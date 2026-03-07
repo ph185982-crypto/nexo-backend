@@ -72,3 +72,14 @@ app.include_router(download.router,      prefix="/api/download",      tags=["Dow
 @app.get("/health")
 async def health():
     return {"status": "online", "version": "3.0.0"}
+
+
+@app.post("/admin/seed")
+async def admin_seed(secret: str):
+    import os
+    if secret != os.getenv("SECRET_KEY", "")[:16]:
+        from fastapi import HTTPException
+        raise HTTPException(403, "Forbidden")
+    from services.seeder import seed_if_empty
+    count = await seed_if_empty(db)
+    return {"seeded": count}
