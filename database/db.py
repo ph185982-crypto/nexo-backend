@@ -279,6 +279,13 @@ class Database:
         async with p.acquire() as c:
             await c.execute("UPDATE products SET ai_analysis=$1 WHERE id=$2", json.dumps(analysis), pid)
 
+    async def get_products_without_ai(self, limit=10) -> List[Dict]:
+        p = await self._p()
+        async with p.acquire() as c:
+            rows = await c.fetch(
+                "SELECT * FROM products WHERE ai_analysis IS NULL ORDER BY score DESC LIMIT $1", limit)
+        return [dict(r) for r in rows]
+
     async def get_market_gaps(self, min_opportunity=70.0) -> List[Dict]:
         p = await self._p()
         async with p.acquire() as c:

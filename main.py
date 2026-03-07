@@ -11,7 +11,7 @@ load_dotenv()
 
 from database.db import Database
 from services.scheduler import DataScheduler
-from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export
+from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export, download
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -43,6 +43,10 @@ scheduler = DataScheduler()
 async def startup():
     await db.connect()
     await scheduler.start()
+    from services.seeder import seed_if_empty
+    seeded = await seed_if_empty(db)
+    if seeded:
+        logger.info(f"Seed inicial: {seeded} produtos inseridos")
     logger.info("NEXO API v3 online")
 
 
@@ -62,6 +66,7 @@ app.include_router(calculator.router,    prefix="/api/calculator",    tags=["Cal
 app.include_router(ai_router.router,     prefix="/api/ai",            tags=["AI"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
 app.include_router(export.router,        prefix="/api/export",        tags=["Export"])
+app.include_router(download.router,      prefix="/api/download",      tags=["Download"])
 
 
 @app.get("/health")

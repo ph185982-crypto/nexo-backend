@@ -59,6 +59,64 @@ Responda SOMENTE com JSON válido, sem markdown:
             logger.error(f"analyze_product: {e}")
             return {"error": str(e)}
 
+    async def check_viability(self, product: Dict) -> Dict:
+        prompt = f"""Você é um analista de e-commerce brasileiro experiente. Avalie a viabilidade comercial deste produto para vender no Brasil.
+
+PRODUTO: {product.get('title','')}
+PREÇO ORIGEM: ${product.get('price_usd',0):.2f} USD
+MARKUP: {product.get('markup',0):.2f}x
+PEDIDOS GLOBAIS: {product.get('orders_count',0):,}
+STATUS NO BRASIL: {product.get('br_status','N/A')}
+CATEGORIA: {product.get('category','N/A')}
+
+Responda SOMENTE com JSON válido, sem markdown:
+{{"veredicto":"Aprovado","pontuacao":8.5,"resumo":"1-2 frases explicando o veredicto","pontos_fortes":["ponto 1","ponto 2","ponto 3"],"pontos_fracos":["risco 1","risco 2"],"recomendacao":"ação concreta recomendada","canal_ideal":"Shopee/MercadoLivre/Instagram/TikTok","prazo_retorno":"estimativa de retorno do investimento"}}
+
+veredicto deve ser exatamente: "Aprovado", "Aprovado com ressalvas" ou "Reprovado"."""
+        try:
+            text = await _generate(prompt)
+            return json.loads(text.replace("```json","").replace("```","").strip())
+        except Exception as e:
+            logger.error(f"check_viability: {e}")
+            return {"error": str(e)}
+
+    async def generate_keywords(self, product: Dict) -> Dict:
+        prompt = f"""Você é um especialista em SEO para e-commerce brasileiro (Shopee, MercadoLivre, Google Shopping).
+
+PRODUTO: {product.get('title','')}
+CATEGORIA: {product.get('category','N/A')}
+PÚBLICO: compradores brasileiros online
+
+Gere palavras-chave estratégicas para maximizar vendas no Brasil.
+
+Responda SOMENTE com JSON válido, sem markdown:
+{{"keywords_principais":["kw1","kw2","kw3","kw4","kw5"],"keywords_cauda_longa":["frase 1 com 3-5 palavras","frase 2","frase 3","frase 4","frase 5"],"hashtags":["#tag1","#tag2","#tag3","#tag4","#tag5","#tag6","#tag7","#tag8"],"termos_negativos":["termo a evitar 1","termo a evitar 2"],"busca_volume":"Alto/Médio/Baixo","dica_seo":"dica específica para esse produto"}}"""
+        try:
+            text = await _generate(prompt)
+            return json.loads(text.replace("```json","").replace("```","").strip())
+        except Exception as e:
+            logger.error(f"generate_keywords: {e}")
+            return {"error": str(e)}
+
+    async def generate_titles(self, product: Dict) -> Dict:
+        prompt = f"""Você é um copywriter especialista em e-commerce brasileiro, expert em criar títulos que vendem.
+
+PRODUTO: {product.get('title','')}
+CATEGORIA: {product.get('category','N/A')}
+PREÇO SUGERIDO: R${product.get('suggested_sell_price',0):.2f}
+MARKUP: {product.get('markup',0):.2f}x
+
+Crie títulos magnéticos para diferentes canais de venda no Brasil.
+
+Responda SOMENTE com JSON válido, sem markdown:
+{{"titulo_shopee":"título otimizado para Shopee (máx 120 chars, inclua palavras-chave)","titulo_mercadolivre":"título para ML (máx 60 chars, direto ao ponto)","titulo_instagram":"título para post Instagram (gancho emocional)","titulo_tiktok":"título para TikTok (trend + curiosidade)","cta_principal":"call-to-action mais forte","gancho_video":"primeira frase para vídeo de 15s que prende atenção","descricao_curta":"descrição de 2 linhas para anúncio"}}"""
+        try:
+            text = await _generate(prompt)
+            return json.loads(text.replace("```json","").replace("```","").strip())
+        except Exception as e:
+            logger.error(f"generate_titles: {e}")
+            return {"error": str(e)}
+
     async def generate_market_insights(self, products: List[Dict]) -> Dict:
         summary = "\n".join([f"- {p.get('title','')}: score {p.get('score',0)}, markup {p.get('markup',0):.1f}x, BR: {p.get('br_status','')}" for p in products[:15]])
         prompt = f"""Analista de mercado de e-commerce brasileiro. Produtos em tendência detectados:
