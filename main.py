@@ -21,12 +21,16 @@ app = FastAPI(title="NEXO API", version="3.0.0")
 # ── CORS ──────────────────────────────────────────────────────────────────────
 # Allow all origins in development. In production set ALLOWED_ORIGINS env var.
 _origins_env = os.getenv("ALLOWED_ORIGINS", "*")
-_origins = ["*"] if _origins_env == "*" else _origins_env.split(",")
+_vercel = "https://frontend-mu-eight-47.vercel.app"
+if _origins_env == "*":
+    _origins = ["*"]
+else:
+    _origins = list({*_origins_env.split(","), _vercel})
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
-    allow_credentials=_origins != ["*"],  # credentials not allowed with wildcard
+    allow_credentials=_origins != ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
