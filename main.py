@@ -74,24 +74,3 @@ async def health():
     return {"status": "online", "version": "3.0.0"}
 
 
-@app.post("/admin/seed")
-async def admin_seed(secret: str):
-    import os, uuid, json
-    if secret != os.getenv("SECRET_KEY", "")[:16]:
-        from fastapi import HTTPException
-        raise HTTPException(403, "Forbidden")
-    from services.seeder import SEED_PRODUCTS
-    from services.profit_calculator import ProfitCalculator
-    from services.ai_scorer import AIScorer
-    calc = ProfitCalculator()
-    scorer = AIScorer()
-    rate = await calc.get_live_usd_rate()
-    enriched = []
-    for p in SEED_PRODUCTS:
-        profit = calc.calculate(p["price_usd"], usd_brl=rate)
-        score = await scorer.score_product(p, "Não Vendido", profit, google_trend=60, fb_ads=10)
-        pid = str(uuid.uuid5(uuid.NAMESPACE_URL, p.get("product_url","") + p["title"]))
-        enriched.append({**p, **profit, "product_id": pid, "br_status": "Não Vendido",
-                         "score": score, "is_new": True, "growth": "+45%"})
-    await db.upsert_products(enriched)
-    return {"seeded": len(enriched)}
