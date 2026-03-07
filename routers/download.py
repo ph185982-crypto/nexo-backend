@@ -1,18 +1,19 @@
-"""Download Router — proxy para baixar mídias (fotos e vídeos) dos produtos"""
+"""Download Router — proxy de imagens e download de mídias dos produtos"""
 import httpx, re
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, Response
 from routers.auth import get_current_user
 
 router = APIRouter()
 
 ALLOWED_HOSTS = [
     "ae01.alicdn.com", "ae02.alicdn.com", "ae03.alicdn.com", "ae04.alicdn.com",
+    "ae05.alicdn.com", "ae06.alicdn.com",
     "img.alicdn.com", "cbu01.alicdn.com",
     "down-br.img.susercontent.com", "cf.shopee.com.br",
     "z-p3-scontent.fbcdn.net", "scontent.cdninstagram.com",
     "video.aliexpress-media.com", "aliexpress-media.com",
-    "img.youtube.com",
+    "img.youtube.com", "images.unsplash.com",
 ]
 
 _EXT_CONTENT = {
@@ -43,6 +44,47 @@ def _safe_filename(url: str, default="arquivo") -> str:
     name = url.split("/")[-1].split("?")[0]
     name = re.sub(r"[^\w.\-]", "_", name)
     return name or default
+
+
+@router.get("/image")
+async def proxy_image(
+    url: str = Query(..., description="URL da imagem AliExpress ou outra plataforma"),
+):
+    """
+    Proxy público de imagens — sem autenticação, resolve CORS do AliExpress.
+    Usado pelo frontend para exibir fotos dos produtos.
+    """
+    # Permite qualquer domínio AliExpress CDN + Unsplash
+    try:
+        from urllib.parse import urlparse
+        host = urlparse(url).hostname or ""
+        ali_ok = "alicdn.com" in host or "aliexpress" in host or "unsplash.com" in host or "susercontent.com" in host
+        if not ali_ok:
+            raise HTTPException(400, "Domínio não permitido no proxy")
+    except Exception:
+        raise HTTPException(400, "URL inválida")
+
+    try:
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
+            r = await client.get(url, headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer": "https://www.aliexpress.com/",
+            })
+            if r.status_code >= 400:
+                raise HTTPException(502, "Imagem não encontrada na origem")
+            content_type = r.headers.get("content-type", "image/jpeg")
+            return Response(
+                content=r.content,
+                media_type=content_type,
+                headers={
+                    "Cache-Control": "public, max-age=86400",
+                    "Access-Control-Allow-Origin": "*",
+                }
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(502, f"Erro ao buscar imagem: {e}")
 
 
 @router.get("/media")
