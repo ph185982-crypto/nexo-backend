@@ -38,7 +38,7 @@ async def _fetch_category(client: httpx.AsyncClient, category_id: int, category_
         "page_size": PER_CATEGORY,
         "target_currency": "USD",
         "target_language": "EN",
-        "country": "US",  # US has the most products; we convert pricing to BRL ourselves
+        "country": "TH",  # TH returns products reliably from Render's IP; pricing converted to BRL
     }
     try:
         r = await client.get(BASE_URL, headers=HEADERS, params=params, timeout=25)
