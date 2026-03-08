@@ -38,6 +38,25 @@ async def hot_sync(background_tasks: BackgroundTasks, user=Depends(get_current_u
     }
 
 
+@router.post("/import")
+async def import_products(payload: dict, user=Depends(get_current_user)):
+    """
+    Recebe uma lista de produtos pre-mapeados e substitui o banco.
+    Usado para injetar produtos coletados externamente.
+    Body: {"products": [...], "clear": true}
+    """
+    products = payload.get("products", [])
+    if not products:
+        raise HTTPException(400, "Nenhum produto no payload")
+    db = Database()
+    if payload.get("clear", True):
+        pool = await db._p()
+        async with pool.acquire() as conn:
+            await conn.execute("DELETE FROM products")
+    await db.upsert_products(products)
+    return {"status": "ok", "count": len(products), "sample": products[0].get("title") if products else None}
+
+
 @router.post("/hot-sync-now")
 async def hot_sync_now(user=Depends(get_current_user)):
     """
