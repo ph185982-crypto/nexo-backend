@@ -88,23 +88,32 @@ async def seed_if_empty(db) -> int:
 
         from services.profit_calculator import ProfitCalculator
         from services.ai_scorer import AIScorer
+        from scrapers.global_spy import get_global_trendsetters
+        import asyncio
         calc = ProfitCalculator()
         scorer = AIScorer()
         rate = await calc.get_live_usd_rate()
         enriched = []
-        for p in SEED_PRODUCTS:
+
+        # Merge global spy + legacy seed products
+        global_products = await get_global_trendsetters(limit=50)
+        all_products = global_products + [p for p in SEED_PRODUCTS if p not in global_products]
+
+        for p in all_products[:50]:
             profit = calc.calculate(p["price_usd"], usd_brl=rate)
-            score = await scorer.score_product(p, "Não Vendido", profit,
-                google_trend=min(100, p["orders_count"] // 5000),
+            br_status = p.get("br_status", "Não Vendido")
+            score = await scorer.score_product(p, br_status, profit,
+                google_trend=min(100, p.get("orders_count", 0) // 5000),
                 fb_ads=15 if p.get("is_hot") else 3)
-            opp = min(100, int((p["orders_count"] / max(p["price_usd"], 1)) * (profit.get("markup", 3) / 3) / 100))
-            pid = str(uuid.uuid5(uuid.NAMESPACE_URL, p["product_url"]))
+            opp = p.get("opportunity") or min(100, int((p.get("orders_count", 1000) / max(p["price_usd"], 1)) * (profit.get("markup", 3) / 3) / 100))
+            prod_url = p.get("product_url") or f"https://www.aliexpress.com/item/{hash(p['title'])}"
+            pid = str(uuid.uuid5(uuid.NAMESPACE_URL, prod_url))
             enriched.append({
                 **p, **profit, "product_id": pid,
-                "br_status": "Não Vendido", "score": score,
+                "br_status": br_status, "score": score,
                 "opportunity": opp, "is_new": True,
-                "is_viral": p.get("is_hot", False),
-                "growth": f"+{min(999, p['orders_count'] // 2000)}%",
+                "is_viral": p.get("is_viral", p.get("is_hot", False)),
+                "growth": p.get("growth") or f"+{min(999, p.get('orders_count', 1000) // 2000)}%",
             })
         await db.upsert_products(enriched)
         logger.info(f"Seed: {len(enriched)} produtos inseridos")

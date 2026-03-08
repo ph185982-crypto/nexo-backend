@@ -1,8 +1,9 @@
-"""AI Router — análise de produtos com Gemini"""
+"""AI Router — análise de produtos com Gemini + AI Analyst estruturado"""
 from fastapi import APIRouter, Depends, HTTPException
 from database.db import Database
 from routers.auth import get_current_user
 from services.ai_scorer import AIScorer
+from services.ai_analyst import analyze_product as analyst_analyze
 
 router = APIRouter()
 scorer = AIScorer()
@@ -14,7 +15,8 @@ async def analyze(product_id: str, user=Depends(get_current_user)):
     product = await db.get_product_by_id(product_id)
     if not product:
         raise HTTPException(404, "Produto não encontrado")
-    analysis = await scorer.analyze_product(product)
+    # Use ai_analyst for structured output (score_br, competition_lvl, ad_creative_hook, sales_projection)
+    analysis = await analyst_analyze(dict(product))
     await db.save_ai_analysis(product_id, analysis)
     return analysis
 
