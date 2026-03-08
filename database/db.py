@@ -20,7 +20,13 @@ _redis: Optional[aioredis.Redis]    = None
 async def _get_pool() -> asyncpg.Pool:
     global _pool
     if _pool is None:
-        _pool = await asyncpg.create_pool(DATABASE_URL, min_size=2, max_size=10)
+        async def _init_conn(conn):
+            await conn.set_type_codec(
+                "jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog"
+            )
+        _pool = await asyncpg.create_pool(
+            DATABASE_URL, min_size=2, max_size=10, init=_init_conn
+        )
     return _pool
 
 

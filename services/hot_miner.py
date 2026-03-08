@@ -1,44 +1,117 @@
 """
-Hot Miner — AliExpress True API (RapidAPI)
-Fetches real HOT products across categories and enriches with BRL pricing.
+Hot Miner v2 — AliExpress True API (RapidAPI)
+Fetches HOT products from 7 priority niches with strict quality filters.
+Criteria: ≥10k orders, ≥90% rating, ≤$15 cost, ≥3.5x markup, score ≥75.
+Titles translated to natural Brazilian Portuguese via Gemini.
 """
-import asyncio, logging, os, uuid
+import asyncio, logging, os, uuid, json
 import httpx
 
 logger = logging.getLogger(__name__)
 
-RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY", "bfa0201ad4msh4eb2fb783613e2fp1f18b7jsn0379d6db7632")
+RAPIDAPI_KEY  = os.getenv("RAPIDAPI_KEY", "bfa0201ad4msh4eb2fb783613e2fp1f18b7jsn0379d6db7632")
 RAPIDAPI_HOST = "aliexpress-true-api.p.rapidapi.com"
-BASE_URL = f"https://{RAPIDAPI_HOST}/api/v3/hot-products-download"
+GEMINI_KEY    = os.getenv("GOOGLE_API_KEY", "")
+BASE_URL      = f"https://{RAPIDAPI_HOST}/api/v3/hot-products-download"
 
 HEADERS = {
     "x-rapidapi-host": RAPIDAPI_HOST,
-    "x-rapidapi-key": RAPIDAPI_KEY,
+    "x-rapidapi-key":  RAPIDAPI_KEY,
 }
 
-# Category IDs → friendly names for the Brazilian market
+# Priority niches ordered by Brazilian market potential
 CATEGORIES = [
-    (1509,        "Joias & Acessórios"),
-    (15,          "Pet"),
-    (6,           "Eletrodomésticos"),
-    (1524,        "Bolsas"),
-    (200000783,   "Moda Masculina"),
-    (200000345,   "Moda Feminina"),
-    (18,          "Esporte"),
+    (66,          "Saúde e Beleza"),       # Beauty & Health
+    (7294,        "Saúde e Beleza"),       # Health Appliances
+    (13,          "Casa Inteligente"),     # Home & Garden
+    (1503,        "Casa Inteligente"),     # Home Improvement
+    (15,          "Pet"),                  # Pets & Pet Supplies
+    (18,          "Fitness em Casa"),      # Sports & Entertainment
+    (1501,        "Bebês e Crianças"),     # Mother & Kids
+    (44,          "Eletrônicos"),          # Consumer Electronics
+    (4,           "Cozinha"),              # Kitchen, Dining & Bar
 ]
 
-# How many products to pull per category (total ≈ 50)
-PER_CATEGORY = 8
+# Products per category request
+PER_CATEGORY = 20
+
+# Margin parameters
+FREIGHT_BRL  = 25.0
+TAX_RATE     = 0.20
+MARKUP_MIN   = 3.5
+MAX_COST_USD = 15.0
+MIN_ORDERS   = 10_000
+MIN_RATING   = 88.0   # ≈ 4.4 stars (API uses 0-100 scale)
+MIN_SCORE    = 75
+
+
+# ── Niche priority bonus (10 pts max) ─────────────────────────────────────────
+_NICHE_BONUS = {
+    "Saúde e Beleza":   10,
+    "Casa Inteligente": 9,
+    "Pet":              8,
+    "Fitness em Casa":  8,
+    "Bebês e Crianças": 7,
+    "Eletrônicos":      6,
+    "Cozinha":          6,
+}
+
+
+def _score(volume: int, rating: float, discount: float, markup: float, price_usd: float, category: str) -> int:
+    """
+    Score 0-100 based on the 5 champion criteria.
+    CRITÉRIO 1 — Volume (30 pts): orders + rating
+    CRITÉRIO 2 — Oportunidade BR (20 pts): low price = higher opportunity
+    CRITÉRIO 3 — Margem (25 pts): markup quality
+    CRITÉRIO 4 — Tendência (15 pts): discount as trend proxy
+    CRITÉRIO 5 — Nicho (10 pts): priority category bonus
+    """
+    # C1 — Volume & rating (30 pts)
+    vol_pts = min(22, int((min(volume, 500_000) / 500_000) * 22))
+    rat_pts = 8 if rating >= 95 else (6 if rating >= 92 else (4 if rating >= 88 else 0))
+
+    # C2 — BR Opportunity (20 pts): cheaper = more accessible market
+    if price_usd <= 3:
+        opp_pts = 20
+    elif price_usd <= 6:
+        opp_pts = 16
+    elif price_usd <= 10:
+        opp_pts = 12
+    elif price_usd <= 15:
+        opp_pts = 8
+    else:
+        opp_pts = 0
+
+    # C3 — Margin (25 pts)
+    if markup >= 5.0:
+        margin_pts = 25
+    elif markup >= 4.5:
+        margin_pts = 22
+    elif markup >= 4.0:
+        margin_pts = 18
+    elif markup >= 3.5:
+        margin_pts = 12
+    else:
+        margin_pts = 0
+
+    # C4 — Trend proxy via discount (15 pts)
+    trend_pts = min(15, int(discount * 0.4))
+
+    # C5 — Niche priority (10 pts)
+    niche_pts = _NICHE_BONUS.get(category, 5)
+
+    total = vol_pts + rat_pts + opp_pts + margin_pts + trend_pts + niche_pts
+    return min(100, max(0, total))
 
 
 async def _fetch_category(client: httpx.AsyncClient, category_id: int, category_name: str) -> list:
     params = {
-        "category_id": category_id,
-        "page_no": 1,
-        "page_size": PER_CATEGORY,
+        "category_id":     category_id,
+        "page_no":         1,
+        "page_size":       PER_CATEGORY,
         "target_currency": "USD",
         "target_language": "EN",
-        "country": "TH",  # TH returns products reliably from Render's IP; pricing converted to BRL
+        "country":         "TH",
     }
     try:
         r = await client.get(BASE_URL, headers=HEADERS, params=params, timeout=25)
@@ -55,131 +128,200 @@ async def _fetch_category(client: httpx.AsyncClient, category_id: int, category_
         return []
 
 
-def _map_product(raw: dict, category_name: str, usd_brl: float) -> dict:
-    """Map AliExpress True API fields → NEXO DB schema."""
+def _map_product(raw: dict, category_name: str, usd_brl: float) -> dict | None:
+    """Map AliExpress True API → NEXO schema with quality filters."""
     product_id = str(raw.get("product_id", ""))
-    title = raw.get("product_title", "Produto")
-    price_usd = float(raw.get("target_sale_price", 0) or raw.get("app_sale_price", 0) or 0)
-    original_usd = float(raw.get("target_original_price", price_usd) or price_usd)
-    discount_str = raw.get("discount", "0%").replace("%", "")
-    try:
-        discount_pct = float(discount_str)
-    except Exception:
-        discount_pct = 0
+    title      = raw.get("product_title", "Produto")
+    price_usd  = float(raw.get("target_sale_price", 0) or raw.get("app_sale_price", 0) or 0)
 
-    # Sales volume (latest_volume or lastest_volume typo in API)
+    # FILTER: max cost $15
+    if price_usd <= 0 or price_usd > MAX_COST_USD:
+        return None
+
+    # Sales volume
     volume = int(raw.get("lastest_volume") or raw.get("latest_volume") or 0)
 
-    # Rating: API gives "90.0%" → convert to 4.5 scale or keep as 0-100
+    # FILTER: min 10k orders
+    if volume < MIN_ORDERS:
+        return None
+
+    # Rating (API gives "90.0%" → float)
     rating_str = str(raw.get("evaluate_rate", "0%")).replace("%", "")
     try:
         rating = float(rating_str)
     except Exception:
         rating = 0.0
 
-    # Images
-    main_img = raw.get("product_main_image_url", "")
+    # FILTER: min rating ~4.4 stars
+    if rating < MIN_RATING:
+        return None
+
+    # Discount
+    discount_str = raw.get("discount", "0%").replace("%", "")
+    try:
+        discount_pct = float(discount_str)
+    except Exception:
+        discount_pct = 0.0
+
+    # Original price
+    original_usd = float(raw.get("target_original_price", price_usd) or price_usd)
+
+    # Images — main image first, then extras
+    main_img   = raw.get("product_main_image_url", "")
     small_imgs = raw.get("product_small_image_urls", {})
-    if isinstance(small_imgs, dict):
-        extra_imgs = small_imgs.get("product_small_image_url", [])
-    else:
-        extra_imgs = []
-    all_images = [main_img] + [i for i in extra_imgs if i != main_img]
+    extra_imgs = small_imgs.get("product_small_image_url", []) if isinstance(small_imgs, dict) else []
+    all_images = [main_img] + [i for i in extra_imgs if i and i != main_img]
     all_images = [i for i in all_images if i]
 
     # BRL pricing
-    freight_brl = 35.0
-    tax_rate = 0.20
-    cost_brl = round(price_usd * usd_brl, 2)
-    tax_brl = round(cost_brl * tax_rate, 2)
-    total_cost_brl = round(cost_brl + freight_brl + tax_brl, 2)
-    markup = 3.0
+    cost_brl       = round(price_usd * usd_brl, 2)
+    tax_brl        = round(cost_brl * TAX_RATE, 2)
+    total_cost_brl = round(cost_brl + FREIGHT_BRL + tax_brl, 2)
+    markup         = round(MARKUP_MIN + 0.5, 1)  # start at 3.5x baseline suggestion
+
+    # Dynamic markup: for cheap products, we can charge more
+    if price_usd <= 5:
+        markup = 5.0
+    elif price_usd <= 8:
+        markup = 4.5
+    elif price_usd <= 12:
+        markup = 4.0
+    else:
+        markup = 3.5
+
     suggested_sell = round(total_cost_brl * markup, 2)
-    margin_pct = round(((suggested_sell - total_cost_brl) / suggested_sell) * 100, 1)
+    margin_pct     = round(((suggested_sell - total_cost_brl) / suggested_sell) * 100, 1)
 
-    # Opportunity & score heuristic
-    opp = min(100, int(
-        (volume / max(price_usd, 1)) * (markup / 3) / 100 +
-        (discount_pct / 2) +
-        (rating / 10)
-    ))
-    score = min(100, int(
-        (rating * 0.4) +
-        (min(volume, 50000) / 50000 * 40) +
-        (discount_pct * 0.2) + 10
-    ))
+    # Score
+    score = _score(volume, rating, discount_pct, markup, price_usd, category_name)
 
-    # Growth tag
+    # FILTER: min score 75
+    if score < MIN_SCORE:
+        return None
+
+    # Opportunity & growth
+    opp    = min(100, int((volume / max(price_usd, 1)) * (markup / 3) / 100 + discount_pct / 2 + rating / 10))
     growth = f"+{min(999, volume // 1000)}%" if volume > 0 else "+0%"
 
-    # Facebook Ads Library search URL from title keywords
-    kws = " ".join(title.split()[:5])
-    fb_ads_url = f"https://www.facebook.com/ads/library/?q={kws.replace(' ', '%20')}&search_type=keyword_unordered&media_type=all&active_status=all&countries[0]=BR"
+    # Facebook Ads Library URL
+    kws        = " ".join(title.split()[:5])
+    fb_ads_url = f"https://www.facebook.com/ads/library/?q={kws.replace(' ','%20')}&search_type=keyword_unordered&media_type=all&active_status=all&countries[0]=BR"
 
     return {
-        "product_id": product_id or str(uuid.uuid4()),
-        "title": title,
-        "platform": "aliexpress",
-        "price_usd": price_usd,
-        "original_price_usd": original_usd,
-        "discount_pct": discount_pct,
-        "cost_brl": cost_brl,
-        "freight_brl": freight_brl,
-        "tax_brl": tax_brl,
-        "total_cost_brl": total_cost_brl,
+        "product_id":          product_id or str(uuid.uuid4()),
+        "title":               title,  # will be translated in batch after fetch
+        "title_en":            title,  # keep original for reference
+        "platform":            "aliexpress",
+        "price_usd":           price_usd,
+        "original_price_usd":  original_usd,
+        "discount_pct":        discount_pct,
+        "cost_brl":            cost_brl,
+        "freight_brl":         FREIGHT_BRL,
+        "tax_brl":             tax_brl,
+        "total_cost_brl":      total_cost_brl,
         "suggested_sell_price": suggested_sell,
-        "markup": markup,
-        "margin_pct": margin_pct,
-        "orders_count": volume,
-        "rating": rating,
-        "evaluate_rate": rating,
-        "category": category_name,
-        "second_level_category": raw.get("second_level_category_name", ""),
-        "images": all_images,
-        "product_url": raw.get("promotion_link") or raw.get("product_detail_url", ""),
-        "product_detail_url": raw.get("product_detail_url", ""),
-        "promotion_link": raw.get("promotion_link", ""),
-        "fb_ads_url": fb_ads_url,
-        "shop_name": raw.get("shop_name", ""),
-        "shop_url": raw.get("shop_url", ""),
-        "video_url": raw.get("product_video_url", ""),
-        "commission_rate": float(raw.get("hot_product_commission_rate", 0) or 0),
-        "score": score,
-        "opportunity": opp,
-        "is_hot": discount_pct >= 15 or volume >= 1000,
-        "is_viral": volume >= 5000 or discount_pct >= 30,
-        "is_new": True,
-        "growth": growth,
-        "br_status": "Não Vendido",
-        "sources": [{"name": "AliExpress", "url": raw.get("product_detail_url", ""), "price": f"${price_usd:.2f}"}],
-        "tags": [category_name, raw.get("second_level_category_name", "")],
+        "markup":              markup,
+        "margin_pct":          margin_pct,
+        "orders_count":        volume,
+        "rating":              rating,
+        "evaluate_rate":       rating,
+        "category":            category_name,
+        "images":              all_images,
+        "product_url":         raw.get("promotion_link") or raw.get("product_detail_url", ""),
+        "product_detail_url":  raw.get("product_detail_url", ""),
+        "promotion_link":      raw.get("promotion_link", ""),
+        "fb_ads_url":          fb_ads_url,
+        "shop_name":           raw.get("shop_name", ""),
+        "shop_url":            raw.get("shop_url", ""),
+        "video_url":           raw.get("product_video_url", ""),
+        "commission_rate":     float(raw.get("hot_product_commission_rate", 0) or 0),
+        "score":               score,
+        "opportunity":         opp,
+        "is_hot":              discount_pct >= 15 or volume >= 50_000,
+        "is_viral":            volume >= 100_000 or discount_pct >= 30,
+        "is_new":              True,
+        "growth":              growth,
+        "br_status":           "Não Vendido",
+        "sources":             [{"name": "AliExpress", "url": raw.get("product_detail_url", ""), "price": f"${price_usd:.2f}"}],
+        "tags":                [category_name, raw.get("second_level_category_name", "")],
     }
 
 
+async def _translate_titles(products: list) -> list:
+    """Batch-translate English titles to natural Brazilian Portuguese using Gemini."""
+    if not GEMINI_KEY or not products:
+        return products
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=GEMINI_KEY)
+        model  = genai.GenerativeModel("gemini-1.5-flash")
+        titles = [p["title"] for p in products]
+        prompt = (
+            "Você é especialista em nomes de produtos para marketplaces brasileiros (Mercado Livre, Shopee).\n"
+            "Traduza cada título abaixo do inglês para português brasileiro NATURAL e ATRAENTE.\n"
+            "Regras:\n"
+            "- Máximo 80 caracteres\n"
+            "- Destaque o benefício principal\n"
+            "- Use linguagem de marketplace (ex: 'Kit', 'Conjunto', 'Profissional', 'Premium')\n"
+            "- Não traduza marcas ou siglas técnicas (USB, LED, WiFi, etc)\n"
+            "- Retorne APENAS os títulos traduzidos, um por linha, mesma ordem\n\n"
+            + "\n".join(f"{i+1}. {t}" for i, t in enumerate(titles))
+        )
+        resp  = await asyncio.to_thread(model.generate_content, prompt)
+        lines = [l.strip() for l in resp.text.strip().split("\n") if l.strip()]
+        # strip leading numbering like "1. " or "1) "
+        cleaned = []
+        for l in lines:
+            if l and len(l) > 2 and l[0].isdigit() and l[1] in ".):":
+                l = l.split(None, 1)[1] if " " in l else l
+            cleaned.append(l)
+        if len(cleaned) == len(products):
+            for p, pt in zip(products, cleaned):
+                p["title"] = pt
+            logger.info(f"Títulos traduzidos para PT: {len(cleaned)}")
+        else:
+            logger.warning(f"Tradução retornou {len(cleaned)} linhas, esperado {len(products)} — mantendo inglês")
+    except Exception as e:
+        logger.warning(f"Tradução Gemini falhou: {e} — mantendo títulos em inglês")
+    return products
+
+
 async def fetch_hot_products(usd_brl: float = 6.10, limit: int = 50) -> list:
-    """Fetch HOT products across all configured categories."""
-    logger.info(f"Hot Miner: buscando produtos em {len(CATEGORIES)} categorias (USD/BRL={usd_brl:.2f})")
+    """Fetch HOT products across all priority niches with quality filters applied."""
+    logger.info(f"Hot Miner v2: {len(CATEGORIES)} categorias, filtros: ≤${MAX_COST_USD}, ≥{MIN_ORDERS} pedidos, ≥{MIN_RATING}% rating, score≥{MIN_SCORE}")
     results = []
 
     async with httpx.AsyncClient(follow_redirects=True) as client:
-        tasks = [_fetch_category(client, cid, cname) for cid, cname in CATEGORIES]
+        tasks      = [_fetch_category(client, cid, cname) for cid, cname in CATEGORIES]
         all_batches = await asyncio.gather(*tasks)
 
+    passed = failed = 0
     for (cid, cname), batch in zip(CATEGORIES, all_batches):
         for raw in batch:
             try:
                 mapped = _map_product(raw, cname, usd_brl)
-                results.append(mapped)
+                if mapped:
+                    results.append(mapped)
+                    passed += 1
+                else:
+                    failed += 1
             except Exception as e:
                 logger.warning(f"Erro ao mapear produto {raw.get('product_id')}: {e}")
+                failed += 1
 
-    # Sort by score descending, deduplicate by product_id
-    seen = set()
-    unique = []
+    logger.info(f"Hot Miner: {passed} aprovados, {failed} rejeitados pelos filtros")
+
+    # Deduplicate by product_id, sort by score
+    seen, unique = set(), []
     for p in sorted(results, key=lambda x: x["score"], reverse=True):
         if p["product_id"] not in seen:
             seen.add(p["product_id"])
             unique.append(p)
 
-    logger.info(f"Hot Miner: {len(unique)} produtos únicos coletados")
-    return unique[:limit]
+    top = unique[:limit]
+
+    # Batch translate titles to Portuguese
+    top = await _translate_titles(top)
+
+    logger.info(f"Hot Miner: {len(top)} produtos únicos prontos")
+    return top
