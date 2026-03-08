@@ -148,7 +148,8 @@ def _map_product(raw: dict, category_name: str, usd_brl: float) -> dict:
         "is_new": True,
         "growth": growth,
         "br_status": "Não Vendido",
-        "source": "aliexpress_true_api",
+        "sources": [{"name": "AliExpress", "url": raw.get("product_detail_url", ""), "price": f"${price_usd:.2f}"}],
+        "tags": [category_name, raw.get("second_level_category_name", "")],
     }
 
 

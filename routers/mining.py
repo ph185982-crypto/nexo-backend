@@ -54,7 +54,7 @@ async def hot_sync_now(user=Depends(get_current_user)):
         # Clear old products and insert fresh ones
         pool = await db._p()
         async with pool.acquire() as conn:
-            await conn.execute("DELETE FROM products WHERE source = 'aliexpress_true_api' OR TRUE")
+            await conn.execute("DELETE FROM products")
         await db.upsert_products(products)
         return {"status": "ok", "count": len(products), "sample": products[0]["title"] if products else None}
     except Exception as e:
