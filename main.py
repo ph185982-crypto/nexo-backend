@@ -1,6 +1,6 @@
 """
 NEXO — Product Intelligence Platform
-Backend API v3 — Fixed: DB singleton, async bcrypt, route ordering, CORS
+Backend API v4.3 — AliExpress True API, /import endpoint, image proxy
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
