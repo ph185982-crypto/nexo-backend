@@ -87,34 +87,39 @@ async def seed_if_empty(db) -> int:
             return 0
 
         from services.profit_calculator import ProfitCalculator
-        from services.ai_scorer import AIScorer
-        from scrapers.global_spy import get_global_trendsetters
-        import asyncio
         calc = ProfitCalculator()
-        scorer = AIScorer()
         rate = await calc.get_live_usd_rate()
         enriched = []
 
-        # Merge global spy + legacy seed products
-        global_products = await get_global_trendsetters(limit=50)
-        all_products = global_products + [p for p in SEED_PRODUCTS if p not in global_products]
+        # Primary: AliExpress True API (real products, real images)
+        try:
+            from services.hot_miner import fetch_hot_products
+            enriched = await fetch_hot_products(usd_brl=rate, limit=50)
+            logger.info(f"Seed via True API: {len(enriched)} produtos reais")
+        except Exception as e:
+            logger.warning(f"True API indisponível no seed ({e}), usando fallback estático")
 
-        for p in all_products[:50]:
-            profit = calc.calculate(p["price_usd"], usd_brl=rate)
-            br_status = p.get("br_status", "Não Vendido")
-            score = await scorer.score_product(p, br_status, profit,
-                google_trend=min(100, p.get("orders_count", 0) // 5000),
-                fb_ads=15 if p.get("is_hot") else 3)
-            opp = p.get("opportunity") or min(100, int((p.get("orders_count", 1000) / max(p["price_usd"], 1)) * (profit.get("markup", 3) / 3) / 100))
-            prod_url = p.get("product_url") or f"https://www.aliexpress.com/item/{hash(p['title'])}"
-            pid = str(uuid.uuid5(uuid.NAMESPACE_URL, prod_url))
-            enriched.append({
-                **p, **profit, "product_id": pid,
-                "br_status": br_status, "score": score,
-                "opportunity": opp, "is_new": True,
-                "is_viral": p.get("is_viral", p.get("is_hot", False)),
-                "growth": p.get("growth") or f"+{min(999, p.get('orders_count', 1000) // 2000)}%",
-            })
+        # Fallback: static global spy products
+        if not enriched:
+            from services.ai_scorer import AIScorer
+            from scrapers.global_spy import get_global_trendsetters
+            scorer = AIScorer()
+            static_products = await get_global_trendsetters(limit=50)
+            for p in static_products:
+                profit = calc.calculate(p["price_usd"], usd_brl=rate)
+                br_status = p.get("br_status", "Não Vendido")
+                score = await scorer.score_product(p, br_status, profit,
+                    google_trend=min(100, p.get("orders_count", 0) // 5000),
+                    fb_ads=15 if p.get("is_hot") else 3)
+                prod_url = p.get("product_url") or f"https://aliexpress.com/item/{hash(p['title'])}"
+                pid = str(uuid.uuid5(uuid.NAMESPACE_URL, prod_url))
+                enriched.append({
+                    **p, **profit, "product_id": pid,
+                    "br_status": br_status, "score": score,
+                    "opportunity": p.get("opportunity", 70), "is_new": True,
+                    "is_viral": p.get("is_viral", p.get("is_hot", False)),
+                    "growth": p.get("growth") or f"+{min(999, p.get('orders_count', 1000) // 2000)}%",
+                })
         await db.upsert_products(enriched)
         logger.info(f"Seed: {len(enriched)} produtos inseridos")
         return len(enriched)

@@ -1,8 +1,8 @@
-"""Mining Router — dispara mineração real do AliExpress DS Center"""
-from fastapi import APIRouter, Depends, BackgroundTasks
+"""Mining Router — AliExpress True API + DS Center"""
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 from database.db import Database
 from routers.auth import get_current_user
-import logging
+import logging, os
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -20,6 +20,70 @@ async def trigger_mining(background_tasks: BackgroundTasks, user=Depends(get_cur
 @router.get("/status/{scan_id}")
 async def mining_status(scan_id: str, user=Depends(get_current_user)):
     return await Database().get_scan_status(scan_id)
+
+
+@router.post("/hot-sync")
+async def hot_sync(background_tasks: BackgroundTasks, user=Depends(get_current_user)):
+    """
+    Busca os 50 produtos HOT da AliExpress True API, limpa o banco
+    e repovoam com dados reais (imagens, preços, ratings).
+    """
+    db = Database()
+    scan_id = await db.create_scan_job({"source": "aliexpress_true_api", "user_id": user["id"]})
+    background_tasks.add_task(_run_hot_sync, scan_id)
+    return {
+        "scan_id": scan_id,
+        "status": "running",
+        "message": "Sincronização HOT iniciada — produtos reais em ~30s",
+    }
+
+
+@router.post("/hot-sync-now")
+async def hot_sync_now(user=Depends(get_current_user)):
+    """
+    Versão síncrona — aguarda e retorna resultados imediatamente.
+    Use apenas para testes; pode atingir timeout em 60s.
+    """
+    from services.hot_miner import fetch_hot_products
+    from services.profit_calculator import ProfitCalculator
+    db = Database()
+    calc = ProfitCalculator()
+    try:
+        rate = await calc.get_live_usd_rate()
+        products = await fetch_hot_products(usd_brl=rate, limit=50)
+        # Clear old products and insert fresh ones
+        pool = await db._p()
+        async with pool.acquire() as conn:
+            await conn.execute("DELETE FROM products WHERE source = 'aliexpress_true_api' OR TRUE")
+        await db.upsert_products(products)
+        return {"status": "ok", "count": len(products), "sample": products[0]["title"] if products else None}
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+async def _run_hot_sync(scan_id: str):
+    """Background task: fetch HOT products and replace DB contents."""
+    from services.hot_miner import fetch_hot_products
+    from services.profit_calculator import ProfitCalculator
+    db = Database()
+    try:
+        await db.update_scan_status(scan_id, "fetching_true_api")
+        calc = ProfitCalculator()
+        rate = await calc.get_live_usd_rate()
+        products = await fetch_hot_products(usd_brl=rate, limit=50)
+        logger.info(f"True API retornou {len(products)} produtos")
+
+        await db.update_scan_status(scan_id, "saving")
+        # Replace all products with fresh HOT data
+        pool = await db._p()
+        async with pool.acquire() as conn:
+            await conn.execute("DELETE FROM products")
+        await db.upsert_products(products)
+        await db.update_scan_status(scan_id, "completed", count=len(products))
+        logger.info(f"Hot Sync concluído: {len(products)} produtos reais salvos")
+    except Exception as e:
+        logger.error(f"Hot Sync falhou: {e}")
+        await db.update_scan_status(scan_id, "failed", error=str(e))
 
 
 async def _run_mining(scan_id: str):

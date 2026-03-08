@@ -10,9 +10,13 @@ ALLOWED_HOSTS = [
     "ae01.alicdn.com", "ae02.alicdn.com", "ae03.alicdn.com", "ae04.alicdn.com",
     "ae05.alicdn.com", "ae06.alicdn.com",
     "img.alicdn.com", "cbu01.alicdn.com",
+    # AliExpress True API CDN
+    "ae-pic-a1.aliexpress-media.com", "ae-pic-a2.aliexpress-media.com",
+    "ae-pic-b1.aliexpress-media.com", "ae-pic-b2.aliexpress-media.com",
+    "aliexpress-media.com",
+    "video.aliexpress-media.com",
     "down-br.img.susercontent.com", "cf.shopee.com.br",
     "z-p3-scontent.fbcdn.net", "scontent.cdninstagram.com",
-    "video.aliexpress-media.com", "aliexpress-media.com",
     "img.youtube.com", "images.unsplash.com",
 ]
 
@@ -58,7 +62,14 @@ async def proxy_image(
     try:
         from urllib.parse import urlparse
         host = urlparse(url).hostname or ""
-        ali_ok = "alicdn.com" in host or "aliexpress" in host or "unsplash.com" in host or "susercontent.com" in host
+        ali_ok = (
+            "alicdn.com" in host or
+            "aliexpress" in host or
+            "aliexpress-media.com" in host or
+            "ae-pic-a1" in host or
+            "unsplash.com" in host or
+            "susercontent.com" in host
+        )
         if not ali_ok:
             raise HTTPException(400, "Domínio não permitido no proxy")
     except Exception:
