@@ -51,6 +51,8 @@ async def hot_sync_now(user=Depends(get_current_user)):
     try:
         rate = await calc.get_live_usd_rate()
         products = await fetch_hot_products(usd_brl=rate, limit=50)
+        if not products:
+            raise HTTPException(502, "True API retornou 0 produtos — verifique logs do Render para detalhes")
         # Clear old products and insert fresh ones
         pool = await db._p()
         async with pool.acquire() as conn:

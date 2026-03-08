@@ -38,17 +38,20 @@ async def _fetch_category(client: httpx.AsyncClient, category_id: int, category_
         "page_size": PER_CATEGORY,
         "target_currency": "USD",
         "target_language": "EN",
-        "country": "BR",
+        "country": "US",  # US has the most products; we convert pricing to BRL ourselves
     }
     try:
-        r = await client.get(BASE_URL, headers=HEADERS, params=params, timeout=20)
+        r = await client.get(BASE_URL, headers=HEADERS, params=params, timeout=25)
         r.raise_for_status()
         data = r.json()
+        if "message" in data:
+            logger.error(f"  [{category_name}] API error: {data['message']}")
+            return []
         products = data.get("products", {}).get("product", [])
         logger.info(f"  [{category_name}] {len(products)} produtos retornados")
         return products
     except Exception as e:
-        logger.error(f"  [{category_name}] Falhou: {e}")
+        logger.error(f"  [{category_name}] Falhou: {type(e).__name__}: {e}")
         return []
 
 
