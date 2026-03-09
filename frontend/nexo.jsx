@@ -1492,6 +1492,356 @@ function AIDrawer({ product, onClose, onOpenFull }) {
   );
 }
 
+// ─── META ADS INTELLIGENCE ────────────────────────────────────────────────────
+
+function MetaAdsBadge({ badge }) {
+  const map = {
+    ESCALÁVEL: { bg: C.greenLight,   color: C.green,  label: "▲ ESCALÁVEL" },
+    ESTÁVEL:   { bg: C.blueLight,    color: C.blue,   label: "● ESTÁVEL" },
+    ATENÇÃO:   { bg: C.yellowLight,  color: C.yellow, label: "⚠ ATENÇÃO" },
+    PAUSAR:    { bg: C.redLight,     color: C.red,    label: "■ PAUSAR" },
+    REPROVADO: { bg: C.redLight,     color: C.red,    label: "✕ REPROVADO" },
+  };
+  const s = map[badge] || map["ATENÇÃO"];
+  return <span style={{background:s.bg,color:s.color,borderRadius:6,padding:"2px 8px",fontSize:10,fontWeight:800,letterSpacing:0.3,border:`1px solid ${s.color}33`}}>{s.label}</span>;
+}
+
+function MetaMetricCard({ label, value, sub, color, icon }) {
+  return (
+    <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"18px 20px",flex:1,minWidth:140}}>
+      <div style={{fontSize:20,marginBottom:8}}>{icon}</div>
+      <div style={{fontSize:22,fontWeight:900,color:color||C.text}}>{value}</div>
+      <div style={{fontSize:11,color:C.textSub,marginTop:2}}>{label}</div>
+      {sub&&<div style={{fontSize:10,color:C.textLight,marginTop:3}}>{sub}</div>}
+    </div>
+  );
+}
+
+function MetaIssueRow({ issue }) {
+  const levelColor = { "crítico": C.red, "atenção": C.yellow, "oportunidade": C.green };
+  const levelBg    = { "crítico": C.redLight, "atenção": C.yellowLight, "oportunidade": C.greenLight };
+  const icon       = { "crítico": "🔴", "atenção": "🟡", "oportunidade": "🟢" };
+  const color = levelColor[issue.level] || C.textSub;
+  const bg    = levelBg[issue.level] || C.surface;
+  return (
+    <div style={{border:`1px solid ${color}33`,borderLeft:`4px solid ${color}`,borderRadius:10,padding:"14px 18px",marginBottom:10,background:bg}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+        <span style={{fontSize:16,flexShrink:0}}>{icon[issue.level]}</span>
+        <div style={{flex:1}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
+            <span style={{fontSize:11,fontWeight:800,color,textTransform:"uppercase",letterSpacing:0.5}}>{issue.level}</span>
+            <span style={{fontSize:11,color:C.textLight,background:C.bg,borderRadius:4,padding:"1px 6px"}}>{issue.entity}: {issue.entity_name}</span>
+            <span style={{fontSize:11,color:C.textLight}}>Métrica: <b style={{color:C.text}}>{issue.metric} {issue.value}</b></span>
+          </div>
+          <div style={{fontSize:13,color:C.text,marginBottom:6,fontWeight:600}}>{issue.description}</div>
+          <div style={{fontSize:12,color:C.textSub,background:C.bg,borderRadius:8,padding:"8px 12px",borderLeft:`3px solid ${color}`}}>
+            <span style={{fontWeight:700,color}}>Ação: </span>{issue.action}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MetaAds() {
+  const [tab, setTab] = useState("overview");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [campaigns, setCampaigns] = useState([]);
+  const [ads, setAds] = useState([]);
+  const [insights, setInsights] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [nexoProducts, setNexoProducts] = useState([]);
+
+  const NICHE_CPM  = { "Saúde e Beleza": 35, "Pet": 28, "Fitness em Casa": 30, "Casa Inteligente": 32, "Bebês e Crianças": 38, "Eletrônicos": 40, "Cozinha": 25 };
+  const NICHE_ROAS = { "Saúde e Beleza": "3-5x", "Pet": "4-6x", "Fitness em Casa": "3-4x", "Casa Inteligente": "3-4x", "Bebês e Crianças": "3-5x", "Eletrônicos": "2-4x", "Cozinha": "3-5x" };
+
+  useEffect(() => {
+    loadOverview();
+    apiFetch("/api/products?limit=8").then(d => setNexoProducts((d?.products||[]).map(normalizeProduct))).catch(()=>{});
+  }, []);
+
+  async function loadOverview() {
+    setLoading(true); setError("");
+    try {
+      const [ins, camp, adsData] = await Promise.all([
+        apiFetch("/api/meta/insights"),
+        apiFetch("/api/meta/campaigns"),
+        apiFetch("/api/meta/ads"),
+      ]);
+      setInsights(ins);
+      setCampaigns(camp?.campaigns || []);
+      setAds(adsData?.ads || []);
+    } catch(e) { setError(e.message); }
+    setLoading(false);
+  }
+
+  async function runAnalysis() {
+    setAnalysisLoading(true); setTab("diagnostic");
+    try {
+      const res = await apiFetch("/api/meta/analysis");
+      setAnalysis(res);
+    } catch(e) { setAnalysis({ error: e.message }); }
+    setAnalysisLoading(false);
+  }
+
+  const fmt_brl = v => v != null ? `R$${parseFloat(v).toFixed(2)}` : "—";
+  const fmt_pct = v => v != null ? `${parseFloat(v).toFixed(2)}%` : "—";
+  const fmt_x   = v => v != null ? `${parseFloat(v).toFixed(2)}x` : "—";
+
+  const TABS = [
+    { id:"overview",    label:"📈 Visão Geral" },
+    { id:"ads",         label:"🎞 Anúncios" },
+    { id:"diagnostic",  label:"🤖 Diagnóstico IA" },
+    { id:"opportunities",label:"💡 Oportunidades" },
+  ];
+
+  if (loading) return <div style={{padding:40}}><Spinner text="Conectando ao Meta Ads…"/></div>;
+  if (error) return (
+    <div style={{padding:32}}>
+      <div style={{background:C.redLight,border:`1px solid ${C.red}`,borderRadius:14,padding:"20px 24px",marginBottom:20}}>
+        <div style={{fontWeight:800,color:C.red,marginBottom:6}}>Erro ao conectar à Meta Ads API</div>
+        <div style={{color:C.textSub,fontSize:13}}>{error}</div>
+      </div>
+      <Btn onClick={loadOverview} icon="🔄">Tentar novamente</Btn>
+    </div>
+  );
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:12}}>
+        <div>
+          <div style={{fontSize:22,fontWeight:900,color:C.text,letterSpacing:-0.5}}>📊 Meta Ads Intelligence</div>
+          <div style={{fontSize:13,color:C.textSub,marginTop:3}}>Análise em tempo real das suas campanhas — últimos 30 dias</div>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <Btn variant="ghost" onClick={loadOverview} icon="🔄" small>Atualizar</Btn>
+          <Btn variant="primary" onClick={runAnalysis} icon="🤖" small disabled={analysisLoading}>
+            {analysisLoading ? "Analisando…" : "Analisar com IA"}
+          </Btn>
+        </div>
+      </div>
+
+      {/* Overview Cards (sempre visível) */}
+      {insights && (
+        <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
+          <MetaMetricCard icon="💸" label="Gasto Total (30d)"       value={fmt_brl(insights.spend)}           color={C.text}/>
+          <MetaMetricCard icon="📊" label="ROAS Médio"              value={fmt_x(insights.purchase_roas)}     color={insights.purchase_roas>=2?C.green:C.red}/>
+          <MetaMetricCard icon="📡" label="CPM Médio"               value={fmt_brl(insights.cpm)}             color={insights.cpm>50?C.yellow:C.text}/>
+          <MetaMetricCard icon="👆" label="CTR Médio"               value={fmt_pct(insights.ctr)}             color={insights.ctr>=1?C.green:C.yellow}/>
+          <MetaMetricCard icon="👁" label="Alcance"                 value={(insights.reach||0).toLocaleString("pt-BR")} color={C.blue}/>
+          <MetaMetricCard icon="🔁" label="Frequência"              value={(insights.frequency||0).toFixed(1)} color={insights.frequency>3?C.red:C.text}/>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div style={{display:"flex",borderBottom:`1px solid ${C.border}`,marginBottom:20,overflowX:"auto"}}>
+        {TABS.map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{background:"none",border:"none",borderBottom:`2px solid ${tab===t.id?C.blue:"transparent"}`,padding:"11px 18px",fontSize:13,fontWeight:tab===t.id?700:500,color:tab===t.id?C.blue:C.textSub,cursor:"pointer",marginBottom:-1,whiteSpace:"nowrap"}}>{t.label}</button>
+        ))}
+      </div>
+
+      {/* ABA 1 — VISÃO GERAL */}
+      {tab==="overview"&&(
+        <div>
+          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:14}}>🏆 Ranking de Campanhas por ROAS</div>
+          {campaigns.length===0&&<EmptyState icon="📭" title="Sem dados de campanha" sub="Verifique se o token do Meta tem permissão ads_read"/>}
+          {campaigns.map((c,i)=>(
+            <div key={c.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 18px",marginBottom:10,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
+              <div style={{width:28,height:28,background:i<3?C.blueLight:C.bg,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,color:i<3?C.blue:C.textSub,fontSize:13,flexShrink:0}}>#{i+1}</div>
+              <div style={{flex:2,minWidth:160}}>
+                <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:2}}>{c.name}</div>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  <Tag color={c.status==="ACTIVE"?"green":"gray"} sm>{c.status}</Tag>
+                  {c.objective&&<Tag color="blue" sm>{c.objective}</Tag>}
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,80px)",gap:10,flexShrink:0}}>
+                {[{l:"Gasto",v:fmt_brl(c.spend)},{l:"ROAS",v:fmt_x(c.purchase_roas),hl:c.purchase_roas>=2},{l:"CTR",v:fmt_pct(c.ctr),hl:c.ctr>=1},{l:"CPM",v:fmt_brl(c.cpm)}].map(m=>(
+                  <div key={m.l} style={{textAlign:"center"}}>
+                    <div style={{fontSize:13,fontWeight:800,color:m.hl?C.green:C.text}}>{m.v||"—"}</div>
+                    <div style={{fontSize:10,color:C.textLight}}>{m.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ABA 2 — ANÚNCIOS */}
+      {tab==="ads"&&(
+        <div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:8}}>
+            <div style={{fontSize:15,fontWeight:700,color:C.text}}>{ads.length} anúncios encontrados</div>
+            <div style={{display:"flex",gap:6,fontSize:11,color:C.textSub,alignItems:"center"}}>
+              <span>Legenda:</span>
+              {["ESCALÁVEL","ESTÁVEL","ATENÇÃO","PAUSAR"].map(b=><MetaAdsBadge key={b} badge={b}/>)}
+            </div>
+          </div>
+          {ads.length===0&&<EmptyState icon="🎞" title="Sem anúncios" sub="Nenhum anúncio ativo encontrado na conta"/>}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:14}}>
+            {ads.map(a=>{
+              const fallback="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400";
+              const thumb = a.thumbnail_url||a.image_url||fallback;
+              return (
+                <div key={a.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,overflow:"hidden"}}>
+                  <div style={{position:"relative",height:140,background:C.bg}}>
+                    <img src={thumb} alt={a.name} onError={e=>e.target.src=fallback} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+                    <div style={{position:"absolute",top:8,left:8}}><MetaAdsBadge badge={a.badge}/></div>
+                    {a.video_id&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:36,height:36,background:"rgba(255,255,255,0.85)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>▶</div></div>}
+                  </div>
+                  <div style={{padding:"14px 16px"}}>
+                    <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:10,lineHeight:1.4}}>{a.name}</div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+                      {[{l:"Gasto",v:fmt_brl(a.spend)},{l:"ROAS",v:fmt_x(a.purchase_roas),hl:a.purchase_roas>=2},{l:"CTR",v:fmt_pct(a.ctr),hl:a.ctr>=1},{l:"CPM",v:fmt_brl(a.cpm)},{l:"Frequência",v:(a.frequency||0).toFixed(1),hl:a.frequency<3},{l:"CPC",v:fmt_brl(a.cpc)}].map(m=>(
+                        <div key={m.l} style={{background:C.bg,borderRadius:8,padding:"7px 10px",textAlign:"center"}}>
+                          <div style={{fontSize:13,fontWeight:800,color:m.hl?C.green:C.text}}>{m.v||"—"}</div>
+                          <div style={{fontSize:9,color:C.textLight,marginTop:1}}>{m.l}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {a.video_id&&(
+                      <div style={{background:C.bg,borderRadius:8,padding:"7px 10px",fontSize:11,color:C.textSub}}>
+                        <span style={{fontWeight:700,color:C.text}}>Play rate: </span>{a.play_rate_pct||0}% &nbsp;|&nbsp;
+                        <span style={{fontWeight:700,color:C.text}}>Conclusão: </span>{a.completion_rate_pct||0}%
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ABA 3 — DIAGNÓSTICO IA */}
+      {tab==="diagnostic"&&(
+        <div>
+          {!analysis&&!analysisLoading&&(
+            <div style={{textAlign:"center",padding:"50px 20px"}}>
+              <div style={{fontSize:52,marginBottom:14}}>🤖</div>
+              <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:8}}>Diagnóstico com IA</div>
+              <div style={{fontSize:13,color:C.textSub,marginBottom:20}}>Clique para analisar todas as campanhas e anúncios</div>
+              <Btn onClick={runAnalysis} icon="🚀">Iniciar Diagnóstico</Btn>
+            </div>
+          )}
+          {analysisLoading&&<Spinner text="IA analisando suas campanhas…"/>}
+          {analysis?.error&&<div style={{background:C.redLight,border:`1px solid ${C.red}`,borderRadius:12,padding:"16px 20px",color:C.red}}>{analysis.error}</div>}
+          {analysis&&!analysis.error&&(
+            <div>
+              {/* Score de Saúde */}
+              <div style={{background:`linear-gradient(135deg,${C.surface},${C.blueLight})`,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 24px",marginBottom:20,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
+                <Ring val={analysis.health_score} size={72} stroke={analysis.health_score>=70?C.green:analysis.health_score>=50?C.yellow:C.red} bg={C.bg}/>
+                <div>
+                  <div style={{fontSize:14,color:C.textSub,marginBottom:4}}>Score de Saúde da Conta</div>
+                  <div style={{fontSize:24,fontWeight:900,color:analysis.health_score>=70?C.green:analysis.health_score>=50?C.yellow:C.red}}>{analysis.health_label}</div>
+                  <div style={{fontSize:12,color:C.textSub,marginTop:4}}>
+                    {analysis.summary?.critical||0} crítico(s) &nbsp;•&nbsp;
+                    {analysis.summary?.warnings||0} atenção &nbsp;•&nbsp;
+                    {analysis.summary?.opportunities||0} oportunidade(s)
+                  </div>
+                </div>
+                {analysis.scale_now?.length>0&&(
+                  <div style={{marginLeft:"auto",background:C.greenLight,border:`1px solid ${C.green}33`,borderRadius:12,padding:"12px 16px"}}>
+                    <div style={{fontSize:11,fontWeight:700,color:C.green,marginBottom:6}}>▲ ESCALAR AGORA</div>
+                    {analysis.scale_now.slice(0,2).map(a=><div key={a.id} style={{fontSize:12,color:C.textSub}}>{a.name.slice(0,30)} — ROAS {a.roas?.toFixed(1)}x</div>)}
+                  </div>
+                )}
+                {analysis.pause_now?.length>0&&(
+                  <div style={{background:C.redLight,border:`1px solid ${C.red}33`,borderRadius:12,padding:"12px 16px"}}>
+                    <div style={{fontSize:11,fontWeight:700,color:C.red,marginBottom:6}}>■ PAUSAR AGORA</div>
+                    {analysis.pause_now.slice(0,2).map(a=><div key={a.id} style={{fontSize:12,color:C.textSub}}>{a.name.slice(0,30)} — R${a.spend}</div>)}
+                  </div>
+                )}
+              </div>
+
+              {/* Top Recommendations */}
+              {analysis.top_recommendations?.length>0&&(
+                <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"16px 20px",marginBottom:20}}>
+                  <div style={{fontSize:13,fontWeight:800,color:C.text,marginBottom:12}}>⚡ Top Recomendações Prioritárias</div>
+                  {analysis.top_recommendations.map((r,i)=>(
+                    <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:i<analysis.top_recommendations.length-1?`1px solid ${C.border}`:"none"}}>
+                      <span style={{background:C.blueLight,color:C.blue,borderRadius:6,padding:"2px 7px",fontSize:11,fontWeight:800,flexShrink:0}}>#{i+1}</span>
+                      <span style={{fontSize:12,color:C.textSub,lineHeight:1.5}}>{r}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Issues */}
+              <div style={{fontSize:14,fontWeight:700,color:C.text,marginBottom:12}}>Problemas Encontrados ({analysis.issues?.length||0})</div>
+              {(analysis.issues||[]).map((issue,i)=><MetaIssueRow key={i} issue={issue}/>)}
+              {(analysis.issues||[]).length===0&&<EmptyState icon="✅" title="Conta saudável!" sub="Nenhum problema crítico detectado"/>}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ABA 4 — OPORTUNIDADES */}
+      {tab==="opportunities"&&(
+        <div>
+          <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"16px 20px",marginBottom:20}}>
+            <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:8}}>💡 Produtos NEXO com Potencial para Meta Ads</div>
+            <div style={{fontSize:12,color:C.textSub}}>Estimativas baseadas em benchmarks do nicho. CPM e ROAS variam conforme criativo e público.</div>
+          </div>
+          {nexoProducts.length===0&&<Spinner text="Carregando produtos…"/>}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
+            {nexoProducts.map(p=>{
+              const cpm  = NICHE_CPM[p.category] || 35;
+              const roas = NICHE_ROAS[p.category] || "3-4x";
+              const breakeven_roas = p.markup > 0 ? (1/(1-1/p.markup)).toFixed(2) : "—";
+              const pub  = {
+                "Saúde e Beleza":   "Mulheres 25-45, interesses: beleza, skin care, bem-estar",
+                "Pet":              "Donos de pets 18-45, interesses: cães, gatos, animais de estimação",
+                "Fitness em Casa":  "Adultos 22-40, interesses: academia, crossfit, emagrecimento",
+                "Casa Inteligente": "Adultos 28-50, interesses: decoração, organização, casa",
+                "Bebês e Crianças": "Pais 25-40, interesses: maternidade, bebê, educação infantil",
+                "Eletrônicos":      "Adultos 18-45, interesses: tecnologia, gadgets, celular",
+                "Cozinha":          "Adultos 25-50, interesses: culinária, receitas, gastronomia",
+              }[p.category] || "Adultos 20-45, interesses relacionados ao produto";
+              return (
+                <div key={p.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,overflow:"hidden"}}>
+                  <div style={{height:120,overflow:"hidden"}}>
+                    <img src={p.img} alt={p.name} onError={e=>e.target.src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400"} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                  </div>
+                  <div style={{padding:"14px 16px"}}>
+                    <Tag color="blue" sm>{p.category}</Tag>
+                    <div style={{fontSize:13,fontWeight:700,color:C.text,margin:"8px 0 10px",lineHeight:1.3}}>{p.name.slice(0,60)}</div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}>
+                        <div style={{fontSize:13,fontWeight:800,color:C.blue}}>R${cpm}</div>
+                        <div style={{fontSize:9,color:C.textLight}}>CPM estim.</div>
+                      </div>
+                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}>
+                        <div style={{fontSize:13,fontWeight:800,color:C.green}}>{roas}</div>
+                        <div style={{fontSize:9,color:C.textLight}}>ROAS estim.</div>
+                      </div>
+                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}>
+                        <div style={{fontSize:13,fontWeight:800,color:C.yellow}}>{breakeven_roas}x</div>
+                        <div style={{fontSize:9,color:C.textLight}}>Break-even</div>
+                      </div>
+                    </div>
+                    <div style={{background:C.blueLight,borderRadius:8,padding:"8px 10px",fontSize:11,color:C.textSub,marginBottom:10}}>
+                      <span style={{fontWeight:700,color:C.blue}}>Público sugerido: </span>{pub}
+                    </div>
+                    <div style={{display:"flex",gap:8}}>
+                      <Btn href={p._raw?.fb_ads_url||`https://www.facebook.com/ads/library/?q=${encodeURIComponent(p.name.slice(0,30))}`} variant="fb" small icon="🔍">Spy Ads</Btn>
+                      <Btn href={`https://business.facebook.com/`} variant="ghost" small icon="📢">Criar Ad</Btn>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── NAV CONFIG ───────────────────────────────────────────────────────────────
 
 const NAV = [
@@ -1502,6 +1852,7 @@ const NAV = [
   {id:"gap",icon:"🎯",label:"Market Gap"},
   {id:"calc",icon:"💰",label:"Profit Calculator"},
   {id:"download",icon:"⬇️",label:"Criativos"},
+  {id:"meta",icon:"📊",label:"Meta Ads"},
   {id:"favoritos",icon:"★",label:"Favoritos"},
   {id:"settings",icon:"⚙️",label:"Configurações"},
 ];
@@ -1561,7 +1912,7 @@ export default function NexoApp() {
   if (!booted) return <Boot onDone={()=>setBooted(true)}/>;
 
   const SW = isMobile ? 0 : collapsed ? 64 : 222;
-  const titles = { dashboard:"Dashboard",produtos:"Winning Products",radar:"Trend Radar",ads:"Ads Spy",gap:"Market Gap Detector",calc:"Profit Calculator",download:"Creative Downloader",favoritos:"Favoritos",settings:"Configurações" };
+  const titles = { dashboard:"Dashboard",produtos:"Winning Products",radar:"Trend Radar",ads:"Ads Spy",gap:"Market Gap Detector",calc:"Profit Calculator",download:"Creative Downloader",meta:"Meta Ads Intelligence",favoritos:"Favoritos",settings:"Configurações" };
 
   return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Sora,system-ui,sans-serif",display:"flex"}}>
@@ -1629,6 +1980,7 @@ export default function NexoApp() {
           {nav==="gap"&&<MarketGap onSelect={setModal} favorites={favorites} onToggleFav={toggleFav}/>}
           {nav==="calc"&&<ProfitCalculator/>}
           {nav==="download"&&<CreativeDownloader/>}
+          {nav==="meta"&&<MetaAds/>}
           {nav==="favoritos"&&<Favorites onSelect={setModal} favorites={favorites} onToggleFav={toggleFav}/>}
           {nav==="settings"&&<Settings user={user}/>}
         </div>
