@@ -10,7 +10,7 @@ import logging, os
 load_dotenv()
 
 from database.db import Database
-from services.scheduler import DataScheduler
+from services.scheduler_mining import MiningScheduler
 from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export, download, mining, meta_ads
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -36,7 +36,7 @@ app.add_middleware(
 )
 
 db        = Database()
-scheduler = DataScheduler()
+scheduler = MiningScheduler()
 
 
 @app.on_event("startup")
@@ -47,7 +47,7 @@ async def startup():
     seeded = await seed_if_empty(db)
     if seeded:
         logger.info(f"Seed inicial: {seeded} produtos inseridos")
-    logger.info("NEXO API v3 online")
+    logger.info("✅ NEXO Mining v5.0 iniciado")
 
 
 @app.on_event("shutdown")
@@ -70,9 +70,13 @@ app.include_router(download.router,      prefix="/api/download",      tags=["Dow
 app.include_router(mining.router,        prefix="/api/mining",        tags=["Mining"])
 app.include_router(meta_ads.router,      prefix="/api/meta",           tags=["Meta Ads"])
 
+# ── NEXO Mining v5.0 Analytics Router ─────────────────────────────────────────
+from routers.analytics import router as analytics_router
+app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"])
+
 
 @app.get("/health")
 async def health():
-    return {"status": "online", "version": "3.0.0"}
+    return {"status": "online", "version": "5.0.0", "mining": "active"}
 
 
