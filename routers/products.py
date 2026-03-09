@@ -65,6 +65,17 @@ async def get_product(product_id: str, user=Depends(get_current_user)):
     return product
 
 
+@router.get("/{product_id}/enrich")
+async def enrich_product(product_id: str, user=Depends(get_current_user)):
+    """Retorna dados enriquecidos estilo Ecomhunt: score breakdown, mercado, targeting IA, ads."""
+    from services.product_enricher import enrich_product as _enrich
+    product = await db().get_product_by_id(product_id)
+    if not product:
+        raise HTTPException(404, "Produto não encontrado")
+    enriched = await _enrich(product)
+    return {"product_id": product_id, **enriched}
+
+
 @router.post("/scan")
 async def trigger_scan(req: ScanRequest, background_tasks: BackgroundTasks, user=Depends(get_current_user)):
     scan_id = await db().create_scan_job({"keywords": req.keywords, "min_markup": req.min_markup, "user_id": user["id"]})
