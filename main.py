@@ -11,7 +11,7 @@ load_dotenv()
 
 from database.db import Database
 from services.scheduler import DataScheduler
-from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export, download, mining
+from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export, download, mining, meta_ads
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -68,6 +68,7 @@ app.include_router(notifications.router, prefix="/api/notifications", tags=["Not
 app.include_router(export.router,        prefix="/api/export",        tags=["Export"])
 app.include_router(download.router,      prefix="/api/download",      tags=["Download"])
 app.include_router(mining.router,        prefix="/api/mining",        tags=["Mining"])
+app.include_router(meta_ads.router,      prefix="/api/meta",           tags=["Meta Ads"])
 
 
 @app.get("/health")
