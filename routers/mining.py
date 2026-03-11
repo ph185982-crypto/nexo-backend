@@ -1,11 +1,51 @@
-"""Mining Router — AliExpress True API + DS Center"""
+"""Mining Router — AliExpress DS Center + scheduler 24/7"""
 from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 from database.db import Database
 from routers.auth import get_current_user
 import logging, os
+from datetime import datetime
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+@router.get("/scheduler-status")
+async def scheduler_status(user=Depends(get_current_user)):
+    """Status do scheduler de mineração 24/7."""
+    from main import scheduler
+    stats = scheduler.get_stats()
+    return {
+        "status": "running",
+        "message": "Mineracao 24/7 ativa — AliExpress DS Center + pytrends + Mercado Livre",
+        "sources": {
+            "aliexpress": "AliExpress DS Center (gratis)",
+            "trends": "Google Trends via pytrends (gratis)",
+            "br_saturation": "Mercado Livre API oficial (gratis)",
+            "rapidapi": "opcional — aumenta volume se RAPIDAPI_KEY configurada",
+        },
+        "schedule": {
+            "product_scan": "a cada 3h (8x por dia)",
+            "trends_refresh": "a cada 4h (6x por dia)",
+            "champion_digest": "a cada 6h (4x por dia)",
+        },
+        "stats": stats,
+    }
+
+
+@router.post("/force-scan")
+async def force_scan(background_tasks: BackgroundTasks, user=Depends(get_current_user)):
+    """Dispara um scan imediato fora do agendamento."""
+    from main import scheduler
+    background_tasks.add_task(scheduler._product_scan)
+    return {"status": "triggered", "message": "Scan iniciado em background — resultados em ~60s"}
+
+
+@router.post("/force-trends")
+async def force_trends(background_tasks: BackgroundTasks, user=Depends(get_current_user)):
+    """Força atualização de trends agora."""
+    from main import scheduler
+    background_tasks.add_task(scheduler._refresh_trends)
+    return {"status": "triggered", "message": "Trends sendo atualizados..."}
 
 
 @router.post("/scan")
