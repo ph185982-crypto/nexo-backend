@@ -257,7 +257,7 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
   }
 
   useEffect(() => { if (tab==="ia") fetchAI(); }, [tab]);
-  const TABS = [{id:"overview",label:"Produto"},{id:"ads",label:"Anúncios"},{id:"import",label:"Importação"},{id:"ia",label:"🤖 Análise IA"}];
+  const TABS = [{id:"overview",label:"Produto"},{id:"ads",label:"Anúncios"},{id:"import",label:"Importação"},{id:"estrategia",label:"🎯 Estratégia"},{id:"ia",label:"🤖 Análise IA"}];
   const fallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=700";
 
   return (
@@ -455,6 +455,79 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
               </div>
             </div>
           )}
+          {/* ESTRATÉGIA */}
+          {tab==="estrategia"&&(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:20}}>
+              {/* Score Breakdown */}
+              <div style={{background:C.bg,borderRadius:14,padding:20,border:`1px solid ${C.border}`}}>
+                <div style={{fontSize:13,fontWeight:800,color:C.text,marginBottom:16}}>📊 Score Breakdown ({p.score}/100)</div>
+                {[
+                  {l:"Markup",v:p.markup>=6?30:p.markup>=4?20:p.markup>=3?10:0,max:30,color:C.green,hint:`×${p.markup} markup`},
+                  {l:"Status BR",v:p.brStatus==="Não Vendido"?25:p.brStatus==="Pouco Vendido"?15:5,max:25,color:p.brStatus==="Não Vendido"?C.green:p.brStatus==="Pouco Vendido"?C.yellow:C.red,hint:p.brStatus},
+                  {l:"Volume Global",v:p._raw?.orders_count>=100000?20:p._raw?.orders_count>=50000?15:p._raw?.orders_count>=10000?8:0,max:20,color:C.blue,hint:`${(p._raw?.orders_count||0).toLocaleString("pt-BR")} pedidos`},
+                  {l:"Rating",v:p._raw?.rating>=4.8?15:p._raw?.rating>=4.5?10:p._raw?.rating>=4.3?5:0,max:15,color:C.purple,hint:`${p._raw?.rating||0} estrelas`},
+                ].map(item=>(
+                  <div key={item.l} style={{marginBottom:14}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:5,alignItems:"center"}}>
+                      <span style={{fontSize:12,color:C.textSub,fontWeight:600}}>{item.l}</span>
+                      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                        <span style={{fontSize:10,color:C.textLight}}>{item.hint}</span>
+                        <span style={{fontSize:13,fontWeight:800,color:item.color}}>{item.v}/{item.max}</span>
+                      </div>
+                    </div>
+                    <div style={{height:7,background:C.border,borderRadius:99,overflow:"hidden"}}>
+                      <div style={{width:`${(item.v/item.max)*100}%`,height:"100%",background:item.color,borderRadius:99,transition:"width 0.8s ease"}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Targeting + Copy */}
+              <div>
+                {/* Públicos Facebook */}
+                <div style={{background:C.purpleLight,border:`1px solid ${C.purple}33`,borderRadius:14,padding:18,marginBottom:14}}>
+                  <div style={{fontSize:13,fontWeight:800,color:C.purple,marginBottom:4}}>🎯 Interesses Facebook/Instagram</div>
+                  <div style={{fontSize:11,color:C.textSub,marginBottom:12}}>5 interesses para segmentação de campanha</div>
+                  {p.targeting.length>0?(
+                    <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+                      {p.targeting.map((t,i)=>(
+                        <div key={i} style={{background:C.bg,border:`1px solid ${C.purple}44`,borderRadius:8,padding:"6px 12px",display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{width:18,height:18,background:C.purple,borderRadius:"50%",color:"#fff",fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</span>
+                          <span style={{fontSize:12,color:C.text,fontWeight:600}}>{t}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ):(
+                    <div style={{fontSize:12,color:C.textSub}}>Sem sugestão de targeting para este produto.</div>
+                  )}
+                </div>
+
+                {/* Copy */}
+                {p.copy&&(
+                  <div style={{background:C.yellowLight,border:`1px solid ${C.yellow}33`,borderRadius:14,padding:18}}>
+                    <div style={{fontSize:13,fontWeight:800,color:C.yellow,marginBottom:4}}>✍️ Copy para Anúncio</div>
+                    <div style={{fontSize:11,color:C.textSub,marginBottom:12}}>Texto pronto para usar no Facebook/Instagram Ads</div>
+                    <div style={{background:C.bg,borderRadius:10,padding:"14px 16px",fontSize:13,color:C.textMid,lineHeight:1.7,marginBottom:12,border:`1px solid ${C.border}`}}>
+                      {p.copy}
+                    </div>
+                    <button onClick={()=>navigator.clipboard?.writeText(p.copy)} style={{background:C.yellowLight,border:`1px solid ${C.yellow}`,borderRadius:8,padding:"6px 14px",fontSize:12,fontWeight:700,color:C.yellow,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
+                      📋 Copiar texto
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Botão Spy Ads */}
+              <div style={{background:C.surface,borderRadius:14,padding:18,border:`1px solid ${C.border}`,gridColumn:"1 / -1",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:3}}>🔍 Ver anúncios dos concorrentes</div>
+                  <div style={{fontSize:12,color:C.textSub}}>Buscar na Biblioteca de Anúncios do Facebook por palavras-chave do produto</div>
+                </div>
+                <Btn variant="fb" href={fbAdsUrl(p.name)} icon="🔍">Abrir Facebook Ads Library</Btn>
+              </div>
+            </div>
+          )}
+
           {/* IA */}
           {tab==="ia"&&(
             <div>
@@ -528,7 +601,7 @@ function ProductCard({ p: rawP, onClick, favorites, onToggleFav }) {
   return (
     <div onClick={()=>onClick(rawP)} style={{background:C.surface,borderRadius:18,border:p.highlight?`2px solid ${C.blue}`:`1px solid ${C.border}`,overflow:"hidden",cursor:"pointer",transition:"all 0.2s ease",boxShadow:p.highlight?`0 4px 20px ${C.blue}22`:"0 1px 6px rgba(0,0,0,0.04)",position:"relative"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 14px 40px ${C.blue}18`;}} onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=p.highlight?`0 4px 20px ${C.blue}22`:"0 1px 6px rgba(0,0,0,0.04)";}}>
       <div style={{position:"relative",height:192,overflow:"hidden"}}>
-        <img src={p.img} alt={p.name} onError={e=>e.target.src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=700"} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+        <img src={imgProxy(p.img)} alt={p.name} onError={e=>{ e.target.onerror=null; e.target.src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400"; }} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 55%)"}}/>
         {p.highlight&&<div style={{position:"absolute",top:10,left:10,background:`linear-gradient(135deg,${C.navy},${C.blue})`,color:"#fff",fontSize:10,fontWeight:800,padding:"3px 9px",borderRadius:20}}>⭐ TOP PICK</div>}
         {p.isNew&&<div style={{position:"absolute",top:10,right:36,background:C.green,color:"#fff",fontSize:10,fontWeight:800,padding:"3px 9px",borderRadius:20}}>✨ NOVO</div>}
@@ -1222,15 +1295,18 @@ function Dashboard({ onNav }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiFetch("/api/products?sort_by=score&limit=20").then(d=>{
+    apiFetch("/api/products?sort_by=score&limit=200").then(d=>{
       const products = d?.products || [];
       setTrending(products.slice(0,4));
       setBest(products[0]||null);
+      const naoVendido = products.filter(p=>p.br_status==="Não Vendido").length;
+      const scoreArr   = products.map(p=>p.score||0);
+      const scoreAvg   = scoreArr.length ? Math.round(scoreArr.reduce((a,b)=>a+b,0)/scoreArr.length) : 0;
       setStats({
-        total: products.length,
-        markup3x: products.filter(p=>p.markup>=3).length,
-        nichos: products.filter(p=>p.br_status==="Não Vendido").length,
-        ads: products.reduce((s,p)=>s+(p.fb_ads_count||0),0),
+        total:     products.length,
+        naoVendido,
+        scoreAvg,
+        bestScore: products[0]?.score || 0,
       });
       setLoading(false);
     }).catch(()=>setLoading(false));
@@ -1240,10 +1316,10 @@ function Dashboard({ onNav }) {
 
   const bestP = best ? normalizeProduct(best) : null;
   const statCards = [
-    {icon:"📊",l:"Produtos Monitorados",v:stats.total||"0",sub:"escaneados agora",c:C.blue},
-    {icon:"🔥",l:"Markup ≥ 3×",v:stats.markup3x||"0",sub:"oportunidades",c:C.green},
-    {icon:"🎯",l:"Nichos Livres BR",v:stats.nichos||"0",sub:"sem concorrência",c:C.yellow},
-    {icon:"📢",l:"Ads Detectados",v:stats.ads||"0",sub:"FB + Instagram",c:C.purple},
+    {icon:"📊",l:"Total de Produtos",v:stats.total||"0",sub:"no banco de dados",c:C.blue},
+    {icon:"🎯",l:"Não Vendidos no BR",v:stats.naoVendido||"0",sub:"sem concorrência",c:C.green},
+    {icon:"⭐",l:"Score Médio",v:stats.scoreAvg||"0",sub:"qualidade da carteira",c:C.yellow},
+    {icon:"🏆",l:"Melhor Oportunidade",v:`${stats.bestScore||0}/100`,sub:bestP?.name?.slice(0,20)||"—",c:C.purple},
   ];
 
   return (
