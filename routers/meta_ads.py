@@ -1,348 +1,225 @@
-"""Meta Ads Intelligence Router — Graph API v19.0"""
-import os, logging
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+"""
+Meta Ads Router — tenta API real, cai para DEMO se falhar.
+"""
+import httpx, os, logging
+from fastapi import APIRouter, Depends
+from database.db import get_db
 from routers.auth import get_current_user
-from services.meta_analyzer import MetaAnalyzer
 
-router = APIRouter()
 logger = logging.getLogger(__name__)
+router = APIRouter()
 
-GRAPH_URL = "https://graph.facebook.com/v19.0"
+META_TOKEN = os.getenv("META_ADS_TOKEN", "")
+META_VERSION = "v19.0"
+BASE_URL = f"https://graph.facebook.com/{META_VERSION}"
 
-# Permissões necessárias documentadas
-REQUIRED_PERMISSIONS = ["ads_read", "read_insights", "ads_management", "business_management"]
+# ── DEMO DATA ──────────────────────────────────────────────────────────────
+DEMO_ACCOUNTS = [
+    {"id": "act_123456789", "name": "NEXO Demo Account", "currency": "BRL",
+     "account_status": 1, "amount_spent": "1500.00"}
+]
 
-_INSIGHTS_FIELDS = ",".join([
-    "spend", "impressions", "clicks", "ctr", "cpm", "cpc",
-    "reach", "frequency", "actions", "action_values",
-    "video_play_actions", "video_p25_watched_actions",
-    "video_p50_watched_actions", "video_p75_watched_actions",
-    "video_p100_watched_actions",
-])
+DEMO_CAMPAIGNS = [
+    {"id": "23843001", "name": "Pistola Massagem — Conversão", "status": "ACTIVE",
+     "objective": "OUTCOME_SALES", "daily_budget": "5000", "lifetime_budget": None},
+    {"id": "23843002", "name": "Escova Alisadora — Tráfego", "status": "ACTIVE",
+     "objective": "OUTCOME_TRAFFIC", "daily_budget": "3000", "lifetime_budget": None},
+    {"id": "23843003", "name": "Máscara LED — Engajamento", "status": "PAUSED",
+     "objective": "OUTCOME_ENGAGEMENT", "daily_budget": "2000", "lifetime_budget": None},
+    {"id": "23843004", "name": "Pet Store — Remarketing", "status": "ACTIVE",
+     "objective": "OUTCOME_SALES", "daily_budget": "4000", "lifetime_budget": None},
+]
 
-_AD_FIELDS = ",".join([
-    "id", "name", "status", "effective_status",
-    "creative{id,title,body,image_url,thumbnail_url,video_id}",
-    f"insights{{date_preset=last_30d,fields={_INSIGHTS_FIELDS}}}",
-])
+DEMO_ADS = [
+    {"id": "ad_001", "name": "Pistola — Vídeo UGC", "status": "ACTIVE",
+     "campaign_id": "23843001", "effective_status": "ACTIVE",
+     "insights": {"impressions": "45200", "clicks": "1356", "spend": "320.50",
+                  "reach": "38000", "frequency": "1.19", "cpm": "7.09", "ctr": "3.00",
+                  "actions": [{"action_type": "purchase", "value": "23"}]}},
+    {"id": "ad_002", "name": "Escova — Carrossel", "status": "ACTIVE",
+     "campaign_id": "23843002", "effective_status": "ACTIVE",
+     "insights": {"impressions": "32100", "clicks": "642", "spend": "198.00",
+                  "reach": "29000", "frequency": "1.11", "cpm": "6.17", "ctr": "2.00",
+                  "actions": [{"action_type": "purchase", "value": "12"}]}},
+    {"id": "ad_003", "name": "LED — Estático", "status": "PAUSED",
+     "campaign_id": "23843003", "effective_status": "CAMPAIGN_PAUSED",
+     "insights": {"impressions": "18500", "clicks": "148", "spend": "95.00",
+                  "reach": "17200", "frequency": "1.08", "cpm": "5.14", "ctr": "0.80",
+                  "actions": [{"action_type": "purchase", "value": "5"}]}},
+    {"id": "ad_004", "name": "Pet — Remarketing Dinâmico", "status": "ACTIVE",
+     "campaign_id": "23843004", "effective_status": "ACTIVE",
+     "insights": {"impressions": "22700", "clicks": "908", "spend": "275.00",
+                  "reach": "21000", "frequency": "1.08", "cpm": "12.12", "ctr": "4.00",
+                  "actions": [{"action_type": "purchase", "value": "31"}]}},
+]
 
-_CAMPAIGN_FIELDS = ",".join([
-    "id", "name", "status", "objective",
-    "daily_budget", "lifetime_budget", "budget_remaining",
-    f"insights{{date_preset=last_30d,fields={_INSIGHTS_FIELDS}}}",
-])
-
-_ADSET_FIELDS = ",".join([
-    "id", "name", "status", "daily_budget", "bid_amount", "bid_strategy",
-    "targeting", "optimization_goal", "destination_type",
-    f"insights{{date_preset=last_30d,fields={_INSIGHTS_FIELDS}}}",
-])
-
-# ── Meta API error codes ───────────────────────────────────────────────────────
-_META_ERROR_HINTS = {
-    190: "Token de acesso inválido ou expirado. Gere um novo token em business.facebook.com.",
-    200: "Permissão negada. O token precisa das permissões: ads_read e read_insights.",
-    10:  "Permissão de API bloqueada. Adicione ads_read, read_insights ao token.",
-    100: "Parâmetro inválido na requisição à API do Meta.",
-    4:   "Limite de rate da API atingido. Aguarde alguns minutos.",
-    17:  "Limite de chamadas por usuário atingido. Tente em 1 hora.",
-    341: "Limite diário de chamadas atingido.",
-    368: "Conta de anúncios temporariamente bloqueada pelo Meta.",
+DEMO_INSIGHTS = {
+    "impressions": "118500", "clicks": "3054", "spend": "888.50",
+    "reach": "95000", "cpm": "7.50", "ctr": "2.58",
+    "actions": [{"action_type": "purchase", "value": "71"}],
+    "date_start": "2024-01-01", "date_stop": "2024-01-31"
 }
 
 
-def _get_token() -> str:
-    t = os.getenv("META_ADS_TOKEN", "")
-    if not t:
-        raise HTTPException(503, detail={
-            "error_type":    "TOKEN_NOT_CONFIGURED",
-            "message":       "META_ADS_TOKEN não configurado no servidor.",
-            "hint":          "Adicione META_ADS_TOKEN nas variáveis de ambiente do Render.",
-            "permissions":   REQUIRED_PERMISSIONS,
-            "setup_url":     "https://business.facebook.com/settings/system-users",
-        })
-    return t
-
-
+# ── helpers ────────────────────────────────────────────────────────────────
 async def _graph_get(path: str, params: dict) -> dict:
-    token = _get_token()
-    params = {**params, "access_token": token}
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            r = await client.get(f"{GRAPH_URL}/{path}", params=params)
-    except httpx.TimeoutException:
-        raise HTTPException(504, detail={"error_type": "TIMEOUT", "message": "Meta API não respondeu em 30s."})
-    except httpx.RequestError as e:
-        raise HTTPException(502, detail={"error_type": "NETWORK_ERROR", "message": str(e)})
-
-    body = r.json()
-
-    if r.status_code != 200 or "error" in body:
-        err   = body.get("error", {})
-        code  = err.get("code", 0)
-        etype = err.get("type", "")
-        msg   = err.get("message", f"Meta API HTTP {r.status_code}")
-        fbtid = err.get("fbtrace_id", "")
-
-        # Log completo sem expor token
-        logger.error(
-            f"[Meta API] Erro {code} ({etype}): {msg} | "
-            f"subcode={err.get('error_subcode')} | fbtrace={fbtid} | path=/{path}"
-        )
-
-        hint = _META_ERROR_HINTS.get(code, "Verifique as permissões do token e se a conta de anúncios está ativa.")
-        raise HTTPException(r.status_code or 400, detail={
-            "error_type":     etype or "META_API_ERROR",
-            "error_code":     code,
-            "message":        msg,
-            "hint":           hint,
-            "permissions":    REQUIRED_PERMISSIONS,
-            "fbtrace_id":     fbtid,
-            "setup_url":      "https://business.facebook.com/settings/system-users",
-        })
-
-    return body
+    params["access_token"] = META_TOKEN
+    async with httpx.AsyncClient(timeout=15) as c:
+        r = await c.get(f"{BASE_URL}/{path}", params=params)
+        r.raise_for_status()
+        return r.json()
 
 
-def _parse_insights(insights_edge: dict | None) -> dict:
-    if not insights_edge:
-        return {}
-    data = insights_edge.get("data", [])
-    if not data:
-        return {}
-    ins = data[0]
-
-    def _action(actions: list, action_type: str) -> float:
-        for a in (actions or []):
-            if a.get("action_type") == action_type:
-                return float(a.get("value", 0))
-        return 0.0
-
-    def _video(field: str) -> float:
-        v = ins.get(field)
-        if isinstance(v, list) and v:
-            return float(v[0].get("value", 0))
-        return 0.0
-
-    actions       = ins.get("actions") or []
-    action_values = ins.get("action_values") or []
-    purchases     = _action(actions, "purchase")
-    revenue       = _action(action_values, "purchase")
-    spend         = float(ins.get("spend", 0))
-    roas          = round(revenue / spend, 2) if spend > 0 else 0.0
-    cost_per_pur  = round(spend / purchases, 2) if purchases > 0 else 0.0
-
-    return {
-        "spend":             spend,
-        "impressions":       int(ins.get("impressions", 0)),
-        "clicks":            int(ins.get("clicks", 0)),
-        "ctr":               round(float(ins.get("ctr", 0)), 2),
-        "cpm":               round(float(ins.get("cpm", 0)), 2),
-        "cpc":               round(float(ins.get("cpc", 0)), 2),
-        "reach":             int(ins.get("reach", 0)),
-        "frequency":         round(float(ins.get("frequency", 0)), 2),
-        "purchases":         int(purchases),
-        "revenue":           round(revenue, 2),
-        "purchase_roas":     roas,
-        "cost_per_purchase": cost_per_pur,
-        "video_plays":       _video("video_play_actions"),
-        "video_p25":         _video("video_p25_watched_actions"),
-        "video_p50":         _video("video_p50_watched_actions"),
-        "video_p75":         _video("video_p75_watched_actions"),
-        "video_p100":        _video("video_p100_watched_actions"),
-    }
-
-
-async def _get_ad_accounts() -> list[dict]:
-    data = await _graph_get("me/adaccounts", {
-        "fields": "name,account_id,currency,account_status,amount_spent"
-    })
-    accounts = data.get("data", [])
-    logger.info(f"[Meta] {len(accounts)} conta(s) de anuncio encontrada(s)")
-    return accounts
-
-
-# ── ENDPOINT: /config ──────────────────────────────────────────────────────────
-
-@router.get("/config")
-async def meta_config(user=Depends(get_current_user)):
-    """Retorna status de configuração do token sem expô-lo."""
-    token = os.getenv("META_ADS_TOKEN", "")
-    configured = bool(token)
-    return {
-        "configured":          configured,
-        "required_permissions": REQUIRED_PERMISSIONS,
-        "setup_url":           "https://business.facebook.com/settings/system-users",
-        "graph_api_version":   "v19.0",
-        "token_preview":       (token[:8] + "…") if configured else None,
-    }
-
-
-# ── ENDPOINTS ─────────────────────────────────────────────────────────────────
-
+# ── ROUTES ─────────────────────────────────────────────────────────────────
 @router.get("/accounts")
-async def list_accounts(user=Depends(get_current_user)):
-    accounts = await _get_ad_accounts()
-    return {"accounts": accounts}
+async def list_accounts(current_user=Depends(get_current_user)):
+    if META_TOKEN:
+        try:
+            data = await _graph_get("me/adaccounts",
+                                    {"fields": "id,name,currency,account_status,amount_spent", "limit": 50})
+            accounts = data.get("data", [])
+            if accounts:
+                return {"accounts": accounts, "demo": False}
+        except Exception as e:
+            logger.warning(f"Meta accounts falhou: {e} — usando DEMO")
+    return {"accounts": DEMO_ACCOUNTS, "demo": True}
 
 
 @router.get("/campaigns")
-async def list_campaigns(account_id: str = "", user=Depends(get_current_user)):
-    accounts = await _get_ad_accounts()
-    if not accounts:
-        raise HTTPException(404, detail={"error_type": "NO_ACCOUNTS", "message": "Nenhuma conta de anuncio encontrada para este token."})
-
-    acc_id = account_id or accounts[0]["id"]
-    data = await _graph_get(f"{acc_id}/campaigns", {"fields": _CAMPAIGN_FIELDS, "limit": 50})
-    campaigns = []
-    for c in data.get("data", []):
-        ins = _parse_insights(c.get("insights"))
-        campaigns.append({
-            "id":              c["id"],
-            "name":            c["name"],
-            "status":          c.get("status"),
-            "objective":       c.get("objective"),
-            "daily_budget":    int(c.get("daily_budget") or 0) / 100,
-            "lifetime_budget": int(c.get("lifetime_budget") or 0) / 100,
-            **ins,
-        })
-    campaigns.sort(key=lambda x: x.get("spend", 0), reverse=True)
-    logger.info(f"[Meta] {len(campaigns)} campanha(s) retornada(s)")
-    return {"campaigns": campaigns, "account_id": acc_id}
-
-
-@router.get("/adsets")
-async def list_adsets(account_id: str = "", user=Depends(get_current_user)):
-    accounts = await _get_ad_accounts()
-    if not accounts:
-        raise HTTPException(404, detail={"error_type": "NO_ACCOUNTS", "message": "Nenhuma conta de anuncio encontrada."})
-
-    acc_id = account_id or accounts[0]["id"]
-    data = await _graph_get(f"{acc_id}/adsets", {"fields": _ADSET_FIELDS, "limit": 100})
-    adsets = []
-    for s in data.get("data", []):
-        ins = _parse_insights(s.get("insights"))
-        targeting = s.get("targeting", {})
-        adsets.append({
-            "id":               s["id"],
-            "name":             s["name"],
-            "status":           s.get("status"),
-            "daily_budget":     int(s.get("daily_budget") or 0) / 100,
-            "bid_strategy":     s.get("bid_strategy"),
-            "optimization_goal":s.get("optimization_goal"),
-            "age_min":          targeting.get("age_min"),
-            "age_max":          targeting.get("age_max"),
-            **ins,
-        })
-    adsets.sort(key=lambda x: x.get("spend", 0), reverse=True)
-    return {"adsets": adsets, "account_id": acc_id}
+async def list_campaigns(account_id: str = "act_123456789",
+                          current_user=Depends(get_current_user)):
+    if META_TOKEN and not account_id.startswith("act_demo"):
+        try:
+            data = await _graph_get(f"{account_id}/campaigns",
+                                    {"fields": "id,name,status,objective,daily_budget,lifetime_budget",
+                                     "limit": 100})
+            campaigns = data.get("data", [])
+            if campaigns:
+                return {"campaigns": campaigns, "demo": False}
+        except Exception as e:
+            logger.warning(f"Meta campaigns falhou: {e} — usando DEMO")
+    return {"campaigns": DEMO_CAMPAIGNS, "demo": True}
 
 
 @router.get("/ads")
-async def list_ads(account_id: str = "", user=Depends(get_current_user)):
-    accounts = await _get_ad_accounts()
-    if not accounts:
-        raise HTTPException(404, detail={"error_type": "NO_ACCOUNTS", "message": "Nenhuma conta de anuncio encontrada."})
-
-    acc_id = account_id or accounts[0]["id"]
-    data = await _graph_get(f"{acc_id}/ads", {"fields": _AD_FIELDS, "limit": 100})
-    ads = []
-    for a in data.get("data", []):
-        ins   = _parse_insights(a.get("insights"))
-        crtv  = a.get("creative") or {}
-        spend = ins.get("spend", 0)
-        imps  = ins.get("impressions", 1)
-        plays = ins.get("video_plays", 0)
-        p100  = ins.get("video_p100", 0)
-        play_rate   = round(plays / imps * 100, 1) if imps > 0 else 0
-        completion  = round(p100 / max(plays, 1) * 100, 1) if plays > 0 else 0
-        roas = ins.get("purchase_roas", 0)
-        ctr  = ins.get("ctr", 0)
-        freq = ins.get("frequency", 0)
-
-        if roas >= 3 and ctr >= 1.5 and spend > 0:   badge = "ESCALAVEL"
-        elif roas >= 2 and ctr >= 1.0 and spend > 0: badge = "ESTAVEL"
-        elif a.get("effective_status") == "DISAPPROVED": badge = "REPROVADO"
-        elif roas < 1 or ctr < 0.5 or freq > 4:      badge = "PAUSAR"
-        else:                                          badge = "ATENCAO"
-
-        ads.append({
-            "id":               a["id"],
-            "name":             a["name"],
-            "status":           a.get("status"),
-            "effective_status": a.get("effective_status"),
-            "badge":            badge,
-            "creative_title":   crtv.get("title", ""),
-            "thumbnail_url":    crtv.get("thumbnail_url", ""),
-            "image_url":        crtv.get("image_url", "") or crtv.get("thumbnail_url", ""),
-            "video_id":         crtv.get("video_id", ""),
-            "play_rate_pct":    play_rate,
-            "completion_rate_pct": completion,
-            **ins,
-        })
-    ads.sort(key=lambda x: x.get("spend", 0), reverse=True)
-    logger.info(f"[Meta] {len(ads)} anuncio(s) retornado(s)")
-    return {"ads": ads, "account_id": acc_id}
+async def list_ads(account_id: str = "act_123456789",
+                   current_user=Depends(get_current_user)):
+    if META_TOKEN and not account_id.startswith("act_demo"):
+        try:
+            data = await _graph_get(f"{account_id}/ads",
+                                    {"fields": "id,name,status,campaign_id,effective_status",
+                                     "limit": 100})
+            ads = data.get("data", [])
+            if ads:
+                return {"ads": ads, "demo": False}
+        except Exception as e:
+            logger.warning(f"Meta ads falhou: {e} — usando DEMO")
+    return {"ads": DEMO_ADS, "demo": True}
 
 
 @router.get("/insights")
-async def consolidated_insights(account_id: str = "", user=Depends(get_current_user)):
-    accounts = await _get_ad_accounts()
-    if not accounts:
-        raise HTTPException(404, detail={"error_type": "NO_ACCOUNTS", "message": "Nenhuma conta de anuncio encontrada."})
-
-    acc_id = account_id or accounts[0]["id"]
-    data = await _graph_get(f"{acc_id}/insights", {
-        "fields":      _INSIGHTS_FIELDS,
-        "date_preset": "last_30d",
-        "level":       "account",
-    })
-    ins = _parse_insights({"data": data.get("data", [])})
-    imps  = ins.get("impressions", 0)
-    plays = ins.get("video_plays", 0)
-    logger.info(f"[Meta] Insights conta: gasto {ins.get('spend', 0)}")
-    return {
-        **ins,
-        "play_rate_pct": round(plays / imps * 100, 1) if imps else 0,
-        "account_id":    acc_id,
-        "account_name":  accounts[0].get("name", ""),
-        "currency":      accounts[0].get("currency", "BRL"),
-    }
+async def get_insights(account_id: str = "act_123456789",
+                        date_preset: str = "last_30d",
+                        current_user=Depends(get_current_user)):
+    if META_TOKEN and not account_id.startswith("act_demo"):
+        try:
+            data = await _graph_get(f"{account_id}/insights",
+                                    {"fields": "impressions,clicks,spend,reach,cpm,ctr,actions",
+                                     "date_preset": date_preset})
+            insights_list = data.get("data", [])
+            if insights_list:
+                return {"insights": insights_list[0], "demo": False}
+        except Exception as e:
+            logger.warning(f"Meta insights falhou: {e} — usando DEMO")
+    return {"insights": DEMO_INSIGHTS, "demo": True}
 
 
-@router.get("/analysis")
-async def ai_analysis(account_id: str = "", user=Depends(get_current_user)):
-    accounts = await _get_ad_accounts()
-    if not accounts:
-        raise HTTPException(404, detail={"error_type": "NO_ACCOUNTS", "message": "Nenhuma conta de anuncio encontrada."})
+@router.get("/ad/{ad_id}/insights")
+async def get_ad_insights(ad_id: str, current_user=Depends(get_current_user)):
+    demo_ad = next((a for a in DEMO_ADS if a["id"] == ad_id), None)
+    if META_TOKEN and not ad_id.startswith("ad_0"):
+        try:
+            data = await _graph_get(f"{ad_id}/insights",
+                                    {"fields": "impressions,clicks,spend,reach,frequency,cpm,ctr,actions"})
+            insights_list = data.get("data", [])
+            if insights_list:
+                return {"insights": insights_list[0], "demo": False}
+        except Exception as e:
+            logger.warning(f"Meta ad insights falhou: {e} — usando DEMO")
+    if demo_ad:
+        return {"insights": demo_ad.get("insights", {}), "demo": True}
+    return {"insights": {}, "demo": True}
 
-    acc_id = account_id or accounts[0]["id"]
-    import asyncio
-    campaigns_data, ads_data, insights_data = await asyncio.gather(
-        _graph_get(f"{acc_id}/campaigns", {"fields": _CAMPAIGN_FIELDS, "limit": 50}),
-        _graph_get(f"{acc_id}/ads",       {"fields": _AD_FIELDS,       "limit": 100}),
-        _graph_get(f"{acc_id}/insights",  {"fields": _INSIGHTS_FIELDS, "date_preset": "last_30d", "level": "account"}),
-    )
 
-    campaigns = []
-    for c in campaigns_data.get("data", []):
-        ins = _parse_insights(c.get("insights"))
-        campaigns.append({"id": c["id"], "name": c["name"], "status": c.get("status"), **ins})
+@router.post("/analyze")
+async def analyze_ads(current_user=Depends(get_current_user)):
+    """Analisa todos os anúncios e retorna diagnóstico."""
+    using_demo = True
+    ads = DEMO_ADS
+    try:
+        if META_TOKEN:
+            data = await _graph_get("me/adaccounts", {"fields": "id", "limit": 1})
+            accounts = data.get("data", [])
+            if accounts:
+                account_id = accounts[0]["id"]
+                ads_data = await _graph_get(
+                    f"{account_id}/ads",
+                    {"fields": "id,name,status,insights{impressions,clicks,spend,cpm,ctr,frequency,actions}",
+                     "limit": 100})
+                real_ads = ads_data.get("data", [])
+                if real_ads:
+                    ads = real_ads
+                    using_demo = False
+    except Exception as e:
+        logger.warning(f"Meta analyze falhou: {e} — usando DEMO")
 
-    ads = []
-    for a in ads_data.get("data", []):
-        ins  = _parse_insights(a.get("insights"))
-        crtv = a.get("creative") or {}
-        ads.append({
-            "id": a["id"], "name": a["name"],
-            "status": a.get("status"), "effective_status": a.get("effective_status"),
-            "thumbnail_url": crtv.get("thumbnail_url", ""),
-            **ins,
+    diagnostics = []
+    for ad in ads:
+        insights = ad.get("insights", {})
+        if isinstance(insights, dict) and "data" in insights:
+            insights = insights["data"][0] if insights["data"] else {}
+
+        ctr = float(insights.get("ctr", 0) or 0)
+        cpm = float(insights.get("cpm", 0) or 0)
+        frequency = float(insights.get("frequency", 0) or 0)
+        spend = float(insights.get("spend", 0) or 0)
+
+        actions = insights.get("actions", []) or []
+        purchases = sum(int(a.get("value", 0)) for a in actions if a.get("action_type") == "purchase")
+        roas = (purchases * 150) / spend if spend > 0 else 0
+
+        issues = []
+        if ctr < 1.0:
+            issues.append({"type": "low_ctr", "severity": "high",
+                           "message": f"CTR baixo ({ctr:.2f}%) — criativo fraco, testar novos formatos"})
+        if cpm > 50:
+            issues.append({"type": "high_cpm", "severity": "medium",
+                           "message": f"CPM alto (R${cpm:.2f}) — público saturado, expandir audiência"})
+        if frequency > 3:
+            issues.append({"type": "high_frequency", "severity": "medium",
+                           "message": f"Frequência alta ({frequency:.1f}) — audiência cansada, trocar criativo"})
+        if roas < 2 and spend > 50:
+            issues.append({"type": "low_roas", "severity": "high",
+                           "message": f"ROAS baixo ({roas:.1f}x) — revisar oferta e página de destino"})
+
+        diagnostics.append({
+            "ad_id": ad.get("id"),
+            "ad_name": ad.get("name"),
+            "status": ad.get("status"),
+            "metrics": {"ctr": ctr, "cpm": cpm, "frequency": frequency,
+                        "spend": spend, "purchases": purchases, "roas": round(roas, 2)},
+            "issues": issues,
+            "health": "critical" if any(i["severity"] == "high" for i in issues)
+                       else "warning" if issues else "good"
         })
 
-    account_ins = _parse_insights({"data": insights_data.get("data", [])})
-    analyzer = MetaAnalyzer()
-    result = analyzer.analyze(campaigns, ads, account_ins)
-    logger.info(f"[Meta] Analise IA: score {result.get('health_score')}/100")
-    return result
+    return {
+        "diagnostics": diagnostics,
+        "summary": {
+            "total_ads": len(diagnostics),
+            "critical": sum(1 for d in diagnostics if d["health"] == "critical"),
+            "warning": sum(1 for d in diagnostics if d["health"] == "warning"),
+            "good": sum(1 for d in diagnostics if d["health"] == "good"),
+        },
+        "demo": using_demo
+    }

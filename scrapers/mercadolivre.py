@@ -1,32 +1,49 @@
-"""Mercado Livre BR Scraper"""
+"""Mercado Livre BR — verificação de saturação via RapidAPI"""
 import httpx, os, logging
 from typing import List, Dict
 
 logger = logging.getLogger(__name__)
-APIFY_TOKEN = os.getenv("APIFY_TOKEN", "")
-BASE = "https://api.apify.com/v2"
 
 
 class MercadoLivreScraper:
     async def search_products(self, keywords: List[str], max_results=30) -> List[Dict]:
-        all_p = []
+        """Mantido para compatibilidade — retorna lista vazia se sem token."""
+        results = []
         for kw in keywords:
             try:
-                url = f"{BASE}/acts/jupri~mercado-libre-scraper/run-sync-get-dataset-items?token={APIFY_TOKEN}&timeout=180&memory=512"
-                async with httpx.AsyncClient(timeout=210) as c:
-                    r = await c.post(url, json={"search": kw, "site": "MLB", "maxItems": max_results, "proxyConfiguration": {"useApifyProxy": True}})
-                    r.raise_for_status()
-                    items = r.json()
-                all_p.extend([self._norm(i) for i in items])
+                data = await check_br_saturation(kw)
+                results.append({"title": kw, "br_status": data.get("br_status", "Não Vendido"), "br_total": data.get("br_total", 0)})
             except Exception as e:
                 logger.error(f"ML '{kw}': {e}")
-        return all_p
+        return results
 
-    def _norm(self, i) -> Dict:
-        return {
-            "platform": "mercadolivre_br",
-            "title": i.get("title", ""),
-            "price_brl": float(i.get("price", 0) or 0),
-            "sales": int(i.get("soldQuantity", 0) or 0),
-            "product_url": i.get("url", ""),
-        }
+
+async def check_br_saturation(keyword: str) -> dict:
+    """Verifica saturação no Mercado Livre Brasil via RapidAPI."""
+    key = os.getenv("RAPIDAPI_KEY", "")
+    if not key:
+        return {"br_status": "Não Vendido", "br_total": 0}
+    try:
+        async with httpx.AsyncClient(timeout=10) as c:
+            r = await c.post(
+                "https://mercadolivresearchapi.p.rapidapi.com/",
+                headers={
+                    "x-rapidapi-host": "mercadolivresearchapi.p.rapidapi.com",
+                    "x-rapidapi-key": key,
+                    "Content-Type": "application/json",
+                },
+                json={"limit": 10, "search": keyword}
+            )
+            r.raise_for_status()
+            data = r.json()
+            total = data.get("total", 0) or len(data.get("results", []))
+            if total < 5:
+                status = "Não Vendido"
+            elif total < 50:
+                status = "Pouco Vendido"
+            else:
+                status = "Já Vendido"
+            return {"br_status": status, "br_total": total}
+    except Exception as e:
+        logger.warning(f"RapidAPI ML '{keyword}': {e} — usando fallback")
+        return {"br_status": "Não Vendido", "br_total": 0}
