@@ -1,0 +1,230 @@
+"""
+Seed de 10 produtos reais do AliExpress com todos os campos.
+Execute: python -m scripts.seed_products
+"""
+import asyncio, os, sys, uuid
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from dotenv import load_dotenv
+load_dotenv()
+
+import asyncpg, json
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://nexo:nexo@localhost:5432/nexo")
+USD_BRL = 6.10
+FREIGHT = 35.0
+TAX_RATE = 0.20
+
+
+def calc_profit(price_usd: float, markup_target: float):
+    cost_brl = price_usd * USD_BRL
+    freight_brl = FREIGHT
+    tax_brl = cost_brl * TAX_RATE
+    total_cost = cost_brl + freight_brl + tax_brl
+    sell_price = total_cost * markup_target
+    markup = round(sell_price / total_cost, 2) if total_cost > 0 else 0
+    return {
+        "cost_brl": round(cost_brl, 2),
+        "freight_brl": round(freight_brl, 2),
+        "tax_brl": round(tax_brl, 2),
+        "total_cost_brl": round(total_cost, 2),
+        "suggested_sell_price": round(sell_price, 2),
+        "markup": markup,
+    }
+
+
+PRODUTOS = [
+    {
+        "title": "Pistola de Massagem Muscular Portátil",
+        "category": "Saúde",
+        "image_url": "https://ae01.alicdn.com/kf/S8b5e0c5a63684e0ead7c0e0e1b7b3e3cJ.jpg",
+        "price_usd": 12.99,
+        "markup_target": 4.2,
+        "orders_count": 85000,
+        "rating": 4.8,
+        "br_status": "Pouco Vendido",
+        "score": 87,
+        "targeting_suggestion": ["Musculação", "CrossFit", "Fisioterapia", "Esporte e Fitness", "Recuperação muscular"],
+        "copy_suggestion": "🔥 Chega de dores musculares! A Pistola de Massagem Profissional relaxa qualquer músculo em segundos. Usada por atletas e fisioterapeutas. Aproveite o frete grátis hoje! 💪",
+    },
+    {
+        "title": "Escova Alisadora Rotativa para Cabelo",
+        "category": "Beleza",
+        "image_url": "https://ae01.alicdn.com/kf/S9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4y.jpg",
+        "price_usd": 8.50,
+        "markup_target": 5.1,
+        "orders_count": 120000,
+        "rating": 4.7,
+        "br_status": "Pouco Vendido",
+        "score": 92,
+        "targeting_suggestion": ["Cuidados com o cabelo", "Beleza e cosméticos", "Mulheres 25-45", "Salão de beleza em casa", "Alisamento capilar"],
+        "copy_suggestion": "✨ Cabelos lisos e brilhosos em apenas 5 minutos! A Escova Alisadora Rotativa 3 em 1 seca, alinha e dá volume ao mesmo tempo. Sem frizz, sem complicação! Peça já! 💁‍♀️",
+    },
+    {
+        "title": "Máscara LED Facial para Rejuvenescimento",
+        "category": "Beleza",
+        "image_url": "https://ae01.alicdn.com/kf/Sc3d4e5f6a7b8c9d0e1f2a3b4c5d6e7fx.jpg",
+        "price_usd": 11.20,
+        "markup_target": 4.8,
+        "orders_count": 65000,
+        "rating": 4.6,
+        "br_status": "Não Vendido",
+        "score": 89,
+        "targeting_suggestion": ["Anti-envelhecimento", "Skincare", "Dermatologia estética", "Bem-estar feminino", "Beleza em casa"],
+        "copy_suggestion": "💎 Pele jovem sem sair de casa! A Máscara LED Facial usa a mesma tecnologia de clínicas de estética. 7 cores para tratar manchas, acne e rugas. Resultados visíveis em 30 dias! 🌟",
+    },
+    {
+        "title": "Brinquedo Automático para Gatos com Pena",
+        "category": "Pet",
+        "image_url": "https://ae01.alicdn.com/kf/S4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9z.jpg",
+        "price_usd": 5.30,
+        "markup_target": 5.5,
+        "orders_count": 95000,
+        "rating": 4.9,
+        "br_status": "Não Vendido",
+        "score": 94,
+        "targeting_suggestion": ["Donos de gatos", "Bem-estar animal", "Pet shop", "Gatos domésticos", "Animais de estimação"],
+        "copy_suggestion": "🐱 Seu gato vai enlouquecer! O Brinquedo Automático com pena gira sozinho e mantém seu gato ativo por horas. Recarregável, silencioso e seguro. Seu bichinho merece! 🐾",
+    },
+    {
+        "title": "Mini Mixer Portátil para Shakes e Sucos",
+        "category": "Cozinha",
+        "image_url": "https://ae01.alicdn.com/kf/S4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9p.jpg",
+        "price_usd": 7.80,
+        "markup_target": 4.3,
+        "orders_count": 200000,
+        "rating": 4.7,
+        "br_status": "Pouco Vendido",
+        "score": 85,
+        "targeting_suggestion": ["Vida saudável", "Academia e fitness", "Nutrição", "Perda de peso", "Alimentação saudável"],
+        "copy_suggestion": "🥤 Shakes e vitaminas em qualquer lugar! O Mini Mixer Portátil USB bate até gelo em segundos. Cabe na bolsa, vai à academia, ao trabalho e às viagens. Peça o seu agora! 💪",
+    },
+    {
+        "title": "Suporte Magnético para Celular no Carro",
+        "category": "Acessórios",
+        "image_url": "https://ae01.alicdn.com/kf/S9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4m.jpg",
+        "price_usd": 3.50,
+        "markup_target": 6.2,
+        "orders_count": 300000,
+        "rating": 4.8,
+        "br_status": "Já Vendido",
+        "score": 78,
+        "targeting_suggestion": ["Motoristas", "Aplicativo de entrega", "Uber e 99", "Acessórios automotivos", "Tecnologia mobile"],
+        "copy_suggestion": "🚗 Nunca mais perca a rota! O Suporte Magnético 360° para carro fixa qualquer celular na posição ideal. Instalação em 5 segundos, compatível com todos os modelos. Corra para o seu! 📱",
+    },
+    {
+        "title": "Massageador Elétrico para Joelho",
+        "category": "Saúde",
+        "image_url": "https://ae01.alicdn.com/kf/S7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2k.jpg",
+        "price_usd": 15.00,
+        "markup_target": 3.8,
+        "orders_count": 45000,
+        "rating": 4.6,
+        "br_status": "Não Vendido",
+        "score": 86,
+        "targeting_suggestion": ["Artrite e artrose", "Idosos ativo", "Fisioterapia em casa", "Dores articulares", "Saúde e bem-estar"],
+        "copy_suggestion": "🦵 Chega de dor no joelho! O Massageador Elétrico com aquecimento e vibração alivia a dor em minutos. Indicado para artrose, pós-cirurgia e esporte. Sem dor, com qualidade de vida! ✅",
+    },
+    {
+        "title": "Corretor de Postura Ajustável",
+        "category": "Saúde",
+        "image_url": "https://ae01.alicdn.com/kf/S3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8p.jpg",
+        "price_usd": 6.20,
+        "markup_target": 5.0,
+        "orders_count": 180000,
+        "rating": 4.5,
+        "br_status": "Pouco Vendido",
+        "score": 83,
+        "targeting_suggestion": ["Trabalho home office", "Coluna e postura", "Fisioterapia", "Dores nas costas", "Ergonomia no trabalho"],
+        "copy_suggestion": "🏋️ Postura correta em 2 semanas! O Corretor de Postura Ajustável alinha sua coluna enquanto você trabalha ou estuda. Discreet, confortável e eficaz. Cuide da sua saúde agora! 💚",
+    },
+    {
+        "title": "Lâmpada UV para Unhas Gel Profissional",
+        "category": "Beleza",
+        "image_url": "https://ae01.alicdn.com/kf/S0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5u.jpg",
+        "price_usd": 9.90,
+        "markup_target": 4.5,
+        "orders_count": 250000,
+        "rating": 4.8,
+        "br_status": "Já Vendido",
+        "score": 80,
+        "targeting_suggestion": ["Nail art", "Manicure profissional", "Beleza feminina", "Unhas de gel em casa", "Autocuidado"],
+        "copy_suggestion": "💅 Manicure profissional em casa! A Lâmpada UV 54W cura qualquer gel em apenas 30 segundos. Timer automático, compatível com todas as marcas. Economize na manicure todo mês! ✨",
+    },
+    {
+        "title": "Garrafa de Água Portátil para Pets",
+        "category": "Pet",
+        "image_url": "https://ae01.alicdn.com/kf/S4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9w.jpg",
+        "price_usd": 4.80,
+        "markup_target": 5.8,
+        "orders_count": 110000,
+        "rating": 4.9,
+        "br_status": "Não Vendido",
+        "score": 91,
+        "targeting_suggestion": ["Donos de cachorros", "Passeios com pets", "Vida ativa com animais", "Pet lovers", "Bem-estar animal"],
+        "copy_suggestion": "🐕 Seu pet nunca mais vai ficar com sede! A Garrafa Portátil 350ml tem botão de liberação de água integrado. Perfeita para passeios, viagens e a praça. Seu melhor amigo merece! 💙",
+    },
+]
+
+
+async def seed():
+    print("Conectando ao banco de dados...")
+    conn = await asyncpg.connect(DATABASE_URL)
+
+    # Garante que colunas existam
+    await conn.execute("""
+        ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT '';
+        ALTER TABLE products ADD COLUMN IF NOT EXISTS targeting_suggestion JSONB DEFAULT '[]';
+        ALTER TABLE products ADD COLUMN IF NOT EXISTS copy_suggestion TEXT DEFAULT '';
+    """)
+
+    count = 0
+    for p in PRODUTOS:
+        profit = calc_profit(p["price_usd"], p["markup_target"])
+        pid = str(uuid.uuid5(uuid.NAMESPACE_URL, f"nexo-seed-{p['title']}"))
+        imgs = [p["image_url"]] if p.get("image_url") else []
+
+        await conn.execute("""
+            INSERT INTO products(
+                id, title, category, platform, price_usd,
+                cost_brl, freight_brl, tax_brl, total_cost_brl,
+                suggested_sell_price, markup, orders_count, rating,
+                br_status, score, images, product_url, supplier_name,
+                image_url, targeting_suggestion, copy_suggestion,
+                is_new, growth, updated_at
+            ) VALUES(
+                $1,$2,$3,'aliexpress',$4,
+                $5,$6,$7,$8,
+                $9,$10,$11,$12,
+                $13,$14,$15,$16,$17,
+                $18,$19,$20,
+                TRUE,'+0%',NOW()
+            )
+            ON CONFLICT(id) DO UPDATE SET
+                title=EXCLUDED.title,
+                score=EXCLUDED.score,
+                markup=EXCLUDED.markup,
+                br_status=EXCLUDED.br_status,
+                image_url=EXCLUDED.image_url,
+                targeting_suggestion=EXCLUDED.targeting_suggestion,
+                copy_suggestion=EXCLUDED.copy_suggestion,
+                updated_at=NOW()
+        """,
+            pid, p["title"], p["category"], p["price_usd"],
+            profit["cost_brl"], profit["freight_brl"], profit["tax_brl"], profit["total_cost_brl"],
+            profit["suggested_sell_price"], profit["markup"], p["orders_count"], p["rating"],
+            p["br_status"], p["score"], json.dumps(imgs),
+            f"https://www.aliexpress.com/wholesale?SearchText={p['title'].replace(' ', '+')}",
+            "AliExpress",
+            p["image_url"],
+            json.dumps(p["targeting_suggestion"]),
+            p["copy_suggestion"],
+        )
+        count += 1
+        print(f"  [{count}/{len(PRODUTOS)}] {p['title']} — score {p['score']}")
+
+    await conn.close()
+    print(f"\n✅ {count} produtos inseridos com sucesso!")
+
+
+if __name__ == "__main__":
+    asyncio.run(seed())

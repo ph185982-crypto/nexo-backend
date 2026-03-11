@@ -9,7 +9,7 @@ from typing import List, Dict, Optional
 
 logger = logging.getLogger(__name__)
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://nexo:nexo@localhost:5432/nexo")
-REDIS_URL    = os.getenv("REDIS_URL", "redis://localhost:6379")
+REDIS_URL    = os.getenv("REDIS_URL", "")  # vazio = desabilitado
 CACHE_TTL    = 3600
 
 # ── Module-level singletons ───────────────────────────────────────────────────
@@ -30,10 +30,18 @@ async def _get_pool() -> asyncpg.Pool:
     return _pool
 
 
-async def _get_redis() -> aioredis.Redis:
+async def _get_redis() -> Optional[aioredis.Redis]:
     global _redis
+    if not REDIS_URL:
+        return None
     if _redis is None:
-        _redis = aioredis.from_url(REDIS_URL, decode_responses=True)
+        try:
+            r = aioredis.from_url(REDIS_URL, decode_responses=True, socket_connect_timeout=3)
+            await r.ping()
+            _redis = r
+        except Exception as e:
+            logger.warning(f"Redis indisponível ({e}) — cache desabilitado")
+            return None
     return _redis
 
 
@@ -57,6 +65,7 @@ class Database:
     async def _cache_get(self, key: str):
         try:
             r = await self._r()
+            if r is None: return None
             v = await r.get(key)
             return json.loads(v) if v else None
         except Exception: return None
@@ -64,12 +73,14 @@ class Database:
     async def _cache_set(self, key: str, value):
         try:
             r = await self._r()
+            if r is None: return
             await r.setex(key, CACHE_TTL, json.dumps(value, default=str))
         except Exception: pass
 
     async def _cache_clear(self, pattern: str):
         try:
             r = await self._r()
+            if r is None: return
             keys = await r.keys(pattern)
             if keys: await r.delete(*keys)
         except Exception: pass
@@ -112,6 +123,9 @@ class Database:
                     product_url TEXT DEFAULT '',
                     supplier_name TEXT DEFAULT '',
                     ai_analysis JSONB,
+                    image_url TEXT DEFAULT '',
+                    targeting_suggestion JSONB DEFAULT '[]',
+                    copy_suggestion TEXT DEFAULT '',
                     is_new BOOLEAN DEFAULT FALSE,
                     is_viral BOOLEAN DEFAULT FALSE,
                     highlight BOOLEAN DEFAULT FALSE,
@@ -181,6 +195,9 @@ class Database:
                     created_at TIMESTAMPTZ DEFAULT NOW(),
                     updated_at TIMESTAMPTZ DEFAULT NOW()
                 );
+                ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT '';
+                ALTER TABLE products ADD COLUMN IF NOT EXISTS targeting_suggestion JSONB DEFAULT '[]';
+                ALTER TABLE products ADD COLUMN IF NOT EXISTS copy_suggestion TEXT DEFAULT '';
                 CREATE INDEX IF NOT EXISTS idx_products_score    ON products(score DESC);
                 CREATE INDEX IF NOT EXISTS idx_products_markup   ON products(markup DESC);
                 CREATE INDEX IF NOT EXISTS idx_products_status   ON products(br_status);
@@ -261,14 +278,20 @@ class Database:
         async with p.acquire() as c:
             for prod in products_list:
                 pid = prod.get("product_id") or prod.get("id") or str(uuid.uuid4())
+                imgs = prod.get("images", [])
+                img_url = prod.get("image_url", "") or (imgs[0] if imgs else "")
                 await c.execute("""
                     INSERT INTO products(id,title,category,platform,price_usd,cost_brl,freight_brl,
                         tax_brl,total_cost_brl,suggested_sell_price,markup,orders_count,rating,
-                        br_status,score,images,sources,product_url,supplier_name,growth,updated_at)
-                    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,NOW())
+                        br_status,score,images,sources,product_url,supplier_name,growth,
+                        image_url,targeting_suggestion,copy_suggestion,updated_at)
+                    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,NOW())
                     ON CONFLICT(id) DO UPDATE SET
                         score=EXCLUDED.score, markup=EXCLUDED.markup,
                         br_status=EXCLUDED.br_status, orders_count=EXCLUDED.orders_count,
+                        image_url=EXCLUDED.image_url,
+                        targeting_suggestion=EXCLUDED.targeting_suggestion,
+                        copy_suggestion=EXCLUDED.copy_suggestion,
                         updated_at=NOW()
                 """, pid, prod.get("title",""), prod.get("category","Outros"),
                     prod.get("platform","aliexpress"), prod.get("price_usd",0),
@@ -276,8 +299,11 @@ class Database:
                     prod.get("total_cost_brl",0), prod.get("suggested_sell_price",0),
                     prod.get("markup",0), prod.get("orders_count",0), prod.get("rating",0),
                     prod.get("br_status","Não Vendido"), prod.get("score",0),
-                    json.dumps(prod.get("images",[])), json.dumps(prod.get("sources",[])),
-                    prod.get("product_url",""), prod.get("supplier_name",""), prod.get("growth","+0%"))
+                    json.dumps(imgs), json.dumps(prod.get("sources",[])),
+                    prod.get("product_url",""), prod.get("supplier_name",""), prod.get("growth","+0%"),
+                    img_url,
+                    json.dumps(prod.get("targeting_suggestion",[])),
+                    prod.get("copy_suggestion",""))
         await self._cache_clear("products:*")
 
     async def save_ai_analysis(self, pid: str, analysis: Dict):

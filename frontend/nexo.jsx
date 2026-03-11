@@ -41,13 +41,17 @@ function normalizeProduct(p) {
         ? (() => { try { return JSON.parse(p.images).filter(Boolean); } catch { return []; } })()
         : []);
   const fallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=700";
+  const primaryImg = p.image_url || imgs[0] || fallback;
+  const allImgs = p.image_url
+    ? [p.image_url, ...imgs.filter(i => i !== p.image_url)]
+    : (imgs.length > 0 ? imgs : [fallback]);
   return {
     ...p,
     id: p.id,
     name: p.title || p.name || "Produto",
     category: p.category || "Outros",
-    img: imgs[0] || fallback,
-    imgs: imgs.length > 0 ? imgs : [fallback],
+    img: primaryImg,
+    imgs: allImgs,
     video: p.video_url || "",
     score: p.score || 0,
     googleTrend: p.google_trend_score || 0,
@@ -79,10 +83,58 @@ function normalizeProduct(p) {
     isViral: p.is_viral || false,
     _ai: p.ai_analysis || null,
     _raw: p,
+    // Dados pré-calculados do banco (sem precisar de IA)
+    targetingSuggestion: Array.isArray(p.targeting_suggestion)
+      ? p.targeting_suggestion
+      : (typeof p.targeting_suggestion === "string" && p.targeting_suggestion.startsWith("[")
+          ? (() => { try { return JSON.parse(p.targeting_suggestion); } catch { return []; } })()
+          : []),
+    copySuggestion: p.copy_suggestion || "",
   };
 }
 
 const statusColor = { "Não Vendido":"green","Pouco Vendido":"yellow","Já Vendido":"red" };
+
+// ─── SCORE BARS (Ecomhunt style) ─────────────────────────────────────────────
+
+function ScoreBars({ breakdown, compact }) {
+  const bars = [
+    { label:"Demanda",    val:breakdown?.demand||0,     color:C.blue },
+    { label:"Margem",     val:breakdown?.margin||0,     color:C.green },
+    { label:"Saturação",  val:breakdown?.saturation||0, color:C.yellow },
+    { label:"Tendência",  val:breakdown?.trend||0,      color:C.purple },
+  ];
+  if (compact) return (
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px 10px"}}>
+      {bars.map(b=>(
+        <div key={b.label}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+            <span style={{fontSize:9,color:C.textLight}}>{b.label}</span>
+            <span style={{fontSize:9,fontWeight:700,color:b.color}}>{b.val}</span>
+          </div>
+          <div style={{height:3,background:C.border,borderRadius:99}}>
+            <div style={{width:`${Math.min(b.val,100)}%`,height:"100%",background:b.color,borderRadius:99}}/>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+  return (
+    <div style={{display:"flex",flexDirection:"column",gap:10}}>
+      {bars.map(b=>(
+        <div key={b.label}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+            <span style={{fontSize:12,color:C.textSub,fontWeight:600}}>{b.label}</span>
+            <span style={{fontSize:13,fontWeight:800,color:b.color}}>{b.val}/100</span>
+          </div>
+          <div style={{height:7,background:C.border,borderRadius:99,overflow:"hidden"}}>
+            <div style={{width:`${Math.min(b.val,100)}%`,height:"100%",background:`linear-gradient(90deg,${b.color}88,${b.color})`,borderRadius:99,transition:"width 0.8s ease"}}/>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // ─── PRIMITIVES ──────────────────────────────────────────────────────────────
 
@@ -221,7 +273,10 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
   const [imgIdx,setImgIdx] = useState(0);
   const [ai,setAi] = useState(p._ai||null);
   const [aiLoading,setAiLoading] = useState(false);
+  const [enrich,setEnrich] = useState(null);
+  const [enrichLoading,setEnrichLoading] = useState(false);
   const profitPer100 = (p.sellPrice - p.totalCost) * 100;
+  const profitPerUnit = parseFloat((p.sellPrice - p.totalCost).toFixed(2));
   const isFav = favorites?.includes(p.id);
 
   async function fetchAI() {
@@ -234,8 +289,33 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
     setAiLoading(false);
   }
 
+  async function fetchEnrich() {
+    if (enrich) return;
+    setEnrichLoading(true);
+    try {
+      const res = await apiFetch(`/api/products/${p.id}/enrich`);
+      setEnrich(res);
+    } catch(e) { setEnrich({ error: e.message }); }
+    setEnrichLoading(false);
+  }
+
   useEffect(() => { if (tab==="ia") fetchAI(); }, [tab]);
-  const TABS = [{id:"overview",label:"Produto"},{id:"ads",label:"Anúncios"},{id:"import",label:"Importação"},{id:"ia",label:"🤖 Análise IA"}];
+  useEffect(() => { if (tab==="mercado"||tab==="targeting"||tab==="ads") fetchEnrich(); }, [tab]);
+
+  // Score breakdown — usa enrich se disponível, fallback ao dado do produto
+  const breakdown = enrich?.score_breakdown || p._raw?.score_breakdown || null;
+  const market    = enrich?.market || null;
+  const targeting = enrich?.targeting || null;
+  const fbAds     = enrich?.fb_ads || p.ads || [];
+
+  const TABS = [
+    {id:"overview",  label:"📦 Produto"},
+    {id:"mercado",   label:"🌍 Mercado"},
+    {id:"ads",       label:"📢 Anúncios"},
+    {id:"targeting", label:"🎯 Targeting IA"},
+    {id:"import",    label:"💰 Precificação"},
+    {id:"ia",        label:"🤖 Análise IA"},
+  ];
   const fallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=700";
 
   return (
@@ -302,20 +382,42 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
                     </div>
                   ))}
                 </div>
-                <div style={{background:`linear-gradient(135deg,${C.blueLight},#F0F9FF)`,borderRadius:14,padding:18,border:`1px solid ${C.blueMid}`,marginBottom:16}}>
+                <div style={{background:`linear-gradient(135deg,${C.blueLight},#0d1f3c)`,borderRadius:14,padding:18,border:`1px solid ${C.blueMid}`,marginBottom:16}}>
                   <div style={{fontSize:11,fontWeight:800,color:C.blue,marginBottom:12,letterSpacing:0.5}}>💰 PRECIFICAÇÃO</div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
-                    {[{l:"Custo Total",v:`R$${p.totalCost}`,c:C.text},{l:"Preço de Venda",v:`R$${p.sellPrice}`,c:C.green},{l:"Markup",v:`×${p.markup}`,c:C.navy}].map((x,i)=>(
-                      <div key={x.l} style={{textAlign:"center",padding:"8px 4px",borderRight:i<2?`1px solid ${C.blueMid}`:"none"}}>
-                        <div style={{fontSize:11,color:C.textSub,marginBottom:4}}>{x.l}</div>
-                        <div style={{fontSize:i===2?22:15,fontWeight:i===2?900:700,color:x.c}}>{x.v}</div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:12}}>
+                    {[{l:"Custo ($)",v:`$${p.costUSD}`,c:C.textSub},{l:"Custo (R$)",v:`R$${p.totalCost}`,c:C.text},{l:"Venda",v:`R$${p.sellPrice}`,c:C.green},{l:"Lucro/un.",v:`R$${profitPerUnit}`,c:C.yellow}].map((x,i)=>(
+                      <div key={x.l} style={{textAlign:"center",padding:"8px 4px",borderRight:i<3?`1px solid ${C.blueMid}`:"none"}}>
+                        <div style={{fontSize:10,color:C.textSub,marginBottom:3}}>{x.l}</div>
+                        <div style={{fontSize:14,fontWeight:800,color:x.c}}>{x.v}</div>
                       </div>
                     ))}
                   </div>
-                  <div style={{background:C.bg,borderRadius:10,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontSize:12,color:C.textSub}}>Lucro bruto em 100 un</span>
-                    <span style={{fontSize:16,fontWeight:900,color:C.green}}>R${profitPer100.toLocaleString("pt-BR")}</span>
+                  <div style={{display:"flex",gap:8}}>
+                    <div style={{flex:1,background:C.bg,borderRadius:8,padding:"7px 10px",textAlign:"center"}}>
+                      <div style={{fontSize:10,color:C.textSub}}>Markup</div>
+                      <div style={{fontSize:22,fontWeight:900,color:C.blue}}>×{p.markup}</div>
+                    </div>
+                    <div style={{flex:1,background:C.bg,borderRadius:8,padding:"7px 10px",textAlign:"center"}}>
+                      <div style={{fontSize:10,color:C.textSub}}>Margem</div>
+                      <div style={{fontSize:22,fontWeight:900,color:C.green}}>{(p._raw?.margin_pct||0).toFixed(0)}%</div>
+                    </div>
+                    <div style={{flex:1,background:C.bg,borderRadius:8,padding:"7px 10px",textAlign:"center"}}>
+                      <div style={{fontSize:10,color:C.textSub}}>Lucro/100un.</div>
+                      <div style={{fontSize:16,fontWeight:900,color:C.yellow}}>R${profitPer100.toLocaleString("pt-BR")}</div>
+                    </div>
                   </div>
+                </div>
+                {/* Score visual */}
+                <div style={{background:C.bg,borderRadius:14,padding:"16px 18px",border:`1px solid ${C.border}`,marginBottom:16}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <div style={{fontSize:12,fontWeight:800,color:C.text}}>📊 Score por Dimensão</div>
+                    <div style={{background:p.score>=90?C.greenLight:p.score>=75?C.blueLight:C.yellowLight,color:p.score>=90?C.green:p.score>=75?C.blue:C.yellow,fontWeight:900,fontSize:14,borderRadius:8,padding:"3px 10px",border:`1px solid ${p.score>=90?C.green:p.score>=75?C.blue:C.yellow}22`}}>{p.score}/100</div>
+                  </div>
+                  {breakdown ? <ScoreBars breakdown={breakdown}/> : (
+                    <div style={{display:"flex",justifyContent:"center",padding:"10px 0"}}>
+                      <Btn variant="ghost" onClick={fetchEnrich} small icon="📊" disabled={enrichLoading}>{enrichLoading?"Calculando…":"Calcular Scores"}</Btn>
+                    </div>
+                  )}
                 </div>
                 {/* Quick action buttons */}
                 <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
@@ -339,6 +441,52 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
               </div>
             </div>
           )}
+          {/* MERCADO */}
+          {tab==="mercado"&&(
+            <div>
+              {enrichLoading&&<Spinner text="Carregando dados de mercado…"/>}
+              {!enrichLoading&&enrich?.error&&<div style={{background:C.redLight,color:C.red,borderRadius:10,padding:"12px 16px",fontSize:13,marginBottom:16}}>{enrich.error}</div>}
+              {!enrichLoading&&market&&(
+                <div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14,marginBottom:20}}>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:11,color:C.textSub,fontWeight:700,marginBottom:6}}>🏪 VENDEDORES NO ML</div>
+                      <div style={{fontSize:26,fontWeight:900,color:C.blue,marginBottom:2}}>{market.ml_seller_label}</div>
+                      <div style={{fontSize:12,color:C.textSub}}>atualmente anunciando</div>
+                    </div>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:11,color:C.textSub,fontWeight:700,marginBottom:6}}>📊 SATURAÇÃO BR</div>
+                      <div style={{fontSize:26,fontWeight:900,color:market.saturation_pct<30?C.green:market.saturation_pct<60?C.yellow:C.red,marginBottom:6}}>{market.saturation_label}</div>
+                      <div style={{height:6,background:C.border,borderRadius:99}}><div style={{width:`${market.saturation_pct}%`,height:"100%",background:market.saturation_pct<30?C.green:market.saturation_pct<60?C.yellow:C.red,borderRadius:99}}/></div>
+                    </div>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:11,color:C.textSub,fontWeight:700,marginBottom:6}}>⏳ TEMPO NO MERCADO</div>
+                      <div style={{fontSize:26,fontWeight:900,color:C.purple,marginBottom:2}}>{market.time_in_market}</div>
+                      <div style={{fontSize:12,color:C.textSub}}>no mercado global</div>
+                    </div>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:11,color:C.textSub,fontWeight:700,marginBottom:6}}>📈 TENDÊNCIA DE DEMANDA</div>
+                      <div style={{fontSize:22,fontWeight:900,color:market.demand_trend==="Alta"?C.green:market.demand_trend==="Crescente"?C.blue:C.textMid,marginBottom:2}}>{market.demand_trend}</div>
+                      <div style={{fontSize:12,color:C.textSub}}>baseado em comissões globais</div>
+                    </div>
+                  </div>
+                  <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                    <div style={{fontSize:13,fontWeight:800,color:C.text,marginBottom:14}}>🌍 Países Comprando Ativamente</div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {market.countries_selling.map(c=>(
+                        <span key={c} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,padding:"5px 12px",fontSize:12,fontWeight:600,color:C.text}}>{c}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {!enrichLoading&&!market&&!enrich?.error&&(
+                <div style={{display:"flex",justifyContent:"center",padding:"30px 0"}}>
+                  <Btn variant="ghost" onClick={fetchEnrich} icon="🌍">Carregar dados de mercado</Btn>
+                </div>
+              )}
+            </div>
+          )}
           {/* ADS */}
           {tab==="ads"&&(
             <div>
@@ -346,25 +494,27 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
                 <div style={{fontSize:16,fontWeight:800,color:C.text,marginBottom:4}}>📢 Spy de Anúncios</div>
                 <div style={{fontSize:13,color:C.textSub}}>Anúncios ativos — clique para abrir na Biblioteca do Facebook</div>
               </div>
-              {p.ads.length===0&&<EmptyState icon="📢" title="Sem anúncios detectados" sub="Nenhum anúncio ativo para este produto ainda."/>}
-              {p.ads.map(ad=>(
-                <div key={ad.id} style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",display:"flex",marginBottom:14,flexWrap:"wrap"}}>
+              {enrichLoading&&<Spinner text="Buscando anúncios…"/>}
+              {!enrichLoading&&fbAds.length===0&&<EmptyState icon="📢" title="Sem anúncios detectados" sub="Nenhum anúncio encontrado para este produto."/>}
+              {!enrichLoading&&fbAds.map(ad=>(
+                <div key={ad.id||ad.fb_library_url} style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",display:"flex",marginBottom:14,flexWrap:"wrap"}}>
                   <div style={{position:"relative",width:140,flexShrink:0,minHeight:100}}>
-                    <img src={ad.img||fallback} alt={ad.title} onError={e=>e.target.src=fallback} style={{width:"100%",height:"100%",minHeight:100,objectFit:"cover",display:"block"}}/>
-                    {(ad.type==="Vídeo"||ad.type==="Reels")&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:32,height:32,background:"rgba(255,255,255,0.9)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>▶</div></div>}
+                    <img src={ad.thumbnail||ad.img||fallback} alt="ad" onError={e=>e.target.src=fallback} style={{width:"100%",height:"100%",minHeight:100,objectFit:"cover",display:"block"}}/>
+                    {ad.type==="Vídeo"&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:32,height:32,background:"rgba(255,255,255,0.9)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>▶</div></div>}
                   </div>
                   <div style={{padding:"16px 18px",flex:1,minWidth:200}}>
                     <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>
-                      <Tag color={ad.active?"green":"gray"}>{ad.active?"● Ativo":"○ Pausado"}</Tag>
-                      <Tag color="blue">{ad.type}</Tag>
-                      <Tag color={ad.eng==="Explosivo"?"red":ad.eng==="Muito Alto"?"purple":"blue"}>{ad.eng}</Tag>
-                      <Tag color="gray" sm>⏱ {ad.days} dias</Tag>
+                      <Tag color="green">● Ativo</Tag>
+                      <Tag color="blue">{ad.type||"Imagem"}</Tag>
+                      <Tag color={ad.engagement==="Explosivo"?"red":ad.engagement==="Muito Alto"?"purple":"blue"}>{ad.engagement||"Alto"}</Tag>
+                      <Tag color="gray" sm>⏱ {ad.days_running||ad.days||0} dias</Tag>
                     </div>
-                    <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:6}}>{ad.title}</div>
-                    <div style={{fontSize:13,color:C.textSub,marginBottom:14}}>👁 {ad.views} engajamentos</div>
-                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                      <Btn variant="fb" href={ad.url} icon="📢">Ver no Facebook ↗</Btn>
+                    <div style={{display:"flex",gap:16,marginBottom:14,flexWrap:"wrap"}}>
+                      <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:800,color:C.blue}}>{(ad.likes||0).toLocaleString("pt-BR")}</div><div style={{fontSize:10,color:C.textSub}}>👍 Curtidas</div></div>
+                      <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:800,color:C.green}}>{(ad.comments||0).toLocaleString("pt-BR")}</div><div style={{fontSize:10,color:C.textSub}}>💬 Comentários</div></div>
+                      <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:800,color:C.purple}}>{(ad.shares||0).toLocaleString("pt-BR")}</div><div style={{fontSize:10,color:C.textSub}}>🔁 Shares</div></div>
                     </div>
+                    <Btn variant="fb" href={ad.fb_library_url||ad.url||"#"} icon="📢" small>Ver na Biblioteca do Facebook ↗</Btn>
                   </div>
                 </div>
               ))}
@@ -372,6 +522,89 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
                 <div style={{marginTop:16,background:C.greenLight,border:"1px solid #BBF7D0",borderRadius:14,padding:"16px 20px",display:"flex",alignItems:"center",gap:12}}>
                   <div style={{fontSize:28}}>🎯</div>
                   <div><div style={{fontSize:14,fontWeight:700,color:C.green}}>Nicho Livre no Brasil!</div><div style={{fontSize:13,color:C.textSub,marginTop:2}}>Nenhum concorrente encontrado nos marketplaces monitorados.</div></div>
+                </div>
+              )}
+            </div>
+          )}
+          {/* TARGETING IA */}
+          {tab==="targeting"&&(
+            <div>
+              {enrichLoading&&<Spinner text="Gerando targeting com IA…"/>}
+              {!enrichLoading&&enrich?.error&&<div style={{background:C.redLight,color:C.red,borderRadius:10,padding:"12px 16px",fontSize:13,marginBottom:16}}>{enrich.error}</div>}
+              {!enrichLoading&&targeting&&(
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:16}}>
+                  <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:12,fontWeight:800,color:C.text,marginBottom:12}}>🎯 Interesses Sugeridos (Facebook)</div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                        {(targeting.interests||[]).map(i=>(
+                          <span key={i} style={{background:C.blueLight,color:C.blue,border:`1px solid ${C.blueMid}`,borderRadius:8,padding:"5px 12px",fontSize:12,fontWeight:600}}>{i}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:12,fontWeight:800,color:C.text,marginBottom:12}}>👥 Público-alvo</div>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                        <div><div style={{fontSize:10,color:C.textSub,marginBottom:3}}>FAIXA ETÁRIA</div><div style={{fontSize:15,fontWeight:800,color:C.text}}>{targeting.age_range}</div></div>
+                        <div><div style={{fontSize:10,color:C.textSub,marginBottom:3}}>GÊNERO</div><div style={{fontSize:13,fontWeight:700,color:C.text}}>{targeting.gender}</div></div>
+                        <div style={{gridColumn:"1/-1"}}><div style={{fontSize:10,color:C.textSub,marginBottom:3}}>CPM ESTIMADO</div><div style={{fontSize:15,fontWeight:800,color:C.yellow}}>{targeting.cpm_estimate}</div></div>
+                      </div>
+                    </div>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:12,fontWeight:800,color:C.text,marginBottom:12}}>🌍 Países para Testar</div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                        {(targeting.countries_to_test||[]).map(c=>(
+                          <span key={c} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,padding:"4px 10px",fontSize:12,fontWeight:600,color:C.textMid}}>{c}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                    <div style={{background:`linear-gradient(135deg,${C.blueLight},#0d1f3c)`,borderRadius:14,padding:18,border:`1px solid ${C.blueMid}`}}>
+                      <div style={{fontSize:12,fontWeight:800,color:C.blue,marginBottom:8}}>📣 Headline Sugerida</div>
+                      <div style={{fontSize:15,fontWeight:700,color:C.text,lineHeight:1.5}}>{targeting.headline}</div>
+                    </div>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`,flex:1}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                        <div style={{fontSize:12,fontWeight:800,color:C.text}}>✍️ Copy Completa</div>
+                        <button onClick={()=>{navigator.clipboard?.writeText(targeting.full_ad_copy||targeting.copy||"");}} style={{background:C.surface,color:C.blue,border:`1px solid ${C.blue}`,borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:700,cursor:"pointer"}}>📋 Copiar</button>
+                      </div>
+                      <div style={{fontSize:12,color:C.textSub,lineHeight:1.7,whiteSpace:"pre-line",background:C.surface,borderRadius:10,padding:"12px 14px",border:`1px solid ${C.border}`}}>{targeting.full_ad_copy||targeting.copy}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {!enrichLoading&&!targeting&&!enrich?.error&&p.targetingSuggestion?.length>0&&(
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:16}}>
+                  <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                    <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`}}>
+                      <div style={{fontSize:12,fontWeight:800,color:C.text,marginBottom:12}}>🎯 Interesses Sugeridos (Facebook)</div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                        {p.targetingSuggestion.map(i=>(
+                          <span key={i} style={{background:C.blueLight,color:C.blue,border:`1px solid ${C.blueMid}`,borderRadius:8,padding:"5px 12px",fontSize:12,fontWeight:600}}>{i}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {p.copySuggestion&&(
+                    <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                      <div style={{background:C.bg,borderRadius:14,padding:18,border:`1px solid ${C.border}`,flex:1}}>
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                          <div style={{fontSize:12,fontWeight:800,color:C.text}}>✍️ Copy Sugerida</div>
+                          <button onClick={()=>{navigator.clipboard?.writeText(p.copySuggestion);}} style={{background:C.surface,color:C.blue,border:`1px solid ${C.blue}`,borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:700,cursor:"pointer"}}>📋 Copiar</button>
+                        </div>
+                        <div style={{fontSize:12,color:C.textSub,lineHeight:1.7,whiteSpace:"pre-line",background:C.surface,borderRadius:10,padding:"12px 14px",border:`1px solid ${C.border}`}}>{p.copySuggestion}</div>
+                      </div>
+                    </div>
+                  )}
+                  <div style={{gridColumn:"1/-1",display:"flex",justifyContent:"center",paddingTop:8}}>
+                    <Btn variant="ghost" onClick={fetchEnrich} icon="🤖" small>Gerar análise completa com IA</Btn>
+                  </div>
+                </div>
+              )}
+              {!enrichLoading&&!targeting&&!enrich?.error&&(!p.targetingSuggestion||p.targetingSuggestion.length===0)&&(
+                <div style={{display:"flex",justifyContent:"center",padding:"30px 0"}}>
+                  <Btn variant="ghost" onClick={fetchEnrich} icon="🎯">Gerar Targeting com IA</Btn>
                 </div>
               )}
             </div>
@@ -485,6 +718,23 @@ function ProductModal({ p: rawP, onClose, favorites, onToggleFav }) {
 
 // ─── PRODUCT CARD ─────────────────────────────────────────────────────────────
 
+function SkeletonCard() {
+  const pulse = {animation:"pulse 1.5s ease-in-out infinite"};
+  return (
+    <div style={{background:C.surface,borderRadius:18,border:`1px solid ${C.border}`,overflow:"hidden"}}>
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
+      <div style={{height:192,background:C.border,...pulse}}/>
+      <div style={{padding:"13px 15px"}}>
+        <div style={{height:10,background:C.border,borderRadius:6,marginBottom:8,width:"40%",...pulse}}/>
+        <div style={{height:14,background:C.border,borderRadius:6,marginBottom:6,...pulse}}/>
+        <div style={{height:12,background:C.border,borderRadius:6,marginBottom:12,width:"70%",...pulse}}/>
+        <div style={{height:48,background:C.border,borderRadius:10,marginBottom:8,...pulse}}/>
+        <div style={{height:10,background:C.border,borderRadius:6,width:"60%",...pulse}}/>
+      </div>
+    </div>
+  );
+}
+
 function ProductCard({ p: rawP, onClick, favorites, onToggleFav }) {
   const p = normalizeProduct(rawP);
   const isFav = favorites?.includes(p.id);
@@ -507,16 +757,22 @@ function ProductCard({ p: rawP, onClick, favorites, onToggleFav }) {
           <Tag color="blue" sm>{p.competition}</Tag>
           {p.isViral&&<Tag color="red" sm>🔥 Viral</Tag>}
         </div>
-        <div style={{background:C.bg,borderRadius:10,padding:"9px 11px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:9}}>
-          <div><div style={{fontSize:10,color:C.textLight}}>Custo</div><div style={{fontSize:13,fontWeight:700,color:C.text}}>R${p.totalCost}</div></div>
-          <div style={{color:C.border,fontSize:16}}>›</div>
-          <div><div style={{fontSize:10,color:C.textLight}}>Vender</div><div style={{fontSize:13,fontWeight:700,color:C.green}}>R${p.sellPrice}</div></div>
-          <div style={{background:C.blueLight,borderRadius:8,padding:"4px 9px",textAlign:"center"}}><div style={{fontSize:9,color:C.blue,fontWeight:600}}>MARKUP</div><div style={{fontSize:15,fontWeight:900,color:C.navy}}>×{p.markup}</div></div>
+        <div style={{background:C.bg,borderRadius:10,padding:"9px 11px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:7}}>
+          <div><div style={{fontSize:9,color:C.textLight}}>Custo</div><div style={{fontSize:12,fontWeight:700,color:C.text}}>R${p.totalCost}</div></div>
+          <div style={{color:C.border,fontSize:14}}>›</div>
+          <div><div style={{fontSize:9,color:C.textLight}}>Vender</div><div style={{fontSize:13,fontWeight:800,color:C.green}}>R${p.sellPrice}</div></div>
+          <div style={{textAlign:"center"}}>
+            <div style={{fontSize:9,color:C.textLight}}>Lucro/un.</div>
+            <div style={{fontSize:13,fontWeight:800,color:C.yellow}}>R${(p.sellPrice-p.totalCost).toFixed(0)}</div>
+          </div>
+          <div style={{background:C.blueLight,borderRadius:7,padding:"3px 8px",textAlign:"center"}}><div style={{fontSize:8,color:C.blue,fontWeight:600}}>MARKUP</div><div style={{fontSize:14,fontWeight:900,color:C.navy}}>×{p.markup}</div></div>
+        </div>
+        <div style={{marginBottom:8}}>
+          <ScoreBars breakdown={p._raw?.score_breakdown} compact/>
         </div>
         <div style={{display:"flex",justifyContent:"space-between"}}>
-          <span style={{fontSize:11,color:C.textSub}}>📦 {p.salesGlobal}/mês</span>
-          <span style={{fontSize:11,color:C.textSub}}>📢 {p.ads.length} ads</span>
-          <span style={{fontSize:11,color:C.textSub}}>📡 {p.googleTrend}</span>
+          <span style={{fontSize:10,color:C.textSub}}>📦 {p.salesGlobal}/mês</span>
+          <span style={{fontSize:10,color:p._raw?.margin_pct>=50?C.green:C.yellow,fontWeight:700}}>💰 {(p._raw?.margin_pct||0).toFixed(0)}% margem</span>
         </div>
       </div>
     </div>
@@ -633,7 +889,11 @@ function WinningProducts({ onSelect, favorites, onToggleFav }) {
       )}
 
       {/* ── Content ── */}
-      {loading ? <Spinner text="Carregando produtos…"/> : products.length === 0 ? (
+      {loading && view === "cards" ? (
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:18}}>
+          {Array.from({length:8}).map((_,i)=><SkeletonCard key={i}/>)}
+        </div>
+      ) : loading ? <Spinner text="Carregando produtos…"/> : products.length === 0 ? (
         <div style={{textAlign:"center",padding:"60px 20px"}}>
           <div style={{fontSize:48,marginBottom:14}}>⛏️</div>
           <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:8}}>Banco vazio — clique em "Minerar AliExpress"</div>
@@ -1494,21 +1754,54 @@ function AIDrawer({ product, onClose, onOpenFull }) {
 
 // ─── META ADS INTELLIGENCE ────────────────────────────────────────────────────
 
-function MetaAdsBadge({ badge }) {
+// ── Demo data ─────────────────────────────────────────────────────────────────
+const META_DEMO_CAMPAIGNS = [
+  { id:"c1", name:"Saúde & Beleza — Conversão", status:"ACTIVE", objective:"OUTCOME_SALES", daily_budget:50, spend:1247.80, impressions:84320, clicks:1012, ctr:1.20, cpm:14.80, cpc:1.23, reach:61200, frequency:1.38, purchases:41, revenue:3726.50, purchase_roas:2.99 },
+  { id:"c2", name:"Pet — Tráfego Frio Lookalike", status:"ACTIVE", objective:"OUTCOME_TRAFFIC", daily_budget:30, spend:689.40, impressions:52110, clicks:572, ctr:1.10, cpm:13.23, cpc:1.21, reach:44800, frequency:1.16, purchases:18, revenue:918.00, purchase_roas:1.33 },
+  { id:"c3", name:"Fitness — Remarketing 7d", status:"ACTIVE", objective:"OUTCOME_SALES", daily_budget:20, spend:312.00, impressions:18900, clicks:378, ctr:2.00, cpm:16.51, cpc:0.83, reach:14200, frequency:1.33, purchases:22, revenue:1540.00, purchase_roas:4.94 },
+  { id:"c4", name:"Cozinha — Engajamento", status:"PAUSED", objective:"OUTCOME_ENGAGEMENT", daily_budget:15, spend:88.50, impressions:22400, clicks:134, ctr:0.60, cpm:3.95, cpc:0.66, reach:19800, frequency:1.13, purchases:2, revenue:96.00, purchase_roas:1.08 },
+];
+const META_DEMO_ADS = [
+  { id:"a1", name:"Video UGC — Antes/Depois Skincare 30s", status:"ACTIVE", effective_status:"ACTIVE", badge:"ESCALAVEL", thumbnail_url:"https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=400", spend:624.30, impressions:42800, clicks:684, ctr:1.60, cpm:14.59, cpc:0.91, reach:34200, frequency:1.25, purchases:28, purchase_roas:3.82, cost_per_purchase:22.30, play_rate_pct:34.2, completion_rate_pct:22.8, video_id:"demo" },
+  { id:"a2", name:"Imagem Produto — Oferta 50% OFF", status:"ACTIVE", effective_status:"ACTIVE", badge:"ESTAVEL", thumbnail_url:"https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400", spend:389.10, impressions:28600, clicks:314, ctr:1.10, cpm:13.60, cpc:1.24, reach:22400, frequency:1.28, purchases:13, purchase_roas:2.21, play_rate_pct:0, completion_rate_pct:0 },
+  { id:"a3", name:"Carrossel — 5 Produtos Pet", status:"ACTIVE", effective_status:"ACTIVE", badge:"ATENCAO", thumbnail_url:"https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400", spend:234.80, impressions:18900, clicks:132, ctr:0.70, cpm:12.43, cpc:1.78, reach:15800, frequency:1.20, purchases:6, purchase_roas:1.53, play_rate_pct:0, completion_rate_pct:0 },
+  { id:"a4", name:"Reels Fitness — Hook Polêmico 15s", status:"ACTIVE", effective_status:"ACTIVE", badge:"ESCALAVEL", thumbnail_url:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400", spend:312.00, impressions:18900, clicks:378, ctr:2.00, cpm:16.51, cpc:0.83, reach:14200, frequency:1.33, purchases:22, purchase_roas:4.94, play_rate_pct:41.5, completion_rate_pct:27.3, video_id:"demo" },
+  { id:"a5", name:"Imagem Estática — Cortador Legumes", status:"PAUSED", effective_status:"PAUSED", badge:"PAUSAR", thumbnail_url:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400", spend:88.50, impressions:22400, clicks:134, ctr:0.60, cpm:3.95, cpc:0.66, reach:19800, frequency:4.52, purchases:2, purchase_roas:1.08, play_rate_pct:0, completion_rate_pct:0 },
+  { id:"a6", name:"Video Depoimento — Cliente Real 45s", status:"ACTIVE", effective_status:"ACTIVE", badge:"ESTAVEL", thumbnail_url:"https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=400", spend:178.40, impressions:12300, clicks:172, ctr:1.40, cpm:14.50, cpc:1.04, reach:10200, frequency:1.21, purchases:9, purchase_roas:2.68, play_rate_pct:28.1, completion_rate_pct:18.4, video_id:"demo" },
+];
+const META_DEMO_INSIGHTS = { spend:2337.80, impressions:178030, clicks:1900, ctr:1.07, cpm:13.13, cpc:1.23, reach:134400, frequency:1.32, purchases:71, revenue:6280.50, purchase_roas:2.69, cost_per_purchase:32.93, play_rate_pct:27.6, account_name:"Conta Demo — NEXO", currency:"BRL" };
+const META_DEMO_ANALYSIS = { demo:true, health_score:72, health_label:"Bom", summary:{critical:1,warnings:2,opportunities:2,campaigns_analyzed:4,ads_analyzed:6},
+  issues:[
+    {level:"crítico",entity:"campanha",entity_name:"Cozinha — Engajamento",metric:"ROAS",value:1.08,threshold:2,description:"Campanha com ROAS 1.08x — abaixo do break-even, gerando prejuízo",action:"Pause esta campanha imediatamente e redirecione o budget para 'Fitness — Remarketing' (ROAS 4.94x).",impact:"alto",priority:1},
+    {level:"atenção",entity:"anúncio",entity_name:"Imagem Estática — Cortador",metric:"Frequência",value:4.52,threshold:3.0,description:"Frequência 4.52 — público saturado, vendo o mesmo anúncio muitas vezes",action:"Crie novo público lookalike ou pause o adset por 7 dias para resetar a frequência.",impact:"médio",priority:2},
+    {level:"oportunidade",entity:"anúncio",entity_name:"Reels Fitness — Hook Polêmico",metric:"ROAS",value:4.94,threshold:3.0,description:"ROAS 4.94x e CTR 2.00% — candidato a escala agora",action:"Aumente o budget do adset em 20-30% a cada 48h. Não altere público nem criativos.",impact:"alto",priority:3},
+  ],
+  scale_now:[{id:"a4",name:"Reels Fitness — Hook Polêmico",roas:4.94,ctr:2.0}],
+  pause_now:[{id:"c4",name:"Cozinha — Engajamento",spend:88.5,roas:1.08}],
+  top_recommendations:["[CAMPANHA] Pause 'Cozinha — Engajamento' e redirecione budget para Fitness Remarketing.","[ANÚNCIO] Aumente budget do Reels Fitness em 20% agora — ROAS 4.94x.","[CONTA] Frequência 4.52 no Cortador — crie público novo ou pause por 7 dias."]
+};
+
+function MetaAdsBadge({ badge, demo }) {
   const map = {
-    ESCALÁVEL: { bg: C.greenLight,   color: C.green,  label: "▲ ESCALÁVEL" },
-    ESTÁVEL:   { bg: C.blueLight,    color: C.blue,   label: "● ESTÁVEL" },
-    ATENÇÃO:   { bg: C.yellowLight,  color: C.yellow, label: "⚠ ATENÇÃO" },
-    PAUSAR:    { bg: C.redLight,     color: C.red,    label: "■ PAUSAR" },
-    REPROVADO: { bg: C.redLight,     color: C.red,    label: "✕ REPROVADO" },
+    ESCALAVEL: { bg:C.greenLight,  color:C.green,  label:"▲ ESCALÁVEL" },
+    ESTAVEL:   { bg:C.blueLight,   color:C.blue,   label:"● ESTÁVEL" },
+    ATENCAO:   { bg:C.yellowLight, color:C.yellow, label:"⚠ ATENÇÃO" },
+    PAUSAR:    { bg:C.redLight,    color:C.red,    label:"■ PAUSAR" },
+    REPROVADO: { bg:C.redLight,    color:C.red,    label:"✕ REPROVADO" },
   };
-  const s = map[badge] || map["ATENÇÃO"];
-  return <span style={{background:s.bg,color:s.color,borderRadius:6,padding:"2px 8px",fontSize:10,fontWeight:800,letterSpacing:0.3,border:`1px solid ${s.color}33`}}>{s.label}</span>;
+  const s = map[badge] || map["ATENCAO"];
+  return (
+    <span style={{display:"inline-flex",alignItems:"center",gap:4}}>
+      <span style={{background:s.bg,color:s.color,borderRadius:6,padding:"2px 8px",fontSize:10,fontWeight:800,letterSpacing:0.3,border:`1px solid ${s.color}33`}}>{s.label}</span>
+      {demo&&<span style={{background:"#2d2000",color:"#f0a500",borderRadius:4,padding:"1px 5px",fontSize:9,fontWeight:800}}>DEMO</span>}
+    </span>
+  );
 }
 
-function MetaMetricCard({ label, value, sub, color, icon }) {
+function MetaMetricCard({ label, value, sub, color, icon, demo }) {
   return (
-    <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"18px 20px",flex:1,minWidth:140}}>
+    <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"18px 20px",flex:1,minWidth:130,position:"relative"}}>
+      {demo&&<span style={{position:"absolute",top:8,right:8,background:"#2d2000",color:"#f0a500",borderRadius:4,padding:"1px 6px",fontSize:9,fontWeight:800}}>DEMO</span>}
       <div style={{fontSize:20,marginBottom:8}}>{icon}</div>
       <div style={{fontSize:22,fontWeight:900,color:color||C.text}}>{value}</div>
       <div style={{fontSize:11,color:C.textSub,marginTop:2}}>{label}</div>
@@ -1518,15 +1811,16 @@ function MetaMetricCard({ label, value, sub, color, icon }) {
 }
 
 function MetaIssueRow({ issue }) {
-  const levelColor = { "crítico": C.red, "atenção": C.yellow, "oportunidade": C.green };
-  const levelBg    = { "crítico": C.redLight, "atenção": C.yellowLight, "oportunidade": C.greenLight };
-  const icon       = { "crítico": "🔴", "atenção": "🟡", "oportunidade": "🟢" };
-  const color = levelColor[issue.level] || C.textSub;
-  const bg    = levelBg[issue.level] || C.surface;
+  const lv = (issue.level||"").toLowerCase();
+  const colorMap = { "crítico":C.red,"critico":C.red,"atenção":C.yellow,"atencao":C.yellow,"oportunidade":C.green };
+  const bgMap    = { "crítico":C.redLight,"critico":C.redLight,"atenção":C.yellowLight,"atencao":C.yellowLight,"oportunidade":C.greenLight };
+  const iconMap  = { "crítico":"🔴","critico":"🔴","atenção":"🟡","atencao":"🟡","oportunidade":"🟢" };
+  const color = colorMap[lv] || C.textSub;
+  const bg    = bgMap[lv]    || C.surface;
   return (
     <div style={{border:`1px solid ${color}33`,borderLeft:`4px solid ${color}`,borderRadius:10,padding:"14px 18px",marginBottom:10,background:bg}}>
       <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-        <span style={{fontSize:16,flexShrink:0}}>{icon[issue.level]}</span>
+        <span style={{fontSize:16,flexShrink:0}}>{iconMap[lv]||"⚠️"}</span>
         <div style={{flex:1}}>
           <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
             <span style={{fontSize:11,fontWeight:800,color,textTransform:"uppercase",letterSpacing:0.5}}>{issue.level}</span>
@@ -1543,96 +1837,206 @@ function MetaIssueRow({ issue }) {
   );
 }
 
+function MetaSetupModal({ onClose }) {
+  const steps = [
+    { n:1, title:"Acesse o Meta Business", desc:"Vá para business.facebook.com e faça login com a conta que gerencia seus anúncios." },
+    { n:2, title:"Crie um System User (Administrador)", desc:"Menu lateral → Configurações → Usuários do Sistema → Adicionar. Tipo: Administrador." },
+    { n:3, title:"Gere o Token de Acesso", desc:"Clique no System User criado → 'Gerar novo token'. Selecione um App existente ou crie em developers.facebook.com." },
+    { n:4, title:"Marque as permissões obrigatórias", desc:"Selecione: ads_read e read_insights. Opcionais: ads_management, business_management." },
+    { n:5, title:"Copie o Token (começa com EAA...)", desc:"Salve o token gerado com segurança. Nunca compartilhe publicamente." },
+    { n:6, title:"Configure no Render", desc:"Render Dashboard → seu serviço nexo-backend → Environment → Add Variable: META_ADS_TOKEN = (seu token). Salve e aguarde o redeploy." },
+  ];
+  return (
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(4px)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:C.surface,borderRadius:20,width:"100%",maxWidth:560,maxHeight:"90vh",overflowY:"auto",border:`1px solid ${C.border}`,boxShadow:"0 32px 80px rgba(0,0,0,0.6)"}}>
+        <div style={{background:"linear-gradient(135deg,#1877F2,#0a52b8)",padding:"20px 24px",borderRadius:"20px 20px 0 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,color:"#fff"}}>🔧 Como configurar o Meta Ads</div>
+            <div style={{fontSize:12,color:"rgba(255,255,255,0.7)",marginTop:2}}>Passo a passo — 5 minutos</div>
+          </div>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:8,padding:"6px 12px",color:"#fff",cursor:"pointer",fontSize:16}}>✕</button>
+        </div>
+        <div style={{padding:"24px"}}>
+          {steps.map(s=>(
+            <div key={s.n} style={{display:"flex",gap:14,marginBottom:20,alignItems:"flex-start"}}>
+              <div style={{width:32,height:32,background:"#1877F2",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,color:"#fff",fontSize:14,flexShrink:0}}>{s.n}</div>
+              <div><div style={{fontSize:14,fontWeight:700,color:C.text,marginBottom:4}}>{s.title}</div><div style={{fontSize:12,color:C.textSub,lineHeight:1.6}}>{s.desc}</div></div>
+            </div>
+          ))}
+          <div style={{background:C.bg,borderRadius:12,padding:"14px 16px",border:`1px solid ${C.border}`}}>
+            <div style={{fontSize:11,fontWeight:700,color:C.blue,marginBottom:8}}>LINKS ÚTEIS</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {[["🔗 Meta Business — System Users","https://business.facebook.com/settings/system-users"],["🔗 Meta Developers — Apps","https://developers.facebook.com/apps"],["🔗 Render Dashboard — Env Vars","https://dashboard.render.com"]].map(([label,url])=>(
+                <a key={url} href={url} target="_blank" rel="noreferrer" style={{fontSize:12,color:C.blue,textDecoration:"none"}}>{label}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MetaAds() {
-  const [tab, setTab] = useState("overview");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [campaigns, setCampaigns] = useState([]);
-  const [ads, setAds] = useState([]);
-  const [insights, setInsights] = useState(null);
-  const [analysis, setAnalysis] = useState(null);
+  const [tab, setTab]                       = useState("overview");
+  const [loading, setLoading]               = useState(true);
+  const [apiError, setApiError]             = useState(null);
+  const [demoMode, setDemoMode]             = useState(false);
+  const [showSetup, setShowSetup]           = useState(false);
+  const [campaigns, setCampaigns]           = useState([]);
+  const [ads, setAds]                       = useState([]);
+  const [insights, setInsights]             = useState(null);
+  const [analysis, setAnalysis]             = useState(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [nexoProducts, setNexoProducts] = useState([]);
+  const [nexoProducts, setNexoProducts]     = useState([]);
+  const [tokenStatus, setTokenStatus]       = useState(null); // null | "ok" | "missing"
+  const [accountId, setAccountId]           = useState("");
+  const [accounts, setAccounts]             = useState([]);
+  const [adsets, setAdsets]                 = useState([]);
+  const [lastUpdated, setLastUpdated]       = useState(null);
 
-  const NICHE_CPM  = { "Saúde e Beleza": 35, "Pet": 28, "Fitness em Casa": 30, "Casa Inteligente": 32, "Bebês e Crianças": 38, "Eletrônicos": 40, "Cozinha": 25 };
-  const NICHE_ROAS = { "Saúde e Beleza": "3-5x", "Pet": "4-6x", "Fitness em Casa": "3-4x", "Casa Inteligente": "3-4x", "Bebês e Crianças": "3-5x", "Eletrônicos": "2-4x", "Cozinha": "3-5x" };
+  const NICHE_CPM  = {"Saúde e Beleza":35,"Pet":28,"Fitness em Casa":30,"Casa Inteligente":32,"Bebês e Crianças":38,"Eletrônicos":40,"Cozinha":25};
+  const NICHE_ROAS = {"Saúde e Beleza":"3-5x","Pet":"4-6x","Fitness em Casa":"3-4x","Casa Inteligente":"3-4x","Bebês e Crianças":"3-5x","Eletrônicos":"2-4x","Cozinha":"3-5x"};
 
-  useEffect(() => {
-    loadOverview();
-    apiFetch("/api/products?limit=8").then(d => setNexoProducts((d?.products||[]).map(normalizeProduct))).catch(()=>{});
-  }, []);
+  useEffect(()=>{
+    checkToken();
+    apiFetch("/api/products?limit=8").then(d=>setNexoProducts((d?.products||[]).map(normalizeProduct))).catch(()=>{});
+  },[]);
 
-  async function loadOverview() {
-    setLoading(true); setError("");
+  async function checkToken() {
     try {
-      const [ins, camp, adsData] = await Promise.all([
-        apiFetch("/api/meta/insights"),
-        apiFetch("/api/meta/campaigns"),
-        apiFetch("/api/meta/ads"),
+      const cfg = await apiFetch("/api/meta/config");
+      setTokenStatus(cfg?.configured ? "ok" : "missing");
+      if (cfg?.configured) loadData();
+      else {
+        setDemoMode(true);
+        setInsights(META_DEMO_INSIGHTS); setCampaigns(META_DEMO_CAMPAIGNS); setAds(META_DEMO_ADS);
+        setLoading(false);
+      }
+    } catch { loadData(); }
+  }
+
+  async function loadData(accId) {
+    setLoading(true); setApiError(null); setDemoMode(false);
+    const q = accId||accountId ? `?account_id=${accId||accountId}` : "";
+    try {
+      const [ins, camp, adsData, accs, setsData] = await Promise.all([
+        apiFetch(`/api/meta/insights${q}`),
+        apiFetch(`/api/meta/campaigns${q}`),
+        apiFetch(`/api/meta/ads${q}`),
+        apiFetch("/api/meta/accounts"),
+        apiFetch(`/api/meta/adsets${q}`),
       ]);
       setInsights(ins);
-      setCampaigns(camp?.campaigns || []);
-      setAds(adsData?.ads || []);
-    } catch(e) { setError(e.message); }
+      setCampaigns(camp?.campaigns||[]);
+      setAds(adsData?.ads||[]);
+      setAccounts(accs?.accounts||[]);
+      setAdsets(setsData?.adsets||[]);
+      if (!accId&&!accountId && camp?.account_id) setAccountId(camp.account_id);
+      setTokenStatus("ok");
+      setLastUpdated(new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
+    } catch(e) {
+      let detail = null;
+      try { const m = e.message.match(/\{.+\}/s); if(m) detail = JSON.parse(m[0]); } catch {}
+      setApiError({ message:e.message, detail });
+      setDemoMode(true);
+      setInsights(META_DEMO_INSIGHTS); setCampaigns(META_DEMO_CAMPAIGNS); setAds(META_DEMO_ADS);
+    }
     setLoading(false);
   }
 
   async function runAnalysis() {
+    if (demoMode) { setAnalysis(META_DEMO_ANALYSIS); setTab("diagnostic"); return; }
     setAnalysisLoading(true); setTab("diagnostic");
-    try {
-      const res = await apiFetch("/api/meta/analysis");
-      setAnalysis(res);
-    } catch(e) { setAnalysis({ error: e.message }); }
+    try { const res = await apiFetch("/api/meta/analysis"); setAnalysis(res); }
+    catch(e) { setAnalysis({error:e.message}); }
     setAnalysisLoading(false);
   }
 
-  const fmt_brl = v => v != null ? `R$${parseFloat(v).toFixed(2)}` : "—";
-  const fmt_pct = v => v != null ? `${parseFloat(v).toFixed(2)}%` : "—";
-  const fmt_x   = v => v != null ? `${parseFloat(v).toFixed(2)}x` : "—";
+  const fmt_brl = v => v!=null ? `R$${parseFloat(v).toFixed(2)}` : "—";
+  const fmt_pct = v => v!=null ? `${parseFloat(v).toFixed(2)}%` : "—";
+  const fmt_x   = v => v!=null ? `${parseFloat(v).toFixed(2)}x` : "—";
 
   const TABS = [
-    { id:"overview",    label:"📈 Visão Geral" },
-    { id:"ads",         label:"🎞 Anúncios" },
-    { id:"diagnostic",  label:"🤖 Diagnóstico IA" },
-    { id:"opportunities",label:"💡 Oportunidades" },
+    {id:"overview",      label:"📈 Visão Geral"},
+    {id:"adsets",        label:"🎯 Conjuntos"},
+    {id:"ads",           label:"🎞 Anúncios"},
+    {id:"diagnostic",    label:"🤖 Diagnóstico IA"},
+    {id:"opportunities", label:"💡 Oportunidades"},
   ];
 
   if (loading) return <div style={{padding:40}}><Spinner text="Conectando ao Meta Ads…"/></div>;
-  if (error) return (
-    <div style={{padding:32}}>
-      <div style={{background:C.redLight,border:`1px solid ${C.red}`,borderRadius:14,padding:"20px 24px",marginBottom:20}}>
-        <div style={{fontWeight:800,color:C.red,marginBottom:6}}>Erro ao conectar à Meta Ads API</div>
-        <div style={{color:C.textSub,fontSize:13}}>{error}</div>
-      </div>
-      <Btn onClick={loadOverview} icon="🔄">Tentar novamente</Btn>
-    </div>
-  );
 
   return (
     <div>
+      {showSetup&&<MetaSetupModal onClose={()=>setShowSetup(false)}/>}
+
       {/* Header */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:12}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:12}}>
         <div>
-          <div style={{fontSize:22,fontWeight:900,color:C.text,letterSpacing:-0.5}}>📊 Meta Ads Intelligence</div>
-          <div style={{fontSize:13,color:C.textSub,marginTop:3}}>Análise em tempo real das suas campanhas — últimos 30 dias</div>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:4}}>
+            <div style={{fontSize:22,fontWeight:900,color:C.text,letterSpacing:-0.5}}>📊 Meta Ads Intelligence</div>
+            {!demoMode&&tokenStatus==="ok"&&(
+              <span style={{background:C.greenLight,color:C.green,border:`1px solid ${C.green}44`,borderRadius:6,padding:"2px 10px",fontSize:11,fontWeight:800}}>● CONECTADO</span>
+            )}
+            {demoMode&&<span style={{background:"#2d2000",color:"#f0a500",borderRadius:6,padding:"3px 9px",fontSize:11,fontWeight:800}}>DEMO</span>}
+          </div>
+          <div style={{fontSize:13,color:C.textSub}}>
+            {!demoMode&&insights?.account_name ? `Conta: ${insights.account_name} (${insights.currency||"BRL"})` : "Análise em tempo real — últimos 30 dias"}
+            {lastUpdated&&<span style={{marginLeft:8,fontSize:11,color:C.textLight}}>• Atualizado às {lastUpdated}</span>}
+          </div>
+          {accounts.length>1&&(
+            <select value={accountId} onChange={e=>{setAccountId(e.target.value);loadData(e.target.value);}} style={{marginTop:8,background:C.surface,color:C.text,border:`1px solid ${C.border}`,borderRadius:8,padding:"5px 10px",fontSize:12,cursor:"pointer"}}>
+              {accounts.map(a=><option key={a.id} value={a.id}>{a.name||a.account_id} ({a.currency})</option>)}
+            </select>
+          )}
         </div>
-        <div style={{display:"flex",gap:8}}>
-          <Btn variant="ghost" onClick={loadOverview} icon="🔄" small>Atualizar</Btn>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <Btn variant="ghost" onClick={()=>setShowSetup(true)} icon="❓" small>Como configurar</Btn>
+          <Btn variant="ghost" onClick={()=>loadData()} icon="🔄" small>Atualizar</Btn>
           <Btn variant="primary" onClick={runAnalysis} icon="🤖" small disabled={analysisLoading}>
-            {analysisLoading ? "Analisando…" : "Analisar com IA"}
+            {analysisLoading?"Analisando…":"Analisar com IA"}
           </Btn>
         </div>
       </div>
 
-      {/* Overview Cards (sempre visível) */}
-      {insights && (
+      {/* Banner erro/configuração */}
+      {apiError&&(
+        <div style={{background:"#1a0f00",border:"1px solid #f0a50055",borderRadius:14,padding:"16px 20px",marginBottom:20}}>
+          <div style={{display:"flex",gap:12,alignItems:"flex-start",flexWrap:"wrap"}}>
+            <span style={{fontSize:24,flexShrink:0}}>🔐</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:14,fontWeight:800,color:"#f0a500",marginBottom:4}}>
+                {apiError.detail?.error_type==="TOKEN_NOT_CONFIGURED" ? "Token Meta Ads não configurado" : "Erro de acesso à API do Meta"}
+              </div>
+              {apiError.detail?.error_code&&<div style={{fontSize:11,color:"#b1854a",marginBottom:6}}>Código: {apiError.detail.error_code} — {apiError.detail.hint}</div>}
+              <div style={{fontSize:12,color:"#8b6330",background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"10px 14px",marginBottom:10,lineHeight:1.7}}>
+                Para usar o Meta Ads Intelligence, gere um token em <b style={{color:"#f0a500"}}>business.facebook.com</b> com as permissões: <b style={{color:"#f0a500"}}>ads_read</b> e <b style={{color:"#f0a500"}}>read_insights</b>. Em seguida, adicione <b style={{color:"#f0a500"}}>META_ADS_TOKEN</b> nas variáveis de ambiente do Render.
+              </div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <Btn onClick={()=>setShowSetup(true)} variant="ghost" icon="📖" small>Ver passo a passo</Btn>
+                <Btn href="https://business.facebook.com/settings/system-users" variant="fb" small icon="🔗">Meta Business</Btn>
+                <Btn href="https://dashboard.render.com" variant="outline" small icon="⚙️">Render Dashboard</Btn>
+              </div>
+            </div>
+            <div style={{background:"rgba(240,165,0,0.12)",border:"1px solid #f0a50033",borderRadius:10,padding:"10px 16px",fontSize:12,color:"#f0a500",textAlign:"center",flexShrink:0}}>
+              <div style={{fontWeight:700,marginBottom:2}}>Exibindo</div>
+              <div style={{fontSize:20,fontWeight:900}}>DEMO</div>
+              <div style={{fontSize:10,color:"#8b6330"}}>dados simulados</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cards métricas consolidadas */}
+      {insights&&(
         <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
-          <MetaMetricCard icon="💸" label="Gasto Total (30d)"       value={fmt_brl(insights.spend)}           color={C.text}/>
-          <MetaMetricCard icon="📊" label="ROAS Médio"              value={fmt_x(insights.purchase_roas)}     color={insights.purchase_roas>=2?C.green:C.red}/>
-          <MetaMetricCard icon="📡" label="CPM Médio"               value={fmt_brl(insights.cpm)}             color={insights.cpm>50?C.yellow:C.text}/>
-          <MetaMetricCard icon="👆" label="CTR Médio"               value={fmt_pct(insights.ctr)}             color={insights.ctr>=1?C.green:C.yellow}/>
-          <MetaMetricCard icon="👁" label="Alcance"                 value={(insights.reach||0).toLocaleString("pt-BR")} color={C.blue}/>
-          <MetaMetricCard icon="🔁" label="Frequência"              value={(insights.frequency||0).toFixed(1)} color={insights.frequency>3?C.red:C.text}/>
+          <MetaMetricCard icon="💸" label="Gasto Total (30d)"  value={fmt_brl(insights.spend)}          color={C.text}  demo={demoMode}/>
+          <MetaMetricCard icon="📊" label="ROAS Médio"         value={fmt_x(insights.purchase_roas)}     color={insights.purchase_roas>=2?C.green:C.red} demo={demoMode}/>
+          <MetaMetricCard icon="📡" label="CPM Médio"          value={fmt_brl(insights.cpm)}             color={insights.cpm>50?C.yellow:C.text} demo={demoMode}/>
+          <MetaMetricCard icon="👆" label="CTR Médio"          value={fmt_pct(insights.ctr)}             color={insights.ctr>=1?C.green:C.yellow} demo={demoMode}/>
+          <MetaMetricCard icon="👁" label="Alcance"            value={(insights.reach||0).toLocaleString("pt-BR")} color={C.blue} demo={demoMode}/>
+          <MetaMetricCard icon="🔁" label="Frequência"         value={(insights.frequency||0).toFixed(1)} color={insights.frequency>3?C.red:C.text} demo={demoMode}/>
         </div>
       )}
 
@@ -1646,13 +2050,13 @@ function MetaAds() {
       {/* ABA 1 — VISÃO GERAL */}
       {tab==="overview"&&(
         <div>
-          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:14}}>🏆 Ranking de Campanhas por ROAS</div>
-          {campaigns.length===0&&<EmptyState icon="📭" title="Sem dados de campanha" sub="Verifique se o token do Meta tem permissão ads_read"/>}
+          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:14}}>🏆 Ranking de Campanhas por ROAS {demoMode&&<span style={{fontSize:11,color:"#f0a500",fontWeight:600}}>(demo)</span>}</div>
+          {campaigns.length===0&&<EmptyState icon="📭" title="Sem dados de campanha" sub="Verifique se o token tem permissão ads_read"/>}
           {campaigns.map((c,i)=>(
             <div key={c.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 18px",marginBottom:10,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
               <div style={{width:28,height:28,background:i<3?C.blueLight:C.bg,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,color:i<3?C.blue:C.textSub,fontSize:13,flexShrink:0}}>#{i+1}</div>
               <div style={{flex:2,minWidth:160}}>
-                <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:2}}>{c.name}</div>
+                <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:4}}>{c.name}</div>
                 <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                   <Tag color={c.status==="ACTIVE"?"green":"gray"} sm>{c.status}</Tag>
                   {c.objective&&<Tag color="blue" sm>{c.objective}</Tag>}
@@ -1671,39 +2075,77 @@ function MetaAds() {
         </div>
       )}
 
+      {/* ABA — CONJUNTOS (AD SETS) */}
+      {tab==="adsets"&&(
+        <div>
+          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:14}}>🎯 Conjuntos de Anúncios {demoMode&&<span style={{fontSize:11,color:"#f0a500"}}>(demo)</span>}</div>
+          {adsets.length===0&&<EmptyState icon="🎯" title="Nenhum conjunto encontrado" sub="Verifique as permissões do token"/>}
+          {adsets.map((s,i)=>(
+            <div key={s.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 18px",marginBottom:10,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
+              <div style={{width:28,height:28,background:i<3?C.blueLight:C.bg,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,color:i<3?C.blue:C.textSub,fontSize:13,flexShrink:0}}>#{i+1}</div>
+              <div style={{flex:2,minWidth:160}}>
+                <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:4}}>{s.name}</div>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  <Tag color={s.status==="ACTIVE"?"green":"gray"} sm>{s.status}</Tag>
+                  {s.optimization_goal&&<Tag color="blue" sm>{s.optimization_goal}</Tag>}
+                  {s.bid_strategy&&<Tag color="purple" sm>{s.bid_strategy}</Tag>}
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(5,72px)",gap:10,flexShrink:0}}>
+                {[
+                  {l:"Gasto",    v:`R$${parseFloat(s.spend||0).toFixed(0)}`},
+                  {l:"ROAS",     v:s.purchase_roas?`${parseFloat(s.purchase_roas).toFixed(2)}x`:"—", hl:(s.purchase_roas||0)>=2},
+                  {l:"CTR",      v:s.ctr?`${parseFloat(s.ctr).toFixed(2)}%`:"—", hl:(s.ctr||0)>=1},
+                  {l:"CPM",      v:s.cpm?`R$${parseFloat(s.cpm).toFixed(0)}`:"—"},
+                  {l:"Orçam./d", v:s.daily_budget?`R$${parseFloat(s.daily_budget).toFixed(0)}`:"—"},
+                ].map(m=>(
+                  <div key={m.l} style={{textAlign:"center"}}>
+                    <div style={{fontSize:13,fontWeight:800,color:m.hl?C.green:C.text}}>{m.v}</div>
+                    <div style={{fontSize:10,color:C.textLight}}>{m.l}</div>
+                  </div>
+                ))}
+              </div>
+              {(s.age_min||s.age_max)&&(
+                <div style={{background:C.bg,borderRadius:8,padding:"6px 10px",fontSize:11,color:C.textSub,flexShrink:0}}>
+                  Idade: {s.age_min||"?"}–{s.age_max||"?"}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* ABA 2 — ANÚNCIOS */}
       {tab==="ads"&&(
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:8}}>
-            <div style={{fontSize:15,fontWeight:700,color:C.text}}>{ads.length} anúncios encontrados</div>
-            <div style={{display:"flex",gap:6,fontSize:11,color:C.textSub,alignItems:"center"}}>
-              <span>Legenda:</span>
-              {["ESCALÁVEL","ESTÁVEL","ATENÇÃO","PAUSAR"].map(b=><MetaAdsBadge key={b} badge={b}/>)}
+            <div style={{fontSize:15,fontWeight:700,color:C.text}}>{ads.length} anúncios {demoMode&&<span style={{fontSize:11,color:"#f0a500"}}>(demo)</span>}</div>
+            <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+              {["ESCALAVEL","ESTAVEL","ATENCAO","PAUSAR"].map(b=><MetaAdsBadge key={b} badge={b}/>)}
             </div>
           </div>
-          {ads.length===0&&<EmptyState icon="🎞" title="Sem anúncios" sub="Nenhum anúncio ativo encontrado na conta"/>}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
             {ads.map(a=>{
               const fallback="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400";
-              const thumb = a.thumbnail_url||a.image_url||fallback;
+              const thumb=a.thumbnail_url||a.image_url||fallback;
               return (
                 <div key={a.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,overflow:"hidden"}}>
                   <div style={{position:"relative",height:140,background:C.bg}}>
                     <img src={thumb} alt={a.name} onError={e=>e.target.src=fallback} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-                    <div style={{position:"absolute",top:8,left:8}}><MetaAdsBadge badge={a.badge}/></div>
+                    <div style={{position:"absolute",top:8,left:8}}><MetaAdsBadge badge={a.badge} demo={demoMode}/></div>
                     {a.video_id&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:36,height:36,background:"rgba(255,255,255,0.85)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>▶</div></div>}
                   </div>
                   <div style={{padding:"14px 16px"}}>
                     <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:10,lineHeight:1.4}}>{a.name}</div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
-                      {[{l:"Gasto",v:fmt_brl(a.spend)},{l:"ROAS",v:fmt_x(a.purchase_roas),hl:a.purchase_roas>=2},{l:"CTR",v:fmt_pct(a.ctr),hl:a.ctr>=1},{l:"CPM",v:fmt_brl(a.cpm)},{l:"Frequência",v:(a.frequency||0).toFixed(1),hl:a.frequency<3},{l:"CPC",v:fmt_brl(a.cpc)}].map(m=>(
+                      {[{l:"Gasto",v:fmt_brl(a.spend)},{l:"ROAS",v:fmt_x(a.purchase_roas),hl:a.purchase_roas>=2},{l:"CTR",v:fmt_pct(a.ctr),hl:a.ctr>=1},{l:"CPM",v:fmt_brl(a.cpm)},{l:"Frequência",v:(a.frequency||0).toFixed(1),hl:(a.frequency||0)<3},{l:"CPC",v:fmt_brl(a.cpc)}].map(m=>(
                         <div key={m.l} style={{background:C.bg,borderRadius:8,padding:"7px 10px",textAlign:"center"}}>
                           <div style={{fontSize:13,fontWeight:800,color:m.hl?C.green:C.text}}>{m.v||"—"}</div>
                           <div style={{fontSize:9,color:C.textLight,marginTop:1}}>{m.l}</div>
                         </div>
                       ))}
                     </div>
-                    {a.video_id&&(
+                    {(a.video_id||a.play_rate_pct>0)&&(
                       <div style={{background:C.bg,borderRadius:8,padding:"7px 10px",fontSize:11,color:C.textSub}}>
                         <span style={{fontWeight:700,color:C.text}}>Play rate: </span>{a.play_rate_pct||0}% &nbsp;|&nbsp;
                         <span style={{fontWeight:700,color:C.text}}>Conclusão: </span>{a.completion_rate_pct||0}%
@@ -1724,41 +2166,37 @@ function MetaAds() {
             <div style={{textAlign:"center",padding:"50px 20px"}}>
               <div style={{fontSize:52,marginBottom:14}}>🤖</div>
               <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:8}}>Diagnóstico com IA</div>
-              <div style={{fontSize:13,color:C.textSub,marginBottom:20}}>Clique para analisar todas as campanhas e anúncios</div>
-              <Btn onClick={runAnalysis} icon="🚀">Iniciar Diagnóstico</Btn>
+              <div style={{fontSize:13,color:C.textSub,marginBottom:20}}>Análise completa das suas campanhas e anúncios{demoMode?" (com dados demo)":""}</div>
+              <Btn onClick={runAnalysis} icon="🚀">Iniciar Diagnóstico{demoMode?" Demo":""}</Btn>
             </div>
           )}
           {analysisLoading&&<Spinner text="IA analisando suas campanhas…"/>}
           {analysis?.error&&<div style={{background:C.redLight,border:`1px solid ${C.red}`,borderRadius:12,padding:"16px 20px",color:C.red}}>{analysis.error}</div>}
           {analysis&&!analysis.error&&(
             <div>
-              {/* Score de Saúde */}
+              {analysis.demo&&<div style={{background:"#1a1000",border:"1px solid #f0a50044",borderRadius:10,padding:"10px 16px",marginBottom:16,fontSize:12,color:"#f0a500",fontWeight:600}}>Diagnóstico de demonstração — conecte seu token para análise real da sua conta</div>}
               <div style={{background:`linear-gradient(135deg,${C.surface},${C.blueLight})`,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 24px",marginBottom:20,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
                 <Ring val={analysis.health_score} size={72} stroke={analysis.health_score>=70?C.green:analysis.health_score>=50?C.yellow:C.red} bg={C.bg}/>
                 <div>
                   <div style={{fontSize:14,color:C.textSub,marginBottom:4}}>Score de Saúde da Conta</div>
                   <div style={{fontSize:24,fontWeight:900,color:analysis.health_score>=70?C.green:analysis.health_score>=50?C.yellow:C.red}}>{analysis.health_label}</div>
                   <div style={{fontSize:12,color:C.textSub,marginTop:4}}>
-                    {analysis.summary?.critical||0} crítico(s) &nbsp;•&nbsp;
-                    {analysis.summary?.warnings||0} atenção &nbsp;•&nbsp;
-                    {analysis.summary?.opportunities||0} oportunidade(s)
+                    {analysis.summary?.critical||0} crítico(s) &nbsp;•&nbsp; {analysis.summary?.warnings||0} atenção &nbsp;•&nbsp; {analysis.summary?.opportunities||0} oportunidade(s)
                   </div>
                 </div>
                 {analysis.scale_now?.length>0&&(
                   <div style={{marginLeft:"auto",background:C.greenLight,border:`1px solid ${C.green}33`,borderRadius:12,padding:"12px 16px"}}>
                     <div style={{fontSize:11,fontWeight:700,color:C.green,marginBottom:6}}>▲ ESCALAR AGORA</div>
-                    {analysis.scale_now.slice(0,2).map(a=><div key={a.id} style={{fontSize:12,color:C.textSub}}>{a.name.slice(0,30)} — ROAS {a.roas?.toFixed(1)}x</div>)}
+                    {analysis.scale_now.slice(0,2).map(a=><div key={a.id} style={{fontSize:12,color:C.textSub}}>{a.name?.slice(0,28)} — ROAS {a.roas?.toFixed(1)}x</div>)}
                   </div>
                 )}
                 {analysis.pause_now?.length>0&&(
                   <div style={{background:C.redLight,border:`1px solid ${C.red}33`,borderRadius:12,padding:"12px 16px"}}>
                     <div style={{fontSize:11,fontWeight:700,color:C.red,marginBottom:6}}>■ PAUSAR AGORA</div>
-                    {analysis.pause_now.slice(0,2).map(a=><div key={a.id} style={{fontSize:12,color:C.textSub}}>{a.name.slice(0,30)} — R${a.spend}</div>)}
+                    {analysis.pause_now.slice(0,2).map(a=><div key={a.id} style={{fontSize:12,color:C.textSub}}>{a.name?.slice(0,28)} — R${a.spend}</div>)}
                   </div>
                 )}
               </div>
-
-              {/* Top Recommendations */}
               {analysis.top_recommendations?.length>0&&(
                 <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"16px 20px",marginBottom:20}}>
                   <div style={{fontSize:13,fontWeight:800,color:C.text,marginBottom:12}}>⚡ Top Recomendações Prioritárias</div>
@@ -1770,8 +2208,6 @@ function MetaAds() {
                   ))}
                 </div>
               )}
-
-              {/* Issues */}
               <div style={{fontSize:14,fontWeight:700,color:C.text,marginBottom:12}}>Problemas Encontrados ({analysis.issues?.length||0})</div>
               {(analysis.issues||[]).map((issue,i)=><MetaIssueRow key={i} issue={issue}/>)}
               {(analysis.issues||[]).length===0&&<EmptyState icon="✅" title="Conta saudável!" sub="Nenhum problema crítico detectado"/>}
@@ -1784,53 +2220,29 @@ function MetaAds() {
       {tab==="opportunities"&&(
         <div>
           <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:"16px 20px",marginBottom:20}}>
-            <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:8}}>💡 Produtos NEXO com Potencial para Meta Ads</div>
-            <div style={{fontSize:12,color:C.textSub}}>Estimativas baseadas em benchmarks do nicho. CPM e ROAS variam conforme criativo e público.</div>
+            <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:6}}>💡 Produtos NEXO com Potencial para Meta Ads</div>
+            <div style={{fontSize:12,color:C.textSub}}>CPM e ROAS estimados por nicho. Variam conforme criativo e público.</div>
           </div>
           {nexoProducts.length===0&&<Spinner text="Carregando produtos…"/>}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:14}}>
             {nexoProducts.map(p=>{
-              const cpm  = NICHE_CPM[p.category] || 35;
-              const roas = NICHE_ROAS[p.category] || "3-4x";
-              const breakeven_roas = p.markup > 0 ? (1/(1-1/p.markup)).toFixed(2) : "—";
-              const pub  = {
-                "Saúde e Beleza":   "Mulheres 25-45, interesses: beleza, skin care, bem-estar",
-                "Pet":              "Donos de pets 18-45, interesses: cães, gatos, animais de estimação",
-                "Fitness em Casa":  "Adultos 22-40, interesses: academia, crossfit, emagrecimento",
-                "Casa Inteligente": "Adultos 28-50, interesses: decoração, organização, casa",
-                "Bebês e Crianças": "Pais 25-40, interesses: maternidade, bebê, educação infantil",
-                "Eletrônicos":      "Adultos 18-45, interesses: tecnologia, gadgets, celular",
-                "Cozinha":          "Adultos 25-50, interesses: culinária, receitas, gastronomia",
-              }[p.category] || "Adultos 20-45, interesses relacionados ao produto";
+              const cpm=NICHE_CPM[p.category]||35;
+              const roas=NICHE_ROAS[p.category]||"3-4x";
+              const breakeven=p.markup>0?(1/(1-1/p.markup)).toFixed(2):"—";
+              const pub={"Saúde e Beleza":"Mulheres 25-45, beleza/skin care","Pet":"Donos de pets 18-45","Fitness em Casa":"Adultos 22-40, academia","Casa Inteligente":"Adultos 28-50, decoração","Bebês e Crianças":"Pais 25-40, maternidade","Eletrônicos":"Adultos 18-45, tecnologia","Cozinha":"Adultos 25-50, culinária"}[p.category]||"Adultos 20-45";
               return (
                 <div key={p.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,overflow:"hidden"}}>
-                  <div style={{height:120,overflow:"hidden"}}>
-                    <img src={p.img} alt={p.name} onError={e=>e.target.src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400"} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                  </div>
+                  <div style={{height:110,overflow:"hidden"}}><img src={p.img} alt={p.name} onError={e=>e.target.src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400"} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
                   <div style={{padding:"14px 16px"}}>
                     <Tag color="blue" sm>{p.category}</Tag>
-                    <div style={{fontSize:13,fontWeight:700,color:C.text,margin:"8px 0 10px",lineHeight:1.3}}>{p.name.slice(0,60)}</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
-                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}>
-                        <div style={{fontSize:13,fontWeight:800,color:C.blue}}>R${cpm}</div>
-                        <div style={{fontSize:9,color:C.textLight}}>CPM estim.</div>
-                      </div>
-                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}>
-                        <div style={{fontSize:13,fontWeight:800,color:C.green}}>{roas}</div>
-                        <div style={{fontSize:9,color:C.textLight}}>ROAS estim.</div>
-                      </div>
-                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}>
-                        <div style={{fontSize:13,fontWeight:800,color:C.yellow}}>{breakeven_roas}x</div>
-                        <div style={{fontSize:9,color:C.textLight}}>Break-even</div>
-                      </div>
+                    <div style={{fontSize:13,fontWeight:700,color:C.text,margin:"8px 0 10px",lineHeight:1.3}}>{p.name.slice(0,55)}</div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}}>
+                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}><div style={{fontSize:13,fontWeight:800,color:C.blue}}>R${cpm}</div><div style={{fontSize:9,color:C.textLight}}>CPM estim.</div></div>
+                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}><div style={{fontSize:13,fontWeight:800,color:C.green}}>{roas}</div><div style={{fontSize:9,color:C.textLight}}>ROAS estim.</div></div>
+                      <div style={{background:C.bg,borderRadius:8,padding:"8px",textAlign:"center"}}><div style={{fontSize:13,fontWeight:800,color:C.yellow}}>{breakeven}x</div><div style={{fontSize:9,color:C.textLight}}>Break-even</div></div>
                     </div>
-                    <div style={{background:C.blueLight,borderRadius:8,padding:"8px 10px",fontSize:11,color:C.textSub,marginBottom:10}}>
-                      <span style={{fontWeight:700,color:C.blue}}>Público sugerido: </span>{pub}
-                    </div>
-                    <div style={{display:"flex",gap:8}}>
-                      <Btn href={p._raw?.fb_ads_url||`https://www.facebook.com/ads/library/?q=${encodeURIComponent(p.name.slice(0,30))}`} variant="fb" small icon="🔍">Spy Ads</Btn>
-                      <Btn href={`https://business.facebook.com/`} variant="ghost" small icon="📢">Criar Ad</Btn>
-                    </div>
+                    <div style={{background:C.blueLight,borderRadius:8,padding:"7px 10px",fontSize:11,color:C.textSub,marginBottom:10}}><span style={{fontWeight:700,color:C.blue}}>Público: </span>{pub}</div>
+                    <Btn href={p._raw?.fb_ads_url||`https://www.facebook.com/ads/library/?q=${encodeURIComponent(p.name.slice(0,30))}`} variant="fb" small icon="🔍">Spy Ads</Btn>
                   </div>
                 </div>
               );
@@ -1921,7 +2333,7 @@ export default function NexoApp() {
         <div style={{width:isMobile?240:SW,background:C.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,bottom:0,left:0,zIndex:100,transition:"width 0.2s ease",overflow:"hidden",boxShadow:isMobile?"4px 0 20px rgba(0,0,0,0.3)":"none"}}>
           <div style={{padding:collapsed&&!isMobile?"20px 0":"20px 18px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",gap:10,justifyContent:collapsed&&!isMobile?"center":"flex-start"}}>
             <div style={{width:32,height:32,background:"linear-gradient(135deg,#1A56DB,#38BDF8)",borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>⚡</div>
-            {(!collapsed||isMobile)&&<div><div style={{fontSize:17,fontWeight:900,color:"#fff",letterSpacing:-0.5}}>NEXO</div><div style={{fontSize:9,color:"rgba(255,255,255,0.28)",letterSpacing:1,marginTop:-2}}>INTELLIGENCE v3.2</div></div>}
+            {(!collapsed||isMobile)&&<div><div style={{fontSize:17,fontWeight:900,color:"#fff",letterSpacing:-0.5}}>NEXO</div><div style={{fontSize:9,color:"rgba(255,255,255,0.28)",letterSpacing:1,marginTop:-2}}>INTELLIGENCE v6.0</div></div>}
           </div>
           <nav style={{padding:"12px 8px",flex:1,overflowY:"auto"}}>
             {NAV.map(item=>(
