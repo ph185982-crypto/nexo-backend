@@ -1,20 +1,20 @@
 """
-Database Layer v3 — PostgreSQL + Redis
-Module-level pool singleton so ALL routers share one connection pool.
-Bug fix: old version had broken per-instance pool that never initialized in routers.
+Database Layer v4 — PostgreSQL + cache em memória (Redis opcional)
+Se REDIS_ENABLED=false ou conexão falhar, usa dict Python com TTL.
 """
-import asyncpg, json, uuid, os, logging
-import redis.asyncio as aioredis
+import asyncpg, json, uuid, os, logging, time
 from typing import List, Dict, Optional
 
 logger = logging.getLogger(__name__)
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://nexo:nexo@localhost:5432/nexo")
-REDIS_URL    = os.getenv("REDIS_URL", "")  # vazio = desabilitado
-CACHE_TTL    = 3600
+DATABASE_URL  = os.getenv("DATABASE_URL", "postgresql://nexo:nexo@localhost:5432/nexo")
+REDIS_URL     = os.getenv("REDIS_URL", "")
+REDIS_ENABLED = os.getenv("REDIS_ENABLED", "true").lower() not in ("false", "0", "no")
+CACHE_TTL     = 3600
 
-# ── Module-level singletons ───────────────────────────────────────────────────
-_pool:  Optional[asyncpg.Pool]      = None
-_redis: Optional[aioredis.Redis]    = None
+# ── Module-level singletons ────────────────────────────────────────────────────
+_pool:  Optional[asyncpg.Pool] = None
+_redis = None
+_mem_cache: Dict[str, tuple] = {}   # key → (value, expires_at)
 
 
 async def _get_pool() -> asyncpg.Pool:
@@ -30,28 +30,28 @@ async def _get_pool() -> asyncpg.Pool:
     return _pool
 
 
-async def _get_redis() -> Optional[aioredis.Redis]:
+async def _get_redis():
     global _redis
-    if not REDIS_URL:
+    if not REDIS_ENABLED or not REDIS_URL:
         return None
     if _redis is None:
         try:
+            import redis.asyncio as aioredis
             r = aioredis.from_url(REDIS_URL, decode_responses=True, socket_connect_timeout=3)
             await r.ping()
             _redis = r
         except Exception as e:
-            logger.warning(f"Redis indisponível ({e}) — cache desabilitado")
-            return None
+            logger.warning(f"Redis indisponível ({e}) — usando cache em memória")
     return _redis
 
 
 class Database:
-    """All methods use module-level pool — safe to instantiate anywhere."""
+    """Todos os métodos usam pool a nível de módulo — seguro instanciar em qualquer lugar."""
 
     async def connect(self):
         p = await _get_pool()
         await self._create_tables(p)
-        logger.info("NEXO DB ready")
+        logger.info("NEXO DB pronto")
 
     async def disconnect(self):
         global _pool, _redis
@@ -63,29 +63,53 @@ class Database:
     async def _r(self): return await _get_redis()
 
     async def _cache_get(self, key: str):
+        # Tenta Redis primeiro
         try:
             r = await self._r()
-            if r is None: return None
-            v = await r.get(key)
-            return json.loads(v) if v else None
-        except Exception: return None
+            if r:
+                v = await r.get(key)
+                return json.loads(v) if v else None
+        except Exception:
+            pass
+        # Fallback: cache em memória
+        entry = _mem_cache.get(key)
+        if entry:
+            val, exp = entry
+            if time.time() < exp:
+                return val
+            del _mem_cache[key]
+        return None
 
     async def _cache_set(self, key: str, value):
+        serialized = json.dumps(value, default=str)
+        # Tenta Redis
         try:
             r = await self._r()
-            if r is None: return
-            await r.setex(key, CACHE_TTL, json.dumps(value, default=str))
-        except Exception: pass
+            if r:
+                await r.setex(key, CACHE_TTL, serialized)
+                return
+        except Exception:
+            pass
+        # Fallback: memória
+        _mem_cache[key] = (value, time.time() + CACHE_TTL)
 
     async def _cache_clear(self, pattern: str):
+        # Redis
         try:
             r = await self._r()
-            if r is None: return
-            keys = await r.keys(pattern)
-            if keys: await r.delete(*keys)
-        except Exception: pass
+            if r:
+                keys = await r.keys(pattern)
+                if keys: await r.delete(*keys)
+                return
+        except Exception:
+            pass
+        # Memória: remove por prefixo
+        prefix = pattern.replace("*", "")
+        for k in list(_mem_cache.keys()):
+            if k.startswith(prefix):
+                del _mem_cache[k]
 
-    # ── Table creation ────────────────────────────────────────────────────────
+    # ── Table creation ─────────────────────────────────────────────────────────
     async def _create_tables(self, pool: asyncpg.Pool):
         async with pool.acquire() as c:
             await c.execute("""
@@ -207,7 +231,7 @@ class Database:
                 CREATE INDEX IF NOT EXISTS idx_notifs_user       ON notifications(user_id);
             """)
 
-    # ── USERS ─────────────────────────────────────────────────────────────────
+    # ── USERS ──────────────────────────────────────────────────────────────────
     async def create_user(self, name: str, email: str, password_hash: str) -> Dict:
         p = await self._p()
         async with p.acquire() as c:
@@ -238,7 +262,7 @@ class Database:
             )
         return [dict(r) for r in rows]
 
-    # ── PRODUCTS ──────────────────────────────────────────────────────────────
+    # ── PRODUCTS ───────────────────────────────────────────────────────────────
     async def get_products(self, category=None, min_markup=0.0, br_status=None,
                            sort_by="score", limit=50) -> List[Dict]:
         ckey = f"products:{category}:{min_markup}:{br_status}:{sort_by}:{limit}"
@@ -247,8 +271,8 @@ class Database:
             return cached
 
         p = await self._p()
-        sort = {"score":"score DESC","markup":"markup DESC",
-                "opportunity":"opportunity DESC","newest":"updated_at DESC"}.get(sort_by, "score DESC")
+        sort = {"score": "score DESC", "markup": "markup DESC",
+                "opportunity": "opportunity DESC", "newest": "updated_at DESC"}.get(sort_by, "score DESC")
         conds, params = [], []
         if min_markup > 0:
             params.append(min_markup); conds.append(f"markup>=${len(params)}")
@@ -293,17 +317,17 @@ class Database:
                         targeting_suggestion=EXCLUDED.targeting_suggestion,
                         copy_suggestion=EXCLUDED.copy_suggestion,
                         updated_at=NOW()
-                """, pid, prod.get("title",""), prod.get("category","Outros"),
-                    prod.get("platform","aliexpress"), prod.get("price_usd",0),
-                    prod.get("cost_brl",0), prod.get("freight_brl",0), prod.get("tax_brl",0),
-                    prod.get("total_cost_brl",0), prod.get("suggested_sell_price",0),
-                    prod.get("markup",0), prod.get("orders_count",0), prod.get("rating",0),
-                    prod.get("br_status","Não Vendido"), prod.get("score",0),
-                    json.dumps(imgs), json.dumps(prod.get("sources",[])),
-                    prod.get("product_url",""), prod.get("supplier_name",""), prod.get("growth","+0%"),
+                """, pid, prod.get("title", ""), prod.get("category", "Outros"),
+                    prod.get("platform", "aliexpress"), prod.get("price_usd", 0),
+                    prod.get("cost_brl", 0), prod.get("freight_brl", 0), prod.get("tax_brl", 0),
+                    prod.get("total_cost_brl", 0), prod.get("suggested_sell_price", 0),
+                    prod.get("markup", 0), prod.get("orders_count", 0), prod.get("rating", 0),
+                    prod.get("br_status", "Não Vendido"), prod.get("score", 0),
+                    json.dumps(imgs), json.dumps(prod.get("sources", [])),
+                    prod.get("product_url", ""), prod.get("supplier_name", ""), prod.get("growth", "+0%"),
                     img_url,
-                    json.dumps(prod.get("targeting_suggestion",[])),
-                    prod.get("copy_suggestion",""))
+                    json.dumps(prod.get("targeting_suggestion", [])),
+                    prod.get("copy_suggestion", ""))
         await self._cache_clear("products:*")
 
     async def save_ai_analysis(self, pid: str, analysis: Dict):
@@ -326,7 +350,7 @@ class Database:
                 "AND opportunity>=$1 ORDER BY opportunity DESC, score DESC LIMIT 20", min_opportunity)
         return [dict(r) for r in rows]
 
-    # ── FAVORITES ─────────────────────────────────────────────────────────────
+    # ── FAVORITES ──────────────────────────────────────────────────────────────
     async def get_favorites(self, user_id: str) -> List[Dict]:
         p = await self._p()
         async with p.acquire() as c:
@@ -346,7 +370,7 @@ class Database:
             await c.execute("INSERT INTO favorites(user_id,product_id) VALUES($1,$2)", user_id, product_id)
             return True
 
-    # ── ADS ───────────────────────────────────────────────────────────────────
+    # ── ADS ────────────────────────────────────────────────────────────────────
     async def get_ads(self, keyword=None, product_id=None, active_only=True, min_days=0, limit=50) -> List[Dict]:
         p = await self._p()
         conds, params = ["days_active>=$1"], [min_days]
@@ -372,14 +396,14 @@ class Database:
                     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
                     ON CONFLICT(id) DO UPDATE SET days_active=EXCLUDED.days_active,
                         is_active=EXCLUDED.is_active, total_engagement=EXCLUDED.total_engagement
-                """, ad.get("ad_id", str(uuid.uuid4())), keyword, (ad.get("title","") or "")[:200],
-                    ad.get("advertiser",""), ad.get("creative_type","Imagem"),
-                    ad.get("image_url",""), ad.get("video_url",""), ad.get("days_active",0),
-                    ad.get("is_active",True), ad.get("engagement","Médio"),
-                    ad.get("total_engagement",0), ad.get("fb_library_url",""),
-                    ad.get("platform","facebook"), json.dumps(ad))
+                """, ad.get("ad_id", str(uuid.uuid4())), keyword, (ad.get("title", "") or "")[:200],
+                    ad.get("advertiser", ""), ad.get("creative_type", "Imagem"),
+                    ad.get("image_url", ""), ad.get("video_url", ""), ad.get("days_active", 0),
+                    ad.get("is_active", True), ad.get("engagement", "Médio"),
+                    ad.get("total_engagement", 0), ad.get("fb_library_url", ""),
+                    ad.get("platform", "facebook"), json.dumps(ad))
 
-    # ── TRENDS ────────────────────────────────────────────────────────────────
+    # ── TRENDS ─────────────────────────────────────────────────────────────────
     async def upsert_trends(self, trends_list: List[Dict]):
         p = await self._p()
         async with p.acquire() as c:
@@ -389,8 +413,8 @@ class Database:
                     VALUES($1,$2,$3,$4,$5,NOW())
                     ON CONFLICT(keyword,geo) DO UPDATE SET
                         trend_score=EXCLUDED.trend_score, timeline=EXCLUDED.timeline, updated_at=NOW()
-                """, t["keyword"], t["trend_score"], t.get("geo","BR"),
-                    t.get("timeframe",""), json.dumps(t.get("timeline",[])))
+                """, t["keyword"], t["trend_score"], t.get("geo", "BR"),
+                    t.get("timeframe", ""), json.dumps(t.get("timeline", [])))
 
     async def get_trends(self, geo="BR", limit=20) -> List[Dict]:
         p = await self._p()
@@ -399,7 +423,7 @@ class Database:
                 "SELECT * FROM trends WHERE geo=$1 ORDER BY trend_score DESC LIMIT $2", geo, limit)
         return [dict(r) for r in rows]
 
-    # ── SCAN JOBS ─────────────────────────────────────────────────────────────
+    # ── SCAN JOBS ──────────────────────────────────────────────────────────────
     async def create_scan_job(self, data: Dict) -> str:
         p = await self._p()
         scan_id = str(uuid.uuid4())
@@ -422,7 +446,7 @@ class Database:
             row = await c.fetchrow("SELECT * FROM scan_jobs WHERE id=$1", scan_id)
         return dict(row) if row else {}
 
-    # ── NOTIFICATIONS ─────────────────────────────────────────────────────────
+    # ── NOTIFICATIONS ──────────────────────────────────────────────────────────
     async def create_notification(self, user_id: str, title: str, body: str, product_id: str = None):
         p = await self._p()
         async with p.acquire() as c:
