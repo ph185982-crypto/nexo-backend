@@ -3,7 +3,6 @@ Meta Ads Router — tenta API real, cai para DEMO se falhar.
 """
 import httpx, os, logging
 from fastapi import APIRouter, Depends
-from database.db import get_db
 from routers.auth import get_current_user
 
 logger = logging.getLogger(__name__)
