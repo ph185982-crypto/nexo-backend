@@ -47,7 +47,7 @@ async def startup():
     seeded = await seed_if_empty(db)
     if seeded:
         logger.info(f"Seed inicial: {seeded} produtos inseridos")
-    logger.info("[OK] NEXO Mining v6.0 iniciado — 24/7 Zero Cost")
+    logger.info("[OK] NEXO Mining v7.0 iniciado — 24/7 Zero Cost")
 
 
 @app.on_event("shutdown")
@@ -77,6 +77,6 @@ app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"]
 
 @app.get("/health")
 async def health():
-    return {"status": "online", "version": "6.0.0", "mining": "24/7 active"}
+    return {"status": "online", "version": "7.0.0", "mining": "24/7 active"}
 
 

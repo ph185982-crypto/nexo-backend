@@ -4,14 +4,32 @@ const FONT_URL = "https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500
 // 👇 Mude para a URL do seu servidor após deploy (ex: "https://api.nexo.seudominio.com")
 const API = "https://nexo-backend-tjoj.onrender.com";
 
+// Cores resolvidas via CSS vars — o tema muda instantaneamente sem re-render
 const C = {
-  bg:"#0d1117",surface:"#161b22",border:"#30363d",borderHover:"#484f58",
-  navy:"#0d1117",blue:"#58a6ff",blueLight:"#1c2d45",blueMid:"#1f4068",
-  accent:"#79c0ff",green:"#3fb950",greenLight:"#0d2119",yellow:"#d29922",
-  yellowLight:"#2d2000",red:"#f85149",redLight:"#2d0f0f",purple:"#bc8cff",
-  purpleLight:"#1b1028",text:"#e6edf3",textMid:"#b1bac4",textSub:"#8b949e",
-  textLight:"#484f58",sidebar:"#010409",sidebarActive:"#1f6feb",
+  bg:"var(--c-bg)",surface:"var(--c-surface)",border:"var(--c-border)",borderHover:"var(--c-borderHover)",
+  navy:"var(--c-navy)",blue:"#58a6ff",blueLight:"var(--c-blueLight)",blueMid:"var(--c-blueMid)",
+  accent:"#79c0ff",green:"#3fb950",greenLight:"var(--c-greenLight)",yellow:"#d29922",
+  yellowLight:"var(--c-yellowLight)",red:"#f85149",redLight:"var(--c-redLight)",purple:"#bc8cff",
+  purpleLight:"var(--c-purpleLight)",text:"var(--c-text)",textMid:"var(--c-textMid)",textSub:"var(--c-textSub)",
+  textLight:"var(--c-textLight)",sidebar:"var(--c-sidebar)",sidebarActive:"#1f6feb",
 };
+
+const THEME_CSS = `
+  [data-nexo-theme="dark"] {
+    --c-bg:#0d1117;--c-surface:#161b22;--c-border:#30363d;--c-borderHover:#484f58;
+    --c-navy:#0d1117;--c-blueLight:#1c2d45;--c-blueMid:#1f4068;
+    --c-greenLight:#0d2119;--c-yellowLight:#2d2000;--c-redLight:#2d0f0f;--c-purpleLight:#1b1028;
+    --c-text:#e6edf3;--c-textMid:#b1bac4;--c-textSub:#8b949e;--c-textLight:#484f58;
+    --c-sidebar:#010409;
+  }
+  [data-nexo-theme="light"] {
+    --c-bg:#f6f8fa;--c-surface:#ffffff;--c-border:#d0d7de;--c-borderHover:#b1bac4;
+    --c-navy:#0969da;--c-blueLight:#ddf4ff;--c-blueMid:#b6e3ff;
+    --c-greenLight:#dafbe1;--c-yellowLight:#fff8c5;--c-redLight:#ffebe9;--c-purpleLight:#fbefff;
+    --c-text:#1f2328;--c-textMid:#424a53;--c-textSub:#636c76;--c-textLight:#b1bac4;
+    --c-sidebar:#f6f8fa;
+  }
+`;
 
 // ─── API CLIENT ──────────────────────────────────────────────────────────────
 
@@ -1976,6 +1994,13 @@ export default function NexoApp() {
   const [authed, setAuthed] = useState(!!localStorage.getItem("nexo_token"));
   const [user, setUser] = useState(() => { try { return JSON.parse(localStorage.getItem("nexo_user")||"null"); } catch { return null; }});
   const [booted, setBooted] = useState(false);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem("nexo_theme") !== "light");
+
+  function toggleTheme() {
+    const next = !isDark;
+    setIsDark(next);
+    localStorage.setItem("nexo_theme", next ? "dark" : "light");
+  }
   const [nav, setNav] = useState("dashboard");
   const [modal, setModal] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -2021,14 +2046,15 @@ export default function NexoApp() {
     } catch(e) {}
   }
 
-  if (!authed) return <AuthScreen onAuth={handleAuth}/>;
-  if (!booted) return <Boot onDone={()=>setBooted(true)}/>;
+  const themeAttr = isDark ? "dark" : "light";
+  if (!authed) return <div data-nexo-theme={themeAttr}><style>{THEME_CSS}</style><AuthScreen onAuth={handleAuth}/></div>;
+  if (!booted) return <div data-nexo-theme={themeAttr}><style>{THEME_CSS}</style><Boot onDone={()=>setBooted(true)}/></div>;
 
   const SW = isMobile ? 0 : collapsed ? 64 : 222;
   const titles = { dashboard:"Dashboard",produtos:"Winning Products",radar:"Trend Radar",ads:"Ads Spy",gap:"Market Gap Detector",calc:"Profit Calculator",download:"Creative Downloader",meta:"Meta Ads Intelligence",favoritos:"Favoritos",settings:"Configurações" };
 
   return (
-    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Sora,system-ui,sans-serif",display:"flex"}}>
+    <div data-nexo-theme={themeAttr} style={{minHeight:"100vh",background:"var(--c-bg)",fontFamily:"Sora,system-ui,sans-serif",display:"flex"}}>
       {/* Sidebar */}
       {(!isMobile||!collapsed)&&(
         <div style={{width:isMobile?240:SW,background:C.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,bottom:0,left:0,zIndex:100,transition:"width 0.2s ease",overflow:"hidden",boxShadow:isMobile?"4px 0 20px rgba(0,0,0,0.3)":"none"}}>
@@ -2078,6 +2104,9 @@ export default function NexoApp() {
             <div style={{background:C.greenLight,color:C.green,border:"1px solid #BBF7D0",borderRadius:10,padding:"5px 12px",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
               <span style={{width:6,height:6,borderRadius:"50%",background:C.green,display:"inline-block"}}/>Online
             </div>
+            <button onClick={toggleTheme} title={isDark?"Modo Claro":"Modo Escuro"} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:10,padding:"5px 10px",cursor:"pointer",fontSize:15,color:C.textSub,transition:"all 0.2s",lineHeight:1}}>
+              {isDark ? "☀️" : "🌙"}
+            </button>
             <button onClick={()=>setShowNotifs(o=>!o)} style={{background:unreadCount>0?C.blueLight:"none",border:`1px solid ${unreadCount>0?C.blue:C.border}`,borderRadius:10,padding:"6px 10px",cursor:"pointer",fontSize:16,position:"relative",color:C.text}}>
               🔔{unreadCount>0&&<span style={{position:"absolute",top:-4,right:-4,background:C.red,color:"#fff",borderRadius:"50%",width:16,height:16,fontSize:9,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{unreadCount}</span>}
             </button>
@@ -2101,6 +2130,7 @@ export default function NexoApp() {
       {/* Modals & Panels */}
       {modal&&<ProductModal p={modal} onClose={()=>setModal(null)} favorites={favorites} onToggleFav={toggleFav}/>}
       {showNotifs&&<NotificationsPanel onClose={()=>setShowNotifs(false)}/>}
+      <style>{THEME_CSS}</style>
       <style>{`
         @import url('${FONT_URL}');
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -2108,14 +2138,14 @@ export default function NexoApp() {
         @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
         ::-webkit-scrollbar{width:5px;height:5px;}
-        ::-webkit-scrollbar-track{background:#0d1117;}
-        ::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px;}
-        ::-webkit-scrollbar-thumb:hover{background:#484f58;}
+        ::-webkit-scrollbar-track{background:var(--c-bg);}
+        ::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:3px;}
+        ::-webkit-scrollbar-thumb:hover{background:var(--c-borderHover);}
         select,input,button,textarea{font-family:Sora,system-ui,sans-serif;}
-        select option{background:#161b22;color:#e6edf3;}
-        input[type=range]{-webkit-appearance:none;height:4px;border-radius:2px;background:#30363d;}
+        select option{background:var(--c-surface);color:var(--c-text);}
+        input[type=range]{-webkit-appearance:none;height:4px;border-radius:2px;background:var(--c-border);}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#58a6ff;cursor:pointer;}
-        input::placeholder{color:#484f58;}
+        input::placeholder{color:var(--c-textLight);}
         @media(max-width:640px){
           .modal-grid{grid-template-columns:1fr!important;}
         }

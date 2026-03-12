@@ -9,9 +9,10 @@ from routers.auth import get_current_user
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-META_TOKEN   = os.getenv("META_ADS_TOKEN", "")
-META_VERSION = "v19.0"
-BASE_URL     = f"https://graph.facebook.com/{META_VERSION}"
+META_TOKEN      = os.getenv("META_ADS_TOKEN", "")
+META_ACCOUNT_ID = os.getenv("META_AD_ACCOUNT_ID", "")
+META_VERSION    = "v19.0"
+BASE_URL        = f"https://graph.facebook.com/{META_VERSION}"
 
 # ── DEMO DATA ──────────────────────────────────────────────────────────────────
 DEMO_ACCOUNTS = [
@@ -155,9 +156,10 @@ async def list_accounts(current_user=Depends(get_current_user)):
 
 
 @router.get("/campaigns")
-async def list_campaigns(account_id: str = "act_123456789",
+async def list_campaigns(account_id: str = "",
                           current_user=Depends(get_current_user)):
-    if META_TOKEN and not account_id.startswith("act_demo"):
+    account_id = account_id or META_ACCOUNT_ID or "act_123456789"
+    if META_TOKEN and not account_id.startswith("act_demo") and META_ACCOUNT_ID:
         try:
             data = await _graph_get(f"{account_id}/campaigns",
                                     {"fields": "id,name,status,objective,daily_budget,lifetime_budget",
@@ -171,9 +173,10 @@ async def list_campaigns(account_id: str = "act_123456789",
 
 
 @router.get("/ads")
-async def list_ads(account_id: str = "act_123456789",
+async def list_ads(account_id: str = "",
                    current_user=Depends(get_current_user)):
-    if META_TOKEN and not account_id.startswith("act_demo"):
+    account_id = account_id or META_ACCOUNT_ID or "act_123456789"
+    if META_TOKEN and not account_id.startswith("act_demo") and META_ACCOUNT_ID:
         try:
             data = await _graph_get(
                 f"{account_id}/ads",
@@ -201,10 +204,11 @@ async def list_ads(account_id: str = "act_123456789",
 
 
 @router.get("/insights")
-async def get_insights(account_id: str = "act_123456789",
+async def get_insights(account_id: str = "",
                         date_preset: str = "last_30d",
                         current_user=Depends(get_current_user)):
-    if META_TOKEN and not account_id.startswith("act_demo"):
+    account_id = account_id or META_ACCOUNT_ID or "act_123456789"
+    if META_TOKEN and not account_id.startswith("act_demo") and META_ACCOUNT_ID:
         try:
             data = await _graph_get(f"{account_id}/insights",
                                     {"fields": "impressions,clicks,spend,reach,cpm,ctr,actions",
@@ -223,19 +227,16 @@ async def get_analysis(current_user=Depends(get_current_user)):
     using_demo = True
     ads = DEMO_ADS
     try:
-        if META_TOKEN:
-            data = await _graph_get("me/adaccounts", {"fields": "id", "limit": 1})
-            accounts = data.get("data", [])
-            if accounts:
-                account_id = accounts[0]["id"]
-                ads_data = await _graph_get(
-                    f"{account_id}/ads",
-                    {"fields": "id,name,status,insights{impressions,clicks,spend,cpm,ctr,frequency,actions}",
-                     "limit": 100})
-                real_ads = ads_data.get("data", [])
-                if real_ads:
-                    ads = real_ads
-                    using_demo = False
+        if META_TOKEN and META_ACCOUNT_ID:
+            account_id = META_ACCOUNT_ID
+            ads_data = await _graph_get(
+                f"{account_id}/ads",
+                {"fields": "id,name,status,insights{impressions,clicks,spend,cpm,ctr,frequency,actions}",
+                 "limit": 100})
+            real_ads = ads_data.get("data", [])
+            if real_ads:
+                ads = real_ads
+                using_demo = False
     except Exception as e:
         logger.warning(f"Meta analysis falhou: {e} — usando DEMO")
 
