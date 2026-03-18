@@ -148,10 +148,16 @@ async function callLLM(
   if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
     return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-5");
   }
+  if (provider === "GOOGLE" && process.env.GOOGLE_AI_API_KEY) {
+    return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash");
+  }
 
-  // Auto-detect from available keys
+  // Auto-detect from available keys (priority: Anthropic → Google → OpenAI)
   if (process.env.ANTHROPIC_API_KEY) {
     return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-5");
+  }
+  if (process.env.GOOGLE_AI_API_KEY) {
+    return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash");
   }
   if (process.env.OPENAI_API_KEY) {
     return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
@@ -228,6 +234,48 @@ async function callAnthropic(
 
   const data = (await response.json()) as { content?: Array<{ text?: string }> };
   return data.content?.[0]?.text ?? null;
+}
+
+async function callGemini(
+  systemPrompt: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  userMessage: string,
+  model: string
+): Promise<string | null> {
+  const apiKey = process.env.GOOGLE_AI_API_KEY!;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  // Gemini uses "model" (not "assistant") for AI turns
+  const geminiHistory = history.map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents: [
+        ...geminiHistory,
+        { role: "user", parts: [{ text: userMessage }] },
+      ],
+      generationConfig: {
+        maxOutputTokens: 600,
+        temperature: 0.7,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("[Gemini] Error:", await response.text());
+    return null;
+  }
+
+  const data = (await response.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
 }
 
 async function handleEscalation(
