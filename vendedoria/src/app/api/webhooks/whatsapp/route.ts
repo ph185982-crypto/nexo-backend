@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
+import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
+import { transcribeAudio } from "@/lib/ai/transcription";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -72,12 +74,16 @@ async function handleIncomingMessage(
     from: string;
     type: string;
     text?: { body: string };
+    // Audio / voice fields from WhatsApp Business API
+    audio?: { id: string; mime_type?: string };
+    voice?: { id: string; mime_type?: string };
     timestamp: string;
   },
   contact: { profile?: { name?: string } } | undefined,
   providerConfig: {
     id: string;
     organizationId: string;
+    accessToken?: string | null;
     agent: {
       id: string;
       systemPrompt?: string | null;
@@ -92,10 +98,9 @@ async function handleIncomingMessage(
   const profileName = contact?.profile?.name;
   const sentAt = new Date(Number(message.timestamp) * 1000);
 
-  // Fix 5: Humanize media type descriptions so AI understands what was received
+  // Humanize media type descriptions so AI understands what was received
   const mediaLabels: Record<string, string> = {
     image: "[Imagem recebida]",
-    audio: "[Áudio recebido]",
     video: "[Vídeo recebido]",
     document: "[Documento recebido]",
     sticker: "[Sticker recebido]",
@@ -104,8 +109,46 @@ async function handleIncomingMessage(
     reaction: "[Reação a mensagem]",
     interactive: "[Resposta interativa]",
     button: "[Botão clicado]",
+    // audio / voice are handled separately below with Whisper transcription
   };
-  const content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
+
+  // ── Audio transcription ───────────────────────────────────────────────────
+  // WhatsApp sends voice notes as type="audio" (recorded in-app) or type="voice".
+  // We attempt to transcribe via Whisper so the AI agent reads the actual words.
+  let content: string;
+  const isAudio = message.type === "audio" || message.type === "voice";
+  const mediaPayload = message.audio ?? message.voice;
+
+  if (isAudio && mediaPayload?.id) {
+    const token =
+      providerConfig.accessToken ??
+      process.env.META_WHATSAPP_ACCESS_TOKEN;
+
+    if (token) {
+      try {
+        const mediaUrl = await getMediaUrl(mediaPayload.id, token);
+        const audioBuffer = await downloadMedia(mediaUrl, token);
+        const transcript = await transcribeAudio(
+          audioBuffer,
+          mediaPayload.mime_type ?? "audio/ogg"
+        );
+
+        if (transcript) {
+          // Prefix makes it clear to the AI agent this was transcribed from audio
+          content = `[Áudio transcrito]: ${transcript}`;
+        } else {
+          content = "[Áudio recebido — transcrição indisponível]";
+        }
+      } catch (err) {
+        console.error("[WhatsApp Webhook] Audio transcription failed:", err);
+        content = "[Áudio recebido — erro na transcrição]";
+      }
+    } else {
+      content = "[Áudio recebido]";
+    }
+  } else {
+    content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
+  }
 
   // Find or create lead
   let lead = await prisma.lead.findFirst({
