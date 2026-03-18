@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 96%;
+    --foreground: 220 13% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 13%;
+    --primary: 168 100% 15%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 9% 96%;
+    --secondary-foreground: 220 9% 20%;
+    --muted: 220 9% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 151 100% 50%;
+    --accent-foreground: 168 100% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 168 100% 15%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  html, body {
+    height: 100%;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 2px;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* WhatsApp chat bubbles */
+.msg-bubble-sent {
+  @apply bg-[#dcf8c6] rounded-2xl rounded-br-sm px-3 py-2 max-w-xs shadow-sm;
+}
+.msg-bubble-received {
+  @apply bg-white rounded-2xl rounded-bl-sm px-3 py-2 max-w-xs shadow-sm;
+}
+
+/* Kanban column */
+.kanban-column {
+  @apply flex flex-col gap-2 min-w-[280px] max-w-[280px];
+}
+.kanban-card {
+  @apply bg-white rounded-lg border border-gray-200 p-3 cursor-pointer hover:shadow-md transition-shadow;
+}

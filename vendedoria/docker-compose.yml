@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  # ─── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vendedoria
+      POSTGRES_PASSWORD: vendedoria_pass
+      POSTGRES_DB: vendedoria
+    ports:
+      - "5433:5432"
+    volumes:
+      - vendedoria_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vendedoria"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── Migration + Seed (runs once, then exits) ─────────────────────────────
+  migrate:
+    build:
+      context: .
+      target: builder       # usa a stage com node_modules completo
+    command: >
+      sh -c "npx prisma db push --skip-generate &&
+             npx tsx prisma/seed.ts"
+    environment:
+      DATABASE_URL: postgresql://vendedoria:vendedoria_pass@db:5432/vendedoria
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── Next.js App ──────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      # Database
+      DATABASE_URL: postgresql://vendedoria:vendedoria_pass@db:5432/vendedoria
+
+      # NextAuth
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-mude-este-secret-em-producao}
+
+      # WhatsApp Business API
+      META_WHATSAPP_VERIFY_TOKEN: ${META_WHATSAPP_VERIFY_TOKEN:-vendedoria_webhook_2025}
+      META_WHATSAPP_APP_SECRET:   ${META_WHATSAPP_APP_SECRET:-}
+
+      # AI
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY:    ${OPENAI_API_KEY:-}
+
+      # App URL
+      NEXT_PUBLIC_APP_URL: http://localhost:3001
+
+      # Cron protection
+      CRON_SECRET: ${CRON_SECRET:-mude-este-secret-tambem}
+
+      NODE_ENV: production
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  vendedoria_postgres:

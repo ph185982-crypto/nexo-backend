@@ -1,0 +1,401 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── NextAuth ──────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("ADMIN") // ADMIN | MANAGER | SELLER
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Organization ──────────────────────────────────────────────────────────
+
+model WhatsappBusinessOrganization {
+  id           String   @id @default(cuid())
+  name         String
+  documentId   String
+  documentType String   // CNPJ | CPF
+  status       String   @default("ACTIVE") // ACTIVE | INACTIVE
+  accounts     WhatsappProviderConfig[]
+  leads        Lead[]
+  campaigns    Campaign[]
+  professionals ProfissionalEntity[]
+  workUnits    WorkUnitEntity[]
+  calendarEvents CalendarEvent[]
+  hierarchyItems OrgHierarchyItem[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── WhatsApp ──────────────────────────────────────────────────────────────
+
+model WhatsappProviderConfig {
+  id                    String   @id @default(cuid())
+  accountName           String
+  displayPhoneNumber    String
+  businessPhoneNumberId String
+  wabaId                String?
+  accessToken           String?
+  status                String   @default("CONNECTED") // CONNECTED | DISCONNECTED | ERROR | BANNED
+  organizationId        String
+  organization          WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  agent                 Agent?
+  conversations         WhatsappConversation[]
+  campaigns             Campaign[]
+  calendarEvents        CalendarEvent[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model Agent {
+  id                       String   @id @default(cuid())
+  displayName              String
+  kind                     String   // AI | HUMAN
+  status                   String   @default("ACTIVE") // ACTIVE | INACTIVE
+  whatsappProviderConfigId String   @unique
+  config                   WhatsappProviderConfig @relation(fields: [whatsappProviderConfigId], references: [id])
+  systemPrompt             String?  @db.Text
+  aiProvider               String?  // OPENAI | ANTHROPIC
+  aiModel                  String?  // gpt-4o | claude-3-5-sonnet
+  escalationThreshold      Int      @default(3)
+  orgHierarchyNode         OrgHierarchyItem?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+// ─── Kanban ────────────────────────────────────────────────────────────────
+
+model KanbanColumn {
+  id              String   @id @default(cuid())
+  name            String
+  order           Int
+  type            String   // CUSTOM | ESCALATED | LOST | TRIAGE | JUNK
+  isSystemDefault Boolean  @default(false)
+  isDefaultEntry  Boolean  @default(false)
+  organizationId  String
+  color           String   // hex color
+  leads           Lead[]
+  createdAt       DateTime @default(now())
+}
+
+// ─── Leads ─────────────────────────────────────────────────────────────────
+
+model Lead {
+  id             String   @id @default(cuid())
+  phoneNumber    String
+  profileName    String?
+  email          String?
+  cpf            String?
+  location       String?
+  leadOrigin     String   // OUTBOUND | INBOUND
+  status         String   @default("OPEN") // OPEN | ESCALATED | CLOSED | BLOCKED
+  organizationId String
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  kanbanColumnId String
+  kanbanColumn   KanbanColumn @relation(fields: [kanbanColumnId], references: [id])
+  conversations  WhatsappConversation[]
+  activities     LeadActivity[]
+  escalations    LeadEscalation[]
+  tags           LeadTag[]
+  calendarEvents CalendarEvent[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  lastActivityAt DateTime?
+}
+
+model LeadActivity {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  type        String   // NOTE | CALL | EMAIL | MEETING | STATUS_CHANGE | TAG_ADDED
+  description String   @db.Text
+  createdBy   String?
+  createdAt   DateTime @default(now())
+}
+
+model LeadEscalation {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  reason      String?  @db.Text
+  escalatedTo String?
+  status      String   @default("PENDING") // PENDING | ACCEPTED | RESOLVED
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+}
+
+model Tag {
+  id            String   @id @default(cuid())
+  name          String
+  color         String
+  kind          String   // SPECULATIVE | HOT | COLD | QUALIFIED | LOST | CUSTOM
+  organizationId String?
+  leadTags      LeadTag[]
+  conversationTags ConversationTag[]
+  createdAt     DateTime @default(now())
+}
+
+model LeadTag {
+  leadId String
+  tagId  String
+  lead   Lead   @relation(fields: [leadId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([leadId, tagId])
+}
+
+// ─── Conversations ─────────────────────────────────────────────────────────
+
+model WhatsappConversation {
+  id                         String   @id @default(cuid())
+  customerWhatsappBusinessId String
+  profileName                String?
+  leadOrigin                 String   // OUTBOUND | INBOUND
+  leadId                     String
+  lead                       Lead     @relation(fields: [leadId], references: [id])
+  whatsappProviderConfigId   String
+  provider                   WhatsappProviderConfig @relation(fields: [whatsappProviderConfigId], references: [id])
+  messages                   WhatsappMessage[]
+  tags                       ConversationTag[]
+  conversationRatings        Json     @default("[]")
+  lastMessageAt              DateTime?
+  isActive                   Boolean  @default(true)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+}
+
+model ConversationTag {
+  conversationId String
+  tagId          String
+  conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
+  tag            Tag                  @relation(fields: [tagId], references: [id])
+
+  @@id([conversationId, tagId])
+}
+
+model WhatsappMessage {
+  id             String   @id @default(cuid())
+  content        String   @db.Text
+  type           String   // TEXT | IMAGE | AUDIO | VIDEO | DOCUMENT
+  role           String   // ASSISTANT | USER
+  sentAt         DateTime
+  mediaUrl       String?
+  caption        String?
+  repliedToId    String?
+  status         String   @default("SENT") // SENT | DELIVERED | READ | FAILED
+  conversationId String
+  conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
+}
+
+// ─── Campaigns ─────────────────────────────────────────────────────────────
+
+model Campaign {
+  id                       String   @id @default(cuid())
+  name                     String
+  objective                String   // OUTBOUND | CALENDAR | FOLLOW_UP
+  status                   String   @default("PLANNING") // PLANNING | ACTIVE | PAUSED | COMPLETED | CANCELLED
+  mode                     String   @default("DEFAULT") // DEFAULT | PARALLEL
+  triggerType              String   @default("SCHEDULED") // SCHEDULED | IMMEDIATE
+  scheduledAt              DateTime?
+  templateMessage          String   @db.Text
+  templateName             String?
+  phoneColumn              String?
+  identificationColumn     String?
+  variableMapping          Json?
+  minDelaySeconds          Int      @default(15)
+  maxDelaySeconds          Int      @default(45)
+  maxMessagesPerMinute     Int      @default(5)
+  dailyStartTime           String   @default("08:00")
+  dailyEndTime             String   @default("20:00")
+  maxConsecutiveDays       Int      @default(7)
+  skipExistingConversation Boolean  @default(true)
+  useAiOptimization        Boolean  @default(false)
+  organizationId           String
+  organization             WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  senderId                 String
+  sender                   WhatsappProviderConfig @relation(fields: [senderId], references: [id])
+  recipients               CampaignRecipient[]
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model CampaignRecipient {
+  id          String   @id @default(cuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+  phoneNumber String
+  name        String?
+  status      String   @default("PENDING") // PENDING | SENT | FAILED | REPLIED | SKIPPED
+  sentAt      DateTime?
+  metadata    Json?
+}
+
+// ─── Calendar ──────────────────────────────────────────────────────────────
+
+model CalendarEvent {
+  id                       String   @id @default(cuid())
+  title                    String
+  description              String?  @db.Text
+  location                 String?
+  startTime                DateTime
+  endTime                  DateTime
+  timezone                 String   @default("America/Sao_Paulo")
+  isAllDay                 Boolean  @default(false)
+  status                   String   @default("SCHEDULED") // SCHEDULED | COMPLETED | CANCELLED
+  provider                 String   @default("LOCAL") // LOCAL | GOOGLE
+  externalEventId          String?
+  googleMeetLink           String?
+  organizationId           String
+  organization             WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  workUnitId               String?
+  workUnit                 WorkUnitEntity? @relation(fields: [workUnitId], references: [id])
+  profissionalId           String?
+  profissional             ProfissionalEntity? @relation(fields: [profissionalId], references: [id])
+  whatsappProviderConfigId String?
+  provider_config          WhatsappProviderConfig? @relation(fields: [whatsappProviderConfigId], references: [id])
+  leadId                   String?
+  lead                     Lead?    @relation(fields: [leadId], references: [id])
+  attendees                CalendarAttendee[]
+  reminders                CalendarReminder[]
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model CalendarAttendee {
+  id              String        @id @default(cuid())
+  calendarEventId String
+  event           CalendarEvent @relation(fields: [calendarEventId], references: [id])
+  name            String
+  email           String?
+  phone           String?
+  status          String        @default("INVITED") // INVITED | CONFIRMED | DECLINED
+}
+
+model CalendarReminder {
+  id              String        @id @default(cuid())
+  calendarEventId String
+  event           CalendarEvent @relation(fields: [calendarEventId], references: [id])
+  minutesBefore   Int
+  channel         String        // WHATSAPP | EMAIL | PUSH
+  sent            Boolean       @default(false)
+}
+
+// ─── Professionals & Work Units ────────────────────────────────────────────
+
+model ProfissionalEntity {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?  @db.Text
+  workField         String?
+  imageUrl          String?
+  isActive          Boolean  @default(true)
+  loginEmail        String?
+  isCalendarOffline Boolean  @default(false)
+  organizationId    String
+  organization      WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  workProfiles      ProfissionalWorkProfile[]
+  availabilities    ProfissionalAvailability[]
+  calendarEvents    CalendarEvent[]
+}
+
+model ProfissionalAvailability {
+  id             String             @id @default(cuid())
+  profissionalId String
+  profissional   ProfissionalEntity @relation(fields: [profissionalId], references: [id])
+  dayOfWeek      Int                // 0-6 (Dom-Sáb)
+  startTime      String             // "08:00"
+  endTime        String             // "18:00"
+  breakMinutes   Int                @default(0)
+  isActive       Boolean            @default(true)
+}
+
+model WorkUnitEntity {
+  id             String   @id @default(cuid())
+  name           String
+  address        String?
+  timezone       String   @default("America/Sao_Paulo")
+  isActive       Boolean  @default(true)
+  organizationId String
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  professionals  ProfissionalWorkProfile[]
+  calendarEvents CalendarEvent[]
+}
+
+model ProfissionalWorkProfile {
+  id             String             @id @default(cuid())
+  profissionalId String
+  profissional   ProfissionalEntity @relation(fields: [profissionalId], references: [id])
+  workUnitId     String
+  workUnit       WorkUnitEntity     @relation(fields: [workUnitId], references: [id])
+  role           String?
+  isActive       Boolean            @default(true)
+
+  @@unique([profissionalId, workUnitId])
+}
+
+// ─── Org Hierarchy ─────────────────────────────────────────────────────────
+
+model OrgHierarchyItem {
+  id             String           @id @default(cuid())
+  parentId       String?
+  parent         OrgHierarchyItem?  @relation("hierarchy", fields: [parentId], references: [id])
+  children       OrgHierarchyItem[] @relation("hierarchy")
+  type           String           // FOLDER | AGENT_NODE
+  name           String
+  description    String?
+  agentId        String?          @unique
+  agent          Agent?           @relation(fields: [agentId], references: [id])
+  organizationId String
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  order          Int              @default(0)
+  createdAt      DateTime         @default(now())
+}
