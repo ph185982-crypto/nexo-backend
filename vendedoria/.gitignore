@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
 
+# Local tunnel binaries (not for git)
+ngrok.exe
+cloudflared.exe
+
 # Next.js
 .next/
 out/
