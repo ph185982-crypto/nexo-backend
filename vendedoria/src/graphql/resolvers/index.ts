@@ -309,12 +309,25 @@ export const resolvers = {
       const paginated = hasMore ? conversations.slice(0, PAGE_SIZE) : conversations;
       const nextCursor = hasMore ? paginated[paginated.length - 1].id : null;
 
+      // Fix 6: Count real unread messages (USER role, not yet READ status)
+      const convIds = paginated.map((c) => c.id);
+      const unreadCounts = await prisma.whatsappMessage.groupBy({
+        by: ["conversationId"],
+        where: {
+          conversationId: { in: convIds },
+          role: "USER",
+          status: { not: "READ" },
+        },
+        _count: { id: true },
+      });
+      const unreadMap = new Map(unreadCounts.map((r) => [r.conversationId, r._count.id]));
+
       return {
         conversations: paginated.map((c) => ({
           ...c,
           tags: c.tags.map((ct) => ct.tag),
           lastMessage: c.messages[0] ?? null,
-          unreadCount: 0,
+          unreadCount: unreadMap.get(c.id) ?? 0,
         })),
         hasMore,
         nextCursor,
@@ -337,6 +350,13 @@ export const resolvers = {
       const hasMore = messages.length > PAGE_SIZE;
       const paginated = hasMore ? messages.slice(0, PAGE_SIZE) : messages;
       const nextCursor = hasMore ? paginated[paginated.length - 1].id : null;
+
+      // Mark all USER messages in this conversation as READ when operator opens it
+      // Run in background — don't await to avoid slowing the response
+      prisma.whatsappMessage.updateMany({
+        where: { conversationId, role: "USER", status: { not: "READ" } },
+        data: { status: "READ" },
+      }).catch(() => {});
 
       return {
         messages: paginated.reverse(),
@@ -664,6 +684,25 @@ export const resolvers = {
         },
       });
       return lead;
+    },
+
+    updateLead: async (
+      _: unknown,
+      { leadId, input }: { leadId: string; input: Record<string, unknown> },
+      ctx: ResolverContext
+    ) => {
+      await requireLeadAccess(ctx, leadId);
+      return prisma.lead.update({
+        where: { id: leadId },
+        data: {
+          ...(input.phoneNumber !== undefined && { phoneNumber: input.phoneNumber as string }),
+          ...(input.profileName !== undefined && { profileName: input.profileName as string | null }),
+          ...(input.email !== undefined && { email: input.email as string | null }),
+          ...(input.leadOrigin !== undefined && { leadOrigin: input.leadOrigin as string }),
+          lastActivityAt: new Date(),
+        },
+        include: { kanbanColumn: true, tags: { include: { tag: true } } },
+      }).then((l) => ({ ...l, tags: l.tags.map((lt) => lt.tag) }));
     },
 
     updateLeadKanbanColumn: async (

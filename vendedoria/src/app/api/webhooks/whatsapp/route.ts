@@ -90,8 +90,22 @@ async function handleIncomingMessage(
 ) {
   const phone = message.from;
   const profileName = contact?.profile?.name;
-  const content = message.text?.body ?? "[Media]";
   const sentAt = new Date(Number(message.timestamp) * 1000);
+
+  // Fix 5: Humanize media type descriptions so AI understands what was received
+  const mediaLabels: Record<string, string> = {
+    image: "[Imagem recebida]",
+    audio: "[Áudio recebido]",
+    video: "[Vídeo recebido]",
+    document: "[Documento recebido]",
+    sticker: "[Sticker recebido]",
+    location: "[Localização compartilhada]",
+    contacts: "[Contato compartilhado]",
+    reaction: "[Reação a mensagem]",
+    interactive: "[Resposta interativa]",
+    button: "[Botão clicado]",
+  };
+  const content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
 
   // Find or create lead
   let lead = await prisma.lead.findFirst({

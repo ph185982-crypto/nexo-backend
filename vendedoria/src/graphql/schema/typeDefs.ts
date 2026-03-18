@@ -362,6 +362,13 @@ export const typeDefs = `#graphql
     tagIds: [String!]
   }
 
+  input UpdateLeadInput {
+    phoneNumber: String
+    profileName: String
+    email: String
+    leadOrigin: LeadOrigin
+  }
+
   input CreateCampaignInput {
     name: String!
     objective: String!
@@ -537,6 +544,7 @@ export const typeDefs = `#graphql
   type Mutation {
     # Leads
     createLead(input: CreateLeadInput!): Lead!
+    updateLead(leadId: String!, input: UpdateLeadInput!): Lead!
     updateLeadKanbanColumn(leadId: String!, columnId: String!): Lead!
     updateLeadTags(leadId: String!, tagIds: [String!]!): Lead!
     blockLead(leadId: String!, reason: String): Lead!

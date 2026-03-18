@@ -20,10 +20,11 @@ Seu objetivo é:
 
 Regras importantes:
 - Responda sempre em português do Brasil
-- Seja conciso e direto
-- Se o cliente demonstrar interesse ou urgência alta, use a flag [ESCALAR] no início da resposta
+- Seja conciso e direto (máximo 3 parágrafos por resposta)
+- Se o cliente demonstrar interesse alto ou urgência, use a flag [ESCALAR] no início da resposta
 - Se o cliente quiser agendar, use a flag [AGENDAR] no início da resposta
-- Mantenha um tom profissional mas acolhedor`;
+- Mantenha um tom profissional mas acolhedor
+- Não invente informações sobre produtos/serviços que não conhece`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -31,29 +32,57 @@ export async function processAIResponse(
   agent: AgentConfig
 ): Promise<void> {
   try {
-    const [messages, conversation] = await Promise.all([
+    const [recentMessages, conversation] = await Promise.all([
+      // Fix 1: Fetch the 20 MOST RECENT messages (desc), then reverse for chronological order
       prisma.whatsappMessage.findMany({
         where: { conversationId },
-        orderBy: { sentAt: "asc" },
+        orderBy: { sentAt: "desc" },
         take: 20,
       }),
       prisma.whatsappConversation.findUnique({
         where: { id: conversationId },
-        include: { provider: true },
+        include: {
+          provider: true,
+          lead: true, // Fix 3: include lead for context injection
+        },
       }),
     ]);
 
     if (!conversation) return;
 
-    // Build message history for LLM
-    const chatHistory = messages.map((m) => ({
-      role: m.role === "USER" ? "user" as const : "assistant" as const,
-      content: m.content,
-    }));
+    // Fix 2: Stop AI if lead has already been escalated — let the human handle it
+    if (conversation.lead?.status === "ESCALATED") {
+      return;
+    }
+
+    // Fix 3: Build lead context header to inject into system prompt
+    const lead = conversation.lead;
+    const leadContext = lead
+      ? [
+          `\n\n--- CONTEXTO DO LEAD ---`,
+          `Nome: ${lead.profileName ?? "Não informado"}`,
+          `Telefone: ${lead.phoneNumber}`,
+          `Email: ${lead.email ?? "Não informado"}`,
+          `Origem: ${lead.leadOrigin === "INBOUND" ? "Tráfego de entrada (inbound)" : "Abordagem ativa (outbound)"}`,
+          `Status: ${lead.status}`,
+          `Cliente desde: ${lead.createdAt.toLocaleDateString("pt-BR")}`,
+          `--- FIM DO CONTEXTO ---`,
+        ].join("\n")
+      : "";
+
+    const systemPromptWithContext = (agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT) + leadContext;
+
+    // Fix 1: Messages fetched desc → reverse to get chronological order for LLM
+    const chatHistory = recentMessages
+      .reverse()
+      .map((m) => ({
+        role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
+        content: m.content,
+      }));
 
     // Call LLM using the agent's configured provider and model
     const response = await callLLM(
-      agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
+      systemPromptWithContext,
       chatHistory,
       userMessage,
       agent.aiProvider ?? undefined,
@@ -68,9 +97,11 @@ export async function processAIResponse(
     }
 
     const cleanResponse = response
-      .replace("[ESCALAR]", "")
-      .replace("[AGENDAR]", "")
+      .replace(/^\[ESCALAR\]\s*/i, "")
+      .replace(/^\[AGENDAR\]\s*/i, "")
       .trim();
+
+    if (!cleanResponse) return;
 
     // Save AI response to DB
     await prisma.whatsappMessage.create({
@@ -95,7 +126,7 @@ export async function processAIResponse(
       provider.businessPhoneNumberId,
       conversation.customerWhatsappBusinessId,
       cleanResponse,
-      provider.accessToken ?? undefined  // use DB token, falls back to ENV if null
+      provider.accessToken ?? undefined
     );
   } catch (error) {
     console.error("[AI Agent] Error:", error);
@@ -115,20 +146,20 @@ async function callLLM(
     return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
   }
   if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
-    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
+    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-5");
   }
 
   // Auto-detect from available keys
   if (process.env.ANTHROPIC_API_KEY) {
-    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
+    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-5");
   }
   if (process.env.OPENAI_API_KEY) {
     return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
   }
 
-  // No LLM configured — send fallback
-  console.warn("[AI Agent] No LLM API key configured");
-  return "Olá! Recebi sua mensagem. Um de nossos atendentes entrará em contato em breve.";
+  // No LLM configured — send fallback message
+  console.warn("[AI Agent] No LLM API key configured — using fallback response");
+  return "Olá! Recebi sua mensagem. Um de nossos atendentes entrará em contato em breve. 😊";
 }
 
 async function callOpenAI(
@@ -141,7 +172,7 @@ async function callOpenAI(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model,
@@ -150,7 +181,7 @@ async function callOpenAI(
         ...history,
         { role: "user", content: userMessage },
       ],
-      max_tokens: 500,
+      max_tokens: 600,
       temperature: 0.7,
     }),
   });
@@ -160,7 +191,9 @@ async function callOpenAI(
     return null;
   }
 
-  const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
   return data.choices?.[0]?.message?.content ?? null;
 }
 
@@ -184,7 +217,7 @@ async function callAnthropic(
         ...history,
         { role: "user", content: userMessage },
       ],
-      max_tokens: 500,
+      max_tokens: 600,
     }),
   });
 
@@ -193,7 +226,7 @@ async function callAnthropic(
     return null;
   }
 
-  const data = await response.json() as { content?: Array<{ text?: string }> };
+  const data = (await response.json()) as { content?: Array<{ text?: string }> };
   return data.content?.[0]?.text ?? null;
 }
 
@@ -208,6 +241,9 @@ async function handleEscalation(
   });
 
   if (!lead) return;
+
+  // Only escalate once — if already escalated, skip
+  if (lead.status === "ESCALATED") return;
 
   const escalatedColumn = await prisma.kanbanColumn.findFirst({
     where: { organizationId: lead.organizationId, type: "ESCALATED" },
@@ -227,7 +263,7 @@ async function handleEscalation(
   await prisma.leadEscalation.create({
     data: {
       leadId,
-      reason: reason.replace("[ESCALAR]", "").substring(0, 500),
+      reason: reason.replace(/^\[ESCALAR\]\s*/i, "").substring(0, 500),
       status: "PENDING",
     },
   });
@@ -241,10 +277,10 @@ async function handleEscalation(
     },
   });
 
-  // Notify about escalation in the conversation itself
+  // Notify about escalation in the conversation
   await prisma.whatsappMessage.create({
     data: {
-      content: "🔔 Lead escalado para atendimento humano",
+      content: "🔔 *Lead escalado para atendimento humano.* Um vendedor assumirá esta conversa em breve.",
       type: "TEXT",
       role: "ASSISTANT",
       sentAt: new Date(),
