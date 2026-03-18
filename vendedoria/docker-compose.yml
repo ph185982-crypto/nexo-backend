@@ -48,14 +48,17 @@ services:
       # NextAuth
       NEXTAUTH_URL: http://localhost:3001
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-mude-este-secret-em-producao}
+      AUTH_TRUST_HOST: "true"
 
       # WhatsApp Business API
       META_WHATSAPP_VERIFY_TOKEN: ${META_WHATSAPP_VERIFY_TOKEN:-vendedoria_webhook_2025}
       META_WHATSAPP_APP_SECRET:   ${META_WHATSAPP_APP_SECRET:-}
+      META_WHATSAPP_ACCESS_TOKEN: ${META_WHATSAPP_ACCESS_TOKEN:-}
 
       # AI
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY:    ${OPENAI_API_KEY:-}
+      GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY:-}
 
       # App URL
       NEXT_PUBLIC_APP_URL: http://localhost:3001
