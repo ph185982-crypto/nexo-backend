@@ -172,7 +172,7 @@ export default function CampaignsPage() {
   const router = useRouter();
   const [selectedOrgId, setSelectedOrgId] = useState("");
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("");
 
   const { data: orgsData } = useQuery(GET_ORGS);
@@ -182,7 +182,7 @@ export default function CampaignsPage() {
   const { data, loading, refetch } = useQuery(GET_CAMPAIGNS, {
     variables: {
       organizationId: orgId,
-      status: statusFilter || undefined,
+      status: statusFilter && statusFilter !== "all" ? statusFilter : undefined,
       search: search || undefined,
       periodDays: periodFilter ? Number(periodFilter) : undefined,
     },
@@ -250,7 +250,7 @@ export default function CampaignsPage() {
             <SelectValue placeholder="Todos os Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos os Status</SelectItem>
+            <SelectItem value="all">Todos os Status</SelectItem>
             <SelectItem value="PLANNING">Rascunho</SelectItem>
             <SelectItem value="ACTIVE">Ativo</SelectItem>
             <SelectItem value="PAUSED">Pausado</SelectItem>

@@ -84,13 +84,13 @@ function MetricCard({ title, value, icon: Icon, color, description }: MetricCard
 
 export default function DashboardPage() {
   const [timeFilter, setTimeFilter] = useState("all");
-  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
 
   const { data: orgsData } = useQuery(ACCOUNTS_QUERY);
   const { data, loading, refetch } = useQuery(WIDGETS_QUERY, {
     variables: {
       timeFilter: timeFilter === "all" ? undefined : timeFilter,
-      whatsappProviderConfigId: selectedAccountId || undefined,
+      whatsappProviderConfigId: selectedAccountId && selectedAccountId !== "all" ? selectedAccountId : undefined,
     },
     fetchPolicy: "cache-and-network",
   });
@@ -122,7 +122,7 @@ export default function DashboardPage() {
               <SelectValue placeholder="Conta WhatsApp" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as contas</SelectItem>
+              <SelectItem value="all">Todas as contas</SelectItem>
               {allAccounts.map((acc: { id: string; accountName: string; displayPhoneNumber: string }) => (
                 <SelectItem key={acc.id} value={acc.id}>
                   {acc.accountName}

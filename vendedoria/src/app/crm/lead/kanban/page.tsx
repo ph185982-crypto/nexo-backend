@@ -307,14 +307,14 @@ export default function KanbanPage() {
             <div className="space-y-2">
               <Label>Status do Lead</Label>
               <Select
-                value={filters.leadStatus ?? ""}
-                onValueChange={(v) => setFilters((f) => ({ ...f, leadStatus: v || undefined }))}
+                value={filters.leadStatus ?? "all"}
+                onValueChange={(v) => setFilters((f) => ({ ...f, leadStatus: v === "all" ? undefined : v }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="OPEN">Aberto</SelectItem>
                   <SelectItem value="ESCALATED">Escalado</SelectItem>
                   <SelectItem value="CLOSED">Encerrado</SelectItem>
@@ -324,14 +324,14 @@ export default function KanbanPage() {
             <div className="space-y-2">
               <Label>Origem</Label>
               <Select
-                value={filters.leadOrigin ?? ""}
-                onValueChange={(v) => setFilters((f) => ({ ...f, leadOrigin: v || undefined }))}
+                value={filters.leadOrigin ?? "all"}
+                onValueChange={(v) => setFilters((f) => ({ ...f, leadOrigin: v === "all" ? undefined : v }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="INBOUND">Entrada</SelectItem>
                   <SelectItem value="OUTBOUND">Saída</SelectItem>
                 </SelectContent>
@@ -340,16 +340,16 @@ export default function KanbanPage() {
             <div className="space-y-2">
               <Label>Período</Label>
               <Select
-                value={String(filters.periodDays ?? "")}
+                value={String(filters.periodDays ?? "all")}
                 onValueChange={(v) =>
-                  setFilters((f) => ({ ...f, periodDays: v ? Number(v) : undefined }))
+                  setFilters((f) => ({ ...f, periodDays: v === "all" ? undefined : Number(v) }))
                 }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Tudo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tudo</SelectItem>
+                  <SelectItem value="all">Tudo</SelectItem>
                   <SelectItem value="1">Hoje</SelectItem>
                   <SelectItem value="7">7 dias</SelectItem>
                   <SelectItem value="30">30 dias</SelectItem>
