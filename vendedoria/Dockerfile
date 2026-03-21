@@ -22,6 +22,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN npm run build
 
+# Pre-compile seed to plain JS so the runner stage needs no tsx/esbuild
+RUN npx esbuild prisma/seed.ts --bundle --platform=node --format=cjs --outfile=prisma/seed.js --external:@prisma/client
+
 # ─── Stage 3: runner ────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
 RUN apk add --no-cache libc6-compat openssl
@@ -43,9 +46,6 @@ COPY --from=builder /app/prisma              ./prisma
 COPY --from=builder /app/node_modules/.prisma     ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma     ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma      ./node_modules/prisma
-COPY --from=builder /app/node_modules/tsx         ./node_modules/tsx
-COPY --from=builder /app/node_modules/esbuild     ./node_modules/esbuild
-COPY --from=builder /app/node_modules/@esbuild    ./node_modules/@esbuild
 COPY --from=builder /app/node_modules/.bin        ./node_modules/.bin
 
 # Startup script: runs migrations + seed, then starts Next.js
