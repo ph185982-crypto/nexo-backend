@@ -59,17 +59,31 @@ async function main() {
   });
   console.log("✓ Account:", account.accountName);
 
-  // Create AI agent
+  // Create AI agent — pick provider based on available API keys
+  const aiProvider = process.env.ANTHROPIC_API_KEY
+    ? "ANTHROPIC"
+    : process.env.GOOGLE_AI_API_KEY
+    ? "GOOGLE"
+    : process.env.OPENAI_API_KEY
+    ? "OPENAI"
+    : "ANTHROPIC";
+  const aiModel =
+    aiProvider === "ANTHROPIC"
+      ? "claude-sonnet-4-6"
+      : aiProvider === "GOOGLE"
+      ? "gemini-2.0-flash"
+      : "gpt-4o";
+
   const agent = await prisma.agent.upsert({
     where: { whatsappProviderConfigId: "acc-demo" },
-    update: { aiProvider: "ANTHROPIC", aiModel: "claude-sonnet-4-6" },
+    update: { aiProvider, aiModel },
     create: {
       displayName: "Agente IA Vendas",
       kind: "AI",
       status: "ACTIVE",
       whatsappProviderConfigId: account.id,
-      aiProvider: "ANTHROPIC",
-      aiModel: "claude-sonnet-4-6",
+      aiProvider,
+      aiModel,
       systemPrompt: "Você é um assistente de vendas especializado. Qualifique leads e escale para humanos quando necessário.",
     },
   });
