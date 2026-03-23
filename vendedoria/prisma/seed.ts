@@ -34,16 +34,25 @@ async function main() {
   });
   console.log("✓ Organization:", org.name);
 
-  // Create WhatsApp account
+  // Create WhatsApp account — update credentials from env vars on every run
+  const realPhoneId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
+  const realWabaId = process.env.META_WHATSAPP_WABA_ID;
+  const realAccessToken = process.env.META_WHATSAPP_ACCESS_TOKEN;
+
   const account = await prisma.whatsappProviderConfig.upsert({
     where: { id: "acc-demo" },
-    update: {},
+    update: {
+      ...(realPhoneId && { businessPhoneNumberId: realPhoneId }),
+      ...(realWabaId && { wabaId: realWabaId }),
+      ...(realAccessToken && { accessToken: realAccessToken }),
+    },
     create: {
       id: "acc-demo",
       accountName: "WhatsApp Vendas",
-      displayPhoneNumber: "+55 11 99999-9999",
-      businessPhoneNumberId: "DEMO_PHONE_ID",
-      wabaId: "DEMO_WABA_ID",
+      displayPhoneNumber: "+55 62 9 8446-5388",
+      businessPhoneNumberId: realPhoneId ?? "DEMO_PHONE_ID",
+      wabaId: realWabaId ?? "DEMO_WABA_ID",
+      accessToken: realAccessToken ?? null,
       status: "CONNECTED",
       organizationId: org.id,
     },
@@ -53,7 +62,7 @@ async function main() {
   // Create AI agent
   const agent = await prisma.agent.upsert({
     where: { whatsappProviderConfigId: "acc-demo" },
-    update: {},
+    update: { aiProvider: "ANTHROPIC", aiModel: "claude-sonnet-4-6" },
     create: {
       displayName: "Agente IA Vendas",
       kind: "AI",
