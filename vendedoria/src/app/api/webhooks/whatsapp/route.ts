@@ -28,10 +28,12 @@ export async function POST(req: NextRequest) {
     const body = await req.text();
 
     if (!verifySignature(body, signature)) {
+      console.error("[WhatsApp Webhook] Signature validation failed — check META_WHATSAPP_APP_SECRET");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const data = JSON.parse(body);
+    console.log("[WhatsApp Webhook] Payload recebido:", JSON.stringify(data).slice(0, 300));
 
     // Process each entry
     for (const entry of data.entry ?? []) {
@@ -47,7 +49,12 @@ export async function POST(req: NextRequest) {
           include: { agent: true },
         });
 
-        if (!providerConfig) continue;
+        if (!providerConfig) {
+          console.warn("[WhatsApp Webhook] Nenhum providerConfig para phone_number_id:", phoneNumberId);
+          continue;
+        }
+
+        console.log("[WhatsApp Webhook] ProviderConfig encontrado:", providerConfig.id, "| Agente:", providerConfig.agent?.kind, providerConfig.agent?.status);
 
         // Process messages
         for (const message of value.messages ?? []) {
@@ -178,6 +185,7 @@ async function handleIncomingMessage(
         kanbanColumnId: defaultColumn.id,
       },
     });
+    console.log("[WhatsApp Webhook] Novo lead criado:", lead.id, "| telefone:", phone);
   }
 
   // Find or create conversation
@@ -226,9 +234,12 @@ async function handleIncomingMessage(
 
   // Trigger AI agent if configured — fire-and-forget with explicit error logging
   if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
+    console.log("[WhatsApp Webhook] Disparando agente IA para conversa:", conversation.id);
     processAIResponse(conversation.id, content, providerConfig.agent).catch((err) => {
       console.error("[WhatsApp Webhook] AI agent error:", err);
     });
+  } else {
+    console.log("[WhatsApp Webhook] Agente IA não ativo — kind:", providerConfig.agent?.kind, "| status:", providerConfig.agent?.status);
   }
 }
 

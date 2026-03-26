@@ -146,7 +146,7 @@ async function callLLM(
     return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
   }
   if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
-    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-5");
+    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
   }
   if (provider === "GOOGLE" && process.env.GOOGLE_AI_API_KEY) {
     return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash");
@@ -154,7 +154,7 @@ async function callLLM(
 
   // Auto-detect from available keys (priority: Anthropic → Google → OpenAI)
   if (process.env.ANTHROPIC_API_KEY) {
-    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-5");
+    return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
   }
   if (process.env.GOOGLE_AI_API_KEY) {
     return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash");
