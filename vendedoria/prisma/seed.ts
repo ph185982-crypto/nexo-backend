@@ -45,6 +45,7 @@ async function main() {
       ...(realPhoneId && { businessPhoneNumberId: realPhoneId }),
       ...(realWabaId && { wabaId: realWabaId }),
       ...(realAccessToken && { accessToken: realAccessToken }),
+      status: "CONNECTED", // reset ERROR/DISCONNECTED back to CONNECTED on each deploy
     },
     create: {
       id: "acc-demo",
