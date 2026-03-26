@@ -72,9 +72,12 @@ export async function processAIResponse(
 
     const systemPromptWithContext = (agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT) + leadContext;
 
-    // Fix 1: Messages fetched desc → reverse to get chronological order for LLM
+    // Messages fetched desc → reverse to get chronological order for LLM.
+    // Exclude the last message (the one just saved = userMessage) to avoid
+    // sending it twice — it is appended separately as the current turn.
     const chatHistory = recentMessages
       .reverse()
+      .slice(0, -1) // drop last = current user message already in userMessage param
       .map((m) => ({
         role: m.role === "USER" ? ("user" as const) : ("assistant" as const),
         content: m.content,
