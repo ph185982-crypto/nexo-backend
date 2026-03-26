@@ -1,0 +1,73 @@
+##############################################################################
+# VendedorIA — Render Infrastructure as Code
+# Docs: https://render.com/docs/infrastructure-as-code
+#
+# Deploy steps:
+#   1. Push this branch to GitHub
+#   2. Go to https://dashboard.render.com → New → Blueprint
+#   3. Connect your repo and select the vendedoria/ root directory
+#   4. Fill in the required env vars marked with sync: false
+##############################################################################
+
+services:
+  # ── Web App (Next.js via Docker) ──────────────────────────────────────────
+  - type: web
+    name: vendedoria
+    runtime: docker
+    dockerfilePath: ./vendedoria/Dockerfile
+    dockerContext: ./vendedoria
+    plan: free              # upgrade to starter ($7/mo) for always-on
+    healthCheckPath: /api/health
+    envVars:
+      # ── Database ─────────────────────────────────────────────────────────
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vendedoria-db
+          property: connectionString
+
+      # ── NextAuth ─────────────────────────────────────────────────────────
+      - key: NEXTAUTH_URL
+        sync: false         # set to your Render URL: https://vendedoria.onrender.com
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: AUTH_TRUST_HOST
+        value: "true"
+
+      # ── WhatsApp Business API ─────────────────────────────────────────────
+      - key: META_WHATSAPP_VERIFY_TOKEN
+        value: vendedoria_webhook_2025
+      - key: META_WHATSAPP_APP_SECRET
+        sync: false         # from Meta Developers → App → Basic Settings
+      - key: META_WHATSAPP_ACCESS_TOKEN
+        sync: false         # permanent token from Meta Business → System User
+      - key: META_WHATSAPP_PHONE_NUMBER_ID
+        sync: false         # from Meta Developers → WhatsApp → API Setup (e.g. 945465465327151)
+      - key: META_WHATSAPP_WABA_ID
+        sync: false         # WhatsApp Business Account ID (from Meta Business Manager)
+
+      # ── AI Providers ─────────────────────────────────────────────────────
+      - key: GOOGLE_AI_API_KEY
+        sync: false         # Gemini 2.0 Flash (AI agent)
+      - key: ANTHROPIC_API_KEY
+        sync: false         # optional: Claude Sonnet
+      - key: OPENAI_API_KEY
+        sync: false         # optional: GPT-4o + Whisper (audio transcription)
+
+      # ── App URL ──────────────────────────────────────────────────────────
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false         # set to your Render URL: https://vendedoria.onrender.com
+
+      # ── Cron Protection ──────────────────────────────────────────────────
+      - key: CRON_SECRET
+        generateValue: true
+
+      - key: NODE_ENV
+        value: production
+
+
+databases:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────
+  - name: vendedoria-db
+    plan: free              # 1 GB storage, 90-day limit on free tier
+    databaseName: vendedoria
+    user: vendedoria
