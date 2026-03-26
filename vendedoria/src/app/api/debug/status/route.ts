@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
               status: true,
               aiProvider: true,
               aiModel: true,
-              hasSystemPrompt: true,
+              systemPrompt: true,
             },
           },
         },
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
             id: true,
             kind: true,
             status: true,
-            aiProvider: true,
+            aiProvider: true,h
             aiModel: true,
             systemPrompt: true,
           },
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
               status: c.agent.status,
               aiProvider: c.agent.aiProvider,
               aiModel: c.agent.aiModel,
-              hasSystemPrompt: !!c.agent.systemPrompt,
+              systemPrompt: !!c.agent.systemPrompt,
             }
           : null,
       })),
