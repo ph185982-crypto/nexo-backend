@@ -42,6 +42,8 @@ services:
         sync: false         # permanent token from Meta Business → System User
       - key: META_WHATSAPP_PHONE_NUMBER_ID
         sync: false         # from Meta Developers → WhatsApp → API Setup (e.g. 945465465327151)
+      - key: META_WHATSAPP_WABA_ID
+        sync: false         # WhatsApp Business Account ID (from Meta Business Manager)
 
       # ── AI Providers ─────────────────────────────────────────────────────
       - key: GOOGLE_AI_API_KEY
