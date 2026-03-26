@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
             id: true,
             kind: true,
             status: true,
-            aiProvider: true,h
+            aiProvider: true,
             aiModel: true,
             systemPrompt: true,
           },
