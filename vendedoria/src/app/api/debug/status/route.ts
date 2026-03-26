@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
           accountName: true,
           businessPhoneNumberId: true,
           status: true,
-          hasAccessToken: true,
+          accessToken: true,
           agent: {
             select: {
               id: true,
