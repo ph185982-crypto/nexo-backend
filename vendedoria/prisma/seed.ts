@@ -72,7 +72,7 @@ async function main() {
     aiProvider === "ANTHROPIC"
       ? "claude-sonnet-4-6"
       : aiProvider === "GOOGLE"
-      ? "gemini-2.0-flash"
+      ? "gemini-2.0-flash-lite"
       : "gpt-4o";
 
   const agent = await prisma.agent.upsert({

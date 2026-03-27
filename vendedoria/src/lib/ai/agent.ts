@@ -152,7 +152,7 @@ async function callLLM(
     return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
   }
   if (provider === "GOOGLE" && process.env.GOOGLE_AI_API_KEY) {
-    return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash");
+    return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
   }
 
   // Auto-detect from available keys (priority: Anthropic → Google → OpenAI)
@@ -160,7 +160,7 @@ async function callLLM(
     return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
   }
   if (process.env.GOOGLE_AI_API_KEY) {
-    return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash");
+    return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
   }
   if (process.env.OPENAI_API_KEY) {
     return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
