@@ -14,3 +14,4 @@ bcrypt>=4.2.0
 pytrends>=4.9.2
 beautifulsoup4>=4.12.0
 lxml>=5.0.0
+pdfplumber>=0.11.0
