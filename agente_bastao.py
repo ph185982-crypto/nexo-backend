@@ -4,7 +4,10 @@ agente_bastao.py — Gerador de e-mail de passagem de bastão
 Logística Reversa | IEL/GO
 
 Uso:
-    python agente_bastao.py [pdf] [--sem-revisao] [--abrir-email]
+    python agente_bastao.py contrato.pdf
+    python agente_bastao.py *.pdf
+    python agente_bastao.py contrato.pdf --salvar
+    python agente_bastao.py contrato.pdf --sem-revisao --abrir-email
 """
 
 import argparse
@@ -30,7 +33,24 @@ except ImportError:
 
 CNPJ_IEL = "01.647.296/0001-08"
 
-DOMINIOS_IGNORADOS = {"fieg.com.br", "ielgoias.com.br", "clicksign.com", "iel.org.br"}
+DOMINIOS_BLOQUEADOS = {
+    "fieg.com.br",
+    "ielgoias.com.br",
+    "clicksign.com",
+    "iel.org.br",
+    "linhaetica.com.br",
+}
+
+# Prefixos de usuário bloqueados (parte antes do @)
+USUARIOS_BLOQUEADOS = {
+    "linhaetica",
+    "contratos.iel",
+    "leandra.iel",
+    "humberto.iel",
+    "pedrohms.iel",
+    "victorleite.iel",
+    "comunicacao.iel",
+}
 
 MESES_PT = {
     "janeiro": "01", "fevereiro": "02", "março": "03", "marco": "03",
@@ -39,10 +59,19 @@ MESES_PT = {
     "novembro": "11", "dezembro": "12",
 }
 
+MESES_ABREV = {
+    "jan": "01", "fev": "02", "mar": "03", "abr": "04",
+    "mai": "05", "jun": "06", "jul": "07", "ago": "08",
+    "set": "09", "out": "10", "nov": "11", "dez": "12",
+}
+
 DESTINATARIOS = "isadora@iel.org.br;frederico@iel.org.br"
 
+ERRO = "[ERRO - VERIFICAR]"
+NAO_ENCONTRADO = "[A CONFIRMAR]"
+
 # ---------------------------------------------------------------------------
-# Templates
+# Templates de e-mail
 # ---------------------------------------------------------------------------
 
 ASSUNTO_TEMPLATE = (
@@ -77,199 +106,242 @@ Solicito que, com base nessas informações, seja providenciado:
 Atenciosamente,"""
 
 # ---------------------------------------------------------------------------
-# Extração de texto do PDF
+# Pré-processamento
 # ---------------------------------------------------------------------------
 
-def extrair_texto(caminho_pdf: Path) -> tuple[str, str]:
-    """Retorna (texto_completo, log_clicksign)."""
+def normalizar(texto: str) -> str:
+    if not texto:
+        return ""
+    texto = re.sub(r"[ \t]+", " ", texto)
+    texto = re.sub(r" \n", "\n", texto)
+    texto = re.sub(r"\n{3,}", "\n\n", texto)
+    return texto.strip()
+
+
+def extrair_texto_pdf(caminho: Path) -> tuple[str, str, str]:
+    """Retorna (texto_completo, secao_contratante, log_clicksign)."""
     paginas = []
-    with pdfplumber.open(caminho_pdf) as pdf:
+    with pdfplumber.open(caminho) as pdf:
         for page in pdf.pages:
-            paginas.append(page.extract_text() or "")
+            paginas.append(normalizar(page.extract_text() or ""))
     texto = "\n".join(paginas)
 
-    # Log do Clicksign: tudo após a primeira ocorrência de "clicksign"
-    idx = texto.lower().find("clicksign")
-    log = texto[idx:] if idx >= 0 else texto[-3000:]
-    return texto, log
+    # Seção CONTRATANTE: tudo antes de "CONTRATADO"
+    idx_contratado = re.search(r"\bCONTRATADO\b", texto)
+    secao_contratante = texto[: idx_contratado.start()] if idx_contratado else texto
 
+    # Log Clicksign: tudo a partir de "Clicksign" ou últimas 3000 chars
+    idx_click = texto.lower().find("clicksign")
+    log = texto[idx_click:] if idx_click >= 0 else texto[-3000:]
+
+    return texto, secao_contratante, log
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _primeiro_match(padrao: str, texto: str, flags: int = re.IGNORECASE) -> str:
+def _m(padrao: str, texto: str, flags: int = re.IGNORECASE) -> str:
+    """Retorna group(1) do primeiro match ou string vazia."""
     m = re.search(padrao, texto, flags)
     return m.group(1).strip() if m else ""
 
 
-def _email_valido(email: str) -> bool:
-    """Retorna True se o e-mail não pertence a domínio interno."""
-    dominio = email.split("@")[-1].lower()
-    return not any(dominio == d or dominio.endswith("." + d) for d in DOMINIOS_IGNORADOS)
+def _email_permitido(email: str) -> bool:
+    email = email.lower()
+    usuario, dominio = email.rsplit("@", 1) if "@" in email else (email, "")
+    if any(dominio == d or dominio.endswith("." + d) for d in DOMINIOS_BLOQUEADOS):
+        return False
+    if any(usuario == u or usuario.endswith("." + u) for u in USUARIOS_BLOQUEADOS):
+        return False
+    return True
 
 
-def _data_extenso_para_numerico(texto_data: str) -> str:
-    """Converte 'DD de mês de AAAA' para 'DD/MM/AAAA'."""
-    m = re.search(r"(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})", texto_data, re.IGNORECASE)
+def _data_extenso_para_numerico(texto: str) -> str:
+    """'17 de março de 2026' → '17/03/2026'."""
+    m = re.search(r"(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})", texto, re.IGNORECASE)
     if not m:
-        return texto_data
+        return ""
     dia, mes_str, ano = m.group(1), m.group(2).lower(), m.group(3)
     mes = MESES_PT.get(mes_str)
-    if not mes:
-        return texto_data
-    return f"{int(dia):02d}/{mes}/{ano}"
+    return f"{int(dia):02d}/{mes}/{ano}" if mes else ""
 
 
-def _data_clicksign_para_numerico(texto: str) -> str:
-    """Converte 'DD mes AAAA' do log Clicksign para 'DD/MM/AAAA'.
-    Ex: '17 mar 2026' → '17/03/2026'
-    """
-    MESES_ABREV = {
-        "jan": "01", "fev": "02", "mar": "03", "abr": "04",
-        "mai": "05", "jun": "06", "jul": "07", "ago": "08",
-        "set": "09", "out": "10", "nov": "11", "dez": "12",
-    }
-    m = re.search(r"(\d{1,2})\s+([a-z]{3})\s+(\d{4})", texto, re.IGNORECASE)
-    if m:
-        dia, mes_abrev, ano = m.group(1), m.group(2).lower(), m.group(3)
-        mes = MESES_ABREV.get(mes_abrev)
-        if mes:
-            return f"{int(dia):02d}/{mes}/{ano}"
-    return ""
+def _data_abrev_para_numerico(texto: str) -> str:
+    """'17 mar 2026' → '17/03/2026'."""
+    m = re.search(r"(\d{1,2})\s+([a-z]{3})\w*\s+(\d{4})", texto, re.IGNORECASE)
+    if not m:
+        return ""
+    dia, abrev, ano = m.group(1), m.group(2).lower(), m.group(3)
+    mes = MESES_ABREV.get(abrev)
+    return f"{int(dia):02d}/{mes}/{ano}" if mes else ""
 
+
+def _normalizar_cnpj(raw: str) -> str:
+    d = re.sub(r"\D", "", raw)
+    if len(d) == 14:
+        return f"{d[:2]}.{d[2:5]}.{d[5:8]}/{d[8:12]}-{d[12:14]}"
+    return raw
 
 # ---------------------------------------------------------------------------
 # Extração — campo por campo
 # ---------------------------------------------------------------------------
 
-def extrair_razao_social(texto: str) -> str:
-    """Seção CONTRATANTE, linha 'Razão Social: ...'"""
-    # Padrão primário: label explícito
-    v = _primeiro_match(r"Raz[aã]o\s+Social:\s*(.+?)(?:\n|CNPJ|CPF)", texto, re.IGNORECASE | re.DOTALL)
+def extrair_razao_social(secao_contratante: str) -> str:
+    """Primeira ocorrência de 'Razão Social:' na seção CONTRATANTE."""
+    v = _m(r"Raz[aã]o\s+Social:\s*([^\n]+)", secao_contratante)
     if v:
-        v = re.split(r"\n|CNPJ|CPF", v)[0].strip().rstrip(".,;:")
-        if v and v.upper() not in ("INSTITUTO EUVALDO LODI", "IEL"):
+        v = v.rstrip(".,;:")
+        if "INSTITUTO EUVALDO LODI" not in v.upper():
             return v
+    return ""
 
-    # Fallback: após "CONTRATANTE" antes de "CONTRATADO"
-    bloco = _primeiro_match(
-        r"CONTRATANTE\b(.{0,800}?)(?:CONTRATADO\b|Cl[aá]usula\s+Primeira)",
-        texto, re.IGNORECASE | re.DOTALL
+
+def extrair_cnpj(secao_contratante: str) -> str:
+    """Primeiro CNPJ na seção CONTRATANTE que não seja do IEL."""
+    # Busca com label explícito primeiro
+    v = _m(
+        r"CNPJ:\s*(\d{2}[\.\s]?\d{3}[\.\s]?\d{3}[/\s]?\d{4}[-\s]?\d{2})",
+        secao_contratante
     )
-    if bloco:
-        for linha in bloco.splitlines():
-            linha = linha.strip()
-            if re.search(r"(?:LTDA|S\.A\.|EIRELI|ME|EPP|SA\b)", linha, re.IGNORECASE):
-                if "INSTITUTO EUVALDO LODI" not in linha.upper():
-                    return linha.rstrip(".,;:")
+    if v:
+        fmt = _normalizar_cnpj(v)
+        if fmt != CNPJ_IEL:
+            return fmt
+
+    # Fallback: qualquer CNPJ na seção
+    for raw in re.findall(r"\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}", secao_contratante):
+        fmt = _normalizar_cnpj(raw)
+        if fmt != CNPJ_IEL:
+            return fmt
     return ""
 
 
-def extrair_cnpj(texto: str) -> str:
-    """Seção CONTRATANTE, primeiro CNPJ que não seja o do IEL."""
-    padrao = r"\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}"
-    for cnpj in re.findall(padrao, texto):
-        # Normaliza para XX.XXX.XXX/XXXX-XX
-        d = re.sub(r"\D", "", cnpj)
-        if len(d) == 14:
-            fmt = f"{d[:2]}.{d[2:5]}.{d[5:8]}/{d[8:12]}-{d[12:14]}"
-            if fmt != CNPJ_IEL:
-                return fmt
-    return ""
-
-
-def extrair_endereco(texto: str) -> str:
-    """Seção CONTRATANTE, linha 'Endereço: ...'"""
-    v = _primeiro_match(
-        r"Endere[çc]o:\s*(.+?)(?:\n(?:Representante|Cargo|CNPJ|CPF|E-?mail)|$)",
-        texto, re.IGNORECASE | re.DOTALL
+def extrair_endereco(secao_contratante: str) -> str:
+    """Label 'Endereço:' na seção CONTRATANTE."""
+    v = _m(
+        r"Endere[çc]o:\s*(.+?)(?=\n(?:Representante|Cargo|E-?mail|CNPJ|CPF)|$)",
+        secao_contratante,
+        re.IGNORECASE | re.DOTALL,
     )
     if v:
         return " ".join(v.split())
     return ""
 
 
-def extrair_representante(texto: str) -> str:
-    """Seção CONTRATANTE, linha 'Representante: ...'"""
-    v = _primeiro_match(
-        r"Representante:\s*(.+?)(?:\n|Cargo|CPF|$)",
-        texto, re.IGNORECASE | re.DOTALL
+def extrair_representante(secao_contratante: str) -> str:
+    """Label 'Representante:' na seção CONTRATANTE."""
+    v = _m(
+        r"Representante:\s*([^\n]+)",
+        secao_contratante,
     )
-    return v.split("\n")[0].strip() if v else ""
+    return v.rstrip(".,;:") if v else ""
 
 
-def extrair_email_financeiro(texto: str, log: str) -> str:
+def extrair_email(texto: str, log: str, representante: str) -> str:
     """
-    Prioridade 1: log Clicksign — padrão 'assinou. Pontos de autenticação: Token via E-mail email@...'
-    Prioridade 2: qualquer e-mail externo no texto completo.
+    Prioridade:
+    1. Log Clicksign — padrão 'Token via E-mail [email]' próximo ao nome do representante.
+    2. Log Clicksign — qualquer 'Token via E-mail [email]' de domínio externo.
+    3. Qualquer e-mail externo no texto completo.
     """
-    # Padrão exato do log Clicksign
-    m = re.search(
-        r"assinou\.\s*Pontos\s+de\s+autentica[çc][aã]o:.*?Token\s+via\s+E-?mail\s+(\S+@\S+\.\S+)",
-        log, re.IGNORECASE | re.DOTALL
-    )
+    padrao_token = r"Token\s+via\s+E-?mail\s+([\w.+\-]+@[\w.\-]+\.\w+)"
+
+    # Todos os e-mails encontrados após "Token via E-mail"
+    emails_token = re.findall(padrao_token, log, re.IGNORECASE)
+    externos = [e.lower() for e in emails_token if _email_permitido(e)]
+
+    # Se há representante, priorizar e-mail na mesma vizinhança
+    if externos and representante:
+        primeiro_nome = representante.strip().split()[0].lower()
+        for trecho in re.split(r"\n{2,}", log):
+            if primeiro_nome in trecho.lower():
+                for email in re.findall(padrao_token, trecho, re.IGNORECASE):
+                    if _email_permitido(email):
+                        return email.lower()
+
+    if externos:
+        return externos[0]
+
+    # Fallback: qualquer e-mail externo no log
+    for email in re.findall(r"[\w.+\-]+@[\w.\-]+\.\w+", log):
+        if _email_permitido(email):
+            return email.lower()
+
+    # Fallback final: corpo do contrato
+    for email in re.findall(r"[\w.+\-]+@[\w.\-]+\.\w+", texto):
+        if _email_permitido(email):
+            return email.lower()
+
+    return ""
+
+
+def extrair_valor(texto: str) -> str:
+    """Tabela VALOR/MODALIDADE/PARCELAMENTO — Cláusula Sexta."""
+    # Camada 1: bloco entre VALOR e MODALIDADE
+    bloco = re.search(r"VALOR(.{1,80}?)MODALIDADE", texto, re.DOTALL | re.IGNORECASE)
+    if bloco:
+        val = re.search(r"R\$\s*([\d.,]+)", bloco.group(1))
+        if val:
+            return f"R$ {val.group(1).strip()}"
+
+    # Camada 2: padrões diretos
+    for p in [
+        r"VALOR\s+R\$\s*([\d.,]+)",
+        r"VALOR\s*\n\s*R\$\s*([\d.,]+)",
+        r"VALOR\s+R\$([\d.,]+)",
+    ]:
+        v = _m(p, texto)
+        if v:
+            return f"R$ {v}"
+
+    # Camada 3: número monetário próximo à palavra VALOR
+    m = re.search(r"VALOR[^\n]{0,30}(\d{1,3}(?:\.\d{3})*,\d{2})", texto)
     if m:
-        email = m.group(1).strip().rstrip(".,;)")
-        if _email_valido(email):
-            return email.lower()
-
-    # Todos os e-mails do log Clicksign (sem o padrão exato)
-    for email in re.findall(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", log):
-        if _email_valido(email):
-            return email.lower()
-
-    # Fallback: corpo do contrato
-    for email in re.findall(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}", texto):
-        if _email_valido(email):
-            return email.lower()
+        return f"R$ {m.group(1)}"
 
     return ""
 
 
-def extrair_valor_total(texto: str) -> str:
-    """Cláusula Sexta — tabela 'VALOR | R$ X.XXX,XX'"""
-    # Padrão da tabela estruturada
-    v = _primeiro_match(r"VALOR\s+R\$\s*([\d.,]+)", texto, re.IGNORECASE)
-    if v:
-        return f"R$ {v}"
+def extrair_modalidade(texto: str) -> str:
+    """Bloco entre MODALIDADE e PARCELAMENTO."""
+    bloco = re.search(r"MODALIDADE(.{1,100}?)PARCELAMENTO", texto, re.DOTALL | re.IGNORECASE)
+    conteudo = " ".join(bloco.group(1).split()).lower() if bloco else ""
 
-    # Fallback: R$ com centavos
-    valores = re.findall(r"R\$\s*\d{1,3}(?:\.\d{3})*,\d{2}", texto)
-    if valores:
-        return valores[-1].strip()
-    return ""
-
-
-def extrair_forma_pagamento(texto: str) -> str:
-    """Cláusula Sexta — tabela 'MODALIDADE | ...'"""
-    v = _primeiro_match(r"MODALIDADE\s+(Boleto[^\n]*|Cart[aã]o[^\n]*)", texto, re.IGNORECASE)
-    if v:
-        v_lower = v.lower()
-        if "cart" in v_lower:
-            return "Cartão de crédito"
+    if "boleto" in conteudo:
         return "Boleto bancário"
-
-    # Fallback por palavra-chave
-    if re.search(r"cart[aã]o\s+de\s+cr[eé]dito", texto, re.IGNORECASE):
+    if "cart" in conteudo:
         return "Cartão de crédito"
-    if re.search(r"boleto", texto, re.IGNORECASE):
-        return "Boleto bancário"
+    if "pix" in conteudo:
+        return "PIX"
+
+    # Fallback: linha após MODALIDADE
+    v = _m(r"MODALIDADE\s*\n?\s*([^\n]+)", texto)
+    if v:
+        vl = v.lower()
+        if "boleto" in vl:
+            return "Boleto bancário"
+        if "cart" in vl:
+            return "Cartão de crédito"
+        if "pix" in vl:
+            return "PIX"
+        return v
+
     return ""
 
 
 def extrair_parcelamento(texto: str) -> str:
-    """Cláusula Sexta — tabela 'PARCELAMENTO | 12x' ou 'À vista'"""
-    # Padrão da tabela estruturada
-    v = _primeiro_match(r"PARCELAMENTO\s+(\d+x|[Àà]\s*vista[^\n]*)", texto, re.IGNORECASE)
+    """Linha após PARCELAMENTO."""
+    # Tabela estruturada
+    v = _m(r"PARCELAMENTO\s*\n?\s*(\d+\s*x|[àÀ]\s*vista[^\n]*)", texto)
     if v:
-        if re.match(r"(\d+)x", v, re.IGNORECASE):
-            n = int(re.match(r"(\d+)", v).group(1))
+        m = re.match(r"(\d+)\s*x", v, re.IGNORECASE)
+        if m:
+            n = int(m.group(1))
             return "À vista" if n <= 1 else f"Parcelado em {n}x"
         return "À vista"
 
     # Fallback
-    m = re.search(r"(?:parcelado\s+em\s+)?(\d+)\s*x\b", texto, re.IGNORECASE)
+    m = re.search(r"(\d+)\s*x\b", texto, re.IGNORECASE)
     if m:
         n = int(m.group(1))
         return "À vista" if n <= 1 else f"Parcelado em {n}x"
@@ -278,104 +350,97 @@ def extrair_parcelamento(texto: str) -> str:
     return ""
 
 
+def extrair_vencimento(texto: str) -> str:
+    """'primeiro vencimento' no corpo ou '[A CONFIRMAR]'."""
+    v = _m(
+        r"(?:primeiro\s+vencimento|vencimento\s+da\s+primeira\s+parcela)"
+        r"[:\s]+(\d{2}/\d{2}/\d{4})",
+        texto,
+    )
+    return v if v else NAO_ENCONTRADO
+
+
 def extrair_data_assinatura(texto: str, log: str) -> str:
-    """
-    Prioridade 1: 'Goiânia, DD de mês de AAAA' no corpo.
-    Prioridade 2: última data 'DD mes AAAA' do log Clicksign.
-    """
+    """'Goiânia, DD de mês de AAAA' ou última data no log Clicksign."""
     # Corpo do contrato
-    v = _primeiro_match(r"Goi[âa]nia,?\s+(\d{1,2}\s+de\s+\w+\s+de\s+\d{4})", texto, re.IGNORECASE)
+    v = _m(r"Goi[aâ]nia,?\s+(\d{1,2}\s+de\s+\w+\s+de\s+\d{4})", texto)
     if v:
         d = _data_extenso_para_numerico(v)
         if re.match(r"\d{2}/\d{2}/\d{4}", d):
             return d
 
-    # Log Clicksign — última data
-    datas_log = re.findall(
-        r"(\d{1,2}\s+(?:jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\w*\s+\d{4})",
+    # Log Clicksign — última data no formato "DD mes AAAA"
+    datas = re.findall(
+        r"\d{1,2}\s+(?:jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\w*\s+\d{4}",
         log, re.IGNORECASE
     )
-    if datas_log:
-        d = _data_clicksign_para_numerico(datas_log[-1])
+    if datas:
+        d = _data_abrev_para_numerico(datas[-1])
         if d:
             return d
 
-    # Fallback: primeira data DD/MM/AAAA do texto
+    # Fallback: primeira data DD/MM/AAAA no texto
     datas = re.findall(r"\d{2}/\d{2}/\d{4}", texto)
     return datas[0] if datas else datetime.today().strftime("%d/%m/%Y")
 
-
-def extrair_primeiro_vencimento(texto: str) -> str:
-    """
-    Busca 'primeiro vencimento' ou 'vencimento da primeira parcela' no contrato.
-    Se não encontrado, retorna '[A CONFIRMAR]'.
-    """
-    v = _primeiro_match(
-        r"(?:primeiro\s+vencimento|vencimento\s+da\s+primeira\s+parcela|1[°º]\s+vencimento)[:\s]+(\d{2}/\d{2}/\d{4})",
-        texto, re.IGNORECASE
-    )
-    return v if v else "[A CONFIRMAR]"
-
-
 # ---------------------------------------------------------------------------
-# Validações
+# Validação
 # ---------------------------------------------------------------------------
-
-ERRO_EXTRACAO = "[ERRO NA EXTRAÇÃO - VERIFICAR]"
-
 
 def validar(dados: dict) -> dict:
-    """Substitui campos inválidos por ERRO_EXTRACAO."""
-    result = dict(dados)
+    """Marca campos inválidos com ERRO."""
+    if not dados["razao_social"] or "INSTITUTO EUVALDO LODI" in dados["razao_social"].upper():
+        dados["razao_social"] = ERRO
 
-    # Razão Social não pode ser IEL
-    if not result["razao_social"] or "INSTITUTO EUVALDO LODI" in result["razao_social"].upper():
-        result["razao_social"] = ERRO_EXTRACAO
-
-    # CNPJ deve ter formato correto e não ser do IEL
-    cnpj = result["cnpj"]
+    cnpj = dados["cnpj"]
     if not re.match(r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}$", cnpj) or cnpj == CNPJ_IEL:
-        result["cnpj"] = ERRO_EXTRACAO
+        dados["cnpj"] = ERRO
 
-    # E-mail não pode ter domínio interno
-    email = result["email_financeiro"]
-    if email and not _email_valido(email):
-        result["email_financeiro"] = ERRO_EXTRACAO
+    email = dados["email_financeiro"]
+    if email and not _email_permitido(email):
+        dados["email_financeiro"] = ERRO
 
-    # Valor deve começar com R$ e ter vírgula decimal
-    valor = result["valor_total"]
-    if not re.match(r"R\$\s*\d+.*,\d{2}$", valor):
-        result["valor_total"] = ERRO_EXTRACAO
+    if not re.match(r"R\$\s*[\d.,]+", dados.get("valor_total", "")):
+        dados["valor_total"] = dados.get("valor_total") or NAO_ENCONTRADO
 
-    return result
-
+    return dados
 
 # ---------------------------------------------------------------------------
-# Montagem dos dados
+# Orquestração principal
 # ---------------------------------------------------------------------------
 
-def extrair_dados(texto: str, log: str) -> dict:
+def processar_contrato(caminho: Path) -> dict:
+    texto, sec_contratante, log = extrair_texto_pdf(caminho)
+
     dados = {
-        "razao_social":        extrair_razao_social(texto),
-        "cnpj":                extrair_cnpj(texto),
-        "endereco":            extrair_endereco(texto),
-        "representante":       extrair_representante(texto),
-        "email_financeiro":    extrair_email_financeiro(texto, log),
-        "valor_total":         extrair_valor_total(texto),
-        "forma_pagamento":     extrair_forma_pagamento(texto),
+        "razao_social":        extrair_razao_social(sec_contratante),
+        "cnpj":                extrair_cnpj(sec_contratante),
+        "endereco":            extrair_endereco(sec_contratante),
+        "representante":       extrair_representante(sec_contratante),
+        "email_financeiro":    "",
+        "valor_total":         extrair_valor(texto),
+        "forma_pagamento":     extrair_modalidade(texto),
         "parcelamento":        extrair_parcelamento(texto),
+        "primeiro_vencimento": extrair_vencimento(texto),
         "data_assinatura":     extrair_data_assinatura(texto, log),
-        "primeiro_vencimento": extrair_primeiro_vencimento(texto),
     }
-    # Preenche campos vazios com placeholder
+    dados["email_financeiro"] = extrair_email(texto, log, dados["representante"])
+
+    # Preencher vazios
     for k, v in dados.items():
         if not v:
-            dados[k] = f"[NÃO ENCONTRADO]"
+            dados[k] = NAO_ENCONTRADO
+
     return validar(dados)
 
 
+def gerar_email(dados: dict) -> tuple[str, str]:
+    assunto = ASSUNTO_TEMPLATE.format(**dados)
+    corpo = CORPO_TEMPLATE.format(**dados)
+    return assunto, corpo
+
 # ---------------------------------------------------------------------------
-# Exibição
+# Exibição no terminal
 # ---------------------------------------------------------------------------
 
 ROTULOS = {
@@ -394,20 +459,27 @@ ROTULOS = {
 SEP = "=" * 70
 
 
-def exibir_dados(dados: dict) -> None:
+def exibir_dados(dados: dict, nome_arquivo: str = "") -> None:
     print(f"\n{SEP}")
-    print("  DADOS EXTRAÍDOS DO CONTRATO")
+    if nome_arquivo:
+        print(f"  ARQUIVO: {nome_arquivo}")
+    print("  DADOS EXTRAÍDOS")
     print(SEP)
+    erros = []
     for campo, rotulo in ROTULOS.items():
         valor = dados.get(campo, "")
-        if ERRO_EXTRACAO in valor:
+        if ERRO in valor:
             icone = "🔴"
-        elif "[" in valor:
+            erros.append(rotulo)
+        elif NAO_ENCONTRADO in valor or "[" in valor:
             icone = "⚠️ "
         else:
             icone = "✅"
         print(f"  {icone} {rotulo:<25} {valor}")
     print(SEP)
+    if erros:
+        print(f"\n  ❌ Campos com erro: {', '.join(erros)}")
+        print("     Preencha manualmente antes de enviar o e-mail.")
 
 
 def exibir_email(assunto: str, corpo: str) -> None:
@@ -424,7 +496,6 @@ def salvar_txt(assunto: str, corpo: str, caminho_pdf: Path) -> Path:
     saida.write_text(f"ASSUNTO: {assunto}\n\n{corpo}", encoding="utf-8")
     return saida
 
-
 # ---------------------------------------------------------------------------
 # Revisão interativa
 # ---------------------------------------------------------------------------
@@ -433,8 +504,7 @@ def revisar_campos(dados: dict) -> dict:
     pendentes = [k for k, v in dados.items() if "[" in v]
     if not pendentes:
         return dados
-
-    print("\n⚠️  Campos pendentes de revisão. Enter para manter, ou digite o valor correto:\n")
+    print("\n⚠️  Campos pendentes. Enter para manter, ou digite o valor correto:\n")
     for campo in pendentes:
         rotulo = ROTULOS.get(campo, campo)
         novo = input(f"  {rotulo} [{dados[campo]}]: ").strip()
@@ -442,62 +512,38 @@ def revisar_campos(dados: dict) -> dict:
             dados[campo] = novo
     return dados
 
-
 # ---------------------------------------------------------------------------
-# Ponto de entrada
+# Processamento de um único PDF
 # ---------------------------------------------------------------------------
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Gera e-mail de passagem de bastão – Logística Reversa IEL/GO",
-        epilog="Exemplo: python agente_bastao.py contrato.pdf",
-    )
-    parser.add_argument("pdf", nargs="?", help="Caminho do arquivo PDF")
-    parser.add_argument("--sem-revisao", action="store_true", help="Pular revisão interativa")
-    parser.add_argument("--abrir-email", action="store_true", help="Abrir cliente de e-mail")
-    args = parser.parse_args()
-
-    # Obter arquivo
-    caminho = args.pdf
-    if not caminho:
-        caminho = input("Caminho do PDF: ").strip()
-    if not caminho:
-        sys.exit("❌ Nenhum arquivo informado.")
-
-    pdf = Path(caminho)
-    if not pdf.is_file():
-        sys.exit(f"❌ Arquivo não encontrado: {caminho}")
-
-    print(f"\n📄  Processando: {pdf.name}")
-
-    # Extrair
+def processar_um(caminho: Path, args: argparse.Namespace) -> None:
+    print(f"\n📄  Processando: {caminho.name}")
     try:
-        texto, log = extrair_texto(pdf)
+        texto_raw = ""
+        with pdfplumber.open(caminho) as pdf:
+            texto_raw = "\n".join(p.extract_text() or "" for p in pdf.pages)
+        if not texto_raw.strip():
+            print("❌  PDF sem texto extraível (escaneado/imagem). Ignorando.")
+            return
     except Exception as e:
-        sys.exit(f"❌ Erro ao ler PDF: {e}")
+        print(f"❌  Erro ao abrir PDF: {e}")
+        return
 
-    if not texto.strip():
-        sys.exit("❌ PDF sem texto extraível (pode ser escaneado/imagem).")
+    dados = processar_contrato(caminho)
+    exibir_dados(dados, caminho.name)
 
-    dados = extrair_dados(texto, log)
-    exibir_dados(dados)
-
-    # Revisão
     if not args.sem_revisao:
         dados = revisar_campos(dados)
 
-    # Gerar e-mail
-    assunto = ASSUNTO_TEMPLATE.format(**dados)
-    corpo = CORPO_TEMPLATE.format(**dados)
+    assunto, corpo = gerar_email(dados)
     exibir_email(assunto, corpo)
 
-    # Salvar
-    txt = salvar_txt(assunto, corpo, pdf)
-    print(f"\n💾  Salvo em: {txt}")
+    if args.salvar:
+        txt = salvar_txt(assunto, corpo, caminho)
+        print(f"\n💾  Salvo em: {txt}")
 
-    # Abrir cliente
     abrir = args.abrir_email
-    if not abrir:
+    if not abrir and not args.sem_revisao:
         abrir = input("\nAbrir cliente de e-mail? [s/N]: ").strip().lower() in ("s", "sim")
     if abrir:
         mailto = (
@@ -506,6 +552,49 @@ def main() -> None:
             f"&body={urllib.parse.quote(corpo)}"
         )
         webbrowser.open(mailto)
+
+# ---------------------------------------------------------------------------
+# Ponto de entrada
+# ---------------------------------------------------------------------------
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Gera e-mail de passagem de bastão – Logística Reversa IEL/GO",
+        epilog=(
+            "Exemplos:\n"
+            "  python agente_bastao.py contrato.pdf\n"
+            "  python agente_bastao.py *.pdf --salvar\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("pdfs", nargs="*", help="Arquivo(s) PDF do contrato")
+    parser.add_argument("--salvar",       action="store_true", help="Salvar e-mail em .txt")
+    parser.add_argument("--sem-revisao",  action="store_true", help="Pular revisão interativa")
+    parser.add_argument("--abrir-email",  action="store_true", help="Abrir cliente de e-mail")
+    args = parser.parse_args()
+
+    # Coletar caminhos
+    caminhos: list[Path] = []
+    if args.pdfs:
+        for p in args.pdfs:
+            path = Path(p)
+            if path.is_file():
+                caminhos.append(path)
+            else:
+                print(f"⚠️  Arquivo não encontrado: {p}")
+    else:
+        entrada = input("Caminho do PDF: ").strip()
+        if not entrada:
+            sys.exit("❌ Nenhum arquivo informado.")
+        caminhos = [Path(entrada)]
+
+    if not caminhos:
+        sys.exit("❌ Nenhum arquivo válido encontrado.")
+
+    for caminho in caminhos:
+        processar_um(caminho, args)
+        if len(caminhos) > 1:
+            print("\n" + "-" * 70)
 
     print("\n✅  Concluído.\n")
 
