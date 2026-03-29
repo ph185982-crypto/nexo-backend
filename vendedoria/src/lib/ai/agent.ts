@@ -146,7 +146,7 @@ async function callLLM(
   const provider = aiProvider?.toUpperCase();
 
   if (provider === "OPENAI" && process.env.OPENAI_API_KEY) {
-    return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
+    return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini");
   }
   if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
     return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
@@ -163,7 +163,7 @@ async function callLLM(
     return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
   }
   if (process.env.OPENAI_API_KEY) {
-    return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o");
+    return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini");
   }
 
   // No LLM configured — send fallback message

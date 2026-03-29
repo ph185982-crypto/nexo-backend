@@ -73,7 +73,7 @@ async function main() {
       ? "claude-sonnet-4-6"
       : aiProvider === "GOOGLE"
       ? "gemini-2.0-flash-lite"
-      : "gpt-4o";
+      : "gpt-4o-mini";
 
   const agent = await prisma.agent.upsert({
     where: { whatsappProviderConfigId: "acc-demo" },
