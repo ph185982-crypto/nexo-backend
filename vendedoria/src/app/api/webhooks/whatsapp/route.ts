@@ -232,6 +232,12 @@ async function handleIncomingMessage(
     data: { lastMessageAt: sentAt, updatedAt: new Date() },
   });
 
+  // Cancel any active follow-up — user replied, no need to follow up
+  await prisma.conversationFollowUp.updateMany({
+    where: { conversationId: conversation.id, status: "ACTIVE" },
+    data: { status: "DONE" },
+  }).catch(() => {});
+
   // Trigger AI agent if configured — fire-and-forget with explicit error logging
   if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
     console.log("[WhatsApp Webhook] Disparando agente IA para conversa:", conversation.id);

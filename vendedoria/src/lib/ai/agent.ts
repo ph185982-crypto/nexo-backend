@@ -1,5 +1,12 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage } from "@/lib/whatsapp/send";
+
+const FOLLOWUP_INTERVALS_MS = [
+  4  * 60 * 60 * 1000,  // step 1 — 4h
+  24 * 60 * 60 * 1000,  // step 2 — 24h
+  48 * 60 * 60 * 1000,  // step 3 — 48h
+  72 * 60 * 60 * 1000,  // step 4 — 72h
+];
 
 interface AgentConfig {
   id: string;
@@ -10,21 +17,25 @@ interface AgentConfig {
   aiModel?: string | null;
 }
 
-const DEFAULT_SYSTEM_PROMPT = `Você é um assistente virtual de vendas para WhatsApp.
-Seu objetivo é:
-1. Cumprimentar o cliente de forma amigável e profissional
-2. Entender a necessidade do cliente
-3. Qualificar o lead (interesse, urgência, orçamento)
-4. Apresentar os serviços/produtos disponíveis
-5. Agendar uma reunião ou escalar para um vendedor humano quando necessário
+const DEFAULT_SYSTEM_PROMPT = `Você é Léo, assistente virtual de vendas da Nexo Brasil, empresa especializada em ferramentas profissionais com entrega em Goiânia e região, Goiás.
 
-Regras importantes:
-- Responda sempre em português do Brasil
-- Seja conciso e direto (máximo 3 parágrafos por resposta)
-- Se o cliente demonstrar interesse alto ou urgência, use a flag [ESCALAR] no início da resposta
-- Se o cliente quiser agendar, use a flag [AGENDAR] no início da resposta
-- Mantenha um tom profissional mas acolhedor
-- Não invente informações sobre produtos/serviços que não conhece`;
+Na sua primeira mensagem para qualquer cliente, se apresente assim: "Sou o assistente virtual da Nexo Brasil — mas pode falar comigo como se fosse com o vendedor mesmo, respondo na hora, qualquer dia, qualquer horário! 😄"
+
+SEU OBJETIVO: Conduzir o cliente do primeiro contato até o fechamento do pedido. Seja consultivo, amigável e direto. Nunca seja robótico. Use linguagem natural.
+
+PRODUTOS:
+Produto 1 — BOMVINK 21V (opção premium)
+Motor Brushless, 2 baterias 21V 4000mAh, torque 210-320Nm, 46 peças inclusos, maleta, luz LED, 1 ano de garantia, nota fiscal.
+Preço: R$549,99 à vista ou 10x de R$61,74.
+
+Produto 2 — LUATEK 48V (custo-benefício)
+2 baterias de alta potência, chave catraca 1/4" inclusa, 1 ano de garantia, nota fiscal.
+Preço: R$529,99 à vista ou 10x de R$61,64.
+
+Pagamento SOMENTE na entrega. Entrega em Goiânia e região. Emite nota fiscal.
+Quando coletar todos os dados do pedido, inclua [PASSAGEM] no início da resposta com os dados: NOME: | ENDEREÇO: | CEP: | BAIRRO: | TELEFONE: | PRODUTO: | PAGAMENTO:
+Se o cliente pedir para não ser contactado, inclua [OPT_OUT] no final da mensagem.
+Para enviar imagem do produto, inclua [ENVIAR_IMAGEM_BOMVINK] ou [ENVIAR_IMAGEM_LUATEK] no texto.`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -94,43 +105,99 @@ export async function processAIResponse(
 
     if (!response) return;
 
-    // Check for escalation before saving
+    const provider = conversation.provider;
+    const to = conversation.customerWhatsappBusinessId;
+    const token = provider.accessToken ?? undefined;
+    const now = new Date();
+
+    // ── Handle [OPT_OUT] ──────────────────────────────────────────────────────
+    if (/\[OPT_OUT\]/i.test(response)) {
+      await Promise.all([
+        prisma.lead.update({ where: { id: conversation.leadId }, data: { status: "BLOCKED" } }),
+        prisma.conversationFollowUp.updateMany({
+          where: { conversationId, status: "ACTIVE" },
+          data: { status: "OPT_OUT" },
+        }),
+      ]);
+    }
+
+    // ── Handle [PASSAGEM] — handoff to business owner ─────────────────────────
+    let passagemData: string | null = null;
+    const passagemMatch = response.match(/\[PASSAGEM\]\s*([^\n]*(?:\n(?!\[)[^\n]*)*)/i);
+    if (passagemMatch) {
+      passagemData = passagemMatch[1].trim();
+    }
+
+    // ── Handle [ESCALAR] ──────────────────────────────────────────────────────
     if (response.startsWith("[ESCALAR]")) {
       await handleEscalation(conversation.leadId, conversationId, response);
     }
 
+    // ── Strip all flags to get clean customer message ─────────────────────────
     const cleanResponse = response
       .replace(/^\[ESCALAR\]\s*/i, "")
       .replace(/^\[AGENDAR\]\s*/i, "")
+      .replace(/\[PASSAGEM\][^\n]*/gi, "")
+      .replace(/\[OPT_OUT\]/gi, "")
+      .replace(/\[ENVIAR_IMAGEM_BOMVINK\]/gi, "")
+      .replace(/\[ENVIAR_IMAGEM_LUATEK\]/gi, "")
       .trim();
 
     if (!cleanResponse) return;
 
-    // Save AI response to DB
+    // ── Save AI response to DB ────────────────────────────────────────────────
     await prisma.whatsappMessage.create({
-      data: {
-        content: cleanResponse,
-        type: "TEXT",
-        role: "ASSISTANT",
-        sentAt: new Date(),
-        status: "SENT",
-        conversationId,
-      },
+      data: { content: cleanResponse, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId },
     });
 
     await prisma.whatsappConversation.update({
       where: { id: conversationId },
-      data: { lastMessageAt: new Date() },
+      data: { lastMessageAt: now },
     });
 
-    // Send via WhatsApp Business API using the account's stored token
-    const provider = conversation.provider;
-    await sendWhatsAppMessage(
-      provider.businessPhoneNumberId,
-      conversation.customerWhatsappBusinessId,
-      cleanResponse,
-      provider.accessToken ?? undefined
-    );
+    // ── Send text response to customer ────────────────────────────────────────
+    await sendWhatsAppMessage(provider.businessPhoneNumberId, to, cleanResponse, token);
+
+    // ── Send product images if flagged ────────────────────────────────────────
+    if (/\[ENVIAR_IMAGEM_BOMVINK\]/i.test(response)) {
+      const imgUrl = process.env.PRODUCT_IMAGE_BOMVINK;
+      if (imgUrl) {
+        await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, "BOMVINK 21V — Chave de Impacto", token);
+      }
+    }
+    if (/\[ENVIAR_IMAGEM_LUATEK\]/i.test(response)) {
+      const imgUrl = process.env.PRODUCT_IMAGE_LUATEK;
+      if (imgUrl) {
+        await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, "LUATEK 48V — Chave de Impacto", token);
+      }
+    }
+
+    // ── Send passagem de bastão to business owner ─────────────────────────────
+    if (passagemData) {
+      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const handoffMsg = `*🔔 NOVO PEDIDO — PASSAGEM DE BASTÃO*\n\n${passagemData}\n\n_Encaminhe para finalizar a entrega._`;
+      await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token).catch((e) =>
+        console.error("[AI Agent] Passagem bastão send failed:", e)
+      );
+    }
+
+    // ── Schedule follow-up (step 1, fires in 4h if customer doesn't reply) ────
+    const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
+    await prisma.conversationFollowUp.upsert({
+      where: { conversationId },
+      update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: conversation.lead?.profileName ?? null },
+      create: {
+        conversationId,
+        step: 1,
+        status: "ACTIVE",
+        aiMessageAt: now,
+        nextSendAt,
+        leadName: conversation.lead?.profileName ?? null,
+        phoneNumber: to,
+        phoneNumberId: provider.businessPhoneNumberId,
+        accessToken: provider.accessToken,
+      },
+    });
   } catch (error) {
     console.error("[AI Agent] Error:", error);
   }

@@ -206,11 +206,28 @@ model WhatsappConversation {
   provider                   WhatsappProviderConfig @relation(fields: [whatsappProviderConfigId], references: [id])
   messages                   WhatsappMessage[]
   tags                       ConversationTag[]
+  followUp                   ConversationFollowUp?
   conversationRatings        Json     @default("[]")
   lastMessageAt              DateTime?
   isActive                   Boolean  @default(true)
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
+}
+
+model ConversationFollowUp {
+  id               String               @id @default(cuid())
+  conversationId   String               @unique
+  conversation     WhatsappConversation @relation(fields: [conversationId], references: [id])
+  step             Int                  @default(1)    // 1=4h 2=24h 3=48h 4=72h 5=done
+  status           String               @default("ACTIVE") // ACTIVE | DONE | OPT_OUT
+  leadName         String?
+  phoneNumber      String               // recipient to send follow-up to
+  phoneNumberId    String               // Meta phone number ID for sending
+  accessToken      String?              // WhatsApp access token
+  aiMessageAt      DateTime             // reference: when AI last messaged
+  nextSendAt       DateTime             // aiMessageAt + interval for current step
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
 }
 
 model ConversationTag {
