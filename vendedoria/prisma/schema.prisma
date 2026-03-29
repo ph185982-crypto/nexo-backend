@@ -416,3 +416,16 @@ model OrgHierarchyItem {
   order          Int              @default(0)
   createdAt      DateTime         @default(now())
 }
+
+// ─── Webhook Retry Queue ────────────────────────────────────────────────────
+
+model WebhookQueue {
+  id          String   @id @default(cuid())
+  payload     String   @db.Text   // raw JSON body from Meta
+  signature   String              // x-hub-signature-256 header
+  attempts    Int      @default(0)
+  status      String   @default("PENDING") // PENDING | PROCESSED | FAILED
+  error       String?  @db.Text
+  createdAt   DateTime @default(now())
+  retryAfter  DateTime @default(now())
+}

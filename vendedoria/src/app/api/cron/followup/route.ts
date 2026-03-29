@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { createHmac } from "crypto";
 
 const INTERVALS_MS = [
   4  * 60 * 60 * 1000,  // step 1 — 4h
@@ -80,5 +81,57 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({ ok: true, ...results });
+  // ── CORREÇÃO 3: Process retry queue ───────────────────────────────────────
+  const queueResults = { retried: 0, requeued: 0, dropped: 0 };
+  const pending = await prisma.webhookQueue.findMany({
+    where: { status: "PENDING", retryAfter: { lte: now } },
+    take: 20,
+    orderBy: { createdAt: "asc" },
+  });
+
+  for (const item of pending) {
+    if (item.attempts >= 5) {
+      await prisma.webhookQueue.update({ where: { id: item.id }, data: { status: "FAILED" } });
+      queueResults.dropped++;
+      continue;
+    }
+
+    try {
+      const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:10000";
+      // Re-deliver the queued webhook payload to the webhook handler
+      const secret = process.env.META_WHATSAPP_APP_SECRET ?? "";
+      const sig = "sha256=" + createHmac("sha256", secret).update(item.payload).digest("hex");
+
+      const res = await fetch(`${baseUrl}/api/webhooks/whatsapp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-hub-signature-256": sig },
+        body: item.payload,
+      });
+
+      if (res.ok) {
+        const json = await res.json() as { queued?: boolean };
+        if (!json.queued) {
+          // Processed successfully
+          await prisma.webhookQueue.update({ where: { id: item.id }, data: { status: "PROCESSED" } });
+          queueResults.retried++;
+        } else {
+          // Still failed — reschedule with backoff
+          const backoff = Math.min(300_000, 30_000 * (item.attempts + 1));
+          await prisma.webhookQueue.update({
+            where: { id: item.id },
+            data: { attempts: item.attempts + 1, retryAfter: new Date(Date.now() + backoff) },
+          });
+          queueResults.requeued++;
+        }
+      }
+    } catch (err) {
+      await prisma.webhookQueue.update({
+        where: { id: item.id },
+        data: { attempts: item.attempts + 1, error: String(err), retryAfter: new Date(Date.now() + 60_000) },
+      });
+      queueResults.requeued++;
+    }
+  }
+
+  return NextResponse.json({ ok: true, followups: results, queue: queueResults });
 }
