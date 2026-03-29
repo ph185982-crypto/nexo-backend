@@ -50,7 +50,7 @@ export async function GET(req: Request) {
 
   const [leads, messages] = await Promise.all([prisma.lead.count(), prisma.whatsappMessage.count()]);
   const lastMessages = await prisma.whatsappMessage.findMany({
-    orderBy: { sentAt: "desc" }, take: 3,
+    orderBy: { sentAt: "desc" }, take: 10,
     select: { role: true, content: true, sentAt: true },
   });
 
