@@ -5,7 +5,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const testKey = new URL(req.url).searchParams.get("testkey");
   // 1. Estado do banco
   const [leads, messages] = await Promise.all([prisma.lead.count(), prisma.whatsappMessage.count()]);
   const lastMessages = await prisma.whatsappMessage.findMany({
@@ -16,7 +17,7 @@ export async function GET() {
   // 2. Teste direto Gemini
   let geminiResult: string | null = null;
   let geminiError: string | null = null;
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
+  const apiKey = testKey ?? process.env.GOOGLE_AI_API_KEY;
 
   if (apiKey) {
     try {
