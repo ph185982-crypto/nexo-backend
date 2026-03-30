@@ -95,6 +95,41 @@ export async function sendWhatsAppImage(
   }
 }
 
+export async function sendWhatsAppVideo(
+  phoneNumberId: string,
+  to: string,
+  videoUrl: string,
+  caption?: string,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) {
+    console.warn("[WhatsApp] No access token — skipping video send");
+    return;
+  }
+
+  const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: normalizeBrazilianNumber(to),
+      type: "video",
+      video: { link: videoUrl, ...(caption ? { caption } : {}) },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error("[WhatsApp] Video send error:", error);
+    throw new Error(`WhatsApp video send failed: ${error}`);
+  }
+}
+
 export async function sendWhatsAppTemplate(
   phoneNumberId: string,
   to: string,

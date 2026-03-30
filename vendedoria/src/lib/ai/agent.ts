@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
 
 const FOLLOWUP_INTERVALS_MS = [
   4  * 60 * 60 * 1000,  // step 1 — 4h
@@ -35,7 +35,9 @@ Preço: R$529,99 à vista ou 10x de R$61,64.
 Pagamento SOMENTE na entrega. Entrega em Goiânia e região. Emite nota fiscal.
 Quando coletar todos os dados do pedido, inclua [PASSAGEM] no início da resposta com os dados: NOME: | ENDEREÇO: | CEP: | BAIRRO: | TELEFONE: | PRODUTO: | PAGAMENTO:
 Se o cliente pedir para não ser contactado, inclua [OPT_OUT] no final da mensagem.
-Para enviar imagem do produto, inclua [ENVIAR_IMAGEM_BOMVINK] ou [ENVIAR_IMAGEM_LUATEK] no texto.`;
+Para enviar a FOTO de um produto inclua [FOTO_<SLUG>] na sua resposta (ex: [FOTO_BOMVINK_21V]).
+Para enviar o VÍDEO de um produto inclua [VIDEO_<SLUG>] na sua resposta (ex: [VIDEO_LUATEK_48V]).
+Os slugs de cada produto com foto/vídeo disponíveis são listados no catálogo abaixo.`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -89,12 +91,14 @@ export async function processAIResponse(
     let productSection = "";
     if (activeProducts.length > 0) {
       const lines = activeProducts.map((p, i) => {
+        // Build safe slug from product name for flags: "BOMVINK 21V" → "BOMVINK_21V"
+        const slug = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
         const parts = [
-          `Produto ${i + 1} — ${p.name}`,
+          `Produto ${i + 1} — ${p.name} [slug: ${slug}]`,
           p.description ?? null,
           `Preço: R$${p.price.toFixed(2)}${p.priceInstallments && p.installments ? ` à vista ou ${p.installments}x de R$${p.priceInstallments.toFixed(2)}` : ""}`,
-          p.imageUrl ? `Imagem: ${p.imageUrl}` : null,
-          p.videoUrl ? `Vídeo: ${p.videoUrl}` : null,
+          p.imageUrl ? `→ Para enviar a FOTO deste produto inclua [FOTO_${slug}] na resposta` : null,
+          p.videoUrl ? `→ Para enviar o VÍDEO deste produto inclua [VIDEO_${slug}] na resposta` : null,
         ].filter(Boolean);
         return parts.join("\n");
       });
@@ -157,14 +161,16 @@ export async function processAIResponse(
       await handleEscalation(conversation.leadId, conversationId, response);
     }
 
+    // ── Build per-product media flag regex for stripping ─────────────────────
+    const mediaFlagPattern = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
+
     // ── Strip all flags to get clean customer message ─────────────────────────
     const cleanResponse = response
       .replace(/^\[ESCALAR\]\s*/i, "")
       .replace(/^\[AGENDAR\]\s*/i, "")
       .replace(/\[PASSAGEM\][^\n]*/gi, "")
       .replace(/\[OPT_OUT\]/gi, "")
-      .replace(/\[ENVIAR_IMAGEM_BOMVINK\]/gi, "")
-      .replace(/\[ENVIAR_IMAGEM_LUATEK\]/gi, "")
+      .replace(mediaFlagPattern, "")
       .trim();
 
     if (!cleanResponse) return;
@@ -182,17 +188,16 @@ export async function processAIResponse(
     // ── Send text response to customer ────────────────────────────────────────
     await sendWhatsAppMessage(provider.businessPhoneNumberId, to, cleanResponse, token);
 
-    // ── Send product images if flagged ────────────────────────────────────────
-    if (/\[ENVIAR_IMAGEM_BOMVINK\]/i.test(response)) {
-      const imgUrl = process.env.PRODUCT_IMAGE_BOMVINK;
-      if (imgUrl) {
-        await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, "BOMVINK 21V — Chave de Impacto", token);
+    // ── Send product photos/videos if flagged ─────────────────────────────────
+    for (const product of activeProducts) {
+      const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+      if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(response) && product.imageUrl) {
+        await sendWhatsAppImage(provider.businessPhoneNumberId, to, product.imageUrl, product.name, token)
+          .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
       }
-    }
-    if (/\[ENVIAR_IMAGEM_LUATEK\]/i.test(response)) {
-      const imgUrl = process.env.PRODUCT_IMAGE_LUATEK;
-      if (imgUrl) {
-        await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, "LUATEK 48V — Chave de Impacto", token);
+      if (new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(response) && product.videoUrl) {
+        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token)
+          .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
       }
     }
 
