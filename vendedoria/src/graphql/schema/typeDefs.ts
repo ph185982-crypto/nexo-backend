@@ -52,6 +52,7 @@ export const typeDefs = `#graphql
     aiProvider: String
     aiModel: String
     escalationThreshold: Int!
+    sandboxMode: Boolean!
     createdAt: DateTime!
   }
 
@@ -466,6 +467,7 @@ export const typeDefs = `#graphql
     aiModel: String
     systemPrompt: String
     escalationThreshold: Int
+    sandboxMode: Boolean
   }
 
 

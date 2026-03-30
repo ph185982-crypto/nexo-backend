@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, gql } from "@apollo/client";
 import {
-  Package, Plus, Pencil, Trash2, Loader2, ImageIcon, Video, CheckCircle2, XCircle,
+  Package, Plus, Pencil, Trash2, Loader2, ImageIcon, Video, CheckCircle2, XCircle, Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +93,25 @@ export default function ProductsPage() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const imgInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadFile = async (file: File, field: "imageUrl" | "videoUrl") => {
+    const isVideo = field === "videoUrl";
+    if (isVideo) setUploadingVideo(true); else setUploadingImg(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!res.ok) { setFeedback({ type: "err", msg: "Falha no upload. Configure CLOUDINARY_CLOUD_NAME e CLOUDINARY_UPLOAD_PRESET." }); return; }
+      const { url } = await res.json() as { url: string };
+      setForm(prev => ({ ...prev, [field]: url }));
+      setFeedback({ type: "ok", msg: "Arquivo enviado!" });
+    } catch { setFeedback({ type: "err", msg: "Erro no upload." }); }
+    finally { if (isVideo) setUploadingVideo(false); else setUploadingImg(false); }
+  };
 
   // Auto-select first org
   useEffect(() => {
@@ -459,29 +478,63 @@ export default function ProductsPage() {
               />
             </div>
 
+            {/* Image upload */}
             <div>
-              <Label htmlFor="p-img">URL da Foto do Produto</Label>
-              <Input
-                id="p-img"
-                value={form.imageUrl}
-                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                placeholder="https://…/imagem.jpg"
-                className="mt-1"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Use um link público (Google Drive, Imgur, Cloudinary, etc.)
-              </p>
+              <Label>Foto do Produto</Label>
+              <div className="mt-1 flex gap-2">
+                <Input
+                  value={form.imageUrl}
+                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                  placeholder="Cole uma URL ou faça upload →"
+                  className="flex-1 text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-shrink-0 gap-1.5"
+                  onClick={() => imgInputRef.current?.click()}
+                  disabled={uploadingImg}
+                >
+                  {uploadingImg ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                  Upload
+                </Button>
+                <input ref={imgInputRef} type="file" accept="image/*" className="hidden"
+                  onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f, "imageUrl"); e.target.value = ""; }} />
+              </div>
+              {form.imageUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={form.imageUrl} alt="preview" className="mt-2 h-24 w-auto rounded border object-cover" onError={e => (e.currentTarget.style.display = "none")} />
+              )}
             </div>
 
+            {/* Video upload */}
             <div>
-              <Label htmlFor="p-video">URL do Vídeo do Produto</Label>
-              <Input
-                id="p-video"
-                value={form.videoUrl}
-                onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
-                placeholder="https://…/video.mp4"
-                className="mt-1"
-              />
+              <Label>Vídeo do Produto</Label>
+              <div className="mt-1 flex gap-2">
+                <Input
+                  value={form.videoUrl}
+                  onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                  placeholder="Cole uma URL ou faça upload →"
+                  className="flex-1 text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-shrink-0 gap-1.5"
+                  onClick={() => videoInputRef.current?.click()}
+                  disabled={uploadingVideo}
+                >
+                  {uploadingVideo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                  Upload
+                </Button>
+                <input ref={videoInputRef} type="file" accept="video/*" className="hidden"
+                  onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f, "videoUrl"); e.target.value = ""; }} />
+              </div>
+              {form.videoUrl && (
+                <p className="text-xs text-muted-foreground mt-1 truncate">✓ {form.videoUrl.split("/").pop()}</p>
+              )}
             </div>
 
             <div className="flex items-center gap-3">

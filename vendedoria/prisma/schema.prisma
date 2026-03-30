@@ -71,10 +71,11 @@ model WhatsappBusinessOrganization {
   professionals ProfissionalEntity[]
   workUnits    WorkUnitEntity[]
   calendarEvents CalendarEvent[]
-  hierarchyItems OrgHierarchyItem[]
-  products     Product[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  hierarchyItems        OrgHierarchyItem[]
+  products              Product[]
+  ownerNotifications    OwnerNotification[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 // ─── WhatsApp ──────────────────────────────────────────────────────────────
@@ -102,6 +103,7 @@ model Agent {
   displayName              String
   kind                     String   // AI | HUMAN
   status                   String   @default("ACTIVE") // ACTIVE | INACTIVE
+  sandboxMode              Boolean  @default(false)  // true = only send to approved test numbers
   whatsappProviderConfigId String   @unique
   config                   WhatsappProviderConfig @relation(fields: [whatsappProviderConfigId], references: [id])
   systemPrompt             String?  @db.Text
@@ -416,6 +418,21 @@ model OrgHierarchyItem {
   organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
   order          Int              @default(0)
   createdAt      DateTime         @default(now())
+}
+
+// ─── Owner Notifications ───────────────────────────────────────────────────
+
+model OwnerNotification {
+  id             String   @id @default(cuid())
+  type           String   // ORDER | ESCALATION | OPT_OUT
+  title          String
+  body           String   @db.Text
+  read           Boolean  @default(false)
+  organizationId String
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  leadId         String?
+  conversationId String?
+  createdAt      DateTime @default(now())
 }
 
 // ─── Product Catalog ───────────────────────────────────────────────────────

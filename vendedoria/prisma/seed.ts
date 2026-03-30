@@ -137,9 +137,16 @@ COMPORTAMENTO GERAL:
 - Se o cliente pedir para não ser mais contactado, responda com educação, se despeça e inclua [OPT_OUT] no final da mensagem
 - Acompanhe o tom informal do cliente`;
 
+  // Only set systemPrompt on create, never overwrite user edits on update
+  const existingAgent = await prisma.agent.findUnique({ where: { whatsappProviderConfigId: "acc-demo" } });
   const agent = await prisma.agent.upsert({
     where: { whatsappProviderConfigId: "acc-demo" },
-    update: { aiProvider, aiModel, systemPrompt: LEO_SYSTEM_PROMPT },
+    update: {
+      aiProvider,
+      aiModel,
+      // Preserve user-edited prompt — only reset if it's still the factory default or empty
+      ...((!existingAgent?.systemPrompt || existingAgent.systemPrompt === LEO_SYSTEM_PROMPT) && { systemPrompt: LEO_SYSTEM_PROMPT }),
+    },
     create: {
       displayName: "Léo — Nexo Brasil",
       kind: "AI",
