@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Kanban, Calendar, Megaphone, Building2,
   Users, ChevronDown, ChevronRight, MessageSquare, Bot,
-  Folder, Settings, Phone,
+  Folder, Settings, Phone, Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,6 +46,7 @@ const navItems = [
   { href: "/crm/campaigns", label: "Campanhas", icon: Megaphone },
   { href: "/crm/work-units", label: "Unidades", icon: Building2 },
   { href: "/crm/professionals", label: "Profissionais", icon: Users },
+  { href: "/crm/products", label: "Produtos", icon: Package },
 ];
 
 export function Sidebar({

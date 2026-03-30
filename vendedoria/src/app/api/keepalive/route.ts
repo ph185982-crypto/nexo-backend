@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 
 /**
  * GET /api/keepalive
- *
- * Endpoint leve para manter o serviço Render acordado.
- * Configure um monitor externo gratuito (ex: UptimeRobot, Freshping, cron-job.org)
- * para fazer GET nesta URL a cada 5 minutos.
- *
- * URL: https://vendedoria.onrender.com/api/keepalive
- * Interval: 5 minutes
+ * Keeps the Render free-tier service awake AND triggers the follow-up worker.
+ * Configure UptimeRobot to ping this URL every 5 minutes.
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const baseUrl = process.env.NEXTAUTH_URL ?? new URL(req.url).origin;
+
+  // Fire follow-up worker asynchronously (don't block the health response)
+  fetch(`${baseUrl}/api/cron/followup`).catch(() => {});
+
   return NextResponse.json({ alive: true, ts: Date.now() });
 }

@@ -72,6 +72,7 @@ model WhatsappBusinessOrganization {
   workUnits    WorkUnitEntity[]
   calendarEvents CalendarEvent[]
   hierarchyItems OrgHierarchyItem[]
+  products     Product[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -206,11 +207,28 @@ model WhatsappConversation {
   provider                   WhatsappProviderConfig @relation(fields: [whatsappProviderConfigId], references: [id])
   messages                   WhatsappMessage[]
   tags                       ConversationTag[]
+  followUp                   ConversationFollowUp?
   conversationRatings        Json     @default("[]")
   lastMessageAt              DateTime?
   isActive                   Boolean  @default(true)
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
+}
+
+model ConversationFollowUp {
+  id               String               @id @default(cuid())
+  conversationId   String               @unique
+  conversation     WhatsappConversation @relation(fields: [conversationId], references: [id])
+  step             Int                  @default(1)    // 1=4h 2=24h 3=48h 4=72h 5=done
+  status           String               @default("ACTIVE") // ACTIVE | DONE | OPT_OUT
+  leadName         String?
+  phoneNumber      String               // recipient to send follow-up to
+  phoneNumberId    String               // Meta phone number ID for sending
+  accessToken      String?              // WhatsApp access token
+  aiMessageAt      DateTime             // reference: when AI last messaged
+  nextSendAt       DateTime             // aiMessageAt + interval for current step
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
 }
 
 model ConversationTag {
@@ -398,4 +416,36 @@ model OrgHierarchyItem {
   organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
   order          Int              @default(0)
   createdAt      DateTime         @default(now())
+}
+
+// ─── Product Catalog ───────────────────────────────────────────────────────
+
+model Product {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?  @db.Text
+  price            Float
+  priceInstallments Float?
+  installments     Int      @default(10)
+  imageUrl         String?
+  videoUrl         String?
+  category         String?
+  isActive         Boolean  @default(true)
+  organizationId   String
+  organization     WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ─── Webhook Retry Queue ────────────────────────────────────────────────────
+
+model WebhookQueue {
+  id          String   @id @default(cuid())
+  payload     String   @db.Text   // raw JSON body from Meta
+  signature   String              // x-hub-signature-256 header
+  attempts    Int      @default(0)
+  status      String   @default("PENDING") // PENDING | PROCESSED | FAILED
+  error       String?  @db.Text
+  createdAt   DateTime @default(now())
+  retryAfter  DateTime @default(now())
 }

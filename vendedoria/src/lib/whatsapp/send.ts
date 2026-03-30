@@ -5,6 +5,25 @@ function resolveToken(override?: string): string | undefined {
   return override ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
 }
 
+/**
+ * Brazilian mobile numbers migrated to 9 digits in 2012.
+ * WhatsApp sometimes delivers the old 8-digit format (55XX8digits).
+ * Meta's send API requires the 9-digit format (55XX9 8digits).
+ * This normalizes: 556284465388 → 5562984465388
+ */
+function normalizeBrazilianNumber(phone: string): string {
+  // Must be Brazil (+55) with area code + 8-digit number = 12 digits total
+  if (/^55\d{10}$/.test(phone)) {
+    const areaCode = phone.slice(2, 4);
+    const number = phone.slice(4);
+    // Mobile numbers start with 6-9; landlines start with 2-5 (don't add 9)
+    if (/^[6-9]/.test(number)) {
+      return `55${areaCode}9${number}`;
+    }
+  }
+  return phone;
+}
+
 export async function sendWhatsAppMessage(
   phoneNumberId: string,
   to: string,
@@ -17,6 +36,8 @@ export async function sendWhatsAppMessage(
     return;
   }
 
+  const normalizedTo = normalizeBrazilianNumber(to);
+
   const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
     headers: {
@@ -26,7 +47,7 @@ export async function sendWhatsAppMessage(
     body: JSON.stringify({
       messaging_product: "whatsapp",
       recipient_type: "individual",
-      to,
+      to: normalizedTo,
       type: "text",
       text: { body: text },
     }),
@@ -36,6 +57,41 @@ export async function sendWhatsAppMessage(
     const error = await response.text();
     console.error("[WhatsApp] Send error:", error);
     throw new Error(`WhatsApp send failed: ${error}`);
+  }
+}
+
+export async function sendWhatsAppImage(
+  phoneNumberId: string,
+  to: string,
+  imageUrl: string,
+  caption?: string,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) {
+    console.warn("[WhatsApp] No access token — skipping image send");
+    return;
+  }
+
+  const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: normalizeBrazilianNumber(to),
+      type: "image",
+      image: { link: imageUrl, ...(caption ? { caption } : {}) },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error("[WhatsApp] Image send error:", error);
+    throw new Error(`WhatsApp image send failed: ${error}`);
   }
 }
 

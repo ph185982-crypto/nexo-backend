@@ -22,18 +22,26 @@ export async function GET(req: NextRequest) {
 
 // ─── Message Processing (POST) ─────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  try {
-    // Verify signature
-    const signature = req.headers.get("x-hub-signature-256");
-    const body = await req.text();
+  const signature = req.headers.get("x-hub-signature-256") ?? "";
+  const body = await req.text();
 
+  // ── CORREÇÃO 4: Diagnostic log on every incoming webhook ──────────────────
+  const ts = new Date().toISOString();
+  try {
+    const preview = JSON.parse(body);
+    const msg = preview?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    const from = msg?.from ?? preview?.entry?.[0]?.changes?.[0]?.value?.statuses?.[0]?.recipient_id ?? "unknown";
+    const text = msg?.text?.body ?? msg?.type ?? "(status/other)";
+    console.log(`[Webhook] ${ts} | from: ${from} | msg: ${text.slice(0, 50)}`);
+  } catch { console.log(`[Webhook] ${ts} | payload unparseable`); }
+
+  try {
     if (!verifySignature(body, signature)) {
       console.error("[WhatsApp Webhook] Signature validation failed — check META_WHATSAPP_APP_SECRET");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const data = JSON.parse(body);
-    console.log("[WhatsApp Webhook] Payload recebido:", JSON.stringify(data).slice(0, 300));
 
     // Process each entry
     for (const entry of data.entry ?? []) {
@@ -70,8 +78,19 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[WhatsApp Webhook] Error:", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    console.error("[WhatsApp Webhook] Error — enqueuing for retry:", error);
+
+    // ── CORREÇÃO 3: Save to retry queue on failure ─────────────────────────
+    await prisma.webhookQueue.create({
+      data: {
+        payload: body,
+        signature,
+        retryAfter: new Date(Date.now() + 30_000), // retry in 30s
+      },
+    }).catch((e) => console.error("[WebhookQueue] Failed to enqueue:", e));
+
+    // Always return 200 to Meta so it doesn't keep retrying immediately
+    return NextResponse.json({ success: true, queued: true });
   }
 }
 
@@ -231,6 +250,12 @@ async function handleIncomingMessage(
     where: { id: conversation.id },
     data: { lastMessageAt: sentAt, updatedAt: new Date() },
   });
+
+  // Cancel any active follow-up — user replied, no need to follow up
+  await prisma.conversationFollowUp.updateMany({
+    where: { conversationId: conversation.id, status: "ACTIVE" },
+    data: { status: "DONE" },
+  }).catch(() => {});
 
   // Trigger AI agent if configured — fire-and-forget with explicit error logging
   if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
