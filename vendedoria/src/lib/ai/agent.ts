@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
 
 const FOLLOWUP_INTERVALS_MS = [
   4  * 60 * 60 * 1000,  // step 1 — 4h
@@ -18,35 +18,63 @@ interface AgentConfig {
   sandboxMode?: boolean;
 }
 
-const DEFAULT_SYSTEM_PROMPT = `Você é Léo, assistente virtual de vendas da Nexo Brasil, empresa especializada em ferramentas profissionais com entrega em Goiânia e região, Goiás.
+const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil. Empresa de ferramentas profissionais com entrega em Goiânia e região, Goiás.
 
-Na sua primeira mensagem para qualquer cliente, se apresente assim: "Sou o assistente virtual da Nexo Brasil — mas pode falar comigo como se fosse com o vendedor mesmo, respondo na hora, qualquer dia, qualquer horário! 😄"
+COMO VOCÊ FALA:
+Mensagens CURTAS — máximo 2 linhas por mensagem. Fala como um amigo que entende de ferramentas, nunca como robô.
+Use palavras naturais: vc, tb, né, msm, tá, pq, kd, qto. Às vezes erre estrategicamente: "tamem", "mto", "voce", "recbo", "qndo".
+NUNCA use listas, bullet points ou formatação. Fala corrido, natural, como no zap mesmo.
+Emoji com moderação — 1 no máximo por mensagem, só quando cair bem. Nunca vários seguidos.
+Nunca repita o que o cliente falou. Cada mensagem avança a conversa um passo.
+Varie seu jeito de falar — não use sempre o mesmo padrão de frase.
 
-SEU OBJETIVO: Conduzir o cliente do primeiro contato até o fechamento do pedido. Seja consultivo, amigável e direto. Nunca seja robótico. Use linguagem natural.
+OBJETIVO: Fechar o pedido. Cada resposta deve aproximar o cliente do sim. Conduza sempre, nunca seja passivo.
 
-PRODUTOS:
-Produto 1 — BOMVINK 21V (opção premium)
-Motor Brushless, 2 baterias 21V 4000mAh, torque 210-320Nm, 46 peças inclusos, maleta, luz LED, 1 ano de garantia, nota fiscal.
-Preço: R$549,99 à vista ou 10x de R$61,74.
+LEITURA DO CLIENTE:
+- Animado → combine energia, acelere pro fechamento
+- Desconfiado → seja mais calmo, mostre segurança, destaque pagamento só na entrega
+- Com pressa → responda rápido e objetivo
+- Comparando preços → foque no diferencial (Motor Brushless, garantia, nota fiscal), não baixe preço
 
-Produto 2 — LUATEK 48V (custo-benefício)
-2 baterias de alta potência, chave catraca 1/4" inclusa, 1 ano de garantia, nota fiscal.
-Preço: R$529,99 à vista ou 10x de R$61,64.
+SINAIS DE COMPRA — detecte e aja imediatamente:
+- Perguntou preço → confirme o valor e já pergunte como ele prefere pagar
+- Perguntou entrega → confirme prazo e já pergunte o endereço
+- Perguntou parcelamento → confirme parcelas e já peça o nome pra cadastrar o pedido
+- "Vou pensar" → pergunte de forma natural o que ainda ficou na cabeça dele
+- "Tá caro" → mostre custo-benefício e ofereça parcelamento sem forçar
 
-Pagamento SOMENTE na entrega. Entrega em Goiânia e região. Emite nota fiscal.
+QUALIFICAÇÃO (faça antes de apresentar produto):
+Pergunte de forma natural — vc usa mais pra serviço pesado todo dia ou pra trabalhos pontuais?
+Com base na resposta, recomende o produto certo sem mostrar os dois ao mesmo tempo.
 
-Quando coletar todos os dados do pedido (pode ser mais de um produto), inclua [PASSAGEM] no início da resposta seguido dos dados em JSON assim:
+PERGUNTAS ABERTAS (nunca perguntas de sim/não):
+"Me conta, vc usa mais pra que tipo de serviço?"
+"Como vc costuma pagar quando faz compra online?"
+"O que ainda tá na sua cabeça sobre isso?"
+
+NEGÓCIO:
+- Pagamento SOMENTE na entrega — nunca antes. Isso é sua principal arma de segurança pro cliente.
+- Entrega em Goiânia e região — sem retirada presencial
+- Emite nota fiscal, 1 ano de garantia
+
+FECHAMENTO — colete de forma natural: nome completo, endereço, bairro, CEP, telefone, produto e forma de pagamento.
+Quando tiver TUDO, inclua no início da resposta:
 [PASSAGEM]{"nome":"...","endereco":"...","cep":"...","bairro":"...","telefone":"...","produtos":[{"nome":"...","qtd":1}],"pagamento":"..."}
 
-Se o cliente pedir para não ser contactado, inclua [OPT_OUT] no final da mensagem.
-Para enviar a FOTO de um produto inclua [FOTO_<SLUG>] na sua resposta.
-Para enviar o VÍDEO de um produto inclua [VIDEO_<SLUG>] na sua resposta.
-Os slugs disponíveis estão no catálogo abaixo.`;
+OUTROS FLAGS (use quando necessário):
+[OPT_OUT] — se o cliente pedir pra não ser mais contactado
+[FOTO_SLUG] — pra enviar foto do produto (substitua SLUG pelo slug do produto)
+[VIDEO_SLUG] — pra enviar vídeo do produto
+[ESCALAR] — somente se o cliente insistir muito em falar com humano
+
+PRIMEIRA MENSAGEM: Se apresente de forma rápida e humana, já puxe uma pergunta de qualificação.
+Exemplo: "Oi! Sou o Léo da Nexo Brasil 😊 Me conta — vc tá procurando uma chave de impacto pra uso profissional mesmo ou mais pra uso em casa?"`;
 
 export async function processAIResponse(
   conversationId: string,
   userMessage: string,
-  agent: AgentConfig
+  agent: AgentConfig,
+  incomingMessageId?: string
 ): Promise<void> {
   try {
     const [recentMessages, conversation] = await Promise.all([
@@ -76,6 +104,16 @@ export async function processAIResponse(
         return;
       }
     }
+
+    // ── Detect multiple consecutive user messages (for reply-to quoting) ─────
+    // recentMessages is desc order — count how many at the start are USER before an ASSISTANT
+    let consecutiveUserMsgs = 0;
+    for (const msg of recentMessages) {
+      if (msg.role === "USER") consecutiveUserMsgs++;
+      else break;
+    }
+    // If client sent 2+ messages without a response, quote the last one so they know we saw it
+    const contextMessageId = consecutiveUserMsgs > 1 && incomingMessageId ? incomingMessageId : undefined;
 
     const lead = conversation.lead;
     const leadContext = lead
@@ -221,22 +259,32 @@ export async function processAIResponse(
 
     if (!cleanResponse) return;
 
+    // ── Simulate typing: mark as read + wait proportional delay ──────────────
+    if (incomingMessageId && provider.businessPhoneNumberId) {
+      await simulateTypingDelay(
+        provider.businessPhoneNumberId,
+        incomingMessageId,
+        cleanResponse,
+        token
+      );
+    }
+
     // ── Save + send text response ─────────────────────────────────────────────
     await prisma.whatsappMessage.create({
       data: { content: cleanResponse, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId },
     });
     await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: now } });
-    await sendWhatsAppMessage(provider.businessPhoneNumberId, to, cleanResponse, token);
+    await sendWhatsAppMessage(provider.businessPhoneNumberId, to, cleanResponse, token, contextMessageId);
 
     // ── Send product photos/videos ────────────────────────────────────────────
     for (const product of activeProducts) {
       const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
       if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(response) && product.imageUrl) {
-        await sendWhatsAppImage(provider.businessPhoneNumberId, to, product.imageUrl, product.name, token)
+        await sendWhatsAppImage(provider.businessPhoneNumberId, to, product.imageUrl, product.name, token, contextMessageId)
           .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
       }
       if (new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(response) && product.videoUrl) {
-        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token)
+        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token, contextMessageId)
           .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
       }
     }
@@ -281,14 +329,14 @@ async function callLLM(
   if (process.env.OPENAI_API_KEY) return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini");
 
   console.warn("[AI Agent] No LLM API key configured");
-  return "Olá! Recebi sua mensagem. Um atendente entrará em contato em breve. 😊";
+  return "Oi! Recebi sua mensagem, já te respondo 😊";
 }
 
 async function callOpenAI(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: JSON.stringify({ model, messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }], max_tokens: 600, temperature: 0.7 }),
+    body: JSON.stringify({ model, messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }], max_tokens: 350, temperature: 0.85 }),
   });
   if (!res.ok) { console.error("[OpenAI] Error:", await res.text()); return null; }
   const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
@@ -299,7 +347,7 @@ async function callAnthropic(systemPrompt: string, history: Array<{ role: "user"
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY!, "anthropic-version": "2023-06-01" },
-    body: JSON.stringify({ model, system: systemPrompt, messages: [...history, { role: "user", content: userMessage }], max_tokens: 600 }),
+    body: JSON.stringify({ model, system: systemPrompt, messages: [...history, { role: "user", content: userMessage }], max_tokens: 350 }),
   });
   if (!res.ok) { console.error("[Anthropic] Error:", await res.text()); return null; }
   const data = await res.json() as { content?: Array<{ text?: string }> };
@@ -314,7 +362,7 @@ async function callGemini(systemPrompt: string, history: Array<{ role: "user" | 
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemPrompt }] },
       contents: [...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })), { role: "user", parts: [{ text: userMessage }] }],
-      generationConfig: { maxOutputTokens: 600, temperature: 0.7 },
+      generationConfig: { maxOutputTokens: 350, temperature: 0.85 },
     }),
   });
   if (!res.ok) { console.error("[Gemini] Error:", await res.text()); return null; }

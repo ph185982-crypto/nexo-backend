@@ -9,26 +9,55 @@ function resolveToken(override?: string): string | undefined {
  * Brazilian mobile numbers migrated to 9 digits in 2012.
  * WhatsApp sometimes delivers the old 8-digit format (55XX8digits).
  * Meta's send API requires the 9-digit format (55XX9 8digits).
- * This normalizes: 556284465388 → 5562984465388
  */
 function normalizeBrazilianNumber(phone: string): string {
-  // Must be Brazil (+55) with area code + 8-digit number = 12 digits total
   if (/^55\d{10}$/.test(phone)) {
     const areaCode = phone.slice(2, 4);
     const number = phone.slice(4);
-    // Mobile numbers start with 6-9; landlines start with 2-5 (don't add 9)
-    if (/^[6-9]/.test(number)) {
-      return `55${areaCode}9${number}`;
-    }
+    if (/^[6-9]/.test(number)) return `55${areaCode}9${number}`;
   }
   return phone;
+}
+
+/** Mark an incoming message as read — shows blue double-tick to customer */
+export async function markWhatsAppMessageRead(
+  phoneNumberId: string,
+  messageId: string,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) return;
+  await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ messaging_product: "whatsapp", status: "read", message_id: messageId }),
+  }).catch(() => {}); // best-effort
+}
+
+/**
+ * Simulate human "typing" — marks message as read then waits.
+ * Delay is proportional to response length: feels natural, not instant.
+ */
+export async function simulateTypingDelay(
+  phoneNumberId: string,
+  incomingMessageId: string,
+  responseText: string,
+  accessToken?: string
+): Promise<void> {
+  // Mark as read immediately (customer sees blue ticks — agent "read" the message)
+  await markWhatsAppMessageRead(phoneNumberId, incomingMessageId, accessToken);
+
+  // Typing delay: ~30ms per character, clamped between 1.5s and 6s
+  const ms = Math.min(Math.max(responseText.length * 30, 1500), 6000);
+  await new Promise((r) => setTimeout(r, ms));
 }
 
 export async function sendWhatsAppMessage(
   phoneNumberId: string,
   to: string,
   text: string,
-  accessToken?: string
+  accessToken?: string,
+  contextMessageId?: string  // reply-to: quotes this message in WhatsApp
 ): Promise<void> {
   const token = resolveToken(accessToken);
   if (!token) {
@@ -36,21 +65,20 @@ export async function sendWhatsAppMessage(
     return;
   }
 
-  const normalizedTo = normalizeBrazilianNumber(to);
+  const body: Record<string, unknown> = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: normalizeBrazilianNumber(to),
+    type: "text",
+    text: { body: text },
+  };
+
+  if (contextMessageId) body.context = { message_id: contextMessageId };
 
   const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: normalizedTo,
-      type: "text",
-      text: { body: text },
-    }),
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -65,34 +93,28 @@ export async function sendWhatsAppImage(
   to: string,
   imageUrl: string,
   caption?: string,
-  accessToken?: string
+  accessToken?: string,
+  contextMessageId?: string
 ): Promise<void> {
   const token = resolveToken(accessToken);
-  if (!token) {
-    console.warn("[WhatsApp] No access token — skipping image send");
-    return;
-  }
+  if (!token) return;
+
+  const body: Record<string, unknown> = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: normalizeBrazilianNumber(to),
+    type: "image",
+    image: { link: imageUrl, ...(caption ? { caption } : {}) },
+  };
+  if (contextMessageId) body.context = { message_id: contextMessageId };
 
   const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: normalizeBrazilianNumber(to),
-      type: "image",
-      image: { link: imageUrl, ...(caption ? { caption } : {}) },
-    }),
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    console.error("[WhatsApp] Image send error:", error);
-    throw new Error(`WhatsApp image send failed: ${error}`);
-  }
+  if (!response.ok) throw new Error(`WhatsApp image send failed: ${await response.text()}`);
 }
 
 export async function sendWhatsAppVideo(
@@ -100,34 +122,28 @@ export async function sendWhatsAppVideo(
   to: string,
   videoUrl: string,
   caption?: string,
-  accessToken?: string
+  accessToken?: string,
+  contextMessageId?: string
 ): Promise<void> {
   const token = resolveToken(accessToken);
-  if (!token) {
-    console.warn("[WhatsApp] No access token — skipping video send");
-    return;
-  }
+  if (!token) return;
+
+  const body: Record<string, unknown> = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: normalizeBrazilianNumber(to),
+    type: "video",
+    video: { link: videoUrl, ...(caption ? { caption } : {}) },
+  };
+  if (contextMessageId) body.context = { message_id: contextMessageId };
 
   const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: normalizeBrazilianNumber(to),
-      type: "video",
-      video: { link: videoUrl, ...(caption ? { caption } : {}) },
-    }),
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    console.error("[WhatsApp] Video send error:", error);
-    throw new Error(`WhatsApp video send failed: ${error}`);
-  }
+  if (!response.ok) throw new Error(`WhatsApp video send failed: ${await response.text()}`);
 }
 
 export async function sendWhatsAppTemplate(
@@ -139,34 +155,20 @@ export async function sendWhatsAppTemplate(
   accessToken?: string
 ): Promise<void> {
   const token = resolveToken(accessToken);
-  if (!token) {
-    console.warn("[WhatsApp] No access token — skipping template send");
-    return;
-  }
+  if (!token) return;
 
   const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       messaging_product: "whatsapp",
       to,
       type: "template",
-      template: {
-        name: templateName,
-        language: { code: languageCode },
-        components,
-      },
+      template: { name: templateName, language: { code: languageCode }, components },
     }),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    console.error("[WhatsApp] Template send error:", error);
-    throw new Error(`WhatsApp template send failed: ${error}`);
-  }
+  if (!response.ok) throw new Error(`WhatsApp template send failed: ${await response.text()}`);
 }
 
 export async function getPhoneNumberInfo(phoneNumberId: string): Promise<{
@@ -179,9 +181,7 @@ export async function getPhoneNumberInfo(phoneNumberId: string): Promise<{
 
   const response = await fetch(
     `${BASE_URL}/${phoneNumberId}?fields=display_phone_number,verified_name,quality_rating`,
-    {
-      headers: { "Authorization": `Bearer ${token}` },
-    }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
 
   if (!response.ok) throw new Error("Failed to get phone info");
