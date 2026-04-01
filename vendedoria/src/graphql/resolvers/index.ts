@@ -1197,6 +1197,7 @@ export const resolvers = {
           aiModel?: string;
           systemPrompt?: string;
           escalationThreshold?: number;
+          sandboxMode?: boolean;
         }
       }
     ) => {
@@ -1209,6 +1210,7 @@ export const resolvers = {
           ...(input.aiModel && { aiModel: input.aiModel }),
           ...(input.systemPrompt !== undefined && { systemPrompt: input.systemPrompt }),
           ...(input.escalationThreshold !== undefined && { escalationThreshold: input.escalationThreshold }),
+          ...(input.sandboxMode !== undefined && { sandboxMode: input.sandboxMode }),
         },
       });
     },

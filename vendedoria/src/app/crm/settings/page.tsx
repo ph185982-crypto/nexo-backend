@@ -27,7 +27,7 @@ const GET_SETTINGS = gql`
       accounts {
         id accountName displayPhoneNumber businessPhoneNumberId wabaId status
         agent {
-          id displayName kind status systemPrompt aiProvider aiModel escalationThreshold
+          id displayName kind status systemPrompt aiProvider aiModel escalationThreshold sandboxMode
         }
       }
     }
@@ -80,7 +80,7 @@ const TEST_WHATSAPP = gql`
 const UPDATE_AGENT = gql`
   mutation UpdateAgent($id: String!, $input: UpdateAgentInput!) {
     updateAgent(id: $id, input: $input) {
-      id displayName status systemPrompt aiProvider aiModel escalationThreshold
+      id displayName status systemPrompt aiProvider aiModel escalationThreshold sandboxMode
     }
   }
 `;
@@ -127,6 +127,7 @@ interface AgentType {
   status: string;
   systemPrompt?: string;
   aiProvider?: string;
+  sandboxMode?: boolean;
   aiModel?: string;
   escalationThreshold?: number;
 }
@@ -496,6 +497,7 @@ function AgentTab({ orgs }: { orgs: OrgType[] }) {
     aiModel: agent?.aiModel ?? "claude-sonnet-4-6",
     escalationThreshold: agent?.escalationThreshold ?? 3,
     status: agent?.status ?? "ACTIVE",
+    sandboxMode: agent?.sandboxMode ?? false,
   });
   const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
 
@@ -513,6 +515,7 @@ function AgentTab({ orgs }: { orgs: OrgType[] }) {
             aiModel: form.aiModel,
             systemPrompt: form.systemPrompt,
             escalationThreshold: form.escalationThreshold,
+            sandboxMode: form.sandboxMode,
           },
         },
       });
@@ -556,6 +559,37 @@ function AgentTab({ orgs }: { orgs: OrgType[] }) {
             </div>
           </div>
         </CardHeader>
+      </Card>
+
+      <Card className={cn(form.sandboxMode && "border-amber-400 bg-amber-50/30")}>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Key className="w-4 h-4 text-amber-500" />
+                Modo Sandbox (Teste)
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Quando ativo, o agente só responde ao número de teste configurado em{" "}
+                <code className="bg-muted px-1 rounded text-xs">SANDBOX_TEST_NUMBER</code>.
+                Use durante testes para não responder clientes reais.
+              </CardDescription>
+            </div>
+            <Switch
+              checked={form.sandboxMode}
+              onCheckedChange={(v) => setForm({ ...form, sandboxMode: v })}
+            />
+          </div>
+        </CardHeader>
+        {form.sandboxMode && (
+          <CardContent className="pt-0">
+            <div className="rounded-md bg-amber-100 border border-amber-300 px-3 py-2 text-xs text-amber-800 flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+              Modo sandbox ativo — apenas o número em{" "}
+              <code className="bg-amber-200 px-1 rounded">SANDBOX_TEST_NUMBER</code> receberá respostas.
+            </div>
+          </CardContent>
+        )}
       </Card>
 
       <Card>
@@ -629,14 +663,34 @@ function AgentTab({ orgs }: { orgs: OrgType[] }) {
           <Textarea
             value={form.systemPrompt}
             onChange={(e) => setForm({ ...form, systemPrompt: e.target.value })}
-            rows={12}
-            className="font-mono text-sm resize-none"
-            placeholder="Você é um assistente de vendas..."
+            rows={18}
+            className="font-mono text-sm resize-y min-h-[200px]"
+            placeholder="Você é um assistente de vendas da [Empresa]. Seu objetivo é..."
           />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{form.systemPrompt.length} caracteres</span>
+            <span>{form.systemPrompt.split("\n").length} linhas</span>
+          </div>
+          <div className="rounded-md bg-muted/60 border border-border px-3 py-2.5 space-y-1.5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Flags disponíveis</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-muted-foreground">
+              {[
+                ["[ESCALAR]", "Passa para atendimento humano"],
+                ["[PASSAGEM]{...JSON}", "Envia pedido para o dono"],
+                ["[OPT_OUT]", "Bloqueia lead (pediu para não contatar)"],
+                ["[FOTO_SLUG]", "Envia foto do produto no WhatsApp"],
+                ["[VIDEO_SLUG]", "Envia vídeo do produto no WhatsApp"],
+              ].map(([flag, desc]) => (
+                <div key={flag} className="flex items-start gap-1.5">
+                  <code className="bg-background border border-border px-1 rounded text-[10px] flex-shrink-0">{flag}</code>
+                  <span className="opacity-70">{desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-xs text-muted-foreground flex-1">
-              Use <code className="bg-muted px-1 rounded">[ESCALAR]</code> para sinalizar escalonamento e{" "}
-              <code className="bg-muted px-1 rounded">[AGENDAR]</code> para agendamento
+              Os produtos do catálogo são injetados automaticamente — não precisa listá-los aqui.
             </p>
             <Button
               variant="outline"
