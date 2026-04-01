@@ -35,23 +35,25 @@ async function main() {
   console.log("✓ Organization:", org.name);
 
   // Create WhatsApp account — update credentials from env vars on every run
-  const realPhoneId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
-  const realWabaId = process.env.META_WHATSAPP_WABA_ID;
+  // Fallback to the Nexo production number if env var not set
+  const realPhoneId   = process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "545617245297475";
+  const realWabaId    = process.env.META_WHATSAPP_WABA_ID;
   const realAccessToken = process.env.META_WHATSAPP_ACCESS_TOKEN;
 
   const account = await prisma.whatsappProviderConfig.upsert({
     where: { id: "acc-demo" },
     update: {
-      ...(realPhoneId && { businessPhoneNumberId: realPhoneId }),
+      businessPhoneNumberId: realPhoneId,
+      displayPhoneNumber: "+55 62 9 3250-0802",
       ...(realWabaId && { wabaId: realWabaId }),
       ...(realAccessToken && { accessToken: realAccessToken }),
       status: "CONNECTED", // reset ERROR/DISCONNECTED back to CONNECTED on each deploy
     },
     create: {
       id: "acc-demo",
-      accountName: "WhatsApp Vendas",
-      displayPhoneNumber: "+55 62 9 8446-5388",
-      businessPhoneNumberId: realPhoneId ?? "DEMO_PHONE_ID",
+      accountName: "WhatsApp Vendas — Nexo Brasil",
+      displayPhoneNumber: "+55 62 9 3250-0802",
+      businessPhoneNumberId: realPhoneId,
       wabaId: realWabaId ?? "DEMO_WABA_ID",
       accessToken: realAccessToken ?? null,
       status: "CONNECTED",
