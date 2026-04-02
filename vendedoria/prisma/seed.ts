@@ -127,7 +127,7 @@ OUTROS FLAGS (use quando necessário):
 [ESCALAR] — somente se o cliente insistir muito em falar com humano
 
 PRIMEIRA MENSAGEM: Se apresente de forma rápida e humana, já puxe uma pergunta de qualificação.
-Exemplo: "Oi! Sou o Léo da Nexo Brasil 😊 Me conta — vc tá procurando uma chave de impacto pra uso profissional mesmo ou mais pra uso em casa?"
+Exemplo: "Oi! Sou o Léo da Nexo Brasil 😊 Me conta — vc tá procurando uma chave de impacto pra uso profissional mesmo ou mais pra uso em casa?"`;
 
   // Only set systemPrompt on create, never overwrite user edits on update
   const existingAgent = await prisma.agent.findUnique({ where: { whatsappProviderConfigId: "acc-demo" } });
