@@ -1,1 +1,9 @@
-{}
+{
+  "framework": "nextjs",
+  "buildCommand": "cd vendedoria && npm ci && npm run build",
+  "outputDirectory": "vendedoria/.next",
+  "installCommand": "echo 'skip'",
+  "crons": [
+    { "path": "/api/campaign/worker", "schedule": "* * * * *" }
+  ]
+}
