@@ -22,11 +22,19 @@ export async function GET(req: Request) {
   const tokenRes = await fetch(`https://graph.facebook.com/v21.0/me?access_token=${token}`);
   results.tokenInfo = await tokenRes.json();
 
-  // 2. Current subscriptions
+  // 2. WABAs acessíveis por este token
+  const wabasRes = await fetch(`https://graph.facebook.com/v21.0/me/whatsapp_business_accounts?access_token=${token}`);
+  results.myWabas = await wabasRes.json();
+
+  // 3. Tentar via businesses
+  const bizRes = await fetch(`https://graph.facebook.com/v21.0/me/businesses?fields=id,name,whatsapp_business_accounts{id,name,phone_numbers}&access_token=${token}`);
+  results.myBusinesses = await bizRes.json();
+
+  // 4. Current subscriptions
   const checkRes = await fetch(`https://graph.facebook.com/v21.0/${wabaId}/subscribed_apps?access_token=${token}`);
   results.currentSubscriptions = await checkRes.json();
 
-  // 3. Subscribe WABA to app
+  // 5. Subscribe WABA to app
   const subRes = await fetch(`https://graph.facebook.com/v21.0/${wabaId}/subscribed_apps`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -34,7 +42,7 @@ export async function GET(req: Request) {
   });
   results.subscribe = await subRes.json();
 
-  // 4. Phone number status
+  // 6. Phone number status
   if (phoneNumberId) {
     const phoneRes = await fetch(
       `https://graph.facebook.com/v21.0/${phoneNumberId}?fields=id,display_phone_number,verified_name,status,quality_rating&access_token=${token}`
@@ -42,7 +50,7 @@ export async function GET(req: Request) {
     results.phoneNumber = await phoneRes.json();
   }
 
-  // 5. Test send (pass ?sendTo=PHONE_NUMBER to trigger)
+  // 7. Test send (pass ?sendTo=PHONE_NUMBER to trigger)
   if (testTo && phoneNumberId) {
     const sendRes = await fetch(`https://graph.facebook.com/v21.0/${phoneNumberId}/messages`, {
       method: "POST",

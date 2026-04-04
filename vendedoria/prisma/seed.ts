@@ -36,7 +36,7 @@ async function main() {
 
   // Create WhatsApp account — update credentials from env vars on every run
   // Fallback to the Nexo production number if env var not set
-  const realPhoneId   = process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "545617245297475";
+  const realPhoneId   = process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "1009631782242056";
   const realWabaId    = process.env.META_WHATSAPP_WABA_ID;
   const realAccessToken = process.env.META_WHATSAPP_ACCESS_TOKEN;
 
