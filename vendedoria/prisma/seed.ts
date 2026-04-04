@@ -63,19 +63,20 @@ async function main() {
   console.log("✓ Account:", account.accountName);
 
   // Create AI agent — pick provider based on available API keys
+  // Priority: Anthropic > OpenAI > Google (Gemini free tier has strict quotas)
   const aiProvider = process.env.ANTHROPIC_API_KEY
     ? "ANTHROPIC"
-    : process.env.GOOGLE_AI_API_KEY
-    ? "GOOGLE"
     : process.env.OPENAI_API_KEY
     ? "OPENAI"
-    : "ANTHROPIC";
+    : process.env.GOOGLE_AI_API_KEY
+    ? "GOOGLE"
+    : "OPENAI";
   const aiModel =
     aiProvider === "ANTHROPIC"
       ? "claude-sonnet-4-6"
-      : aiProvider === "GOOGLE"
-      ? "gemini-2.0-flash-lite"
-      : "gpt-4o-mini";
+      : aiProvider === "OPENAI"
+      ? "gpt-4o-mini"
+      : "gemini-2.0-flash-lite";
 
   const LEO_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil. Empresa de ferramentas profissionais com entrega em Goiânia e região, Goiás.
 

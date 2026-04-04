@@ -320,16 +320,37 @@ async function callLLM(
 ): Promise<string | null> {
   const provider = aiProvider?.toUpperCase();
 
-  if (provider === "OPENAI" && process.env.OPENAI_API_KEY) return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini");
-  if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
-  if (provider === "GOOGLE" && process.env.GOOGLE_AI_API_KEY) return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
+  // Try configured provider first
+  if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
+    const r = await callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
+    if (r) return r;
+  }
+  if (provider === "OPENAI" && process.env.OPENAI_API_KEY) {
+    const r = await callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini");
+    if (r) return r;
+  }
+  if (provider === "GOOGLE" && process.env.GOOGLE_AI_API_KEY) {
+    const r = await callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
+    if (r) return r;
+  }
 
-  if (process.env.ANTHROPIC_API_KEY) return callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
-  if (process.env.GOOGLE_AI_API_KEY) return callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
-  if (process.env.OPENAI_API_KEY) return callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini");
+  // Fallback chain: Anthropic → OpenAI → Google
+  console.warn(`[AI Agent] Provider ${provider} falhou ou não configurado — tentando fallback`);
+  if (process.env.ANTHROPIC_API_KEY) {
+    const r = await callAnthropic(systemPrompt, history, userMessage, "claude-sonnet-4-6");
+    if (r) return r;
+  }
+  if (process.env.OPENAI_API_KEY) {
+    const r = await callOpenAI(systemPrompt, history, userMessage, "gpt-4o-mini");
+    if (r) return r;
+  }
+  if (process.env.GOOGLE_AI_API_KEY) {
+    const r = await callGemini(systemPrompt, history, userMessage, "gemini-2.0-flash-lite");
+    if (r) return r;
+  }
 
-  console.warn("[AI Agent] No LLM API key configured");
-  return "Oi! Recebi sua mensagem, já te respondo 😊";
+  console.warn("[AI Agent] Nenhuma API key de LLM disponível ou todas falharam");
+  return null;
 }
 
 async function callOpenAI(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
