@@ -1,40 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Direct upload to Cloudinary using unsigned preset.
-// Set env vars: CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_PRESET (unsigned preset)
-export async function POST(req: NextRequest) {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
+const MAX_IMAGE_SIZE = 8 * 1024 * 1024;  // 8 MB
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 MB (fallback base64)
 
-  if (!cloudName || !uploadPreset) {
+export async function POST(req: NextRequest) {
+  const formData = await req.formData();
+  const file = formData.get("file") as File | null;
+  if (!file) return NextResponse.json({ error: "Nenhum arquivo enviado." }, { status: 400 });
+
+  const isVideo = file.type.startsWith("video/");
+  const isImage = file.type.startsWith("image/");
+
+  if (!isImage && !isVideo) {
     return NextResponse.json(
-      { error: "CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET env vars are required" },
-      { status: 503 }
+      { error: "Tipo não suportado. Envie imagem (jpg/png/webp) ou vídeo (mp4)." },
+      { status: 415 }
     );
   }
 
-  const formData = await req.formData();
-  const file = formData.get("file") as File | null;
-  if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
 
-  // Forward to Cloudinary
-  const cloudForm = new FormData();
-  cloudForm.append("file", file);
-  cloudForm.append("upload_preset", uploadPreset);
-  cloudForm.append("folder", "vendedoria/products");
+  // ── Cloudinary (preferido — suporta vídeos grandes) ───────────────────────
+  if (cloudName && uploadPreset) {
+    const cloudForm = new FormData();
+    cloudForm.append("file", file);
+    cloudForm.append("upload_preset", uploadPreset);
+    cloudForm.append("folder", "vendedoria/products");
 
-  const resourceType = file.type.startsWith("video/") ? "video" : "image";
-  const cloudRes = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
-    { method: "POST", body: cloudForm }
-  );
+    const resourceType = isVideo ? "video" : "image";
+    const cloudRes = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+      { method: "POST", body: cloudForm }
+    );
 
-  if (!cloudRes.ok) {
-    const err = await cloudRes.text();
-    console.error("[Upload] Cloudinary error:", err);
-    return NextResponse.json({ error: "Upload failed", detail: err }, { status: 502 });
+    if (!cloudRes.ok) {
+      const err = await cloudRes.text();
+      console.error("[Upload] Cloudinary error:", err);
+      return NextResponse.json({ error: "Cloudinary falhou.", detail: err }, { status: 502 });
+    }
+
+    const data = await cloudRes.json() as { secure_url: string; public_id: string };
+    return NextResponse.json({ url: data.secure_url, publicId: data.public_id, storage: "cloudinary" });
   }
 
-  const data = await cloudRes.json() as { secure_url: string; public_id: string };
-  return NextResponse.json({ url: data.secure_url, publicId: data.public_id });
+  // ── Fallback: base64 data URL (sem Cloudinary) ───────────────────────────
+  if (isImage && file.size > MAX_IMAGE_SIZE) {
+    return NextResponse.json(
+      { error: `Imagem muito grande (máx 8 MB). Reduza o arquivo ou configure Cloudinary.` },
+      { status: 413 }
+    );
+  }
+
+  if (isVideo && file.size > MAX_VIDEO_SIZE) {
+    return NextResponse.json(
+      { error: "Para vídeos acima de 50 MB configure CLOUDINARY_CLOUD_NAME e CLOUDINARY_UPLOAD_PRESET." },
+      { status: 413 }
+    );
+  }
+
+  const bytes = await file.arrayBuffer();
+  const base64 = Buffer.from(bytes).toString("base64");
+  const dataUrl = `data:${file.type};base64,${base64}`;
+
+  return NextResponse.json({ url: dataUrl, storage: "base64" });
 }

@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "VendedorIA — CRM Inteligente para WhatsApp",
   description: "Gerencie seus leads e automatize suas vendas via WhatsApp com IA",
   icons: { icon: "/favicon.ico" },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({

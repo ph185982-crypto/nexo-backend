@@ -31,9 +31,15 @@
   * { @apply border-border; }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    /* Prevent content shifting when mobile sidebar opens */
+    overflow-x: hidden;
   }
   html, body {
     height: 100%;
+  }
+  /* Smoother tap targets on mobile */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
