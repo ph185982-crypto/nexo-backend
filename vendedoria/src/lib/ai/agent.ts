@@ -276,16 +276,44 @@ export async function processAIResponse(
     await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: now } });
     await sendWhatsAppMessage(provider.businessPhoneNumberId, to, cleanResponse, token, contextMessageId);
 
-    // ── Send product photos/videos ────────────────────────────────────────────
+    // ── Send product photos + video ───────────────────────────────────────────
+    // WhatsApp requires public HTTPS URLs — convert any base64 data: URIs to
+    // our media-serving endpoint before passing them to the API.
+    const appUrl = (process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const toPublicUrl = (dataOrUrl: string, productId: string, idx: number, isVideo = false): string => {
+      if (dataOrUrl.startsWith("data:")) {
+        return isVideo
+          ? `${appUrl}/api/media/product/${productId}?type=video`
+          : `${appUrl}/api/media/product/${productId}?idx=${idx}`;
+      }
+      return dataOrUrl;
+    };
+
     for (const product of activeProducts) {
       const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-      if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(response) && product.imageUrl) {
-        await sendWhatsAppImage(provider.businessPhoneNumberId, to, product.imageUrl, product.name, token, contextMessageId)
-          .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
+      const triggerFoto  = new RegExp(`\\[FOTO_${slug}\\]`, "i").test(response);
+      const triggerVideo = new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(response);
+
+      if (triggerFoto) {
+        // All images (imageUrls array preferred, fallback to single imageUrl)
+        const p = product as typeof product & { imageUrls?: string[] };
+        const rawImages: string[] = p.imageUrls?.length ? p.imageUrls : product.imageUrl ? [product.imageUrl] : [];
+
+        for (let i = 0; i < rawImages.length; i++) {
+          const imgUrl = toPublicUrl(rawImages[i], product.id, i);
+          await new Promise((r) => setTimeout(r, 800)); // small gap between images
+          await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, product.name, token)
+            .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
+        }
       }
-      if (new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(response) && product.videoUrl) {
-        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token, contextMessageId)
-          .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
+
+      if (triggerVideo) {
+        if (product.videoUrl) {
+          const videoUrl = toPublicUrl(product.videoUrl, product.id, 0, true);
+          await new Promise((r) => setTimeout(r, 1000));
+          await sendWhatsAppVideo(provider.businessPhoneNumberId, to, videoUrl, product.name, token)
+            .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
+        }
       }
     }
 
