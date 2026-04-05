@@ -49,13 +49,17 @@ interface AIResponse {
   delays: number[];
 }
 
-// Detects if a message is asking for too many data points at once
+// Detects messages that ask for multiple data fields at once (address overload)
 function isOverloadedRequest(msg: string): boolean {
   const fields = [
     /endere[çc]o/i,
     /\bcep\b/i,
-    /telefone|fone|whatsapp/i,
+    /telefone|fone|celular|whatsapp/i,
     /nome\s+completo/i,
+    /\bbairro\b/i,
+    /me\s+passa\s+(seu|o)/i,
+    /finalizar\s+o\s+pedido/i,
+    /confirmar\s+o\s+pedido/i,
   ];
   return fields.filter((re) => re.test(msg)).length >= 2;
 }
@@ -94,8 +98,9 @@ function parseAIResponse(raw: string): AIResponse {
 
 function sanitizeMessages(msgs: string[]): string[] {
   return msgs.map((m) => {
-    // Replace overloaded address requests with just the location request
     if (isOverloadedRequest(m)) return "me manda sua localização 📍";
+    // Hard cap: message > 120 chars = too long for WhatsApp seller style
+    if (m.length > 120) return "me manda sua localização 📍";
     return m;
   });
 }
@@ -187,7 +192,11 @@ NEGÓCIO:
 - Entrega em Goiânia e região
 - Emite nota fiscal, 1 ano de garantia
 
-FECHAMENTO — quando tiver nome, endereço, bairro, CEP, telefone, produto e pagamento:
+FECHAMENTO:
+NUNCA peça endereço completo + CEP + telefone tudo de uma vez.
+Use APENAS: "me manda sua localização 📍"
+Depois, numa mensagem separada: "e o nome completo?"
+Quando tiver TODOS os dados (nome, endereco, bairro, cep, telefone, produto, pagamento):
 [PASSAGEM]{"nome":"...","endereco":"...","cep":"...","bairro":"...","telefone":"...","produtos":[{"nome":"...","qtd":1}],"pagamento":"..."}
 
 FLAGS:
