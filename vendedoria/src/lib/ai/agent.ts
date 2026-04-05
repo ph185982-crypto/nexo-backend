@@ -43,11 +43,61 @@ function detectLeadState(message: string): LeadState {
 }
 
 // ── ETAPA 2 — Engine de Resposta Humana ─────────────────────────────────────
-function splitMessages(response: string): string[] {
-  return response
-    .split("||")
-    .map((m) => m.trim())
-    .filter(Boolean);
+
+interface AIResponse {
+  mensagens: string[];
+  delays: number[];
+}
+
+// Detects if a message is asking for too many data points at once
+function isOverloadedRequest(msg: string): boolean {
+  const fields = [
+    /endere[çc]o/i,
+    /\bcep\b/i,
+    /telefone|fone|whatsapp/i,
+    /nome\s+completo/i,
+  ];
+  return fields.filter((re) => re.test(msg)).length >= 2;
+}
+
+function parseAIResponse(raw: string): AIResponse {
+  // Strip markdown code fences if model wrapped the JSON
+  const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+
+  // Try to parse as JSON
+  try {
+    const parsed = JSON.parse(stripped) as { mensagens?: unknown; delays?: unknown };
+    if (Array.isArray(parsed.mensagens) && parsed.mensagens.length > 0) {
+      const msgs: string[] = (parsed.mensagens as unknown[])
+        .map((m) => String(m).trim())
+        .filter(Boolean);
+      const rawDelays = Array.isArray(parsed.delays) ? (parsed.delays as unknown[]) : [];
+      const delays: number[] = msgs.map((_, i) =>
+        typeof rawDelays[i] === "number" ? (rawDelays[i] as number) : i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500
+      );
+      return { mensagens: sanitizeMessages(msgs), delays };
+    }
+  } catch {
+    // Not JSON — fall through to string parsing
+  }
+
+  // Fallback: old || separator format
+  const byPipe = stripped.split("||").map((m) => m.trim()).filter(Boolean);
+  if (byPipe.length > 1) {
+    const delays = byPipe.map((_, i) => (i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500));
+    return { mensagens: sanitizeMessages(byPipe), delays };
+  }
+
+  // Last resort: wrap single string
+  return { mensagens: sanitizeMessages([stripped]), delays: [0] };
+}
+
+function sanitizeMessages(msgs: string[]): string[] {
+  return msgs.map((m) => {
+    // Replace overloaded address requests with just the location request
+    if (isOverloadedRequest(m)) return "me manda sua localização 📍";
+    return m;
+  });
 }
 
 // Build context block injected into system prompt at runtime
@@ -98,10 +148,18 @@ function buildRuntimeContext(
     lines.push(`→ Lead CURIOSO: responda com naturalidade. "tenho sim${emoji ? " 👍" : ""}", "essa é bem forte${reticencias ? "..." : ""}", "cliente pega bastante".`);
   }
 
-  lines.push(``, `FORMATO OBRIGATÓRIO DE RESPOSTA:`);
-  lines.push(`Separe SEMPRE as mensagens com || entre elas. Cada parte = 1 linha, 1 ideia.`);
-  lines.push(`ERRADO: "Tenho sim. Essa é bem forte. Pagamento na entrega."`);
-  lines.push(`CERTO: "tenho sim${emoji ? " 👍" : ""} || essa é bem forte${reticencias ? "..." : ""} || pagamento só na entrega"`);
+  lines.push(``, `FORMATO OBRIGATÓRIO DE RESPOSTA (JSON):`);
+  lines.push(`Responda SEMPRE como JSON. Nunca texto puro.`);
+  lines.push(`{`);
+  lines.push(`  "mensagens": ["msg1", "msg2", "msg3"],`);
+  lines.push(`  "delays": [1500, 2000, 2500]`);
+  lines.push(`}`);
+  lines.push(`Regras:`);
+  lines.push(`- cada mensagem = 1 linha, 1 ideia`);
+  lines.push(`- NÃO pedir endereço completo + CEP + telefone tudo junto`);
+  lines.push(`- FECHAMENTO: use apenas "me manda sua localização 📍"`);
+  lines.push(`ERRADO: {"mensagens": ["Perfeito! Me passa seu endereço completo com CEP e telefone..."]}`);
+  lines.push(`CERTO:  {"mensagens": ["me manda sua localização 📍"], "delays": [1500]}`);
   lines.push(`--- FIM DO CONTEXTO ---`);
 
   return lines.join("\n");
@@ -260,8 +318,17 @@ export async function processAIResponse(
     const token = provider.accessToken ?? undefined;
     const now = new Date();
 
+    // ── Parse JSON response first ─────────────────────────────────────────────
+    const mediaFlagPattern = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
+
+    // Flatten the full raw response + check for flags (works whether JSON or plain text)
+    const { mensagens: rawMensagens, delays } = parseAIResponse(response);
+
+    // Combine raw text for flag detection (raw response covers flags outside JSON too)
+    const combinedText = [response, ...rawMensagens].join("\n");
+
     // ── Handle [OPT_OUT] ──────────────────────────────────────────────────────
-    if (/\[OPT_OUT\]/i.test(response)) {
+    if (/\[OPT_OUT\]/i.test(combinedText)) {
       await Promise.all([
         prisma.lead.update({ where: { id: conversation.leadId }, data: { status: "BLOCKED" } }),
         prisma.conversationFollowUp.updateMany({
@@ -272,7 +339,7 @@ export async function processAIResponse(
     }
 
     // ── Handle [PASSAGEM] ─────────────────────────────────────────────────────
-    const passagemMatch = response.match(/\[PASSAGEM\]\s*(\{[\s\S]*?\})/i);
+    const passagemMatch = combinedText.match(/\[PASSAGEM\]\s*(\{[\s\S]*?\})/i);
     if (passagemMatch) {
       try {
         const orderData = JSON.parse(passagemMatch[1]);
@@ -309,7 +376,7 @@ export async function processAIResponse(
     }
 
     // ── Handle [ESCALAR] ──────────────────────────────────────────────────────
-    if (response.startsWith("[ESCALAR]") || /\[ESCALAR\]/i.test(response)) {
+    if (/\[ESCALAR\]/i.test(combinedText)) {
       await handleEscalation(conversation.leadId, conversationId, response);
       await prisma.ownerNotification.create({
         data: {
@@ -323,39 +390,39 @@ export async function processAIResponse(
       }).catch(() => {});
     }
 
-    // ── Strip all flags ───────────────────────────────────────────────────────
-    const mediaFlagPattern = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
-    const cleanResponse = response
-      .replace(/^\[ESCALAR\]\s*/i, "")
-      .replace(/^\[AGENDAR\]\s*/i, "")
-      .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
-      .replace(/\[OPT_OUT\]/gi, "")
-      .replace(mediaFlagPattern, "")
-      .trim();
+    // ── Strip flags from individual messages ──────────────────────────────────
+    const mensagens = rawMensagens
+      .map((m) =>
+        m
+          .replace(/^\[ESCALAR\]\s*/i, "")
+          .replace(/^\[AGENDAR\]\s*/i, "")
+          .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
+          .replace(/\[OPT_OUT\]/gi, "")
+          .replace(mediaFlagPattern, "")
+          .trim()
+      )
+      .filter(Boolean);
 
-    if (!cleanResponse) return;
+    if (mensagens.length === 0) return;
 
     // ── ETAPA 7: Simulate typing before first message ─────────────────────────
     if (incomingMessageId && provider.businessPhoneNumberId) {
       await simulateTypingDelay(
         provider.businessPhoneNumberId,
         incomingMessageId,
-        cleanResponse,
+        mensagens.join(" "),
         token
       );
     }
 
-    // ── ETAPA 2 & 7: Split into multiple messages + send with delays ──────────
-    const messages = splitMessages(cleanResponse);
+    // ── ETAPA 2 & 7: Send messages with per-message delays from JSON ──────────
 
-    for (let i = 0; i < messages.length; i++) {
-      if (i > 0) {
-        const delayMs = SEND_DELAYS_MS[Math.min(i, SEND_DELAYS_MS.length - 1)];
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
+    for (let i = 0; i < mensagens.length; i++) {
+      const delayMs = delays[i] ?? 0;
+      if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs));
 
       const msgNow = new Date();
-      const msgText = messages[i];
+      const msgText = mensagens[i];
 
       await prisma.whatsappMessage.create({
         data: {
@@ -382,14 +449,14 @@ export async function processAIResponse(
       data: { lastMessageAt: new Date() },
     });
 
-    // ── Send product photos/videos (after text messages) ──────────────────────
+    // ── Send product photos/videos (flags detected in full raw response) ────────
     for (const product of activeProducts) {
       const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-      if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(response) && product.imageUrl) {
+      if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedText) && product.imageUrl) {
         await sendWhatsAppImage(provider.businessPhoneNumberId, to, product.imageUrl, product.name, token, contextMessageId)
           .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
       }
-      if (new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(response) && product.videoUrl) {
+      if (new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedText) && product.videoUrl) {
         await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token, contextMessageId)
           .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
       }
