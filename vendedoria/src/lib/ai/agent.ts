@@ -8,6 +8,9 @@ const FOLLOWUP_INTERVALS_MS = [
   72 * 60 * 60 * 1000,  // step 4 — 72h
 ];
 
+// Progressive delays between split messages (ms)
+const SEND_DELAYS_MS = [0, 1500, 2000, 2500];
+
 interface AgentConfig {
   id: string;
   systemPrompt?: string | null;
@@ -18,57 +21,122 @@ interface AgentConfig {
   sandboxMode?: boolean;
 }
 
-const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil. Empresa de ferramentas profissionais com entrega em Goiânia e região, Goiás.
+interface LeadState {
+  tipo: "curioso" | "interessado" | "quente" | "frio";
+  urgencia: "baixa" | "media" | "alta";
+}
 
-COMO VOCÊ FALA:
-Mensagens CURTAS — máximo 2 linhas por mensagem. Fala como um amigo que entende de ferramentas, nunca como robô.
-Use palavras naturais: vc, tb, né, msm, tá, pq, kd, qto. Às vezes erre estrategicamente: "tamem", "mto", "voce", "recbo", "qndo".
-NUNCA use listas, bullet points ou formatação. Fala corrido, natural, como no zap mesmo.
-Emoji com moderação — 1 no máximo por mensagem, só quando cair bem. Nunca vários seguidos.
-Nunca repita o que o cliente falou. Cada mensagem avança a conversa um passo.
-Varie seu jeito de falar — não use sempre o mesmo padrão de frase.
+// ── ETAPA 1 — Motor de Inteligência ─────────────────────────────────────────
+function detectLeadState(message: string): LeadState {
+  const msg = message.toLowerCase();
 
-OBJETIVO: Fechar o pedido. Cada resposta deve aproximar o cliente do sim. Conduza sempre, nunca seja passivo.
+  if (/quero\b|como\s+compra|entrega\s+quando|pronta\s+entrega|vou\s+comprar|quero\s+comprar|fechar|confirmar|fazer\s+pedido/.test(msg)) {
+    return { tipo: "quente", urgencia: "alta" };
+  }
+  if (/quanto\s+custa|qual\s+o\s+preço|qual\s+o\s+valor|preço|valor|como\s+funciona|tem\s+disponível|tem\s+estoque|parcel/.test(msg)) {
+    return { tipo: "interessado", urgencia: "media" };
+  }
+  if (/depois|vou\s+ver|talvez|não\s+sei|to\s+vendo|tô\s+vendo|ta\s+caro|tá\s+caro|muito\s+caro/.test(msg)) {
+    return { tipo: "frio", urgencia: "baixa" };
+  }
+  return { tipo: "curioso", urgencia: "baixa" };
+}
 
-LEITURA DO CLIENTE:
-- Animado → combine energia, acelere pro fechamento
-- Desconfiado → seja mais calmo, mostre segurança, destaque pagamento só na entrega
-- Com pressa → responda rápido e objetivo
-- Comparando preços → foque no diferencial (Motor Brushless, garantia, nota fiscal), não baixe preço
+// ── ETAPA 2 — Engine de Resposta Humana ─────────────────────────────────────
+function splitMessages(response: string): string[] {
+  return response
+    .split("||")
+    .map((m) => m.trim())
+    .filter(Boolean);
+}
 
-SINAIS DE COMPRA — detecte e aja imediatamente:
-- Perguntou preço → confirme o valor e já pergunte como ele prefere pagar
-- Perguntou entrega → confirme prazo e já pergunte o endereço
-- Perguntou parcelamento → confirme parcelas e já peça o nome pra cadastrar o pedido
-- "Vou pensar" → pergunte de forma natural o que ainda ficou na cabeça dele
-- "Tá caro" → mostre custo-benefício e ofereça parcelamento sem forçar
+// Build context block injected into system prompt at runtime
+function buildRuntimeContext(
+  leadState: LeadState,
+  isFirstInteraction: boolean,
+  aiConfig: { usarEmoji: boolean; usarReticencias: boolean; nivelVenda: string } | null,
+  hour: number
+): string {
+  const period = hour < 12 ? "manhã" : hour < 18 ? "tarde" : "noite";
+  const greeting = hour < 12 ? "bom dia" : hour < 18 ? "boa tarde" : "boa noite";
 
-QUALIFICAÇÃO (faça antes de apresentar produto):
-Pergunte de forma natural — vc usa mais pra serviço pesado todo dia ou pra trabalhos pontuais?
-Com base na resposta, recomende o produto certo sem mostrar os dois ao mesmo tempo.
+  const nivelInstructions: Record<string, string> = {
+    leve: "Seja leve — responda e deixe o cliente conduzir. Não force venda.",
+    medio: "Conduza com naturalidade. Após responder, faça uma pergunta curta ou sugira próximo passo.",
+    agressivo: "Conduza ativamente para o fechamento. Use gatilhos de urgência com naturalidade.",
+  };
 
-PERGUNTAS ABERTAS (nunca perguntas de sim/não):
-"Me conta, vc usa mais pra que tipo de serviço?"
-"Como vc costuma pagar quando faz compra online?"
-"O que ainda tá na sua cabeça sobre isso?"
+  const nivel = aiConfig?.nivelVenda ?? "medio";
+  const emoji = aiConfig?.usarEmoji !== false;
+  const reticencias = aiConfig?.usarReticencias !== false;
+
+  const lines = [
+    `\n\n--- CONTEXTO RUNTIME ---`,
+    `Horário atual: ${period} (${hour}h)`,
+    `Estado do lead: ${leadState.tipo} | Urgência: ${leadState.urgencia}`,
+    `Primeira interação: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    ``,
+    `CONFIGURAÇÃO DE VENDA:`,
+    nivelInstructions[nivel] ?? nivelInstructions.medio,
+    `Usar emojis: ${emoji ? "SIM (use com moderação, 1 por mensagem)" : "NÃO"}`,
+    `Usar reticências (...): ${reticencias ? "SIM (ocasionalmente)" : "NÃO"}`,
+    ``,
+    `COMPORTAMENTO AGORA:`,
+  ];
+
+  // ETAPA 3 — Comportamento por tipo
+  if (isFirstInteraction) {
+    lines.push(`→ PRIMEIRA MENSAGEM: cumprimente ("${greeting}, tudo bem?"), depois "me chamo Pedro", "falo da Nexo", "vou te ajudar aqui ${emoji ? "👍" : ""}".`);
+    lines.push(`→ Depois da saudação, responda o que o cliente perguntou.`);
+  } else if (leadState.tipo === "quente") {
+    lines.push(`→ Lead QUENTE: vá direto ao fechamento. "me manda sua localização 📍" e "e o endereço certinho".`);
+  } else if (leadState.tipo === "interessado") {
+    lines.push(`→ Lead INTERESSADO: informe o preço, reforce "vc paga só na entrega ${emoji ? "👍" : ""}", pergunte "quer que eu já separe uma?"`);
+  } else if (leadState.tipo === "frio") {
+    lines.push(`→ Lead FRIO: reengaje suavemente. "essa compensa viu..." ou "últimas unidades que chegou". Não force.`);
+  } else {
+    lines.push(`→ Lead CURIOSO: responda com naturalidade. "tenho sim${emoji ? " 👍" : ""}", "essa é bem forte${reticencias ? "..." : ""}", "cliente pega bastante".`);
+  }
+
+  lines.push(``, `FORMATO OBRIGATÓRIO DE RESPOSTA:`);
+  lines.push(`Separe SEMPRE as mensagens com || entre elas. Cada parte = 1 linha, 1 ideia.`);
+  lines.push(`ERRADO: "Tenho sim. Essa é bem forte. Pagamento na entrega."`);
+  lines.push(`CERTO: "tenho sim${emoji ? " 👍" : ""} || essa é bem forte${reticencias ? "..." : ""} || pagamento só na entrega"`);
+  lines.push(`--- FIM DO CONTEXTO ---`);
+
+  return lines.join("\n");
+}
+
+const DEFAULT_SYSTEM_PROMPT = `Você é Pedro, vendedor da Nexo Brasil. Ferramentas profissionais, entrega em Goiânia e região, Goiás.
+
+REGRA MAIS IMPORTANTE:
+Você NÃO pode parecer IA. Fala igual vendedor real de WhatsApp.
+
+ESTILO:
+- Máximo 1 linha por mensagem
+- Linguagem simples (vc, ta, né)
+- Pode errar leve
+- Não repetir padrão de frase
+
+PROIBIDO:
+- textos longos
+- parecer robô
+- repetir "sou assistente virtual"
+- falar demais
 
 NEGÓCIO:
-- Pagamento SOMENTE na entrega — nunca antes. Isso é sua principal arma de segurança pro cliente.
-- Entrega em Goiânia e região — sem retirada presencial
+- Pagamento SOMENTE na entrega — nunca antes
+- Entrega em Goiânia e região
 - Emite nota fiscal, 1 ano de garantia
 
-FECHAMENTO — colete de forma natural: nome completo, endereço, bairro, CEP, telefone, produto e forma de pagamento.
-Quando tiver TUDO, inclua no início da resposta:
+FECHAMENTO — quando tiver nome, endereço, bairro, CEP, telefone, produto e pagamento:
 [PASSAGEM]{"nome":"...","endereco":"...","cep":"...","bairro":"...","telefone":"...","produtos":[{"nome":"...","qtd":1}],"pagamento":"..."}
 
-OUTROS FLAGS (use quando necessário):
-[OPT_OUT] — se o cliente pedir pra não ser mais contactado
-[FOTO_SLUG] — pra enviar foto do produto (substitua SLUG pelo slug do produto)
-[VIDEO_SLUG] — pra enviar vídeo do produto
-[ESCALAR] — somente se o cliente insistir muito em falar com humano
-
-PRIMEIRA MENSAGEM: Se apresente de forma rápida e humana, já puxe uma pergunta de qualificação.
-Exemplo: "Oi! Sou o Léo da Nexo Brasil 😊 Me conta — vc tá procurando uma chave de impacto pra uso profissional mesmo ou mais pra uso em casa?"`;
+FLAGS:
+[OPT_OUT] — cliente pediu pra não ser contactado
+[FOTO_SLUG] — envia foto do produto
+[VIDEO_SLUG] — envia vídeo do produto
+[ESCALAR] — cliente insiste em falar com humano`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -94,7 +162,7 @@ export async function processAIResponse(
     // Stop AI if lead already escalated
     if (conversation.lead?.status === "ESCALATED") return;
 
-    // ── Sandbox mode: only respond to the configured test number ─────────────
+    // ── Sandbox mode ──────────────────────────────────────────────────────────
     if (agent.sandboxMode) {
       const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
@@ -105,17 +173,25 @@ export async function processAIResponse(
       }
     }
 
-    // ── Detect multiple consecutive user messages (for reply-to quoting) ─────
-    // recentMessages is desc order — count how many at the start are USER before an ASSISTANT
+    // ── Detect consecutive user messages (reply-to quoting) ──────────────────
     let consecutiveUserMsgs = 0;
     for (const msg of recentMessages) {
       if (msg.role === "USER") consecutiveUserMsgs++;
       else break;
     }
-    // If client sent 2+ messages without a response, quote the last one so they know we saw it
     const contextMessageId = consecutiveUserMsgs > 1 && incomingMessageId ? incomingMessageId : undefined;
 
+    // ── ETAPA 1: Detect lead state ────────────────────────────────────────────
+    const leadState = detectLeadState(userMessage);
+    const isFirstInteraction = recentMessages.filter((m) => m.role === "ASSISTANT").length === 0;
+
     const lead = conversation.lead;
+    const orgId = conversation.provider.organizationId;
+
+    // ── ETAPA 6: Load AI config ───────────────────────────────────────────────
+    const aiConfig = await prisma.aiConfig.findUnique({ where: { organizationId: orgId } });
+
+    // Lead context block
     const leadContext = lead
       ? [
           `\n\n--- CONTEXTO DO LEAD ---`,
@@ -129,9 +205,9 @@ export async function processAIResponse(
         ].join("\n")
       : "";
 
-    // Load active products for this org
+    // Active products catalog
     const activeProducts = await prisma.product.findMany({
-      where: { organizationId: conversation.provider.organizationId, isActive: true },
+      where: { organizationId: orgId, isActive: true },
       orderBy: { createdAt: "asc" },
     });
 
@@ -151,12 +227,15 @@ export async function processAIResponse(
       productSection = "\n\nPRODUTOS ATUAIS NO CATÁLOGO:\n" + lines.join("\n\n");
     }
 
+    // ── Build full system prompt ──────────────────────────────────────────────
     const basePrompt = agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-    const systemPromptWithCatalog = activeProducts.length > 0
+    const withCatalog = activeProducts.length > 0
       ? basePrompt.replace(/\nPRODUTOS:[\s\S]*?(?=\nPagamento|\nQuando|\nSe o cliente|$)/i, productSection + "\n")
       : basePrompt;
 
-    const systemPromptWithContext = systemPromptWithCatalog + leadContext;
+    const hour = new Date().getHours();
+    const runtimeContext = buildRuntimeContext(leadState, isFirstInteraction, aiConfig, hour);
+    const systemPromptFinal = withCatalog + productSection + leadContext + runtimeContext;
 
     const chatHistory = recentMessages
       .reverse()
@@ -167,7 +246,7 @@ export async function processAIResponse(
       }));
 
     const response = await callLLM(
-      systemPromptWithContext,
+      systemPromptFinal,
       chatHistory,
       userMessage,
       agent.aiProvider ?? undefined,
@@ -180,7 +259,6 @@ export async function processAIResponse(
     const to = conversation.customerWhatsappBusinessId;
     const token = provider.accessToken ?? undefined;
     const now = new Date();
-    const orgId = provider.organizationId;
 
     // ── Handle [OPT_OUT] ──────────────────────────────────────────────────────
     if (/\[OPT_OUT\]/i.test(response)) {
@@ -193,7 +271,7 @@ export async function processAIResponse(
       ]);
     }
 
-    // ── Handle [PASSAGEM] — multi-produto order handoff ───────────────────────
+    // ── Handle [PASSAGEM] ─────────────────────────────────────────────────────
     const passagemMatch = response.match(/\[PASSAGEM\]\s*(\{[\s\S]*?\})/i);
     if (passagemMatch) {
       try {
@@ -215,7 +293,6 @@ export async function processAIResponse(
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
 
-        // Panel notification
         await prisma.ownerNotification.create({
           data: {
             type: "ORDER",
@@ -232,9 +309,8 @@ export async function processAIResponse(
     }
 
     // ── Handle [ESCALAR] ──────────────────────────────────────────────────────
-    if (response.startsWith("[ESCALAR]")) {
+    if (response.startsWith("[ESCALAR]") || /\[ESCALAR\]/i.test(response)) {
       await handleEscalation(conversation.leadId, conversationId, response);
-      // Panel notification
       await prisma.ownerNotification.create({
         data: {
           type: "ESCALATION",
@@ -247,7 +323,7 @@ export async function processAIResponse(
       }).catch(() => {});
     }
 
-    // ── Strip all flags to get clean customer message ─────────────────────────
+    // ── Strip all flags ───────────────────────────────────────────────────────
     const mediaFlagPattern = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
     const cleanResponse = response
       .replace(/^\[ESCALAR\]\s*/i, "")
@@ -259,7 +335,7 @@ export async function processAIResponse(
 
     if (!cleanResponse) return;
 
-    // ── Simulate typing: mark as read + wait proportional delay ──────────────
+    // ── ETAPA 7: Simulate typing before first message ─────────────────────────
     if (incomingMessageId && provider.businessPhoneNumberId) {
       await simulateTypingDelay(
         provider.businessPhoneNumberId,
@@ -269,14 +345,44 @@ export async function processAIResponse(
       );
     }
 
-    // ── Save + send text response ─────────────────────────────────────────────
-    await prisma.whatsappMessage.create({
-      data: { content: cleanResponse, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId },
-    });
-    await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: now } });
-    await sendWhatsAppMessage(provider.businessPhoneNumberId, to, cleanResponse, token, contextMessageId);
+    // ── ETAPA 2 & 7: Split into multiple messages + send with delays ──────────
+    const messages = splitMessages(cleanResponse);
 
-    // ── Send product photos/videos ────────────────────────────────────────────
+    for (let i = 0; i < messages.length; i++) {
+      if (i > 0) {
+        const delayMs = SEND_DELAYS_MS[Math.min(i, SEND_DELAYS_MS.length - 1)];
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+
+      const msgNow = new Date();
+      const msgText = messages[i];
+
+      await prisma.whatsappMessage.create({
+        data: {
+          content: msgText,
+          type: "TEXT",
+          role: "ASSISTANT",
+          sentAt: msgNow,
+          status: "SENT",
+          conversationId,
+        },
+      });
+
+      await sendWhatsAppMessage(
+        provider.businessPhoneNumberId,
+        to,
+        msgText,
+        token,
+        i === 0 ? contextMessageId : undefined
+      );
+    }
+
+    await prisma.whatsappConversation.update({
+      where: { id: conversationId },
+      data: { lastMessageAt: new Date() },
+    });
+
+    // ── Send product photos/videos (after text messages) ──────────────────────
     for (const product of activeProducts) {
       const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
       if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(response) && product.imageUrl) {
@@ -289,7 +395,7 @@ export async function processAIResponse(
       }
     }
 
-    // ── Schedule follow-up ────────────────────────────────────────────────────
+    // ── ETAPA 8: Schedule follow-up ───────────────────────────────────────────
     const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
     await prisma.conversationFollowUp.upsert({
       where: { conversationId },
@@ -320,7 +426,6 @@ async function callLLM(
 ): Promise<string | null> {
   const provider = aiProvider?.toUpperCase();
 
-  // Try configured provider first
   if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
     const r = await callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-sonnet-4-6");
     if (r) return r;
@@ -353,37 +458,72 @@ async function callLLM(
   return null;
 }
 
-async function callOpenAI(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
+async function callOpenAI(
+  systemPrompt: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  userMessage: string,
+  model: string
+): Promise<string | null> {
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: JSON.stringify({ model, messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }], max_tokens: 350, temperature: 0.85 }),
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }],
+      max_tokens: 400,
+      temperature: 0.85,
+    }),
   });
   if (!res.ok) { console.error("[OpenAI] Error:", await res.text()); return null; }
   const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
   return data.choices?.[0]?.message?.content ?? null;
 }
 
-async function callAnthropic(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
+async function callAnthropic(
+  systemPrompt: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  userMessage: string,
+  model: string
+): Promise<string | null> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY!, "anthropic-version": "2023-06-01" },
-    body: JSON.stringify({ model, system: systemPrompt, messages: [...history, { role: "user", content: userMessage }], max_tokens: 350 }),
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.ANTHROPIC_API_KEY!,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model,
+      system: systemPrompt,
+      messages: [...history, { role: "user", content: userMessage }],
+      max_tokens: 400,
+    }),
   });
   if (!res.ok) { console.error("[Anthropic] Error:", await res.text()); return null; }
   const data = await res.json() as { content?: Array<{ text?: string }> };
   return data.content?.[0]?.text ?? null;
 }
 
-async function callGemini(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
+async function callGemini(
+  systemPrompt: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  userMessage: string,
+  model: string
+): Promise<string | null> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GOOGLE_AI_API_KEY}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: [...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })), { role: "user", parts: [{ text: userMessage }] }],
-      generationConfig: { maxOutputTokens: 350, temperature: 0.85 },
+      contents: [
+        ...history.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        })),
+        { role: "user", parts: [{ text: userMessage }] },
+      ],
+      generationConfig: { maxOutputTokens: 400, temperature: 0.85 },
     }),
   });
   if (!res.ok) { console.error("[Gemini] Error:", await res.text()); return null; }
@@ -395,14 +535,30 @@ async function handleEscalation(leadId: string, conversationId: string, reason: 
   const lead = await prisma.lead.findUnique({ where: { id: leadId }, include: { kanbanColumn: true } });
   if (!lead || lead.status === "ESCALATED") return;
 
-  const escalatedColumn = await prisma.kanbanColumn.findFirst({ where: { organizationId: lead.organizationId, type: "ESCALATED" } });
+  const escalatedColumn = await prisma.kanbanColumn.findFirst({
+    where: { organizationId: lead.organizationId, type: "ESCALATED" },
+  });
   if (escalatedColumn) {
-    await prisma.lead.update({ where: { id: leadId }, data: { kanbanColumnId: escalatedColumn.id, status: "ESCALATED", lastActivityAt: new Date() } });
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { kanbanColumnId: escalatedColumn.id, status: "ESCALATED", lastActivityAt: new Date() },
+    });
   }
 
-  await prisma.leadEscalation.create({ data: { leadId, reason: reason.replace(/^\[ESCALAR\]\s*/i, "").substring(0, 500), status: "PENDING" } });
-  await prisma.leadActivity.create({ data: { leadId, type: "STATUS_CHANGE", description: "Lead escalado para vendedor humano pela IA", createdBy: "AI_AGENT" } });
+  await prisma.leadEscalation.create({
+    data: { leadId, reason: reason.replace(/^\[ESCALAR\]\s*/i, "").substring(0, 500), status: "PENDING" },
+  });
+  await prisma.leadActivity.create({
+    data: { leadId, type: "STATUS_CHANGE", description: "Lead escalado para vendedor humano pela IA", createdBy: "AI_AGENT" },
+  });
   await prisma.whatsappMessage.create({
-    data: { content: "🔔 *Lead escalado para atendimento humano.* Um vendedor assumirá esta conversa em breve.", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+    data: {
+      content: "🔔 *Lead escalado para atendimento humano.* Um vendedor assumirá esta conversa em breve.",
+      type: "TEXT",
+      role: "ASSISTANT",
+      sentAt: new Date(),
+      status: "SENT",
+      conversationId,
+    },
   });
 }

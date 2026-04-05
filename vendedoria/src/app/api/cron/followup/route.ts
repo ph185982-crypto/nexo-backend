@@ -10,17 +10,23 @@ const INTERVALS_MS = [
   72 * 60 * 60 * 1000,  // step 4 — 72h
 ];
 
+// ETAPA 8 — Follow-up estilo Pedro (mensagens curtas, humanas)
 function buildFollowupMessage(step: number, name: string | null): string {
-  const nome = name ?? "você";
   switch (step) {
     case 1:
-      return "Oi! Só passando pra ver se ficou alguma dúvida sobre a chave que te mostrei 😊 Pode perguntar à vontade!";
+      // 4h — lembrete leve
+      return "conseguiu ver aí? 🙂";
     case 2:
-      return `Oi ${nome}! Lembrei de te contar uma coisa que esqueci: a Bomvink já vem com 46 peças de soquetes e acessórios dentro da maleta — você não precisa comprar mais nada separado. E pagamento só na entrega, sem risco. Ainda tem interesse?`;
+      // 24h — reforço de benefício
+      return "ainda tenho disponível...";
     case 3:
-      return "Oi! Hoje cedo um cliente aqui do Setor Bueno retirou a última unidade que tinha reservada. Ainda tenho uma disponível pra região. Se quiser garantir a sua, é só falar — você paga só quando receber. 🔧";
+      // 48h — urgência
+      return "últimas unidades viu...";
     case 4:
-      return `Oi ${nome}, última vez que passo aqui pra não te incomodar 😄 Se um dia precisar de ferramentas profissionais em Goiânia, pode me chamar. Abraço e sucesso no trabalho! 👊`;
+      // 72h — último contato
+      return name
+        ? `${name}, qualquer coisa pode me chamar 👊`
+        : "qualquer coisa pode me chamar 👊";
     default:
       return "";
   }

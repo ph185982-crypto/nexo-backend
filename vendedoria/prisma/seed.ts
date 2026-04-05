@@ -356,6 +356,19 @@ NEGÓCIO:
   });
   console.log("✓ Professional:", professional.name);
 
+  // Create default AI config
+  await prisma.aiConfig.upsert({
+    where: { organizationId: org.id },
+    update: {},
+    create: {
+      organizationId: org.id,
+      usarEmoji: true,
+      usarReticencias: true,
+      nivelVenda: "medio",
+    },
+  });
+  console.log("✓ AI Config: default (emoji=true, reticencias=true, nivel=medio)");
+
   console.log("\n✅ Seed completed!");
   console.log("\nCredentials:");
   console.log("  Email: admin@vendedoria.com");

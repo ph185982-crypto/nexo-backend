@@ -74,6 +74,7 @@ model WhatsappBusinessOrganization {
   hierarchyItems        OrgHierarchyItem[]
   products              Product[]
   ownerNotifications    OwnerNotification[]
+  aiConfig              AiConfig?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
@@ -452,6 +453,18 @@ model Product {
   organization     WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+// ─── AI Config ─────────────────────────────────────────────────────────────
+
+model AiConfig {
+  id              String   @id @default(cuid())
+  organizationId  String   @unique
+  organization    WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  usarEmoji       Boolean  @default(true)
+  usarReticencias Boolean  @default(true)
+  nivelVenda      String   @default("medio") // leve | medio | agressivo
+  updatedAt       DateTime @updatedAt
 }
 
 // ─── Webhook Retry Queue ────────────────────────────────────────────────────
