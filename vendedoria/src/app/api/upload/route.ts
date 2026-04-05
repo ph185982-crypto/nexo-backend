@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const MAX_IMAGE_SIZE = 8 * 1024 * 1024;  // 8 MB
-const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 MB (fallback base64)
-
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
@@ -21,7 +18,7 @@ export async function POST(req: NextRequest) {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
 
-  // ── Cloudinary (preferido — suporta vídeos grandes) ───────────────────────
+  // ── Cloudinary (preferido — suporta arquivos grandes) ────────────────────
   if (cloudName && uploadPreset) {
     const cloudForm = new FormData();
     cloudForm.append("file", file);
@@ -44,21 +41,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: data.secure_url, publicId: data.public_id, storage: "cloudinary" });
   }
 
-  // ── Fallback: base64 data URL (sem Cloudinary) ───────────────────────────
-  if (isImage && file.size > MAX_IMAGE_SIZE) {
-    return NextResponse.json(
-      { error: `Imagem muito grande (máx 8 MB). Reduza o arquivo ou configure Cloudinary.` },
-      { status: 413 }
-    );
-  }
-
-  if (isVideo && file.size > MAX_VIDEO_SIZE) {
-    return NextResponse.json(
-      { error: "Para vídeos acima de 50 MB configure CLOUDINARY_CLOUD_NAME e CLOUDINARY_UPLOAD_PRESET." },
-      { status: 413 }
-    );
-  }
-
+  // ── Fallback: base64 data URL (sem Cloudinary, sem limite) ──────────────
   const bytes = await file.arrayBuffer();
   const base64 = Buffer.from(bytes).toString("base64");
   const dataUrl = `data:${file.type};base64,${base64}`;

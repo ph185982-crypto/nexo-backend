@@ -16,12 +16,28 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { organizationId, name, description, price, priceInstallments, installments, imageUrl, videoUrl, category } = body;
+  const body = await req.json() as {
+    organizationId?: string;
+    name?: string;
+    description?: string;
+    price?: number | string;
+    priceInstallments?: number | string | null;
+    installments?: number | string;
+    imageUrl?: string | null;
+    imageUrls?: string[];
+    videoUrl?: string | null;
+    category?: string | null;
+  };
+
+  const { organizationId, name, description, price, priceInstallments, installments, imageUrl, imageUrls, videoUrl, category } = body;
 
   if (!organizationId || !name || price == null) {
     return NextResponse.json({ error: "organizationId, name and price are required" }, { status: 400 });
   }
+
+  // Derive imageUrl from imageUrls[0] if not explicitly provided
+  const images: string[] = Array.isArray(imageUrls) ? imageUrls.slice(0, 8) : [];
+  const primaryImage = imageUrl ?? images[0] ?? null;
 
   const product = await prisma.product.create({
     data: {
@@ -31,7 +47,8 @@ export async function POST(req: NextRequest) {
       price: Number(price),
       priceInstallments: priceInstallments != null ? Number(priceInstallments) : null,
       installments: installments ? Number(installments) : 10,
-      imageUrl: imageUrl ?? null,
+      imageUrl: primaryImage,
+      imageUrls: images,
       videoUrl: videoUrl ?? null,
       category: category ?? null,
       isActive: true,

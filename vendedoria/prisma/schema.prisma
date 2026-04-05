@@ -445,7 +445,8 @@ model Product {
   price            Float
   priceInstallments Float?
   installments     Int      @default(10)
-  imageUrl         String?
+  imageUrl         String?           // legacy / primary image
+  imageUrls        String[]          // up to 8 images
   videoUrl         String?
   category         String?
   isActive         Boolean  @default(true)
