@@ -165,6 +165,7 @@ function buildRuntimeContext(
   lines.push(`- FECHAMENTO: use apenas "me manda sua localização 📍"`);
   lines.push(`ERRADO: {"mensagens": ["Perfeito! Me passa seu endereço completo com CEP e telefone..."]}`);
   lines.push(`CERTO:  {"mensagens": ["me manda sua localização 📍"], "delays": [1500]}`);
+  lines.push(`Para enviar mídia de produto: inclua [MIDIA_SLUG] em qualquer mensagem (substitua SLUG pelo slug do produto).`);
   lines.push(`--- FIM DO CONTEXTO ---`);
 
   return lines.join("\n");
@@ -201,8 +202,7 @@ Quando tiver TODOS os dados (nome, endereco, bairro, cep, telefone, produto, pag
 
 FLAGS:
 [OPT_OUT] — cliente pediu pra não ser contactado
-[FOTO_SLUG] — envia foto do produto
-[VIDEO_SLUG] — envia vídeo do produto
+[MIDIA_SLUG] — envia TODAS as fotos + vídeo do produto (substitua SLUG pelo slug do produto)
 [ESCALAR] — cliente insiste em falar com humano`;
 
 export async function processAIResponse(
@@ -286,8 +286,7 @@ export async function processAIResponse(
           `Produto ${i + 1} — ${p.name} [slug: ${slug}]`,
           p.description ?? null,
           `Preço: R$${p.price.toFixed(2)}${p.priceInstallments && p.installments ? ` à vista ou ${p.installments}x de R$${p.priceInstallments.toFixed(2)}` : ""}`,
-          p.imageUrl ? `→ Inclua [FOTO_${slug}] para enviar a foto` : null,
-          p.videoUrl ? `→ Inclua [VIDEO_${slug}] para enviar o vídeo` : null,
+          (p.imageUrl || (p as { imageUrls?: string[] }).imageUrls?.length) ? `→ Inclua [MIDIA_${slug}] para enviar as fotos e o vídeo do produto` : null,
         ].filter(Boolean);
         return parts.join("\n");
       });
@@ -458,16 +457,31 @@ export async function processAIResponse(
       data: { lastMessageAt: new Date() },
     });
 
-    // ── Send product photos/videos (flags detected in full raw response) ────────
+    // ── Send product photos + video ───────────────────────────────────────────
     for (const product of activeProducts) {
       const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-      if (new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedText) && product.imageUrl) {
-        await sendWhatsAppImage(provider.businessPhoneNumberId, to, product.imageUrl, product.name, token, contextMessageId)
-          .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
+      const triggerMidia  = new RegExp(`\\[MIDIA_${slug}\\]`, "i").test(combinedText);
+      const triggerFoto   = new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedText);
+      const triggerVideo  = new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedText);
+
+      if (triggerMidia || triggerFoto) {
+        // All images (imageUrls array preferred, fallback to single imageUrl)
+        const p = product as typeof product & { imageUrls?: string[] };
+        const allImages: string[] = p.imageUrls?.length ? p.imageUrls : product.imageUrl ? [product.imageUrl] : [];
+
+        for (const imgUrl of allImages) {
+          await new Promise((r) => setTimeout(r, 800)); // small gap between images
+          await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, product.name, token)
+            .catch((e) => console.error(`[AI Agent] Image send failed for ${product.name}:`, e));
+        }
       }
-      if (new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedText) && product.videoUrl) {
-        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token, contextMessageId)
-          .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
+
+      if (triggerMidia || triggerVideo) {
+        if (product.videoUrl) {
+          await new Promise((r) => setTimeout(r, 1000));
+          await sendWhatsAppVideo(provider.businessPhoneNumberId, to, product.videoUrl, product.name, token)
+            .catch((e) => console.error(`[AI Agent] Video send failed for ${product.name}:`, e));
+        }
       }
     }
 

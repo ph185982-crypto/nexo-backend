@@ -211,8 +211,7 @@ FLAGS ESPECIAIS
 ═══════════════════════════════
 
 [OPT_OUT] — cliente pediu pra não ser mais contactado
-[FOTO_SLUG] — envia foto do produto (substitua SLUG pelo slug do produto)
-[VIDEO_SLUG] — envia vídeo do produto
+[MIDIA_SLUG] — envia TODAS as fotos + vídeo do produto (substitua SLUG pelo slug do produto)
 [ESCALAR] — cliente insiste em falar com humano
 
 ═══════════════════════════════
