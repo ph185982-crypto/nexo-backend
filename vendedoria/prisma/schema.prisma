@@ -112,8 +112,22 @@ model Agent {
   aiModel                  String?  // gpt-4o | claude-3-5-sonnet
   escalationThreshold      Int      @default(3)
   orgHierarchyNode         OrgHierarchyItem?
+  scriptVersions           AgentScriptVersion[]
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
+}
+
+// ─── Agent Script Version History ─────────────────────────────────────────
+
+model AgentScriptVersion {
+  id        String   @id @default(cuid())
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  savedBy   String?  // user name or "configurador"
+  createdAt DateTime @default(now())
+
+  @@index([agentId, createdAt])
 }
 
 // ─── Kanban ────────────────────────────────────────────────────────────────

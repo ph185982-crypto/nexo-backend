@@ -365,6 +365,19 @@ export const resolvers = {
       };
     },
 
+    agentScriptVersions: async (
+      _: unknown,
+      { agentId }: { agentId: string },
+      ctx: ResolverContext
+    ) => {
+      requireAuth(ctx);
+      return prisma.agentScriptVersion.findMany({
+        where: { agentId },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+    },
+
     getConversationsByLead: async (
       _: unknown,
       { leadId }: { leadId: string }
@@ -1213,6 +1226,47 @@ export const resolvers = {
           ...(input.sandboxMode !== undefined && { sandboxMode: input.sandboxMode }),
         },
       });
+    },
+
+    saveAgentScript: async (
+      _: unknown,
+      { agentId, content, savedBy }: { agentId: string; content: string; savedBy?: string },
+      ctx: ResolverContext
+    ) => {
+      requireAuth(ctx);
+      // Save current version to history before overwriting
+      const current = await prisma.agent.findUnique({ where: { id: agentId }, select: { systemPrompt: true } });
+      if (current?.systemPrompt) {
+        await prisma.agentScriptVersion.create({
+          data: { agentId, content: current.systemPrompt, savedBy: savedBy ?? "editor" },
+        });
+      }
+      // Keep only last 10 versions
+      const oldVersions = await prisma.agentScriptVersion.findMany({
+        where: { agentId }, orderBy: { createdAt: "desc" }, skip: 10,
+      });
+      if (oldVersions.length > 0) {
+        await prisma.agentScriptVersion.deleteMany({ where: { id: { in: oldVersions.map((v) => v.id) } } });
+      }
+      return prisma.agent.update({ where: { id: agentId }, data: { systemPrompt: content } });
+    },
+
+    restoreAgentScript: async (
+      _: unknown,
+      { agentId, versionId }: { agentId: string; versionId: string },
+      ctx: ResolverContext
+    ) => {
+      requireAuth(ctx);
+      const version = await prisma.agentScriptVersion.findFirst({ where: { id: versionId, agentId } });
+      if (!version) throw new Error("Versão não encontrada");
+      // Save current as a version before restoring
+      const current = await prisma.agent.findUnique({ where: { id: agentId }, select: { systemPrompt: true } });
+      if (current?.systemPrompt) {
+        await prisma.agentScriptVersion.create({
+          data: { agentId, content: current.systemPrompt, savedBy: "restauração" },
+        });
+      }
+      return prisma.agent.update({ where: { id: agentId }, data: { systemPrompt: version.content } });
     },
 
     testWhatsappConnection: async (_: unknown, { accountId }: { accountId: string }) => {

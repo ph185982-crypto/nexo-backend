@@ -476,6 +476,14 @@ export const typeDefs = `#graphql
     color: String
   }
 
+  type AgentScriptVersion {
+    id: String!
+    agentId: String!
+    content: String!
+    savedBy: String
+    createdAt: String!
+  }
+
   type TestConnectionResult {
     success: Boolean!
     message: String!
@@ -540,6 +548,9 @@ export const typeDefs = `#graphql
 
     # Lead Conversations
     getConversationsByLead(leadId: String!): [WhatsappConversation!]!
+
+    # Agent Script Versions
+    agentScriptVersions(agentId: String!): [AgentScriptVersion!]!
   }
 
   # ─── Mutations ────────────────────────────────────────
@@ -581,6 +592,8 @@ export const typeDefs = `#graphql
     createWhatsappAccount(input: CreateWhatsappAccountInput!): WhatsappProviderConfig!
     deleteWhatsappAccount(id: String!): Boolean!
     updateAgent(id: String!, input: UpdateAgentInput!): Agent!
+    saveAgentScript(agentId: String!, content: String!, savedBy: String): Agent!
+    restoreAgentScript(agentId: String!, versionId: String!): Agent!
     testWhatsappConnection(accountId: String!): TestConnectionResult!
     updateKanbanColumn(id: String!, input: UpdateKanbanColumnInput!): KanbanColumn!
     changePassword(currentPassword: String!, newPassword: String!): Boolean!
