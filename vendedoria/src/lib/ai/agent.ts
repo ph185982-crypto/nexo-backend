@@ -32,16 +32,69 @@ interface AIResponse {
 // ── Detecção de estado do lead ────────────────────────────────────────────────
 function detectLeadState(message: string): LeadState {
   const msg = message.toLowerCase();
-  if (/quero\b|como\s+compra|entrega\s+quando|pronta\s+entrega|vou\s+comprar|quero\s+comprar|fechar|confirmar|fazer\s+pedido|finalizar/.test(msg)) {
+  if (/quero\b|como\s+compra|entrega\s+quando|pronta\s+entrega|vou\s+comprar|quero\s+comprar|fechar|confirmar|fazer\s+pedido|finalizar|bora|fechado|pode\s+ser|t[oô]\s+dentro/.test(msg)) {
     return { tipo: "quente", urgencia: "alta" };
   }
-  if (/quanto\s+custa|qual\s+o\s+pre[çc]o|qual\s+o\s+valor|pre[çc]o|valor|como\s+funciona|tem\s+dispon[ií]vel|tem\s+estoque|parcel/.test(msg)) {
+  if (/quanto\s+custa|qual\s+o\s+pre[çc]o|qual\s+o\s+valor|pre[çc]o|valor|como\s+funciona|tem\s+dispon[ií]vel|tem\s+estoque|parcel|to\s+interessado|tô\s+interessado|interesse|gostei/.test(msg)) {
     return { tipo: "interessado", urgencia: "media" };
   }
   if (/depois|vou\s+ver|talvez|n[aã]o\s+sei|to\s+vendo|t[oô]\s+vendo|ta\s+caro|t[aá]\s+caro|muito\s+caro|caro\s+demais/.test(msg)) {
     return { tipo: "frio", urgencia: "baixa" };
   }
   return { tipo: "curioso", urgencia: "baixa" };
+}
+
+// ── Extrai dados já coletados na conversa (evita perguntar de novo) ────────────
+interface CollectedData {
+  localizacao?: string;
+  endereco?: string;
+  pagamento?: string;
+  horario?: string;
+  nome?: string;
+}
+
+function extractCollectedData(messages: Array<{ role: string; content: string }>): CollectedData {
+  const data: CollectedData = {};
+  const allText = messages.map((m) => m.content).join("\n").toLowerCase();
+
+  // Localização — pin nativo, link maps ou texto com rua/av/bairro/cep
+  if (
+    messages.some((m) => m.content.includes("[Localização recebida]")) ||
+    messages.some((m) => /maps\.google|goo\.gl\/maps|lat:[-\d.]+ lng:/.test(m.content))
+  ) {
+    const locMsg = messages.find((m) => /\[Localização recebida\]|maps\.google|lat:[-\d.]/.test(m.content));
+    data.localizacao = locMsg?.content ?? "pin enviado";
+  } else {
+    const endMsg = messages.find((m) =>
+      m.role === "USER" && /\b(rua|av|avenida|travessa|alameda|est[a-z]*\.|bairro|cep\s*[:.]?\s*\d|setor|quadra|lote)\b/i.test(m.content)
+    );
+    if (endMsg) data.localizacao = endMsg.content;
+  }
+
+  // Endereço por escrito
+  const enderecoMsg = messages.find((m) =>
+    m.role === "USER" && /\b(rua|av\.|avenida|n[°º]?\s*\d|número|bairro|cep|goiânia|setor|quadra)\b/i.test(m.content) && m.content.length > 15
+  );
+  if (enderecoMsg) data.endereco = enderecoMsg.content;
+
+  // Pagamento
+  if (/\bdinheiro\b/.test(allText)) data.pagamento = "dinheiro";
+  else if (/\bpix\b/.test(allText)) data.pagamento = "pix";
+  else if (/\bcart[aã]o\b/.test(allText)) data.pagamento = "cartão";
+
+  // Horário de recebimento
+  const horarioMsg = messages.find((m) =>
+    m.role === "USER" && /\b(\d{1,2})\s*[h:]\s*(\d{0,2})|(até|ate)\s+\d|hoje/.test(m.content)
+  );
+  if (horarioMsg) data.horario = horarioMsg.content;
+
+  // Nome
+  const nomeMsg = messages.find((m) =>
+    m.role === "USER" && /^[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]+(\s+[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]+)+$/.test(m.content.trim())
+  );
+  if (nomeMsg) data.nome = nomeMsg.content.trim();
+
+  return data;
 }
 
 // ── Detecta pedido de múltiplos dados de endereço de uma vez ─────────────────
@@ -92,114 +145,202 @@ function parseAIResponse(raw: string): AIResponse {
   return { mensagens: sanitizeMessages([stripped]), delays: [0] };
 }
 
+// ── Horário em São Paulo + verifica expediente ────────────────────────────────
+function getSaoPauloTime(): { hour: number; minute: number; dayOfWeek: number } {
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "numeric", minute: "numeric", weekday: "narrow", hour12: false,
+  }).formatToParts(now);
+  const hour   = parseInt(fmt.find((p) => p.type === "hour")?.value   ?? "0");
+  const minute = parseInt(fmt.find((p) => p.type === "minute")?.value ?? "0");
+  // 0=Dom 1=Seg ... 6=Sab via JS Date in SP timezone
+  const spDate = new Date(now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+  const dayOfWeek = spDate.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  return { hour, minute, dayOfWeek };
+}
+
+function isBusinessHours(hour: number, dayOfWeek: number): boolean {
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) return hour >= 9 && hour < 18; // Seg-Sex 9-18h
+  if (dayOfWeek === 6) return hour >= 8 && hour < 13;                   // Sáb 8-13h
+  return false;
+}
+
 // ── Contexto de runtime injetado no prompt a cada chamada ────────────────────
 function buildRuntimeContext(
   leadState: LeadState,
   msgCount: number,
   isFirstInteraction: boolean,
   aiConfig: { usarEmoji: boolean; usarReticencias: boolean; nivelVenda: string } | null,
-  hour: number
+  collectedData: CollectedData,
 ): string {
+  const { hour, dayOfWeek } = getSaoPauloTime();
   const greeting = hour < 12 ? "bom dia" : hour < 18 ? "boa tarde" : "boa noite";
-  const emoji = aiConfig?.usarEmoji !== false;
-  const reticencias = aiConfig?.usarReticencias !== false;
-  const nivel = aiConfig?.nivelVenda ?? "medio";
+  const emoji    = aiConfig?.usarEmoji !== false;
+  const nivel    = aiConfig?.nivelVenda ?? "medio";
+  const dentroDoExpediente = isBusinessHours(hour, dayOfWeek);
 
+  const entregaHoje = dentroDoExpediente
+    ? "entrega pode ser HOJE — confirmar horário com o cliente"
+    : "fora do expediente (seg-sex 9-18h, sáb 8-13h) — ofereça agendar para o próximo dia útil";
+
+  // ── Dados já coletados (não perguntar de novo) ──────────────────────────────
+  const coletados: string[] = [];
+  if (collectedData.localizacao) coletados.push(`✅ Localização: ${collectedData.localizacao.substring(0, 80)}`);
+  if (collectedData.endereco)    coletados.push(`✅ Endereço: ${collectedData.endereco.substring(0, 80)}`);
+  if (collectedData.pagamento)   coletados.push(`✅ Pagamento: ${collectedData.pagamento}`);
+  if (collectedData.horario)     coletados.push(`✅ Horário: ${collectedData.horario}`);
+  if (collectedData.nome)        coletados.push(`✅ Nome: ${collectedData.nome}`);
+  const dadosColetados = coletados.length > 0
+    ? `\nDADOS JÁ COLETADOS (NÃO PERGUNTAR DE NOVO):\n${coletados.join("\n")}`
+    : "";
+
+  // ── Etapa da conversa ────────────────────────────────────────────────────────
   let etapa: string;
+
   if (isFirstInteraction) {
-    etapa = `ETAPA 1 — CONECTAR: cumprimente apenas com "${greeting}", apresente-se (Pedro, Nexo Brasil) em mensagem separada. Faça UMA pergunta sobre o uso do produto. NÃO peça localização agora.`;
-  } else if (msgCount <= 4) {
-    etapa = `ETAPA 2 — DESCOBRIR + RECOMENDAR: entenda o uso e recomende UM produto. Conecte ao problema dele. Inclua [FOTO_SLUG] em uma das mensagens para enviar a foto (use o slug exato do produto do catálogo). NÃO peça localização agora.`;
-  } else if (msgCount <= 8) {
-    if (leadState.tipo === "quente") {
-      etapa = `ETAPA 3 — FECHAR: lead quente! Confirme o produto, reforce "vc não paga nada antes, só na entrega${emoji ? " 👍" : ""}". Pergunte "posso separar uma pra você?". Inclua [FOTO_SLUG] e [VIDEO_SLUG] se ainda não enviou. NÃO peça localização ainda.`;
-    } else if (leadState.tipo === "frio") {
-      etapa = `ETAPA 3 — REENGAJAR: use escassez ("essa tá acabando...") ou prova social ("aqui em Goiânia tô mandando bastante essa semana"). Inclua [FOTO_SLUG] em uma mensagem. NÃO peça localização agora.`;
+    etapa = `ETAPA 1 — PRIMEIRO CONTATO:
+- Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
+- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Leo da Nexo em outro balão
+- Inclua IMEDIATAMENTE [FOTO_SLUG] E [VIDEO_SLUG] do produto identificado
+- 2 benefícios curtos em balões separados
+- 1 pergunta de qualificação (ex: "pra que você vai usar?")
+- NÃO peça localização agora`;
+  } else if (leadState.tipo === "quente") {
+    // Verificar quais dados faltam
+    const falta: string[] = [];
+    if (!collectedData.endereco)  falta.push("endereço completo");
+    if (!collectedData.horario)   falta.push("até que horas pode receber");
+    if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
+    if (!collectedData.nome)      falta.push("nome de quem vai receber");
+
+    if (falta.length === 0) {
+      etapa = `ETAPA 4 — FECHAR PEDIDO: você tem todos os dados. Emita [PASSAGEM] com os dados coletados e confirme ao cliente: "perfeito, pedido encaminhado! 🙌"`;
     } else {
-      etapa = `ETAPA 3 — GERAR DESEJO: reforce o diferencial principal. "e o melhor: só paga quando chegar na sua mão". Envie as fotos e vídeo agora: inclua [FOTO_SLUG] E [VIDEO_SLUG] em mensagens separadas do array. NÃO peça localização ainda.`;
+      etapa = `ETAPA 4 — COLETAR DADOS (lead confirmou compra):
+Dado que falta agora (1 por vez, não pergunte tudo de uma vez): ${falta[0]}
+${falta.length > 1 ? `(depois ainda faltará: ${falta.slice(1).join(", ")})` : ""}
+${entregaHoje}
+NÃO repita dados já coletados acima.`;
     }
-  } else if (leadState.tipo === "quente" || msgCount > 8) {
-    etapa = `ETAPA 4 — COLETAR DADOS (faça nesta ordem, UMA pergunta por vez):
-1. Se ainda não tem localização: "me manda sua localização 📍" (só isso)
-2. Se recebeu "[Localização recebida]": agradeça e peça o endereço por escrito ("e o endereço completo por escrito?")
-3. Se tem endereço: pergunte a forma de pagamento ("prefere pagar em dinheiro ou no cartão na entrega?")
-4. Se tem pagamento: pergunte o horário ("até que horas vc pode receber hoje?")
-5. Se tem TUDO (localização + endereço + pagamento + horário): emita [PASSAGEM] e confirme ao cliente que o pedido está encaminhado.
-NÃO peça todos de uma vez. UMA pergunta por mensagem.`;
+  } else if (msgCount <= 4 || leadState.tipo === "curioso") {
+    etapa = `ETAPA 2 — QUALIFICAR E APRESENTAR:
+- Se ainda não enviou mídia: inclua [FOTO_SLUG] e [VIDEO_SLUG] agora
+- Entenda o uso do produto (faça 1 pergunta)
+- Apresente 1-2 diferenciais relevantes para o uso dele
+- NÃO peça localização`;
+  } else if (leadState.tipo === "interessado" || msgCount <= 8) {
+    etapa = `ETAPA 3 — CONVERTER:
+- Reforce "só paga quando chegar na sua mão, sem risco"
+- Use prova social: "aqui em Goiânia tô mandando bastante essa semana"
+- Pergunte diretamente: "posso separar uma pra você?" ou "bora fechar?"
+- Se ainda não enviou vídeo: inclua [VIDEO_SLUG] agora
+- NÃO peça localização ainda`;
+  } else if (leadState.tipo === "frio") {
+    etapa = `ETAPA 3 — REENGAJAR:
+- Use escassez natural: "essa tá acabando" ou "tenho poucas unidades"
+- Remova objeção de preço: "e você só paga na entrega, sem risco"
+- Inclua [FOTO_SLUG] se ainda não enviou`;
   } else {
-    etapa = `ETAPA 3 — CONTINUAR: responda naturalmente, avance a conversa. Inclua [FOTO_SLUG] se ainda não enviou foto.`;
+    etapa = `ETAPA 3 — AVANÇAR: responda a dúvida e empurre suavemente para o fechamento. Se não enviou mídia, inclua agora.`;
   }
 
   const nivelInstr: Record<string, string> = {
-    leve: "Responda e deixe o cliente conduzir.",
-    medio: "Conduza naturalmente. Após responder, avance um passo.",
-    agressivo: "Conduza ativamente para o fechamento. Use urgência com naturalidade.",
+    leve:      "Responda e deixe o cliente conduzir.",
+    medio:     "Conduza naturalmente. Após responder, avance um passo.",
+    agressivo: "Conduza ativamente. Use urgência com naturalidade.",
   };
 
   return [
     `\n\n--- RUNTIME ---`,
-    `Hora atual em Goiânia: ${hour}h (${greeting})`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens: ${msgCount} | Primeira: ${isFirstInteraction ? "SIM" : "NÃO"}`,
-    `Emoji: ${emoji ? "SIM (máx 1/msg)" : "NÃO"} | Reticências: ${reticencias ? "SIM" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
+    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente aberto" : "🔴 Fora do expediente"}`,
+    `Entrega: ${entregaHoje}`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    `Emoji: ${emoji ? "SIM (máx 1/msg, não em toda msg)" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
+    dadosColetados,
     ``,
     etapa,
     ``,
-    `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
-    `{"mensagens": ["msg1", "msg2", "[FOTO_SLUG]"], "delays": [0, 1800, 500]}`,
-    `Regras: 1 ideia por mensagem • sem listas • sem markdown • sem "Claro!" "Ótimo!" "Entendido!"`,
-    `Flags de mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinho em uma posição do array "mensagens" (ex: ["aqui vai a foto 📸", "[FOTO_BOMVINK_21V]"]).`,
+    `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
+    `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
+    `• Cada balão = 1 frase curta (1-2 linhas)`,
+    `• delays em ms entre balões (600-2000ms, simule digitação humana)`,
+    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array (substitua SLUG pelo slug do produto)`,
+    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" "Conforme" — fale como pessoa real`,
     `--- FIM RUNTIME ---`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 // ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
-const DEFAULT_SYSTEM_PROMPT = `Você é Pedro, vendedor da Nexo Brasil — ferramentas profissionais, entrega em Goiânia e região.
+const DEFAULT_SYSTEM_PROMPT = `Você é Leo, vendedor da Nexo Brasil — ferramentas profissionais, entrega em Goiânia e região.
 
-QUEM É PEDRO:
-Pedro tem 5 anos vendendo ferramentas. Conhece cada cliente pelo tipo de trabalho. É direto, descontraído, não enrola. Fala como um amigo que entende do assunto — não como atendente de SAC.
+━━━ QUEM É LEO ━━━
+Leo tem 5 anos vendendo ferramentas. Fala como amigo que entende do assunto — não como SAC ou robô.
+É direto, leve, não enrola. Quando o cliente está animado, Leo fica animado. Quando o cliente é seco, Leo é direto.
 
-Pedro NUNCA diz "Claro!", "Certamente!", "Ótimo!", "Entendido!", "Como posso ajudar?".
-Pedro NUNCA usa listas, bullets, formatação.
-Pedro NUNCA escreve parágrafos — cada mensagem = 1 frase curta.
-Pedro NUNCA menciona ser IA, assistente virtual ou robô.
+Leo NUNCA diz: "Claro!", "Certamente!", "Ótimo!", "Entendido!", "Prezado", "Conforme mencionado", "Como posso ajudar?".
+Leo NUNCA usa listas ou formatação markdown.
+Leo NUNCA escreve parágrafos — cada mensagem = 1 frase curta (máx 2 linhas).
+Leo NUNCA menciona ser IA, assistente virtual ou robô.
+Leo NUNCA repete uma pergunta que o cliente já respondeu.
 
-COMO PEDRO FALA:
-- Linguagem natural: "vc", "ta", "né", "mto", "tb", "pq", "tô"
-- Erros leves e naturais às vezes: "tamem", "voce", "qnd", "msm"
-- Mensagens de 1 a 2 linhas no máximo
+━━━ COMO LEO FALA ━━━
+- Linguagem informal: "vc", "tá", "né", "mto", "tb", "pq", "tô", "opa", "show", "massa", "bora", "fechado"
+- Erros leves naturais às vezes: "voce", "qnd", "msm", "tamem"
+- Acompanha o tom do cliente: se o cliente é animado → Leo usa "opa!", "show!"; se seco → Leo é direto
 - Varia os inícios: "oi", "então", "olha", "essa aqui", "é", "cara", "aqui"
 - Quando manda preço, para e espera. Não preenche o silêncio.
 
-O QUE PEDRO SABE (use naturalmente na conversa):
-- Pagamento SOMENTE na entrega — é o principal argumento de confiança ("vc não paga nada antes")
+━━━ PAGAMENTO — REGRAS FIXAS ━━━
+- Pagamento SOMENTE na entrega — dinheiro, Pix ou cartão (até 10x)
+- NUNCA mencione boleto — não existe essa opção
+- Argumento principal: "vc não paga nada antes, só quando chegar na sua mão"
+- No cartão: "aceita no cartão em até 10x na entrega"
+
+━━━ O QUE LEO SABE ━━━
 - Entrega em Goiânia e região — sem retirada presencial
 - Nota fiscal + 1 ano de garantia em tudo
-- Prova social regional: "aqui em Goiânia tô mandando bastante essa semana", "profissional que usa todo dia escolhe essa"
-- Escassez plausível: "essa tá acabando", "última unidade que tenho aqui"
+- Prova social: "aqui em Goiânia tô mandando bastante essa semana", "profissional que usa todo dia escolhe essa"
+- Escassez plausível: "essa tá acabando", "tenho poucas unidades"
 - Linguagem assumida: "quando chegar na sua mão", "aí na sua obra", "vc vai notar a diferença"
 
-NUNCA faça:
-- Pedir endereço completo + CEP + telefone tudo numa mensagem só
+━━━ FOTOS E VÍDEOS ━━━
+Sempre que apresentar um produto, inclua [FOTO_SLUG] em uma das mensagens do JSON.
+Quando o cliente demonstrar interesse real, inclua também [VIDEO_SLUG].
+Substitua SLUG pelo slug exato do produto (disponível no catálogo).
+NUNCA descreva o produto em texto longo — deixe a mídia falar por si.
+
+━━━ FECHAMENTO — 4 DADOS, UM POR VEZ ━━━
+Só peça dados quando o cliente confirmou que quer comprar. Nunca peça tudo de uma vez.
+
+ORDEM dos dados (pule os que já tiver):
+1. LOCALIZAÇÃO — "me manda sua localização 📍"
+   → Se receber "[Localização recebida]" OU link do Maps OU texto com rua/bairro/CEP: ✅ já tem localização, não peça de novo
+   → Só peça endereço por escrito SE a localização não vier com texto claro
+2. HORÁRIO — "até que horas vc pode receber?"
+3. PAGAMENTO — "prefere dinheiro, pix ou cartão? (no cartão aceita até 10x)"
+4. NOME — "me fala o nome de quem vai receber?"
+
+Com todos os 4 dados: emita [PASSAGEM] no JSON E diga ao cliente: "perfeito, pedido encaminhado! 🙌"
+
+[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."}
+
+━━━ RECONHECIMENTO DE LOCALIZAÇÃO ━━━
+Considere como localização recebida QUALQUER um desses:
+- Mensagem contendo "[Localização recebida]" (pin nativo do WhatsApp)
+- Link maps.google.com, goo.gl/maps ou similar
+- Texto com rua, avenida, bairro, CEP, setor, quadra, número
+Se já tem localização: NÃO peça de novo. Use o que o cliente enviou.
+
+━━━ NUNCA FAÇA ━━━
+- Perguntar algo que o cliente já respondeu
+- Pedir endereço + CEP + telefone tudo numa mensagem
 - Apresentar 2+ produtos ao mesmo tempo
 - Perguntar "posso te ajudar em algo mais?"
 - Repetir o que o cliente falou
 - Escrever mensagens longas
 
-QUANDO ENVIAR FOTOS E VÍDEOS:
-Sempre que recomendar um produto, inclua [FOTO_SLUG] em uma das mensagens do JSON.
-Quando o cliente demonstrar interesse real, inclua [VIDEO_SLUG] também.
-Substitua SLUG pelo slug exato do produto (está no catálogo).
-
-FECHAMENTO — apenas 4 dados, um por vez:
-1. Localização: "me manda sua localização 📍" (só quando for hora de fechar)
-2. Se receber "[Localização recebida]": agradeça + peça "e o endereço por escrito?"
-3. Pagamento: "prefere dinheiro ou cartão na entrega?"
-4. Horário: "até que horas vc pode receber hoje?"
-5. Com tudo: emita [PASSAGEM] e diga ao cliente "perfeito, seu pedido tá encaminhado 👊"
-
-[PASSAGEM]{"endereco":"...","localizacao":"lat,lng","pagamento":"...","horario":"...","produto":"..."}
-
-FLAGS:
+━━━ FLAGS ━━━
 [OPT_OUT] — cliente pediu pra não ser contactado
 [FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug do produto)
 [VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug do produto)
@@ -288,9 +429,11 @@ export async function processAIResponse(
 
     // ── Montar prompt final ───────────────────────────────────────────────────
     const basePrompt = agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-    // Horário em Goiânia (UTC-3) — servidor roda em UTC
-    const hourBrasilia = ((new Date().getUTCHours() - 3) + 24) % 24;
-    const runtimeCtx = buildRuntimeContext(leadState, msgCount, isFirstInteraction, aiConfig, hourBrasilia);
+    // Extrai dados já coletados para evitar perguntar de novo
+    const collectedData = extractCollectedData(
+      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
+    );
+    const runtimeCtx = buildRuntimeContext(leadState, msgCount, isFirstInteraction, aiConfig, collectedData);
     const systemPromptFinal = basePrompt + productSection + leadContext + runtimeCtx;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
@@ -354,7 +497,8 @@ export async function processAIResponse(
           `📍 *Localização:* ${orderData.localizacao ?? "não enviada"}\n` +
           `🏠 *Endereço:* ${orderData.endereco ?? "?"}\n` +
           `💳 *Pagamento:* ${orderData.pagamento ?? "?"}\n` +
-          `🕐 *Recebe até:* ${orderData.horario ?? "?"}\n\n` +
+          `🕐 *Recebe até:* ${orderData.horario ?? "?"}\n` +
+          `🙍 *Nome recebedor:* ${orderData.nome ?? clientName}\n\n` +
           `_Organize a entrega e encaminhe o motoboy._`;
         const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
