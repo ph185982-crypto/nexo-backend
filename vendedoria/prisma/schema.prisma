@@ -439,21 +439,21 @@ model OwnerNotification {
 // ─── Product Catalog ───────────────────────────────────────────────────────
 
 model Product {
-  id               String   @id @default(cuid())
-  name             String
-  description      String?  @db.Text
-  price            Float
+  id                String   @id @default(cuid())
+  name              String
+  description       String?  @db.Text
+  price             Float
   priceInstallments Float?
-  installments     Int      @default(10)
-  imageUrl         String?           // legacy / primary image
-  imageUrls        String[]          // up to 8 images
-  videoUrl         String?
-  category         String?
-  isActive         Boolean  @default(true)
-  organizationId   String
-  organization     WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  installments      Int      @default(10)
+  imageUrl          String?           // legacy / primary image
+  imageUrls         String[]          // up to 8 images
+  videoUrl          String?
+  category          String?
+  isActive          Boolean  @default(true)
+  organizationId    String
+  organization      WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 // ─── AI Config ─────────────────────────────────────────────────────────────
@@ -461,6 +461,14 @@ model Product {
 model AiConfig {
   id              String   @id @default(cuid())
   organizationId  String   @unique
+  organization    WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  usarEmoji       Boolean  @default(true)
+  usarReticencias Boolean  @default(true)
+  nivelVenda      String   @default("medio") // leve | medio | agressivo
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── Webhook Retry Queue ────────────────────────────────────────────────────
   organization    WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
   usarEmoji       Boolean  @default(true)
   usarReticencias Boolean  @default(true)
