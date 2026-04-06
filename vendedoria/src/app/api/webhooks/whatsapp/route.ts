@@ -100,9 +100,9 @@ async function handleIncomingMessage(
     from: string;
     type: string;
     text?: { body: string };
-    // Audio / voice fields from WhatsApp Business API
     audio?: { id: string; mime_type?: string };
     voice?: { id: string; mime_type?: string };
+    location?: { latitude: number; longitude: number; name?: string; address?: string };
     timestamp: string;
   },
   contact: { profile?: { name?: string } } | undefined,
@@ -172,6 +172,13 @@ async function handleIncomingMessage(
     } else {
       content = "[Áudio recebido]";
     }
+  } else if (message.type === "location" && message.location) {
+    // Extrair coordenadas reais para que a IA reconheça e agradeça a localização
+    const loc = message.location;
+    const parts = [`[Localização recebida] lat:${loc.latitude} lng:${loc.longitude}`];
+    if (loc.address) parts.push(`endereço: ${loc.address}`);
+    if (loc.name)    parts.push(`ponto: ${loc.name}`);
+    content = parts.join(" | ");
   } else {
     content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
   }

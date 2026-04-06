@@ -105,44 +105,49 @@ function buildRuntimeContext(
   const reticencias = aiConfig?.usarReticencias !== false;
   const nivel = aiConfig?.nivelVenda ?? "medio";
 
-  // Etapa da conversa baseada na contagem de mensagens trocadas
   let etapa: string;
   if (isFirstInteraction) {
-    etapa = `ETAPA 1 — CONECTAR: cumprimente ("${greeting}"), se apresente (Pedro, Nexo Brasil) em mensagens curtas separadas. Faça UMA pergunta de qualificação natural sobre o uso do produto.`;
+    etapa = `ETAPA 1 — CONECTAR: cumprimente apenas com "${greeting}", apresente-se (Pedro, Nexo Brasil) em mensagem separada. Faça UMA pergunta sobre o uso do produto. NÃO peça localização agora.`;
   } else if (msgCount <= 4) {
-    etapa = `ETAPA 2 — DESCOBRIR: entenda a dor/necessidade real do cliente. Recomende UM produto específico conectando ao problema dele. Use "essa aqui é exatamente pra isso".`;
+    etapa = `ETAPA 2 — DESCOBRIR + RECOMENDAR: entenda o uso e recomende UM produto. Conecte ao problema dele. Inclua [FOTO_SLUG] em uma das mensagens para enviar a foto (use o slug exato do produto do catálogo). NÃO peça localização agora.`;
   } else if (msgCount <= 8) {
     if (leadState.tipo === "quente") {
-      etapa = `ETAPA 3 — FECHAR: lead quente. Vá direto. "posso separar uma pra você${emoji ? " 👍" : ""}?" → depois "me manda sua localização 📍".`;
+      etapa = `ETAPA 3 — FECHAR: lead quente! Confirme o produto, reforce "vc não paga nada antes, só na entrega${emoji ? " 👍" : ""}". Pergunte "posso separar uma pra você?". Inclua [FOTO_SLUG] e [VIDEO_SLUG] se ainda não enviou. NÃO peça localização ainda.`;
     } else if (leadState.tipo === "frio") {
-      etapa = `ETAPA 3 — REENGAJAR: use escassez natural ("última que tenho aqui...") ou prova social ("aqui em Goiânia tô mandando bastante"). Não force.`;
+      etapa = `ETAPA 3 — REENGAJAR: use escassez ("essa tá acabando...") ou prova social ("aqui em Goiânia tô mandando bastante essa semana"). Inclua [FOTO_SLUG] em uma mensagem. NÃO peça localização agora.`;
     } else {
-      etapa = `ETAPA 3 — GERAR DESEJO: reforce o benefício principal conectado à dor dele. Antecipe a objeção de preço com "e o melhor: só paga quando chegar na sua mão". Envie a mídia do produto.`;
+      etapa = `ETAPA 3 — GERAR DESEJO: reforce o diferencial principal. "e o melhor: só paga quando chegar na sua mão". Envie as fotos e vídeo agora: inclua [FOTO_SLUG] E [VIDEO_SLUG] em mensagens separadas do array. NÃO peça localização ainda.`;
     }
+  } else if (leadState.tipo === "quente" || msgCount > 8) {
+    etapa = `ETAPA 4 — COLETAR DADOS (faça nesta ordem, UMA pergunta por vez):
+1. Se ainda não tem localização: "me manda sua localização 📍" (só isso)
+2. Se recebeu "[Localização recebida]": agradeça e peça o endereço por escrito ("e o endereço completo por escrito?")
+3. Se tem endereço: pergunte a forma de pagamento ("prefere pagar em dinheiro ou no cartão na entrega?")
+4. Se tem pagamento: pergunte o horário ("até que horas vc pode receber hoje?")
+5. Se tem TUDO (localização + endereço + pagamento + horário): emita [PASSAGEM] e confirme ao cliente que o pedido está encaminhado.
+NÃO peça todos de uma vez. UMA pergunta por mensagem.`;
   } else {
-    etapa = `ETAPA 4 — COLETAR DADOS: assumindo a venda. Peça dados progressivamente: primeiro localização, depois nome, depois confirme o produto e pagamento. Nunca tudo de uma vez.`;
+    etapa = `ETAPA 3 — CONTINUAR: responda naturalmente, avance a conversa. Inclua [FOTO_SLUG] se ainda não enviou foto.`;
   }
 
   const nivelInstr: Record<string, string> = {
-    leve: "Responda e deixe o cliente conduzir. Não empurre.",
-    medio: "Conduza naturalmente. Após responder, avance um passo com uma pergunta curta ou sugestão.",
-    agressivo: "Conduza ativamente para o fechamento em cada mensagem. Use urgência e escassez com naturalidade.",
+    leve: "Responda e deixe o cliente conduzir.",
+    medio: "Conduza naturalmente. Após responder, avance um passo.",
+    agressivo: "Conduza ativamente para o fechamento. Use urgência com naturalidade.",
   };
 
   return [
     `\n\n--- RUNTIME ---`,
-    `Hora: ${hour}h | Estado do lead: ${leadState.tipo} | Urgência: ${leadState.urgencia}`,
-    `Mensagens trocadas: ${msgCount} | Primeira vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
-    `Emoji: ${emoji ? "SIM (máx 1/msg)" : "NÃO"} | Reticências: ${reticencias ? "SIM (com moderação)" : "NÃO"}`,
-    `Nível de venda: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
+    `Hora atual em Goiânia: ${hour}h (${greeting})`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens: ${msgCount} | Primeira: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    `Emoji: ${emoji ? "SIM (máx 1/msg)" : "NÃO"} | Reticências: ${reticencias ? "SIM" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
     ``,
     etapa,
     ``,
-    `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
-    `{"mensagens": ["msg1", "msg2"], "delays": [0, 1800]}`,
+    `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
+    `{"mensagens": ["msg1", "msg2", "[FOTO_SLUG]"], "delays": [0, 1800, 500]}`,
     `Regras: 1 ideia por mensagem • sem listas • sem markdown • sem "Claro!" "Ótimo!" "Entendido!"`,
-    `NUNCA pedir endereço+CEP+telefone na mesma mensagem. Use só: "me manda sua localização 📍"`,
-    `Para enviar mídia: inclua [FOTO_SLUG] ou [VIDEO_SLUG] dentro de uma mensagem do array (substitua SLUG pelo slug do produto).`,
+    `Flags de mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinho em uma posição do array "mensagens" (ex: ["aqui vai a foto 📸", "[FOTO_BOMVINK_21V]"]).`,
     `--- FIM RUNTIME ---`,
   ].join("\n");
 }
@@ -180,17 +185,25 @@ NUNCA faça:
 - Repetir o que o cliente falou
 - Escrever mensagens longas
 
-FECHAMENTO — coleta progressiva:
-1. "me manda sua localização 📍"
-2. "e o nome completo?"
-3. Confirme produto e pagamento
-4. Quando tiver TUDO, emita: [PASSAGEM]{"nome":"...","endereco":"...","cep":"...","bairro":"...","telefone":"...","produtos":[{"nome":"...","qtd":1}],"pagamento":"..."}
+QUANDO ENVIAR FOTOS E VÍDEOS:
+Sempre que recomendar um produto, inclua [FOTO_SLUG] em uma das mensagens do JSON.
+Quando o cliente demonstrar interesse real, inclua [VIDEO_SLUG] também.
+Substitua SLUG pelo slug exato do produto (está no catálogo).
+
+FECHAMENTO — apenas 4 dados, um por vez:
+1. Localização: "me manda sua localização 📍" (só quando for hora de fechar)
+2. Se receber "[Localização recebida]": agradeça + peça "e o endereço por escrito?"
+3. Pagamento: "prefere dinheiro ou cartão na entrega?"
+4. Horário: "até que horas vc pode receber hoje?"
+5. Com tudo: emita [PASSAGEM] e diga ao cliente "perfeito, seu pedido tá encaminhado 👊"
+
+[PASSAGEM]{"endereco":"...","localizacao":"lat,lng","pagamento":"...","horario":"...","produto":"..."}
 
 FLAGS:
-[OPT_OUT] — cliente pediu pra não ser mais contactado
-[FOTO_SLUG] — envia foto do produto (substitua SLUG pelo slug)
-[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug)
-[ESCALAR] — cliente insiste muito em falar com humano`;
+[OPT_OUT] — cliente pediu pra não ser contactado
+[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug do produto)
+[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug do produto)
+[ESCALAR] — cliente insiste em falar com humano`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -275,8 +288,9 @@ export async function processAIResponse(
 
     // ── Montar prompt final ───────────────────────────────────────────────────
     const basePrompt = agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-    const hour = new Date().getHours();
-    const runtimeCtx = buildRuntimeContext(leadState, msgCount, isFirstInteraction, aiConfig, hour);
+    // Horário em Goiânia (UTC-3) — servidor roda em UTC
+    const hourBrasilia = ((new Date().getUTCHours() - 3) + 24) % 24;
+    const runtimeCtx = buildRuntimeContext(leadState, msgCount, isFirstInteraction, aiConfig, hourBrasilia);
     const systemPromptFinal = basePrompt + productSection + leadContext + runtimeCtx;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
@@ -324,22 +338,27 @@ export async function processAIResponse(
     if (passagemMatch) {
       try {
         const orderData = JSON.parse(passagemMatch[1]);
-        const produtosStr = Array.isArray(orderData.produtos)
-          ? orderData.produtos.map((p: { nome: string; qtd?: number }) => `${p.nome} x${p.qtd ?? 1}`).join(", ")
-          : String(orderData.produtos ?? "N/A");
+        const clientName = lead?.profileName ?? "Cliente";
+        const produtoStr = orderData.produto ?? orderData.produtos
+          ? (Array.isArray(orderData.produtos)
+              ? orderData.produtos.map((p: { nome: string; qtd?: number }) => `${p.nome} x${p.qtd ?? 1}`).join(", ")
+              : String(orderData.produtos))
+          : "N/A";
         const handoffMsg =
-          `*🔔 NOVO PEDIDO — NEXO BRASIL*\n\n` +
-          `👤 *Nome:* ${orderData.nome ?? "?"}\n` +
-          `📍 *Endereço:* ${orderData.endereco ?? "?"}, ${orderData.bairro ?? ""} — CEP ${orderData.cep ?? ""}\n` +
-          `📱 *Telefone:* ${orderData.telefone ?? to}\n` +
-          `📦 *Produto(s):* ${produtosStr}\n` +
-          `💳 *Pagamento:* ${orderData.pagamento ?? "?"}\n\n` +
-          `_Encaminhe para finalizar a entrega._`;
+          `*🔔 PEDIDO NOVO — NEXO BRASIL*\n\n` +
+          `👤 *Cliente:* ${clientName}\n` +
+          `📱 *WhatsApp:* ${to}\n` +
+          `📦 *Produto:* ${produtoStr}\n` +
+          `📍 *Localização:* ${orderData.localizacao ?? "não enviada"}\n` +
+          `🏠 *Endereço:* ${orderData.endereco ?? "?"}\n` +
+          `💳 *Pagamento:* ${orderData.pagamento ?? "?"}\n` +
+          `🕐 *Recebe até:* ${orderData.horario ?? "?"}\n\n` +
+          `_Organize a entrega e encaminhe o motoboy._`;
         const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
         await prisma.ownerNotification.create({
-          data: { type: "ORDER", title: `Novo pedido: ${orderData.nome ?? "Cliente"}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
+          data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
         }).catch(() => {});
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
     }
