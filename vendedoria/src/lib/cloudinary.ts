@@ -9,7 +9,7 @@
  *   Unsigned: CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_PRESET
  */
 
-import { createHmac } from "crypto";
+import { createHash } from "crypto";
 
 export interface CloudinaryResult {
   url: string;       // secure_url — always HTTPS
@@ -48,9 +48,8 @@ export async function uploadToCloudinary(
     // ── Signed upload (Cloudinary usa SHA-1 HMAC de params + api_secret) ─
     const timestamp = Math.round(Date.now() / 1000).toString();
     const paramsString = `folder=${folder}&timestamp=${timestamp}`;
-    const sig = createHmac("sha1", apiSecret)
-      .update(paramsString)
-      .digest("hex");
+    // Cloudinary signature: SHA1(sorted_params_string + api_secret) — NOT HMAC
+    const sig = createHash("sha1").update(paramsString + apiSecret).digest("hex");
 
     form.append("api_key", apiKey);
     form.append("timestamp", timestamp);
@@ -107,7 +106,8 @@ export async function uploadBase64ToCloudinary(
 
   const timestamp = Math.round(Date.now() / 1000).toString();
   const paramsString = `folder=${folder}&timestamp=${timestamp}`;
-  const sig = createHmac("sha1", apiSecret).update(paramsString).digest("hex");
+  // Cloudinary signature: SHA1(sorted_params_string + api_secret) — NOT HMAC
+  const sig = createHash("sha1").update(paramsString + apiSecret).digest("hex");
 
   const form = new FormData();
   form.append("file", dataUri);          // Cloudinary accepts data: URIs directly
