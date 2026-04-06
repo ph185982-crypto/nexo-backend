@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
         where: { id: p.id },
         data: {
           price: u.price,
-          ...(u.priceInstallments !== undefined && { priceInstallments: u.priceInstallments }),
-          ...(u.installments !== undefined && { installments: u.installments }),
+          ...(u.priceInstallments !== undefined && { priceInstallments: u.priceInstallments ?? null }),
+          ...(u.installments != null && { installments: u.installments }),
         },
       });
       results.push({ id: p.id, name: p.name, price: u.price, priceInstallments: u.priceInstallments, installments: u.installments });
