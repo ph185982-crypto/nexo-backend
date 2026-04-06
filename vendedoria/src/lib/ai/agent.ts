@@ -305,8 +305,10 @@ export async function processAIResponse(
     if (!rawResponse) return;
 
     // ── Parse de multi-mensagens ──────────────────────────────────────────────
+    console.log(`[AI Agent] Raw LLM response: ${rawResponse.substring(0, 300)}`);
     const { mensagens: rawMsgs, delays } = parseAIResponse(rawResponse);
     const combinedRaw = [rawResponse, ...rawMsgs].join("\n");
+    console.log(`[AI Agent] Parsed ${rawMsgs.length} messages. combinedRaw length: ${combinedRaw.length}`);
     const mediaFlagRe = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
 
     // ── Limpar flags das mensagens que vão pro cliente ────────────────────────
@@ -394,30 +396,59 @@ export async function processAIResponse(
     const appUrl = (process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
     const toPublicUrl = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (url.startsWith("data:")) {
+        if (!appUrl) {
+          console.error("[AI Agent] NEXTAUTH_URL não está definida — não é possível gerar URL pública para mídia base64");
+          return "";
+        }
         return isVideo ? `${appUrl}/api/media/product/${productId}?type=video` : `${appUrl}/api/media/product/${productId}?idx=${idx}`;
       }
       return url;
     };
 
-    for (const product of activeProducts) {
-      const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-      const triggerFoto  = new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedRaw);
-      const triggerVideo = new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedRaw);
+    // Verifica se algum produto já teve mídia enviada nesta conversa (evita duplicar)
+    const mediaAlreadySent = recentMessages.some((m) => m.type === "IMAGE" || m.type === "VIDEO");
 
-      if (triggerFoto) {
-        const p = product as typeof product & { imageUrls?: string[] };
-        const imgs: string[] = p.imageUrls?.length ? p.imageUrls : product.imageUrl ? [product.imageUrl] : [];
+    // Busca imageUrls de forma explícita (campo novo no schema)
+    const productsWithMedia = await prisma.product.findMany({
+      where: { organizationId: orgId, isActive: true },
+      select: { id: true, name: true, imageUrl: true, imageUrls: true, videoUrl: true },
+    });
+
+    for (const product of productsWithMedia) {
+      const slug = product.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+
+      // Trigger 1: Flag explícita gerada pela IA [FOTO_SLUG]
+      const flagFoto  = new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedRaw);
+      const flagVideo = new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedRaw);
+
+      // Trigger 2: Nome do produto mencionado na resposta + Etapa 2-3 + mídia ainda não enviada
+      const nameMentioned = new RegExp(product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(combinedRaw);
+      const autoSend = nameMentioned && !isFirstInteraction && !mediaAlreadySent && msgCount <= 10;
+
+      const sendFoto  = flagFoto  || autoSend;
+      const sendVideo = flagVideo || (autoSend && !!product.videoUrl);
+
+      console.log(`[AI Agent] Product "${product.name}": flagFoto=${flagFoto} flagVideo=${flagVideo} nameMentioned=${nameMentioned} autoSend=${autoSend} sendFoto=${sendFoto} sendVideo=${sendVideo}`);
+
+      if (sendFoto) {
+        const imgs: string[] = product.imageUrls?.length ? product.imageUrls : product.imageUrl ? [product.imageUrl] : [];
+        console.log(`[AI Agent] Sending ${imgs.length} image(s) for "${product.name}"`);
         for (let i = 0; i < imgs.length; i++) {
+          const imgUrl = toPublicUrl(imgs[i], product.id, i);
+          if (!imgUrl) continue;
           await new Promise((r) => setTimeout(r, 800));
-          await sendWhatsAppImage(provider.businessPhoneNumberId, to, toPublicUrl(imgs[i], product.id, i), product.name, token)
-            .catch((e) => console.error(`[AI Agent] Image failed ${product.name}:`, e));
+          await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, product.name, token)
+            .catch((e) => console.error(`[AI Agent] Image failed "${product.name}":`, e));
         }
       }
 
-      if (triggerVideo && product.videoUrl) {
+      if (sendVideo && product.videoUrl) {
+        const videoUrl = toPublicUrl(product.videoUrl, product.id, 0, true);
+        if (!videoUrl) continue;
+        console.log(`[AI Agent] Sending video for "${product.name}"`);
         await new Promise((r) => setTimeout(r, 1000));
-        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, toPublicUrl(product.videoUrl, product.id, 0, true), product.name, token)
-          .catch((e) => console.error(`[AI Agent] Video failed ${product.name}:`, e));
+        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, videoUrl, product.name, token)
+          .catch((e) => console.error(`[AI Agent] Video failed "${product.name}":`, e));
       }
     }
 
