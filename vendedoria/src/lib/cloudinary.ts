@@ -85,6 +85,52 @@ export async function uploadToCloudinary(
   return { url: data.secure_url, publicId: data.public_id };
 }
 
+/**
+ * Upload a base64 data URI directly to Cloudinary.
+ * Used for migrating existing products stored as base64 in the DB.
+ */
+export async function uploadBase64ToCloudinary(
+  dataUri: string,
+  folder = "vendedoria/products"
+): Promise<CloudinaryResult> {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey    = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY e CLOUDINARY_API_SECRET são obrigatórios");
+  }
+
+  // Determine resource type from MIME
+  const mime = dataUri.split(";")[0].replace("data:", "");
+  const resourceType = mime.startsWith("video/") ? "video" : "image";
+
+  const timestamp = Math.round(Date.now() / 1000).toString();
+  const paramsString = `folder=${folder}&timestamp=${timestamp}`;
+  const sig = createHmac("sha1", apiSecret).update(paramsString).digest("hex");
+
+  const form = new FormData();
+  form.append("file", dataUri);          // Cloudinary accepts data: URIs directly
+  form.append("folder", folder);
+  form.append("api_key", apiKey);
+  form.append("timestamp", timestamp);
+  form.append("signature", sig);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+    { method: "POST", body: form }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Cloudinary upload failed (${res.status}): ${err}`);
+  }
+
+  const data = await res.json() as { secure_url: string; public_id: string };
+  if (!data.secure_url) throw new Error("Cloudinary não retornou secure_url");
+  return { url: data.secure_url, publicId: data.public_id };
+}
+
 /** Returns true if Cloudinary is configured (at least cloud name + one auth method). */
 export function isCloudinaryConfigured(): boolean {
   const cloudName    = process.env.CLOUDINARY_CLOUD_NAME;

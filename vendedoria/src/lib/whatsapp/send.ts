@@ -97,7 +97,11 @@ export async function sendWhatsAppImage(
   contextMessageId?: string
 ): Promise<void> {
   const token = resolveToken(accessToken);
-  if (!token) return;
+  if (!token) { console.error("[sendWhatsAppImage] No access token"); return; }
+
+  if (imageUrl.startsWith("data:")) {
+    throw new Error("sendWhatsAppImage: URL is base64 — use Cloudinary URL instead");
+  }
 
   const body: Record<string, unknown> = {
     messaging_product: "whatsapp",
@@ -108,13 +112,23 @@ export async function sendWhatsAppImage(
   };
   if (contextMessageId) body.context = { message_id: contextMessageId };
 
-  const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify(body),
-  });
+  console.log(`[sendWhatsAppImage] phoneId=${phoneNumberId} to=${to} url=${imageUrl.substring(0, 80)}`);
 
-  if (!response.ok) throw new Error(`WhatsApp image send failed: ${await response.text()}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const responseText = await response.text();
+    console.log(`[sendWhatsAppImage] status=${response.status} body=${responseText.substring(0, 200)}`);
+    if (!response.ok) throw new Error(`WhatsApp image send failed (${response.status}): ${responseText}`);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function sendWhatsAppVideo(
@@ -126,7 +140,11 @@ export async function sendWhatsAppVideo(
   contextMessageId?: string
 ): Promise<void> {
   const token = resolveToken(accessToken);
-  if (!token) return;
+  if (!token) { console.error("[sendWhatsAppVideo] No access token"); return; }
+
+  if (videoUrl.startsWith("data:")) {
+    throw new Error("sendWhatsAppVideo: URL is base64 — use Cloudinary URL instead");
+  }
 
   const body: Record<string, unknown> = {
     messaging_product: "whatsapp",
@@ -137,13 +155,23 @@ export async function sendWhatsAppVideo(
   };
   if (contextMessageId) body.context = { message_id: contextMessageId };
 
-  const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify(body),
-  });
+  console.log(`[sendWhatsAppVideo] phoneId=${phoneNumberId} to=${to} url=${videoUrl.substring(0, 80)}`);
 
-  if (!response.ok) throw new Error(`WhatsApp video send failed: ${await response.text()}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const responseText = await response.text();
+    console.log(`[sendWhatsAppVideo] status=${response.status} body=${responseText.substring(0, 200)}`);
+    if (!response.ok) throw new Error(`WhatsApp video send failed (${response.status}): ${responseText}`);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function sendWhatsAppTemplate(
