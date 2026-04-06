@@ -469,14 +469,6 @@ model AiConfig {
 }
 
 // ─── Webhook Retry Queue ────────────────────────────────────────────────────
-  organization    WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
-  usarEmoji       Boolean  @default(true)
-  usarReticencias Boolean  @default(true)
-  nivelVenda      String   @default("medio") // leve | medio | agressivo
-  updatedAt       DateTime @updatedAt
-}
-
-// ─── Webhook Retry Queue ────────────────────────────────────────────────────
 
 model WebhookQueue {
   id          String   @id @default(cuid())
