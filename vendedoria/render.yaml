@@ -61,6 +61,18 @@ services:
       - key: CRON_SECRET
         generateValue: true
 
+      # ── Cloudinary (upload de imagens e vídeos) ───────────────────────────
+      # Crie conta grátis em cloudinary.com → Settings → API Keys
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false         # ex: dxyz1234 (Cloud name no Dashboard do Cloudinary)
+      - key: CLOUDINARY_API_KEY
+        sync: false         # ex: 123456789012345
+      - key: CLOUDINARY_API_SECRET
+        sync: false         # ex: abcdefghij_KLMNOPQRSTU
+      # Alternativa: upload sem autenticação (unsigned preset)
+      # - key: CLOUDINARY_UPLOAD_PRESET
+      #   sync: false       # nome do unsigned preset criado em Settings → Upload
+
       - key: NODE_ENV
         value: production
 
