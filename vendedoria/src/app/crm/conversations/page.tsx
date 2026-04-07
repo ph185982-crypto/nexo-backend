@@ -157,14 +157,14 @@ export default function ConversationsPage() {
         body: JSON.stringify({
           query: `query($id: String!) {
             getConversationMessages(conversationId: $id) {
-              id content type role sentAt status
+              messages { id content type role sentAt status }
             }
           }`,
           variables: { id: convId },
         }),
       });
-      const { data } = await res.json() as { data?: { getConversationMessages?: Message[] } };
-      const newMsgs = data?.getConversationMessages ?? [];
+      const { data } = await res.json() as { data?: { getConversationMessages?: { messages?: Message[] } } };
+      const newMsgs = data?.getConversationMessages?.messages ?? [];
       setMessages(newMsgs);
       // Auto-scroll only when new messages arrive
       if (newMsgs.length !== prevMsgCountRef.current) {

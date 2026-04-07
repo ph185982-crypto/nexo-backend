@@ -36,7 +36,13 @@ export async function GET(req: NextRequest) {
       ...(leadStatusFilter ? { lead: leadStatusFilter } : {}),
       ...(cursor ? { id: { lt: cursor } } : {}),
     },
-    include: {
+    select: {
+      id: true,
+      customerWhatsappBusinessId: true,
+      profileName: true,
+      lastMessageAt: true,
+      isActive: true,
+      humanTakeover: true,
       lead: { select: { id: true, profileName: true, phoneNumber: true, status: true } },
       messages: {
         orderBy: { sentAt: "desc" },
