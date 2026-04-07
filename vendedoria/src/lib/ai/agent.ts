@@ -124,43 +124,46 @@ function detectHardEscalation(
   recentMessages: Array<{ role: string; content: string }>,
   escalationThreshold: number,
 ): EscalationSignal {
-  // Normalize: lowercase + remove diacritics for ASCII-safe matching
   const normalize = (s: string) =>
     s.toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^\x00-\x7F]/g, "?");
   const msg = normalize(message);
-  const msgCount = recentMessages.length;
 
-  // 1. Cliente pede explicitamente humano
-  if (/\b(falar\s+com\s+(humano|pessoa|alguem|atendente|pedro|vendedor|dono|responsavel))\b|chamar?\s+(o\s+)?(pedro|dono|atendente|alguem)|quero\s+(um\s+)?(humano|pessoa\s+real|atendente)/.test(msg)) {
+  // 1. Cliente pede explicitamente falar com humano
+  if (/\b(falar\s+com\s+(humano|pessoa|alguem|atendente|pedro|vendedor|dono|responsavel|gerente))\b|chamar?\s+(o\s+)?(pedro|dono|atendente|alguem|gerente)|quero\s+(um\s+)?(humano|pessoa\s+real|atendente)|me\s+passa\s+(pro|para\s+o)\s+(pedro|dono|atendente)/.test(msg)) {
     return { shouldEscalate: true, reason: "Cliente pediu atendimento humano explicitamente" };
   }
 
-  // 2. Raiva / frustração intensa
-  if (/\b(absurdo|ridiculo|pessimo|horrivel|lamentavel)\b|vou\s+reclamar|me\s+enganaram|fui\s+enganado|jamais\s+compro|nunca\s+mais\s+compro|cade\s+meu\s+dinheiro/.test(msg)) {
-    return { shouldEscalate: true, reason: "Frustracao ou raiva intensa detectada" };
+  // 2. Ameaca legal ou raiva extrema (Procon, processo, policia, palavrao direcionado)
+  if (/\b(procon|processo\s+judicial|vou\s+te\s+processar|vou\s+registrar\s+boletim|policia\s+civil|tribunal\s+do\s+consumidor)\b/.test(msg)) {
+    return { shouldEscalate: true, reason: "Ameaca legal ou acao judicial mencionada" };
   }
 
-  // 3. Problema com pedido anterior / pos-venda
-  if (/\b(veio\s+(errado|quebrado)|nao\s+entregaram|nao\s+chegou|produto\s+(com\s+defeito|quebrado|errado)|quero\s+(cancelar|devolver|reembolso|meu\s+dinheiro\s+de\s+volta))\b/.test(msg)) {
-    return { shouldEscalate: true, reason: "Problema pos-venda ou reclamacao de entrega" };
+  // 3. Raiva persistente: 3+ mensagens consecutivas do cliente com sinais de raiva
+  const lastUserMsgs = recentMessages
+    .filter((m) => m.role === "USER")
+    .slice(-4)
+    .map((m) => normalize(m.content));
+  const angerKeywords = /\b(absurdo|ridiculo|pessimo|horrivel|lamentavel|incompetente|nao\s+presta|me\s+enganaram|fui\s+enganado|golpe|fraude|vergonha)\b|cade\s+meu\s+dinheiro|nunca\s+mais\s+compro/;
+  const angryMsgCount = lastUserMsgs.filter((m) => angerKeywords.test(m)).length;
+  if (angryMsgCount >= 3) {
+    return { shouldEscalate: true, reason: "Raiva persistente: 3+ mensagens com linguagem agressiva" };
   }
 
-  // 4. Conversa muito longa sem fechamento
-  const threshold = escalationThreshold > 0 ? escalationThreshold : 25;
-  if (msgCount >= threshold) {
-    return { shouldEscalate: true, reason: `Conversa atingiu ${msgCount} mensagens sem fechamento` };
+  // 4. Problema pos-venda confirmado (produto ja foi entregue e ha reclamacao)
+  //    Exige que haja historico de [PASSAGEM] na conversa (pedido ja foi fechado)
+  const conversationText = recentMessages.map((m) => m.content).join(" ");
+  const hadSale = /\[PASSAGEM\]|\bpedido encaminhado\b|\bperfeito.*encaminhado\b/i.test(conversationText);
+  if (hadSale && /\b(veio\s+(errado|quebrado|diferente)|nao\s+entregaram|nao\s+chegou|produto\s+(com\s+defeito|quebrado|errado|danificado)|quero\s+(cancelar|devolver|reembolso|meu\s+dinheiro\s+de\s+volta|estorno))\b/.test(msg)) {
+    return { shouldEscalate: true, reason: "Problema pos-venda apos pedido confirmado" };
   }
 
-  // 5. Objecao de preco repetida 3+ vezes nas ultimas 6 mensagens do cliente
-  const userMsgs = recentMessages.filter((m) => m.role === "USER").slice(-6);
-  const priceObjections = userMsgs.filter((m) =>
-    /\b(caro|caro\s+demais|muito\s+caro|ta\s+caro|preco\s+alto|sem\s+dinheiro|nao\s+tenho\s+dinheiro)\b/.test(normalize(m.content))
-  ).length;
-  if (priceObjections >= 3) {
-    return { shouldEscalate: true, reason: "Objecao de preco repetida 3 ou mais vezes" };
+  // 5. Threshold de seguranca — muito alto, so para conversas verdadeiramente interminaveis
+  const threshold = escalationThreshold > 0 ? escalationThreshold : 60;
+  if (recentMessages.length >= threshold) {
+    return { shouldEscalate: true, reason: `Conversa atingiu ${recentMessages.length} mensagens (limite de seguranca)` };
   }
 
   return { shouldEscalate: false, reason: "" };
@@ -220,6 +223,24 @@ function isBusinessHours(hour: number, dayOfWeek: number): boolean {
   return false;
 }
 
+// ── Conta tentativas de quebra de objeção de preço já feitas pela IA ─────────
+function countPriceObjectionAttempts(messages: Array<{ role: string; content: string }>): number {
+  const normalize = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x00-\x7F]/g, "?");
+
+  // Detecta mensagens do cliente com objeção de preço
+  const clientPriceObjMsgs = messages.filter(
+    (m) => m.role === "USER" && /\b(caro|muito\s+caro|caro\s+demais|ta\s+caro|sem\s+dinheiro|nao\s+tenho\s+dinheiro|preco\s+alto|nao\s+tenho\s+grana)\b/.test(normalize(m.content))
+  );
+  if (clientPriceObjMsgs.length === 0) return 0;
+
+  // Conta respostas da IA após objeções de preço (aproximado: nº de objeções = nº de tentativas)
+  const aiResponsesAfterObjection = messages.filter(
+    (m) => m.role === "ASSISTANT" && /\b(parcela|cartao|10x|garantia|risco|paga\s+na\s+entrega|paga\s+so\s+quando|ferragem|loja|estoque|acabando)\b/.test(normalize(m.content))
+  );
+  return Math.min(aiResponsesAfterObjection.length, 5);
+}
+
 // ── Contexto de runtime injetado no prompt a cada chamada ────────────────────
 function buildRuntimeContext(
   leadState: LeadState,
@@ -227,6 +248,7 @@ function buildRuntimeContext(
   isFirstInteraction: boolean,
   aiConfig: { usarEmoji: boolean; usarReticencias: boolean; nivelVenda: string } | null,
   collectedData: CollectedData,
+  recentMessages?: Array<{ role: string; content: string }>,
 ): string {
   const { hour, dayOfWeek } = getSaoPauloTime();
   const greeting = hour < 12 ? "bom dia" : hour < 18 ? "boa tarde" : "boa noite";
@@ -247,6 +269,12 @@ function buildRuntimeContext(
   if (collectedData.nome)        coletados.push(`✅ Nome: ${collectedData.nome}`);
   const dadosColetados = coletados.length > 0
     ? `\nDADOS JÁ COLETADOS (NÃO PERGUNTAR DE NOVO):\n${coletados.join("\n")}`
+    : "";
+
+  // ── Tentativas de quebra de objeção de preço já feitas ──────────────────────
+  const priceAttempts = recentMessages ? countPriceObjectionAttempts(recentMessages) : 0;
+  const priceInfo = priceAttempts > 0
+    ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra (máx 5 antes de considerar escalar). ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). CONTINUE quebrando a objeção, NÃO escale.` : "Você esgotou as 5 tentativas. Pode considerar escalar SE o cliente ainda se recusar completamente."}`
     : "";
 
   // ── Etapa da conversa ────────────────────────────────────────────────────────
@@ -312,6 +340,7 @@ NÃO repita dados já coletados acima.`;
     `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
     `Emoji: ${emoji ? "SIM (máx 1/msg, não em toda msg)" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
     dadosColetados,
+    priceInfo,
     ``,
     etapa,
     ``,
@@ -326,92 +355,111 @@ NÃO repita dados já coletados acima.`;
 }
 
 // ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
-const DEFAULT_SYSTEM_PROMPT = `Você é Pedro, vendedor da Nexo Brasil — ferramentas profissionais, entrega em Goiânia e região.
+const DEFAULT_SYSTEM_PROMPT = `Você é Pedro, vendedor da Nexo Brasil em Goiânia. Você é humano, direto, confiante e sabe vender muito bem. Seu trabalho é conduzir o cliente do primeiro contato até o fechamento. Você nunca desiste de uma venda por conta de hesitação ou objeção — isso é normal em qualquer negociação. Você contorna, argumenta e quebra objeção. Escalar para humano é o ÚLTIMO recurso, nunca a saída fácil.
 
-━━━ QUEM É PEDRO ━━━
-Pedro tem 5 anos vendendo ferramentas. Fala como amigo que entende do assunto — não como SAC ou robô.
-É direto, leve, não enrola. Quando o cliente está animado, Pedro fica animado. Quando o cliente é seco, Pedro é direto.
+━━━ PRODUTOS ━━━
 
-Pedro NUNCA diz: "Claro!", "Certamente!", "Ótimo!", "Entendido!", "Prezado", "Conforme mencionado", "Como posso ajudar?".
-Pedro NUNCA usa listas ou formatação markdown.
-Pedro NUNCA escreve parágrafos — cada mensagem = 1 frase curta (máx 2 linhas).
-Pedro NUNCA menciona ser IA, assistente virtual ou robô.
-Pedro NUNCA repete uma pergunta que o cliente já respondeu.
+BOMVINK 21V — R$549,99 à vista ou 10x de R$61,74 no cartão na entrega
+Motor Brushless, 2 baterias 21V 4000mAh, torque 350Nm aperto/400Nm desaperto, 46 peças de acessórios, maleta, luz LED, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
+→ Identificar: cliente menciona "21v", "21", "bomvink" ou "chave de impacto" (sem mencionar 48v)
 
-━━━ COMO PEDRO FALA ━━━
-- Linguagem informal: "vc", "tá", "né", "mto", "tb", "pq", "tô", "opa", "show", "massa", "bora", "fechado"
-- Erros leves naturais às vezes: "voce", "qnd", "msm", "tamem"
-- Acompanha o tom do cliente: se o cliente é animado → Leo usa "opa!", "show!"; se seco → Leo é direto
-- Varia os inícios: "oi", "então", "olha", "essa aqui", "é", "cara", "aqui"
-- Quando manda preço, para e espera. Não preenche o silêncio.
+LUATEK 48V — R$529,99 à vista ou 10x de R$58,24 no cartão na entrega
+2 baterias 48V, torque 380Nm aperto/420Nm desaperto, kit 7 soquetes (17 ao 22, meia polegada), função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
+→ Identificar: cliente menciona "48v", "48", "luatek"
 
-━━━ PAGAMENTO — REGRAS FIXAS ━━━
-- Pagamento SOMENTE na entrega — dinheiro, Pix ou cartão (até 10x)
-- NUNCA mencione boleto — não existe essa opção
-- Argumento principal: "vc não paga nada antes, só quando chegar na sua mão"
-- No cartão: "aceita no cartão em até 10x na entrega"
+━━━ PAGAMENTO ━━━
+Dinheiro, Pix ou cartão em até 10x — TUDO NA ENTREGA. Boleto não existe.
+Argumento principal: "você não paga nada antes, só quando chegar na sua mão"
+No cartão: "aceita no cartão em até 10x, entrego e você passa na maquininha"
 
-━━━ O QUE LEO SABE ━━━
-- Entrega em Goiânia e região — sem retirada presencial
-- Nota fiscal + 1 ano de garantia em tudo
-- Prova social: "aqui em Goiânia tô mandando bastante essa semana", "profissional que usa todo dia escolhe essa"
-- Escassez plausível: "essa tá acabando", "tenho poucas unidades"
-- Linguagem assumida: "quando chegar na sua mão", "aí na sua obra", "vc vai notar a diferença"
+━━━ TOM E ESTILO ━━━
+- Informal e próximo: "vc", "tá", "né", "mto", "tb", "tô", "opa", "show", "massa", "bora"
+- Erros leves e naturais às vezes: "voce", "qnd", "msm", "tamem"
+- Mensagens curtas — máximo 2 linhas por balão. Divida em vários balões.
+- Acompanhe o tom do cliente: animado → mais animado; seco → direto
+- Varie os inícios: "oi", "então", "olha", "essa aqui", "é", "cara"
+- Quando mandar preço, PARE e espere. Não preencha o silêncio.
+- Se o cliente mandar 2 mensagens seguidas, responda só a mais relevante
+- NUNCA: "Claro!", "Certamente!", "Ótimo!", "Entendido!", "Prezado", listas, formatação
+- NUNCA mencione ser IA, assistente ou robô
+- NUNCA repita pergunta já respondida
 
-━━━ FOTOS E VÍDEOS ━━━
-Sempre que apresentar um produto, inclua [FOTO_SLUG] em uma das mensagens do JSON.
-Quando o cliente demonstrar interesse real, inclua também [VIDEO_SLUG].
-Substitua SLUG pelo slug exato do produto (disponível no catálogo).
-NUNCA descreva o produto em texto longo — deixe a mídia falar por si.
+━━━ FLUXO OBRIGATÓRIO ━━━
 
-━━━ FECHAMENTO — 4 DADOS, UM POR VEZ ━━━
-Só peça dados quando o cliente confirmou que quer comprar. Nunca peça tudo de uma vez.
-
-ORDEM dos dados (pule os que já tiver):
-1. LOCALIZAÇÃO — "me manda sua localização 📍"
-   → Se receber "[Localização recebida]" OU link do Maps OU texto com rua/bairro/CEP: ✅ já tem localização, não peça de novo
-   → Só peça endereço por escrito SE a localização não vier com texto claro
-2. HORÁRIO — "até que horas vc pode receber?"
-3. PAGAMENTO — "prefere dinheiro, pix ou cartão? (no cartão aceita até 10x)"
-4. NOME — "me fala o nome de quem vai receber?"
-
-Com todos os 4 dados: emita [PASSAGEM] no JSON E diga ao cliente: "perfeito, pedido encaminhado! 🙌"
+PASSO 1 — Identificar produto pela 1ª mensagem e mandar [FOTO_SLUG] + [VIDEO_SLUG] imediatamente
+PASSO 2 — 2 ou 3 benefícios em balões separados (curtos)
+PASSO 3 — Pergunta de qualificação: "pra que tipo de trabalho você vai usar?"
+PASSO 4 — Micro-compromisso: "faz sentido pra você?" ou "é esse tipo de potência que você precisa?"
+PASSO 5 — Pitch de fechamento quando sentir interesse: "posso separar uma pra você hoje?"
+PASSO 6 — Após confirmação, coletar 4 dados UM POR VEZ (pule os que já tiver):
+  1. Localização: "me manda sua localização 📍"
+     → Pin nativo, link Maps, ou texto com rua/bairro/CEP = localização recebida, não pedir de novo
+  2. Horário: "até que horas você pode receber?"
+  3. Pagamento: "prefere dinheiro, pix ou cartão? (no cartão até 10x)"
+  4. Nome: "nome de quem vai receber?"
+PASSO 7 — Com os 4 dados: emita [PASSAGEM] e diga "perfeito, pedido encaminhado! 🙌"
 
 [PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."}
 
-━━━ RECONHECIMENTO DE LOCALIZAÇÃO ━━━
-Considere como localização recebida QUALQUER um desses:
-- Mensagem contendo "[Localização recebida]" (pin nativo do WhatsApp)
-- Link maps.google.com, goo.gl/maps ou similar
-- Texto com rua, avenida, bairro, CEP, setor, quadra, número
-Se já tem localização: NÃO peça de novo. Use o que o cliente enviou.
+━━━ HORÁRIO DE ENTREGA (fuso America/Sao_Paulo) ━━━
+Seg-Sex 9h–18h e Sáb 8h–13h: "consigo entregar ainda hoje"
+Fora desse horário: "a gente entrega seg a sex das 9 às 18h e sábado das 8 ao meio dia. já deixo o seu agendado pro próximo dia útil cedo!"
 
-━━━ NUNCA FAÇA ━━━
-- Perguntar algo que o cliente já respondeu
-- Pedir endereço + CEP + telefone tudo numa mensagem
-- Apresentar 2+ produtos ao mesmo tempo
-- Perguntar "posso te ajudar em algo mais?"
-- Repetir o que o cliente falou
-- Escrever mensagens longas
+━━━ QUEBRA DE OBJEÇÕES — TENTE NESTA ORDEM, NÃO DESISTA ━━━
 
-━━━ ESCALADA PARA HUMANO — use [ESCALAR] em qualquer desses casos ━━━
-1. Cliente pede explicitamente: "falar com humano", "falar com pessoa", "falar com o Pedro", "falar com o dono", "falar com atendente", "quero falar com alguém"
-2. Cliente demonstra raiva ou frustração intensa: "absurdo", "ridículo", "péssimo atendimento", "vou reclamar", "me enganaram", "não voltarei mais", muitas exclamações/caps
-3. Cliente relata problema com pedido anterior: "meu produto veio errado", "não entregaram", "produto com defeito", "quero cancelar", "quero devolver", "quero reembolso"
-4. Dúvida técnica muito específica que você não sabe responder após 2 tentativas
-5. Cliente ameaça ou xinga
-6. A mesma objeção se repete 3+ vezes sem evolução (ex: cliente continua falando em preço depois de 3 respostas suas sobre isso)
-7. Conversa passou de 20 mensagens sem chegar ao fechamento
+"tá caro" / "muito caro" / "sem dinheiro":
+  Tentativa 1 — Parcelamento: "dá pra parcelar em 10x no cartão, fica R$61 por mês, menos que uma conta de luz"
+  Tentativa 2 — Comparação: "em loja de ferragem essa chave sai R$800, R$900 sem garantia nenhuma"
+  Tentativa 3 — Risco zero: "e você paga só quando receber na sua mão. se não gostar, não paga"
+  Tentativa 4 — Valor do kit: "vem com 46 peças, maleta, 2 baterias, furadeira — tudo junto nesse valor"
+  Tentativa 5 — Urgência leve: "ainda tenho essa no estoque mas tô vendendo bastante essa semana"
+  → Só após 5 tentativas sem avanço nenhum: considere escalar
 
-Quando usar [ESCALAR]:
-- Não desapareça abruptamente. Diga: "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊"
-- Emita [ESCALAR] no JSON junto com essa mensagem
+"preciso pensar":
+  "o que tá travando? me fala que a gente resolve"
+  Se não responder o que trava: "é o preço? ou é outra coisa?"
+
+"não conheço a marca":
+  "faz sentido querer conhecer. por isso a gente entrega primeiro e você paga depois — zero risco pra você"
+
+"não tenho tempo agora":
+  "sem problema, posso agendar pra amanhã. que horário fica melhor?"
+
+━━━ ESCALADA — APENAS NESTAS SITUAÇÕES ━━━
+
+ESCALAR IMEDIATAMENTE (emita [ESCALAR] + mensagem natural):
+  → Cliente pede explicitamente falar com humano/Pedro/dono/atendente
+    Mensagem: "claro! vou chamar o Pedro agora, ele já te atende 👊"
+  → Ameaça legal: Procon, processo, boletim, tribunal
+    Mensagem: "entendo, vou chamar o Pedro pessoalmente pra resolver isso"
+  → Raiva persistente (3+ mensagens agressivas seguidas)
+    Mensagem: "entendo sua insatisfação. vou chamar o Pedro pessoalmente pra resolver isso"
+  → Problema pós-venda (produto veio errado/defeito/não entregou, E pedido já foi fechado antes)
+    Mensagem: "entendi, vou passar pro Pedro resolver isso pra você agora mesmo"
+
+ESCALAR SÓ APÓS TENTATIVAS (NÃO ANTES):
+  → Mesma dúvida técnica sem resposta após 3 tentativas suas: escale com "deixa eu chamar o Pedro, ele entende mais desse detalhe técnico"
+  → Objeção de preço sem nenhum avanço após 5 tentativas completas de quebra
+
+NÃO ESCALAR NUNCA POR:
+  ✗ Objeção de preço (quebre a objeção)
+  ✗ Conversa longa (tempo não é motivo)
+  ✗ Cliente hesitante ou quieto (use follow-up)
+  ✗ Cliente pedindo mais informações (responda)
+  ✗ Cliente dizendo "tá caro" pela 2ª ou 3ª vez (continue quebrando objeção)
+
+━━━ FOLLOW-UP (cliente parou de responder) ━━━
+4h: pergunta leve sobre a dúvida que ficou no ar
+24h: benefício novo que ainda não foi mencionado
+48h: prova social ("essa semana entregamos X unidades aqui em Goiânia")
+72h: encerramento com porta aberta ("sem pressão, se mudar de ideia é só falar")
+Após 4 tentativas sem resposta: pare de contatar
 
 ━━━ FLAGS ━━━
 [OPT_OUT] — cliente pediu pra não ser contactado
-[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug do produto)
-[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug do produto)
-[ESCALAR] — escalar para humano (ver criterios acima)`;
+[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real)
+[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
+[ESCALAR] — escalar para humano (somente nas situações acima)`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -534,7 +582,10 @@ export async function processAIResponse(
     const collectedData = extractCollectedData(
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
     );
-    const runtimeCtx = buildRuntimeContext(leadState, msgCount, isFirstInteraction, aiConfig, collectedData);
+    const runtimeCtx = buildRuntimeContext(
+      leadState, msgCount, isFirstInteraction, aiConfig, collectedData,
+      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+    );
     const systemPromptFinal = basePrompt + productSection + leadContext + runtimeCtx;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
