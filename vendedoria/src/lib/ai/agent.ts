@@ -122,7 +122,6 @@ interface EscalationSignal {
 function detectHardEscalation(
   message: string,
   recentMessages: Array<{ role: string; content: string }>,
-  escalationThreshold: number,
 ): EscalationSignal {
   const normalize = (s: string) =>
     s.toLowerCase()
@@ -132,39 +131,60 @@ function detectHardEscalation(
   const msg = normalize(message);
 
   // 1. Cliente pede explicitamente falar com humano
-  if (/\b(falar\s+com\s+(humano|pessoa|alguem|atendente|pedro|vendedor|dono|responsavel|gerente))\b|chamar?\s+(o\s+)?(pedro|dono|atendente|alguem|gerente)|quero\s+(um\s+)?(humano|pessoa\s+real|atendente)|me\s+passa\s+(pro|para\s+o)\s+(pedro|dono|atendente)/.test(msg)) {
+  // Exige frases completas — "caro" ou "oi" nunca disparam isso
+  if (
+    /falar\s+com\s+(o\s+)?(pedro|humano|pessoa|atendente|vendedor|dono|responsavel|gerente|alguem)/.test(msg) ||
+    /chama\s+(o\s+|um\s+|uma\s+)?(pedro|dono|atendente|gerente|alguem)/.test(msg) ||
+    /quero\s+(falar\s+com\s+)?(um\s+)?(humano|pessoa\s+real|atendente|vendedor\s+humano)/.test(msg) ||
+    /me\s+passa\s+(pro|para\s+o)\s+(pedro|dono|atendente)/.test(msg) ||
+    /quero\s+um\s+atendente/.test(msg) ||
+    /fala\s+com\s+alguem/.test(msg)
+  ) {
     return { shouldEscalate: true, reason: "Cliente pediu atendimento humano explicitamente" };
   }
 
-  // 2. Ameaca legal ou raiva extrema (Procon, processo, policia, palavrao direcionado)
-  if (/\b(procon|processo\s+judicial|vou\s+te\s+processar|vou\s+registrar\s+boletim|policia\s+civil|tribunal\s+do\s+consumidor)\b/.test(msg)) {
-    return { shouldEscalate: true, reason: "Ameaca legal ou acao judicial mencionada" };
+  // 2. Ameaca legal (palavras-chave exatas — nao dispara por "caro" ou reclamacao genérica)
+  if (
+    /\bprocon\b/.test(msg) ||
+    /vou\s+te\s+processar/.test(msg) ||
+    /vou\s+registrar\s+boletim/.test(msg) ||
+    /\btribunal\s+do\s+consumidor\b/.test(msg) ||
+    /vou\s+no\s+reclame\s+aqui/.test(msg) ||
+    /processo\s+judicial/.test(msg)
+  ) {
+    return { shouldEscalate: true, reason: "Ameaca legal mencionada" };
   }
 
-  // 3. Raiva persistente: 3+ mensagens consecutivas do cliente com sinais de raiva
+  // 3. Raiva persistente: 3+ das últimas 4 msgs do cliente com linguagem agressiva REAL
+  // Nao inclui "caro", "sem dinheiro" ou qualquer objecao de preco
   const lastUserMsgs = recentMessages
     .filter((m) => m.role === "USER")
     .slice(-4)
     .map((m) => normalize(m.content));
-  const angerKeywords = /\b(absurdo|ridiculo|pessimo|horrivel|lamentavel|incompetente|nao\s+presta|me\s+enganaram|fui\s+enganado|golpe|fraude|vergonha)\b|cade\s+meu\s+dinheiro|nunca\s+mais\s+compro/;
+  const angerKeywords =
+    /\b(absurdo|ridiculo|pessimo|horrivel|lamentavel|incompetente|nao\s+presta|me\s+enganaram|fui\s+enganado|golpe|fraude|vergonha)\b|cade\s+meu\s+dinheiro|nunca\s+mais\s+compro/;
   const angryMsgCount = lastUserMsgs.filter((m) => angerKeywords.test(m)).length;
   if (angryMsgCount >= 3) {
     return { shouldEscalate: true, reason: "Raiva persistente: 3+ mensagens com linguagem agressiva" };
   }
 
-  // 4. Problema pos-venda confirmado (produto ja foi entregue e ha reclamacao)
-  //    Exige que haja historico de [PASSAGEM] na conversa (pedido ja foi fechado)
+  // 4. Problema pos-venda CONFIRMADO — so dispara se pedido ja foi fechado ([PASSAGEM] no historico)
   const conversationText = recentMessages.map((m) => m.content).join(" ");
-  const hadSale = /\[PASSAGEM\]|\bpedido encaminhado\b|\bperfeito.*encaminhado\b/i.test(conversationText);
-  if (hadSale && /\b(veio\s+(errado|quebrado|diferente)|nao\s+entregaram|nao\s+chegou|produto\s+(com\s+defeito|quebrado|errado|danificado)|quero\s+(cancelar|devolver|reembolso|meu\s+dinheiro\s+de\s+volta|estorno))\b/.test(msg)) {
+  const hadSale = /\[PASSAGEM\]|\bpedido encaminhado\b/i.test(conversationText);
+  if (
+    hadSale &&
+    (
+      /veio\s+(errado|quebrado|diferente)/.test(msg) ||
+      /nao\s+entregaram/.test(msg) ||
+      /nao\s+chegou/.test(msg) ||
+      /produto\s+(com\s+defeito|quebrado|errado|danificado)/.test(msg) ||
+      /quero\s+(devolver|reembolso|meu\s+dinheiro\s+de\s+volta|estorno)/.test(msg)
+    )
+  ) {
     return { shouldEscalate: true, reason: "Problema pos-venda apos pedido confirmado" };
   }
 
-  // 5. Threshold de seguranca — muito alto, so para conversas verdadeiramente interminaveis
-  const threshold = escalationThreshold > 0 ? escalationThreshold : 60;
-  if (recentMessages.length >= threshold) {
-    return { shouldEscalate: true, reason: `Conversa atingiu ${recentMessages.length} mensagens (limite de seguranca)` };
-  }
+  // REMOVIDO: threshold por numero de mensagens (causava escalada indevida em testes)
 
   return { shouldEscalate: false, reason: "" };
 }
@@ -273,8 +293,10 @@ function buildRuntimeContext(
 
   // ── Tentativas de quebra de objeção de preço já feitas ──────────────────────
   const priceAttempts = recentMessages ? countPriceObjectionAttempts(recentMessages) : 0;
+  // Informa à IA quantas tentativas de objeção de preço já foram feitas
+  // mas NUNCA sugere escalar — escalada por preço está completamente removida
   const priceInfo = priceAttempts > 0
-    ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra (máx 5 antes de considerar escalar). ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). CONTINUE quebrando a objeção, NÃO escale.` : "Você esgotou as 5 tentativas. Pode considerar escalar SE o cliente ainda se recusar completamente."}`
+    ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra. ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). Varie o argumento.` : "Já tentou bastante. Tente um ângulo diferente — benefício, praticidade, entrega. NUNCA escale por preço."}`
     : "";
 
   // ── Etapa da conversa ────────────────────────────────────────────────────────
@@ -422,7 +444,7 @@ WhatsApp do cliente:
 
 "tá caro":
   → tente em ordem: parcelamento / comparação com ferragem / risco zero pagar na entrega / valor do kit completo / urgência de estoque
-  → Só escala após 5 tentativas reais
+  → NUNCA escala por preço — continue tentando enquanto o cliente estiver respondendo
 
 "preciso pensar":
   → descobre o que está travando. "o que tá segurando?"
@@ -431,15 +453,12 @@ WhatsApp do cliente:
 "não conheço a marca":
   → usa o argumento do risco zero. Pagar na entrega elimina qualquer risco de comprar de desconhecido.
 
-━━━ ESCALADA — apenas nestes casos ━━━
+━━━ IMPORTANTE: VOCÊ NÃO DECIDE QUANDO ESCALAR ━━━
 
-Cliente pede explicitamente para falar com humano → escala imediatamente
-Raiva real ou ameaça persistente por mais de 3 mensagens → escala
-Problema pós-venda real (defeito, não entregou, quer devolução) → escala
-Mesma dúvida técnica sem resposta após 3 tentativas → escala
-Quando escalar: fala algo natural, para de responder, emite [ESCALAR] com o motivo, notifica 62984465388.
-
-NÃO escala por: objeção de preço, conversa longa, cliente hesitante, cliente pedindo mais informação.
+Escalada é controlada pelo sistema, não por você.
+Você NUNCA deve emitir [ESCALAR] na sua resposta.
+Continue a conversa sempre, independente de quantas mensagens já foram trocadas ou quantas objeções de preço o cliente fez.
+A única coisa que encerra uma conversa é: pedido fechado [PASSAGEM] ou cliente pediu pra não ser contactado [OPT_OUT].
 
 ━━━ FOLLOW-UP quando cliente para de responder ━━━
 4h → toca leve, pergunta se ficou dúvida
@@ -449,10 +468,9 @@ NÃO escala por: objeção de preço, conversa longa, cliente hesitante, cliente
 Após 4 sem resposta → PERDA, para de contatar.
 
 ━━━ FLAGS ━━━
-[OPT_OUT] — cliente pediu pra não ser contactado
+[OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
 [FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real)
 [VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
-[ESCALAR] — escalar para humano (somente nas situações acima)
 [PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados`;
 
 export async function processAIResponse(
@@ -511,29 +529,33 @@ export async function processAIResponse(
     const hardEscalation = detectHardEscalation(
       userMessage,
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
-      agent.escalationThreshold ?? 25,
     );
     if (hardEscalation.shouldEscalate && lead?.status !== "ESCALATED") {
-      console.log(`[AI Agent] Hard escalation triggered: ${hardEscalation.reason}`);
-      await handleEscalation(conversation.leadId, conversationId, hardEscalation.reason);
-      const provider = conversation.provider;
       const to = conversation.customerWhatsappBusinessId;
-      const token = provider.accessToken ?? undefined;
-      await sendWhatsAppMessage(
-        provider.businessPhoneNumberId, to,
-        "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊",
-        token,
-      ).catch(() => {});
+      const token = conversation.provider.accessToken ?? undefined;
+      console.log(`[ESCALATION] Regra: "${hardEscalation.reason}" | Cliente: ${to} | Msg: "${userMessage}"`);
+
+      // ── Log de escalação: salva regra disparada + últimas 5 mensagens ────────
+      const last5 = recentMessages.slice(0, 5).reverse()
+        .map((m) => `[${m.role}] ${m.content.substring(0, 120)}`)
+        .join("\n");
       await prisma.ownerNotification.create({
         data: {
           type: "ESCALATION",
-          title: `Escalada automática: ${lead?.profileName ?? to}`,
-          body: `Motivo: ${hardEscalation.reason}\nCliente: ${to}`,
+          title: `🔔 Escalada | ${lead?.profileName ?? to} | Regra: ${hardEscalation.reason}`,
+          body: `📱 Cliente: ${to}\n⚡ Regra disparada: ${hardEscalation.reason}\n💬 Mensagem que disparou: "${userMessage}"\n\n📋 Últimas 5 mensagens:\n${last5}`,
           organizationId: orgId,
           leadId: conversation.leadId,
           conversationId,
         },
       }).catch(() => {});
+
+      await handleEscalation(conversation.leadId, conversationId, hardEscalation.reason);
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊",
+        token,
+      ).catch(() => {});
       return;
     }
 
@@ -655,19 +677,22 @@ export async function processAIResponse(
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
     }
 
-    // ── [ESCALAR] soft trigger (IA decidiu escalar) ───────────────────────────
-    if (/\[ESCALAR\]/i.test(combinedRaw) && lead?.status !== "ESCALATED") {
-      await handleEscalation(conversation.leadId, conversationId, rawResponse);
+    // ── [ESCALAR] soft trigger — DESATIVADO temporariamente ─────────────────
+    // A IA não pode mais escalar por conta própria. Escalação só via Camada 1 (código).
+    // Quando [ESCALAR] aparecer na resposta da IA, logamos mas NÃO escalamos.
+    if (/\[ESCALAR\]/i.test(combinedRaw)) {
+      console.log(`[ESCALATION] IA tentou emitir [ESCALAR] mas Camada 2 está DESATIVADA. Conv: ${conversationId} | Resp: ${rawResponse.substring(0, 200)}`);
       await prisma.ownerNotification.create({
         data: {
           type: "ESCALATION",
-          title: `🔔 Escalada: ${lead?.profileName ?? to}`,
-          body: `Cliente: ${to}\nMotivo detectado pelo agente:\n${rawResponse.substring(0, 300)}`,
+          title: `⚠️ IA tentou escalar (bloqueado) | ${lead?.profileName ?? to}`,
+          body: `A IA emitiu [ESCALAR] mas foi bloqueada pelo código.\nCliente: ${to}\nResposta da IA:\n${rawResponse.substring(0, 400)}`,
           organizationId: orgId,
           leadId: conversation.leadId,
           conversationId,
         },
       }).catch(() => {});
+      // NÃO chama handleEscalation — IA não pode escalar sozinha agora
     }
 
     // ── Simular digitação antes da 1ª mensagem ────────────────────────────────
