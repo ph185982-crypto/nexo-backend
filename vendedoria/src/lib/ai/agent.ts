@@ -129,6 +129,7 @@ function detectHardEscalation(
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^\x00-\x7F]/g, "?");
   const msg = normalize(message);
+  console.log(`[ESCALATION-DETAIL] msg normalizada: "${msg}" | histórico size: ${recentMessages.length}`);
 
   // 1. Cliente pede explicitamente falar com humano
   // Exige frases completas — "caro" ou "oi" nunca disparam isso
@@ -493,7 +494,10 @@ export async function processAIResponse(
     ]);
 
     if (!conversation) return;
-    if (conversation.lead?.status === "ESCALATED") return;
+    if (conversation.lead?.status === "ESCALATED") {
+      console.log(`[ESCALATION-CHECK] Conv ${conversationId} | lead já está ESCALATED — IA ignorando msg: "${userMessage}"`);
+      return;
+    }
     if ((conversation as typeof conversation & { humanTakeover?: boolean }).humanTakeover) {
       console.log(`[AI Agent] humanTakeover=true — skipping AI for conv ${conversationId}`);
       return;
@@ -526,10 +530,12 @@ export async function processAIResponse(
     const leadState = detectLeadState(userMessage);
 
     // ── Hard escalation check (antes do LLM, garante escalada mesmo que a IA erre) ──
+    console.log(`[ESCALATION-TRACE] v2 | Conv ${conversationId} | Msgs no histórico: ${msgCount} | Msg recebida: "${userMessage}" | Lead status: ${lead?.status ?? "null"}`);
     const hardEscalation = detectHardEscalation(
       userMessage,
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
     );
+    console.log(`[ESCALATION-TRACE] resultado detectHardEscalation: shouldEscalate=${hardEscalation.shouldEscalate} | reason="${hardEscalation.reason}"`);
     if (hardEscalation.shouldEscalate && lead?.status !== "ESCALATED") {
       const to = conversation.customerWhatsappBusinessId;
       const token = conversation.provider.accessToken ?? undefined;
@@ -681,7 +687,7 @@ export async function processAIResponse(
     // A IA não pode mais escalar por conta própria. Escalação só via Camada 1 (código).
     // Quando [ESCALAR] aparecer na resposta da IA, logamos mas NÃO escalamos.
     if (/\[ESCALAR\]/i.test(combinedRaw)) {
-      console.log(`[ESCALATION] IA tentou emitir [ESCALAR] mas Camada 2 está DESATIVADA. Conv: ${conversationId} | Resp: ${rawResponse.substring(0, 200)}`);
+      console.log(`[ESCALATION-BLOCKED] Camada 2 DESATIVADA — IA tentou emitir [ESCALAR] para conv ${conversationId} | msg do cliente: "${userMessage}" | Resp da IA: ${rawResponse.substring(0, 200)}`);
       await prisma.ownerNotification.create({
         data: {
           type: "ESCALATION",
