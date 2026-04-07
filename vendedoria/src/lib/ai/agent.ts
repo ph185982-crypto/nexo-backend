@@ -17,6 +17,7 @@ interface AgentConfig {
   aiProvider?: string | null;
   aiModel?: string | null;
   sandboxMode?: boolean;
+  escalationThreshold?: number | null;
 }
 
 interface LeadState {
@@ -110,6 +111,59 @@ function isOverloadedRequest(msg: string): boolean {
     /confirmar\s+o\s+pedido/i,
   ];
   return fields.filter((re) => re.test(msg)).length >= 2;
+}
+
+// ── Escalada automática (hard triggers — independente do LLM) ────────────────
+interface EscalationSignal {
+  shouldEscalate: boolean;
+  reason: string;
+}
+
+function detectHardEscalation(
+  message: string,
+  recentMessages: Array<{ role: string; content: string }>,
+  escalationThreshold: number,
+): EscalationSignal {
+  // Normalize: lowercase + remove diacritics for ASCII-safe matching
+  const normalize = (s: string) =>
+    s.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^\x00-\x7F]/g, "?");
+  const msg = normalize(message);
+  const msgCount = recentMessages.length;
+
+  // 1. Cliente pede explicitamente humano
+  if (/\b(falar\s+com\s+(humano|pessoa|alguem|atendente|pedro|vendedor|dono|responsavel))\b|chamar?\s+(o\s+)?(pedro|dono|atendente|alguem)|quero\s+(um\s+)?(humano|pessoa\s+real|atendente)/.test(msg)) {
+    return { shouldEscalate: true, reason: "Cliente pediu atendimento humano explicitamente" };
+  }
+
+  // 2. Raiva / frustração intensa
+  if (/\b(absurdo|ridiculo|pessimo|horrivel|lamentavel)\b|vou\s+reclamar|me\s+enganaram|fui\s+enganado|jamais\s+compro|nunca\s+mais\s+compro|cade\s+meu\s+dinheiro/.test(msg)) {
+    return { shouldEscalate: true, reason: "Frustracao ou raiva intensa detectada" };
+  }
+
+  // 3. Problema com pedido anterior / pos-venda
+  if (/\b(veio\s+(errado|quebrado)|nao\s+entregaram|nao\s+chegou|produto\s+(com\s+defeito|quebrado|errado)|quero\s+(cancelar|devolver|reembolso|meu\s+dinheiro\s+de\s+volta))\b/.test(msg)) {
+    return { shouldEscalate: true, reason: "Problema pos-venda ou reclamacao de entrega" };
+  }
+
+  // 4. Conversa muito longa sem fechamento
+  const threshold = escalationThreshold > 0 ? escalationThreshold : 25;
+  if (msgCount >= threshold) {
+    return { shouldEscalate: true, reason: `Conversa atingiu ${msgCount} mensagens sem fechamento` };
+  }
+
+  // 5. Objecao de preco repetida 3+ vezes nas ultimas 6 mensagens do cliente
+  const userMsgs = recentMessages.filter((m) => m.role === "USER").slice(-6);
+  const priceObjections = userMsgs.filter((m) =>
+    /\b(caro|caro\s+demais|muito\s+caro|ta\s+caro|preco\s+alto|sem\s+dinheiro|nao\s+tenho\s+dinheiro)\b/.test(normalize(m.content))
+  ).length;
+  if (priceObjections >= 3) {
+    return { shouldEscalate: true, reason: "Objecao de preco repetida 3 ou mais vezes" };
+  }
+
+  return { shouldEscalate: false, reason: "" };
 }
 
 // ── Sanitiza mensagens — remove sobrecarga de dados e trunca textos longos ───
@@ -340,11 +394,24 @@ Se já tem localização: NÃO peça de novo. Use o que o cliente enviou.
 - Repetir o que o cliente falou
 - Escrever mensagens longas
 
+━━━ ESCALADA PARA HUMANO — use [ESCALAR] em qualquer desses casos ━━━
+1. Cliente pede explicitamente: "falar com humano", "falar com pessoa", "falar com o Pedro", "falar com o dono", "falar com atendente", "quero falar com alguém"
+2. Cliente demonstra raiva ou frustração intensa: "absurdo", "ridículo", "péssimo atendimento", "vou reclamar", "me enganaram", "não voltarei mais", muitas exclamações/caps
+3. Cliente relata problema com pedido anterior: "meu produto veio errado", "não entregaram", "produto com defeito", "quero cancelar", "quero devolver", "quero reembolso"
+4. Dúvida técnica muito específica que você não sabe responder após 2 tentativas
+5. Cliente ameaça ou xinga
+6. A mesma objeção se repete 3+ vezes sem evolução (ex: cliente continua falando em preço depois de 3 respostas suas sobre isso)
+7. Conversa passou de 20 mensagens sem chegar ao fechamento
+
+Quando usar [ESCALAR]:
+- Não desapareça abruptamente. Diga: "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊"
+- Emita [ESCALAR] no JSON junto com essa mensagem
+
 ━━━ FLAGS ━━━
 [OPT_OUT] — cliente pediu pra não ser contactado
 [FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug do produto)
 [VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug do produto)
-[ESCALAR] — cliente insiste em falar com humano`;
+[ESCALAR] — escalar para humano (ver criterios acima)`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -393,6 +460,36 @@ export async function processAIResponse(
 
     // ── Detectar estado do lead ───────────────────────────────────────────────
     const leadState = detectLeadState(userMessage);
+
+    // ── Hard escalation check (antes do LLM, garante escalada mesmo que a IA erre) ──
+    const hardEscalation = detectHardEscalation(
+      userMessage,
+      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+      agent.escalationThreshold ?? 25,
+    );
+    if (hardEscalation.shouldEscalate && lead?.status !== "ESCALATED") {
+      console.log(`[AI Agent] Hard escalation triggered: ${hardEscalation.reason}`);
+      await handleEscalation(conversation.leadId, conversationId, hardEscalation.reason);
+      const provider = conversation.provider;
+      const to = conversation.customerWhatsappBusinessId;
+      const token = provider.accessToken ?? undefined;
+      await sendWhatsAppMessage(
+        provider.businessPhoneNumberId, to,
+        "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊",
+        token,
+      ).catch(() => {});
+      await prisma.ownerNotification.create({
+        data: {
+          type: "ESCALATION",
+          title: `Escalada automática: ${lead?.profileName ?? to}`,
+          body: `Motivo: ${hardEscalation.reason}\nCliente: ${to}`,
+          organizationId: orgId,
+          leadId: conversation.leadId,
+          conversationId,
+        },
+      }).catch(() => {});
+      return;
+    }
 
     // ── Carregar AiConfig ─────────────────────────────────────────────────────
     const aiConfig = await prisma.aiConfig.findUnique({ where: { organizationId: orgId } }).catch(() => null);
@@ -509,11 +606,18 @@ export async function processAIResponse(
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
     }
 
-    // ── [ESCALAR] ─────────────────────────────────────────────────────────────
-    if (/\[ESCALAR\]/i.test(combinedRaw)) {
+    // ── [ESCALAR] soft trigger (IA decidiu escalar) ───────────────────────────
+    if (/\[ESCALAR\]/i.test(combinedRaw) && lead?.status !== "ESCALATED") {
       await handleEscalation(conversation.leadId, conversationId, rawResponse);
       await prisma.ownerNotification.create({
-        data: { type: "ESCALATION", title: `Lead escalado: ${lead?.profileName ?? to}`, body: `${lead?.profileName ?? to} pediu atendimento humano.`, organizationId: orgId, leadId: conversation.leadId, conversationId },
+        data: {
+          type: "ESCALATION",
+          title: `🔔 Escalada: ${lead?.profileName ?? to}`,
+          body: `Cliente: ${to}\nMotivo detectado pelo agente:\n${rawResponse.substring(0, 300)}`,
+          organizationId: orgId,
+          leadId: conversation.leadId,
+          conversationId,
+        },
       }).catch(() => {});
     }
 
