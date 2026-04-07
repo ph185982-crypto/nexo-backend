@@ -228,6 +228,7 @@ model WhatsappConversation {
   conversationRatings        Json     @default("[]")
   lastMessageAt              DateTime?
   isActive                   Boolean  @default(true)
+  humanTakeover              Boolean  @default(false) // true = IA pausada, humano está no controle
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
 }

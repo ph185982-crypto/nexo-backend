@@ -839,6 +839,25 @@ export const resolvers = {
       return { ...message, status: "SENT" };
     },
 
+    takeoverConversation: async (
+      _: unknown,
+      { conversationId, takeover }: { conversationId: string; takeover: boolean },
+      ctx: ResolverContext
+    ) => {
+      requireAuth(ctx);
+      const conv = await prisma.whatsappConversation.findUnique({
+        where: { id: conversationId },
+        include: { provider: true },
+      });
+      if (!conv) throw new Error("Conversa nao encontrada");
+      requireOrgAccess(ctx, conv.provider.organizationId);
+      return prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { humanTakeover: takeover },
+        include: { lead: true, provider: true },
+      });
+    },
+
     createCampaign: async (
       _: unknown,
       { input }: { input: Record<string, unknown> },

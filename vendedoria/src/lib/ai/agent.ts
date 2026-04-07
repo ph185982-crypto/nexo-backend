@@ -434,6 +434,10 @@ export async function processAIResponse(
 
     if (!conversation) return;
     if (conversation.lead?.status === "ESCALATED") return;
+    if ((conversation as typeof conversation & { humanTakeover?: boolean }).humanTakeover) {
+      console.log(`[AI Agent] humanTakeover=true — skipping AI for conv ${conversationId}`);
+      return;
+    }
 
     // ── Sandbox mode ──────────────────────────────────────────────────────────
     if (agent.sandboxMode) {

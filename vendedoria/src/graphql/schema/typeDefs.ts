@@ -141,6 +141,7 @@ export const typeDefs = `#graphql
     lastMessage: WhatsappMessage
     lastMessageAt: DateTime
     isActive: Boolean!
+    humanTakeover: Boolean!
     unreadCount: Int
     createdAt: DateTime!
   }
@@ -566,6 +567,7 @@ export const typeDefs = `#graphql
 
     # Messages
     sendWhatsappMessage(conversationId: String!, content: String!): WhatsappMessage!
+    takeoverConversation(conversationId: String!, takeover: Boolean!): WhatsappConversation!
 
     # Campaigns
     createCampaign(input: CreateCampaignInput!): Campaign!
