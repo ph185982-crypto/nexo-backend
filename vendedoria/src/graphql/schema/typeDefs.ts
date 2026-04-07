@@ -568,6 +568,7 @@ export const typeDefs = `#graphql
     # Messages
     sendWhatsappMessage(conversationId: String!, content: String!): WhatsappMessage!
     takeoverConversation(conversationId: String!, takeover: Boolean!): WhatsappConversation!
+    deescalateConversation(conversationId: String!): WhatsappConversation!
 
     # Campaigns
     createCampaign(input: CreateCampaignInput!): Campaign!

@@ -5,7 +5,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   MessageSquare, Search, RefreshCw, Phone, Clock,
   ChevronRight, Loader2, Send, Bot, UserCheck,
-  AlertTriangle, CheckCheck, Check, Image as ImageIcon, Video,
+  AlertTriangle, CheckCheck, Check, Image as ImageIcon, Video, ShieldOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,14 @@ const TAKEOVER = gql`
   mutation Takeover($conversationId: String!, $takeover: Boolean!) {
     takeoverConversation(conversationId: $conversationId, takeover: $takeover) {
       id humanTakeover
+    }
+  }
+`;
+
+const DEESCALATE = gql`
+  mutation Deescalate($conversationId: String!) {
+    deescalateConversation(conversationId: $conversationId) {
+      id humanTakeover lead { id status }
     }
   }
 `;
@@ -111,12 +119,14 @@ export default function ConversationsPage() {
   const [msgInput, setMsgInput] = useState("");
   const [sending, setSending] = useState(false);
   const [takingOver, setTakingOver] = useState(false);
+  const [deescalating, setDeescalating] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevMsgCountRef = useRef(0);
 
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [takeoverMutation] = useMutation(TAKEOVER);
+  const [deescalateMutation] = useMutation(DEESCALATE);
 
   useEffect(() => {
     if (!orgId && orgs.length > 0) setOrgId(orgs[0].id);
@@ -187,9 +197,26 @@ export default function ConversationsPage() {
     return () => clearInterval(t);
   }, [selectedId, fetchMessages]);
 
+  // ── De-escalate ──────────────────────────────────────────────────────────────
+  const handleDeescalate = useCallback(async () => {
+    if (!selectedId || deescalating) return;
+    setDeescalating(true);
+    try {
+      await deescalateMutation({ variables: { conversationId: selectedId } });
+      setConversations(prev => prev.map(c =>
+        c.id === selectedId
+          ? { ...c, humanTakeover: false, lead: c.lead ? { ...c.lead, status: "OPEN" } : c.lead }
+          : c
+      ));
+    } finally {
+      setDeescalating(false);
+    }
+  }, [selectedId, deescalating, deescalateMutation]);
+
   // ── Selected conversation ───────────────────────────────────────────────────
   const selected = conversations.find(c => c.id === selectedId);
   const isHumanControl = selected?.humanTakeover ?? false;
+  const isEscalated = selected?.lead?.status === "ESCALATED";
 
   // ── Send message ────────────────────────────────────────────────────────────
   const handleSend = useCallback(async () => {
@@ -366,9 +393,38 @@ export default function ConversationsPage() {
                 </p>
               </div>
 
-              {/* Takeover toggle */}
+              {/* Takeover / Escalation controls */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                {isHumanControl ? (
+                {isEscalated ? (
+                  /* ── Escalated state ── */
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700 font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      Escalado para humano
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleDeescalate}
+                      disabled={deescalating}
+                      className="h-8 text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                    >
+                      {deescalating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldOff className="w-3.5 h-3.5" />}
+                      De-escalar (voltar IA)
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleTakeover(true)}
+                      disabled={takingOver}
+                      className="h-8 text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      {takingOver ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5" />}
+                      Assumir eu mesmo
+                    </Button>
+                  </div>
+                ) : isHumanControl ? (
+                  /* ── Human in control ── */
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700 font-medium">
                       <UserCheck className="w-3.5 h-3.5" />
@@ -386,6 +442,7 @@ export default function ConversationsPage() {
                     </Button>
                   </div>
                 ) : (
+                  /* ── AI active ── */
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-700 font-medium">
                       <Bot className="w-3.5 h-3.5" />
@@ -406,8 +463,14 @@ export default function ConversationsPage() {
               </div>
             </div>
 
-            {/* Control banner */}
-            {isHumanControl && (
+            {/* Control banners */}
+            {isEscalated && (
+              <div className="bg-orange-500 text-white text-xs px-4 py-1.5 flex items-center gap-2 flex-shrink-0">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                <span><strong>Conversa escalada.</strong> A IA parou de responder. Clique em <strong>De-escalar (voltar IA)</strong> para reativar o Pedro, ou <strong>Assumir eu mesmo</strong> para responder você.</span>
+              </div>
+            )}
+            {!isEscalated && isHumanControl && (
               <div className="bg-blue-600 text-white text-xs px-4 py-1.5 flex items-center gap-2 flex-shrink-0">
                 <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
                 <span><strong>IA pausada.</strong> Você está respondendo manualmente. O Pedro não vai interferir enquanto você estiver no controle.</span>

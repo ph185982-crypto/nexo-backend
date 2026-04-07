@@ -858,6 +858,35 @@ export const resolvers = {
       });
     },
 
+    deescalateConversation: async (
+      _: unknown,
+      { conversationId }: { conversationId: string },
+      ctx: ResolverContext
+    ) => {
+      requireAuth(ctx);
+      const conv = await prisma.whatsappConversation.findUnique({
+        where: { id: conversationId },
+        include: { provider: true, lead: true },
+      });
+      if (!conv) throw new Error("Conversa nao encontrada");
+      requireOrgAccess(ctx, conv.provider.organizationId);
+
+      // Reset lead status to OPEN so the AI can respond again
+      if (conv.lead?.id) {
+        await prisma.lead.update({
+          where: { id: conv.lead.id },
+          data: { status: "OPEN" },
+        });
+      }
+
+      // Also clear humanTakeover
+      return prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { humanTakeover: false },
+        include: { lead: true, provider: true },
+      });
+    },
+
     createCampaign: async (
       _: unknown,
       { input }: { input: Record<string, unknown> },
