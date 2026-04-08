@@ -229,6 +229,20 @@ model WhatsappConversation {
   lastMessageAt              DateTime?
   isActive                   Boolean  @default(true)
   humanTakeover              Boolean  @default(false) // true = IA pausada, humano está no controle
+
+  // ── EstadoConversa: estado rastreado por código (não pela IA) ─────────────
+  etapa              String   @default("NOVO")      // NOVO | PRODUTO_IDENTIFICADO | MIDIA_ENVIADA | QUALIFICANDO | NEGOCIANDO | COLETANDO_DADOS | PEDIDO_CONFIRMADO | PERDIDO
+  produtoInteresse   String?                         // BOMVINK_21V | LUATEK_48V
+  midiaEnviada       Boolean  @default(false)
+  localizacaoRecebida Boolean @default(false)
+  foraAreaEntrega    Boolean  @default(false)
+  resumoEnviado      Boolean  @default(false)
+  cortesiasAposConf  Int      @default(0)            // contador de mensagens de cortesia pós-confirmação
+  localizacaoTexto   String?  @db.Text
+  nomeRecebedor      String?
+  horarioEntrega     String?
+  formaPagamento     String?
+
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
 }

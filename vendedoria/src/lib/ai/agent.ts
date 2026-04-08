@@ -199,6 +199,39 @@ function detectHardEscalation(
   return { shouldEscalate: false, reason: "" };
 }
 
+// ── CORREÇÃO 2: Detecção de área de entrega ──────────────────────────────────
+// Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
+// Não dispara por menção casual de cidade em contexto de uso do produto.
+function detectForaDeArea(message: string): boolean {
+  const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const norm = n(message);
+
+  // Exige contexto de localização pessoal do cliente
+  const temContextoLocal = /\b(sou de|sou do|sou da|sou la de|sou la|moro em|fico em|estou em|to de|minha cidade|vivo em|resido em|meu bairro|minha regiao|na minha cidade)\b/.test(norm);
+  if (!temContextoLocal) return false;
+
+  // Cidades da área de entrega — se mencionadas, não rejeitar
+  const dentroArea = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
+  if (dentroArea) return false;
+
+  // Estados fora de Goiás — por nome completo normalizado
+  const foraEstado = /\b(acre|alagoas|amapa|amazonas|bahia|ceara|distrito federal|espirito santo|maranhao|mato grosso do sul|mato grosso|minas gerais|paraiba|parana|pernambuco|piaui|rio de janeiro|rio grande do norte|rio grande do sul|rondonia|roraima|santa catarina|sao paulo|sergipe|tocantins)\b/.test(norm);
+  if (foraEstado) return true;
+
+  // Grandes cidades claramente fora de Goiás
+  const foraCidade = /\b(brasilia|belo horizonte|salvador|manaus|fortaleza|recife|porto alegre|curitiba|belem|joao pessoa|natal|teresina|campo grande|maceio|macapa|porto velho|boa vista|florianopolis|vitoria|cuiaba|palmas|aracaju|campinas|guarulhos|ribeirao preto|uberlandia|contagem)\b/.test(norm);
+  if (foraCidade) return true;
+
+  return false;
+}
+
+// ── CORREÇÃO 3: Detecta mensagem de cortesia pós-confirmação ─────────────────
+// Mensagens curtas de agradecimento/confirmação não merecem resposta após pedido fechado.
+function isCourtesyMessage(message: string): boolean {
+  const norm = message.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return /^(ok|oi|sim|nao|obrigado|obrigada|valeu|vlw|vlr|top|boa|show|certo|entendi|combinado|perfeito|blz|blzinha|beleza|otimo|😊|👍|🙏|✅|❤️|🙌|👏|k+|haha+|huhu|rs+|\.)$/.test(norm);
+}
+
 // ── Sanitiza mensagens — remove sobrecarga de dados e trunca textos longos ───
 function sanitizeMessages(msgs: string[]): string[] {
   return msgs.map((m) => {
@@ -528,6 +561,76 @@ export async function processAIResponse(
       return;
     }
 
+    // ── CORREÇÃO 2: Área de entrega ───────────────────────────────────────────
+    if (conversation.foraAreaEntrega) {
+      console.log(`[AI Agent] foraAreaEntrega=true — ignorando mensagem para conv ${conversationId}`);
+      return;
+    }
+
+    if (detectForaDeArea(userMessage)) {
+      const to = conversation.customerWhatsappBusinessId;
+      const token = conversation.provider.accessToken ?? undefined;
+      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId}: "${userMessage}"`);
+
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅",
+        token,
+      ).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1400));
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊",
+        token,
+      ).catch(() => {});
+
+      const rejectionNow = new Date();
+      await prisma.whatsappMessage.createMany({
+        data: [
+          { content: "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅", type: "TEXT", role: "ASSISTANT", sentAt: rejectionNow, status: "SENT", conversationId },
+          { content: "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(rejectionNow.getTime() + 1400), status: "SENT", conversationId },
+        ],
+      }).catch(() => {});
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { foraAreaEntrega: true, etapa: "PERDIDO", lastMessageAt: rejectionNow },
+      }).catch(() => {});
+      await prisma.conversationFollowUp.updateMany({
+        where: { conversationId, status: "ACTIVE" },
+        data: { status: "DONE" },
+      }).catch(() => {});
+      return;
+    }
+
+    // ── CORREÇÃO 3: Silêncio pós-confirmação ──────────────────────────────────
+    if (conversation.etapa === "PEDIDO_CONFIRMADO") {
+      if (isCourtesyMessage(userMessage)) {
+        console.log(`[AI Agent] Pós-confirmação: cortesia ignorada "${userMessage}"`);
+        return;
+      }
+      const cortesias = conversation.cortesiasAposConf ?? 0;
+      if (cortesias >= 2) {
+        console.log(`[AI Agent] Pós-confirmação: cortesiasAposConf=${cortesias} >= 2 — não responder mais`);
+        return;
+      }
+      const to = conversation.customerWhatsappBusinessId;
+      const token = conversation.provider.accessToken ?? undefined;
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "qualquer dúvida pode chamar 👊 nossa equipe entra em contato em breve",
+        token,
+      ).catch(() => {});
+      await prisma.whatsappMessage.create({
+        data: { content: "qualquer dúvida pode chamar 👊 nossa equipe entra em contato em breve", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+      }).catch(() => {});
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { cortesiasAposConf: cortesias + 1, lastMessageAt: new Date() },
+      }).catch(() => {});
+      console.log(`[AI Agent] Pós-confirmação: respondeu cortesia ${cortesias + 1}/2`);
+      return;
+    }
+
     // ── Sandbox mode ──────────────────────────────────────────────────────────
     if (agent.sandboxMode) {
       const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
@@ -769,9 +872,10 @@ export async function processAIResponse(
         "qualquer dúvida é só chamar 👊", token,
       ).catch(() => {});
 
-      // Salva mensagens no banco
+      // Salva mensagens e marca pedido confirmado
       await prisma.whatsappMessage.create({ data: { content: "pedido confirmado! 🎉", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
-      await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date() } }).catch(() => {});
+      await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date(), etapa: "PEDIDO_CONFIRMADO" } }).catch(() => {});
+      await prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "DONE" } }).catch(() => {});
       return; // não chamar LLM — pedido já encerrado
     }
     const runtimeCtx = buildRuntimeContext(
@@ -849,6 +953,15 @@ export async function processAIResponse(
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
         await prisma.ownerNotification.create({
           data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
+        }).catch(() => {});
+        // Marca conversa como pedido confirmado e cancela follow-ups
+        await prisma.whatsappConversation.update({
+          where: { id: conversationId },
+          data: { etapa: "PEDIDO_CONFIRMADO" },
+        }).catch(() => {});
+        await prisma.conversationFollowUp.updateMany({
+          where: { conversationId, status: "ACTIVE" },
+          data: { status: "DONE" },
         }).catch(() => {});
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
     }
@@ -950,13 +1063,23 @@ export async function processAIResponse(
       }
     }
 
-    // ── Agendar follow-up ─────────────────────────────────────────────────────
-    const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
-    await prisma.conversationFollowUp.upsert({
-      where: { conversationId },
-      update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
-      create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
-    });
+    // ── CORREÇÃO 4: Agendar follow-up (só se não confirmado/perdido/fora de área) ──
+    const skipFollowup =
+      conversation.etapa === "PEDIDO_CONFIRMADO" ||
+      conversation.etapa === "PERDIDO" ||
+      conversation.foraAreaEntrega ||
+      lead?.status === "CLOSED" ||
+      lead?.status === "BLOCKED";
+    if (!skipFollowup) {
+      const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
+      await prisma.conversationFollowUp.upsert({
+        where: { conversationId },
+        update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
+        create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
+      });
+    } else {
+      console.log(`[AI Agent] Follow-up não agendado — etapa: ${conversation.etapa} | foraAreaEntrega: ${conversation.foraAreaEntrega} | lead: ${lead?.status}`);
+    }
 
   } catch (error) {
     console.error("[AI Agent] Error:", error);

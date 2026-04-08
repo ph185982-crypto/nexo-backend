@@ -236,21 +236,35 @@ async function handleIncomingMessage(
   }
 
   // Idempotency: skip if this exact message was already processed
+  // Uses message.id (Meta's ID) as PK — also catches race conditions via try-catch on create
   const alreadyProcessed = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });
-  if (alreadyProcessed) return;
+  if (alreadyProcessed) {
+    console.log(`[Webhook] Mensagem duplicada ignorada: ${message.id}`);
+    return;
+  }
 
-  // Save user message
-  await prisma.whatsappMessage.create({
-    data: {
-      id: message.id,
-      content,
-      type: message.type.toUpperCase() as "TEXT",
-      role: "USER",
-      sentAt,
-      status: "DELIVERED",
-      conversationId: conversation.id,
-    },
-  });
+  // Save user message — if unique constraint fails (race condition), another worker processed it
+  let savedMessage;
+  try {
+    savedMessage = await prisma.whatsappMessage.create({
+      data: {
+        id: message.id,
+        content,
+        type: message.type.toUpperCase() as "TEXT",
+        role: "USER",
+        sentAt,
+        status: "DELIVERED",
+        conversationId: conversation.id,
+      },
+    });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("Unique constraint") || msg.includes("unique")) {
+      console.log(`[Webhook] Race-condition dedup: mensagem ${message.id} já foi processada por outro worker`);
+      return;
+    }
+    throw e;
+  }
 
   // Update conversation last message
   await prisma.whatsappConversation.update({
