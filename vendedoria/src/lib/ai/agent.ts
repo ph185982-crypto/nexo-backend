@@ -58,40 +58,49 @@ function extractCollectedData(messages: Array<{ role: string; content: string }>
   const data: CollectedData = {};
   const allText = messages.map((m) => m.content).join("\n").toLowerCase();
 
-  // Localização — pin nativo, link maps ou texto com rua/av/bairro/cep
-  if (
-    messages.some((m) => m.content.includes("[Localização recebida]")) ||
-    messages.some((m) => /maps\.google|goo\.gl\/maps|lat:[-\d.]+ lng:/.test(m.content))
-  ) {
-    const locMsg = messages.find((m) => /\[Localização recebida\]|maps\.google|lat:[-\d.]/.test(m.content));
-    data.localizacao = locMsg?.content ?? "pin enviado";
+  // ── Localização ───────────────────────────────────────────────────────────
+  // Detecta: pin nativo WhatsApp, qualquer link Maps, CEP, texto com rua/av
+  // UMA VEZ DETECTADA, nunca mais pedir — coloca em AMBOS localizacao e endereco
+  const locMsg = messages.find((m) =>
+    /\[Localiza[çc][aã]o\s+recebida\]/.test(m.content) ||         // pin nativo
+    /lat:[-\d.]+\s+lng:[-\d.]+/.test(m.content) ||                 // coordenadas
+    /maps\.google\.com/.test(m.content) ||                          // google maps
+    /maps\.app\.goo\.gl/.test(m.content) ||                        // short link maps
+    /goo\.gl\/maps/.test(m.content) ||                             // outro short
+    /\bwaze\.com\b/.test(m.content)                                 // waze
+  );
+  if (locMsg) {
+    data.localizacao = locMsg.content;
+    data.endereco = locMsg.content; // localização basta — não pedir endereço de novo
   } else {
+    // Texto com endereço escrito (rua, av, setor, CEP, bairro)
     const endMsg = messages.find((m) =>
-      m.role === "USER" && /\b(rua|av|avenida|travessa|alameda|est[a-z]*\.|bairro|cep\s*[:.]?\s*\d|setor|quadra|lote)\b/i.test(m.content)
+      m.role === "USER" && (
+        /\b(rua|av\.?|avenida|travessa|alameda|setor|quadra|lote)\b.{3,}/i.test(m.content) ||
+        /\b\d{5}[-\s]?\d{3}\b/.test(m.content) ||   // CEP 00000-000 ou 00000000
+        /\b(goiania|goiânia|aparecida|senador|trindade|anapolis|anapolís)\b/i.test(m.content)
+      ) && m.content.length > 10
     );
-    if (endMsg) data.localizacao = endMsg.content;
+    if (endMsg) {
+      data.localizacao = endMsg.content;
+      data.endereco = endMsg.content;
+    }
   }
 
-  // Endereço por escrito
-  const enderecoMsg = messages.find((m) =>
-    m.role === "USER" && /\b(rua|av\.|avenida|n[°º]?\s*\d|número|bairro|cep|goiânia|setor|quadra)\b/i.test(m.content) && m.content.length > 15
-  );
-  if (enderecoMsg) data.endereco = enderecoMsg.content;
-
-  // Pagamento
+  // ── Pagamento ─────────────────────────────────────────────────────────────
   if (/\bdinheiro\b/.test(allText)) data.pagamento = "dinheiro";
   else if (/\bpix\b/.test(allText)) data.pagamento = "pix";
   else if (/\bcart[aã]o\b/.test(allText)) data.pagamento = "cartão";
 
-  // Horário de recebimento
+  // ── Horário de recebimento ────────────────────────────────────────────────
   const horarioMsg = messages.find((m) =>
-    m.role === "USER" && /\b(\d{1,2})\s*[h:]\s*(\d{0,2})|(até|ate)\s+\d|hoje/.test(m.content)
+    m.role === "USER" && /\b(\d{1,2})\s*[h:]\s*(\d{0,2})|(até|ate)\s+\d/.test(m.content)
   );
   if (horarioMsg) data.horario = horarioMsg.content;
 
-  // Nome
+  // ── Nome de quem recebe ───────────────────────────────────────────────────
   const nomeMsg = messages.find((m) =>
-    m.role === "USER" && /^[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]+(\s+[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]+)+$/.test(m.content.trim())
+    m.role === "USER" && /^[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{2,}(\s+[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{2,})+$/.test(m.content.trim())
   );
   if (nomeMsg) data.nome = nomeMsg.content.trim();
 
@@ -244,6 +253,16 @@ function isBusinessHours(hour: number, dayOfWeek: number): boolean {
   return false;
 }
 
+// ── Saudação baseada no horário real de Brasília ──────────────────────────────
+function saudacao(): string {
+  // toLocaleString em "en-US" retorna data no fuso correto para extrair getHours()
+  const spDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+  const h = spDate.getHours();
+  if (h >= 5 && h < 12) return "bom dia";
+  if (h >= 12 && h < 18) return "boa tarde";
+  return "boa noite";
+}
+
 // ── Conta tentativas de quebra de objeção de preço já feitas pela IA ─────────
 function countPriceObjectionAttempts(messages: Array<{ role: string; content: string }>): number {
   const normalize = (s: string) =>
@@ -272,7 +291,7 @@ function buildRuntimeContext(
   recentMessages?: Array<{ role: string; content: string }>,
 ): string {
   const { hour, dayOfWeek } = getSaoPauloTime();
-  const greeting = hour < 12 ? "bom dia" : hour < 18 ? "boa tarde" : "boa noite";
+  const greeting = saudacao(); // usa fuso America/Sao_Paulo — nunca "bom dia" à meia-noite
   const emoji    = aiConfig?.usarEmoji !== false;
   const nivel    = aiConfig?.nivelVenda ?? "medio";
   const dentroDoExpediente = isBusinessHours(hour, dayOfWeek);
@@ -283,13 +302,17 @@ function buildRuntimeContext(
 
   // ── Dados já coletados (não perguntar de novo) ──────────────────────────────
   const coletados: string[] = [];
-  if (collectedData.localizacao) coletados.push(`✅ Localização: ${collectedData.localizacao.substring(0, 80)}`);
-  if (collectedData.endereco)    coletados.push(`✅ Endereço: ${collectedData.endereco.substring(0, 80)}`);
+  if (collectedData.localizacao) {
+    coletados.push(`✅ LOCALIZAÇÃO RECEBIDA: "${collectedData.localizacao.substring(0, 100)}" — PROIBIDO pedir localização de novo`);
+  }
+  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) {
+    coletados.push(`✅ Endereço confirmado: ${collectedData.endereco.substring(0, 80)}`);
+  }
   if (collectedData.pagamento)   coletados.push(`✅ Pagamento: ${collectedData.pagamento}`);
   if (collectedData.horario)     coletados.push(`✅ Horário: ${collectedData.horario}`);
   if (collectedData.nome)        coletados.push(`✅ Nome: ${collectedData.nome}`);
   const dadosColetados = coletados.length > 0
-    ? `\nDADOS JÁ COLETADOS (NÃO PERGUNTAR DE NOVO):\n${coletados.join("\n")}`
+    ? `\nDADOS JÁ COLETADOS — NÃO PERGUNTAR DE NOVO:\n${coletados.join("\n")}`
     : "";
 
   // ── Tentativas de quebra de objeção de preço já feitas ──────────────────────
@@ -306,15 +329,17 @@ function buildRuntimeContext(
   if (isFirstInteraction) {
     etapa = `ETAPA 1 — PRIMEIRO CONTATO:
 - Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
-- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Leo da Nexo em outro balão
+- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Léo da Nexo em outro balão
 - Inclua IMEDIATAMENTE [FOTO_SLUG] E [VIDEO_SLUG] do produto identificado
 - 2 benefícios curtos em balões separados
 - 1 pergunta de qualificação (ex: "pra que você vai usar?")
 - NÃO peça localização agora`;
   } else if (leadState.tipo === "quente") {
     // Verificar quais dados faltam
+    // Localização OU endereço é suficiente — não pedir os dois
+    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
     const falta: string[] = [];
-    if (!collectedData.endereco)  falta.push("endereço completo");
+    if (!temLocal)                falta.push("localização (pin 📍 ou texto: rua, bairro, CEP)");
     if (!collectedData.horario)   falta.push("até que horas pode receber");
     if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
     if (!collectedData.nome)      falta.push("nome de quem vai receber");
@@ -378,7 +403,7 @@ NÃO repita dados já coletados acima.`;
 }
 
 // ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
-const DEFAULT_SYSTEM_PROMPT = `Você é Pedro, vendedor da Nexo Brasil em Goiânia. Você tem 28 anos, é direto, bem-humorado na medida certa e sabe muito sobre ferramentas. Você não é um assistente — você é um vendedor que gosta do que faz e conhece o produto na palma da mão.
+const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil em Goiânia. Você tem 28 anos, é direto, bem-humorado na medida certa e sabe muito sobre ferramentas. Você não é um assistente — você é um vendedor que gosta do que faz e conhece o produto na palma da mão.
 Você nunca usa frases prontas. Cada mensagem sua é escrita na hora, pensando naquele cliente específico, naquele momento específico da conversa.
 
 ━━━ PERSONALIDADE ━━━
@@ -529,12 +554,28 @@ export async function processAIResponse(
     // ── Detectar estado do lead ───────────────────────────────────────────────
     const leadState = detectLeadState(userMessage);
 
+    // ── Guard: intenção de compra bloqueia qualquer escalação ────────────────
+    // Se o cliente quer fechar/comprar, NUNCA escalar — vai direto para coleta de dados
+    const msgNorm = userMessage.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const INTENCAO_COMPRA = [
+      /quero\s+fechar/, /vamos\s+fechar/, /pode\s+fechar/, /quero\s+comprar/,
+      /\bfechado\b/, /pode\s+mandar/, /bora\s+fechar/, /me\s+manda\s+/,
+      /qual\s+(o\s+)?valor/, /quanto\s+custa/, /faz\s+entrega/, /tem\s+estoque/,
+      /me\s+passa\s+o\s+pix/, /vou\s+querer/, /to\s+dentro/, /to\s+fechando/,
+    ];
+    const temIntencaoCompra = INTENCAO_COMPRA.some((re) => re.test(msgNorm));
+    if (temIntencaoCompra) {
+      console.log(`[ESCALATION-TRACE] v2 | COMPRA — escalação BLOQUEADA por intenção de compra: "${userMessage}"`);
+    }
+
     // ── Hard escalation check (antes do LLM, garante escalada mesmo que a IA erre) ──
     console.log(`[ESCALATION-TRACE] v2 | Conv ${conversationId} | Msgs no histórico: ${msgCount} | Msg recebida: "${userMessage}" | Lead status: ${lead?.status ?? "null"}`);
-    const hardEscalation = detectHardEscalation(
-      userMessage,
-      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
-    );
+    const hardEscalation = !temIntencaoCompra
+      ? detectHardEscalation(
+          userMessage,
+          recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+        )
+      : { shouldEscalate: false, reason: "" };
     console.log(`[ESCALATION-TRACE] resultado detectHardEscalation: shouldEscalate=${hardEscalation.shouldEscalate} | reason="${hardEscalation.reason}"`);
     if (hardEscalation.shouldEscalate && lead?.status !== "ESCALATED") {
       const to = conversation.customerWhatsappBusinessId;
@@ -574,6 +615,63 @@ export async function processAIResponse(
       orderBy: { createdAt: "asc" },
     });
 
+    // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
+    // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
+    // antes da IA responder. Não depende de flag — sempre funciona.
+    const appUrlEarly = (process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const toPublicUrlEarly = (url: string, productId: string, idx: number, isVideo = false): string => {
+      if (!url) return "";
+      if (url.startsWith("data:")) {
+        if (!appUrlEarly) return "";
+        return isVideo
+          ? `${appUrlEarly}/api/media/product/${productId}?type=video`
+          : `${appUrlEarly}/api/media/product/${productId}?idx=${idx}`;
+      }
+      return url;
+    };
+    const msgLower = userMessage.toLowerCase();
+    if (isFirstInteraction) {
+      const productsWithMediaEarly = await prisma.product.findMany({
+        where: { organizationId: orgId, isActive: true },
+        select: { id: true, name: true, imageUrl: true, imageUrls: true, videoUrl: true },
+      });
+      for (const prod of productsWithMediaEarly) {
+        const nm = prod.name.toLowerCase();
+        const matchesByName = msgLower.includes(nm);
+        const matchesByKeyword =
+          (/21v|bomvink/.test(msgLower) && (nm.includes("21") || nm.includes("bomvink"))) ||
+          (/48v|luatek/.test(msgLower) && (nm.includes("48") || nm.includes("luatek")));
+        if (!matchesByName && !matchesByKeyword) continue;
+
+        console.log(`[AI Agent] FORCED first-contact media for "${prod.name}"`);
+        const imgs: string[] = prod.imageUrls?.length ? prod.imageUrls : prod.imageUrl ? [prod.imageUrl] : [];
+        for (let i = 0; i < imgs.length; i++) {
+          const imgUrl = toPublicUrlEarly(imgs[i], prod.id, i);
+          if (!imgUrl) continue;
+          await new Promise((r) => setTimeout(r, 500));
+          await sendWhatsAppImage(
+            conversation.provider.businessPhoneNumberId,
+            conversation.customerWhatsappBusinessId,
+            imgUrl, prod.name,
+            conversation.provider.accessToken ?? undefined,
+          ).catch((e) => console.error(`[AI Agent] Forced image failed:`, e));
+        }
+        if (prod.videoUrl) {
+          const vidUrl = toPublicUrlEarly(prod.videoUrl, prod.id, 0, true);
+          if (vidUrl) {
+            await new Promise((r) => setTimeout(r, 800));
+            await sendWhatsAppVideo(
+              conversation.provider.businessPhoneNumberId,
+              conversation.customerWhatsappBusinessId,
+              vidUrl, prod.name,
+              conversation.provider.accessToken ?? undefined,
+            ).catch((e) => console.error(`[AI Agent] Forced video failed:`, e));
+          }
+        }
+        break; // envia apenas o primeiro produto identificado
+      }
+    }
+
     let productSection = "";
     if (activeProducts.length > 0) {
       const lines = activeProducts.map((p, i) => {
@@ -604,6 +702,78 @@ export async function processAIResponse(
     const collectedData = extractCollectedData(
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
     );
+
+    // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
+    const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
+    const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
+    const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
+    if (dadosCompletos && leadState.tipo === "quente" && !passagemJaFeita) {
+      console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
+      const produtoNome = activeProducts[0]?.name ?? "produto";
+      const clientName  = lead?.profileName ?? "Cliente";
+      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const to          = conversation.customerWhatsappBusinessId;
+      const token       = conversation.provider.accessToken ?? undefined;
+
+      // Últimas 3 mensagens do cliente
+      const last3client = recentMessages
+        .filter((m) => m.role === "USER")
+        .slice(0, 3)
+        .reverse()
+        .map((m) => `"${m.content.substring(0, 80)}"`)
+        .join("\n");
+
+      const handoffMsg =
+        `*🔔 PEDIDO NOVO — NEXO BRASIL*\n\n` +
+        `📦 *Produto:* ${produtoNome}\n` +
+        `👤 *Nome:* ${collectedData.nome}\n` +
+        `🏠 *Endereço:* ${collectedData.endereco ?? collectedData.localizacao}\n` +
+        `🗺️ *Localização:* ${collectedData.localizacao ?? "não enviada"}\n` +
+        `⏰ *Receber até:* ${collectedData.horario}\n` +
+        `💳 *Pagamento:* ${collectedData.pagamento}\n` +
+        `📱 *WhatsApp cliente:* ${to}\n\n` +
+        `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
+        `_Organizar entrega e encaminhar motoboy._`;
+
+      // Tenta enviar — retry após 30s se falhar
+      const enviarPassagem = async (tentativa = 1) => {
+        try {
+          await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
+          await prisma.ownerNotification.create({
+            data: { type: "ORDER", title: `🎉 Pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
+          }).catch(() => {});
+          await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
+          console.log(`[AI Agent] PASSAGEM enviada com sucesso (tentativa ${tentativa})`);
+        } catch (e) {
+          console.error(`[AI Agent] PASSAGEM falhou tentativa ${tentativa}:`, e);
+          if (tentativa < 2) {
+            setTimeout(() => enviarPassagem(2), 30_000);
+          }
+        }
+      };
+      await enviarPassagem();
+
+      // Confirma ao cliente
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "pedido confirmado! 🎉", token,
+      ).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1200));
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "nossa equipe vai entrar em contato pra confirmar o horário certinho", token,
+      ).catch(() => {});
+      await new Promise((r) => setTimeout(r, 800));
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "qualquer dúvida é só chamar 👊", token,
+      ).catch(() => {});
+
+      // Salva mensagens no banco
+      await prisma.whatsappMessage.create({ data: { content: "pedido confirmado! 🎉", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+      await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date() } }).catch(() => {});
+      return; // não chamar LLM — pedido já encerrado
+    }
     const runtimeCtx = buildRuntimeContext(
       leadState, msgCount, isFirstInteraction, aiConfig, collectedData,
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
@@ -749,9 +919,9 @@ export async function processAIResponse(
       const flagFoto  = new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedRaw);
       const flagVideo = new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedRaw);
 
-      // Trigger 2: Nome do produto mencionado na resposta + Etapa 2-3 + mídia ainda não enviada
+      // Trigger 2: Nome do produto mencionado na resposta + mídia ainda não enviada
       const nameMentioned = new RegExp(product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(combinedRaw);
-      const autoSend = nameMentioned && !isFirstInteraction && !mediaAlreadySent && msgCount <= 10;
+      const autoSend = nameMentioned && !mediaAlreadySent && msgCount <= 12;
 
       const sendFoto  = flagFoto  || autoSend;
       const sendVideo = flagVideo || (autoSend && !!product.videoUrl);
