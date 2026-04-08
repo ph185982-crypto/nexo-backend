@@ -3,6 +3,14 @@
     {
       "path": "/api/campaign/worker",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/followup",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/daily-summary",
+      "schedule": "0 11 * * *"
     }
   ]
 }

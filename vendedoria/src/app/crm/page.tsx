@@ -1,80 +1,311 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery, gql } from "@apollo/client";
+import React, { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import {
-  DollarSign, TrendingUp, Users, MessageSquare,
-  FileText, RefreshCw, ChevronDown,
+  TrendingUp, Users, MessageSquare, CheckCircle2,
+  AlertTriangle, MapPin, RefreshCw, ChevronRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-const WIDGETS_QUERY = gql`
-  query WidgetsData($timeFilter: String, $whatsappProviderConfigId: String) {
-    widgetsData(timeFilter: $timeFilter, whatsappProviderConfigId: $whatsappProviderConfigId) {
-      uniqueWhatsappConversations
-      leadsQuentes
-      conversationWindowsOpened
-      repassados
-      contactsSentDocs
-      regionStatistics { region count }
-    }
-  }
-`;
+type Period = "today" | "7d" | "30d";
 
-const ACCOUNTS_QUERY = gql`
-  query AllAccounts {
-    whatsappBusinessOrganizations {
-      id
-      name
-      accounts {
-        id
-        accountName
-        displayPhoneNumber
-      }
-    }
-  }
-`;
-
-const TIME_FILTERS = [
-  { label: "Todas", value: "all" },
-  { label: "Hoje", value: "today" },
-  { label: "7 dias", value: "7d" },
-  { label: "15 dias", value: "15d" },
-  { label: "30 dias", value: "30d" },
-];
-
-interface MetricCardProps {
-  title: string;
-  value: number;
-  icon: React.ElementType;
-  color: string;
-  description?: string;
+interface DashboardStats {
+  totalConversas: number;
+  pedidosConfirmados: number;
+  taxaConversao: number;
+  escalados: number;
+  perdidos: number;
+  foraArea: number;
+  conversasAtivas: number;
+  totalMsgsClientes: number;
 }
 
-function MetricCard({ title, value, icon: Icon, color, description }: MetricCardProps) {
+interface FunnelStep {
+  etapa: string;
+  count: number;
+}
+
+interface RecentConv {
+  id: string;
+  name: string;
+  phone: string;
+  etapa: string;
+  foraAreaEntrega: boolean;
+  humanTakeover: boolean;
+  leadStatus: string;
+  lastMessageAt: string | null;
+  lastMessage: string;
+  lastMessageRole: string;
+}
+
+interface DashboardData {
+  period: string;
+  stats: DashboardStats;
+  funnel: FunnelStep[];
+  recentConversations: RecentConv[];
+}
+
+const ETAPA_LABELS: Record<string, string> = {
+  NOVO: "Novo",
+  PRODUTO_IDENTIFICADO: "Produto ID",
+  MIDIA_ENVIADA: "Mídia enviada",
+  QUALIFICANDO: "Qualificando",
+  NEGOCIANDO: "Negociando",
+  COLETANDO_DADOS: "Coletando dados",
+  PEDIDO_CONFIRMADO: "Pedido confirmado",
+  PERDIDO: "Perdido",
+};
+
+const ETAPA_COLOR: Record<string, string> = {
+  NOVO: "bg-slate-100 text-slate-700",
+  PRODUTO_IDENTIFICADO: "bg-blue-100 text-blue-700",
+  MIDIA_ENVIADA: "bg-indigo-100 text-indigo-700",
+  QUALIFICANDO: "bg-purple-100 text-purple-700",
+  NEGOCIANDO: "bg-amber-100 text-amber-700",
+  COLETANDO_DADOS: "bg-orange-100 text-orange-700",
+  PEDIDO_CONFIRMADO: "bg-green-100 text-green-700",
+  PERDIDO: "bg-red-100 text-red-700",
+};
+
+const FUNNEL_BAR_COLOR: Record<string, string> = {
+  NOVO: "#94a3b8",
+  PRODUTO_IDENTIFICADO: "#60a5fa",
+  MIDIA_ENVIADA: "#818cf8",
+  QUALIFICANDO: "#a78bfa",
+  NEGOCIANDO: "#fbbf24",
+  COLETANDO_DADOS: "#f97316",
+  PEDIDO_CONFIRMADO: "#22c55e",
+  PERDIDO: "#ef4444",
+};
+
+function relativeTime(dateStr: string | null): string {
+  if (!dateStr) return "-";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "agora";
+  if (m < 60) return `${m}min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h / 24)}d`;
+}
+
+function StatusBadge({ conv }: { conv: RecentConv }) {
+  if (conv.leadStatus === "ESCALATED" || conv.humanTakeover) {
+    return <Badge className="bg-orange-100 text-orange-700 text-xs">Humano</Badge>;
+  }
+  if (conv.foraAreaEntrega) {
+    return <Badge className="bg-gray-100 text-gray-600 text-xs">Fora área</Badge>;
+  }
+  const label = ETAPA_LABELS[conv.etapa] ?? conv.etapa;
+  const cls = ETAPA_COLOR[conv.etapa] ?? "bg-slate-100 text-slate-700";
+  return <Badge className={cn("text-xs", cls)}>{label}</Badge>;
+}
+
+export default function DashboardPage() {
+  const [period, setPeriod] = useState<Period>("today");
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async (p: Period) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/dashboard?period=${p}`);
+      if (res.ok) setData(await res.json() as DashboardData);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void load(period); }, [period, load]);
+
+  const stats = data?.stats;
+  const funnel = data?.funnel ?? [];
+  const recents = data?.recentConversations ?? [];
+  const maxFunnelCount = Math.max(...funnel.map((f) => f.count), 1);
+
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-6">
+    <div className="p-4 md:p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Painel de vendas</h1>
+          <p className="text-sm text-muted-foreground">Funil do agente Léo — Nexo Brasil</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {(["today", "7d", "30d"] as Period[]).map((p) => (
+            <Button
+              key={p}
+              variant={period === p ? "default" : "outline"}
+              size="sm"
+              onClick={() => setPeriod(p)}
+            >
+              {p === "today" ? "Hoje" : p === "7d" ? "7 dias" : "30 dias"}
+            </Button>
+          ))}
+          <Button variant="outline" size="sm" onClick={() => load(period)} disabled={loading}>
+            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          icon={MessageSquare}
+          label="Conversas"
+          value={stats?.totalConversas ?? 0}
+          color="#6366f1"
+          loading={loading}
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Pedidos confirmados"
+          value={stats?.pedidosConfirmados ?? 0}
+          color="#22c55e"
+          loading={loading}
+          sub={stats ? `${stats.taxaConversao}% de conversão` : undefined}
+        />
+        <StatCard
+          icon={Users}
+          label="Ativas agora"
+          value={stats?.conversasAtivas ?? 0}
+          color="#f59e0b"
+          loading={loading}
+        />
+        <StatCard
+          icon={AlertTriangle}
+          label="Escalados"
+          value={stats?.escalados ?? 0}
+          color="#ef4444"
+          loading={loading}
+        />
+      </div>
+
+      {/* Secondary stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <MiniStat label="Fora da área" value={stats?.foraArea ?? 0} icon={MapPin} color="text-slate-500" loading={loading} />
+        <MiniStat label="Perdidos" value={stats?.perdidos ?? 0} icon={TrendingUp} color="text-red-500" loading={loading} />
+        <MiniStat label="Msgs clientes" value={stats?.totalMsgsClientes ?? 0} icon={MessageSquare} color="text-blue-500" loading={loading} />
+      </div>
+
+      {/* Funil de conversão */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Funil de conversão por etapa</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {funnel.filter((f) => f.count > 0 || f.etapa === "PEDIDO_CONFIRMADO").map((step) => (
+            <div key={step.etapa} className="flex items-center gap-3">
+              <div className="w-36 text-xs text-right text-muted-foreground shrink-0">
+                {ETAPA_LABELS[step.etapa] ?? step.etapa}
+              </div>
+              <div className="flex-1 h-5 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.max(2, Math.round((step.count / maxFunnelCount) * 100))}%`,
+                    backgroundColor: FUNNEL_BAR_COLOR[step.etapa] ?? "#94a3b8",
+                  }}
+                />
+              </div>
+              <div className="w-8 text-xs font-semibold text-right shrink-0">{step.count}</div>
+            </div>
+          ))}
+          {funnel.every((f) => f.count === 0) && !loading && (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              Nenhuma conversa no período selecionado.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Conversas recentes */}
+      <Card>
+        <CardHeader className="pb-3 flex-row items-center justify-between">
+          <CardTitle className="text-base">Conversas recentes</CardTitle>
+          <Link href="/crm/conversations">
+            <Button variant="ghost" size="sm" className="text-xs gap-1">
+              Ver todas <ChevronRight className="w-3 h-3" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading && recents.length === 0 ? (
+            <div className="text-center py-8 text-sm text-muted-foreground">Carregando...</div>
+          ) : recents.length === 0 ? (
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              Nenhuma conversa no período selecionado.
+            </div>
+          ) : (
+            <div className="divide-y">
+              {recents.map((conv) => (
+                <Link key={conv.id} href={`/crm/conversations?id=${conv.id}`}>
+                  <div className="flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0 text-indigo-700 font-semibold text-sm">
+                      {(conv.name?.[0] ?? "?").toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-sm truncate">{conv.name}</span>
+                        <StatusBadge conv={conv} />
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        {conv.lastMessageRole === "ASSISTANT" ? "🤖 " : "👤 "}
+                        {conv.lastMessage || "..."}
+                      </p>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {relativeTime(conv.lastMessageAt)}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+  loading,
+  sub,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: number;
+  color: string;
+  loading: boolean;
+  sub?: string;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-4">
         <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold tracking-tight" style={{ color }}>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">{label}</p>
+            <p
+              className={cn("text-2xl font-bold transition-opacity", loading && "opacity-40")}
+              style={{ color }}
+            >
               {value.toLocaleString("pt-BR")}
             </p>
-            {description && (
-              <p className="text-xs text-muted-foreground">{description}</p>
-            )}
+            {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
           </div>
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            className="w-9 h-9 rounded-lg flex items-center justify-center"
             style={{ backgroundColor: `${color}20` }}
           >
-            <Icon className="w-6 h-6" style={{ color }} />
+            <Icon className="w-4 h-4" style={{ color }} />
           </div>
         </div>
       </CardContent>
@@ -82,162 +313,28 @@ function MetricCard({ title, value, icon: Icon, color, description }: MetricCard
   );
 }
 
-export default function DashboardPage() {
-  const [timeFilter, setTimeFilter] = useState("all");
-  const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
-
-  const { data: orgsData } = useQuery(ACCOUNTS_QUERY);
-  const { data, loading, refetch } = useQuery(WIDGETS_QUERY, {
-    variables: {
-      timeFilter: timeFilter === "all" ? undefined : timeFilter,
-      whatsappProviderConfigId: selectedAccountId && selectedAccountId !== "all" ? selectedAccountId : undefined,
-    },
-    fetchPolicy: "cache-and-network",
-  });
-
-  const metrics = data?.widgetsData;
-  const allAccounts = (orgsData?.whatsappBusinessOrganizations ?? []).flatMap(
-    (org: { id: string; name: string; accounts: Array<{ id: string; accountName: string; displayPhoneNumber: string }> }) =>
-      org.accounts.map((acc: { id: string; accountName: string; displayPhoneNumber: string }) => ({
-        ...acc,
-        orgName: org.name,
-      }))
-  );
-
+function MiniStat({
+  label,
+  value,
+  icon: Icon,
+  color,
+  loading,
+}: {
+  label: string;
+  value: number;
+  icon: React.ElementType;
+  color: string;
+  loading: boolean;
+}) {
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Visão geral do seu CRM
-          </p>
+    <Card>
+      <CardContent className="p-3 flex items-center gap-2">
+        <Icon className={cn("w-4 h-4 shrink-0", color)} />
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground truncate">{label}</p>
+          <p className={cn("text-lg font-bold", loading && "opacity-40")}>{value}</p>
         </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Account selector */}
-          <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
-            <SelectTrigger className="w-48 bg-white">
-              <SelectValue placeholder="Conta WhatsApp" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as contas</SelectItem>
-              {allAccounts.map((acc: { id: string; accountName: string; displayPhoneNumber: string }) => (
-                <SelectItem key={acc.id} value={acc.id}>
-                  {acc.accountName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Time filter */}
-          <div className="flex bg-white border border-border rounded-md overflow-hidden">
-            {TIME_FILTERS.map((f) => (
-              <button
-                key={f.value}
-                onClick={() => setTimeFilter(f.value)}
-                className={cn(
-                  "px-3 py-2 text-sm transition-colors",
-                  timeFilter === f.value
-                    ? "bg-primary text-white font-medium"
-                    : "text-muted-foreground hover:bg-muted"
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => refetch()}
-            disabled={loading}
-          >
-            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
-          </Button>
-        </div>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <MetricCard
-          title="Número de Leads"
-          value={metrics?.uniqueWhatsappConversations ?? 0}
-          icon={DollarSign}
-          color="#004c3f"
-          description="Total de conversas únicas"
-        />
-        <MetricCard
-          title="Leads que Enviaram Documentos"
-          value={metrics?.contactsSentDocs ?? 0}
-          icon={FileText}
-          color="#0891b2"
-          description="Documentos recebidos"
-        />
-        <MetricCard
-          title="Leads Quentes"
-          value={metrics?.leadsQuentes ?? 0}
-          icon={TrendingUp}
-          color="#f97316"
-          description="Leads com alto potencial"
-        />
-        <MetricCard
-          title="Leads Repassados"
-          value={metrics?.repassados ?? 0}
-          icon={Users}
-          color="#8b5cf6"
-          description="Escalados para vendedor humano"
-        />
-        <MetricCard
-          title="Conversas Iniciadas"
-          value={metrics?.conversationWindowsOpened ?? 0}
-          icon={MessageSquare}
-          color="#22c55e"
-          description="Janelas de conversa abertas"
-        />
-      </div>
-
-      {/* Region Statistics */}
-      {metrics?.regionStatistics && metrics.regionStatistics.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Estatísticas por Região</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {metrics.regionStatistics.map((stat: { region: string; count: number }) => (
-                <div key={stat.region} className="flex items-center gap-3">
-                  <span className="text-sm w-32 text-muted-foreground">{stat.region}</span>
-                  <div className="flex-1 bg-muted rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all"
-                      style={{
-                        width: `${(stat.count / Math.max(...metrics.regionStatistics.map((s: { count: number }) => s.count))) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-sm font-medium w-12 text-right">{stat.count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Empty state */}
-      {!loading && !metrics && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <MessageSquare className="w-12 h-12 text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-muted-foreground">
-            Nenhum dado disponível
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure uma conta WhatsApp para começar a ver métricas
-          </p>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

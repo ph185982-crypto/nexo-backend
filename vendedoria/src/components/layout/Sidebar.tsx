@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Kanban, Calendar, Megaphone, Building2,
-  Users, ChevronDown, ChevronRight, MessageSquare, Bot,
+  LayoutDashboard, Kanban, Calendar, Megaphone,
+  ChevronDown, ChevronRight, MessageSquare, Bot,
   Folder, Settings, Phone, Package, BarChart2, X, SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -50,8 +50,6 @@ const navItems = [
   { href: "/crm/campaigns", label: "Campanhas", icon: Megaphone },
   { href: "/crm/products", label: "Produtos", icon: Package },
   { href: "/crm/configure-agent", label: "Configurar Agente", icon: SlidersHorizontal },
-  { href: "/crm/work-units", label: "Unidades", icon: Building2 },
-  { href: "/crm/professionals", label: "Profissionais", icon: Users },
 ];
 
 export function Sidebar({
