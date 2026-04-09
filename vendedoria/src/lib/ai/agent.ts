@@ -810,7 +810,7 @@ export async function processAIResponse(
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
     const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
     const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
-    if (dadosCompletos && leadState.tipo === "quente" && !passagemJaFeita) {
+    if (dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
@@ -838,7 +838,7 @@ export async function processAIResponse(
         `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
         `_Organizar entrega e encaminhar motoboy._`;
 
-      // Tenta enviar — retry após 30s se falhar
+      // Tenta enviar — retry 30s → 2min se falhar
       const enviarPassagem = async (tentativa = 1) => {
         try {
           await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
@@ -846,11 +846,14 @@ export async function processAIResponse(
             data: { type: "ORDER", title: `🎉 Pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
           }).catch(() => {});
           await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
+          await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
           console.log(`[AI Agent] PASSAGEM enviada com sucesso (tentativa ${tentativa})`);
         } catch (e) {
           console.error(`[AI Agent] PASSAGEM falhou tentativa ${tentativa}:`, e);
-          if (tentativa < 2) {
+          if (tentativa === 1) {
             setTimeout(() => enviarPassagem(2), 30_000);
+          } else if (tentativa === 2) {
+            setTimeout(() => enviarPassagem(3), 120_000);
           }
         }
       };

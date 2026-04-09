@@ -169,9 +169,19 @@ function ConversationsContent() {
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
 
-  const messagesEndRef    = useRef<HTMLDivElement>(null);
-  const prevMsgCountRef   = useRef(0);
-  const inputRef          = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef      = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const prevLastMsgIdRef    = useRef<string>("");
+  const prevMsgCountRef     = useRef(0);
+  const initialLoadDoneRef  = useRef(false);
+  const inputRef            = useRef<HTMLTextAreaElement>(null);
+
+  // True when user is within 80px of the bottom of the messages container
+  const isNearBottom = useCallback(() => {
+    const c = messagesContainerRef.current;
+    if (!c) return true;
+    return c.scrollHeight - c.scrollTop <= c.clientHeight + 80;
+  }, []);
 
   const [sendMessage]       = useMutation(SEND_MESSAGE);
   const [takeoverMutation]  = useMutation(TAKEOVER);
@@ -239,18 +249,39 @@ function ConversationsContent() {
         data?: { getConversationMessages?: { messages?: Message[] } }
       };
       const newMsgs = data?.getConversationMessages?.messages ?? [];
+      const newLastId = newMsgs[newMsgs.length - 1]?.id ?? "";
+      const isFirstLoad = !initialLoadDoneRef.current;
+      const hasNewMessages = newMsgs.length > prevMsgCountRef.current;
+
+      // Skip state update entirely if content is identical (avoids re-render + scroll fight)
+      if (!isFirstLoad && newLastId === prevLastMsgIdRef.current && newMsgs.length === prevMsgCountRef.current) {
+        return;
+      }
+
       setMessages(newMsgs);
-      if (newMsgs.length !== prevMsgCountRef.current) {
-        prevMsgCountRef.current = newMsgs.length;
+      prevLastMsgIdRef.current = newLastId;
+      prevMsgCountRef.current  = newMsgs.length;
+
+      if (isFirstLoad) {
+        // First load of this conversation: jump instantly to bottom
+        initialLoadDoneRef.current = true;
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 50);
+      } else if (hasNewMessages && isNearBottom()) {
+        // New message arrived and user is already at bottom: smooth scroll
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
       }
     } finally {
       if (!silent) setLoadingMessages(false);
     }
-  }, []);
+  }, [isNearBottom]);
 
   useEffect(() => {
-    if (selectedId) { prevMsgCountRef.current = 0; fetchMessages(selectedId); }
+    if (selectedId) {
+      prevMsgCountRef.current    = 0;
+      prevLastMsgIdRef.current   = "";
+      initialLoadDoneRef.current = false;
+      fetchMessages(selectedId);
+    }
   }, [selectedId, fetchMessages]);
 
   useEffect(() => {
@@ -667,6 +698,7 @@ function ConversationsContent() {
 
             {/* ── Messages area ────────────────────────────────────────────────── */}
             <div
+              ref={messagesContainerRef}
               className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-1"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}
             >
