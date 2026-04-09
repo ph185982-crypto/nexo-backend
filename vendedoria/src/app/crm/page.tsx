@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   TrendingUp, Users, MessageSquare, CheckCircle2,
-  AlertTriangle, MapPin, RefreshCw, ChevronRight,
+  AlertTriangle, MapPin, RefreshCw, ChevronRight, Send,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,6 +109,8 @@ export default function DashboardPage() {
   const [period, setPeriod] = useState<Period>("today");
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [testingPassagem, setTestingPassagem] = useState(false);
+  const [testPassagemResult, setTestPassagemResult] = useState<string | null>(null);
 
   const load = useCallback(async (p: Period) => {
     setLoading(true);
@@ -117,6 +119,25 @@ export default function DashboardPage() {
       if (res.ok) setData(await res.json() as DashboardData);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const handleTestPassagem = useCallback(async () => {
+    setTestingPassagem(true);
+    setTestPassagemResult(null);
+    try {
+      const res = await fetch("/api/debug/test-passagem", { method: "POST" });
+      const json = await res.json() as { ok?: boolean; error?: string; to?: string };
+      if (json.ok) {
+        setTestPassagemResult(`✅ Enviado para ${json.to}`);
+      } else {
+        setTestPassagemResult(`❌ Erro: ${json.error ?? "desconhecido"}`);
+      }
+    } catch (e) {
+      setTestPassagemResult(`❌ Erro de rede: ${String(e)}`);
+    } finally {
+      setTestingPassagem(false);
+      setTimeout(() => setTestPassagemResult(null), 8000);
     }
   }, []);
 
@@ -135,7 +156,7 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold tracking-tight">Painel de vendas</h1>
           <p className="text-sm text-muted-foreground">Funil do agente Léo — Nexo Brasil</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {(["today", "7d", "30d"] as Period[]).map((p) => (
             <Button
               key={p}
@@ -149,8 +170,29 @@ export default function DashboardPage() {
           <Button variant="outline" size="sm" onClick={() => load(period)} disabled={loading}>
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
           </Button>
+          <Button
+            variant="outline" size="sm"
+            onClick={handleTestPassagem}
+            disabled={testingPassagem}
+            className="border-green-200 text-green-700 hover:bg-green-50 gap-1.5"
+          >
+            {testingPassagem
+              ? <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              : <Send className="w-3.5 h-3.5" />}
+            Testar passagem
+          </Button>
         </div>
       </div>
+      {testPassagemResult && (
+        <div className={cn(
+          "text-sm px-3 py-2 rounded-lg border",
+          testPassagemResult.startsWith("✅")
+            ? "bg-green-50 border-green-200 text-green-800"
+            : "bg-red-50 border-red-200 text-red-800"
+        )}>
+          {testPassagemResult}
+        </div>
+      )}
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
