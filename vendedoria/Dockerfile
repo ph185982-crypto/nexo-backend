@@ -20,6 +20,8 @@ RUN npx prisma generate
 # Build Next.js (standalone output)
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# Aumenta memória disponível — Next.js build consome ~2GB no plano free do Render
+ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN npm run build
 
 # Pre-compile seed to plain JS so the runner stage needs no tsx/esbuild
