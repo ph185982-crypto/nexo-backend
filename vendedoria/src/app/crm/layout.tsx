@@ -22,7 +22,7 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
   const closeMobileSidebar = useCallback(() => setMobileSidebarOpen(false), []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen h-dvh overflow-hidden bg-background">
       {/* Mobile backdrop overlay */}
       {mobileSidebarOpen && (
         <div
@@ -45,7 +45,7 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onToggleSidebar={handleToggle} />
-        <main className="flex-1 overflow-auto bg-background">
+        <main className="flex-1 overflow-auto bg-background flex flex-col min-h-0">
           {children}
         </main>
       </div>
