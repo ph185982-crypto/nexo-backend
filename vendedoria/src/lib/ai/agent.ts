@@ -99,10 +99,25 @@ function extractCollectedData(messages: Array<{ role: string; content: string }>
   if (horarioMsg) data.horario = horarioMsg.content;
 
   // ── Nome de quem recebe ───────────────────────────────────────────────────
-  const nomeMsg = messages.find((m) =>
-    m.role === "USER" && /^[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{2,}(\s+[A-ZÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{2,})+$/.test(m.content.trim())
-  );
-  if (nomeMsg) data.nome = nomeMsg.content.trim();
+  // Detecta: "meu nome é X", "pode colocar no nome de X", ou mensagem que é só o nome
+  const nomePatterns = [
+    /(?:meu\s+nome\s+[eé]|nome\s+[eé]|pode\s+colocar\s+no\s+nome\s+(?:de|do|da)?|chamo[-\s]+me\s+|me\s+chamo\s+|sou\s+o?\s+)\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
+  ];
+  let nomeFound: string | undefined;
+  for (const m of messages) {
+    if (m.role !== "USER") continue;
+    for (const re of nomePatterns) {
+      const match = re.exec(m.content);
+      if (match?.[1]) { nomeFound = match[1].trim(); break; }
+    }
+    if (nomeFound) break;
+    // Mensagem que é só um nome (1-3 palavras, começa com maiúscula ou minúscula, sem pontuação especial)
+    const trimmed = m.content.trim();
+    if (/^[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ]{2,}(\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ]{2,}){0,3}$/.test(trimmed) && trimmed.length >= 4 && trimmed.length <= 60) {
+      nomeFound = trimmed; break;
+    }
+  }
+  if (nomeFound) data.nome = nomeFound;
 
   return data;
 }
@@ -631,16 +646,6 @@ export async function processAIResponse(
       return;
     }
 
-    // ── Sandbox mode ──────────────────────────────────────────────────────────
-    if (agent.sandboxMode) {
-      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
-      const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
-      if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
-        console.log(`[AI Agent] Sandbox mode — skipping ${customerNum}`);
-        return;
-      }
-    }
-
     // ── Contexto ──────────────────────────────────────────────────────────────
     const lead = conversation.lead;
     const orgId = conversation.provider.organizationId;
@@ -881,6 +886,17 @@ export async function processAIResponse(
       await prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "DONE" } }).catch(() => {});
       return; // não chamar LLM — pedido já encerrado
     }
+
+    // ── Sandbox mode (após passagem — passagem sempre dispara, sandbox só bloqueia IA) ──
+    if (agent.sandboxMode) {
+      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
+      if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
+        console.log(`[AI Agent] Sandbox mode — skipping AI for ${customerNum}`);
+        return;
+      }
+    }
+
     const runtimeCtx = buildRuntimeContext(
       leadState, msgCount, isFirstInteraction, aiConfig, collectedData,
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),

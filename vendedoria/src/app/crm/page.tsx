@@ -111,6 +111,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [testingPassagem, setTestingPassagem] = useState(false);
   const [testPassagemResult, setTestPassagemResult] = useState<string | null>(null);
+  const [testPassagemDiag, setTestPassagemDiag] = useState<Record<string, unknown> | null>(null);
 
   const load = useCallback(async (p: Period) => {
     setLoading(true);
@@ -125,19 +126,21 @@ export default function DashboardPage() {
   const handleTestPassagem = useCallback(async () => {
     setTestingPassagem(true);
     setTestPassagemResult(null);
+    setTestPassagemDiag(null);
     try {
       const res = await fetch("/api/debug/test-passagem", { method: "POST" });
-      const json = await res.json() as { ok?: boolean; error?: string; to?: string };
+      const json = await res.json() as { ok?: boolean; error?: string; message?: string; diag?: Record<string, unknown> };
+      setTestPassagemDiag(json.diag ?? null);
       if (json.ok) {
-        setTestPassagemResult(`✅ Enviado para ${json.to}`);
+        setTestPassagemResult(`✅ ${json.message ?? "Enviado com sucesso"}`);
+        setTimeout(() => { setTestPassagemResult(null); setTestPassagemDiag(null); }, 15000);
       } else {
-        setTestPassagemResult(`❌ Erro: ${json.error ?? "desconhecido"}`);
+        setTestPassagemResult(`❌ ${json.error ?? "Erro desconhecido"}`);
       }
     } catch (e) {
       setTestPassagemResult(`❌ Erro de rede: ${String(e)}`);
     } finally {
       setTestingPassagem(false);
-      setTimeout(() => setTestPassagemResult(null), 8000);
     }
   }, []);
 
@@ -183,14 +186,19 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
-      {testPassagemResult && (
+      {(testPassagemResult || testPassagemDiag) && (
         <div className={cn(
-          "text-sm px-3 py-2 rounded-lg border",
-          testPassagemResult.startsWith("✅")
+          "text-sm px-3 py-2 rounded-lg border space-y-2",
+          testPassagemResult?.startsWith("✅")
             ? "bg-green-50 border-green-200 text-green-800"
             : "bg-red-50 border-red-200 text-red-800"
         )}>
-          {testPassagemResult}
+          {testPassagemResult && <p className="font-medium">{testPassagemResult}</p>}
+          {testPassagemDiag && (
+            <pre className="text-[10px] leading-4 overflow-x-auto whitespace-pre-wrap opacity-80">
+              {JSON.stringify(testPassagemDiag, null, 2)}
+            </pre>
+          )}
         </div>
       )}
 

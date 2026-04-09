@@ -1,26 +1,57 @@
 /**
- * Simulação de passagem de bastão — envia mensagem de teste para OWNER_WHATSAPP_NUMBER
- * GET /api/debug/test-passagem?secret=<CRON_SECRET>
- * POST /api/debug/test-passagem   (autenticado por sessão NextAuth)
+ * Diagnóstico completo + simulação de passagem de bastão
+ * POST /api/debug/test-passagem  — autenticado por sessão NextAuth
+ * GET  /api/debug/test-passagem?secret=<CRON_SECRET>  — via URL
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { auth } from "@/lib/auth";
 
-async function runSimulation() {
-  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+const GRAPH_API_VERSION = "v20.0";
+const BASE_URL = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
 
+async function runDiagnostic() {
+  const ownerRaw  = process.env.OWNER_WHATSAPP_NUMBER ?? "";
+  const ownerFull = ownerRaw.replace(/\D/g, "");
+  // Garante prefixo 55 (Brasil)
+  const ownerNumber = ownerFull.startsWith("55") ? ownerFull : `55${ownerFull}`;
+
+  // ── Provider ──────────────────────────────────────────────────────────────
   const provider = await prisma.whatsappProviderConfig.findFirst({
-    where: { status: "CONNECTED" },
     orderBy: { createdAt: "asc" },
   });
 
+  const diag: Record<string, unknown> = {
+    ownerNumberRaw:   ownerRaw   || "(não configurado)",
+    ownerNumberSend:  ownerNumber,
+    envMetaToken:     !!process.env.META_WHATSAPP_ACCESS_TOKEN,
+    envMetaPhoneId:   process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "(não configurado)",
+    provider: provider ? {
+      id:                   provider.id,
+      name:                 provider.accountName,
+      status:               provider.status,
+      businessPhoneNumberId: provider.businessPhoneNumberId,
+      hasDbToken:           !!provider.accessToken,
+      dbTokenPrefix:        provider.accessToken ? provider.accessToken.slice(0, 12) + "…" : null,
+    } : "NENHUM PROVIDER ENCONTRADO",
+  };
+
   if (!provider) {
-    return { ok: false, error: "Nenhum provider WhatsApp conectado encontrado" };
+    return { ok: false, diag, error: "Nenhum provider WhatsApp encontrado no banco" };
   }
 
-  const token = provider.accessToken ?? undefined;
+  if (!ownerNumber || ownerNumber.length < 10) {
+    return { ok: false, diag, error: "OWNER_WHATSAPP_NUMBER não configurado ou inválido" };
+  }
+
+  // Token: DB tem prioridade, senão env var
+  const token = provider.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? "";
+  diag.tokenSource = provider.accessToken ? "banco de dados" : process.env.META_WHATSAPP_ACCESS_TOKEN ? "env META_WHATSAPP_ACCESS_TOKEN" : "NENHUM TOKEN";
+
+  if (!token) {
+    return { ok: false, diag, error: "Nenhum access token disponível (nem no banco nem na env var META_WHATSAPP_ACCESS_TOKEN)" };
+  }
+
   const phoneNumberId = provider.businessPhoneNumberId;
 
   const handoffMsg =
@@ -32,33 +63,57 @@ async function runSimulation() {
     `⏰ *Receber até:* 18h\n` +
     `💳 *Pagamento:* PIX\n` +
     `📱 *WhatsApp cliente:* 5562999999999\n\n` +
-    `💬 *Últimas mensagens do cliente:*\n` +
-    `"pode ser pix?"\n"meu endereço é Rua das Flores 123"\n"sim, pode mandar até as 18h"\n\n` +
-    `_⚠️ Esta é uma mensagem de TESTE — não é um pedido real._`;
+    `_⚠️ Mensagem de TESTE — não é um pedido real._`;
 
+  // Chama Meta API diretamente para ver o erro exato
+  const body = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: ownerNumber,
+    type: "text",
+    text: { body: handoffMsg },
+  };
+
+  let metaStatus = 0;
+  let metaResponse = "";
   try {
-    await sendWhatsAppMessage(phoneNumberId, ownerNumber, handoffMsg, token);
-    return { ok: true, to: ownerNumber, phoneNumberId, providerName: provider.accountName };
+    const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    metaStatus = res.status;
+    metaResponse = await res.text();
+    diag.metaStatus   = metaStatus;
+    diag.metaResponse = metaResponse.slice(0, 500);
+
+    if (!res.ok) {
+      return { ok: false, diag, error: `Meta API retornou HTTP ${metaStatus}: ${metaResponse.slice(0, 300)}` };
+    }
+
+    return { ok: true, diag, message: `Mensagem enviada para ${ownerNumber}` };
   } catch (e) {
-    return { ok: false, error: String(e), to: ownerNumber, phoneNumberId, providerName: provider.accountName };
+    diag.networkError = String(e);
+    return { ok: false, diag, error: `Erro de rede: ${String(e)}` };
   }
 }
 
-// Via URL com CRON_SECRET
+export async function POST() {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  return NextResponse.json(await runDiagnostic());
+}
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const secret = url.searchParams.get("secret");
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  return NextResponse.json(await runSimulation());
-}
-
-// Via sessão autenticada (chamado pelo botão da UI)
-export async function POST() {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-  return NextResponse.json(await runSimulation());
+  return NextResponse.json(await runDiagnostic());
 }
