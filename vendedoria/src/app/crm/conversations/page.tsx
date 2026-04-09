@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
@@ -145,7 +145,7 @@ function Avatar({ conv, size = "md" }: { conv: Conversation; size?: "sm" | "md" 
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function ConversationsPage() {
+function ConversationsContent() {
   const searchParams = useSearchParams();
 
   const { data: orgsData } = useQuery(GET_ORGS);
@@ -779,5 +779,17 @@ export default function ConversationsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ConversationsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-1 items-center justify-center h-full text-muted-foreground">
+        <span className="text-sm">Carregando conversas...</span>
+      </div>
+    }>
+      <ConversationsContent />
+    </Suspense>
   );
 }
