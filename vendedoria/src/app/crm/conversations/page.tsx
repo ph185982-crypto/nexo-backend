@@ -165,6 +165,8 @@ function ConversationsContent() {
   const [sending, setSending]           = useState(false);
   const [takingOver, setTakingOver]     = useState(false);
   const [deescalating, setDeescalating] = useState(false);
+  const [diagResult, setDiagResult]     = useState<Record<string, unknown> | null>(null);
+  const [diagLoading, setDiagLoading]   = useState(false);
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
@@ -659,7 +661,7 @@ function ConversationsContent() {
                   </>
                 )}
 
-                {/* More options menu (mobile overflow) */}
+                {/* More options menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -670,10 +672,63 @@ function ConversationsContent() {
                     <DropdownMenuItem onClick={() => fetchMessages(selectedId!, false)}>
                       <RefreshCw className="w-4 h-4 mr-2" /> Recarregar chat
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={async () => {
+                      if (!selectedId) return;
+                      setDiagLoading(true);
+                      setDiagResult(null);
+                      try {
+                        const res = await fetch("/api/debug/passagem-diag", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ conversationId: selectedId }),
+                        });
+                        setDiagResult(await res.json() as Record<string, unknown>);
+                      } finally { setDiagLoading(false); }
+                    }} disabled={diagLoading}>
+                      {diagLoading
+                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        : <AlertTriangle className="w-4 h-4 mr-2 text-amber-500" />}
+                      Diagnóstico passagem
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </div>
+
+            {/* ── Diagnóstico passagem ─────────────────────────────────────────── */}
+            {diagResult && (
+              <div className="bg-slate-800 text-slate-100 text-[11px] px-3 py-2.5 flex-shrink-0 relative">
+                <button
+                  onClick={() => setDiagResult(null)}
+                  className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-base leading-none"
+                >×</button>
+                <p className="font-bold mb-1.5 text-amber-300">
+                  {(diagResult.dadosCompletos as boolean)
+                    ? "✅ Dados completos — passagem deveria disparar"
+                    : "❌ Dados INCOMPLETOS — passagem bloqueada"}
+                </p>
+                {Array.isArray(diagResult.camposFaltando) && (diagResult.camposFaltando as string[]).length > 0 && (
+                  <p className="text-red-300 mb-1">
+                    Faltando: {(diagResult.camposFaltando as string[]).join(" | ")}
+                  </p>
+                )}
+                {(diagResult.passagemJaFeita as boolean) && (
+                  <p className="text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
+                )}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1">
+                  {Object.entries(diagResult.camposDetectados as Record<string, string | null>).map(([k, v]) => (
+                    <span key={k}>
+                      <span className={v ? "text-green-300" : "text-red-400"}>{v ? "✅" : "❌"}</span>
+                      {" "}<span className="text-slate-400">{k}:</span>
+                      {" "}<span className="text-white">{v ? v.substring(0, 50) : "não detectado"}</span>
+                    </span>
+                  ))}
+                </div>
+                {(diagResult.etapa as string) && (
+                  <p className="mt-1 text-slate-400">etapa DB: <span className="text-white">{diagResult.etapa as string}</span></p>
+                )}
+              </div>
+            )}
 
             {/* ── Status banners ───────────────────────────────────────────────── */}
             {isEscalated && (
