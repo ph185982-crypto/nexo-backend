@@ -337,6 +337,7 @@ function buildRuntimeContext(
   aiConfig: { usarEmoji: boolean; usarReticencias: boolean; nivelVenda: string } | null,
   collectedData: CollectedData,
   recentMessages?: Array<{ role: string; content: string }>,
+  activeProducts?: Array<{ id: string; name: string; imageUrl?: string | null; videoUrl?: string | null }>,
 ): string {
   const { hour, dayOfWeek } = getSaoPauloTime();
   const greeting = saudacao(); // usa fuso America/Sao_Paulo — nunca "bom dia" à meia-noite
@@ -375,10 +376,22 @@ function buildRuntimeContext(
   let etapa: string;
 
   if (isFirstInteraction) {
+    // Monta flags reais dos produtos com mídia para o LLM usar
+    const mediaFlags = (activeProducts ?? [])
+      .filter(p => p.imageUrl || p.videoUrl)
+      .map(p => {
+        const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+        return `[FOTO_${s}]${p.videoUrl ? ` e [VIDEO_${s}]` : ""}`;
+      })
+      .join("  |  ");
+    const flagInstrucao = mediaFlags
+      ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})
+- ATENÇÃO: você DEVE colocar o flag exato (ex: [FOTO_LUATEK_48V]) em um balão separado — isso é o que dispara o envio. Nunca diga "vou te enviar fotos" sem o flag.`
+      : "- Descreva o produto em texto";
     etapa = `ETAPA 1 — PRIMEIRO CONTATO:
 - Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
 - Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Léo da Nexo em outro balão
-- Inclua IMEDIATAMENTE [FOTO_SLUG] E [VIDEO_SLUG] do produto identificado
+${flagInstrucao}
 - 2 benefícios curtos em balões separados
 - 1 pergunta de qualificação (ex: "pra que você vai usar?")
 - NÃO peça localização agora`;
@@ -541,9 +554,13 @@ A única coisa que encerra uma conversa é: pedido fechado [PASSAGEM] ou cliente
 72h → encerra com porta aberta, sem pressão
 Após 4 sem resposta → PERDA, para de contatar.
 
-━━━ FLAGS ━━━
+━━━ FLAGS — REGRAS CRÍTICAS ━━━
+NUNCA escreva "vou te enviar fotos", "mando as fotos agora" ou similar SEM incluir o flag correspondente.
+O sistema SOMENTE envia fotos/vídeo quando o flag aparece na resposta. Se você prometer mas não incluir o flag, a foto nunca chega.
+Sempre que quiser enviar mídia, coloque o flag na mesma resposta, em um balão separado (ex: "[FOTO_LUATEK_48V]").
+
 [OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
-[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real)
+[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real do catálogo)
 [VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
 [PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados`;
 
@@ -726,7 +743,12 @@ export async function processAIResponse(
     // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
     // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
     // antes da IA responder. Não depende de flag — sempre funciona.
-    const appUrlEarly = (process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const appUrlEarly = (
+      process.env.NEXTAUTH_URL ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.RENDER_EXTERNAL_URL ??
+      (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
+    ).replace(/\/$/, "");
     const toPublicUrlEarly = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (!url) return "";
       if (url.startsWith("data:")) {
@@ -751,11 +773,13 @@ export async function processAIResponse(
           (/48v|luatek/.test(msgLower) && (nm.includes("48") || nm.includes("luatek")));
         if (!matchesByName && !matchesByKeyword) continue;
 
-        console.log(`[AI Agent] FORCED first-contact media for "${prod.name}"`);
+        console.log(`[AI Agent] FORCED first-contact media for "${prod.name}" | appUrlEarly="${appUrlEarly}"`);
         const imgs: string[] = prod.imageUrls?.length ? prod.imageUrls : prod.imageUrl ? [prod.imageUrl] : [];
+        console.log(`[AI Agent] ${imgs.length} imagens encontradas para "${prod.name}" | videoUrl=${!!prod.videoUrl}`);
         for (let i = 0; i < imgs.length; i++) {
           const imgUrl = toPublicUrlEarly(imgs[i], prod.id, i);
-          if (!imgUrl) continue;
+          console.log(`[AI Agent] imgUrl[${i}]: "${imgUrl.substring(0, 80)}"`);
+          if (!imgUrl) { console.error(`[AI Agent] imgUrl[${i}] vazio — pulando`); continue; }
           await new Promise((r) => setTimeout(r, 500));
           await sendWhatsAppImage(
             conversation.provider.businessPhoneNumberId,
@@ -900,6 +924,7 @@ export async function processAIResponse(
     const runtimeCtx = buildRuntimeContext(
       leadState, msgCount, isFirstInteraction, aiConfig, collectedData,
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+      activeProducts,
     );
     const systemPromptFinal = basePrompt + productSection + leadContext + runtimeCtx;
 
@@ -1023,14 +1048,22 @@ export async function processAIResponse(
 
     // ── Enviar fotos + vídeo do produto ───────────────────────────────────────
     // WhatsApp exige URLs HTTPS públicas — converte base64 para endpoint público
-    const appUrl = (process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const appUrl = (
+      process.env.NEXTAUTH_URL ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.RENDER_EXTERNAL_URL ??
+      (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
+    ).replace(/\/$/, "");
+    console.log(`[AI Agent] appUrl resolvido: "${appUrl}" | NEXTAUTH_URL=${process.env.NEXTAUTH_URL ?? "unset"} | RENDER_EXTERNAL_URL=${process.env.RENDER_EXTERNAL_URL ?? "unset"}`);
     const toPublicUrl = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (url.startsWith("data:")) {
         if (!appUrl) {
-          console.error("[AI Agent] NEXTAUTH_URL não está definida — não é possível gerar URL pública para mídia base64");
+          console.error("[AI Agent] ERRO: nenhuma URL pública configurada (NEXTAUTH_URL, RENDER_EXTERNAL_URL, etc.) — imagem base64 não pode ser enviada via WhatsApp");
           return "";
         }
-        return isVideo ? `${appUrl}/api/media/product/${productId}?type=video` : `${appUrl}/api/media/product/${productId}?idx=${idx}`;
+        const publicUrl = isVideo ? `${appUrl}/api/media/product/${productId}?type=video` : `${appUrl}/api/media/product/${productId}?idx=${idx}`;
+        console.log(`[AI Agent] base64 → URL pública: ${publicUrl}`);
+        return publicUrl;
       }
       return url;
     };
@@ -1051,14 +1084,23 @@ export async function processAIResponse(
       const flagFoto  = new RegExp(`\\[FOTO_${slug}\\]`, "i").test(combinedRaw);
       const flagVideo = new RegExp(`\\[VIDEO_${slug}\\]`, "i").test(combinedRaw);
 
-      // Trigger 2: Nome do produto mencionado na resposta + mídia ainda não enviada
+      // Trigger 2: Heurística — nome/keyword do produto na resposta + LLM falou em foto/vídeo
       const nameMentioned = new RegExp(product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(combinedRaw);
-      const autoSend = nameMentioned && !mediaAlreadySent && msgCount <= 12;
+      const nm = product.name.toLowerCase();
+      const keywordMatch =
+        (/luatek|48\s*v/i.test(combinedRaw) && (nm.includes("luatek") || nm.includes("48"))) ||
+        (/bomvink|21\s*v/i.test(combinedRaw) && (nm.includes("bomvink") || nm.includes("21")));
+      const llmMentionedMedia = /\b(foto|fotos|v[ií]deo|videos?|imagem|imagens|enviar\s+as?\s+fotos?|mando\s+as?\s+fotos?)\b/i.test(combinedRaw);
+      const autoSend = !mediaAlreadySent && msgCount <= 15 && (nameMentioned || keywordMatch) && llmMentionedMedia;
 
-      const sendFoto  = flagFoto  || autoSend;
-      const sendVideo = flagVideo || (autoSend && !!product.videoUrl);
+      // Trigger 3: LLM usou [FOTO] genérico sem slug — envia de qualquer produto ativo com mídia
+      const genericFotoFlag  = /\[FOTO\b/i.test(combinedRaw) && !flagFoto;
+      const genericVideoFlag = /\[VIDEO\b/i.test(combinedRaw) && !flagVideo;
 
-      console.log(`[AI Agent] Product "${product.name}": flagFoto=${flagFoto} flagVideo=${flagVideo} nameMentioned=${nameMentioned} autoSend=${autoSend} sendFoto=${sendFoto} sendVideo=${sendVideo}`);
+      const sendFoto  = flagFoto  || autoSend || (genericFotoFlag  && !mediaAlreadySent);
+      const sendVideo = flagVideo || (autoSend && !!product.videoUrl) || (genericVideoFlag && !!product.videoUrl && !mediaAlreadySent);
+
+      console.log(`[AI Agent] Product "${product.name}" slug=${slug}: flagFoto=${flagFoto} flagVideo=${flagVideo} nameMentioned=${nameMentioned} keywordMatch=${keywordMatch} llmMentionedMedia=${llmMentionedMedia} autoSend=${autoSend} sendFoto=${sendFoto} sendVideo=${sendVideo}`);
 
       if (sendFoto) {
         const imgs: string[] = product.imageUrls?.length ? product.imageUrls : product.imageUrl ? [product.imageUrl] : [];
