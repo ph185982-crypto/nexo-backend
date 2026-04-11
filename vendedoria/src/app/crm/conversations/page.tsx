@@ -7,7 +7,7 @@ import {
   MessageSquare, Search, RefreshCw, Phone, Clock,
   ChevronLeft, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
-  Video, ShieldOff, ArrowLeft, MoreVertical, X,
+  Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +65,8 @@ interface Conversation {
   lastMessageAt: string | null;
   isActive: boolean;
   humanTakeover: boolean;
+  etapa: string;
+  localizacaoRecebida: boolean;
   lead: Lead | null;
   messages: LastMessage[];
   followUp: FollowUp | null;
@@ -474,6 +476,7 @@ function ConversationsContent() {
           <div className="flex gap-1 flex-wrap">
             {[
               ["all", "Todos"],
+              ["hot", "🔥 Quentes"],
               ["open", "Abertos"],
               ["escalated", "Escalados"],
               ["blocked", "Bloqueados"],
@@ -550,6 +553,16 @@ function ConversationsContent() {
                           <Clock className="w-2.5 h-2.5" />F{conv.followUp.step}
                         </span>
                       )}
+                      {conv.localizacaoRecebida && (
+                        <span className="text-[10px] text-emerald-700 flex items-center gap-0.5 shrink-0 font-medium">
+                          <MapPin className="w-2.5 h-2.5" />Loc
+                        </span>
+                      )}
+                      {(conv.etapa === "PEDIDO_CONFIRMADO") && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-purple-100 text-purple-700 shrink-0">
+                          ✅ Confirmado
+                        </span>
+                      )}
                     </div>
 
                     {/* Last message preview */}
@@ -623,6 +636,11 @@ function ConversationsContent() {
                     <Badge className={cn("text-[10px] shrink-0 hidden sm:inline-flex", STATUS_COLORS[selected.lead.status])}>
                       {STATUS_LABELS[selected.lead.status]}
                     </Badge>
+                  )}
+                  {selected.localizacaoRecebida && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700 shrink-0 hidden sm:inline-flex items-center gap-0.5">
+                      <MapPin className="w-2.5 h-2.5" />Localização
+                    </span>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground truncate flex items-center gap-1">

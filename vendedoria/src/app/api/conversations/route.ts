@@ -8,6 +8,8 @@ const CONV_SELECT = {
   lastMessageAt: true,
   isActive: true,
   humanTakeover: true,
+  etapa: true,
+  localizacaoRecebida: true,
   lead: { select: { id: true, profileName: true, phoneNumber: true, status: true } },
   messages: {
     orderBy: { sentAt: "desc" as const },
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
   const status  = searchParams.get("status") ?? "all";
   const cursor  = searchParams.get("cursor");
   const fetchId = searchParams.get("id"); // fetch a single conversation by id
-  const take    = 100; // increased from 30
+  const take    = 250;
 
   if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
 
@@ -43,12 +45,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ conversation: conv });
   }
 
-  const leadStatusFilter =
-    status === "open"      ? { status: "OPEN" } :
-    status === "escalated" ? { status: "ESCALATED" } :
-    status === "blocked"   ? { status: "BLOCKED" } :
-    status === "closed"    ? { status: "CLOSED" } :
-    undefined; // "all" — no filter
+  // Build status-based where clause
+  // "hot" = conversations where location was received or etapa is advanced (near-close)
+  const statusWhere =
+    status === "open"      ? { lead: { status: "OPEN" } } :
+    status === "escalated" ? { lead: { status: "ESCALATED" } } :
+    status === "blocked"   ? { lead: { status: "BLOCKED" } } :
+    status === "closed"    ? { lead: { status: "CLOSED" } } :
+    status === "hot"       ? {
+      OR: [
+        { localizacaoRecebida: true },
+        { etapa: { in: ["NEGOCIANDO", "COLETANDO_DADOS", "PEDIDO_CONFIRMADO"] } },
+      ],
+    } :
+    {}; // "all" — no filter
 
   const conversations = await prisma.whatsappConversation.findMany({
     where: {
@@ -61,7 +71,7 @@ export async function GET(req: NextRequest) {
           { lead: { profileName: { contains: search, mode: "insensitive" } } },
         ],
       } : {}),
-      ...(leadStatusFilter ? { lead: leadStatusFilter } : {}),
+      ...statusWhere,
       ...(cursor ? { lastMessageAt: { lt: new Date(cursor) } } : {}),
     },
     select: CONV_SELECT,
