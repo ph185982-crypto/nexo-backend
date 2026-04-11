@@ -60,17 +60,36 @@ export async function GET(req: NextRequest) {
     } :
     {}; // "all" — no filter
 
+  // Build search OR clauses — handle phone numbers with formatting like "(61) 9044-2728"
+  const searchOR = (() => {
+    if (!search) return null;
+    const digitsOnly = search.replace(/\D/g, "");
+    const isPhone    = digitsOnly.length >= 8;
+
+    // All phone variants to try: raw search + digits + with/without BR country code 55
+    const phoneVariants = isPhone ? Array.from(new Set([
+      digitsOnly,
+      ...(digitsOnly.startsWith("55") && digitsOnly.length > 10 ? [digitsOnly.slice(2)] : []),
+      ...(!digitsOnly.startsWith("55") ? ["55" + digitsOnly] : []),
+    ])) : [];
+
+    return [
+      { profileName:                { contains: search, mode: "insensitive" as const } },
+      { customerWhatsappBusinessId: { contains: search, mode: "insensitive" as const } },
+      { lead: { phoneNumber:   { contains: search } } },
+      { lead: { profileName:   { contains: search, mode: "insensitive" as const } } },
+      // Digits-only variants so "(61) 9044-2728" → "6190442728" matches "556190442728"
+      ...phoneVariants.flatMap(v => [
+        { customerWhatsappBusinessId: { contains: v } },
+        { lead: { phoneNumber: { contains: v } } },
+      ]),
+    ];
+  })();
+
   const conversations = await prisma.whatsappConversation.findMany({
     where: {
       whatsappProviderConfigId: { in: providerIds },
-      ...(search ? {
-        OR: [
-          { profileName: { contains: search, mode: "insensitive" } },
-          { customerWhatsappBusinessId: { contains: search } },
-          { lead: { phoneNumber: { contains: search } } },
-          { lead: { profileName: { contains: search, mode: "insensitive" } } },
-        ],
-      } : {}),
+      ...(searchOR ? { OR: searchOR } : {}),
       ...statusWhere,
       ...(cursor ? { lastMessageAt: { lt: new Date(cursor) } } : {}),
     },

@@ -455,7 +455,7 @@ function ConversationsContent() {
                 autoFocus
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Buscar por nome ou telefone..."
+                placeholder="Nome, (61) 9044-2728, ou parte do número..."
                 className="h-9 pl-8 text-sm"
               />
             </div>
