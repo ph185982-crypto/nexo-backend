@@ -146,6 +146,40 @@ function MessageContent({ msg }: { msg: Message }) {
     </span>
   );
   if (msg.type === "AUDIO") return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
+  if (msg.type === "LOCATION") {
+    // Extract lat/lng from content: "[Localização recebida] lat:-15.7801 lng:-47.9292 | endereço: ..."
+    const latMatch = msg.content.match(/lat:([-\d.]+)/);
+    const lngMatch = msg.content.match(/lng:([-\d.]+)/);
+    const addrMatch = msg.content.match(/endereço:\s*([^|]+)/);
+    const pointMatch = msg.content.match(/ponto:\s*(.+)/);
+    const lat = latMatch?.[1];
+    const lng = lngMatch?.[1];
+    const label = pointMatch?.[1]?.trim() ?? addrMatch?.[1]?.trim() ?? "Localização";
+    const mapsUrl = lat && lng
+      ? `https://www.google.com/maps?q=${lat},${lng}`
+      : null;
+    return (
+      <span className="flex flex-col gap-1 text-sm">
+        <span className="flex items-center gap-1.5 font-medium">
+          <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
+          {label}
+        </span>
+        {lat && lng && (
+          <span className="text-xs opacity-70">{lat}, {lng}</span>
+        )}
+        {mapsUrl && (
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-600 underline underline-offset-2 hover:text-blue-800"
+          >
+            Ver no Google Maps
+          </a>
+        )}
+      </span>
+    );
+  }
   return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
 }
 
@@ -571,9 +605,13 @@ function ConversationsContent() {
                         {lastMsg.role === "ASSISTANT"
                           ? (conv.humanTakeover ? "👤 " : "🤖 ")
                           : "💬 "}
-                        {lastMsg.type === "TEXT"
-                          ? lastMsg.content.slice(0, 60)
-                          : `[${lastMsg.type}]`}
+                        {lastMsg.type === "TEXT"   ? lastMsg.content.slice(0, 60)
+                         : lastMsg.type === "IMAGE"    ? "📷 Imagem"
+                         : lastMsg.type === "VIDEO"    ? "🎥 Vídeo"
+                         : lastMsg.type === "AUDIO"    ? "🎙 Áudio"
+                         : lastMsg.type === "DOCUMENT" ? "📄 Documento"
+                         : lastMsg.type === "LOCATION" ? "📍 Localização"
+                         : `[${lastMsg.type}]`}
                       </p>
                     )}
                   </div>

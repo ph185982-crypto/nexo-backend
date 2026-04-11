@@ -120,6 +120,15 @@ async function handleIncomingMessage(
     } | null;
   }
 ) {
+  // Normalize WhatsApp message type to GraphQL MessageType enum values.
+  // Unknown types (sticker, contacts, reaction, interactive, button) fall back to TEXT
+  // so the GraphQL serializer never encounters an invalid enum value.
+  const TYPE_MAP: Record<string, string> = {
+    text: "TEXT", image: "IMAGE", video: "VIDEO",
+    audio: "AUDIO", voice: "AUDIO", document: "DOCUMENT", location: "LOCATION",
+  };
+  const normalizedType = TYPE_MAP[message.type.toLowerCase()] ?? "TEXT";
+
   const phone = message.from;
   const profileName = contact?.profile?.name;
   const sentAt = new Date(Number(message.timestamp) * 1000);
@@ -250,7 +259,7 @@ async function handleIncomingMessage(
       data: {
         id: message.id,
         content,
-        type: message.type.toUpperCase() as "TEXT",
+        type: normalizedType,
         role: "USER",
         sentAt,
         status: "DELIVERED",

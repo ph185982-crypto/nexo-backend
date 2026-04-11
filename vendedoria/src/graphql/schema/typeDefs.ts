@@ -9,7 +9,7 @@ export const typeDefs = `#graphql
   enum CampaignStatus { PLANNING ACTIVE PAUSED COMPLETED CANCELLED }
   enum CampaignMode { DEFAULT PARALLEL }
   enum MessageRole { ASSISTANT USER }
-  enum MessageType { TEXT IMAGE AUDIO VIDEO DOCUMENT }
+  enum MessageType { TEXT IMAGE AUDIO VIDEO DOCUMENT LOCATION }
   enum CalendarEventStatus { SCHEDULED COMPLETED CANCELLED }
   enum AgentKind { AI HUMAN }
 

@@ -358,8 +358,20 @@ export const resolvers = {
         data: { status: "READ" },
       }).catch(() => {});
 
+      // Normalize legacy/unknown type values to valid MessageType enum values.
+      // Messages stored before the enum was complete (e.g. "STICKER", "REACTION",
+      // "location" lowercase) would cause Apollo to null out the entire list.
+      const VALID_MSG_TYPES = new Set(["TEXT", "IMAGE", "AUDIO", "VIDEO", "DOCUMENT", "LOCATION"]);
+      const TYPE_NORM: Record<string, string> = {
+        voice: "AUDIO", audio: "AUDIO",
+        location: "LOCATION", image: "IMAGE", video: "VIDEO",
+        document: "DOCUMENT", text: "TEXT",
+      };
+      const normalizeType = (t: string) =>
+        VALID_MSG_TYPES.has(t) ? t : (TYPE_NORM[t.toLowerCase()] ?? "TEXT");
+
       return {
-        messages: paginated.reverse(),
+        messages: paginated.reverse().map(m => ({ ...m, type: normalizeType(m.type) })),
         hasMore,
         nextCursor,
       };
