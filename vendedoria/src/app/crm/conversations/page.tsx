@@ -108,6 +108,30 @@ function getContactInitial(conv: Conversation): string {
   return (getContactName(conv)?.[0] ?? "?").toUpperCase();
 }
 
+// Format Brazilian phone for display
+function formatPhone(raw: string): string {
+  const d = raw.replace(/\D/g, "");
+  const local = d.startsWith("55") && d.length > 11 ? d.slice(2) : d;
+  if (local.length === 11) return `(${local.slice(0,2)}) ${local.slice(2,7)}-${local.slice(7)}`;
+  if (local.length === 10) return `(${local.slice(0,2)}) ${local.slice(2,6)}-${local.slice(6)}`;
+  return local || raw;
+}
+
+const AVATAR_COLORS = [
+  "bg-indigo-100 text-indigo-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-amber-100 text-amber-700",
+  "bg-rose-100 text-rose-700",
+  "bg-sky-100 text-sky-700",
+  "bg-violet-100 text-violet-700",
+  "bg-orange-100 text-orange-700",
+];
+function avatarColor(name: string): string {
+  let h = 0;
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
 function MessageContent({ msg }: { msg: Message }) {
   if (msg.type === "IMAGE") return (
     <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
@@ -135,7 +159,7 @@ function Avatar({ conv, size = "md" }: { conv: Conversation; size?: "sm" | "md" 
 
   return (
     <div className="relative shrink-0">
-      <div className={cn("rounded-full bg-indigo-100 text-indigo-700 font-semibold flex items-center justify-center", sizeClass)}>
+      <div className={cn("rounded-full font-semibold flex items-center justify-center", avatarColor(getContactName(conv)), sizeClass)}>
         {getContactInitial(conv)}
       </div>
       <span className={cn("absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white", dotColor)} />
@@ -159,6 +183,7 @@ function ConversationsContent() {
   const [hasMore, setHasMore]           = useState(false);
   const [nextCursor, setNextCursor]     = useState<string | null>(null);
   const [selectedId, setSelectedId]     = useState<string | null>(null);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [messages, setMessages]         = useState<Message[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [msgInput, setMsgInput]         = useState("");
@@ -171,18 +196,20 @@ function ConversationsContent() {
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
 
-  const messagesEndRef      = useRef<HTMLDivElement>(null);
+  const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const prevLastMsgIdRef    = useRef<string>("");
-  const prevMsgCountRef     = useRef(0);
-  const initialLoadDoneRef  = useRef(false);
-  const inputRef            = useRef<HTMLTextAreaElement>(null);
+  const prevLastMsgIdRef     = useRef<string>("");
+  const prevMsgCountRef      = useRef(0);
+  const currentConvIdRef     = useRef<string | null>(null);
+  const isFirstLoadRef       = useRef(false);
+  const atBottomRef          = useRef(true);
+  const inputRef             = useRef<HTMLTextAreaElement>(null);
 
-  // True when user is within 80px of the bottom of the messages container
-  const isNearBottom = useCallback(() => {
-    const c = messagesContainerRef.current;
-    if (!c) return true;
-    return c.scrollHeight - c.scrollTop <= c.clientHeight + 80;
+  const handleContainerScroll = useCallback(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+    atBottomRef.current = dist < 60;
   }, []);
 
   const [sendMessage]       = useMutation(SEND_MESSAGE);
@@ -218,6 +245,20 @@ function ConversationsContent() {
       setConversations(prev => reset ? data.conversations : [...prev, ...data.conversations]);
       setHasMore(data.hasMore);
       setNextCursor(data.nextCursor);
+      // Keep selectedConv in sync with the refreshed list
+      const selId = currentConvIdRef.current;
+      if (selId) {
+        const fresh = data.conversations.find(c => c.id === selId);
+        if (fresh) {
+          setSelectedConv(fresh);
+        } else if (reset) {
+          // Conversation not in this batch — fetch individually so the chat header stays visible
+          fetch(`/api/conversations?organizationId=${orgId}&id=${selId}`)
+            .then(r => r.json())
+            .then((d: { conversation: Conversation | null }) => { if (d.conversation) setSelectedConv(d.conversation); })
+            .catch(() => {});
+        }
+      }
     } finally {
       if (reset) setLoading(false);
     }
@@ -252,7 +293,10 @@ function ConversationsContent() {
       };
       const newMsgs = data?.getConversationMessages?.messages ?? [];
       const newLastId = newMsgs[newMsgs.length - 1]?.id ?? "";
-      const isFirstLoad = !initialLoadDoneRef.current;
+      // Stale-request guard: discard if user switched conversations while fetch was in-flight
+      if (convId !== currentConvIdRef.current) return;
+
+      const isFirstLoad = isFirstLoadRef.current;
       const hasNewMessages = newMsgs.length > prevMsgCountRef.current;
 
       // Skip state update entirely if content is identical (avoids re-render + scroll fight)
@@ -266,23 +310,28 @@ function ConversationsContent() {
 
       if (isFirstLoad) {
         // First load of this conversation: jump instantly to bottom
-        initialLoadDoneRef.current = true;
+        isFirstLoadRef.current = false;
+        atBottomRef.current = true;
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 50);
-      } else if (hasNewMessages && isNearBottom()) {
+      } else if (hasNewMessages && atBottomRef.current) {
         // New message arrived and user is already at bottom: smooth scroll
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
       }
     } finally {
       if (!silent) setLoadingMessages(false);
     }
-  }, [isNearBottom]);
+  }, []);
 
   useEffect(() => {
     if (selectedId) {
-      prevMsgCountRef.current    = 0;
-      prevLastMsgIdRef.current   = "";
-      initialLoadDoneRef.current = false;
+      currentConvIdRef.current = selectedId;
+      isFirstLoadRef.current   = true;
+      atBottomRef.current      = true;
+      prevMsgCountRef.current  = 0;
+      prevLastMsgIdRef.current = "";
       fetchMessages(selectedId);
+    } else {
+      currentConvIdRef.current = null;
     }
   }, [selectedId, fetchMessages]);
 
@@ -293,8 +342,9 @@ function ConversationsContent() {
   }, [selectedId, fetchMessages]);
 
   // ── Select conversation ───────────────────────────────────────────────────────
-  const selectConversation = useCallback((id: string) => {
+  const selectConversation = useCallback((id: string, conv?: Conversation) => {
     setSelectedId(id);
+    if (conv) setSelectedConv(conv);
     setMobilePanel("chat");
   }, []);
 
@@ -309,11 +359,12 @@ function ConversationsContent() {
     setDeescalating(true);
     try {
       await deescalateMutation({ variables: { conversationId: selectedId } });
-      setConversations(prev => prev.map(c =>
+      const patch = (c: Conversation) =>
         c.id === selectedId
           ? { ...c, humanTakeover: false, lead: c.lead ? { ...c.lead, status: "OPEN" } : c.lead }
-          : c
-      ));
+          : c;
+      setConversations(prev => prev.map(patch));
+      setSelectedConv(prev => prev ? patch(prev) : prev);
     } finally { setDeescalating(false); }
   }, [selectedId, deescalating, deescalateMutation]);
 
@@ -323,9 +374,10 @@ function ConversationsContent() {
     setTakingOver(true);
     try {
       await takeoverMutation({ variables: { conversationId: selectedId, takeover } });
-      setConversations(prev => prev.map(c =>
-        c.id === selectedId ? { ...c, humanTakeover: takeover } : c
-      ));
+      const patch = (c: Conversation) =>
+        c.id === selectedId ? { ...c, humanTakeover: takeover } : c;
+      setConversations(prev => prev.map(patch));
+      setSelectedConv(prev => prev ? patch(prev) : prev);
       if (takeover) setTimeout(() => inputRef.current?.focus(), 100);
     } finally { setTakingOver(false); }
   }, [selectedId, takingOver, takeoverMutation]);
@@ -352,7 +404,7 @@ function ConversationsContent() {
     } finally { setSending(false); }
   }, [msgInput, selectedId, sending, sendMessage, fetchMessages]);
 
-  const selected       = conversations.find(c => c.id === selectedId);
+  const selected       = selectedConv;
   const isHumanControl = selected?.humanTakeover ?? false;
   const isEscalated    = selected?.lead?.status === "ESCALATED";
 
@@ -425,6 +477,7 @@ function ConversationsContent() {
               ["open", "Abertos"],
               ["escalated", "Escalados"],
               ["blocked", "Bloqueados"],
+              ["closed", "Fechados"],
             ].map(([v, l]) => (
               <button
                 key={v}
@@ -459,7 +512,7 @@ function ConversationsContent() {
             return (
               <button
                 key={conv.id}
-                onClick={() => selectConversation(conv.id)}
+                onClick={() => selectConversation(conv.id, conv)}
                 className={cn(
                   "w-full text-left px-3 py-3 border-b hover:bg-muted/40 active:bg-muted/60 transition-colors",
                   isSelected && "bg-primary/5 border-l-2 border-l-primary"
@@ -574,7 +627,7 @@ function ConversationsContent() {
                 </div>
                 <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
                   <Phone className="w-3 h-3 shrink-0" />
-                  {selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId}
+                  {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
                   {selected.followUp?.status === "ACTIVE" && (
                     <span className="hidden sm:inline ml-1 text-amber-600">
                       · Follow-up {selected.followUp.step}
@@ -754,6 +807,7 @@ function ConversationsContent() {
             {/* ── Messages area ────────────────────────────────────────────────── */}
             <div
               ref={messagesContainerRef}
+              onScroll={handleContainerScroll}
               className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-1"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}
             >
