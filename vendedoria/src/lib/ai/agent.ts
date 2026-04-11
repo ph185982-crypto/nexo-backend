@@ -774,30 +774,44 @@ export async function processAIResponse(
         if (!matchesByName && !matchesByKeyword) continue;
 
         console.log(`[AI Agent] FORCED first-contact media for "${prod.name}" | appUrlEarly="${appUrlEarly}"`);
-        const imgs: string[] = prod.imageUrls?.length ? prod.imageUrls : prod.imageUrl ? [prod.imageUrl] : [];
+        const imgs: string[] = (Array.isArray(prod.imageUrls) && prod.imageUrls.length > 0)
+          ? prod.imageUrls as string[]
+          : prod.imageUrl ? [prod.imageUrl] : [];
         console.log(`[AI Agent] ${imgs.length} imagens encontradas para "${prod.name}" | videoUrl=${!!prod.videoUrl}`);
         for (let i = 0; i < imgs.length; i++) {
           const imgUrl = toPublicUrlEarly(imgs[i], prod.id, i);
           console.log(`[AI Agent] imgUrl[${i}]: "${imgUrl.substring(0, 80)}"`);
           if (!imgUrl) { console.error(`[AI Agent] imgUrl[${i}] vazio — pulando`); continue; }
           await new Promise((r) => setTimeout(r, 500));
-          await sendWhatsAppImage(
-            conversation.provider.businessPhoneNumberId,
-            conversation.customerWhatsappBusinessId,
-            imgUrl, prod.name,
-            conversation.provider.accessToken ?? undefined,
-          ).catch((e) => console.error(`[AI Agent] Forced image failed:`, e));
+          try {
+            await sendWhatsAppImage(
+              conversation.provider.businessPhoneNumberId,
+              conversation.customerWhatsappBusinessId,
+              imgUrl, prod.name,
+              conversation.provider.accessToken ?? undefined,
+            );
+            await prisma.whatsappMessage.create({
+              data: { content: `[Imagem] ${prod.name}`, type: "IMAGE", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+            }).catch(() => {});
+            console.log(`[AI Agent] ✅ Forced image ${i + 1}/${imgs.length} enviada`);
+          } catch (e) { console.error(`[AI Agent] ❌ Forced image failed idx=${i}:`, e); }
         }
         if (prod.videoUrl) {
           const vidUrl = toPublicUrlEarly(prod.videoUrl, prod.id, 0, true);
           if (vidUrl) {
             await new Promise((r) => setTimeout(r, 800));
-            await sendWhatsAppVideo(
-              conversation.provider.businessPhoneNumberId,
-              conversation.customerWhatsappBusinessId,
-              vidUrl, prod.name,
-              conversation.provider.accessToken ?? undefined,
-            ).catch((e) => console.error(`[AI Agent] Forced video failed:`, e));
+            try {
+              await sendWhatsAppVideo(
+                conversation.provider.businessPhoneNumberId,
+                conversation.customerWhatsappBusinessId,
+                vidUrl, prod.name,
+                conversation.provider.accessToken ?? undefined,
+              );
+              await prisma.whatsappMessage.create({
+                data: { content: `[Vídeo] ${prod.name}`, type: "VIDEO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+              }).catch(() => {});
+              console.log(`[AI Agent] ✅ Forced video enviado`);
+            } catch (e) { console.error(`[AI Agent] ❌ Forced video failed:`, e); }
           }
         }
         break; // envia apenas o primeiro produto identificado
@@ -955,7 +969,13 @@ export async function processAIResponse(
         .trim()
     ).filter(Boolean);
 
-    if (mensagens.length === 0) return;
+    // Só retorna se não há nem mensagens de texto nem flags de mídia a processar
+    const hasMediaFlag = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/i.test(combinedRaw);
+    if (mensagens.length === 0 && !hasMediaFlag) {
+      console.log(`[AI Agent] Resposta vazia e sem flags de mídia — descartando para conv ${conversationId}`);
+      return;
+    }
+    console.log(`[AI Agent] mensagens=${mensagens.length} | hasMediaFlag=${hasMediaFlag} | combinedRaw length=${combinedRaw.length}`);
 
     const provider = conversation.provider;
     const to = conversation.customerWhatsappBusinessId;
@@ -1044,7 +1064,20 @@ export async function processAIResponse(
       await sendWhatsAppMessage(provider.businessPhoneNumberId, to, mensagens[i], token, i === 0 ? contextMessageId : undefined);
     }
 
-    await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date() } });
+    // Atualiza lastMessageAt e, se lead quente, avança etapa no banco
+    // (necessário para o filtro "Quentes" do CRM detectar essas conversas)
+    const novaEtapa = (() => {
+      const etapaAtual = conversation.etapa;
+      if (etapaAtual === "PEDIDO_CONFIRMADO" || etapaAtual === "PERDIDO") return undefined;
+      if (leadState.tipo === "quente") return "COLETANDO_DADOS";
+      if (leadState.tipo === "interessado" && (etapaAtual === "NOVO" || etapaAtual === "PRODUTO_IDENTIFICADO")) return "NEGOCIANDO";
+      return undefined;
+    })();
+    await prisma.whatsappConversation.update({
+      where: { id: conversationId },
+      data: { lastMessageAt: new Date(), ...(novaEtapa ? { etapa: novaEtapa } : {}) },
+    });
+    if (novaEtapa) console.log(`[AI Agent] etapa atualizada para "${novaEtapa}" | conv ${conversationId}`);
 
     // ── Enviar fotos + vídeo do produto ───────────────────────────────────────
     // WhatsApp exige URLs HTTPS públicas — converte base64 para endpoint público
@@ -1103,24 +1136,42 @@ export async function processAIResponse(
       console.log(`[AI Agent] Product "${product.name}" slug=${slug}: flagFoto=${flagFoto} flagVideo=${flagVideo} nameMentioned=${nameMentioned} keywordMatch=${keywordMatch} llmMentionedMedia=${llmMentionedMedia} autoSend=${autoSend} sendFoto=${sendFoto} sendVideo=${sendVideo}`);
 
       if (sendFoto) {
-        const imgs: string[] = product.imageUrls?.length ? product.imageUrls : product.imageUrl ? [product.imageUrl] : [];
-        console.log(`[AI Agent] Sending ${imgs.length} image(s) for "${product.name}"`);
+        const imgs: string[] = (Array.isArray(product.imageUrls) && product.imageUrls.length > 0)
+          ? product.imageUrls as string[]
+          : product.imageUrl ? [product.imageUrl] : [];
+        console.log(`[AI Agent] Sending ${imgs.length} image(s) for "${product.name}" | appUrl="${appUrl}"`);
         for (let i = 0; i < imgs.length; i++) {
           const imgUrl = toPublicUrl(imgs[i], product.id, i);
-          if (!imgUrl) continue;
+          if (!imgUrl) { console.error(`[AI Agent] imgUrl[${i}] vazio para "${product.name}" — pulando`); continue; }
           await new Promise((r) => setTimeout(r, 800));
-          await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, product.name, token)
-            .catch((e) => console.error(`[AI Agent] Image failed "${product.name}":`, e));
+          try {
+            await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, product.name, token);
+            // Salva no banco para aparecer no CRM e evitar reenvio
+            await prisma.whatsappMessage.create({
+              data: { content: `[Imagem] ${product.name}`, type: "IMAGE", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+            }).catch(() => {});
+            console.log(`[AI Agent] ✅ Imagem ${i + 1}/${imgs.length} enviada para "${product.name}"`);
+          } catch (e) {
+            console.error(`[AI Agent] ❌ Image failed "${product.name}" idx=${i}:`, e);
+          }
         }
       }
 
       if (sendVideo && product.videoUrl) {
         const videoUrl = toPublicUrl(product.videoUrl, product.id, 0, true);
-        if (!videoUrl) continue;
-        console.log(`[AI Agent] Sending video for "${product.name}"`);
+        if (!videoUrl) { console.error(`[AI Agent] videoUrl vazio para "${product.name}" — pulando`); continue; }
+        console.log(`[AI Agent] Sending video for "${product.name}" url="${videoUrl.substring(0, 80)}"`);
         await new Promise((r) => setTimeout(r, 1000));
-        await sendWhatsAppVideo(provider.businessPhoneNumberId, to, videoUrl, product.name, token)
-          .catch((e) => console.error(`[AI Agent] Video failed "${product.name}":`, e));
+        try {
+          await sendWhatsAppVideo(provider.businessPhoneNumberId, to, videoUrl, product.name, token);
+          // Salva no banco para aparecer no CRM
+          await prisma.whatsappMessage.create({
+            data: { content: `[Vídeo] ${product.name}`, type: "VIDEO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+          }).catch(() => {});
+          console.log(`[AI Agent] ✅ Vídeo enviado para "${product.name}"`);
+        } catch (e) {
+          console.error(`[AI Agent] ❌ Video failed "${product.name}":`, e);
+        }
       }
     }
 

@@ -266,11 +266,16 @@ async function handleIncomingMessage(
     throw e;
   }
 
-  // Update conversation last message
+  // Update conversation: lastMessageAt + localizacaoRecebida (se for localização)
   await prisma.whatsappConversation.update({
     where: { id: conversation.id },
-    data: { lastMessageAt: sentAt, updatedAt: new Date() },
+    data: {
+      lastMessageAt: sentAt,
+      updatedAt: new Date(),
+      ...(message.type === "location" ? { localizacaoRecebida: true } : {}),
+    },
   });
+  console.log(`[Webhook] Conv ${conversation.id} atualizada | lastMessageAt=${sentAt.toISOString()} | localizacaoRecebida=${message.type === "location"}`);
 
   // Cancel any active follow-up — user replied, no need to follow up
   await prisma.conversationFollowUp.updateMany({
