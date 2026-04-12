@@ -369,6 +369,30 @@ NEGÓCIO:
   });
   console.log("✓ AI Config: default (emoji=true, reticencias=true, nivel=medio)");
 
+  // ── AgentConfig singleton ──────────────────────────────────────────────────
+  // Create only if none exists — never overwrite the prompt Pedro may have edited
+  const existingConfig = await prisma.agentConfig.findFirst();
+  if (!existingConfig) {
+    await prisma.agentConfig.create({
+      data: {
+        agentName: "Léo",
+        bastaoNumber: "5562984465388",
+        deliveryWeekStart: 9,
+        deliveryWeekEnd: 18,
+        deliverySatStart: 8,
+        deliverySatEnd: 13,
+        maxFollowUps: 4,
+        followUpHours: "4,24,48,72",
+        deliveryArea: "Goiânia,Aparecida de Goiânia,Trindade,Senador Canedo,Goianira,Nerópolis,Hidrolândia,Abadia de Goiás,Aragoiânia,Guapó,Inhumas",
+        currentPrompt: PEDRO_SYSTEM_PROMPT,
+        promptVersion: 1,
+      },
+    });
+    console.log("✓ AgentConfig created (v1)");
+  } else {
+    console.log("✓ AgentConfig already exists (v" + existingConfig.promptVersion + ") — skipping");
+  }
+
   console.log("\n✅ Seed completed!");
   console.log("\nCredentials:");
   console.log("  Email: admin@vendedoria.com");

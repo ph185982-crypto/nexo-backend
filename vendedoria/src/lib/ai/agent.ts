@@ -1,6 +1,44 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
 
+// ─── AgentConfig DB cache (60s TTL) ──────────────────────────────────────────
+type DBAgentConfig = {
+  currentPrompt: string;
+  bastaoNumber: string;
+  deliveryWeekStart: number;
+  deliveryWeekEnd: number;
+  deliverySatStart: number;
+  deliverySatEnd: number;
+  followUpHours: string;
+  deliveryArea: string;
+};
+let _dbConfigCache: DBAgentConfig | null = null;
+let _dbConfigExpiry = 0;
+
+async function getDBAgentConfig(): Promise<DBAgentConfig | null> {
+  if (_dbConfigCache && Date.now() < _dbConfigExpiry) return _dbConfigCache;
+  try {
+    const cfg = await prisma.agentConfig.findFirst();
+    if (cfg) {
+      _dbConfigCache = {
+        currentPrompt: cfg.currentPrompt,
+        bastaoNumber: cfg.bastaoNumber,
+        deliveryWeekStart: cfg.deliveryWeekStart,
+        deliveryWeekEnd: cfg.deliveryWeekEnd,
+        deliverySatStart: cfg.deliverySatStart,
+        deliverySatEnd: cfg.deliverySatEnd,
+        followUpHours: cfg.followUpHours,
+        deliveryArea: cfg.deliveryArea,
+      };
+      _dbConfigExpiry = Date.now() + 60_000; // 60s cache
+      return _dbConfigCache;
+    }
+  } catch (e) {
+    console.warn("[AI Agent] Falha ao carregar AgentConfig do banco:", e);
+  }
+  return null;
+}
+
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
   4  * 60 * 60 * 1000,  // step 1 — 4h
@@ -834,7 +872,9 @@ export async function processAIResponse(
     ].join("\n") : "";
 
     // ── Montar prompt final ───────────────────────────────────────────────────
-    const basePrompt = agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
+    // Priority: 1) AgentConfig.currentPrompt (DB, 60s cache)  2) agent.systemPrompt  3) DEFAULT
+    const dbCfg = await getDBAgentConfig();
+    const basePrompt = dbCfg?.currentPrompt ?? agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
     // Extrai dados já coletados para evitar perguntar de novo
     const collectedData = extractCollectedData(
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
@@ -848,7 +888,7 @@ export async function processAIResponse(
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
-      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const ownerNumber = dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const to          = conversation.customerWhatsappBusinessId;
       const token       = conversation.provider.accessToken ?? undefined;
 
@@ -918,7 +958,7 @@ export async function processAIResponse(
 
     // ── Sandbox mode (após passagem — passagem sempre dispara, sandbox só bloqueia IA) ──
     if (agent.sandboxMode) {
-      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
       if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
         console.log(`[AI Agent] Sandbox mode — skipping AI for ${customerNum}`);
@@ -1005,7 +1045,7 @@ export async function processAIResponse(
           `🕐 *Recebe até:* ${orderData.horario ?? "?"}\n` +
           `🙍 *Nome recebedor:* ${orderData.nome ?? clientName}\n\n` +
           `_Organize a entrega e encaminhe o motoboy._`;
-        const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+        const ownerNumber = dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
         await prisma.ownerNotification.create({
@@ -1049,7 +1089,7 @@ export async function processAIResponse(
         `📱 *WhatsApp:* ${to}\n` +
         `📮 *CEP:* ${cep}\n\n` +
         `_Cliente de fora de Goiânia quer comprar via Correios. Calcule o frete e entre em contato com ele._`;
-      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const ownerNumber = dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, cepMsg, token)
         .catch((e) => console.error("[AI Agent] CEP notification failed:", e));
       await prisma.ownerNotification.create({

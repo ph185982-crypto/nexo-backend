@@ -8,7 +8,9 @@ import {
   ChevronLeft, ChevronDown, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
+  User, SlidersHorizontal,
 } from "lucide-react";
+import { ContactPanel } from "@/components/crm/ContactPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -67,6 +69,11 @@ interface Conversation {
   humanTakeover: boolean;
   etapa: string;
   localizacaoRecebida: boolean;
+  produtoInteresse: string | null;
+  localizacaoTexto: string | null;
+  nomeRecebedor: string | null;
+  horarioEntrega: string | null;
+  formaPagamento: string | null;
   lead: Lead | null;
   messages: LastMessage[];
   followUp: FollowUp | null;
@@ -329,6 +336,12 @@ function ConversationsContent() {
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
+  const [showContactPanel, setShowContactPanel] = useState(false);
+  // Advanced filters
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [produtoFilter, setProdutoFilter] = useState("");
+  const [etapaFilter, setEtapaFilter]     = useState("");
+  const [tempoFilter, setTempoFilter]     = useState("");
   // BUG 2: rastrear se usuário está no final (state para effects, ref para callbacks async)
   const [atBottom, setAtBottom]         = useState(true);
 
@@ -374,6 +387,9 @@ function ConversationsContent() {
       const params = new URLSearchParams({ organizationId: orgId, status: statusFilter });
       if (search) params.set("search", search);
       if (cursor) params.set("cursor", cursor);
+      if (produtoFilter) params.set("produto", produtoFilter);
+      if (etapaFilter)   params.set("etapa", etapaFilter);
+      if (tempoFilter)   params.set("tempo", tempoFilter);
       const res = await fetch(`/api/conversations?${params}`);
       const data = await res.json() as {
         conversations: Conversation[];
@@ -400,10 +416,10 @@ function ConversationsContent() {
     } finally {
       if (reset) setLoading(false);
     }
-  }, [orgId, search, statusFilter, nextCursor]);
+  }, [orgId, search, statusFilter, produtoFilter, etapaFilter, tempoFilter, nextCursor]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchConversations(true); }, [orgId, search, statusFilter]);
+  useEffect(() => { fetchConversations(true); }, [orgId, search, statusFilter, produtoFilter, etapaFilter, tempoFilter]);
 
   useEffect(() => {
     const t = setInterval(() => fetchConversations(true), 5000);
@@ -646,7 +662,69 @@ function ConversationsContent() {
                 {l}
               </button>
             ))}
+            <button
+              onClick={() => setShowAdvancedFilters(v => !v)}
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs border transition-colors flex items-center gap-1",
+                (produtoFilter || etapaFilter || tempoFilter)
+                  ? "bg-primary text-white border-primary"
+                  : showAdvancedFilters
+                  ? "border-primary text-primary"
+                  : "border-border text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <SlidersHorizontal className="w-3 h-3" />
+              {(produtoFilter || etapaFilter || tempoFilter) ? "Filtrado" : "Filtros"}
+            </button>
           </div>
+
+          {/* Advanced filters */}
+          {showAdvancedFilters && (
+            <div className="space-y-1.5 pt-1">
+              <div className="flex gap-1.5">
+                <select
+                  value={produtoFilter}
+                  onChange={e => setProdutoFilter(e.target.value)}
+                  className="flex-1 h-8 text-xs rounded-md border border-input bg-background px-2"
+                >
+                  <option value="">Todos produtos</option>
+                  <option value="bomvink">Bomvink</option>
+                  <option value="luatek">Luatek</option>
+                </select>
+                <select
+                  value={tempoFilter}
+                  onChange={e => setTempoFilter(e.target.value)}
+                  className="flex-1 h-8 text-xs rounded-md border border-input bg-background px-2"
+                >
+                  <option value="">Qualquer tempo</option>
+                  <option value="1h">Sem resp. 1h+</option>
+                  <option value="3h">Sem resp. 3h+</option>
+                  <option value="24h">Sem resp. 24h+</option>
+                </select>
+              </div>
+              <select
+                value={etapaFilter}
+                onChange={e => setEtapaFilter(e.target.value)}
+                className="w-full h-8 text-xs rounded-md border border-input bg-background px-2"
+              >
+                <option value="">Todas etapas</option>
+                <option value="NOVO">Novo</option>
+                <option value="PRODUTO_IDENTIFICADO">Produto identificado</option>
+                <option value="NEGOCIANDO">Negociando</option>
+                <option value="COLETANDO_DADOS">Coletando dados</option>
+                <option value="PEDIDO_CONFIRMADO">Pedido confirmado</option>
+                <option value="PERDIDO">Perdido</option>
+              </select>
+              {(produtoFilter || etapaFilter || tempoFilter) && (
+                <button
+                  onClick={() => { setProdutoFilter(""); setEtapaFilter(""); setTempoFilter(""); }}
+                  className="text-xs text-red-500 hover:underline"
+                >
+                  Limpar filtros avançados
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Conversation list */}
@@ -887,6 +965,16 @@ function ConversationsContent() {
                   </>
                 )}
 
+                {/* Contact panel toggle */}
+                <Button
+                  variant="ghost" size="icon"
+                  className={cn("h-8 w-8", showContactPanel && "bg-primary/10 text-primary")}
+                  onClick={() => setShowContactPanel(v => !v)}
+                  title="Perfil do contato"
+                >
+                  <User className="w-4 h-4" />
+                </Button>
+
                 {/* More options menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -1005,6 +1093,13 @@ function ConversationsContent() {
               </div>
             )}
 
+            {/* ── Content area: messages + optional contact panel ──────────────── */}
+            <div className="flex flex-1 min-h-0 overflow-hidden">
+            {/* Chat column */}
+            <div className={cn(
+              "flex flex-col flex-1 min-w-0",
+              showContactPanel ? "hidden md:flex" : "flex"
+            )}>
             {/* ── Messages area ────────────────────────────────────────────────── */}
             <div
               ref={messagesContainerRef}
@@ -1116,6 +1211,26 @@ function ConversationsContent() {
               <p className="text-[10px] text-muted-foreground px-3 pb-2">
                 Enter · enviar &nbsp;·&nbsp; Shift+Enter · nova linha
               </p>
+            </div>
+            {/* End chat column */}
+            </div>
+
+            {/* Contact panel — mobile: full overlay, desktop: right sidebar */}
+            {showContactPanel && selected && (
+              <div className={cn(
+                "z-30",
+                // Mobile: fixed full overlay
+                "fixed inset-0 md:static md:inset-auto",
+                // Desktop: flex-shrink-0 right sidebar
+                "md:flex md:shrink-0"
+              )}>
+                <ContactPanel
+                  conv={selected}
+                  onClose={() => setShowContactPanel(false)}
+                />
+              </div>
+            )}
+            {/* End content area */}
             </div>
           </>
         )}

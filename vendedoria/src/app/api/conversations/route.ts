@@ -10,6 +10,11 @@ const CONV_SELECT = {
   humanTakeover: true,
   etapa: true,
   localizacaoRecebida: true,
+  produtoInteresse: true,
+  localizacaoTexto: true,
+  nomeRecebedor: true,
+  horarioEntrega: true,
+  formaPagamento: true,
   lead: { select: { id: true, profileName: true, phoneNumber: true, status: true } },
   messages: {
     orderBy: { sentAt: "desc" as const },
@@ -22,11 +27,15 @@ const CONV_SELECT = {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const organizationId = searchParams.get("organizationId");
-  const search  = searchParams.get("search") ?? "";
-  const status  = searchParams.get("status") ?? "all";
-  const cursor  = searchParams.get("cursor");
-  const fetchId = searchParams.get("id"); // fetch a single conversation by id
-  const take    = 250;
+  const search   = searchParams.get("search") ?? "";
+  const status   = searchParams.get("status") ?? "all";
+  const cursor   = searchParams.get("cursor");
+  const fetchId  = searchParams.get("id"); // fetch a single conversation by id
+  // Advanced filters
+  const produto  = searchParams.get("produto") ?? ""; // "bomvink" | "luatek" | ""
+  const etapa    = searchParams.get("etapa")   ?? ""; // etapa slug
+  const tempo    = searchParams.get("tempo")   ?? ""; // "1h" | "3h" | "24h"
+  const take     = 250;
 
   if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
 
@@ -86,11 +95,29 @@ export async function GET(req: NextRequest) {
     ];
   })();
 
+  // Advanced filter: produto
+  const produtoWhere = produto === "bomvink" ? { produtoInteresse: { contains: "BOMVINK", mode: "insensitive" as const } }
+    : produto === "luatek" ? { produtoInteresse: { contains: "LUATEK", mode: "insensitive" as const } }
+    : {};
+
+  // Advanced filter: etapa
+  const etapaWhere = etapa ? { etapa } : {};
+
+  // Advanced filter: tempo sem resposta
+  const tempoWhere = (() => {
+    const hours = tempo === "1h" ? 1 : tempo === "3h" ? 3 : tempo === "24h" ? 24 : 0;
+    if (!hours) return {};
+    return { lastMessageAt: { lt: new Date(Date.now() - hours * 3600 * 1000) } };
+  })();
+
   const conversations = await prisma.whatsappConversation.findMany({
     where: {
       whatsappProviderConfigId: { in: providerIds },
       ...(searchOR ? { OR: searchOR } : {}),
       ...statusWhere,
+      ...produtoWhere,
+      ...etapaWhere,
+      ...tempoWhere,
       ...(cursor ? { lastMessageAt: { lt: new Date(cursor) } } : {}),
     },
     select: CONV_SELECT,

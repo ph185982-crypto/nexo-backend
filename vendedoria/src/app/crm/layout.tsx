@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { SessionProvider } from "next-auth/react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { MobileTabBar } from "@/components/layout/MobileTabBar";
 
 function CRMLayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -45,9 +46,10 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onToggleSidebar={handleToggle} />
-        <main className="flex-1 overflow-auto bg-background flex flex-col min-h-0">
+        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-[60px] md:pb-0">
           {children}
         </main>
+        <MobileTabBar />
       </div>
     </div>
   );

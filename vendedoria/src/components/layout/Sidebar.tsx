@@ -42,14 +42,11 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: "/crm", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/crm/conversations", label: "Conversas", icon: MessageSquare },
-  { href: "/crm/metrics", label: "Métricas", icon: BarChart2 },
-  { href: "/crm/lead/kanban", label: "Kanban", icon: Kanban },
-  { href: "/crm/calendar", label: "Agenda", icon: Calendar },
-  { href: "/crm/campaigns", label: "Campanhas", icon: Megaphone },
-  { href: "/crm/products", label: "Produtos", icon: Package },
-  { href: "/crm/configure-agent", label: "Configurar Agente", icon: SlidersHorizontal },
+  { href: "/crm/conversations", label: "Conversas",  icon: MessageSquare },
+  { href: "/crm/pipeline",      label: "Pipeline",   icon: Kanban },
+  { href: "/crm/dashboard",     label: "Dashboard",  icon: LayoutDashboard },
+  { href: "/crm/reports",       label: "Relatórios", icon: BarChart2 },
+  { href: "/crm/agent",         label: "Agente IA",  icon: Bot },
 ];
 
 export function Sidebar({
@@ -110,7 +107,7 @@ export function Sidebar({
         <nav className="py-4 px-2 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.href, item.exact);
+            const active = isActive(item.href);
             return (
               <Link
                 key={item.href}

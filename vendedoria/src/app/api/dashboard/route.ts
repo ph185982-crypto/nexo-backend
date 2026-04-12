@@ -1,144 +1,79 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma/client";
 
-export async function GET(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+const AVG_PRODUCT_PRICE = 539.99;
 
-  const url = new URL(req.url);
-  const period = url.searchParams.get("period") ?? "today";
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const organizationId = searchParams.get("organizationId");
+  if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
 
   const now = new Date();
-  let since: Date;
-  switch (period) {
-    case "7d":  since = new Date(now.getTime() - 7  * 24 * 60 * 60 * 1000); break;
-    case "30d": since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); break;
-    default: { // today — desde meia-noite em São Paulo
-      const sp = new Date(now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-      sp.setHours(0, 0, 0, 0);
-      since = new Date(now.getTime() - (new Date().getTime() - sp.getTime()));
-      break;
-    }
-  }
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const [
-    totalConversas,
-    pedidosConfirmados,
-    escalados,
-    perdidos,
-    foraArea,
-    conversasAtivas,
-    totalMsgsClientes,
-    recentConversations,
-    funnelData,
-  ] = await Promise.all([
-    // Total de novas conversas
-    prisma.whatsappConversation.count({ where: { createdAt: { gte: since } } }),
-
-    // Pedidos confirmados (etapa alcançada no período)
-    prisma.whatsappConversation.count({
-      where: { etapa: "PEDIDO_CONFIRMADO", updatedAt: { gte: since } },
-    }),
-
-    // Escalados para humano
-    prisma.lead.count({ where: { status: "ESCALATED", updatedAt: { gte: since } } }),
-
-    // Perdidos/desistências
-    prisma.whatsappConversation.count({
-      where: { etapa: "PERDIDO", updatedAt: { gte: since } },
-    }),
-
-    // Fora da área de entrega
-    prisma.whatsappConversation.count({
-      where: { foraAreaEntrega: true, updatedAt: { gte: since } },
-    }),
-
-    // Conversas ativas em andamento (mensagem nas últimas 48h)
-    prisma.whatsappConversation.count({
-      where: {
-        isActive: true,
-        etapa: { notIn: ["PEDIDO_CONFIRMADO", "PERDIDO"] },
-        foraAreaEntrega: false,
-        lastMessageAt: { gte: new Date(now.getTime() - 48 * 60 * 60 * 1000) },
-      },
-    }),
-
-    // Total de mensagens de clientes no período
-    prisma.whatsappMessage.count({ where: { role: "USER", sentAt: { gte: since } } }),
-
-    // Últimas 15 conversas com atividade
-    prisma.whatsappConversation.findMany({
-      where: { lastMessageAt: { gte: since } },
-      orderBy: { lastMessageAt: "desc" },
-      take: 15,
-      select: {
-        id: true,
-        profileName: true,
-        customerWhatsappBusinessId: true,
-        etapa: true,
-        foraAreaEntrega: true,
-        humanTakeover: true,
-        lastMessageAt: true,
-        lead: { select: { status: true } },
-        messages: {
-          orderBy: { sentAt: "desc" },
-          take: 1,
-          select: { content: true, role: true },
+  const [leadsToday, allLeads, pedidosHoje, convs] = await Promise.all([
+    prisma.lead.count({ where: { organizationId, createdAt: { gte: todayStart } } }),
+    prisma.lead.findMany({
+      where: { organizationId, status: { in: ["OPEN", "ESCALATED"] } },
+      include: {
+        conversations: {
+          take: 1, orderBy: { lastMessageAt: "desc" },
+          select: { etapa: true, lastMessageAt: true, humanTakeover: true },
         },
       },
     }),
-
-    // Funil de conversão por etapa
-    prisma.whatsappConversation.groupBy({
-      by: ["etapa"],
-      _count: { id: true },
-      where: { createdAt: { gte: since } },
+    prisma.whatsappConversation.count({
+      where: { provider: { organizationId }, etapa: "PEDIDO_CONFIRMADO", updatedAt: { gte: todayStart } },
+    }),
+    prisma.whatsappConversation.findMany({
+      where: { provider: { organizationId } },
+      select: { etapa: true, lastMessageAt: true },
     }),
   ]);
 
-  // Taxa de conversão
-  const taxaConversao = totalConversas > 0
-    ? Math.round((pedidosConfirmados / totalConversas) * 100)
-    : 0;
+  const [totalLeads, closedLeads] = await Promise.all([
+    prisma.lead.count({ where: { organizationId } }),
+    prisma.lead.count({ where: { organizationId, status: "CLOSED" } }),
+  ]);
 
-  // Funil formatado
-  const etapaOrder = [
-    "NOVO", "PRODUTO_IDENTIFICADO", "MIDIA_ENVIADA",
-    "QUALIFICANDO", "NEGOCIANDO", "COLETANDO_DADOS",
-    "PEDIDO_CONFIRMADO", "PERDIDO",
-  ];
-  const funnelFormatted = etapaOrder.map((etapa) => ({
-    etapa,
-    count: funnelData.find((f) => f.etapa === etapa)?._count.id ?? 0,
-  }));
+  const taxaConversao = totalLeads > 0 ? Math.round((closedLeads / totalLeads) * 100) : 0;
+  const receitaEstimada = pedidosHoje * AVG_PRODUCT_PRICE;
+
+  // Brasília offset UTC-3
+  const brNow = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+  const hora = brNow.getUTCHours();
+  const diaSemana = brNow.getUTCDay();
+  const horarioComercial =
+    (diaSemana >= 1 && diaSemana <= 5 && hora >= 9 && hora < 18) ||
+    (diaSemana === 6 && hora >= 8 && hora < 13);
+
+  const umHoraAtras = new Date(now.getTime() - 60 * 60 * 1000);
+  const alertas = horarioComercial
+    ? allLeads
+        .filter((l) => { const lm = l.conversations[0]?.lastMessageAt; return lm && new Date(lm) < umHoraAtras; })
+        .slice(0, 10)
+        .map((l) => ({
+          leadId: l.id, name: l.profileName ?? l.phoneNumber,
+          etapa: l.conversations[0]?.etapa ?? "NOVO",
+          lastMessageAt: l.conversations[0]?.lastMessageAt, tipo: "parado_1h",
+        }))
+    : [];
+
+  const ETAPAS = ["NOVO","PRODUTO_IDENTIFICADO","QUALIFICANDO","NEGOCIANDO","COLETANDO_DADOS","PEDIDO_CONFIRMADO","PERDIDO"];
+  const funil = ETAPAS.map((e) => ({ etapa: e, count: convs.filter((c) => c.etapa === e).length }));
+
+  const dias7 = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(todayStart); d.setDate(d.getDate() - (6 - i)); return d;
+  });
+  const conversao7d = dias7.map((d) => {
+    const next = new Date(d); next.setDate(next.getDate() + 1);
+    const total = convs.filter((c) => c.lastMessageAt && new Date(c.lastMessageAt) >= d && new Date(c.lastMessageAt) < next).length;
+    const ok = convs.filter((c) => c.etapa === "PEDIDO_CONFIRMADO" && c.lastMessageAt && new Date(c.lastMessageAt) >= d && new Date(c.lastMessageAt) < next).length;
+    return { date: d.toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit" }), taxa: total > 0 ? Math.round((ok/total)*100) : 0 };
+  });
 
   return NextResponse.json({
-    period,
-    stats: {
-      totalConversas,
-      pedidosConfirmados,
-      taxaConversao,
-      escalados,
-      perdidos,
-      foraArea,
-      conversasAtivas,
-      totalMsgsClientes,
-    },
-    funnel: funnelFormatted,
-    recentConversations: recentConversations.map((c) => ({
-      id: c.id,
-      name: c.profileName ?? c.customerWhatsappBusinessId,
-      phone: c.customerWhatsappBusinessId,
-      etapa: c.etapa,
-      foraAreaEntrega: c.foraAreaEntrega,
-      humanTakeover: c.humanTakeover,
-      leadStatus: c.lead?.status ?? "OPEN",
-      lastMessageAt: c.lastMessageAt,
-      lastMessage: c.messages[0]?.content?.slice(0, 60) ?? "",
-      lastMessageRole: c.messages[0]?.role ?? "USER",
-    })),
+    metricas: { leadsToday, ativosAgora: allLeads.length, pedidosHoje, taxaConversao, receitaEstimada },
+    alertas, funil, conversao7d,
   });
 }

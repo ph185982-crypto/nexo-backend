@@ -163,6 +163,7 @@ model Lead {
   conversations  WhatsappConversation[]
   activities     LeadActivity[]
   escalations    LeadEscalation[]
+  notes          LeadNote[]
   tags           LeadTag[]
   calendarEvents CalendarEvent[]
   createdAt      DateTime @default(now())
@@ -495,6 +496,43 @@ model AiConfig {
   usarReticencias Boolean  @default(true)
   nivelVenda      String   @default("medio") // leve | medio | agressivo
   updatedAt       DateTime @updatedAt
+}
+
+// ─── Agent Config (singleton — configuração global do agente Léo/Pedro) ───────
+
+model AgentConfig {
+  id                String   @id @default(cuid())
+  agentName         String   @default("Pedro")
+  bastaoNumber      String   @default("5562984465388")
+  deliveryWeekStart Int      @default(9)
+  deliveryWeekEnd   Int      @default(18)
+  deliverySatStart  Int      @default(8)
+  deliverySatEnd    Int      @default(13)
+  maxFollowUps      Int      @default(4)
+  followUpHours     String   @default("4,24,48,72")
+  deliveryArea      String   @default("Goiânia,Aparecida de Goiânia,Trindade,Senador Canedo,Goianira,Nerópolis,Hidrolândia,Abadia de Goiás,Aragoiânia,Guapó,Inhumas")
+  currentPrompt     String   @db.Text
+  promptVersion     Int      @default(1)
+  updatedAt         DateTime @updatedAt
+  createdAt         DateTime @default(now())
+}
+
+model AgentPromptHistory {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  version   Int
+  savedBy   String   @default("Pedro")
+  createdAt DateTime @default(now())
+}
+
+// ─── Lead Notes ────────────────────────────────────────────────────────────────
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id])
 }
 
 // ─── Webhook Retry Queue ────────────────────────────────────────────────────
