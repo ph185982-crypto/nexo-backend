@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   MessageSquare, Search, RefreshCw, Phone, Clock,
-  ChevronLeft, Loader2, Send, Bot, UserCheck,
+  ChevronLeft, ChevronDown, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
 } from "lucide-react";
@@ -325,9 +325,12 @@ function ConversationsContent() {
   const [deescalating, setDeescalating] = useState(false);
   const [diagResult, setDiagResult]     = useState<Record<string, unknown> | null>(null);
   const [diagLoading, setDiagLoading]   = useState(false);
+  const [diagExpanded, setDiagExpanded] = useState(false); // banner colapsado por padrão
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
+  // BUG 2: rastrear se usuário está no final (state para effects, ref para callbacks async)
+  const [atBottom, setAtBottom]         = useState(true);
 
   const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -342,7 +345,9 @@ function ConversationsContent() {
     const el = messagesContainerRef.current;
     if (!el) return;
     const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
-    atBottomRef.current = dist < 60;
+    const near = dist < 60;
+    atBottomRef.current = near;
+    setAtBottom(near);
   }, []);
 
   const [sendMessage]       = useMutation(SEND_MESSAGE);
@@ -440,16 +445,7 @@ function ConversationsContent() {
       setMessages(newMsgs);
       prevLastMsgIdRef.current = newLastId;
       prevMsgCountRef.current  = newMsgs.length;
-
-      if (isFirstLoad) {
-        // First load of this conversation: jump instantly to bottom
-        isFirstLoadRef.current = false;
-        atBottomRef.current = true;
-        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 50);
-      } else if (hasNewMessages && atBottomRef.current) {
-        // New message arrived and user is already at bottom: smooth scroll
-        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
-      }
+      // Scroll é gerenciado pelo useEffect abaixo (inteligente, baseado em atBottom)
     } finally {
       if (!silent) setLoadingMessages(false);
     }
@@ -460,6 +456,7 @@ function ConversationsContent() {
       currentConvIdRef.current = selectedId;
       isFirstLoadRef.current   = true;
       atBottomRef.current      = true;
+      setAtBottom(true); // garante estado limpo ao abrir nova conversa
       prevMsgCountRef.current  = 0;
       prevLastMsgIdRef.current = "";
       fetchMessages(selectedId);
@@ -473,6 +470,29 @@ function ConversationsContent() {
     const t = setInterval(() => fetchMessages(selectedId, true), 3000);
     return () => clearInterval(t);
   }, [selectedId, fetchMessages]);
+
+  // ── Scroll inteligente ────────────────────────────────────────────────────────
+  // Roda sempre que as mensagens mudam ou o usuário volta ao final.
+  // Regras:
+  //   • Primeira carga da conversa  → scroll instant (sem animação)
+  //   • Nova mensagem + usuário no final → scroll suave
+  //   • Usuário rolou para cima → NENHUM scroll automático
+  useEffect(() => {
+    if (messages.length === 0) return;
+    if (isFirstLoadRef.current) {
+      // Primeira carga: sempre rola sem animação e marca como carregado
+      isFirstLoadRef.current = false;
+      requestAnimationFrame(() =>
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" })
+      );
+    } else if (atBottom) {
+      // Novas mensagens e usuário já estava no final: scroll suave
+      requestAnimationFrame(() =>
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      );
+    }
+    // atBottom=false → usuário rolou para cima → não faz nada
+  }, [messages, atBottom]);
 
   // ── Select conversation ───────────────────────────────────────────────────────
   const selectConversation = useCallback((id: string, conv?: Conversation) => {
@@ -901,37 +921,65 @@ function ConversationsContent() {
               </div>
             </div>
 
-            {/* ── Diagnóstico passagem ─────────────────────────────────────────── */}
+            {/* ── Diagnóstico passagem — colapsado por padrão, max 60px ────────── */}
             {diagResult && (
-              <div className="bg-slate-800 text-slate-100 text-[11px] px-3 py-2.5 flex-shrink-0 relative">
-                <button
-                  onClick={() => setDiagResult(null)}
-                  className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-base leading-none"
-                >×</button>
-                <p className="font-bold mb-1.5 text-amber-300">
-                  {(diagResult.dadosCompletos as boolean)
-                    ? "✅ Dados completos — passagem deveria disparar"
-                    : "❌ Dados INCOMPLETOS — passagem bloqueada"}
-                </p>
-                {Array.isArray(diagResult.camposFaltando) && (diagResult.camposFaltando as string[]).length > 0 && (
-                  <p className="text-red-300 mb-1">
-                    Faltando: {(diagResult.camposFaltando as string[]).join(" | ")}
-                  </p>
-                )}
-                {(diagResult.passagemJaFeita as boolean) && (
-                  <p className="text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
-                )}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1">
-                  {Object.entries(diagResult.camposDetectados as Record<string, string | null>).map(([k, v]) => (
-                    <span key={k}>
-                      <span className={v ? "text-green-300" : "text-red-400"}>{v ? "✅" : "❌"}</span>
-                      {" "}<span className="text-slate-400">{k}:</span>
-                      {" "}<span className="text-white">{v ? v.substring(0, 50) : "não detectado"}</span>
-                    </span>
-                  ))}
+              <div className="bg-slate-800 text-slate-100 text-[11px] flex-shrink-0">
+                {/* Linha compacta — sempre visível, clica para expandir */}
+                <div
+                  className="flex items-center gap-2 px-3 cursor-pointer select-none"
+                  style={{ minHeight: 36, maxHeight: 60 }}
+                  onClick={() => setDiagExpanded(e => !e)}
+                >
+                  <span className={cn(
+                    "font-semibold truncate flex-1",
+                    (diagResult.dadosCompletos as boolean) ? "text-green-300" : "text-amber-300"
+                  )}>
+                    {(diagResult.dadosCompletos as boolean)
+                      ? "✅ Dados completos"
+                      : "⚠️ Dados incompletos"}
+                    {Array.isArray(diagResult.camposFaltando) && (diagResult.camposFaltando as string[]).length > 0 && (
+                      <span className="text-red-300 ml-1 font-normal">
+                        — faltando: {(diagResult.camposFaltando as string[]).join(", ")}
+                      </span>
+                    )}
+                  </span>
+                  <ChevronDown className={cn(
+                    "w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-150",
+                    diagExpanded && "rotate-180"
+                  )} />
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setDiagResult(null); setDiagExpanded(false); }}
+                    className="text-slate-400 hover:text-white shrink-0 ml-1 p-0.5 rounded"
+                    aria-label="Fechar diagnóstico"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-                {(diagResult.etapa as string) && (
-                  <p className="mt-1 text-slate-400">etapa DB: <span className="text-white">{diagResult.etapa as string}</span></p>
+
+                {/* Painel expandido — só aparece ao clicar */}
+                {diagExpanded && (
+                  <div className="px-3 pb-3 border-t border-slate-700 mt-0">
+                    <p className="font-bold mt-2 mb-1.5 text-amber-300">
+                      {(diagResult.dadosCompletos as boolean)
+                        ? "✅ Dados completos — passagem deveria disparar"
+                        : "❌ Dados INCOMPLETOS — passagem bloqueada"}
+                    </p>
+                    {(diagResult.passagemJaFeita as boolean) && (
+                      <p className="text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
+                    )}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1">
+                      {Object.entries(diagResult.camposDetectados as Record<string, string | null>).map(([k, v]) => (
+                        <span key={k}>
+                          <span className={v ? "text-green-300" : "text-red-400"}>{v ? "✅" : "❌"}</span>
+                          {" "}<span className="text-slate-400">{k}:</span>
+                          {" "}<span className="text-white">{v ? v.substring(0, 50) : "não detectado"}</span>
+                        </span>
+                      ))}
+                    </div>
+                    {(diagResult.etapa as string) && (
+                      <p className="mt-1.5 text-slate-400">etapa DB: <span className="text-white">{diagResult.etapa as string}</span></p>
+                    )}
+                  </div>
                 )}
               </div>
             )}
