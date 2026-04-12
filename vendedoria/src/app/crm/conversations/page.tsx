@@ -245,10 +245,11 @@ function MessageContent({ msg }: { msg: Message }) {
   }
 
   if (msg.type === "LOCATION") {
-    const latMatch = msg.content.match(/lat:([-\d.]+)/);
-    const lngMatch = msg.content.match(/lng:([-\d.]+)/);
-    const addrMatch = msg.content.match(/endereço:\s*([^|]+)/);
-    const pointMatch = msg.content.match(/ponto:\s*(.+)/);
+    const text = msg.content ?? ""; // defensive — content is String! but guard anyway
+    const latMatch = text.match(/lat:([-\d.]+)/);
+    const lngMatch = text.match(/lng:([-\d.]+)/);
+    const addrMatch = text.match(/endereço:\s*([^|]+)/);
+    const pointMatch = text.match(/ponto:\s*(.+)/);
     const lat = latMatch?.[1];
     const lng = lngMatch?.[1];
     const label = pointMatch?.[1]?.trim() ?? addrMatch?.[1]?.trim() ?? "Localização";

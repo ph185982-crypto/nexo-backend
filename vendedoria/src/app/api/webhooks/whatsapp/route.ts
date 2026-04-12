@@ -185,13 +185,19 @@ async function handleIncomingMessage(
     } else {
       content = "[Áudio recebido]";
     }
-  } else if (message.type === "location" && message.location) {
-    // Extrair coordenadas reais para que a IA reconheça e agradeça a localização
+  } else if (message.type === "location") {
+    // Extrair coordenadas reais para que a IA reconheça e agradeça a localização.
+    // Guard: message.location may be absent in malformed payloads → fallback label ensures
+    // content is never null/empty (would break String! GraphQL field → empty chat).
     const loc = message.location;
-    const parts = [`[Localização recebida] lat:${loc.latitude} lng:${loc.longitude}`];
-    if (loc.address) parts.push(`endereço: ${loc.address}`);
-    if (loc.name)    parts.push(`ponto: ${loc.name}`);
-    content = parts.join(" | ");
+    if (loc) {
+      const parts = [`[Localização recebida] lat:${loc.latitude} lng:${loc.longitude}`];
+      if (loc.address) parts.push(`endereço: ${loc.address}`);
+      if (loc.name)    parts.push(`ponto: ${loc.name}`);
+      content = parts.join(" | ");
+    } else {
+      content = "[Localização recebida]";
+    }
   } else {
     // Base content from text or media label
     content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;

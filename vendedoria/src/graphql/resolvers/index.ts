@@ -358,20 +358,36 @@ export const resolvers = {
         data: { status: "READ" },
       }).catch(() => {});
 
-      // Normalize legacy/unknown type values to valid MessageType enum values.
-      // Messages stored before the enum was complete (e.g. "STICKER", "REACTION",
-      // "location" lowercase) would cause Apollo to null out the entire list.
+      // ── Null-safe normalization ───────────────────────────────────────────────
+      // Any null/invalid value on a non-null GraphQL field causes Apollo to null
+      // out the WhatsappMessage, which then propagates through [WhatsappMessage!]!
+      // and empties the entire list — resulting in the chat appearing blank.
+      // We guard every non-nullable enum/string field here before serialization.
       const VALID_MSG_TYPES = new Set(["TEXT", "IMAGE", "AUDIO", "VIDEO", "DOCUMENT", "LOCATION"]);
       const TYPE_NORM: Record<string, string> = {
         voice: "AUDIO", audio: "AUDIO",
         location: "LOCATION", image: "IMAGE", video: "VIDEO",
         document: "DOCUMENT", text: "TEXT",
       };
-      const normalizeType = (t: string) =>
-        VALID_MSG_TYPES.has(t) ? t : (TYPE_NORM[t.toLowerCase()] ?? "TEXT");
+      // Accept null/undefined defensively — a null type would otherwise throw on .toLowerCase()
+      const normalizeType = (t: string | null | undefined): string => {
+        if (!t) return "TEXT";
+        if (VALID_MSG_TYPES.has(t)) return t;
+        return TYPE_NORM[t.toLowerCase()] ?? "TEXT";
+      };
+      // ASSISTANT | USER — any other value (null, "SYSTEM", legacy) maps to USER
+      const normalizeRole = (r: string | null | undefined): string =>
+        r === "ASSISTANT" || r === "USER" ? r : "USER";
 
       return {
-        messages: paginated.reverse().map(m => ({ ...m, type: normalizeType(m.type) })),
+        messages: paginated.reverse().map(m => ({
+          ...m,
+          // Guard all non-nullable fields against null propagation
+          content:       m.content  || "[mensagem]",   // String! — never send null
+          type:          normalizeType(m.type),         // MessageType! enum
+          role:          normalizeRole(m.role),         // MessageRole! enum
+          status:        m.status   || "SENT",          // String!
+        })),
         hasMore,
         nextCursor,
       };
