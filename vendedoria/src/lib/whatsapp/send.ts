@@ -9,8 +9,9 @@ function resolveToken(override?: string): string | undefined {
  * Brazilian mobile numbers migrated to 9 digits in 2012.
  * WhatsApp sometimes delivers the old 8-digit format (55XX8digits).
  * Meta's send API requires the 9-digit format (55XX9 8digits).
+ * Exported so the webhook can normalise phone numbers at storage time too.
  */
-function normalizeBrazilianNumber(phone: string): string {
+export function normalizeBrazilianNumber(phone: string): string {
   if (/^55\d{10}$/.test(phone)) {
     const areaCode = phone.slice(2, 4);
     const number = phone.slice(4);

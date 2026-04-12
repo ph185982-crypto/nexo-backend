@@ -114,7 +114,13 @@ function getContactInitial(conv: Conversation): string {
 // Format Brazilian phone for display
 function formatPhone(raw: string): string {
   const d = raw.replace(/\D/g, "");
-  const local = d.startsWith("55") && d.length > 11 ? d.slice(2) : d;
+  // Normalise Brazilian 8-digit format (55 + DDD + 8digits) → 9-digit (55 + DDD + 9 + 8digits)
+  // so existing DB records stored before the webhook fix also display correctly
+  const norm =
+    /^55\d{10}$/.test(d) && /^[6-9]/.test(d.slice(4))
+      ? `55${d.slice(2, 4)}9${d.slice(4)}`
+      : d;
+  const local = norm.startsWith("55") && norm.length > 11 ? norm.slice(2) : norm;
   if (local.length === 11) return `(${local.slice(0,2)}) ${local.slice(2,7)}-${local.slice(7)}`;
   if (local.length === 10) return `(${local.slice(0,2)}) ${local.slice(2,6)}-${local.slice(6)}`;
   return local || raw;

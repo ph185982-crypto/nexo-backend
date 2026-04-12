@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { transcribeAudio } from "@/lib/ai/transcription";
+import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -133,7 +134,10 @@ async function handleIncomingMessage(
   };
   const normalizedType = TYPE_MAP[message.type.toLowerCase()] ?? "TEXT";
 
-  const phone = message.from;
+  // Always store/lookup the 9-digit normalised number (55 + DDD + 9 + 8 digits).
+  // Meta sometimes delivers old 8-digit format (55XX8digits); normalise at entry
+  // so both the DB record and the phone column are consistent.
+  const phone = normalizeBrazilianNumber(message.from);
   const profileName = contact?.profile?.name;
   const sentAt = new Date(Number(message.timestamp) * 1000);
 
@@ -218,9 +222,12 @@ async function handleIncomingMessage(
     console.log(`[Webhook] Mídia inbound | type=${message.type} | media_id=${inboundMediaId}`);
   }
 
-  // Find or create lead
+  // Find or create lead — OR clause handles existing records stored with old 8-digit format
   let lead = await prisma.lead.findFirst({
-    where: { phoneNumber: phone, organizationId: providerConfig.organizationId },
+    where: {
+      organizationId: providerConfig.organizationId,
+      OR: [{ phoneNumber: phone }, { phoneNumber: message.from }],
+    },
   });
 
   if (!lead) {

@@ -379,15 +379,30 @@ export const resolvers = {
       const normalizeRole = (r: string | null | undefined): string =>
         r === "ASSISTANT" || r === "USER" ? r : "USER";
 
+      const normalized = paginated.reverse().flatMap(m => {
+        try {
+          // Guard sentAt: DateTime! — invalid timestamps throw RangeError in DateTimeScalar.serialize
+          const sentAt = m.sentAt instanceof Date && isFinite(m.sentAt.getTime())
+            ? m.sentAt
+            : new Date();
+          return [{
+            ...m,
+            sentAt,
+            // Guard all non-nullable enum/string fields against null propagation
+            content: m.content  || "[mensagem]",  // String!
+            type:    normalizeType(m.type),        // MessageType! enum
+            role:    normalizeRole(m.role),        // MessageRole! enum
+            status:  m.status   || "SENT",         // String!
+          }];
+        } catch {
+          // If a message is truly unserializable, drop it rather than crash the whole list
+          console.error(`[getConversationMessages] Skipping unserializable message id=${m.id}`);
+          return [];
+        }
+      });
+
       return {
-        messages: paginated.reverse().map(m => ({
-          ...m,
-          // Guard all non-nullable fields against null propagation
-          content:       m.content  || "[mensagem]",   // String! — never send null
-          type:          normalizeType(m.type),         // MessageType! enum
-          role:          normalizeRole(m.role),         // MessageRole! enum
-          status:        m.status   || "SENT",          // String!
-        })),
+        messages: normalized,
         hasMore,
         nextCursor,
       };
