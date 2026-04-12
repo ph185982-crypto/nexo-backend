@@ -100,8 +100,12 @@ async function handleIncomingMessage(
     from: string;
     type: string;
     text?: { body: string };
-    audio?: { id: string; mime_type?: string };
-    voice?: { id: string; mime_type?: string };
+    audio?:    { id: string; mime_type?: string };
+    voice?:    { id: string; mime_type?: string };
+    image?:    { id: string; mime_type?: string; caption?: string };
+    video?:    { id: string; mime_type?: string; caption?: string };
+    document?: { id: string; mime_type?: string; caption?: string; filename?: string };
+    sticker?:  { id: string; mime_type?: string; animated?: boolean };
     location?: { latitude: number; longitude: number; name?: string; address?: string };
     timestamp: string;
   },
@@ -189,7 +193,23 @@ async function handleIncomingMessage(
     if (loc.name)    parts.push(`ponto: ${loc.name}`);
     content = parts.join(" | ");
   } else {
+    // Base content from text or media label
     content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
+
+    // If image/video/document has a caption, append it so the AI has context
+    const inlineCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
+    if (inlineCaption) {
+      content = `${content} "${inlineCaption}"`;
+    }
+  }
+
+  // Extract inbound media_id (image, video, document, sticker) for storage
+  // We store the raw media_id — the proxy /api/whatsapp/media/[mediaId] serves it on demand
+  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
+  const inboundCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
+
+  if (inboundMediaId) {
+    console.log(`[Webhook] Mídia inbound | type=${message.type} | media_id=${inboundMediaId}`);
   }
 
   // Find or create lead
@@ -273,6 +293,21 @@ async function handleIncomingMessage(
       return;
     }
     throw e;
+  }
+
+  // Persist inbound media_id — fire-and-forget so it never blocks the webhook response
+  if (inboundMediaId) {
+    prisma.whatsappMessage.update({
+      where: { id: savedMessage.id },
+      data: {
+        mediaUrl: inboundMediaId,
+        ...(inboundCaption ? { caption: inboundCaption } : {}),
+      },
+    }).then(() => {
+      console.log(`[Webhook] mediaId persistido: ${inboundMediaId} → msg ${savedMessage.id}`);
+    }).catch((e) => {
+      console.error(`[Webhook] Erro ao persistir mediaId ${inboundMediaId}:`, e);
+    });
   }
 
   // Update conversation: lastMessageAt + localizacaoRecebida (se for localização)

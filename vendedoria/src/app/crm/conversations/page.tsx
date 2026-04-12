@@ -72,7 +72,8 @@ interface Conversation {
   followUp: FollowUp | null;
 }
 interface Message {
-  id: string; content: string; role: string; sentAt: string; type: string; status?: string;
+  id: string; content: string; role: string; sentAt: string; type: string;
+  status?: string; mediaUrl?: string | null; caption?: string | null;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -134,20 +135,116 @@ function avatarColor(name: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
+/** Resolves a media_id into a proxy URL the browser can fetch */
+function mediaProxyUrl(mediaUrl: string): string {
+  // If it's already a full URL (e.g. Cloudinary outbound image) — use directly
+  if (mediaUrl.startsWith("http://") || mediaUrl.startsWith("https://")) return mediaUrl;
+  // Otherwise it's a WhatsApp media_id — route through our proxy
+  return `/api/whatsapp/media/${mediaUrl}`;
+}
+
 function MessageContent({ msg }: { msg: Message }) {
-  if (msg.type === "IMAGE") return (
-    <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
-      <ImageIcon className="w-4 h-4 shrink-0" /> Imagem
-    </span>
-  );
-  if (msg.type === "VIDEO") return (
-    <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
-      <Video className="w-4 h-4 shrink-0" /> Vídeo
-    </span>
-  );
-  if (msg.type === "AUDIO") return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
+  if (msg.type === "IMAGE") {
+    if (msg.mediaUrl) {
+      const src = mediaProxyUrl(msg.mediaUrl);
+      return (
+        <span className="flex flex-col gap-1">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={msg.caption ?? "Imagem"}
+            className="rounded-lg max-w-[260px] max-h-[260px] object-cover cursor-pointer"
+            onClick={() => window.open(src, "_blank")}
+            onError={(e) => {
+              console.warn("[CRM] Falha ao carregar imagem:", src);
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+              (e.currentTarget.nextSibling as HTMLElement | null)?.removeAttribute("hidden");
+            }}
+          />
+          <span hidden className="flex items-center gap-1.5 italic opacity-60 text-sm">
+            <ImageIcon className="w-4 h-4 shrink-0" /> Imagem indisponível
+          </span>
+          {msg.caption && <span className="text-xs opacity-70">{msg.caption}</span>}
+        </span>
+      );
+    }
+    return (
+      <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
+        <ImageIcon className="w-4 h-4 shrink-0" /> Imagem
+      </span>
+    );
+  }
+
+  if (msg.type === "VIDEO") {
+    if (msg.mediaUrl) {
+      const src = mediaProxyUrl(msg.mediaUrl);
+      return (
+        <span className="flex flex-col gap-1">
+          <video
+            controls
+            src={src}
+            className="rounded-lg max-w-[260px] max-h-[200px]"
+            onError={() => console.warn("[CRM] Falha ao carregar vídeo:", src)}
+          >
+            Seu navegador não suporta vídeo.
+          </video>
+          {msg.caption && <span className="text-xs opacity-70">{msg.caption}</span>}
+        </span>
+      );
+    }
+    return (
+      <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
+        <Video className="w-4 h-4 shrink-0" /> Vídeo
+      </span>
+    );
+  }
+
+  if (msg.type === "AUDIO") {
+    if (msg.mediaUrl) {
+      const src = mediaProxyUrl(msg.mediaUrl);
+      return (
+        <span className="flex flex-col gap-1">
+          <audio controls src={src} className="w-full max-w-[260px]"
+            onError={() => console.warn("[CRM] Falha ao carregar áudio:", src)} />
+          {/* Show transcript if AI transcribed it */}
+          {msg.content && !msg.content.startsWith("[Áudio") && (
+            <span className="text-xs italic opacity-70 mt-0.5">{msg.content}</span>
+          )}
+        </span>
+      );
+    }
+    // No mediaUrl — show transcript or placeholder
+    const transcript = msg.content?.replace(/^\[Áudio transcrito\]:\s*/i, "");
+    if (transcript && !transcript.startsWith("[Áudio")) {
+      return (
+        <span className="flex flex-col gap-0.5 text-sm">
+          <span className="text-[10px] text-muted-foreground flex items-center gap-1">🎙 Áudio transcrito</span>
+          <span className="italic">{transcript}</span>
+        </span>
+      );
+    }
+    return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
+  }
+
+  if (msg.type === "DOCUMENT") {
+    if (msg.mediaUrl) {
+      const src = mediaProxyUrl(msg.mediaUrl);
+      const filename = msg.caption ?? msg.content ?? "Documento";
+      return (
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-sm text-blue-600 underline underline-offset-2 hover:text-blue-800"
+        >
+          📄 {filename}
+        </a>
+      );
+    }
+    return <span className="text-sm italic opacity-80">📄 Documento</span>;
+  }
+
   if (msg.type === "LOCATION") {
-    // Extract lat/lng from content: "[Localização recebida] lat:-15.7801 lng:-47.9292 | endereço: ..."
     const latMatch = msg.content.match(/lat:([-\d.]+)/);
     const lngMatch = msg.content.match(/lng:([-\d.]+)/);
     const addrMatch = msg.content.match(/endereço:\s*([^|]+)/);
@@ -155,31 +252,24 @@ function MessageContent({ msg }: { msg: Message }) {
     const lat = latMatch?.[1];
     const lng = lngMatch?.[1];
     const label = pointMatch?.[1]?.trim() ?? addrMatch?.[1]?.trim() ?? "Localização";
-    const mapsUrl = lat && lng
-      ? `https://www.google.com/maps?q=${lat},${lng}`
-      : null;
+    const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null;
     return (
       <span className="flex flex-col gap-1 text-sm">
         <span className="flex items-center gap-1.5 font-medium">
           <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
           {label}
         </span>
-        {lat && lng && (
-          <span className="text-xs opacity-70">{lat}, {lng}</span>
-        )}
+        {lat && lng && <span className="text-xs opacity-70">{lat}, {lng}</span>}
         {mapsUrl && (
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-600 underline underline-offset-2 hover:text-blue-800"
-          >
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+            className="text-xs text-blue-600 underline underline-offset-2 hover:text-blue-800">
             Ver no Google Maps
           </a>
         )}
       </span>
     );
   }
+
   return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
 }
 
@@ -318,7 +408,7 @@ function ConversationsContent() {
         body: JSON.stringify({
           query: `query($id: String!) {
             getConversationMessages(conversationId: $id) {
-              messages { id content type role sentAt status }
+              messages { id content type role sentAt status mediaUrl caption }
             }
           }`,
           variables: { id: convId },
