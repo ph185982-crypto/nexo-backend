@@ -562,7 +562,27 @@ Sempre que quiser enviar mídia, coloque o flag na mesma resposta, em um balão 
 [OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
 [FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real do catálogo)
 [VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
-[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados`;
+[AGENDAR:DD/MM/AAAA] — quando o cliente pede pra você contatar em data específica (ex: "me chama dia 18 de abril" → [AGENDAR:18/04/2026]). O sistema agenda o follow-up para essa data. Não mande mensagem antes.
+[CEP_CLIENTE:XXXXXXXX] — quando o cliente informa o CEP dele (ex: CEP 74000-010 → [CEP_CLIENTE:74000010]). Use quando tiver o CEP em mãos, não antes.
+[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados
+
+━━━ APÓS FALAR O PREÇO ━━━
+Ao informar o preço do produto, SEMPRE inclua na MESMA resposta:
+1. Uma foto do produto — coloque o flag [FOTO_SLUG] no mesmo bloco de resposta
+2. Uma pergunta de engajamento sobre o uso que o cliente vai dar
+Nunca responda só o preço e pare. O preço é uma ponte — use-o para avançar na conversa.
+
+━━━ AO PEDIR LOCALIZAÇÃO ━━━
+Quando pedir o pin de localização do cliente, sempre mencione o horário de entrega:
+"entregamos seg–sex das 9h às 18h e sábado das 8h às 13h"
+Se o cliente quiser receber fora desse horário, agenda pro próximo dia/horário disponível.
+
+━━━ CLIENTES DE FORA DE GOIÂNIA ━━━
+NUNCA rejeite um cliente que mora em outra cidade. Sempre ofereça a entrega via Correios.
+Quando o cliente mencionar que é de outra cidade/estado: pergunte o CEP dele de forma natural.
+Quando ele enviar o CEP: use [CEP_CLIENTE:XXXXXXXX] na sua resposta (sem traço, só os 8 dígitos).
+Pedro (nossa logística) vai calcular o frete via Correios e entrar em contato direto com o cliente.
+Após usar o flag, informe o cliente que Pedro vai falar com ele em breve com o valor do frete.`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -599,39 +619,10 @@ export async function processAIResponse(
       return;
     }
 
+    // Out-of-area handling: AI now asks for CEP via [CEP_CLIENTE] flag instead of rejecting.
+    // detectForaDeArea is kept for logging only — no longer blocks the AI from responding.
     if (detectForaDeArea(userMessage)) {
-      const to = conversation.customerWhatsappBusinessId;
-      const token = conversation.provider.accessToken ?? undefined;
-      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId}: "${userMessage}"`);
-
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅",
-        token,
-      ).catch(() => {});
-      await new Promise((r) => setTimeout(r, 1400));
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊",
-        token,
-      ).catch(() => {});
-
-      const rejectionNow = new Date();
-      await prisma.whatsappMessage.createMany({
-        data: [
-          { content: "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅", type: "TEXT", role: "ASSISTANT", sentAt: rejectionNow, status: "SENT", conversationId },
-          { content: "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(rejectionNow.getTime() + 1400), status: "SENT", conversationId },
-        ],
-      }).catch(() => {});
-      await prisma.whatsappConversation.update({
-        where: { id: conversationId },
-        data: { foraAreaEntrega: true, etapa: "PERDIDO", lastMessageAt: rejectionNow },
-      }).catch(() => {});
-      await prisma.conversationFollowUp.updateMany({
-        where: { conversationId, status: "ACTIVE" },
-        data: { status: "DONE" },
-      }).catch(() => {});
-      return;
+      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — deixando IA pedir CEP: "${userMessage}"`);
     }
 
     // ── CORREÇÃO 3: Silêncio pós-confirmação ──────────────────────────────────
@@ -965,6 +956,8 @@ export async function processAIResponse(
       m.replace(/^\[ESCALAR\]\s*/i, "")
         .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
         .replace(/\[OPT_OUT\]/gi, "")
+        .replace(/\[AGENDAR:\d{2}\/\d{2}(?:\/\d{4})?\]/gi, "")
+        .replace(/\[CEP_CLIENTE:\d{5,8}\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1028,6 +1021,58 @@ export async function processAIResponse(
           data: { status: "DONE" },
         }).catch(() => {});
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
+    }
+
+    // ── [AGENDAR:DD/MM/AAAA] ─────────────────────────────────────────────────
+    // Cliente pediu pra ser contactado em data específica → agenda follow-up para essa data
+    let agendarDate: Date | null = null;
+    const agendarMatch = combinedRaw.match(/\[AGENDAR:(\d{2})\/(\d{2})(?:\/(\d{4}))?\]/i);
+    if (agendarMatch) {
+      const day   = parseInt(agendarMatch[1], 10);
+      const month = parseInt(agendarMatch[2], 10) - 1; // 0-indexed
+      const year  = agendarMatch[3] ? parseInt(agendarMatch[3], 10) : now.getFullYear();
+      agendarDate = new Date(year, month, day, 9, 0, 0); // 9h do dia agendado
+      // Se a data já passou, usa o próximo ano (safety guard)
+      if (agendarDate <= now) agendarDate.setFullYear(agendarDate.getFullYear() + 1);
+      console.log(`[AI Agent] [AGENDAR] follow-up agendado para ${agendarDate.toISOString()} | conv ${conversationId}`);
+    }
+
+    // ── [CEP_CLIENTE:XXXXXXXX] ────────────────────────────────────────────────
+    // Cliente de fora de Goiânia informou o CEP → notifica Pedro, ativa humanTakeover
+    const cepMatch = combinedRaw.match(/\[CEP_CLIENTE:(\d{5,8})\]/i);
+    if (cepMatch) {
+      const cep        = cepMatch[1];
+      const clientName = lead?.profileName ?? "Cliente";
+      const cepMsg =
+        `*📦 FRETE CORREIOS — NEXO BRASIL*\n\n` +
+        `👤 *Cliente:* ${clientName}\n` +
+        `📱 *WhatsApp:* ${to}\n` +
+        `📮 *CEP:* ${cep}\n\n` +
+        `_Cliente de fora de Goiânia quer comprar via Correios. Calcule o frete e entre em contato com ele._`;
+      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, cepMsg, token)
+        .catch((e) => console.error("[AI Agent] CEP notification failed:", e));
+      await prisma.ownerNotification.create({
+        data: {
+          type: "ORDER",
+          title: `CEP para frete Correios: ${clientName} — ${cep}`,
+          body: cepMsg,
+          organizationId: orgId,
+          leadId: conversation.leadId,
+          conversationId,
+        },
+      }).catch(() => {});
+      // Marca humanTakeover: Pedro assume a conversa, IA para de responder
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { humanTakeover: true },
+      }).catch(() => {});
+      // Cancela follow-ups automáticos — Pedro entra em contato diretamente
+      await prisma.conversationFollowUp.updateMany({
+        where: { conversationId, status: "ACTIVE" },
+        data: { status: "DONE" },
+      }).catch(() => {});
+      console.log(`[AI Agent] [CEP_CLIENTE] CEP=${cep} | humanTakeover ativado para conv ${conversationId}`);
     }
 
     // ── [ESCALAR] soft trigger — DESATIVADO temporariamente ─────────────────
@@ -1175,22 +1220,36 @@ export async function processAIResponse(
       }
     }
 
-    // ── CORREÇÃO 4: Agendar follow-up (só se não confirmado/perdido/fora de área) ──
+    // ── Agendar follow-up ─────────────────────────────────────────────────────
+    // Pula se: pedido confirmado, perdido, fora da área, fechado, bloqueado, ou CEP (Pedro assume)
     const skipFollowup =
       conversation.etapa === "PEDIDO_CONFIRMADO" ||
       conversation.etapa === "PERDIDO" ||
       conversation.foraAreaEntrega ||
       lead?.status === "CLOSED" ||
-      lead?.status === "BLOCKED";
+      lead?.status === "BLOCKED" ||
+      cepMatch !== null; // Pedro assume — sem follow-up automático
+
     if (!skipFollowup) {
-      const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
-      await prisma.conversationFollowUp.upsert({
-        where: { conversationId },
-        update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
-        create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
-      });
+      if (agendarDate) {
+        // Cliente pediu data específica → agenda para essa data (não manda antes)
+        await prisma.conversationFollowUp.upsert({
+          where: { conversationId },
+          update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: agendarDate, leadName: lead?.profileName ?? null },
+          create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: agendarDate, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
+        });
+        console.log(`[AI Agent] Follow-up agendado para data solicitada: ${agendarDate.toISOString()}`);
+      } else {
+        // Follow-up padrão: 4h
+        const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
+        await prisma.conversationFollowUp.upsert({
+          where: { conversationId },
+          update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
+          create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
+        });
+      }
     } else {
-      console.log(`[AI Agent] Follow-up não agendado — etapa: ${conversation.etapa} | foraAreaEntrega: ${conversation.foraAreaEntrega} | lead: ${lead?.status}`);
+      console.log(`[AI Agent] Follow-up não agendado — etapa: ${conversation.etapa} | foraAreaEntrega: ${conversation.foraAreaEntrega} | lead: ${lead?.status} | cep: ${cepMatch !== null}`);
     }
 
   } catch (error) {
