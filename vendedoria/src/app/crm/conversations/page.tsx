@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronDown, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
-  User, SlidersHorizontal,
+  User, SlidersHorizontal, Paperclip, Film,
 } from "lucide-react";
 import { ContactPanel } from "@/components/crm/ContactPanel";
 import { Button } from "@/components/ui/button";
@@ -81,6 +81,10 @@ interface Conversation {
 interface Message {
   id: string; content: string; role: string; sentAt: string; type: string;
   status?: string; mediaUrl?: string | null; caption?: string | null;
+}
+interface Product {
+  id: string; name: string; imageUrl: string | null; imageUrls: string[];
+  videoUrl: string | null; price: number;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -344,6 +348,11 @@ function ConversationsContent() {
   const [tempoFilter, setTempoFilter]     = useState("");
   // BUG 2: rastrear se usuário está no final (state para effects, ref para callbacks async)
   const [atBottom, setAtBottom]         = useState(true);
+  // Media sending
+  const [products, setProducts]           = useState<Product[]>([]);
+  const [mediaDropdown, setMediaDropdown] = useState<string | null>(null); // product id | "__clip" | null
+  const [mediaModal, setMediaModal]       = useState<"image" | "video" | null>(null);
+  const [sendingMedia, setSendingMedia]   = useState(false);
 
   const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -353,6 +362,7 @@ function ConversationsContent() {
   const isFirstLoadRef       = useRef(false);
   const atBottomRef          = useRef(true);
   const inputRef             = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef         = useRef<HTMLInputElement>(null);
 
   const handleContainerScroll = useCallback(() => {
     const el = messagesContainerRef.current;
@@ -371,6 +381,15 @@ function ConversationsContent() {
   useEffect(() => {
     if (!orgId && orgs.length > 0) setOrgId(orgs[0].id);
   }, [orgs, orgId]);
+
+  // Fetch products for media toolbar
+  useEffect(() => {
+    if (!orgId) return;
+    fetch(`/api/products?organizationId=${orgId}`)
+      .then(r => r.json())
+      .then((data: Product[]) => setProducts(data.filter(p => p.imageUrl || p.videoUrl)))
+      .catch(() => {});
+  }, [orgId]);
 
   // Open conversation from URL param (?id=xxx)
   useEffect(() => {
@@ -551,6 +570,56 @@ function ConversationsContent() {
     } finally { setTakingOver(false); }
   }, [selectedId, takingOver, takeoverMutation]);
 
+  // ── Send product media ────────────────────────────────────────────────────────
+  const handleSendProductMedia = useCallback(async (productId: string, mt: "image" | "video") => {
+    if (!selectedId || sendingMedia) return;
+    setSendingMedia(true);
+    setMediaDropdown(null);
+    setMediaModal(null);
+    try {
+      const res = await fetch(`/api/conversations/${selectedId}/send-media`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, mediaType: mt }),
+      });
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        console.error("[send-media]", err.error);
+      }
+      await fetchMessages(selectedId, true);
+    } finally {
+      setSendingMedia(false);
+    }
+  }, [selectedId, sendingMedia, fetchMessages]);
+
+  // ── Upload local file ─────────────────────────────────────────────────────────
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedId || sendingMedia) return;
+    e.target.value = "";
+    setSendingMedia(true);
+    setMediaDropdown(null);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const isVideo = file.type.startsWith("video/");
+      const isPdf   = file.type === "application/pdf";
+      form.append("type", isVideo ? "video" : isPdf ? "document" : "image");
+      form.append("caption", file.name);
+      const res = await fetch(`/api/conversations/${selectedId}/send-media`, {
+        method: "POST",
+        body: form,
+      });
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        console.error("[send-media file]", err.error);
+      }
+      await fetchMessages(selectedId, true);
+    } finally {
+      setSendingMedia(false);
+    }
+  }, [selectedId, sendingMedia, fetchMessages]);
+
   // ── Send message ──────────────────────────────────────────────────────────────
   const handleSend = useCallback(async () => {
     const content = msgInput.trim();
@@ -579,6 +648,7 @@ function ConversationsContent() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
+    <>
     <div className="flex flex-1 min-h-0 overflow-hidden bg-background" style={{ height: "100%" }}>
 
       {/* ════════════════════════════════════════════════════════════════════════
@@ -1158,6 +1228,7 @@ function ConversationsContent() {
 
             {/* ── Message input ────────────────────────────────────────────────── */}
             <div className="bg-white border-t flex-shrink-0">
+              {/* IA status bar */}
               {!isHumanControl && (
                 <div className="px-3 pt-2 pb-0">
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1">
@@ -1173,6 +1244,106 @@ function ConversationsContent() {
                   </p>
                 </div>
               )}
+
+              {/* Media toolbar — visible only when human is in control */}
+              {isHumanControl && (
+                <div
+                  className="px-3 pt-2 pb-1.5 flex items-center gap-1.5 border-b overflow-x-auto scrollbar-hide"
+                  onClick={() => setMediaDropdown(null)}
+                >
+                  {/* Quick-send product buttons */}
+                  {products.map(p => (
+                    <div key={p.id} className="relative shrink-0" onClick={e => e.stopPropagation()}>
+                      <button
+                        onClick={() => setMediaDropdown(mediaDropdown === p.id ? null : p.id)}
+                        disabled={sendingMedia}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
+                      >
+                        <ImageIcon className="w-3 h-3 shrink-0" />
+                        <span className="truncate max-w-[72px]">{p.name}</span>
+                        <ChevronDown className="w-3 h-3 shrink-0" />
+                      </button>
+                      {mediaDropdown === p.id && (
+                        <div className="absolute bottom-full left-0 mb-1 bg-white border rounded-xl shadow-lg py-1 z-20 min-w-[140px]">
+                          {(p.imageUrl || (p.imageUrls && p.imageUrls.length > 0)) && (
+                            <button
+                              onClick={() => void handleSendProductMedia(p.id, "image")}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                            >
+                              <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                              Foto
+                            </button>
+                          )}
+                          {p.videoUrl && (
+                            <button
+                              onClick={() => void handleSendProductMedia(p.id, "video")}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                            >
+                              <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                              Vídeo
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Separator */}
+                  {products.length > 0 && <span className="w-px h-4 bg-border shrink-0" />}
+
+                  {/* 📎 General attachment */}
+                  <div className="relative shrink-0" onClick={e => e.stopPropagation()}>
+                    <button
+                      onClick={() => setMediaDropdown(mediaDropdown === "__clip" ? null : "__clip")}
+                      disabled={sendingMedia}
+                      title="Anexar mídia"
+                      className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
+                    >
+                      {sendingMedia
+                        ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                        : <Paperclip className="w-4 h-4 text-muted-foreground" />
+                      }
+                    </button>
+                    {mediaDropdown === "__clip" && (
+                      <div className="absolute bottom-full left-0 mb-1 bg-white border rounded-xl shadow-lg py-1 z-20 min-w-[180px]">
+                        <button
+                          onClick={() => { setMediaModal("image"); setMediaDropdown(null); }}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                        >
+                          <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                          Foto do produto
+                        </button>
+                        <button
+                          onClick={() => { setMediaModal("video"); setMediaDropdown(null); }}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                        >
+                          <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                          Vídeo do produto
+                        </button>
+                        <div className="border-t my-1" />
+                        <button
+                          onClick={() => { fileInputRef.current?.click(); setMediaDropdown(null); }}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                        >
+                          <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                          Arquivo do celular
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/quicktime,application/pdf"
+                    className="hidden"
+                    onChange={e => void handleFileChange(e)}
+                  />
+                </div>
+              )}
+
+              {/* Text input row */}
               <div className="px-3 py-2 flex gap-2 items-end">
                 <Textarea
                   ref={inputRef}
@@ -1236,6 +1407,89 @@ function ConversationsContent() {
         )}
       </div>
     </div>
+
+    {/* ── Product media modal ──────────────────────────────────────────────── */}
+    {mediaModal && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+        onClick={() => setMediaModal(null)}
+      >
+        <div
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Modal header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+              {mediaModal === "image"
+                ? <><ImageIcon className="w-4 h-4 text-blue-500" /> Selecionar foto</>
+                : <><Film className="w-4 h-4 text-purple-500" /> Selecionar vídeo</>}
+            </h3>
+            <button
+              onClick={() => setMediaModal(null)}
+              className="p-1 rounded-lg hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Products list */}
+          <div className="max-h-96 overflow-y-auto divide-y">
+            {products.filter(p => mediaModal === "image"
+              ? (p.imageUrl || (p.imageUrls && p.imageUrls.length > 0))
+              : p.videoUrl
+            ).map(p => {
+              const thumb = mediaModal === "image"
+                ? (p.imageUrls?.[0] ?? p.imageUrl ?? null)
+                : null;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => void handleSendProductMedia(p.id, mediaModal)}
+                  disabled={sendingMedia}
+                  className="flex items-center gap-3 w-full px-4 py-3 hover:bg-muted/50 active:bg-muted transition-colors disabled:opacity-50 text-left"
+                >
+                  {/* Thumbnail */}
+                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0 flex items-center justify-center">
+                    {mediaModal === "image" && thumb ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={thumb} alt={p.name} className="w-full h-full object-cover" />
+                    ) : mediaModal === "video" ? (
+                      <Film className="w-6 h-6 text-purple-400" />
+                    ) : (
+                      <ImageIcon className="w-6 h-6 text-blue-300" />
+                    )}
+                  </div>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{p.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {mediaModal === "image"
+                        ? `${p.imageUrls?.length ?? (p.imageUrl ? 1 : 0)} foto(s)`
+                        : "Vídeo disponível"}
+                    </p>
+                  </div>
+                  {sendingMedia
+                    ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />
+                    : <Send className="w-4 h-4 text-primary shrink-0" />
+                  }
+                </button>
+              );
+            })}
+            {products.filter(p => mediaModal === "image"
+              ? (p.imageUrl || (p.imageUrls && p.imageUrls.length > 0))
+              : p.videoUrl
+            ).length === 0 && (
+              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+                <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                Nenhum produto com {mediaModal === "image" ? "foto" : "vídeo"} cadastrado
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
