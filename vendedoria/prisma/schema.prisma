@@ -547,3 +547,45 @@ model WebhookQueue {
   createdAt   DateTime @default(now())
   retryAfter  DateTime @default(now())
 }
+
+// ─── Produtos Fornecedor ────────────────────────────────────────────────────
+
+model Produto {
+  id                 String         @id @default(cuid())
+  nome               String
+  slug               String         @unique
+  precoCusto         Float
+  precoVenda         Float
+  precoDesconto      Float
+  parcelamento       Float
+  fotoUrl            String
+  descricao          String?        @db.Text
+  categoria          String?
+  ativo              Boolean        @default(true)
+  ehFerramenta       Boolean        @default(true)
+  importadoEm        DateTime       @default(now())
+  atualizadoEm       DateTime       @updatedAt
+  ultimaOfertaEm     DateTime?
+  vezesUsadoEmOferta Int            @default(0)
+  ofertas            OfertaGerada[]
+}
+
+// ─── Ofertas Geradas ────────────────────────────────────────────────────────
+
+model OfertaGerada {
+  id                  String    @id @default(cuid())
+  produtoId           String
+  nomeProduto         String
+  precoCusto          Float
+  precoVenda          Float
+  precoDesconto       Float
+  parcelamento        Float
+  fotoOriginalUrl     String
+  artePath            String
+  textoOferta         String    @db.Text
+  status              String    @default("PRONTA") // PRONTA | ENVIADA | FALHA
+  enviadaParaWhatsApp Boolean   @default(false)
+  enviadaEm           DateTime?
+  criadaEm            DateTime  @default(now())
+  produto             Produto   @relation(fields: [produtoId], references: [id])
+}
