@@ -589,3 +589,13 @@ model OfertaGerada {
   criadaEm            DateTime  @default(now())
   produto             Produto   @relation(fields: [produtoId], references: [id])
 }
+
+// ─── PWA Push Subscriptions ────────────────────────────────────────────────
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  criadaEm  DateTime @default(now())
+}

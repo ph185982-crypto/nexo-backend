@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
+import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 
@@ -322,6 +323,13 @@ async function handleIncomingMessage(
       console.error(`[Webhook] Erro ao persistir mediaId ${inboundMediaId}:`, e);
     });
   }
+
+  // Push notification — fire-and-forget, never blocks webhook response
+  const nomeCliente = conversation.profileName ?? conversation.customerWhatsappBusinessId;
+  const preview = content.substring(0, 100) || (normalizedType !== "TEXT" ? `[${normalizedType}]` : "Nova mensagem");
+  notificarNovaMensagem(nomeCliente, preview, conversation.id).catch((e) =>
+    console.error("[Webhook] Push notification error:", e)
+  );
 
   // Update conversation: lastMessageAt + localizacaoRecebida (se for localização)
   await prisma.whatsappConversation.update({

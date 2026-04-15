@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
@@ -152,6 +153,93 @@ function avatarColor(name: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
+// ── PortalDropdown — renders floating menus at body level (avoids z-index clipping) ──
+
+function PortalDropdown({
+  open,
+  anchorRef,
+  onClose,
+  children,
+}: {
+  open: boolean;
+  anchorRef: React.RefObject<HTMLElement | null>;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (!open || !anchorRef.current) return;
+    const rect = anchorRef.current.getBoundingClientRect();
+    setPos({ top: rect.top - 4, left: rect.left });
+  }, [open, anchorRef]);
+
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
+    <>
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
+      <div
+        style={{
+          position: "fixed",
+          bottom: `calc(100vh - ${pos.top}px)`,
+          left: pos.left,
+          zIndex: 9999,
+          background: "#fff",
+          border: "1px solid #E5E7EB",
+          borderRadius: "12px",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+          padding: "4px 0",
+          minWidth: "160px",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </>,
+    document.body
+  );
+}
+
+// ── LocationCard — Google Maps Static API thumbnail ──────────────────────────
+
+function LocationCard({ lat, lng, endereco }: { lat?: string; lng?: string; endereco?: string }) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? "AIzaSyBieVsbis7QSowEGVVp12psG4ugrlk5uSg";
+  const mapsUrl = lat && lng ? `https://maps.google.com/?q=${lat},${lng}` : null;
+  const staticMapUrl = lat && lng && apiKey
+    ? `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=300x140&scale=2&markers=color:red%7C${lat},${lng}&key=${apiKey}&style=feature:poi%7Cvisibility:off`
+    : null;
+
+  const card = (
+    <div style={{
+      borderRadius: "12px", overflow: "hidden",
+      border: "1px solid #E5E7EB", background: "#fff",
+      maxWidth: "260px", cursor: mapsUrl ? "pointer" : "default",
+    }}>
+      {staticMapUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={staticMapUrl} alt="Mapa" style={{ width: "100%", height: "140px", objectFit: "cover", display: "block" }} />
+      ) : (
+        <div style={{ width: "100%", height: "140px", background: "#E8EAF0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>🗺️</div>
+      )}
+      <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
+        <MapPin className="w-4 h-4 text-red-500 shrink-0" />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: "13px", fontWeight: 600, color: "#111827", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {endereco ?? (lat && lng ? `${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}` : "Localização")}
+          </p>
+          {mapsUrl && <p style={{ fontSize: "12px", color: "#1976D2", margin: 0, marginTop: "2px" }}>Abrir no Google Maps →</p>}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (mapsUrl) {
+    return <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", display: "block" }}>{card}</a>;
+  }
+  return card;
+}
+
 /** Resolves a media_id into a proxy URL the browser can fetch */
 function mediaProxyUrl(mediaUrl: string): string {
   // If it's already a full URL (e.g. Cloudinary outbound image) — use directly
@@ -192,19 +280,20 @@ function MessageContent({ msg }: { msg: Message }) {
     );
   }
 
-  if (msg.type === "VIDEO") {
+  if (msg.type === "VIDEO" || (msg.mediaUrl && /\.(mp4|mov|webm|3gpp?)(\?|$)/i.test(msg.mediaUrl))) {
     if (msg.mediaUrl) {
       const src = mediaProxyUrl(msg.mediaUrl);
       return (
         <span className="flex flex-col gap-1">
-          <video
-            controls
-            src={src}
-            className="rounded-lg max-w-[260px] max-h-[200px]"
-            onError={() => console.warn("[CRM] Falha ao carregar vídeo:", src)}
-          >
-            Seu navegador não suporta vídeo.
-          </video>
+          <div style={{ maxWidth: "260px", borderRadius: "12px", overflow: "hidden", background: "#000" }}>
+            <video controls preload="metadata"
+              style={{ width: "100%", display: "block", maxHeight: "200px" }}
+              onError={() => console.warn("[CRM] Falha ao carregar vídeo:", src)}
+            >
+              <source src={src} />
+              <a href={src} target="_blank" style={{ color: "#60a5fa", padding: "8px", display: "block" }}>Baixar vídeo</a>
+            </video>
+          </div>
           {msg.caption && <span className="text-xs opacity-70">{msg.caption}</span>}
         </span>
       );
@@ -216,13 +305,22 @@ function MessageContent({ msg }: { msg: Message }) {
     );
   }
 
-  if (msg.type === "AUDIO") {
+  if (msg.type === "AUDIO" || (msg.mediaUrl && /\.(ogg|mp3|m4a|opus|aac)(\?|$)/i.test(msg.mediaUrl))) {
     if (msg.mediaUrl) {
       const src = mediaProxyUrl(msg.mediaUrl);
       return (
         <span className="flex flex-col gap-1">
-          <audio controls src={src} className="w-full max-w-[260px]"
-            onError={() => console.warn("[CRM] Falha ao carregar áudio:", src)} />
+          <div style={{
+            background: "#F0F0F0", borderRadius: "24px",
+            padding: "10px 16px", display: "flex",
+            alignItems: "center", gap: "10px", maxWidth: "260px",
+          }}>
+            <span style={{ fontSize: "20px" }}>🎙️</span>
+            <audio controls preload="metadata" style={{ flex: 1, height: "32px" }}
+              onError={() => console.warn("[CRM] Falha ao carregar áudio:", src)}>
+              <source src={src} />
+            </audio>
+          </div>
           {/* Show transcript if AI transcribed it */}
           {msg.content && !msg.content.startsWith("[Áudio") && (
             <span className="text-xs italic opacity-70 mt-0.5">{msg.content}</span>
@@ -243,18 +341,23 @@ function MessageContent({ msg }: { msg: Message }) {
     return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
   }
 
-  if (msg.type === "DOCUMENT") {
+  if (msg.type === "DOCUMENT" || (msg.mediaUrl && /\.(pdf|doc|docx|xls|xlsx)(\?|$)/i.test(msg.mediaUrl))) {
     if (msg.mediaUrl) {
       const src = mediaProxyUrl(msg.mediaUrl);
       const filename = msg.caption ?? msg.content ?? "Documento";
       return (
-        <a
-          href={src}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-blue-600 underline underline-offset-2 hover:text-blue-800"
-        >
-          📄 {filename}
+        <a href={src} target="_blank" rel="noopener noreferrer"
+          style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            padding: "10px 14px", background: "#F3F4F6",
+            borderRadius: "12px", textDecoration: "none",
+            maxWidth: "260px", color: "#111827",
+          }}>
+          <span style={{ fontSize: "24px" }}>📄</span>
+          <div>
+            <div style={{ fontSize: "13px", fontWeight: 600 }}>{filename}</div>
+            <div style={{ fontSize: "12px", color: "#6B7280" }}>Toque para abrir</div>
+          </div>
         </a>
       );
     }
@@ -262,30 +365,40 @@ function MessageContent({ msg }: { msg: Message }) {
   }
 
   if (msg.type === "LOCATION") {
-    const text = msg.content ?? ""; // defensive — content is String! but guard anyway
+    const text = msg.content ?? "";
     const latMatch = text.match(/lat:([-\d.]+)/);
     const lngMatch = text.match(/lng:([-\d.]+)/);
     const addrMatch = text.match(/endereço:\s*([^|]+)/);
     const pointMatch = text.match(/ponto:\s*(.+)/);
     const lat = latMatch?.[1];
     const lng = lngMatch?.[1];
-    const label = pointMatch?.[1]?.trim() ?? addrMatch?.[1]?.trim() ?? "Localização";
-    const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null;
-    return (
-      <span className="flex flex-col gap-1 text-sm">
-        <span className="flex items-center gap-1.5 font-medium">
-          <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
-          {label}
-        </span>
-        {lat && lng && <span className="text-xs opacity-70">{lat}, {lng}</span>}
-        {mapsUrl && (
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-            className="text-xs text-blue-600 underline underline-offset-2 hover:text-blue-800">
-            Ver no Google Maps
-          </a>
-        )}
-      </span>
-    );
+    const label = pointMatch?.[1]?.trim() ?? addrMatch?.[1]?.trim() ?? "Localização recebida";
+    return <LocationCard lat={lat} lng={lng} endereco={label} />;
+  }
+
+  // Detect location coordinates or Maps links embedded in TEXT messages
+  if (msg.type === "TEXT" || !msg.type) {
+    const content = msg.content ?? "";
+    const mapsShort = content.match(/maps\.app\.goo\.gl\/\S+|goo\.gl\/maps\/\S+/);
+    const latLng1 = content.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/);
+    const latLng2 = content.match(/@([-\d.]+),([-\d.]+)/);
+    const latLng3 = content.match(/maps\.google\.com\/\?q=([-\d.]+),([-\d.]+)/);
+
+    if (latLng1) return <LocationCard lat={latLng1[1]} lng={latLng1[2]} />;
+    if (latLng2) return <LocationCard lat={latLng2[1]} lng={latLng2[2]} />;
+    if (latLng3) return <LocationCard lat={latLng3[1]} lng={latLng3[2]} />;
+    if (mapsShort) {
+      return (
+        <a href={mapsShort[0]} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl max-w-[260px] no-underline hover:bg-green-100 transition-colors">
+          <span className="text-xl">📍</span>
+          <div>
+            <p className="text-xs font-semibold text-green-800">Localização recebida</p>
+            <p className="text-xs text-blue-600">Abrir no Google Maps</p>
+          </div>
+        </a>
+      );
+    }
   }
 
   return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
@@ -363,6 +476,8 @@ function ConversationsContent() {
   const atBottomRef          = useRef(true);
   const inputRef             = useRef<HTMLTextAreaElement>(null);
   const fileInputRef         = useRef<HTMLInputElement>(null);
+  const clipBtnRef           = useRef<HTMLButtonElement>(null);
+  const productBtnRefs       = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const handleContainerScroll = useCallback(() => {
     const el = messagesContainerRef.current;
@@ -1074,6 +1189,22 @@ function ConversationsContent() {
                         : <AlertTriangle className="w-4 h-4 mr-2 text-amber-500" />}
                       Diagnóstico passagem
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={async () => {
+                      if (!selectedId) return;
+                      if (!confirm("Reenviar passagem de bastão para o dono agora?")) return;
+                      try {
+                        const res = await fetch("/api/debug/reenviar-passagem", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ conversationId: selectedId }),
+                        });
+                        const data = await res.json() as { ok: boolean; msg?: string; error?: string };
+                        alert(data.ok ? `✅ ${data.msg}` : `❌ ${data.error}`);
+                      } catch (err) { alert(`Erro: ${err}`); }
+                    }}>
+                      <Send className="w-4 h-4 mr-2 text-green-500" />
+                      Reenviar passagem
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -1251,23 +1382,25 @@ function ConversationsContent() {
                   className="px-3 pt-2 pb-1.5 flex items-center gap-1.5 border-b overflow-x-auto scrollbar-hide"
                   onClick={() => setMediaDropdown(null)}
                 >
-                  {/* Quick-send product buttons */}
-                  {products.map(p => (
-                    <div key={p.id} className="relative shrink-0" onClick={e => e.stopPropagation()}>
-                      <button
-                        onClick={() => setMediaDropdown(mediaDropdown === p.id ? null : p.id)}
-                        disabled={sendingMedia}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
-                      >
-                        <ImageIcon className="w-3 h-3 shrink-0" />
-                        <span className="truncate max-w-[72px]">{p.name}</span>
-                        <ChevronDown className="w-3 h-3 shrink-0" />
-                      </button>
-                      {mediaDropdown === p.id && (
-                        <div className="absolute bottom-full left-0 mb-1 bg-white border rounded-xl shadow-lg py-1 z-20 min-w-[140px]">
+                  {/* Quick-send product buttons — Portal dropdown */}
+                  {products.map(p => {
+                    const btnRef = { current: productBtnRefs.current.get(p.id) ?? null } as React.RefObject<HTMLButtonElement | null>;
+                    return (
+                      <div key={p.id} className="relative shrink-0">
+                        <button
+                          ref={(el) => { if (el) productBtnRefs.current.set(p.id, el); }}
+                          onClick={() => setMediaDropdown(mediaDropdown === p.id ? null : p.id)}
+                          disabled={sendingMedia}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
+                        >
+                          <ImageIcon className="w-3 h-3 shrink-0" />
+                          <span className="truncate max-w-[72px]">{p.name}</span>
+                          <ChevronDown className="w-3 h-3 shrink-0" />
+                        </button>
+                        <PortalDropdown open={mediaDropdown === p.id} anchorRef={btnRef} onClose={() => setMediaDropdown(null)}>
                           {(p.imageUrl || (p.imageUrls && p.imageUrls.length > 0)) && (
                             <button
-                              onClick={() => void handleSendProductMedia(p.id, "image")}
+                              onClick={() => { void handleSendProductMedia(p.id, "image"); setMediaDropdown(null); }}
                               className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
                             >
                               <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
@@ -1276,24 +1409,25 @@ function ConversationsContent() {
                           )}
                           {p.videoUrl && (
                             <button
-                              onClick={() => void handleSendProductMedia(p.id, "video")}
+                              onClick={() => { void handleSendProductMedia(p.id, "video"); setMediaDropdown(null); }}
                               className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
                             >
                               <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                               Vídeo
                             </button>
                           )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        </PortalDropdown>
+                      </div>
+                    );
+                  })}
 
                   {/* Separator */}
                   {products.length > 0 && <span className="w-px h-4 bg-border shrink-0" />}
 
-                  {/* 📎 General attachment */}
-                  <div className="relative shrink-0" onClick={e => e.stopPropagation()}>
+                  {/* 📎 General attachment — Portal dropdown */}
+                  <div className="relative shrink-0">
                     <button
+                      ref={clipBtnRef}
                       onClick={() => setMediaDropdown(mediaDropdown === "__clip" ? null : "__clip")}
                       disabled={sendingMedia}
                       title="Anexar mídia"
@@ -1304,32 +1438,30 @@ function ConversationsContent() {
                         : <Paperclip className="w-4 h-4 text-muted-foreground" />
                       }
                     </button>
-                    {mediaDropdown === "__clip" && (
-                      <div className="absolute bottom-full left-0 mb-1 bg-white border rounded-xl shadow-lg py-1 z-20 min-w-[180px]">
-                        <button
-                          onClick={() => { setMediaModal("image"); setMediaDropdown(null); }}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                        >
-                          <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                          Foto do produto
-                        </button>
-                        <button
-                          onClick={() => { setMediaModal("video"); setMediaDropdown(null); }}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                        >
-                          <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                          Vídeo do produto
-                        </button>
-                        <div className="border-t my-1" />
-                        <button
-                          onClick={() => { fileInputRef.current?.click(); setMediaDropdown(null); }}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                        >
-                          <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                          Arquivo do celular
-                        </button>
-                      </div>
-                    )}
+                    <PortalDropdown open={mediaDropdown === "__clip"} anchorRef={clipBtnRef} onClose={() => setMediaDropdown(null)}>
+                      <button
+                        onClick={() => { setMediaModal("image"); setMediaDropdown(null); }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                      >
+                        <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        Foto do produto
+                      </button>
+                      <button
+                        onClick={() => { setMediaModal("video"); setMediaDropdown(null); }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                      >
+                        <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                        Vídeo do produto
+                      </button>
+                      <div className="border-t my-1" />
+                      <button
+                        onClick={() => { fileInputRef.current?.click(); setMediaDropdown(null); }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
+                      >
+                        <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        Arquivo do celular
+                      </button>
+                    </PortalDropdown>
                   </div>
 
                   {/* Hidden file input */}
@@ -1409,9 +1541,9 @@ function ConversationsContent() {
     </div>
 
     {/* ── Product media modal ──────────────────────────────────────────────── */}
-    {mediaModal && (
+    {mediaModal && typeof document !== "undefined" && createPortal(
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+        className="fixed inset-0 z-[9990] flex items-center justify-center bg-black/60 p-4"
         onClick={() => setMediaModal(null)}
       >
         <div
@@ -1487,7 +1619,8 @@ function ConversationsContent() {
             )}
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
     </>
   );

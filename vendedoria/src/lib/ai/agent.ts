@@ -883,7 +883,11 @@ export async function processAIResponse(
     // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
     const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
-    const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
+    // BUG FIX: [PASSAGEM] is stripped before saving to DB, so text search always returns false.
+    // Use resumoEnviado (DB flag) as the authoritative guard. Also check etapa as secondary guard.
+    const resumoJaEnviado = (conversation as typeof conversation & { resumoEnviado?: boolean }).resumoEnviado ?? false;
+    const etapaJaConfirmada = conversation.etapa === "PEDIDO_CONFIRMADO";
+    const passagemJaFeita = resumoJaEnviado || etapaJaConfirmada || recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
     if (dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
@@ -1051,15 +1055,16 @@ export async function processAIResponse(
         await prisma.ownerNotification.create({
           data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
         }).catch(() => {});
-        // Marca conversa como pedido confirmado e cancela follow-ups
+        // Marca conversa como pedido confirmado, seta resumoEnviado e cancela follow-ups
         await prisma.whatsappConversation.update({
           where: { id: conversationId },
-          data: { etapa: "PEDIDO_CONFIRMADO" },
+          data: { etapa: "PEDIDO_CONFIRMADO", resumoEnviado: true },
         }).catch(() => {});
         await prisma.conversationFollowUp.updateMany({
           where: { conversationId, status: "ACTIVE" },
           data: { status: "DONE" },
         }).catch(() => {});
+        console.log(`[AI Agent] [PASSAGEM] via IA processada e resumoEnviado=true marcado`);
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
     }
 
