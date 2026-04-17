@@ -912,7 +912,7 @@ export async function processAIResponse(
         `🗺️ *Localização:* ${collectedData.localizacao ?? "não enviada"}\n` +
         `⏰ *Receber até:* ${collectedData.horario}\n` +
         `💳 *Pagamento:* ${collectedData.pagamento}\n` +
-        `📱 *WhatsApp cliente:* ${to}\n\n` +
+        `📱 *WhatsApp:* https://wa.me/${to}\n` +
         `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
         `_Organizar entrega e encaminhar motoboy._`;
 
@@ -1041,7 +1041,7 @@ export async function processAIResponse(
         const handoffMsg =
           `*🔔 PEDIDO NOVO — NEXO BRASIL*\n\n` +
           `👤 *Cliente:* ${clientName}\n` +
-          `📱 *WhatsApp:* ${to}\n` +
+          `📱 *WhatsApp:* https://wa.me/${to}\n` +
           `📦 *Produto:* ${produtoStr}\n` +
           `📍 *Localização:* ${orderData.localizacao ?? "não enviada"}\n` +
           `🏠 *Endereço:* ${orderData.endereco ?? "?"}\n` +

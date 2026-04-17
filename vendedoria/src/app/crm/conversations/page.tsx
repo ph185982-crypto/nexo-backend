@@ -9,7 +9,7 @@ import {
   ChevronLeft, ChevronDown, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
-  User, SlidersHorizontal, Paperclip, Film,
+  User, SlidersHorizontal, Paperclip, Film, Smile,
 } from "lucide-react";
 import { ContactPanel } from "@/components/crm/ContactPanel";
 import { Button } from "@/components/ui/button";
@@ -466,6 +466,7 @@ function ConversationsContent() {
   const [mediaDropdown, setMediaDropdown] = useState<string | null>(null); // product id | "__clip" | null
   const [mediaModal, setMediaModal]       = useState<"image" | "video" | null>(null);
   const [sendingMedia, setSendingMedia]   = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -478,6 +479,7 @@ function ConversationsContent() {
   const fileInputRef         = useRef<HTMLInputElement>(null);
   const clipBtnRef           = useRef<HTMLButtonElement>(null);
   const productBtnRefs       = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const emojiPickerRef       = useRef<HTMLDivElement>(null);
 
   const handleContainerScroll = useCallback(() => {
     const el = messagesContainerRef.current;
@@ -736,6 +738,18 @@ function ConversationsContent() {
   }, [selectedId, sendingMedia, fetchMessages]);
 
   // ── Send message ──────────────────────────────────────────────────────────────
+  // Close emoji picker on outside click
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showEmojiPicker]);
+
   const handleSend = useCallback(async () => {
     const content = msgInput.trim();
     if (!content || !selectedId || sending) return;
@@ -1476,7 +1490,48 @@ function ConversationsContent() {
               )}
 
               {/* Text input row */}
-              <div className="px-3 py-2 flex gap-2 items-end">
+              <div className="px-3 py-2 flex gap-2 items-end relative">
+                {/* Emoji picker button */}
+                <div className="relative shrink-0" ref={emojiPickerRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(v => !v)}
+                    className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
+                    title="Emojis"
+                  >
+                    <Smile className="w-5 h-5 text-muted-foreground" />
+                  </button>
+                  {showEmojiPicker && (
+                    <div className="absolute bottom-10 left-0 z-50 bg-white rounded-xl shadow-xl border p-2 w-72">
+                      {[
+                        { cat: "😊 Expressões", emojis: ["😀","😃","😄","😁","😅","😂","🤣","😊","😇","🥰","😍","🤩","😘","😗","😚","😙","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","😐","😑","😶","😏","😒","🙄","😬","🤥","😔","😪","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","😱","😨","😰","😥","😓","🥴","😵","🤡","😷","🤒","🤕","🤧","😇","🤠","🥳","😎","🤓","🧐"] },
+                        { cat: "👋 Gestos", emojis: ["👋","🤚","🖐","✋","🖖","👌","🤌","🤏","✌","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝","👍","👎","✊","👊","🤛","🤜","👏","🙌","🤲","🤝","🙏","💪","🦾","🫶"] },
+                        { cat: "❤️ Símbolos", emojis: ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","❤️‍🔥","💔","❣️","💕","💞","💓","💗","💖","💘","💝","🌟","⭐","✨","💫","🔥","🎉","🎊","🏆","💯","✅","❌","⚡","💥","🌈"] },
+                        { cat: "🛍️ Comércio", emojis: ["📦","🛒","💳","💰","💵","🏷️","🎁","📋","📱","💬","🔔","🚀","⏰","📍","🗺️","🏠","🚗","🛵","📸","🎥","🛠️","🔧","⚙️","📊","📈","🤝","👑","💎","🌟","🎯","✔️","📞"] },
+                      ].map(({ cat, emojis }) => (
+                        <div key={cat} className="mb-2">
+                          <p className="text-[10px] text-muted-foreground font-medium px-1 mb-1">{cat}</p>
+                          <div className="flex flex-wrap gap-0.5">
+                            {emojis.map(em => (
+                              <button
+                                key={em}
+                                type="button"
+                                className="text-xl hover:bg-muted rounded p-0.5 leading-none"
+                                onClick={() => {
+                                  setMsgInput(v => v + em);
+                                  inputRef.current?.focus();
+                                }}
+                              >
+                                {em}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <Textarea
                   ref={inputRef}
                   value={msgInput}
