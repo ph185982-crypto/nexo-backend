@@ -1973,6 +1973,280 @@ function MetaAds() {
   );
 }
 
+// ─── IMPORT FORNECEDOR ────────────────────────────────────────────────────────
+
+function ImportFornecedor() {
+  const [job, setJob]             = useState(null);
+  const [products, setProducts]   = useState([]);
+  const [loading, setLoading]     = useState(false);
+  const [polling, setPolling]     = useState(false);
+  const [genImages, setGenImages] = useState(false);
+  const [filter, setFilter]       = useState("all");   // all | pending | published | rejected
+  const [msg, setMsg]             = useState("");
+  const [publishing, setPublishing] = useState(false);
+
+  // Load last job status on mount
+  useEffect(() => { loadStatus(); }, []);
+
+  async function loadStatus() {
+    try {
+      const d = await apiFetch("/api/import/status");
+      if (d && d.status !== "idle") {
+        setJob(d);
+        if (d.status === "done" || d.status === "error") {
+          await loadProducts(d.id);
+        }
+      }
+    } catch(e) {}
+  }
+
+  async function loadProducts(jobId) {
+    try {
+      const d = await apiFetch(`/api/import/products?job_id=${jobId || ""}`);
+      setProducts(d?.products || []);
+    } catch(e) {}
+  }
+
+  async function startImport() {
+    setLoading(true);
+    setMsg("");
+    try {
+      const d = await apiFetch("/api/import/start", {
+        method: "POST",
+        body: JSON.stringify({ generate_images: genImages }),
+      });
+      setJob({ id: d.job_id, status: "scraping", total: 0, processed: 0 });
+      setMsg("Importação iniciada! Raspando produtos do fornecedor…");
+      setPolling(true);
+      pollJob(d.job_id);
+    } catch(e) {
+      setMsg("Erro: " + e.message);
+    }
+    setLoading(false);
+  }
+
+  function pollJob(jobId) {
+    const iv = setInterval(async () => {
+      try {
+        const d = await apiFetch(`/api/import/status/${jobId}`);
+        setJob(d);
+        if (d.status === "done" || d.status === "error") {
+          clearInterval(iv);
+          setPolling(false);
+          await loadProducts(jobId);
+          setMsg(d.status === "done" ? `Concluído! ${d.total || 0} produtos importados.` : `Erro: ${d.error}`);
+        }
+      } catch(e) { clearInterval(iv); setPolling(false); }
+    }, 3000);
+  }
+
+  async function publishOne(productId) {
+    try {
+      await apiFetch(`/api/import/publish/${productId}`, { method: "POST" });
+      setProducts(ps => ps.map(p => p.id === productId ? {...p, status: "published"} : p));
+    } catch(e) { alert("Erro ao publicar: " + e.message); }
+  }
+
+  async function rejectOne(productId) {
+    try {
+      await apiFetch(`/api/import/products/${productId}`, { method: "DELETE" });
+      setProducts(ps => ps.map(p => p.id === productId ? {...p, status: "rejected"} : p));
+    } catch(e) {}
+  }
+
+  async function generateImageOne(productId) {
+    try {
+      const d = await apiFetch(`/api/import/generate-image/${productId}`, { method: "POST" });
+      setProducts(ps => ps.map(p => p.id === productId ? {...p, ai_image_url: d.url} : p));
+    } catch(e) { alert("Erro ao gerar imagem: " + e.message); }
+  }
+
+  async function publishAll() {
+    setPublishing(true);
+    try {
+      const d = await apiFetch("/api/import/publish-all", { method: "POST" });
+      setMsg(`Publicados: ${d.published} produtos.`);
+      await loadProducts(job?.id);
+    } catch(e) { setMsg("Erro: " + e.message); }
+    setPublishing(false);
+  }
+
+  const filtered = products.filter(p => filter === "all" || p.status === filter);
+  const counts = {
+    pending:   products.filter(p => p.status === "pending").length,
+    published: products.filter(p => p.status === "published").length,
+    rejected:  products.filter(p => p.status === "rejected").length,
+  };
+
+  const statusColor = { pending: C.yellow, published: C.green, rejected: C.red, scraping: C.blue, saving: C.blue, generating_images: C.purple, done: C.green, error: C.red, idle: C.textSub };
+  const statusLabel = { pending: "Aguardando revisão", published: "Publicado", rejected: "Rejeitado", scraping: "Raspando produtos…", saving: "Salvando…", generating_images: "Gerando imagens IA…", done: "Concluído", error: "Erro", idle: "Ocioso" };
+
+  return (
+    <div style={{padding:24,maxWidth:1200,margin:"0 auto"}}>
+      {/* Header card */}
+      <div style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:14,padding:24,marginBottom:20}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:16,flexWrap:"wrap"}}>
+          <div style={{flex:1,minWidth:260}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
+              <span style={{fontSize:24}}>📦</span>
+              <div>
+                <div style={{fontSize:17,fontWeight:800,color:C.text}}>Importar do Fornecedor</div>
+                <div style={{fontSize:12,color:C.textSub}}>yanne.vendizap.com — Luciy Variedades</div>
+              </div>
+            </div>
+            <div style={{fontSize:13,color:C.textMid,lineHeight:1.6}}>
+              Raspa automaticamente o catálogo do fornecedor, aplica <strong style={{color:C.green}}>75% de margem</strong> no preço de custo e permite revisar antes de publicar.
+              {" "}Opcionalmente, gera fotos profissionais com IA (DALL-E 3).
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:10,minWidth:220}}>
+            <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,color:C.textMid}}>
+              <input type="checkbox" checked={genImages} onChange={e=>setGenImages(e.target.checked)} style={{accentColor:C.purple}}/>
+              <span>Gerar fotos com DALL-E 3</span>
+            </label>
+            <button
+              onClick={startImport}
+              disabled={loading || polling}
+              style={{padding:"10px 20px",background:loading||polling?"rgba(255,255,255,0.07)":C.sidebarActive,border:"none",borderRadius:9,color:"#fff",fontWeight:700,fontSize:13,cursor:loading||polling?"not-allowed":"pointer",fontFamily:"Sora,system-ui,sans-serif",transition:"all 0.15s"}}
+            >
+              {polling ? "Importando…" : loading ? "Iniciando…" : "🚀 Iniciar Importação"}
+            </button>
+          </div>
+        </div>
+
+        {/* Progress */}
+        {job && job.status !== "idle" && (
+          <div style={{marginTop:16,padding:"12px 16px",background:C.bg,borderRadius:10,border:`1px solid ${C.border}`}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+              <span style={{fontSize:13,fontWeight:600,color:statusColor[job.status]||C.textMid}}>
+                {statusLabel[job.status]||job.status}
+              </span>
+              {job.total > 0 && (
+                <span style={{fontSize:12,color:C.textSub}}>{job.processed||0} / {job.total} produtos</span>
+              )}
+            </div>
+            {job.total > 0 && (
+              <div style={{height:6,background:C.border,borderRadius:3,overflow:"hidden"}}>
+                <div style={{height:"100%",background:statusColor[job.status]||C.blue,borderRadius:3,width:`${Math.min(100,(job.processed/job.total)*100)}%`,transition:"width 0.5s ease"}}/>
+              </div>
+            )}
+          </div>
+        )}
+
+        {msg && (
+          <div style={{marginTop:12,padding:"10px 14px",background:"rgba(63,185,80,0.08)",border:`1px solid rgba(63,185,80,0.2)`,borderRadius:8,fontSize:13,color:C.green}}>{msg}</div>
+        )}
+      </div>
+
+      {/* Stats row */}
+      {products.length > 0 && (
+        <div style={{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+          {[
+            {label:"Total",value:products.length,color:C.blue},
+            {label:"Pendentes",value:counts.pending,color:C.yellow},
+            {label:"Publicados",value:counts.published,color:C.green},
+            {label:"Rejeitados",value:counts.rejected,color:C.red},
+          ].map(s=>(
+            <div key={s.label} style={{flex:"1 1 120px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,padding:"12px 16px",textAlign:"center"}}>
+              <div style={{fontSize:22,fontWeight:800,color:s.color}}>{s.value}</div>
+              <div style={{fontSize:11,color:C.textSub,marginTop:2}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Actions bar */}
+      {products.length > 0 && (
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16,flexWrap:"wrap"}}>
+          {["all","pending","published","rejected"].map(f=>(
+            <button key={f} onClick={()=>setFilter(f)} style={{padding:"6px 14px",borderRadius:7,border:`1px solid ${filter===f?C.blue:C.border}`,background:filter===f?"rgba(88,166,255,0.12)":"transparent",color:filter===f?C.blue:C.textMid,fontSize:12,cursor:"pointer",fontFamily:"Sora,system-ui,sans-serif",fontWeight:filter===f?700:400}}>
+              {{all:"Todos",pending:"Pendentes",published:"Publicados",rejected:"Rejeitados"}[f]}
+              {f==="pending"&&counts.pending>0&&<span style={{marginLeft:5,background:C.yellow,color:"#000",borderRadius:8,padding:"0 5px",fontSize:10,fontWeight:800}}>{counts.pending}</span>}
+            </button>
+          ))}
+          <div style={{flex:1}}/>
+          {counts.pending > 0 && (
+            <button onClick={publishAll} disabled={publishing} style={{padding:"7px 16px",background:C.green,border:"none",borderRadius:8,color:"#fff",fontSize:12,fontWeight:700,cursor:publishing?"not-allowed":"pointer",fontFamily:"Sora,system-ui,sans-serif"}}>
+              {publishing ? "Publicando…" : `Publicar Todos (${counts.pending})`}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Product grid */}
+      {filtered.length === 0 && products.length === 0 && !polling && (
+        <div style={{textAlign:"center",padding:"60px 20px",color:C.textSub}}>
+          <div style={{fontSize:48,marginBottom:12}}>📦</div>
+          <div style={{fontSize:16,fontWeight:600,color:C.textMid,marginBottom:6}}>Nenhum produto importado ainda</div>
+          <div style={{fontSize:13}}>Clique em "Iniciar Importação" para raspar o catálogo do fornecedor.</div>
+        </div>
+      )}
+
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:16}}>
+        {filtered.map(p => {
+          const img = p.ai_image_url || (p.original_images?.[0]?.thumb) || (p.original_images?.[0]?.original) || "";
+          const isPublished = p.status === "published";
+          const isRejected  = p.status === "rejected";
+          return (
+            <div key={p.id} style={{background:C.surface,border:`1px solid ${isPublished?C.green:isRejected?"rgba(248,81,73,0.3)":C.border}`,borderRadius:12,overflow:"hidden",opacity:isRejected?0.5:1,position:"relative"}}>
+              {/* Status badge */}
+              <div style={{position:"absolute",top:8,right:8,zIndex:2,padding:"3px 8px",borderRadius:6,fontSize:10,fontWeight:700,background:isPublished?"rgba(63,185,80,0.9)":isRejected?"rgba(248,81,73,0.9)":"rgba(210,153,34,0.9)",color:"#fff"}}>
+                {isPublished?"✓ Publicado":isRejected?"✗ Rejeitado":"Pendente"}
+              </div>
+
+              {/* Image */}
+              <div style={{height:180,background:C.bg,overflow:"hidden",position:"relative"}}>
+                {img ? (
+                  <img src={img} alt={p.title} style={{width:"100%",height:"100%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";}}/>
+                ) : (
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100%",color:C.textLight,fontSize:32}}>🔧</div>
+                )}
+                {p.ai_image_url && (
+                  <div style={{position:"absolute",bottom:6,left:6,background:"rgba(188,140,255,0.9)",borderRadius:5,padding:"2px 7px",fontSize:9,fontWeight:700,color:"#fff"}}>✨ IA</div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div style={{padding:12}}>
+                <div style={{fontSize:12,fontWeight:700,color:C.text,lineHeight:1.4,marginBottom:6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{p.title}</div>
+                {p.sku && <div style={{fontSize:10,color:C.textSub,marginBottom:6}}>SKU: {p.sku}</div>}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:10}}>
+                  <div>
+                    <div style={{fontSize:10,color:C.textSub}}>Custo</div>
+                    <div style={{fontSize:13,fontWeight:700,color:C.textMid}}>R$ {p.cost_brl?.toFixed(2)}</div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:10,color:C.textSub}}>Venda (+75%)</div>
+                    <div style={{fontSize:16,fontWeight:800,color:C.green}}>R$ {p.sell_price?.toFixed(2)}</div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                {!isPublished && !isRejected && (
+                  <div style={{display:"flex",gap:6}}>
+                    <button onClick={()=>publishOne(p.id)} style={{flex:1,padding:"6px 0",background:C.green,border:"none",borderRadius:7,color:"#fff",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Sora,system-ui,sans-serif"}}>
+                      Publicar
+                    </button>
+                    <button onClick={()=>generateImageOne(p.id)} title="Gerar imagem IA" style={{padding:"6px 9px",background:"rgba(188,140,255,0.15)",border:`1px solid rgba(188,140,255,0.3)`,borderRadius:7,color:C.purple,fontSize:13,cursor:"pointer"}}>
+                      ✨
+                    </button>
+                    <button onClick={()=>rejectOne(p.id)} style={{padding:"6px 9px",background:C.redLight,border:`1px solid rgba(248,81,73,0.2)`,borderRadius:7,color:C.red,fontSize:11,cursor:"pointer",fontFamily:"Sora,system-ui,sans-serif"}}>
+                      ✗
+                    </button>
+                  </div>
+                )}
+                {isPublished && (
+                  <div style={{textAlign:"center",fontSize:12,color:C.green,fontWeight:600}}>✓ Produto no catálogo</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── NAV CONFIG ───────────────────────────────────────────────────────────────
 
 const NAV = [
@@ -1984,6 +2258,7 @@ const NAV = [
   {id:"calc",icon:"💰",label:"Profit Calculator"},
   {id:"download",icon:"⬇️",label:"Criativos"},
   {id:"meta",icon:"📊",label:"Meta Ads"},
+  {id:"import",icon:"📦",label:"Importar Fornecedor"},
   {id:"favoritos",icon:"★",label:"Favoritos"},
   {id:"settings",icon:"⚙️",label:"Configurações"},
 ];
@@ -2051,7 +2326,7 @@ export default function NexoApp() {
   if (!booted) return <div data-nexo-theme={themeAttr}><style>{THEME_CSS}</style><Boot onDone={()=>setBooted(true)}/></div>;
 
   const SW = isMobile ? 0 : collapsed ? 64 : 222;
-  const titles = { dashboard:"Dashboard",produtos:"Winning Products",radar:"Trend Radar",ads:"Ads Spy",gap:"Market Gap Detector",calc:"Profit Calculator",download:"Creative Downloader",meta:"Meta Ads Intelligence",favoritos:"Favoritos",settings:"Configurações" };
+  const titles = { dashboard:"Dashboard",produtos:"Winning Products",radar:"Trend Radar",ads:"Ads Spy",gap:"Market Gap Detector",calc:"Profit Calculator",download:"Creative Downloader",meta:"Meta Ads Intelligence",import:"Importar Fornecedor",favoritos:"Favoritos",settings:"Configurações" };
 
   return (
     <div data-nexo-theme={themeAttr} style={{minHeight:"100vh",background:"var(--c-bg)",fontFamily:"Sora,system-ui,sans-serif",display:"flex"}}>
@@ -2124,6 +2399,7 @@ export default function NexoApp() {
           {nav==="download"&&<CreativeDownloader/>}
           {nav==="meta"&&<MetaAds/>}
           {nav==="favoritos"&&<Favorites onSelect={setModal} favorites={favorites} onToggleFav={toggleFav}/>}
+          {nav==="import"&&<ImportFornecedor/>}
           {nav==="settings"&&<Settings user={user}/>}
         </div>
       </div>
