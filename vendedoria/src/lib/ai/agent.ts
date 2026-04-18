@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
+import { sendPushToAll } from "@/lib/push/notificar";
 
 // ─── AgentConfig DB cache (60s TTL) ──────────────────────────────────────────
 type DBAgentConfig = {
@@ -916,18 +917,21 @@ export async function processAIResponse(
         `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
         `_Organizar entrega e encaminhar motoboy._`;
 
-      // Tenta enviar — retry 30s → 2min se falhar
+      // DB + push always fire, regardless of WhatsApp delivery status
+      await prisma.ownerNotification.create({
+        data: { type: "ORDER", title: `🎉 Pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
+      }).catch(() => {});
+      await sendPushToAll({ title: `🔔 Pedido novo: ${clientName}`, body: handoffMsg.slice(0, 120), url: `/crm/conversations?id=${conversationId}`, tag: `order-${conversationId}` }).catch(() => {});
+      await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
+      await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
+
+      // WhatsApp to owner — best-effort with retry (24h window may block delivery)
       const enviarPassagem = async (tentativa = 1) => {
         try {
           await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
-          await prisma.ownerNotification.create({
-            data: { type: "ORDER", title: `🎉 Pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
-          }).catch(() => {});
-          await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
-          await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
-          console.log(`[AI Agent] PASSAGEM enviada com sucesso (tentativa ${tentativa})`);
+          console.log(`[AI Agent] PASSAGEM WhatsApp enviada com sucesso (tentativa ${tentativa})`);
         } catch (e) {
-          console.error(`[AI Agent] PASSAGEM falhou tentativa ${tentativa}:`, e);
+          console.error(`[AI Agent] PASSAGEM WhatsApp falhou tentativa ${tentativa}:`, e);
           if (tentativa === 1) {
             setTimeout(() => enviarPassagem(2), 30_000);
           } else if (tentativa === 2) {
@@ -1055,6 +1059,7 @@ export async function processAIResponse(
         await prisma.ownerNotification.create({
           data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
         }).catch(() => {});
+        await sendPushToAll({ title: `🔔 Pedido novo: ${clientName}`, body: handoffMsg.slice(0, 120), url: `/crm/conversations?id=${conversationId}`, tag: `order-${conversationId}` }).catch(() => {});
         // Marca conversa como pedido confirmado, seta resumoEnviado e cancela follow-ups
         await prisma.whatsappConversation.update({
           where: { id: conversationId },

@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { sendPushToAll } from "@/lib/push/notificar";
 
 async function handler(conversationId: string): Promise<{ ok: boolean; msg?: string; error?: string }> {
   const conversation = await prisma.whatsappConversation.findUnique({
@@ -89,6 +90,14 @@ async function handler(conversationId: string): Promise<{ ok: boolean; msg?: str
       if (t < 3) await new Promise((r) => setTimeout(r, 5000));
     }
   }
+
+  // Push notification regardless of WhatsApp success
+  await sendPushToAll({
+    title: `🔔 Pedido novo (reenvio): ${lead?.profileName ?? conversationId}`,
+    body: handoffMsg.slice(0, 120),
+    url: `/crm/conversations?id=${conversationId}`,
+    tag: `order-${conversationId}`,
+  }).catch(() => {});
 
   if (!sucesso) return { ok: false, error: "Falha ao enviar pelo WhatsApp após 3 tentativas" };
 

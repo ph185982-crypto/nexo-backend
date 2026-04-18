@@ -82,12 +82,42 @@ export function Header({ onToggleSidebar }: HeaderProps) {
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const [newOrder, setNewOrder] = useState(false);
+  const prevCountRef = React.useRef(0);
+
+  const playOrderSound = () => {
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      [523, 659, 784].forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = freq;
+        o.type = "sine";
+        g.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
+        o.start(ctx.currentTime + i * 0.15);
+        o.stop(ctx.currentTime + i * 0.15 + 0.3);
+      });
+    } catch { /* no audio context */ }
+  };
 
   const fetchNotifications = useCallback(async () => {
     if (!orgId) return;
     try {
       const res = await fetch(`/api/notifications?organizationId=${orgId}&unread=true`);
-      setNotifications(await res.json());
+      const data: Notification[] = await res.json();
+      const orderCount = data.filter(n => n.type === "ORDER").length;
+      if (orderCount > prevCountRef.current) {
+        playOrderSound();
+        setNewOrder(true);
+        setTimeout(() => setNewOrder(false), 5000);
+        if (Notification.permission === "granted") {
+          new Notification("🔔 Pedido novo!", { body: data.find(n => n.type === "ORDER")?.title ?? "Novo pedido recebido", icon: "/favicon.ico" });
+        }
+      }
+      prevCountRef.current = orderCount;
+      setNotifications(data);
     } catch { /* silent */ }
   }, [orgId]);
 
@@ -97,6 +127,13 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     const t = setInterval(fetchNotifications, 15000);
     return () => clearInterval(t);
   }, [fetchNotifications]);
+
+  // Request browser notification permission on mount
+  useEffect(() => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
+  }, []);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -131,10 +168,15 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         {/* Notification bell */}
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative rounded-full" onClick={fetchNotifications}>
-              <Bell className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className={cn("relative rounded-full", newOrder && "animate-bounce")} onClick={fetchNotifications}>
+              <Bell className={cn("w-5 h-5", newOrder && "text-green-600")} />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className={cn("absolute -top-0.5 -right-0.5 w-4 h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center", newOrder ? "bg-green-500 animate-ping" : "bg-red-500")}>
+                  {newOrder ? "" : unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+              {newOrder && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-green-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
