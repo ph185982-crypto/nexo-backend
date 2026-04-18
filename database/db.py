@@ -205,6 +205,33 @@ class Database:
                 CREATE INDEX IF NOT EXISTS idx_ads_keyword       ON ads(keyword);
                 CREATE INDEX IF NOT EXISTS idx_favs_user         ON favorites(user_id);
                 CREATE INDEX IF NOT EXISTS idx_notifs_user       ON notifications(user_id);
+                CREATE TABLE IF NOT EXISTS import_jobs (
+                    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+                    status TEXT DEFAULT 'pending',
+                    total INT DEFAULT 0,
+                    processed INT DEFAULT 0,
+                    generated INT DEFAULT 0,
+                    error TEXT,
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
+                    updated_at TIMESTAMPTZ DEFAULT NOW()
+                );
+                CREATE TABLE IF NOT EXISTS import_products (
+                    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+                    job_id TEXT NOT NULL,
+                    vendor_id TEXT DEFAULT '',
+                    sku TEXT DEFAULT '',
+                    title TEXT NOT NULL,
+                    description TEXT DEFAULT '',
+                    cost_brl FLOAT DEFAULT 0,
+                    sell_price FLOAT DEFAULT 0,
+                    category TEXT DEFAULT 'Geral',
+                    original_images JSONB DEFAULT '[]',
+                    ai_image_url TEXT DEFAULT '',
+                    status TEXT DEFAULT 'pending',
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS idx_import_products_job    ON import_products(job_id);
+                CREATE INDEX IF NOT EXISTS idx_import_products_status ON import_products(status);
             """)
 
     # ── USERS ─────────────────────────────────────────────────────────────────
@@ -462,3 +489,86 @@ class Database:
                 settings.get("email_enabled", True), settings.get("telegram_enabled", False),
                 settings.get("telegram_chat_id"), settings.get("min_score_alert", 85),
                 settings.get("daily_digest", True))
+
+    # ── IMPORT JOBS ───────────────────────────────────────────────────────────
+    async def create_import_job(self) -> str:
+        p = await self._p()
+        async with p.acquire() as c:
+            row = await c.fetchrow(
+                "INSERT INTO import_jobs(status) VALUES('pending') RETURNING id")
+        return row["id"]
+
+    async def get_import_job(self, job_id: str) -> Optional[Dict]:
+        p = await self._p()
+        async with p.acquire() as c:
+            row = await c.fetchrow("SELECT * FROM import_jobs WHERE id=$1", job_id)
+        return dict(row) if row else None
+
+    async def get_latest_import_job(self) -> Optional[Dict]:
+        p = await self._p()
+        async with p.acquire() as c:
+            row = await c.fetchrow(
+                "SELECT * FROM import_jobs ORDER BY created_at DESC LIMIT 1")
+        return dict(row) if row else None
+
+    async def update_import_job(self, job_id: str, **kwargs):
+        p = await self._p()
+        sets = ", ".join(f"{k}=${i+2}" for i, k in enumerate(kwargs))
+        vals = list(kwargs.values())
+        async with p.acquire() as c:
+            await c.execute(
+                f"UPDATE import_jobs SET {sets}, updated_at=NOW() WHERE id=$1",
+                job_id, *vals)
+
+    # ── IMPORT PRODUCTS ───────────────────────────────────────────────────────
+    async def save_import_products(self, job_id: str, products: list):
+        p = await self._p()
+        async with p.acquire() as c:
+            for pr in products:
+                await c.execute("""
+                    INSERT INTO import_products
+                        (job_id, vendor_id, sku, title, description, cost_brl,
+                         sell_price, category, original_images, status)
+                    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+                    ON CONFLICT DO NOTHING
+                """,
+                    job_id,
+                    pr.get("vendor_id", ""),
+                    pr.get("sku", ""),
+                    pr.get("title", ""),
+                    pr.get("description", ""),
+                    float(pr.get("cost_brl", 0)),
+                    float(pr.get("sell_price", 0)),
+                    pr.get("category", "Geral"),
+                    json.dumps(pr.get("original_images", [])),
+                    "pending",
+                )
+
+    async def get_import_products(self, job_id: str, status: Optional[str] = None) -> List[Dict]:
+        p = await self._p()
+        cond = "WHERE job_id=$1"
+        params: list = [job_id]
+        if status:
+            params.append(status)
+            cond += f" AND status=${len(params)}"
+        async with p.acquire() as c:
+            rows = await c.fetch(
+                f"SELECT * FROM import_products {cond} ORDER BY created_at ASC", *params)
+        return [dict(r) for r in rows]
+
+    async def update_import_product(self, product_id: str, **kwargs):
+        p = await self._p()
+        sets = ", ".join(f"{k}=${i+2}" for i, k in enumerate(kwargs))
+        vals = list(kwargs.values())
+        async with p.acquire() as c:
+            await c.execute(
+                f"UPDATE import_products SET {sets} WHERE id=$1",
+                product_id, *vals)
+
+    async def count_import_products(self, job_id: str) -> Dict[str, int]:
+        p = await self._p()
+        async with p.acquire() as c:
+            rows = await c.fetch(
+                "SELECT status, COUNT(*) as n FROM import_products WHERE job_id=$1 GROUP BY status",
+                job_id)
+        return {r["status"]: r["n"] for r in rows}

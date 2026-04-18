@@ -11,7 +11,7 @@ load_dotenv()
 
 from database.db import Database
 from services.scheduler_mining import MiningScheduler
-from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export, download, mining, meta_ads
+from routers import products, trends, ads, gaps, calculator, ai_router, auth, notifications, export, download, mining, meta_ads, import_ferramentas
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -68,7 +68,8 @@ app.include_router(notifications.router, prefix="/api/notifications", tags=["Not
 app.include_router(export.router,        prefix="/api/export",        tags=["Export"])
 app.include_router(download.router,      prefix="/api/download",      tags=["Download"])
 app.include_router(mining.router,        prefix="/api/mining",        tags=["Mining"])
-app.include_router(meta_ads.router,      prefix="/api/meta",           tags=["Meta Ads"])
+app.include_router(meta_ads.router,          prefix="/api/meta",           tags=["Meta Ads"])
+app.include_router(import_ferramentas.router, prefix="/api/import",          tags=["Import Fornecedor"])
 
 # ── NEXO Mining v5.0 Analytics Router ─────────────────────────────────────────
 from routers.analytics import router as analytics_router
