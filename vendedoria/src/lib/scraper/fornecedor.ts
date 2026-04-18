@@ -236,8 +236,9 @@ export async function scrapeFornecedor(
     });
 
     const ferramentas = result.filter((p) => p.ehFerramenta);
-    console.log(`[Scraper] ${result.length} produtos → ${ferramentas.length} ferramentas`);
-    return ferramentas;
+    console.log(`[Scraper] ${result.length} produtos → ${ferramentas.length} identificados como ferramentas`);
+    // Return ALL products from the supplier URL (supplier is a dedicated tool store)
+    return result;
   } finally {
     await browser.close();
   }
@@ -264,5 +265,5 @@ export function processarProdutosManuais(
         ehFerramenta: ehFerramenta(item.nome, item.categoria ?? "ferramenta"),
       };
     })
-    .filter((p) => p.ehFerramenta);
+    .filter((p) => p.nome && p.precoCusto > 0);
 }
