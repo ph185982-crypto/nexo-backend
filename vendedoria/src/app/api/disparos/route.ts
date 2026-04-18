@@ -42,8 +42,11 @@ export async function POST(req: NextRequest) {
 
   for (let i = 0; i < leads.length; i++) {
     const lead = leads[i];
+    const personalized = message.trim()
+      .replace(/\{nome\}/gi, lead.profileName ?? lead.phoneNumber)
+      .replace(/\{telefone\}/gi, lead.phoneNumber);
     try {
-      await sendWhatsAppMessage(phoneNumberId, lead.phoneNumber, message.trim());
+      await sendWhatsAppMessage(phoneNumberId, lead.phoneNumber, personalized);
       results.push({ leadId: lead.id, phone: lead.phoneNumber, name: lead.profileName, status: "sent" });
     } catch (e) {
       results.push({

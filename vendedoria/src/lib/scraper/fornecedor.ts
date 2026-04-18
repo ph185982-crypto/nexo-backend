@@ -31,12 +31,13 @@ export function ehFerramenta(nome: string, categoria: string): boolean {
   return palavrasFerramenta.some((p) => texto.includes(p));
 }
 
-// ── Cálculo de preços ─────────────────────────────────────────────────────────
+// ── Cálculo de preços (margem de 75% sobre o custo) ──────────────────────────
 
-function calcularPrecos(precoCusto: number) {
-  const precoVenda = precoCusto * 2;
-  const precoDesconto = Math.round(precoVenda * 0.75 * 100) / 100;
-  const parcelamento = Math.round((precoDesconto / 10) * 100) / 100;
+export function calcularPrecos(precoCusto: number, margemPercent = 75) {
+  // precoVenda = custo × (1 + margem/100)
+  const precoVenda    = Math.round(precoCusto * (1 + margemPercent / 100) * 100) / 100;
+  const precoDesconto = precoVenda;
+  const parcelamento  = Math.round((precoVenda / 10) * 100) / 100;
   return { precoVenda, precoDesconto, parcelamento };
 }
 

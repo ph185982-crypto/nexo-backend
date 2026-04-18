@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery, gql } from "@apollo/client";
 import {
-  Send, Search, CheckSquare, Square, Loader2, CheckCircle, XCircle,
+  Send, Search, CheckSquare, Square, Loader2, CheckCircle, XCircle, Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -333,14 +333,33 @@ export default function DisparosPage() {
           <div>
             <label className="text-sm font-medium mb-1.5 block">Mensagem</label>
             <Textarea
-              placeholder="Digite a mensagem que será enviada para os contatos selecionados..."
+              placeholder="Olá {nome}! Temos uma oferta especial para você..."
               rows={8}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="resize-none"
             />
+            <div className="flex items-start gap-1.5 mt-1.5 text-xs text-muted-foreground">
+              <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>Use <code className="bg-muted px-1 rounded">{"{nome}"}</code> e <code className="bg-muted px-1 rounded">{"{telefone}"}</code> para personalizar. Ex: "Oi {"{nome}"}, tudo bem?"</span>
+            </div>
             <p className="text-xs text-muted-foreground mt-1">{message.length} caracteres</p>
           </div>
+
+          {/* Preview */}
+          {message && selectedLeadIds.size > 0 && (() => {
+            const firstLead = leads.find(l => selectedLeadIds.has(l.id));
+            if (!firstLead) return null;
+            const preview = message
+              .replace(/\{nome\}/gi, firstLead.profileName ?? firstLead.phoneNumber)
+              .replace(/\{telefone\}/gi, firstLead.phoneNumber);
+            return (
+              <div className="rounded-lg bg-muted/50 p-3 border">
+                <p className="text-xs text-muted-foreground mb-1 font-medium">Prévia (1º contato)</p>
+                <p className="text-xs whitespace-pre-wrap">{preview}</p>
+              </div>
+            );
+          })()}
 
           {/* Send button */}
           <Button

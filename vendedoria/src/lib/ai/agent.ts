@@ -379,249 +379,77 @@ function buildRuntimeContext(
   activeProducts?: Array<{ id: string; name: string; imageUrl?: string | null; videoUrl?: string | null }>,
 ): string {
   const { hour, dayOfWeek } = getSaoPauloTime();
-  const greeting = saudacao(); // usa fuso America/Sao_Paulo — nunca "bom dia" à meia-noite
+  const greeting = saudacao();
   const emoji    = aiConfig?.usarEmoji !== false;
-  const nivel    = aiConfig?.nivelVenda ?? "medio";
   const dentroDoExpediente = isBusinessHours(hour, dayOfWeek);
 
-  const entregaHoje = dentroDoExpediente
-    ? "entrega pode ser HOJE — confirmar horário com o cliente"
-    : "fora do expediente (seg-sex 9-18h, sáb 8-13h) — ofereça agendar para o próximo dia útil";
-
-  // ── Dados já coletados (não perguntar de novo) ──────────────────────────────
+  // ── Dados já coletados ────────────────────────────────────────────────────────
   const coletados: string[] = [];
-  if (collectedData.localizacao) {
-    coletados.push(`✅ LOCALIZAÇÃO RECEBIDA: "${collectedData.localizacao.substring(0, 100)}" — PROIBIDO pedir localização de novo`);
-  }
-  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) {
-    coletados.push(`✅ Endereço confirmado: ${collectedData.endereco.substring(0, 80)}`);
-  }
-  if (collectedData.pagamento)   coletados.push(`✅ Pagamento: ${collectedData.pagamento}`);
-  if (collectedData.horario)     coletados.push(`✅ Horário: ${collectedData.horario}`);
-  if (collectedData.nome)        coletados.push(`✅ Nome: ${collectedData.nome}`);
+  if (collectedData.localizacao) coletados.push(`✅ Localização: "${collectedData.localizacao.substring(0, 100)}" — NÃO pedir de novo`);
+  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) coletados.push(`✅ Endereço: ${collectedData.endereco.substring(0, 80)}`);
+  if (collectedData.pagamento) coletados.push(`✅ Pagamento: ${collectedData.pagamento}`);
+  if (collectedData.horario)   coletados.push(`✅ Horário: ${collectedData.horario}`);
+  if (collectedData.nome)      coletados.push(`✅ Nome: ${collectedData.nome}`);
   const dadosColetados = coletados.length > 0
     ? `\nDADOS JÁ COLETADOS — NÃO PERGUNTAR DE NOVO:\n${coletados.join("\n")}`
     : "";
 
-  // ── Tentativas de quebra de objeção de preço já feitas ──────────────────────
+  // ── Progresso de objeção de preço ────────────────────────────────────────────
   const priceAttempts = recentMessages ? countPriceObjectionAttempts(recentMessages) : 0;
-  // Informa à IA quantas tentativas de objeção de preço já foram feitas
-  // mas NUNCA sugere escalar — escalada por preço está completamente removida
   const priceInfo = priceAttempts > 0
-    ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra. ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). Varie o argumento.` : "Já tentou bastante. Tente um ângulo diferente — benefício, praticidade, entrega. NUNCA escale por preço."}`
+    ? `\nOBJEÇÃO DE PREÇO: ${priceAttempts} tentativa(s) feitas. ${priceAttempts < 5 ? "Varie o argumento." : "Tente um ângulo diferente."}`
     : "";
 
-  // ── Etapa da conversa ────────────────────────────────────────────────────────
-  let etapa: string;
+  // ── Estágio atual (informativo — o comportamento vem do roteiro configurado) ─
+  const temLocal = !!(collectedData.localizacao || collectedData.endereco);
+  const dadosFaltando: string[] = [];
+  if (!temLocal)                dadosFaltando.push("localização/endereço");
+  if (!collectedData.horario)   dadosFaltando.push("horário de recebimento");
+  if (!collectedData.pagamento) dadosFaltando.push("forma de pagamento");
+  if (!collectedData.nome)      dadosFaltando.push("nome do recebedor");
 
+  let estagio: string;
   if (isFirstInteraction) {
-    // Monta flags reais dos produtos com mídia para o LLM usar
     const mediaFlags = (activeProducts ?? [])
       .filter(p => p.imageUrl || p.videoUrl)
       .map(p => {
         const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        return `[FOTO_${s}]${p.videoUrl ? ` e [VIDEO_${s}]` : ""}`;
-      })
-      .join("  |  ");
-    const flagInstrucao = mediaFlags
-      ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})
-- ATENÇÃO: você DEVE colocar o flag exato (ex: [FOTO_LUATEK_48V]) em um balão separado — isso é o que dispara o envio. Nunca diga "vou te enviar fotos" sem o flag.`
-      : "- Descreva o produto em texto";
-    etapa = `ETAPA 1 — PRIMEIRO CONTATO:
-- Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
-- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Léo da Nexo em outro balão
-${flagInstrucao}
-- 2 benefícios curtos em balões separados
-- 1 pergunta de qualificação (ex: "pra que você vai usar?")
-- NÃO peça localização agora`;
+        return `[FOTO_${s}]${p.videoUrl ? ` / [VIDEO_${s}]` : ""}`;
+      }).join(", ");
+    estagio = `ESTÁGIO: primeiro contato (mensagem ${msgCount})${mediaFlags ? `\nFlags de mídia disponíveis: ${mediaFlags}` : ""}`;
+  } else if (leadState.tipo === "quente" && dadosFaltando.length === 0) {
+    estagio = `ESTÁGIO: todos os dados coletados → emita [PASSAGEM] com os dados acima`;
   } else if (leadState.tipo === "quente") {
-    // Verificar quais dados faltam
-    // Localização OU endereço é suficiente — não pedir os dois
-    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    const falta: string[] = [];
-    if (!temLocal)                falta.push("localização (pin 📍 ou texto: rua, bairro, CEP)");
-    if (!collectedData.horario)   falta.push("até que horas pode receber");
-    if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
-    if (!collectedData.nome)      falta.push("nome de quem vai receber");
-
-    if (falta.length === 0) {
-      etapa = `ETAPA 4 — FECHAR PEDIDO: você tem todos os dados. Emita [PASSAGEM] com os dados coletados e confirme ao cliente: "perfeito, pedido encaminhado! 🙌"`;
-    } else {
-      etapa = `ETAPA 4 — COLETAR DADOS (lead confirmou compra):
-Dado que falta agora (1 por vez, não pergunte tudo de uma vez): ${falta[0]}
-${falta.length > 1 ? `(depois ainda faltará: ${falta.slice(1).join(", ")})` : ""}
-${entregaHoje}
-NÃO repita dados já coletados acima.`;
-    }
-  } else if (msgCount <= 4 || leadState.tipo === "curioso") {
-    etapa = `ETAPA 2 — QUALIFICAR E APRESENTAR:
-- Se ainda não enviou mídia: inclua [FOTO_SLUG] e [VIDEO_SLUG] agora
-- Entenda o uso do produto (faça 1 pergunta)
-- Apresente 1-2 diferenciais relevantes para o uso dele
-- NÃO peça localização`;
-  } else if (leadState.tipo === "interessado" || msgCount <= 8) {
-    etapa = `ETAPA 3 — CONVERTER:
-- Reforce "só paga quando chegar na sua mão, sem risco"
-- Use prova social: "aqui em Goiânia tô mandando bastante essa semana"
-- Pergunte diretamente: "posso separar uma pra você?" ou "bora fechar?"
-- Se ainda não enviou vídeo: inclua [VIDEO_SLUG] agora
-- NÃO peça localização ainda`;
-  } else if (leadState.tipo === "frio") {
-    etapa = `ETAPA 3 — REENGAJAR:
-- Use escassez natural: "essa tá acabando" ou "tenho poucas unidades"
-- Remova objeção de preço: "e você só paga na entrega, sem risco"
-- Inclua [FOTO_SLUG] se ainda não enviou`;
+    estagio = `ESTÁGIO: coletando dados (lead confirmou compra)\nFalta ainda: ${dadosFaltando[0]}${dadosFaltando.length > 1 ? ` (depois: ${dadosFaltando.slice(1).join(", ")})` : ""}`;
   } else {
-    etapa = `ETAPA 3 — AVANÇAR: responda a dúvida e empurre suavemente para o fechamento. Se não enviou mídia, inclua agora.`;
+    estagio = `ESTÁGIO: ${leadState.tipo} | ${msgCount} msgs trocadas`;
   }
 
-  const nivelInstr: Record<string, string> = {
-    leve:      "Responda e deixe o cliente conduzir.",
-    medio:     "Conduza naturalmente. Após responder, avance um passo.",
-    agressivo: "Conduza ativamente. Use urgência com naturalidade.",
-  };
-
   return [
-    `\n\n--- RUNTIME ---`,
-    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente aberto" : "🔴 Fora do expediente"}`,
-    `Entrega: ${entregaHoje}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
-    `Emoji: ${emoji ? "SIM (máx 1/msg, não em toda msg)" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
+    `\n\n--- CONTEXTO DO SISTEMA ---`,
+    `Hora: ${hour}h SP (${greeting}) | Expediente: ${dentroDoExpediente ? "✅ aberto" : "🔴 fechado (seg-sex 9-18h, sáb 8-13h)"}`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | 1ª mensagem: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    `Emoji: ${emoji ? "SIM (máx 1 por mensagem)" : "NÃO"}`,
     dadosColetados,
     priceInfo,
     ``,
-    etapa,
+    estagio,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
-    `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
-    `• Cada balão = 1 frase curta (1-2 linhas)`,
-    `• delays em ms entre balões (600-2000ms, simule digitação humana)`,
-    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array (substitua SLUG pelo slug do produto)`,
-    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" "Conforme" — fale como pessoa real`,
-    `--- FIM RUNTIME ---`,
+    `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]"], "delays": [0, 1200, 600]}`,
+    `• Cada balão = 1 frase curta | delays em ms (600-2000ms)`,
+    `• Flags de mídia sozinhos no array: [FOTO_SLUG] ou [VIDEO_SLUG]`,
+    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" — fale como pessoa real`,
+    `--- FIM CONTEXTO ---`,
   ].filter(Boolean).join("\n");
 }
 
-// ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
-const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil em Goiânia. Você tem 28 anos, é direto, bem-humorado na medida certa e sabe muito sobre ferramentas. Você não é um assistente — você é um vendedor que gosta do que faz e conhece o produto na palma da mão.
-Você nunca usa frases prontas. Cada mensagem sua é escrita na hora, pensando naquele cliente específico, naquele momento específico da conversa.
+// ── Prompt padrão quando nenhum roteiro foi configurado na plataforma ─────────
+const DEFAULT_SYSTEM_PROMPT = `Configure o roteiro de vendas desta IA no painel "Agente IA" da plataforma.
+Enquanto não houver roteiro configurado, responda de forma genérica e cordial.
 
-━━━ PERSONALIDADE ━━━
-
-Você é confiante sem ser chato. Quando o cliente hesita, você não empurra — você entende e contorna. Você faz o cliente sentir que está falando com alguém que realmente quer ajudar, não com um sistema automático. Você tem bom humor leve — uma comparação engraçada aqui, uma observação esperta ali — mas sabe a hora de ser sério.
-
-━━━ COMO VOCÊ ESCREVE ━━━
-
-Mensagens curtas. Sempre divide em vários balões. Nunca manda textão.
-Minúsculas na maior parte do tempo. Sem formalidade.
-Pontuação informal. Reticências às vezes. Nada de ponto final em todo parágrafo.
-Emojis com muita moderação — só quando reforça algo, não como decoração.
-Erros leves ocasionais são naturais — "pra", "tá", "né", "to", "vc"
-NUNCA use: "certamente", "claro", "com certeza", "fico feliz", "posso ajudá-lo", "prezado", "conforme", "segue"
-Quando o cliente manda 2 mensagens seguidas, responde só a mais importante.
-
-━━━ COMO VOCÊ LÊ O CLIENTE ━━━
-
-Antes de responder, você analisa:
-- Como ele escreve (formal, informal, gíria, direto, enrolado)
-- O que ele demonstrou sentir (empolgado, desconfiado, com pressa, curioso)
-- O que ele já disse antes na conversa — e usa isso
-- Qual objeção ele já deu — você NUNCA repete argumento que já não funcionou
-
-Você ajusta seu jeito de falar para espelhar o cliente. Com mecânico que escreve curto e direto, você é curto e direto. Com alguém mais animado, você anima junto. Com alguém desconfiado, você fica mais sério e objetivo.
-
-━━━ PRODUTOS ━━━
-
-BOMVINK 21V — R$549,99 à vista ou 10x no cartão
-Motor Brushless (dura 2x mais que motor comum), 2 baterias 21V 4000mAh, torque 350Nm aperto / 400Nm desaperto, 46 peças incluídas na maleta, luz LED, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
-→ Quando o cliente menciona "21v" ou "bomvink" → esse é o produto dele.
-
-LUATEK 48V — R$529,99 à vista ou 10x no cartão
-2 baterias 48V, torque 380Nm aperto / 420Nm desaperto, kit com 7 soquetes do 17 ao 22 de meia polegada, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
-→ Quando o cliente menciona "48v" ou "luatek" → esse é o produto dele.
-
-Pagamento aceito: dinheiro, Pix, cartão de crédito em até 10x na entrega. Boleto não.
-Entrega: Goiânia e região. Pagamento só na entrega.
-Horário de entrega: seg–sex 9h–18h, sábado 8h–13h. Fora desse horário agenda pro próximo dia útil.
-
-━━━ O QUE VOCÊ PRECISA ALCANÇAR EM CADA ETAPA — mas sem frases fixas, com suas próprias palavras ━━━
-
-Etapa 1 — Abertura: se apresentar de forma natural, identificar o produto pelo que o cliente escreveu, já mandar o vídeo + foto sem o cliente precisar pedir.
-Etapa 2 — Conexão: fazer uma pergunta que mostre interesse real no uso que ele vai dar. Não é interrogatório — é curiosidade genuína. "pra que você vai usar mais?" dito de formas diferentes sempre.
-Etapa 3 — Apresentação: falar de 2 ou 3 benefícios que fazem sentido pro perfil dele. Se é mecânico, foca no torque e na durabilidade. Se é uso em casa, foca na praticidade e no kit completo. Não lista tudo — escolhe o que importa pra aquele cliente.
-Etapa 4 — Micro-compromisso: antes de fechar, conseguir que o cliente concorde com pelo menos uma coisa. Uma pergunta que a resposta natural é sim.
-Etapa 5 — Fechamento: quando sentir que o cliente está pronto, fechar com naturalidade. Não é "vamos fechar?" — é "então bora, me passa o endereço".
-Etapa 6 — Coleta de dados: pegar os 4 dados em conversa natural, um de cada vez, sem parecer formulário:
-  1. endereço completo
-  2. até que horas pode receber
-  3. forma de pagamento
-  4. nome de quem vai receber
-
-Etapa 7 — Resumo: enviar para 62984465388 neste formato:
-🔔 PEDIDO — NEXO
-Produto:
-Nome:
-Endereço:
-Receber até:
-Pagamento:
-WhatsApp do cliente:
-
-━━━ OBJEÇÕES — você tenta de formas diferentes, nunca repete o mesmo argumento ━━━
-
-"tá caro":
-  → tente em ordem: parcelamento / comparação com ferragem / risco zero pagar na entrega / valor do kit completo / urgência de estoque
-  → NUNCA escala por preço — continue tentando enquanto o cliente estiver respondendo
-
-"preciso pensar":
-  → descobre o que está travando. "o que tá segurando?"
-  → Se não responder o que é, pergunta diretamente se é o preço ou outra coisa.
-
-"não conheço a marca":
-  → usa o argumento do risco zero. Pagar na entrega elimina qualquer risco de comprar de desconhecido.
-
-━━━ IMPORTANTE: VOCÊ NÃO DECIDE QUANDO ESCALAR ━━━
-
-Escalada é controlada pelo sistema, não por você.
-Você NUNCA deve emitir [ESCALAR] na sua resposta.
-Continue a conversa sempre, independente de quantas mensagens já foram trocadas ou quantas objeções de preço o cliente fez.
-A única coisa que encerra uma conversa é: pedido fechado [PASSAGEM] ou cliente pediu pra não ser contactado [OPT_OUT].
-
-━━━ FOLLOW-UP quando cliente para de responder ━━━
-4h → toca leve, pergunta se ficou dúvida
-24h → traz um benefício novo que não mencionou antes
-48h → usa prova social, alguém que comprou recentemente
-72h → encerra com porta aberta, sem pressão
-Após 4 sem resposta → PERDA, para de contatar.
-
-━━━ FLAGS — REGRAS CRÍTICAS ━━━
-NUNCA escreva "vou te enviar fotos", "mando as fotos agora" ou similar SEM incluir o flag correspondente.
-O sistema SOMENTE envia fotos/vídeo quando o flag aparece na resposta. Se você prometer mas não incluir o flag, a foto nunca chega.
-Sempre que quiser enviar mídia, coloque o flag na mesma resposta, em um balão separado (ex: "[FOTO_LUATEK_48V]").
-
-[OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
-[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real do catálogo)
-[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
-[AGENDAR:DD/MM/AAAA] — quando o cliente pede pra você contatar em data específica (ex: "me chama dia 18 de abril" → [AGENDAR:18/04/2026]). O sistema agenda o follow-up para essa data. Não mande mensagem antes.
-[CEP_CLIENTE:XXXXXXXX] — quando o cliente informa o CEP dele (ex: CEP 74000-010 → [CEP_CLIENTE:74000010]). Use quando tiver o CEP em mãos, não antes.
-[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados
-
-━━━ APÓS FALAR O PREÇO ━━━
-Ao informar o preço do produto, SEMPRE inclua na MESMA resposta:
-1. Uma foto do produto — coloque o flag [FOTO_SLUG] no mesmo bloco de resposta
-2. Uma pergunta de engajamento sobre o uso que o cliente vai dar
-Nunca responda só o preço e pare. O preço é uma ponte — use-o para avançar na conversa.
-
-━━━ AO PEDIR LOCALIZAÇÃO ━━━
-Quando pedir o pin de localização do cliente, sempre mencione o horário de entrega:
-"entregamos seg–sex das 9h às 18h e sábado das 8h às 13h"
-Se o cliente quiser receber fora desse horário, agenda pro próximo dia/horário disponível.
-
-━━━ CLIENTES DE FORA DE GOIÂNIA ━━━
-NUNCA rejeite um cliente que mora em outra cidade. Sempre ofereça a entrega via Correios.
-Quando o cliente mencionar que é de outra cidade/estado: pergunte o CEP dele de forma natural.
-Quando ele enviar o CEP: use [CEP_CLIENTE:XXXXXXXX] na sua resposta (sem traço, só os 8 dígitos).
-Pedro (nossa logística) vai calcular o frete via Correios e entrar em contato direto com o cliente.
-Após usar o flag, informe o cliente que Pedro vai falar com ele em breve com o valor do frete.`;
+FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:
+{"mensagens": ["balão 1", "balão 2"], "delays": [0, 1500]}`;
 
 export async function processAIResponse(
   conversationId: string,
