@@ -40,11 +40,6 @@ async function upsertProdutos(items: ProdutoFornecedor[]): Promise<ImportResult>
   const slugSet = new Set(existingSlugs.map((p) => p.slug));
 
   for (const item of items) {
-    if (!item.ehFerramenta) {
-      result.ignorados++;
-      continue;
-    }
-
     const baseSlug = toSlug(item.nome);
     const existing = await prisma.produto.findFirst({
       where: { nome: item.nome },
@@ -83,7 +78,7 @@ async function upsertProdutos(items: ProdutoFornecedor[]): Promise<ImportResult>
           descricao: item.descricao,
           categoria: item.categoria ?? "ferramenta",
           ativo: true,
-          ehFerramenta: true,
+          ehFerramenta: item.ehFerramenta,
         },
       });
       result.novos++;
