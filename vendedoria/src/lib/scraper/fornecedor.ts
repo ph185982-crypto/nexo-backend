@@ -22,11 +22,16 @@ export function ehFerramenta(nome: string, categoria: string): boolean {
     "chave", "furadeira", "parafusadeira", "impacto", "esmerilhadeira",
     "lixadeira", "serra", "martelo", "alicate", "kit", "compressor",
     "soldador", "torno", "mandril", "broca", "ponteira", "soquete",
-    "catraca", "torquímetro", "multímetro", "nível", "trena",
+    "catraca", "torquimetro", "multimetro", "nivel", "trena",
     "ferramenta", "bateria", "carregador", "maleta", "jogo", "chaves",
     "politriz", "plaina", "soprador", "aspirador", "lavadora",
     "maquita", "tupia", "retifica", "morsa", "parafuso", "rebarbadora",
-    "makita", "bosch", "dewalt", "tramontina", "vonder",
+    "makita", "bosch", "dewalt", "tramontina", "vonder", "schulz",
+    "stanley", "wesco", "worker", "skil", "black", "decker",
+    "eletrica", "eletronica", "voltagem", "tensao", "bivolt",
+    "rpm", "watts", "hp", "motor", "profissional", "industrial",
+    "aparelho", "maquina", "equipamento", "politriz", "lixadora",
+    "v", "w",
   ];
   const texto = (nome + " " + categoria).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   return palavras.some((p) => texto.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
@@ -35,13 +40,13 @@ export function ehFerramenta(nome: string, categoria: string): boolean {
 // ── Cálculo de preços (margem de 75% sobre o custo) ──────────────────────────
 
 export function calcularPrecos(precoCusto: number, margemPercent = 75) {
-  const precoVenda   = Math.round(precoCusto * (1 + margemPercent / 100) * 100) / 100;
+  const precoVenda    = Math.round(precoCusto * (1 + margemPercent / 100) * 100) / 100;
   const precoDesconto = precoVenda;
   const parcelamento  = Math.round((precoVenda / 10) * 100) / 100;
   return { precoVenda, precoDesconto, parcelamento };
 }
 
-// ── Raw product type extracted from page ─────────────────────────────────────
+// ── Raw product type ──────────────────────────────────────────────────────────
 
 interface RawProduct {
   nome: string;
@@ -49,6 +54,61 @@ interface RawProduct {
   fotoUrl: string;
   categoria: string;
   descricao: string;
+}
+
+// ── Parse helpers ─────────────────────────────────────────────────────────────
+
+function parseFirebaseRTDB(data: Record<string, unknown>): RawProduct[] {
+  const products: RawProduct[] = [];
+  const seen = new Set<string>();
+
+  const processEntry = (entry: unknown) => {
+    if (!entry || typeof entry !== "object") return;
+    const e = entry as Record<string, unknown>;
+    const nome = String(e.titulo ?? e.nome ?? e.name ?? "").trim();
+    const preco = Number(e.preco ?? e.precoVenda ?? e.valor ?? e.price ?? 0);
+    if (!nome || preco <= 0 || seen.has(nome)) return;
+    seen.add(nome);
+    const fotos = Array.isArray(e.fotos) ? (e.fotos as string[]) : [];
+    products.push({
+      nome,
+      preco,
+      fotoUrl: fotos[0] ?? String(e.fotoUrl ?? e.foto ?? e.imagem ?? e.imageUrl ?? ""),
+      categoria: String(e.categoria ?? e.category ?? ""),
+      descricao: String(e.descricao ?? e.description ?? ""),
+    });
+  };
+
+  // RTDB returns an object keyed by push-ID
+  for (const val of Object.values(data)) {
+    if (Array.isArray(val)) {
+      val.forEach(processEntry);
+    } else {
+      processEntry(val);
+    }
+  }
+  return products;
+}
+
+function parseFirestore(data: Record<string, unknown>): RawProduct[] {
+  const documents = (data.documents ?? []) as Array<{ fields?: Record<string, unknown> }>;
+  const products: RawProduct[] = [];
+  for (const doc of documents) {
+    if (!doc.fields) continue;
+    const f = doc.fields as Record<string, { stringValue?: string; doubleValue?: number; integerValue?: string; arrayValue?: { values?: Array<{ stringValue?: string }> } }>;
+    const nome = f.titulo?.stringValue ?? f.nome?.stringValue ?? "";
+    const preco = f.preco?.doubleValue ?? Number(f.preco?.integerValue ?? 0);
+    if (!nome || preco <= 0) continue;
+    const fotos = f.fotos?.arrayValue?.values?.map((v) => v.stringValue ?? "") ?? [];
+    products.push({
+      nome,
+      preco,
+      fotoUrl: fotos[0] ?? f.fotoUrl?.stringValue ?? "",
+      categoria: f.categoria?.stringValue ?? "",
+      descricao: f.descricao?.stringValue ?? "",
+    });
+  }
+  return products;
 }
 
 // ── Scraper ───────────────────────────────────────────────────────────────────
@@ -77,47 +137,62 @@ export async function scrapeFornecedor(
     );
     await page.setViewport({ width: 1280, height: 900 });
 
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+    // ── Intercept network responses BEFORE navigation ─────────────────────
+    const networkProducts: RawProduct[] = [];
+    await page.setRequestInterception(true);
+    page.on("request", (req) => req.continue());
 
-    // Wait for Vue store to be populated with products
-    // VendiZap uses Vuex: state.produto.listaProdutosGaleria / listaProdutosDestaque
-    const gotProducts = await page.waitForFunction(
-      () => {
-        const app = document.querySelector("#app") as HTMLElement & {
-          __vue__?: { $store?: { state?: Record<string, unknown> } };
-          __vue_app__?: { config?: { globalProperties?: { $store?: { state?: Record<string, unknown> } } } };
-        };
-        const storeState = (
-          app?.__vue__?.$store?.state ??
-          app?.__vue_app__?.config?.globalProperties?.$store?.state
-        ) as Record<string, Record<string, unknown[]>> | undefined;
-        if (!storeState) return false;
-        const mod = storeState.produto as Record<string, unknown[]> | undefined;
-        if (!mod) return false;
-        return (
-          (Array.isArray(mod.listaProdutosGaleria) && mod.listaProdutosGaleria.length > 0) ||
-          (Array.isArray(mod.listaProdutosDestaque) && mod.listaProdutosDestaque.length > 0) ||
-          (Array.isArray(mod.listaProdutosMaisVendidos) && mod.listaProdutosMaisVendidos.length > 0)
-        );
-      },
-      { timeout: 30000 }
-    ).catch(() => false);
+    page.on("response", async (response) => {
+      if (networkProducts.length > 0) return; // already got data
+      const respUrl = response.url();
+      const ct = response.headers()["content-type"] ?? "";
+      if (response.status() !== 200 || !ct.includes("json")) return;
 
-    if (!gotProducts) {
-      console.log("[Scraper] Vue store não populou em 30s — tentando DOM fallback...");
+      const isFirebase =
+        respUrl.includes("firebaseio.com") ||
+        respUrl.includes("firestore.googleapis.com") ||
+        respUrl.includes("firebase") ||
+        respUrl.includes("/produtos") ||
+        respUrl.includes("/products") ||
+        respUrl.includes("/vitrine") ||
+        respUrl.includes("/catalog");
+
+      if (!isFirebase) return;
+
+      try {
+        const json = (await response.json()) as Record<string, unknown>;
+        console.log(`[Scraper] Resposta de rede: ${respUrl.substring(0, 100)}`);
+
+        let parsed: RawProduct[] = [];
+
+        if (respUrl.includes("firestore.googleapis.com")) {
+          parsed = parseFirestore(json);
+        } else {
+          parsed = parseFirebaseRTDB(json);
+        }
+
+        if (parsed.length > 0) {
+          networkProducts.push(...parsed);
+          console.log(`[Scraper] Rede capturou ${parsed.length} produtos`);
+        }
+      } catch {
+        // not parseable JSON, ignore
+      }
+    });
+
+    // ── Navigate ──────────────────────────────────────────────────────────
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 90000 });
+    await new Promise((r) => setTimeout(r, 6000)); // let async requests settle
+
+    if (networkProducts.length > 0) {
+      console.log(`[Scraper] Usando dados de rede: ${networkProducts.length} produtos`);
+      return toFornecedorList(networkProducts);
     }
 
-    // Extra scroll to trigger lazy-load
-    await page.evaluate(async () => {
-      for (let i = 0; i < 6; i++) {
-        window.scrollBy(0, 600);
-        await new Promise((r) => setTimeout(r, 500));
-      }
-      window.scrollTo(0, 0);
-    });
-    await new Promise((r) => setTimeout(r, 2000));
+    // ── Fallback 1: Vuex store ────────────────────────────────────────────
+    console.log("[Scraper] Sem dados de rede — tentando Vuex store...");
 
-    const rawProducts = await page.evaluate((): { products: RawProduct[]; debug: string } => {
+    const vuexProducts = await page.evaluate((): RawProduct[] => {
       const app = document.querySelector("#app") as HTMLElement & {
         __vue__?: { $store?: { state?: Record<string, unknown> } };
         __vue_app__?: { config?: { globalProperties?: { $store?: { state?: Record<string, unknown> } } } };
@@ -128,120 +203,144 @@ export async function scrapeFornecedor(
         app?.__vue_app__?.config?.globalProperties?.$store?.state
       ) as Record<string, Record<string, unknown[]>> | undefined;
 
-      // Try Vuex store product lists (VendiZap-specific paths)
-      if (storeState) {
-        const prodMod = storeState.produto as Record<string, unknown[]> | undefined;
-        if (prodMod) {
-          const lists = [
-            prodMod.listaProdutosGaleria ?? [],
-            prodMod.listaProdutosDestaque ?? [],
-            prodMod.listaProdutosMaisVendidos ?? [],
-            prodMod.listaProdutosPromocoes ?? [],
-          ].flat() as Array<Record<string, unknown>>;
+      if (!storeState) return [];
 
-          const seen = new Set<string>();
-          const products: RawProduct[] = [];
-          for (const p of lists) {
-            const id = String(p.id ?? p.idProduto ?? p.titulo ?? p.nome ?? Math.random());
-            if (seen.has(id)) continue;
-            seen.add(id);
-            const nome = String(p.titulo ?? p.nome ?? p.name ?? "");
-            const preco = Number(p.preco ?? p.precoVenda ?? p.valor ?? p.price ?? 0);
-            const fotoUrl = String(
-              (Array.isArray(p.fotos) ? p.fotos[0] : undefined) ??
-              p.fotoUrl ?? p.foto ?? p.imagem ?? p.imageUrl ?? ""
-            );
-            const categoria = String(p.categoria ?? p.category ?? "");
-            const descricao = String(p.descricao ?? p.description ?? "");
-            if (nome && preco > 0) {
-              products.push({ nome, preco, fotoUrl, categoria, descricao });
-            }
-          }
-          if (products.length > 0) {
-            return { products, debug: `Vuex store: ${products.length} produtos` };
-          }
-        }
+      const prodMod = storeState.produto as Record<string, unknown[]> | undefined;
+      if (!prodMod) return [];
 
-        // Try global module as fallback
-        const globalMod = storeState.global as Record<string, unknown[]> | undefined;
-        if (globalMod) {
-          const prods = (globalMod.produtos ?? globalMod.Produtos ?? []) as Array<Record<string, unknown>>;
-          const products: RawProduct[] = prods.map((p) => ({
-            nome: String(p.nome ?? p.name ?? ""),
-            preco: Number(p.preco ?? p.precoVenda ?? p.valor ?? 0),
-            fotoUrl: String((Array.isArray(p.fotos) ? p.fotos[0] : undefined) ?? p.fotoUrl ?? p.foto ?? ""),
-            categoria: String(p.categoria ?? ""),
-            descricao: String(p.descricao ?? ""),
-          })).filter((p) => p.nome && p.preco > 0);
-          if (products.length > 0) {
-            return { products, debug: `Vuex global: ${products.length} produtos` };
-          }
-        }
+      const lists = [
+        prodMod.listaProdutosGaleria ?? [],
+        prodMod.listaProdutosDestaque ?? [],
+        prodMod.listaProdutosMaisVendidos ?? [],
+        prodMod.listaProdutosPromocoes ?? [],
+      ].flat() as Array<Record<string, unknown>>;
+
+      const seen = new Set<string>();
+      const products: RawProduct[] = [];
+      for (const p of lists) {
+        const id = String(p.id ?? p.idProduto ?? p.titulo ?? p.nome ?? Math.random());
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const nome = String(p.titulo ?? p.nome ?? p.name ?? "").trim();
+        const preco = Number(p.preco ?? p.precoVenda ?? p.valor ?? p.price ?? 0);
+        if (!nome || preco <= 0) continue;
+        const fotos = Array.isArray(p.fotos) ? (p.fotos as string[]) : [];
+        products.push({
+          nome,
+          preco,
+          fotoUrl: fotos[0] ?? String(p.fotoUrl ?? p.foto ?? p.imagem ?? ""),
+          categoria: String(p.categoria ?? p.category ?? ""),
+          descricao: String(p.descricao ?? p.description ?? ""),
+        });
       }
+      return products;
+    });
 
-      // DOM fallback: try any product card selectors
-      const selectors = [
-        ".produto-card", ".card-produto", "[class*='produto']",
-        "[class*='product']", ".v-card", "[data-produto]",
-        "article", ".item",
+    if (vuexProducts.length > 0) {
+      console.log(`[Scraper] Vuex store: ${vuexProducts.length} produtos`);
+      return toFornecedorList(vuexProducts);
+    }
+
+    // ── Fallback 2: DOM ───────────────────────────────────────────────────
+    console.log("[Scraper] Vuex vazio — tentando DOM fallback...");
+
+    const domProducts = await page.evaluate((): RawProduct[] => {
+      // VendiZap-specific selectors first, then generic
+      const cardSelectors = [
+        ".produto-card",
+        ".card-produto",
+        "[class*='produto-card']",
+        "[class*='card-produto']",
+        "[class*='produto']",
+        "[class*='product-card']",
+        "article",
       ];
-      for (const sel of selectors) {
+
+      for (const sel of cardSelectors) {
         const cards = document.querySelectorAll(sel);
         if (cards.length < 2) continue;
+
         const products: RawProduct[] = [];
         cards.forEach((card) => {
-          const nome = (
-            card.querySelector(".nome-produto, .product-name, h3, h4, .title, [class*='nome'], [class*='titulo']")?.textContent ?? ""
-          ).trim();
-          const precoText = card.querySelector(
-            ".preco, .price, .valor, [class*='preco'], [class*='price'], [class*='valor']"
-          )?.textContent ?? "";
+          // Try many name selectors
+          const nomeEl = card.querySelector(
+            ".titulo-produto, .nome-produto, .product-name, .product-title, " +
+            "[class*='titulo'], [class*='nome'], [class*='title'], " +
+            "h2, h3, h4, p.titulo, p.nome, span.titulo"
+          );
+          const nome = (nomeEl?.textContent ?? "").trim();
+
+          // Try many price selectors
+          const precoEl = card.querySelector(
+            ".preco-produto, .valor-produto, .price, " +
+            "[class*='preco'], [class*='valor'], [class*='price'], " +
+            "span.preco, p.preco, strong"
+          );
+          const precoText = precoEl?.textContent ?? "";
+          const precoMatch = precoText.match(/[\d]+[.,][\d]{2}/);
+          const preco = precoMatch
+            ? parseFloat(precoMatch[0].replace(/\./g, "").replace(",", "."))
+            : 0;
+
+          // Image: prefer data-src (lazy-load) over src
           const img = card.querySelector("img") as HTMLImageElement | null;
-          const fotoUrl = img?.src ?? img?.getAttribute("data-src") ?? "";
-          const precoMatch = precoText.match(/[\d.,]+/);
-          const preco = precoMatch ? parseFloat(precoMatch[0].replace(/\./g, "").replace(",", ".")) : 0;
+          const fotoUrl =
+            img?.getAttribute("data-src") ??
+            img?.getAttribute("data-lazy-src") ??
+            img?.src ??
+            "";
+
           if (nome && preco > 0) {
             products.push({ nome, preco, fotoUrl, categoria: "", descricao: "" });
           }
         });
+
         if (products.length > 0) {
-          return { products, debug: `DOM (${sel}): ${products.length} produtos` };
+          return products;
         }
       }
-
-      return { products: [], debug: document.body.innerText.substring(0, 500) };
+      return [];
     });
 
-    console.log(`[Scraper] ${rawProducts.debug}`);
-
-    if (rawProducts.products.length === 0) {
-      console.log("[Scraper] Nenhum produto encontrado.");
-      return [];
+    if (domProducts.length > 0) {
+      console.log(`[Scraper] DOM fallback: ${domProducts.length} produtos`);
+      return toFornecedorList(domProducts);
     }
 
-    const result: ProdutoFornecedor[] = rawProducts.products.map((p) => {
-      const { precoVenda, precoDesconto, parcelamento } = calcularPrecos(p.preco);
-      return {
-        nome: p.nome,
-        precoCusto: p.preco,
-        precoVenda,
-        precoDesconto,
-        parcelamento,
-        fotoUrl: p.fotoUrl,
-        descricao: p.descricao,
-        categoria: p.categoria,
-        disponivel: true,
-        ehFerramenta: ehFerramenta(p.nome, p.categoria),
-      };
-    });
-
-    const ferramentas = result.filter((p) => p.ehFerramenta);
-    console.log(`[Scraper] ${result.length} produtos → ${ferramentas.length} identificados como ferramentas`);
-    // Return ALL products from the supplier URL (supplier is a dedicated tool store)
-    return result;
+    console.log("[Scraper] Nenhum produto encontrado em nenhuma estratégia.");
+    return [];
   } finally {
     await browser.close();
   }
+}
+
+// ── Convert raw → ProdutoFornecedor (only ferramentas) ────────────────────────
+
+function toFornecedorList(rawList: RawProduct[]): ProdutoFornecedor[] {
+  const seen = new Set<string>();
+  const all: ProdutoFornecedor[] = [];
+
+  for (const p of rawList) {
+    if (!p.nome || p.preco <= 0 || seen.has(p.nome)) continue;
+    seen.add(p.nome);
+    const { precoVenda, precoDesconto, parcelamento } = calcularPrecos(p.preco);
+    all.push({
+      nome: p.nome,
+      precoCusto: p.preco,
+      precoVenda,
+      precoDesconto,
+      parcelamento,
+      fotoUrl: p.fotoUrl,
+      descricao: p.descricao,
+      categoria: p.categoria,
+      disponivel: true,
+      ehFerramenta: ehFerramenta(p.nome, p.categoria),
+    });
+  }
+
+  const ferramentas = all.filter((p) => p.ehFerramenta);
+  console.log(`[Scraper] ${all.length} produtos → ${ferramentas.length} ferramentas`);
+  return ferramentas;
 }
 
 // ── Importação manual (JSON) ──────────────────────────────────────────────────
@@ -265,5 +364,5 @@ export function processarProdutosManuais(
         ehFerramenta: ehFerramenta(item.nome, item.categoria ?? "ferramenta"),
       };
     })
-    .filter((p) => p.nome && p.precoCusto > 0);
+    .filter((p) => p.ehFerramenta);
 }
