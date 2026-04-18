@@ -4,10 +4,10 @@ import puppeteer from "puppeteer";
 
 export interface ProdutoFornecedor {
   nome: string;
-  precoCusto: number;   // preco do fornecedor
-  precoVenda: number;   // custo × 2
-  precoDesconto: number; // venda × 0.75
-  parcelamento: number; // desconto ÷ 10
+  precoCusto: number;
+  precoVenda: number;
+  precoDesconto: number;
+  parcelamento: number;
   fotoUrl: string;
   descricao?: string;
   categoria?: string;
@@ -18,27 +18,37 @@ export interface ProdutoFornecedor {
 // ── Classificador ─────────────────────────────────────────────────────────────
 
 export function ehFerramenta(nome: string, categoria: string): boolean {
-  const palavrasFerramenta = [
+  const palavras = [
     "chave", "furadeira", "parafusadeira", "impacto", "esmerilhadeira",
     "lixadeira", "serra", "martelo", "alicate", "kit", "compressor",
     "soldador", "torno", "mandril", "broca", "ponteira", "soquete",
     "catraca", "torquímetro", "multímetro", "nível", "trena",
     "ferramenta", "bateria", "carregador", "maleta", "jogo", "chaves",
     "politriz", "plaina", "soprador", "aspirador", "lavadora",
-    "maquita", "tupia", "retifica", "morsa",
+    "maquita", "tupia", "retifica", "morsa", "parafuso", "rebarbadora",
+    "makita", "bosch", "dewalt", "tramontina", "vonder",
   ];
-  const texto = (nome + " " + categoria).toLowerCase();
-  return palavrasFerramenta.some((p) => texto.includes(p));
+  const texto = (nome + " " + categoria).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return palavras.some((p) => texto.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
 }
 
 // ── Cálculo de preços (margem de 75% sobre o custo) ──────────────────────────
 
 export function calcularPrecos(precoCusto: number, margemPercent = 75) {
-  // precoVenda = custo × (1 + margem/100)
-  const precoVenda    = Math.round(precoCusto * (1 + margemPercent / 100) * 100) / 100;
+  const precoVenda   = Math.round(precoCusto * (1 + margemPercent / 100) * 100) / 100;
   const precoDesconto = precoVenda;
   const parcelamento  = Math.round((precoVenda / 10) * 100) / 100;
   return { precoVenda, precoDesconto, parcelamento };
+}
+
+// ── Raw product type extracted from page ─────────────────────────────────────
+
+interface RawProduct {
+  nome: string;
+  preco: number;
+  fotoUrl: string;
+  categoria: string;
+  descricao: string;
 }
 
 // ── Scraper ───────────────────────────────────────────────────────────────────
@@ -56,6 +66,7 @@ export async function scrapeFornecedor(
       "--disable-setuid-sandbox",
       "--disable-gpu",
       "--disable-dev-shm-usage",
+      "--single-process",
     ],
   });
 
@@ -64,136 +75,152 @@ export async function scrapeFornecedor(
     await page.setUserAgent(
       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     );
-    await page.setViewport({ width: 1280, height: 800 });
+    await page.setViewport({ width: 1280, height: 900 });
 
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
 
-    // Wait for products to render (VendiZap loads via Firebase)
-    await page.waitForFunction(
+    // Wait for Vue store to be populated with products
+    // VendiZap uses Vuex: state.produto.listaProdutosGaleria / listaProdutosDestaque
+    const gotProducts = await page.waitForFunction(
       () => {
-        const cards = document.querySelectorAll(
-          ".produto-card, .card-produto, [class*='produto'], [class*='product'], .v-card"
+        const app = document.querySelector("#app") as HTMLElement & {
+          __vue__?: { $store?: { state?: Record<string, unknown> } };
+          __vue_app__?: { config?: { globalProperties?: { $store?: { state?: Record<string, unknown> } } } };
+        };
+        const storeState = (
+          app?.__vue__?.$store?.state ??
+          app?.__vue_app__?.config?.globalProperties?.$store?.state
+        ) as Record<string, Record<string, unknown[]>> | undefined;
+        if (!storeState) return false;
+        const mod = storeState.produto as Record<string, unknown[]> | undefined;
+        if (!mod) return false;
+        return (
+          (Array.isArray(mod.listaProdutosGaleria) && mod.listaProdutosGaleria.length > 0) ||
+          (Array.isArray(mod.listaProdutosDestaque) && mod.listaProdutosDestaque.length > 0) ||
+          (Array.isArray(mod.listaProdutosMaisVendidos) && mod.listaProdutosMaisVendidos.length > 0)
         );
-        return cards.length > 0;
       },
-      { timeout: 20000 }
-    ).catch(() => {
-      console.log("[Scraper] Timeout esperando cards. Tentando extrair do DOM...");
-    });
+      { timeout: 30000 }
+    ).catch(() => false);
 
-    // Extra wait for images
-    await new Promise((r) => setTimeout(r, 3000));
+    if (!gotProducts) {
+      console.log("[Scraper] Vue store não populou em 30s — tentando DOM fallback...");
+    }
 
-    // Scroll down to trigger lazy loading
+    // Extra scroll to trigger lazy-load
     await page.evaluate(async () => {
-      for (let i = 0; i < 10; i++) {
-        window.scrollBy(0, 500);
-        await new Promise((r) => setTimeout(r, 300));
+      for (let i = 0; i < 6; i++) {
+        window.scrollBy(0, 600);
+        await new Promise((r) => setTimeout(r, 500));
       }
       window.scrollTo(0, 0);
     });
     await new Promise((r) => setTimeout(r, 2000));
 
-    // Extract products from the rendered DOM
-    const rawProducts = await page.evaluate(() => {
-      const products: Array<{
-        nome: string;
-        preco: number;
-        fotoUrl: string;
-        categoria: string;
-        descricao: string;
-      }> = [];
+    const rawProducts = await page.evaluate((): { products: RawProduct[]; debug: string } => {
+      const app = document.querySelector("#app") as HTMLElement & {
+        __vue__?: { $store?: { state?: Record<string, unknown> } };
+        __vue_app__?: { config?: { globalProperties?: { $store?: { state?: Record<string, unknown> } } } };
+      };
 
-      // Strategy 1: VendiZap product cards
-      const cards = document.querySelectorAll(
-        ".produto-card, .card-produto, [class*='produto'], [class*='product'], .v-card"
-      );
+      const storeState = (
+        app?.__vue__?.$store?.state ??
+        app?.__vue_app__?.config?.globalProperties?.$store?.state
+      ) as Record<string, Record<string, unknown[]>> | undefined;
 
-      if (cards.length > 0) {
-        cards.forEach((card) => {
-          const nome =
-            card.querySelector(".nome-produto, .product-name, h3, h4, .title")
-              ?.textContent?.trim() ?? "";
-          const precoText =
-            card.querySelector(
-              ".preco, .price, .valor, [class*='preco'], [class*='price']"
-            )?.textContent ?? "";
-          const img = card.querySelector("img") as HTMLImageElement | null;
-          const fotoUrl = img?.src ?? img?.getAttribute("data-src") ?? "";
-          const categoria =
-            card.getAttribute("data-categoria") ??
-            card.querySelector(".categoria, .category")?.textContent?.trim() ??
-            "";
+      // Try Vuex store product lists (VendiZap-specific paths)
+      if (storeState) {
+        const prodMod = storeState.produto as Record<string, unknown[]> | undefined;
+        if (prodMod) {
+          const lists = [
+            prodMod.listaProdutosGaleria ?? [],
+            prodMod.listaProdutosDestaque ?? [],
+            prodMod.listaProdutosMaisVendidos ?? [],
+            prodMod.listaProdutosPromocoes ?? [],
+          ].flat() as Array<Record<string, unknown>>;
 
-          // Parse price from text like "R$ 199,90" or "199.90"
-          const precoMatch = precoText.match(
-            /R?\$?\s*([\d.,]+)/
-          );
-          const preco = precoMatch
-            ? parseFloat(
-                precoMatch[1].replace(/\./g, "").replace(",", ".")
-              )
-            : 0;
-
-          if (nome && preco > 0) {
-            products.push({ nome, preco, fotoUrl, categoria, descricao: "" });
-          }
-        });
-      }
-
-      // Strategy 2: If no cards found, try to extract from Vuex store
-      if (products.length === 0) {
-        const app = document.querySelector("#app") as HTMLElement & {
-          __vue__?: { $store?: { state?: { global?: { produtos?: unknown[] } } } };
-        };
-        if (app?.__vue__?.$store?.state?.global) {
-          const state = app.__vue__.$store.state.global as Record<string, unknown>;
-          const prods = (state.produtos ?? state.Produtos ?? []) as Array<Record<string, unknown>>;
-          prods.forEach((p) => {
-            const nome = String(p.nome ?? p.name ?? "");
-            const preco = Number(
-              p.preco ?? p.precoVenda ?? p.valor ?? p.price ?? 0
+          const seen = new Set<string>();
+          const products: RawProduct[] = [];
+          for (const p of lists) {
+            const id = String(p.id ?? p.idProduto ?? p.titulo ?? p.nome ?? Math.random());
+            if (seen.has(id)) continue;
+            seen.add(id);
+            const nome = String(p.titulo ?? p.nome ?? p.name ?? "");
+            const preco = Number(p.preco ?? p.precoVenda ?? p.valor ?? p.price ?? 0);
+            const fotoUrl = String(
+              (Array.isArray(p.fotos) ? p.fotos[0] : undefined) ??
+              p.fotoUrl ?? p.foto ?? p.imagem ?? p.imageUrl ?? ""
             );
-            const fotos = (p.fotos ?? []) as string[];
-            const fotoUrl = fotos[0] ?? String(p.foto ?? p.imagem ?? p.imageUrl ?? "");
             const categoria = String(p.categoria ?? p.category ?? "");
             const descricao = String(p.descricao ?? p.description ?? "");
-
             if (nome && preco > 0) {
               products.push({ nome, preco, fotoUrl, categoria, descricao });
             }
-          });
+          }
+          if (products.length > 0) {
+            return { products, debug: `Vuex store: ${products.length} produtos` };
+          }
+        }
+
+        // Try global module as fallback
+        const globalMod = storeState.global as Record<string, unknown[]> | undefined;
+        if (globalMod) {
+          const prods = (globalMod.produtos ?? globalMod.Produtos ?? []) as Array<Record<string, unknown>>;
+          const products: RawProduct[] = prods.map((p) => ({
+            nome: String(p.nome ?? p.name ?? ""),
+            preco: Number(p.preco ?? p.precoVenda ?? p.valor ?? 0),
+            fotoUrl: String((Array.isArray(p.fotos) ? p.fotos[0] : undefined) ?? p.fotoUrl ?? p.foto ?? ""),
+            categoria: String(p.categoria ?? ""),
+            descricao: String(p.descricao ?? ""),
+          })).filter((p) => p.nome && p.preco > 0);
+          if (products.length > 0) {
+            return { products, debug: `Vuex global: ${products.length} produtos` };
+          }
         }
       }
 
-      // Strategy 3: Try extracting from any grid-like structure
-      if (products.length === 0) {
-        const allText = document.body.innerText;
-        // Return the page text for debugging
-        return { products: [], debug: allText.substring(0, 2000) };
+      // DOM fallback: try any product card selectors
+      const selectors = [
+        ".produto-card", ".card-produto", "[class*='produto']",
+        "[class*='product']", ".v-card", "[data-produto]",
+        "article", ".item",
+      ];
+      for (const sel of selectors) {
+        const cards = document.querySelectorAll(sel);
+        if (cards.length < 2) continue;
+        const products: RawProduct[] = [];
+        cards.forEach((card) => {
+          const nome = (
+            card.querySelector(".nome-produto, .product-name, h3, h4, .title, [class*='nome'], [class*='titulo']")?.textContent ?? ""
+          ).trim();
+          const precoText = card.querySelector(
+            ".preco, .price, .valor, [class*='preco'], [class*='price'], [class*='valor']"
+          )?.textContent ?? "";
+          const img = card.querySelector("img") as HTMLImageElement | null;
+          const fotoUrl = img?.src ?? img?.getAttribute("data-src") ?? "";
+          const precoMatch = precoText.match(/[\d.,]+/);
+          const preco = precoMatch ? parseFloat(precoMatch[0].replace(/\./g, "").replace(",", ".")) : 0;
+          if (nome && preco > 0) {
+            products.push({ nome, preco, fotoUrl, categoria: "", descricao: "" });
+          }
+        });
+        if (products.length > 0) {
+          return { products, debug: `DOM (${sel}): ${products.length} produtos` };
+        }
       }
 
-      return { products, debug: null };
+      return { products: [], debug: document.body.innerText.substring(0, 500) };
     });
 
+    console.log(`[Scraper] ${rawProducts.debug}`);
+
     if (rawProducts.products.length === 0) {
-      console.log(
-        "[Scraper] Nenhum produto encontrado. Debug:",
-        rawProducts.debug?.substring(0, 500)
-      );
+      console.log("[Scraper] Nenhum produto encontrado.");
       return [];
     }
 
-    console.log(
-      `[Scraper] ${rawProducts.products.length} produtos extraídos do DOM`
-    );
-
-    // Process and filter
     const result: ProdutoFornecedor[] = rawProducts.products.map((p) => {
-      const { precoVenda, precoDesconto, parcelamento } = calcularPrecos(
-        p.preco
-      );
-      const isFerramenta = ehFerramenta(p.nome, p.categoria);
+      const { precoVenda, precoDesconto, parcelamento } = calcularPrecos(p.preco);
       return {
         nome: p.nome,
         precoCusto: p.preco,
@@ -204,15 +231,12 @@ export async function scrapeFornecedor(
         descricao: p.descricao,
         categoria: p.categoria,
         disponivel: true,
-        ehFerramenta: isFerramenta,
+        ehFerramenta: ehFerramenta(p.nome, p.categoria),
       };
     });
 
     const ferramentas = result.filter((p) => p.ehFerramenta);
-    console.log(
-      `[Scraper] ${result.length} produtos total → ${ferramentas.length} ferramentas`
-    );
-
+    console.log(`[Scraper] ${result.length} produtos → ${ferramentas.length} ferramentas`);
     return ferramentas;
   } finally {
     await browser.close();
@@ -226,9 +250,7 @@ export function processarProdutosManuais(
 ): ProdutoFornecedor[] {
   return items
     .map((item) => {
-      const { precoVenda, precoDesconto, parcelamento } = calcularPrecos(
-        item.preco
-      );
+      const { precoVenda, precoDesconto, parcelamento } = calcularPrecos(item.preco);
       return {
         nome: item.nome,
         precoCusto: item.preco,
