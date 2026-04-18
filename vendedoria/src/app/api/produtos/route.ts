@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
   const where = {
     ...(ativo !== null ? { ativo: ativo !== "false" } : {}),
     ...(q ? { nome: { contains: q, mode: "insensitive" as const } } : {}),
-    ehFerramenta: true,
   };
 
   const [total, produtos] = await Promise.all([
