@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Kanban, Calendar, Megaphone,
   ChevronDown, ChevronRight, MessageSquare, Bot,
-  Folder, Settings, Phone, Package, BarChart2, X, SlidersHorizontal, Radio,
+  Folder, Settings, Phone, Package, BarChart2, X, SlidersHorizontal, Radio, Truck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,7 +46,8 @@ const navItems = [
   { href: "/crm/pipeline",      label: "Pipeline",   icon: Kanban },
   { href: "/crm/dashboard",     label: "Dashboard",  icon: LayoutDashboard },
   { href: "/crm/reports",       label: "Relatórios", icon: BarChart2 },
-  { href: "/crm/produtos",      label: "Produtos",   icon: Package },
+  { href: "/crm/products",      label: "Produtos",   icon: Package },
+  { href: "/crm/produtos",      label: "Fornecedor", icon: Truck },
   { href: "/crm/ofertas",       label: "Ofertas",    icon: Megaphone },
   { href: "/crm/disparos",      label: "Disparos",   icon: Radio },
   { href: "/crm/agent",         label: "Agente IA",  icon: Bot },
