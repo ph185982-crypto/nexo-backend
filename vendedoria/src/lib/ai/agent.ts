@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendWhatsAppLocation, sendWhatsAppTyping } from "@/lib/whatsapp/send";
 import { sendPushToAll } from "@/lib/push/notificar";
 
 // ─── AgentConfig DB cache (60s TTL) ──────────────────────────────────────────
@@ -753,7 +753,7 @@ export async function processAIResponse(
       await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
       await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
 
-      // WhatsApp to owner — best-effort with retry (24h window may block delivery)
+      // WhatsApp to owner — text summary + location pin (if available)
       const enviarPassagem = async (tentativa = 1) => {
         try {
           await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
@@ -768,6 +768,24 @@ export async function processAIResponse(
         }
       };
       await enviarPassagem();
+
+      // Forward client's location as a real WhatsApp location pin to owner
+      const locText = collectedData.localizacao ?? "";
+      const coordMatch = locText.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/i);
+      if (coordMatch) {
+        const lat = parseFloat(coordMatch[1]);
+        const lng = parseFloat(coordMatch[2]);
+        const addrMatch = locText.match(/endereço:\s*(.+?)(?:\s*\||\s*ponto:|$)/i);
+        const addr = addrMatch?.[1]?.trim() ?? "Localização do cliente";
+        await sendWhatsAppLocation(
+          conversation.provider.businessPhoneNumberId,
+          ownerNumber,
+          lat, lng,
+          `📍 ${collectedData.nome ?? "Cliente"}`,
+          addr,
+          token
+        ).catch(() => {});
+      }
 
       // Confirma ao cliente
       await sendWhatsAppMessage(
@@ -971,8 +989,11 @@ export async function processAIResponse(
       // NÃO chama handleEscalation — IA não pode escalar sozinha agora
     }
 
-    // ── Simular digitação antes da 1ª mensagem ────────────────────────────────
+    // ── Typing indicator + delay ─────────────────────────────────────────────
     if (incomingMessageId && provider.businessPhoneNumberId) {
+      // Send typing indicator (shows "digitando..." to the client)
+      await sendWhatsAppTyping(provider.businessPhoneNumberId, incomingMessageId, conversation.customerWhatsappBusinessId, token);
+      // Natural delay proportional to response length
       await simulateTypingDelay(provider.businessPhoneNumberId, incomingMessageId, mensagens.join(" "), token);
     }
 

@@ -200,6 +200,57 @@ export async function sendWhatsAppTemplate(
   if (!response.ok) throw new Error(`WhatsApp template send failed: ${await response.text()}`);
 }
 
+/** Send a WhatsApp location pin (shows interactive map to recipient) */
+export async function sendWhatsAppLocation(
+  phoneNumberId: string,
+  to: string,
+  latitude: number,
+  longitude: number,
+  name?: string,
+  address?: string,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) return;
+  const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: normalizeBrazilianNumber(to),
+      type: "location",
+      location: { latitude, longitude, name: name ?? "", address: address ?? "" },
+    }),
+  });
+  if (!res.ok) console.error("[sendWhatsAppLocation]", await res.text());
+}
+
+/** Send typing indicator — marks message read then shows "digitando..." via Meta API */
+export async function sendWhatsAppTyping(
+  phoneNumberId: string,
+  incomingMessageId: string,
+  to: string,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) return;
+  // Step 1: mark as read (blue ticks)
+  await markWhatsAppMessageRead(phoneNumberId, incomingMessageId, accessToken);
+  // Step 2: send typing indicator via Meta Cloud API (v21+)
+  await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: normalizeBrazilianNumber(to),
+      type: "text",
+      typing: true,
+    }),
+  }).catch(() => {});
+}
+
 export async function getPhoneNumberInfo(phoneNumberId: string): Promise<{
   display_phone_number: string;
   verified_name: string;

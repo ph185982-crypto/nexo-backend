@@ -1077,7 +1077,16 @@ function ConversationsContent() {
                 </div>
                 <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
                   <Phone className="w-3 h-3 shrink-0" />
-                  {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
+                  {/* Link opens WhatsApp directly with correct international format */}
+                  <a
+                    href={`https://wa.me/${(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId).replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary hover:underline"
+                    title="Abrir no WhatsApp"
+                  >
+                    {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
+                  </a>
                   {selected.followUp?.status === "ACTIVE" && (
                     <span className="hidden sm:inline ml-1 text-amber-600">
                       · Follow-up {selected.followUp.step}

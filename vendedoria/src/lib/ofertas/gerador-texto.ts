@@ -9,30 +9,39 @@ function fmt(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-const SYSTEM_PROMPT = `Você é um especialista em copywriting para vendas de ferramentas no WhatsApp.
-Crie legendas curtas, impactantes e persuasivas em português brasileiro.
-Use emojis estrategicamente. Seja direto ao ponto. Máximo 5 linhas.
-Tom: animado, confiante, urgente (escassez/oferta por tempo limitado).`;
+const SYSTEM_PROMPT = `Você é especialista em copywriting para vendas de ferramentas/produtos no WhatsApp.
+Siga EXATAMENTE este formato na resposta (não adicione nada além disso):
+
+🔧 *[NOME DO PRODUTO]*
+
+[Explicação técnica do produto em 1-2 linhas — foque em potência, uso, benefício]
+
+💰 *Preço especial: [preço com desconto]*
+💳 10x de *[parcelamento]* sem juros
+🚚 Frete grátis p/ Goiânia e região!
+
+Condições: Pix, cartão ou dinheiro na entrega
+
+👇 Comenta *"eu quero"* e garanta agora!`;
 
 function userPrompt(dados: DadosTexto): string {
-  return `Crie uma legenda de oferta para WhatsApp para o produto:
-
-Nome: ${dados.nome}
-Preço original: ${fmt(dados.precoVenda)}
-Preço com desconto: ${fmt(dados.precoDesconto)}
+  return `Produto: ${dados.nome}
+Preço especial: ${fmt(dados.precoDesconto)}
 Parcelamento: 10x de ${fmt(dados.parcelamento)} sem juros
 
-Inclua: nome do produto, preço com desconto, parcelamento, urgência para chamar no WhatsApp.
-Não inclua hashtags. Seja conciso (máximo 5 linhas).`;
+Gere a legenda seguindo exatamente o formato do sistema.`;
 }
 
 function fallbackTexto(dados: DadosTexto): string {
-  return `🔧 *${dados.nome}*
-
-💥 De ${fmt(dados.precoVenda)} por apenas *${fmt(dados.precoDesconto)}*
-💳 Ou em 10x de *${fmt(dados.parcelamento)}* sem juros
-
-⚡ Oferta por tempo limitado! Chame agora no WhatsApp e garanta o seu! 📲`;
+  return (
+    `🔧 *${dados.nome}*\n\n` +
+    `Ferramenta profissional de alta performance. Ideal para uso doméstico e industrial com eficiência e durabilidade.\n\n` +
+    `💰 *Preço especial: ${fmt(dados.precoDesconto)}*\n` +
+    `💳 10x de *${fmt(dados.parcelamento)}* sem juros\n` +
+    `🚚 Frete grátis p/ Goiânia e região!\n\n` +
+    `Condições: Pix, cartão ou dinheiro na entrega\n\n` +
+    `👇 Comenta *"eu quero"* e garanta agora!`
+  );
 }
 
 export async function gerarTextoOferta(dados: DadosTexto): Promise<string> {

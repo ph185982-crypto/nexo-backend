@@ -4,8 +4,11 @@ import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 
 /**
  * GET /api/cron/daily-summary
- * Analisa todas as conversas das últimas 24h e envia resumo ao dono às 8h.
- * Chamado por cron job (vercel.json ou Render cron) — protegido por CRON_SECRET.
+ * Envia resumo ao gestor (62984465388) em 3 horários diários:
+ *   - 8h  → resumo das últimas 24h (completo)
+ *   - 13h → resumo do turno da manhã (últimas 6h)
+ *   - 18h → resumo do turno da tarde (últimas 7h)
+ * Chamado a cada hora por cron job — protegido por CRON_SECRET.
  */
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
@@ -14,7 +17,27 @@ export async function GET(req: NextRequest) {
   }
 
   const now = new Date();
-  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000); // últimas 24h
+  // Current hour in Brasília (UTC-3)
+  const brasiliaHour = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+  ).getHours();
+
+  // Determine which slot we're in (allow ±30min tolerance)
+  let slotLabel = "";
+  let horasAtras = 24;
+  let titulo = "☀️ BOM DIA";
+
+  if (brasiliaHour >= 7 && brasiliaHour < 9) {
+    slotLabel = "08h"; horasAtras = 24; titulo = "☀️ BOM DIA — RESUMO NOTURNO";
+  } else if (brasiliaHour >= 12 && brasiliaHour < 14) {
+    slotLabel = "13h"; horasAtras = 6; titulo = "🌤️ TURNO DA MANHÃ";
+  } else if (brasiliaHour >= 17 && brasiliaHour < 19) {
+    slotLabel = "18h"; horasAtras = 7; titulo = "🌆 TURNO DA TARDE";
+  } else {
+    return NextResponse.json({ ok: true, skipped: true, reason: "Fora do horário de resumo", hora: brasiliaHour });
+  }
+
+  const since = new Date(now.getTime() - horasAtras * 60 * 60 * 1000);
 
   // ── Coleta estatísticas das últimas 24h ───────────────────────────────────
   const [
@@ -86,7 +109,7 @@ export async function GET(req: NextRequest) {
 
   // ── Gerar análise com LLM (resumo inteligente) ────────────────────────────
   const statsText =
-    `📊 DADOS DAS ÚLTIMAS 24H:\n` +
+    `📊 DADOS (${slotLabel} — últimas ${horasAtras}h):\n` +
     `• Novas conversas: ${novasConversas}\n` +
     `• Msgs de clientes: ${mensagensUsuario}\n` +
     `• Pedidos confirmados: ${pedidosConfirmados}\n` +
@@ -119,7 +142,7 @@ export async function GET(req: NextRequest) {
     : "\n\n📦 *PEDIDOS DE HOJE:* nenhum pedido confirmado";
 
   const summaryMsg =
-    `*🤖 RESUMO DIÁRIO — NEXO BRASIL*\n` +
+    `*🤖 ${titulo}*\n` +
     `_${dateStr}_\n\n` +
     statsText +
     pedidosListText +

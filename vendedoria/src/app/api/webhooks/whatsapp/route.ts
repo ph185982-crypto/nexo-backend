@@ -6,6 +6,7 @@ import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
+import { isManagerNumber, handleManagerMessage } from "@/lib/manager/handler";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -115,6 +116,7 @@ async function handleIncomingMessage(
   providerConfig: {
     id: string;
     organizationId: string;
+    businessPhoneNumberId: string;
     accessToken?: string | null;
     agent: {
       id: string;
@@ -347,6 +349,16 @@ async function handleIncomingMessage(
     where: { conversationId: conversation.id, status: "ACTIVE" },
     data: { status: "DONE" },
   }).catch(() => {});
+
+  // Manager command handler — if message is from the owner's number, route to
+  // the sales dashboard bot instead of the AI lead flow
+  if (isManagerNumber(phone)) {
+    const msgText = message.text?.body ?? content;
+    handleManagerMessage(msgText, providerConfig).catch((e) =>
+      console.error("[Webhook] Manager handler error:", e)
+    );
+    return; // do not process as a regular lead
+  }
 
   // Trigger AI agent if configured — fire-and-forget with explicit error logging
   if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
