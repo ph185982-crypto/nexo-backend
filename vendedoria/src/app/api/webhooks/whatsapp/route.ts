@@ -354,7 +354,8 @@ async function handleIncomingMessage(
   // the sales dashboard bot instead of the AI lead flow
   if (isManagerNumber(phone)) {
     const msgText = message.text?.body ?? content;
-    handleManagerMessage(msgText, providerConfig).catch((e) =>
+    console.log(`[Webhook] Manager message detected | from=${message.from} → routing to manager handler`);
+    handleManagerMessage(msgText, providerConfig, message.from).catch((e) =>
       console.error("[Webhook] Manager handler error:", e)
     );
     return; // do not process as a regular lead

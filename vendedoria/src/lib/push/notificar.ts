@@ -35,10 +35,15 @@ export async function sendPushToAll(payload: PushPayload): Promise<void> {
         );
       } catch (err: unknown) {
         const statusCode = (err as { statusCode?: number }).statusCode;
-        if (statusCode === 410 || statusCode === 404) {
-          // Subscription expired — remove it
+        const errMsg = (err as Error).message ?? "";
+        const isInvalidKey =
+          errMsg.includes("p256dh") ||
+          errMsg.includes("auth") && errMsg.includes("bytes") ||
+          errMsg.includes("Valid subscription");
+        if (statusCode === 410 || statusCode === 404 || isInvalidKey) {
+          // Subscription expired or malformed — remove it so future pushes don't spam the log
           await prisma.pushSubscription.delete({ where: { endpoint: sub.endpoint } }).catch(() => {});
-          console.log(`[push] Subscription removida (${statusCode}): ${sub.endpoint.slice(0, 60)}`);
+          console.log(`[push] Subscription removida (${statusCode ?? "invalid-key"}): ${sub.endpoint.slice(0, 60)}`);
         } else {
           console.error("[push] Erro ao enviar:", err);
         }

@@ -19,11 +19,18 @@ function brasiliaHour(): number {
   ).getHours();
 }
 
-// ── Detect if the sender is the manager ─────────────────────────────────────
+// ── Normalize BR phone: strip country code 55 and the mobile "9" prefix ────
+// Makes comparison tolerant to both 12-digit (55 + DDD + 8) and 13-digit
+// (55 + DDD + 9 + 8) formats that WhatsApp/Meta deliver interchangeably.
+function canonicalBR(phone: string): string {
+  let n = phone.replace(/\D/g, "");
+  if (n.startsWith("55") && n.length >= 12) n = n.slice(2);
+  if (n.length === 11 && n[2] === "9") n = n.slice(0, 2) + n.slice(3);
+  return n; // always 10 digits (DDD + 8)
+}
+
 export function isManagerNumber(phone: string): boolean {
-  const clean = phone.replace(/\D/g, "");
-  const mgr = MANAGER_NUMBER.replace(/\D/g, "");
-  return clean === mgr || clean === mgr.replace(/^55/, "");
+  return canonicalBR(phone) === canonicalBR(MANAGER_NUMBER);
 }
 
 // ── Stats fetchers ───────────────────────────────────────────────────────────
@@ -156,15 +163,20 @@ type ProviderConfig = {
 
 export async function handleManagerMessage(
   text: string,
-  providerConfig: ProviderConfig
+  providerConfig: ProviderConfig,
+  replyTo?: string
 ): Promise<void> {
   const { businessPhoneNumberId, accessToken } = providerConfig;
   const token = accessToken ?? undefined;
-  const mgr = MANAGER_NUMBER;
+  // Reply to the wa_id that sent the message (preserves 12/13-digit format Meta gave us).
+  // Fall back to MANAGER_NUMBER if the webhook didn't pass the original sender.
+  const target = replyTo ?? MANAGER_NUMBER;
   const cmd = text.toLowerCase().trim();
 
+  console.log(`[Manager] cmd="${cmd.slice(0, 60)}" → reply to ${target}`);
+
   const send = (msg: string) =>
-    sendWhatsAppMessage(businessPhoneNumberId, mgr, msg, token);
+    sendWhatsAppMessage(businessPhoneNumberId, target, msg, token);
 
   // ── vendas / pedidos ───────────────────────────────────────────────────────
   if (/vend[as]|pedid[os]|confirmad[os]|quantas vendas/i.test(cmd)) {
