@@ -377,41 +377,59 @@ function MessageContent({ msg }: { msg: Message }) {
   }
 
   // ── Contact card (shared contact via WhatsApp) ────────────────────────────
-  if (msg.content?.includes("[CONTATO_CARD]")) {
-    const cards = msg.content.split("\n").filter(l => l.includes("[CONTATO_CARD]")).map(line => {
-      const get = (key: string) => {
-        const m = line.match(new RegExp(`${key}="([^"]*)"`, "i"));
-        return m?.[1] ?? "";
-      };
-      return {
-        nome: get("nome"),
-        phones: get("phones"),
-        email: get("email"),
-        org: get("org"),
-      };
-    });
-    return (
-      <span className="flex flex-col gap-2">
-        {cards.map((c, i) => (
-          <span key={i} className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl max-w-[260px]">
-            <span className="text-2xl shrink-0">👤</span>
-            <span className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold text-green-900 truncate">{c.nome || "Contato"}</span>
-              {c.org && <span className="text-xs text-muted-foreground truncate">{c.org}</span>}
-              {c.phones && (
-                <a
-                  href={`https://wa.me/${c.phones.replace(/\D/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-600 underline mt-0.5"
-                >
-                  📱 {c.phones}
-                </a>
-              )}
-              {c.email && <span className="text-xs text-muted-foreground">{c.email}</span>}
+  // Handles both: new structured [CONTATO_CARD] format and legacy "[Contato compartilhado]" text
+  const isContactMsg =
+    msg.content?.includes("[CONTATO_CARD]") ||
+    msg.content?.trim() === "[Contato compartilhado]";
+
+  if (isContactMsg) {
+    // New format: structured data with name, phones, etc.
+    if (msg.content?.includes("[CONTATO_CARD]")) {
+      const cards = msg.content.split("\n").filter(l => l.includes("[CONTATO_CARD]")).map(line => {
+        const get = (key: string) => {
+          const m = line.match(new RegExp(`${key}="([^"]*)"`, "i"));
+          return m?.[1] ?? "";
+        };
+        return { nome: get("nome"), phones: get("phones"), email: get("email"), org: get("org") };
+      });
+      return (
+        <span className="flex flex-col gap-2">
+          {cards.map((c, i) => (
+            <span key={i} className="flex items-center gap-3 p-3 bg-slate-100 border border-slate-300 rounded-xl max-w-[260px]">
+              <span className="w-10 h-10 rounded-full bg-slate-400 flex items-center justify-center text-white font-bold text-lg shrink-0">
+                {(c.nome || "?")[0].toUpperCase()}
+              </span>
+              <span className="flex flex-col min-w-0">
+                <span className="text-sm font-semibold text-slate-900 truncate">{c.nome || "Contato"}</span>
+                {c.org && <span className="text-xs text-muted-foreground truncate">{c.org}</span>}
+                {c.phones && (
+                  <a
+                    href={`https://wa.me/${c.phones.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 underline mt-0.5"
+                  >
+                    📱 {c.phones}
+                  </a>
+                )}
+                {c.email && <span className="text-xs text-muted-foreground">{c.email}</span>}
+              </span>
             </span>
-          </span>
-        ))}
+          ))}
+        </span>
+      );
+    }
+
+    // Legacy format: only text "[Contato compartilhado]" — data lost, show styled card
+    return (
+      <span className="flex items-center gap-3 p-3 bg-slate-100 border border-slate-300 rounded-xl max-w-[260px]">
+        <span className="w-10 h-10 rounded-full bg-slate-400 flex items-center justify-center text-white text-lg shrink-0">
+          👤
+        </span>
+        <span className="flex flex-col">
+          <span className="text-sm font-semibold text-slate-900">Contato compartilhado</span>
+          <span className="text-xs text-muted-foreground">Dados não disponíveis</span>
+        </span>
       </span>
     );
   }
