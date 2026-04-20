@@ -368,7 +368,8 @@ function countPriceObjectionAttempts(messages: Array<{ role: string; content: st
   return Math.min(aiResponsesAfterObjection.length, 5);
 }
 
-// ── Contexto de runtime injetado no prompt a cada chamada ────────────────────
+// ── Contexto técnico injetado no prompt — apenas dados e flags, sem comportamento ──
+// Tudo que dita TOM, ESTILO ou ESTRATÉGIA deve vir do roteiro configurado no SaaS.
 function buildRuntimeContext(
   leadState: LeadState,
   msgCount: number,
@@ -378,29 +379,20 @@ function buildRuntimeContext(
   recentMessages?: Array<{ role: string; content: string }>,
   activeProducts?: Array<{ id: string; name: string; imageUrl?: string | null; videoUrl?: string | null }>,
 ): string {
-  const { hour, dayOfWeek } = getSaoPauloTime();
-  const greeting = saudacao();
-  const emoji    = aiConfig?.usarEmoji !== false;
-  const dentroDoExpediente = isBusinessHours(hour, dayOfWeek);
+  void aiConfig; void recentMessages; // behavioral settings come from user's configured prompt
 
-  // ── Dados já coletados ────────────────────────────────────────────────────────
+  // ── Dados já coletados — evitar perguntar de novo ──────────────────────────
   const coletados: string[] = [];
-  if (collectedData.localizacao) coletados.push(`✅ Localização: "${collectedData.localizacao.substring(0, 100)}" — NÃO pedir de novo`);
-  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) coletados.push(`✅ Endereço: ${collectedData.endereco.substring(0, 80)}`);
-  if (collectedData.pagamento) coletados.push(`✅ Pagamento: ${collectedData.pagamento}`);
-  if (collectedData.horario)   coletados.push(`✅ Horário: ${collectedData.horario}`);
-  if (collectedData.nome)      coletados.push(`✅ Nome: ${collectedData.nome}`);
+  if (collectedData.localizacao) coletados.push(`✅ Localização: "${collectedData.localizacao.substring(0, 100)}" (já informada)`);
+  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) coletados.push(`✅ Endereço: ${collectedData.endereco.substring(0, 80)} (já informado)`);
+  if (collectedData.pagamento) coletados.push(`✅ Pagamento: ${collectedData.pagamento} (já informado)`);
+  if (collectedData.horario)   coletados.push(`✅ Horário: ${collectedData.horario} (já informado)`);
+  if (collectedData.nome)      coletados.push(`✅ Nome: ${collectedData.nome} (já informado)`);
   const dadosColetados = coletados.length > 0
-    ? `\nDADOS JÁ COLETADOS — NÃO PERGUNTAR DE NOVO:\n${coletados.join("\n")}`
+    ? `\nDADOS JÁ COLETADOS — não perguntar de novo:\n${coletados.join("\n")}`
     : "";
 
-  // ── Progresso de objeção de preço ────────────────────────────────────────────
-  const priceAttempts = recentMessages ? countPriceObjectionAttempts(recentMessages) : 0;
-  const priceInfo = priceAttempts > 0
-    ? `\nOBJEÇÃO DE PREÇO: ${priceAttempts} tentativa(s) feitas. ${priceAttempts < 5 ? "Varie o argumento." : "Tente um ângulo diferente."}`
-    : "";
-
-  // ── Estágio atual (informativo — o comportamento vem do roteiro configurado) ─
+  // ── Estágio e flags de mídia disponíveis ─────────────────────────────────
   const temLocal = !!(collectedData.localizacao || collectedData.endereco);
   const dadosFaltando: string[] = [];
   if (!temLocal)                dadosFaltando.push("localização/endereço");
@@ -408,38 +400,33 @@ function buildRuntimeContext(
   if (!collectedData.pagamento) dadosFaltando.push("forma de pagamento");
   if (!collectedData.nome)      dadosFaltando.push("nome do recebedor");
 
+  const mediaFlags = (activeProducts ?? [])
+    .filter(p => p.imageUrl || p.videoUrl)
+    .map(p => {
+      const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+      return `[FOTO_${s}]${p.videoUrl ? ` [VIDEO_${s}]` : ""}`;
+    }).join(" | ");
+
   let estagio: string;
   if (isFirstInteraction) {
-    const mediaFlags = (activeProducts ?? [])
-      .filter(p => p.imageUrl || p.videoUrl)
-      .map(p => {
-        const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        return `[FOTO_${s}]${p.videoUrl ? ` / [VIDEO_${s}]` : ""}`;
-      }).join(", ");
-    estagio = `ESTÁGIO: primeiro contato (mensagem ${msgCount})${mediaFlags ? `\nFlags de mídia disponíveis: ${mediaFlags}` : ""}`;
+    estagio = `ESTÁGIO: primeiro contato (msg ${msgCount})`;
   } else if (leadState.tipo === "quente" && dadosFaltando.length === 0) {
-    estagio = `ESTÁGIO: todos os dados coletados → emita [PASSAGEM] com os dados acima`;
+    estagio = `ESTÁGIO: todos os dados coletados → emita [PASSAGEM]`;
   } else if (leadState.tipo === "quente") {
-    estagio = `ESTÁGIO: coletando dados (lead confirmou compra)\nFalta ainda: ${dadosFaltando[0]}${dadosFaltando.length > 1 ? ` (depois: ${dadosFaltando.slice(1).join(", ")})` : ""}`;
+    estagio = `ESTÁGIO: coletando dados — falta: ${dadosFaltando.join(", ")}`;
   } else {
-    estagio = `ESTÁGIO: ${leadState.tipo} | ${msgCount} msgs trocadas`;
+    estagio = `ESTÁGIO: ${leadState.tipo} | ${msgCount} msgs`;
   }
 
   return [
-    `\n\n--- CONTEXTO DO SISTEMA ---`,
-    `Hora: ${hour}h SP (${greeting}) | Expediente: ${dentroDoExpediente ? "✅ aberto" : "🔴 fechado (seg-sex 9-18h, sáb 8-13h)"}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | 1ª mensagem: ${isFirstInteraction ? "SIM" : "NÃO"}`,
-    `Emoji: ${emoji ? "SIM (máx 1 por mensagem)" : "NÃO"}`,
-    dadosColetados,
-    priceInfo,
-    ``,
+    `\n\n--- CONTEXTO DO SISTEMA (técnico) ---`,
     estagio,
+    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    dadosColetados,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
-    `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]"], "delays": [0, 1200, 600]}`,
-    `• Cada balão = 1 frase curta | delays em ms (600-2000ms)`,
-    `• Flags de mídia sozinhos no array: [FOTO_SLUG] ou [VIDEO_SLUG]`,
-    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" — fale como pessoa real`,
+    `{"mensagens": ["msg 1", "msg 2"], "delays": [0, 1200]}`,
+    `• Flags de mídia: inclua [FOTO_SLUG] ou [VIDEO_SLUG] como item separado no array "mensagens"`,
     `--- FIM CONTEXTO ---`,
   ].filter(Boolean).join("\n");
 }
