@@ -93,13 +93,23 @@ interface CollectedData {
   nome?: string;
 }
 
-function extractCollectedData(messages: Array<{ role: string; content: string }>): CollectedData {
+function extractCollectedData(
+  messages: Array<{ role: string; content: string }>,
+  localizacaoRecebidaDB = false,
+): CollectedData {
   const data: CollectedData = {};
   const allText = messages.map((m) => m.content).join("\n").toLowerCase();
 
   // ── Localização ───────────────────────────────────────────────────────────
-  // Detecta: pin nativo WhatsApp, qualquer link Maps, CEP, texto com rua/av
-  // UMA VEZ DETECTADA, nunca mais pedir — coloca em AMBOS localizacao e endereco
+  // DB flag (localizacaoRecebida) is the authoritative source — set when client sends WhatsApp pin.
+  // Text extraction below is a fallback for typed addresses.
+  if (localizacaoRecebidaDB) {
+    // Location was already received — mark both fields so AI never asks again
+    const locMsg = messages.find((m) => /\[Localiza[çc][aã]o\s+recebida\]/.test(m.content) || /lat:[-\d.]+\s+lng:[-\d.]+/.test(m.content));
+    data.localizacao = locMsg?.content ?? "[Localização recebida via WhatsApp]";
+    data.endereco = data.localizacao;
+  }
+
   const locMsg = messages.find((m) =>
     /\[Localiza[çc][aã]o\s+recebida\]/.test(m.content) ||         // pin nativo
     /lat:[-\d.]+\s+lng:[-\d.]+/.test(m.content) ||                 // coordenadas
@@ -381,16 +391,9 @@ function buildRuntimeContext(
 ): string {
   void aiConfig; void recentMessages; // behavioral settings come from user's configured prompt
 
-  // ── Dados já coletados — evitar perguntar de novo ──────────────────────────
-  const coletados: string[] = [];
-  if (collectedData.localizacao) coletados.push(`✅ Localização: "${collectedData.localizacao.substring(0, 100)}" (já informada)`);
-  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) coletados.push(`✅ Endereço: ${collectedData.endereco.substring(0, 80)} (já informado)`);
-  if (collectedData.pagamento) coletados.push(`✅ Pagamento: ${collectedData.pagamento} (já informado)`);
-  if (collectedData.horario)   coletados.push(`✅ Horário: ${collectedData.horario} (já informado)`);
-  if (collectedData.nome)      coletados.push(`✅ Nome: ${collectedData.nome} (já informado)`);
-  const dadosColetados = coletados.length > 0
-    ? `\nDADOS JÁ COLETADOS — não perguntar de novo:\n${coletados.join("\n")}`
-    : "";
+  // Collected data restrictions are prepended BEFORE the user's prompt (see restricoesBlock).
+  // Avoid repeating them here to prevent overloading the context window.
+  const dadosColetados = "";
 
   // ── Estágio e flags de mídia disponíveis ─────────────────────────────────
   const temLocal = !!(collectedData.localizacao || collectedData.endereco);
@@ -454,6 +457,7 @@ export async function processAIResponse(
       prisma.whatsappConversation.findUnique({
         where: { id: conversationId },
         include: { provider: true, lead: true },
+        // localizacaoRecebida is a top-level scalar — always included automatically
       }),
     ]);
 
@@ -691,10 +695,26 @@ export async function processAIResponse(
     // Priority: 1) AgentConfig.currentPrompt (DB, 60s cache)  2) agent.systemPrompt  3) DEFAULT
     const dbCfg = await getDBAgentConfig();
     const basePrompt = dbCfg?.currentPrompt ?? agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-    // Extrai dados já coletados para evitar perguntar de novo
+
+    // Extrai dados já coletados — usa localizacaoRecebida do DB como sinal definitivo
+    const localizacaoRecebidaDB = (conversation as typeof conversation & { localizacaoRecebida?: boolean }).localizacaoRecebida ?? false;
     const collectedData = extractCollectedData(
-      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
+      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+      localizacaoRecebidaDB,
     );
+
+    // Bloco de restrições gerado ANTES do prompt do usuário para ter precedência máxima.
+    // Cobre dados que já foram fornecidos e NÃO devem ser solicitados de novo.
+    const restricoes: string[] = [];
+    if (collectedData.localizacao || localizacaoRecebidaDB) {
+      restricoes.push("⛔ LOCALIZAÇÃO/ENDEREÇO — o cliente já enviou. NÃO peça de novo.");
+    }
+    if (collectedData.pagamento) restricoes.push(`⛔ FORMA DE PAGAMENTO — já informada (${collectedData.pagamento}). NÃO peça de novo.`);
+    if (collectedData.horario)   restricoes.push(`⛔ HORÁRIO — já informado. NÃO peça de novo.`);
+    if (collectedData.nome)      restricoes.push(`⛔ NOME — já informado (${collectedData.nome}). NÃO peça de novo.`);
+    const restricoesBlock = restricoes.length > 0
+      ? `⚠️ DADOS JÁ COLETADOS — PROIBIDO SOLICITAR NOVAMENTE:\n${restricoes.join("\n")}\n\n`
+      : "";
 
     // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
@@ -812,7 +832,8 @@ export async function processAIResponse(
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
       activeProducts,
     );
-    const systemPromptFinal = basePrompt + productSection + leadContext + runtimeCtx;
+    // restricoesBlock comes FIRST so it overrides any "ask for X" in the user's prompt
+    const systemPromptFinal = restricoesBlock + basePrompt + productSection + leadContext + runtimeCtx;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
