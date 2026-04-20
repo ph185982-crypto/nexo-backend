@@ -110,6 +110,12 @@ async function handleIncomingMessage(
     document?: { id: string; mime_type?: string; caption?: string; filename?: string };
     sticker?:  { id: string; mime_type?: string; animated?: boolean };
     location?: { latitude: number; longitude: number; name?: string; address?: string };
+    contacts?: Array<{
+      name?: { formatted_name?: string; first_name?: string; last_name?: string };
+      phones?: Array<{ phone?: string; type?: string; wa_id?: string }>;
+      emails?: Array<{ email?: string; type?: string }>;
+      org?: { company?: string; title?: string };
+    }>;
     timestamp: string;
   },
   contact: { profile?: { name?: string } } | undefined,
@@ -205,6 +211,21 @@ async function handleIncomingMessage(
     } else {
       content = "[Localização recebida]";
     }
+  } else if (message.type === "contacts" && message.contacts?.length) {
+    // Extract structured contact data (name + phones) so the CRM can render a card
+    const cards = message.contacts.map((c) => {
+      const nome = c.name?.formatted_name ?? c.name?.first_name ?? "Contato";
+      const phones = (c.phones ?? []).map((p) => p.phone ?? p.wa_id).filter(Boolean).join(", ");
+      const email  = (c.emails ?? [])[0]?.email ?? "";
+      const org    = c.org?.company ?? "";
+      const parts  = [`[CONTATO_CARD] nome=${JSON.stringify(nome)}`];
+      if (phones) parts.push(`phones=${JSON.stringify(phones)}`);
+      if (email)  parts.push(`email=${JSON.stringify(email)}`);
+      if (org)    parts.push(`org=${JSON.stringify(org)}`);
+      return parts.join(" | ");
+    });
+    content = cards.join("\n");
+    console.log(`[Webhook] Contato recebido: ${content.substring(0, 120)}`);
   } else {
     // Base content from text or media label
     content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;

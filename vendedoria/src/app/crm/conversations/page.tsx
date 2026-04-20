@@ -376,6 +376,46 @@ function MessageContent({ msg }: { msg: Message }) {
     return <LocationCard lat={lat} lng={lng} endereco={label} />;
   }
 
+  // ── Contact card (shared contact via WhatsApp) ────────────────────────────
+  if (msg.content?.includes("[CONTATO_CARD]")) {
+    const cards = msg.content.split("\n").filter(l => l.includes("[CONTATO_CARD]")).map(line => {
+      const get = (key: string) => {
+        const m = line.match(new RegExp(`${key}="([^"]*)"`, "i"));
+        return m?.[1] ?? "";
+      };
+      return {
+        nome: get("nome"),
+        phones: get("phones"),
+        email: get("email"),
+        org: get("org"),
+      };
+    });
+    return (
+      <span className="flex flex-col gap-2">
+        {cards.map((c, i) => (
+          <span key={i} className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl max-w-[260px]">
+            <span className="text-2xl shrink-0">👤</span>
+            <span className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold text-green-900 truncate">{c.nome || "Contato"}</span>
+              {c.org && <span className="text-xs text-muted-foreground truncate">{c.org}</span>}
+              {c.phones && (
+                <a
+                  href={`https://wa.me/${c.phones.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 underline mt-0.5"
+                >
+                  📱 {c.phones}
+                </a>
+              )}
+              {c.email && <span className="text-xs text-muted-foreground">{c.email}</span>}
+            </span>
+          </span>
+        ))}
+      </span>
+    );
+  }
+
   // Detect location coordinates or Maps links embedded in TEXT messages
   if (msg.type === "TEXT" || !msg.type) {
     const content = msg.content ?? "";
