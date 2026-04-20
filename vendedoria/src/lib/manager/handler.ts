@@ -131,27 +131,50 @@ async function getQualidadeLeads(hours = 24) {
   return { total, quentes, perdidos, confirmados, foraArea };
 }
 
-// ── LLM-powered free query ──────────────────────────────────────────────────
+// ── LLM-powered free query — uses OPENAI_API_KEY (with ANTHROPIC as fallback) ─
 
 async function consultarLLM(pergunta: string, contexto: string): Promise<string> {
-  if (!process.env.ANTHROPIC_API_KEY) return "API key não configurada.";
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 400,
-      system: `Você é um assistente de vendas WhatsApp. Analise os dados do CRM e responda de forma direta e útil em português. Use emojis. Seja conciso (máx 5 linhas).`,
-      messages: [{ role: "user", content: `Dados do CRM:\n${contexto}\n\nPergunta do gestor: ${pergunta}` }],
-    }),
-  });
-  if (!res.ok) return "Erro ao consultar IA.";
-  const data = await res.json() as { content?: Array<{ text?: string }> };
-  return data.content?.[0]?.text?.trim() ?? "Sem resposta.";
+  const systemPrompt = `Você é um assistente de vendas WhatsApp. Analise os dados do CRM e responda de forma direta e útil em português. Use emojis. Seja conciso (máx 5 linhas).`;
+  const userMsg = `Dados do CRM:\n${contexto}\n\nPergunta do gestor: ${pergunta}`;
+
+  // OpenAI (primary — always configured in this env)
+  if (process.env.OPENAI_API_KEY) {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        max_tokens: 400,
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userMsg }],
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
+      const text = data.choices?.[0]?.message?.content?.trim();
+      if (text) return text;
+    }
+  }
+
+  // Anthropic fallback
+  if (process.env.ANTHROPIC_API_KEY) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 400,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userMsg }],
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json() as { content?: Array<{ text?: string }> };
+      const text = data.content?.[0]?.text?.trim();
+      if (text) return text;
+    }
+  }
+
+  return "❌ Nenhuma chave de IA configurada no servidor.";
 }
 
 // ── Command router ───────────────────────────────────────────────────────────
