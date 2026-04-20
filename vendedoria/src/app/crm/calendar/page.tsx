@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   ChevronLeft, ChevronRight, Plus, LayoutGrid, List, RefreshCw,
-  Calendar as CalendarIcon, Clock, MapPin, User, Loader2,
+  Calendar as CalendarIcon, Clock, MapPin, User, Loader2, Phone, MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,6 +129,23 @@ export default function CalendarPage() {
   const { data: orgsData } = useQuery(GET_ORGS);
   const orgs = orgsData?.whatsappBusinessOrganizations ?? [];
   const orgId = selectedOrgId || orgs[0]?.id || "";
+
+  // WhatsApp follow-ups (scheduled contacts from conversations)
+  const [followups, setFollowups] = useState<Array<{
+    id: string; step: number; leadName: string; phoneNumber: string;
+    nextSendAt: string; conversationId: string; leadId: string | null;
+  }>>([]);
+  const [loadingFollowups, setLoadingFollowups] = useState(false);
+
+  useEffect(() => {
+    if (!orgId) return;
+    setLoadingFollowups(true);
+    fetch(`/api/followups?organizationId=${orgId}`)
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d)) setFollowups(d); })
+      .catch(() => {})
+      .finally(() => setLoadingFollowups(false));
+  }, [orgId]);
 
   const { data: eventsData, loading } = useQuery(LIST_EVENTS, {
     variables: { organizationId: orgId, month: currentMonth + 1, year: currentYear },
@@ -534,6 +551,108 @@ export default function CalendarPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ── Retornos Agendados (WhatsApp Follow-ups) ──────────────────────── */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-green-600" />
+              <CardTitle className="text-base">Retornos Agendados — WhatsApp</CardTitle>
+              {followups.length > 0 && (
+                <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                  {followups.length}
+                </span>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                if (!orgId) return;
+                setLoadingFollowups(true);
+                fetch(`/api/followups?organizationId=${orgId}`)
+                  .then((r) => r.json())
+                  .then((d) => { if (Array.isArray(d)) setFollowups(d); })
+                  .catch(() => {})
+                  .finally(() => setLoadingFollowups(false));
+              }}
+            >
+              <RefreshCw className={`w-4 h-4 ${loadingFollowups ? "animate-spin" : ""}`} />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Clientes que pediram pra serem contactados depois — a IA dispara automaticamente em 4h, 24h, 48h e 72h.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {loadingFollowups ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : followups.length === 0 ? (
+            <p className="text-center text-sm text-muted-foreground py-8">
+              Nenhum retorno agendado no momento
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {followups.map((f) => {
+                const nextDate = new Date(f.nextSendAt);
+                const now = new Date();
+                const isOverdue = nextDate < now;
+                const diffMin = Math.round((nextDate.getTime() - now.getTime()) / 60000);
+                const diffLabel = isOverdue
+                  ? `Atrasado ${Math.abs(diffMin)} min`
+                  : diffMin < 60
+                  ? `Em ${diffMin} min`
+                  : diffMin < 1440
+                  ? `Em ${Math.round(diffMin / 60)}h`
+                  : `Em ${Math.round(diffMin / 1440)}d`;
+
+                const stepLabels = ["", "4h", "24h", "48h", "72h"];
+
+                return (
+                  <div
+                    key={f.id}
+                    className="flex items-center gap-3 p-3 border border-border rounded-lg hover:bg-muted/40"
+                  >
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${isOverdue ? "bg-red-500" : "bg-green-500"}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">{f.leadName}</p>
+                        <span className="text-xs bg-muted px-1.5 py-0.5 rounded shrink-0">
+                          Etapa {f.step} de 4 ({stepLabels[f.step] ?? "?"})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 mt-0.5">
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          {f.phoneNumber}
+                        </span>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {nextDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                          {" "}
+                          {nextDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={`text-xs font-semibold shrink-0 ${isOverdue ? "text-red-600" : "text-green-700"}`}>
+                      {diffLabel}
+                    </div>
+                    <a
+                      href={`/crm/conversations?id=${f.conversationId}`}
+                      className="text-xs text-primary underline shrink-0"
+                    >
+                      Ver conversa
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
