@@ -1,5 +1,6 @@
 import { makeDecision } from "./decision";
 import { applyStateTransition, logStateTransition, etapaToState } from "./state-machine";
+import { compilePrompt, CompiledPrompt } from "./prompt-compiler";
 import { prisma } from "@/lib/prisma/client";
 
 // ─── AI Orchestrator: Coordinates Decision Engine + State Machine ─────────────
@@ -16,6 +17,7 @@ export interface AIDecisionResult {
   reasoning: string;
   newEtapa?: string;
   stateTransitionApplied: boolean;
+  compiledPrompt?: CompiledPrompt;
 }
 
 /**
@@ -109,12 +111,20 @@ export async function orchestrateAIDecision(context: AIDecisionContext): Promise
       ).catch((e) => console.error("[Orchestrator] Transition logging error:", e));
     }
 
+    // If action is RESPOND, compile the prompt from layers
+    let compiledPrompt: CompiledPrompt | undefined;
+    if (decision.action === "RESPOND") {
+      console.log(`[Orchestrator] Compiling dynamic prompt for conversation ${context.conversationId}`);
+      compiledPrompt = await compilePrompt(context.conversationId, conversationHistory, { action: decision.action });
+    }
+
     return {
       action: decision.action,
       targetState: decision.targetState,
       reasoning: decision.reasoning,
       newEtapa,
       stateTransitionApplied: !!transition,
+      compiledPrompt,
     };
   } catch (error) {
     console.error("[Orchestrator] Error:", error);

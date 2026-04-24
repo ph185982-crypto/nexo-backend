@@ -518,6 +518,14 @@ model AgentConfig {
   escalacaoAtiva    Boolean  @default(true)
   currentPrompt     String   @db.Text
   promptVersion     Int      @default(1)
+
+  // ── Sprint 3: Prompt Compiler profiles ──────────────────────────────────────
+  personalityProfileId String?
+  personalityProfile   PersonalityProfile? @relation(fields: [personalityProfileId], references: [id], onDelete: SetNull)
+
+  strategyProfileId    String?
+  strategyProfile      StrategyProfile?    @relation(fields: [strategyProfileId], references: [id], onDelete: SetNull)
+
   updatedAt         DateTime @updatedAt
   createdAt         DateTime @default(now())
 }
@@ -528,6 +536,54 @@ model AgentPromptHistory {
   version   Int
   savedBy   String   @default("Pedro")
   createdAt DateTime @default(now())
+}
+
+// ─── Prompt Compiler Layers (Sprint 3) ─────────────────────────────────────
+
+model PersonalityProfile {
+  id           String   @id @default(cuid())
+  name         String   @unique // "Formal", "Agressivo", "Amigável", "Profissional"
+  tone         String   @db.Text
+  archetype    String   // Vendedor, Consultor, Amigo, Especialista
+  emoji        String   @default("📱")
+  isActive     Boolean  @default(true)
+  agentConfigs AgentConfig[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model StrategyProfile {
+  id           String   @id @default(cuid())
+  name         String   @unique // "Venda Rápida", "Relacionamento", "Educacional"
+  description  String   @db.Text
+  salesGoal    String   // "Close imediato", "Lead qualificado", "Agendamento", "Contato"
+  urgency      String   @default("medium") // low, medium, high
+  isActive     Boolean  @default(true)
+  agentConfigs AgentConfig[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ConstraintRule {
+  id           String   @id @default(cuid())
+  title        String
+  rule         String   @db.Text // O que NÃO pode falar
+  reason       String?  @db.Text // Por que não pode
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model ObjectionRule {
+  id           String   @id @default(cuid())
+  keyword      String   @unique // "caro", "concorrente", "sem_interesse"
+  objectionType String   // PRICE, COMPETITOR, TIMING, DISINTEREST
+  responseStrategy String @db.Text // Como responder à objeção
+  counterArgument String  @db.Text // Argumento para contrapor
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([keyword])
 }
 
 // ─── Lead Notes ────────────────────────────────────────────────────────────────
