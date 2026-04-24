@@ -259,34 +259,46 @@ def extrair_telefone(secao_contratante: str) -> str:
 def extrair_email(texto: str, log: str, representante: str) -> str:
     """
     Prioridade:
-    1. Log Clicksign — padrão 'Token via E-mail [email]' próximo ao nome do representante.
-    2. Log Clicksign — qualquer 'Token via E-mail [email]' de domínio externo.
+    1. Log Clicksign — 'assinou.' (signatário principal, não testemunha) + Token via E-mail.
+    2. Log Clicksign — qualquer 'Token via E-mail' externo.
     3. Qualquer e-mail externo no texto completo.
     """
-    padrao_token = r"Token\s+via\s+E-?mail\s+([\w.+\-]+@[\w.\-]+\.\w+)"
-
-    # Todos os e-mails encontrados após "Token via E-mail"
-    emails_token = re.findall(padrao_token, log, re.IGNORECASE)
-    externos = [e.lower() for e in emails_token if _email_permitido(e)]
+    # Prioridade 1: signatário principal — "assinou." sem "como" ou "para" antes do ponto
+    # "assinou como testemunha." e "assinou para acusar recebimento." NÃO batem aqui
+    signatarios = re.findall(
+        r"\bassinou\.\s+Pontos\s+de\s+autentica[çc][aã]o.*?Token\s+via\s+E-?mail\s+([\w.+\-]+@[\w.\-]+\.\w+)",
+        log, re.IGNORECASE
+    )
+    externos = [e.lower() for e in signatarios if _email_permitido(e)]
 
     # Se há representante, priorizar e-mail na mesma vizinhança
     if externos and representante:
         primeiro_nome = representante.strip().split()[0].lower()
         for trecho in re.split(r"\n{2,}", log):
             if primeiro_nome in trecho.lower():
-                for email in re.findall(padrao_token, trecho, re.IGNORECASE):
+                for email in re.findall(
+                    r"\bassinou\.\s+Pontos.*?Token\s+via\s+E-?mail\s+([\w.+\-]+@[\w.\-]+\.\w+)",
+                    trecho, re.IGNORECASE
+                ):
                     if _email_permitido(email):
                         return email.lower()
 
     if externos:
         return externos[0]
 
-    # Fallback: qualquer e-mail externo no log
+    # Prioridade 2: qualquer Token via E-mail no log (inclui testemunhas)
+    for email in re.findall(
+        r"Token\s+via\s+E-?mail\s+([\w.+\-]+@[\w.\-]+\.\w+)", log, re.IGNORECASE
+    ):
+        if _email_permitido(email):
+            return email.lower()
+
+    # Prioridade 3: qualquer e-mail externo no log
     for email in re.findall(r"[\w.+\-]+@[\w.\-]+\.\w+", log):
         if _email_permitido(email):
             return email.lower()
 
-    # Fallback final: corpo do contrato
+    # Fallback: corpo do contrato
     for email in re.findall(r"[\w.+\-]+@[\w.\-]+\.\w+", texto):
         if _email_permitido(email):
             return email.lower()
@@ -349,18 +361,18 @@ def extrair_modalidade(texto: str) -> str:
 
 
 def extrair_parcelamento(texto: str) -> str:
-    """Linha após PARCELAMENTO."""
-    # Tabela estruturada
-    v = _m(r"PARCELAMENTO\s*\n?\s*(\d+\s*x|[àÀ]\s*vista[^\n]*)", texto)
+    """Linha após PARCELAMENTO. Aceita '12x', '12 vezes' e 'À vista'."""
+    # Tabela estruturada — modelo 1 (12x) e modelo 2 (12 vezes)
+    v = _m(r"PARCELAMENTO\s*\n?\s*(\d+\s*(?:x|vez(?:es)?)|[àÀ]\s*vista[^\n]*)", texto, re.IGNORECASE)
     if v:
-        m = re.match(r"(\d+)\s*x", v, re.IGNORECASE)
+        m = re.match(r"(\d+)\s*(?:x|vez(?:es)?)", v, re.IGNORECASE)
         if m:
             n = int(m.group(1))
             return "À vista" if n <= 1 else f"Parcelado em {n}x"
         return "À vista"
 
-    # Fallback
-    m = re.search(r"(\d+)\s*x\b", texto, re.IGNORECASE)
+    # Fallback genérico
+    m = re.search(r"(\d+)\s*(?:x\b|vez(?:es)?)", texto, re.IGNORECASE)
     if m:
         n = int(m.group(1))
         return "À vista" if n <= 1 else f"Parcelado em {n}x"
