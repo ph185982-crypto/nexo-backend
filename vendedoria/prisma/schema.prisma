@@ -538,6 +538,30 @@ model AgentPromptHistory {
   createdAt DateTime @default(now())
 }
 
+// ─── AgentConfigVersion — immutable snapshot on every config change ──────────
+// Each write to personality/strategy/constraints/objections/followup creates a
+// new version. The PromptCompiler always reads the isActive=true version so a
+// running conversation is never interrupted by a mid-flight config change.
+
+model AgentConfigVersion {
+  id          String   @id @default(cuid())
+  version     Int                        // auto-increment within the config
+  isActive    Boolean  @default(false)   // only one row is true at a time
+  changeNote  String?                    // what changed (e.g. "personality updated")
+
+  // JSON snapshots of each layer at the time of save
+  personalitySnapshot  Json?  // PersonalityProfile fields
+  strategySnapshot     Json?  // StrategyProfile fields
+  constraintsSnapshot  Json?  // ConstraintRule[] array
+  objectionsSnapshot   Json?  // ObjectionRule[] array
+  followUpSnapshot     Json?  // maxFollowUps + followUpHours
+
+  createdAt   DateTime @default(now())
+
+  @@index([isActive])
+  @@index([version])
+}
+
 // ─── Prompt Compiler Layers (Sprint 3) ─────────────────────────────────────
 
 model PersonalityProfile {
