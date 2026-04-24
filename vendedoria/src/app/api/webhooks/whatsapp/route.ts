@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
+import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
+import { sendAIResponse } from "@/lib/ai/responder";
+import { scheduleFollowUp, cancelFollowUpsForConversation } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
@@ -365,31 +368,166 @@ async function handleIncomingMessage(
   });
   console.log(`[Webhook] Conv ${conversation.id} atualizada | lastMessageAt=${sentAt.toISOString()} | localizacaoRecebida=${message.type === "location"}`);
 
-  // Cancel any active follow-up — user replied, no need to follow up
-  await prisma.conversationFollowUp.updateMany({
-    where: { conversationId: conversation.id, status: "ACTIVE" },
-    data: { status: "DONE" },
-  }).catch(() => {});
+  // ── Regra de Ouro: qualquer mensagem do lead cancela TODOS os follow-ups ─────
+  // Tenta cancelar via BullMQ (se Redis disponível); fallback via DB apenas
+  cancelFollowUpsForConversation(conversation.id).catch(() =>
+    prisma.conversationFollowUp.updateMany({
+      where: { conversationId: conversation.id, status: "ACTIVE" },
+      data: { status: "DONE" },
+    }).catch(() => {}),
+  );
 
-  // Manager command handler — if message is from the owner's number, route to
-  // the sales dashboard bot instead of the AI lead flow
+  // Manager command handler
   if (isManagerNumber(phone)) {
     const msgText = message.text?.body ?? content;
     console.log(`[Webhook] Manager message detected | from=${message.from} → routing to manager handler`);
     handleManagerMessage(msgText, providerConfig, message.from).catch((e) =>
       console.error("[Webhook] Manager handler error:", e)
     );
-    return; // do not process as a regular lead
+    return;
   }
 
-  // Trigger AI agent if configured — fire-and-forget with explicit error logging
-  if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
-    console.log("[WhatsApp Webhook] Disparando agente IA para conversa:", conversation.id);
-    processAIResponse(conversation.id, content, providerConfig.agent, message.id).catch((err) => {
-      console.error("[WhatsApp Webhook] AI agent error:", err);
+  if (providerConfig.agent?.kind !== "AI" || providerConfig.agent?.status !== "ACTIVE") {
+    console.log("[Webhook] Agent not active — kind:", providerConfig.agent?.kind, "| status:", providerConfig.agent?.status);
+    return;
+  }
+
+  // ── New AI Flow: Orchestrator (Decision + Prompt Compiler) + Responder ────
+  // Runs async so webhook returns 200 immediately to Meta
+  handleWithOrchestrator(conversation.id, content, message.id, providerConfig, phone).catch((err) => {
+    console.error("[Webhook] Orchestrator flow error — falling back to legacy agent:", err);
+    // Fallback: legacy agent as safety net
+    processAIResponse(conversation.id, content, providerConfig.agent!, message.id).catch((e) =>
+      console.error("[Webhook] Legacy agent error:", e),
+    );
+  });
+}
+
+// ─── Orchestrator Flow ────────────────────────────────────────────────────────
+
+async function handleWithOrchestrator(
+  conversationId: string,
+  userMessage: string,
+  incomingMessageId: string,
+  providerConfig: {
+    id: string;
+    organizationId: string;
+    businessPhoneNumberId: string;
+    accessToken?: string | null;
+    agent: {
+      id: string;
+      kind: string;
+      status: string;
+      aiProvider?: string | null;
+      aiModel?: string | null;
+      sandboxMode?: boolean;
+      escalationThreshold?: number | null;
+    } | null;
+  },
+  phoneNumber: string,
+): Promise<void> {
+  console.log(`[Orchestrator Flow] conv=${conversationId}`);
+
+  // 1. Decide action + compile prompt
+  const result = await orchestrateAIDecision({ conversationId, incomingMessage: userMessage });
+  if (!result) {
+    throw new Error("orchestrateAIDecision returned null");
+  }
+
+  console.log(`[Orchestrator Flow] action=${result.action} state=${result.targetState}`);
+
+  const ctx = {
+    conversationId,
+    phoneNumber,
+    phoneNumberId: providerConfig.businessPhoneNumberId,
+    incomingMessageId,
+    accessToken: providerConfig.accessToken ?? undefined,
+    aiProvider: providerConfig.agent?.aiProvider,
+    aiModel: providerConfig.agent?.aiModel,
+  };
+
+  switch (result.action) {
+    case "RESPOND":
+      await sendAIResponse(ctx, result, userMessage);
+      // After responding, schedule first follow-up
+      await scheduleFirstFollowUp(conversationId, phoneNumber, providerConfig);
+      break;
+
+    case "FOLLOW_UP":
+      // Decision engine says to wait and follow up later — schedule immediately
+      await scheduleFirstFollowUp(conversationId, phoneNumber, providerConfig);
+      break;
+
+    case "ESCALATE":
+      // Escalation is handled inside decision.ts logging; no message sent here
+      console.log(`[Orchestrator Flow] ESCALATE — conv ${conversationId}`);
+      break;
+
+    case "CLOSE":
+      // Mark lead as LOST if conversation should be closed
+      console.log(`[Orchestrator Flow] CLOSE — conv ${conversationId}`);
+      break;
+
+    case "WAIT":
+      console.log(`[Orchestrator Flow] WAIT — no action taken for conv ${conversationId}`);
+      break;
+
+    default:
+      // Fallback: respond with compiled prompt
+      await sendAIResponse(ctx, { ...result, action: "RESPOND" }, userMessage);
+  }
+}
+
+// ─── Schedule the first follow-up for a conversation ─────────────────────────
+
+async function scheduleFirstFollowUp(
+  conversationId: string,
+  phoneNumber: string,
+  providerConfig: {
+    businessPhoneNumberId: string;
+    accessToken?: string | null;
+  },
+): Promise<void> {
+  // Skip if Redis not configured — cron fallback handles it
+  if (!process.env.REDIS_URL) return;
+
+  try {
+    const agentConfig = await prisma.agentConfig.findFirst();
+    const hours = (agentConfig?.followUpHours ?? "4,24,48,72").split(",").map(Number).filter(Boolean);
+    const firstDelayMs = (hours[0] ?? 4) * 3_600_000;
+    const maxSteps = agentConfig?.maxFollowUps ?? 4;
+    const now = new Date();
+
+    // Upsert DB record
+    await prisma.conversationFollowUp.upsert({
+      where: { conversationId },
+      update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: new Date(Date.now() + firstDelayMs) },
+      create: {
+        conversationId,
+        step: 1,
+        status: "ACTIVE",
+        aiMessageAt: now,
+        nextSendAt: new Date(Date.now() + firstDelayMs),
+        phoneNumber,
+        phoneNumberId: providerConfig.businessPhoneNumberId,
+        accessToken: providerConfig.accessToken ?? undefined,
+      },
     });
-  } else {
-    console.log("[WhatsApp Webhook] Agente IA não ativo — kind:", providerConfig.agent?.kind, "| status:", providerConfig.agent?.status);
+
+    // Schedule BullMQ job
+    await scheduleFollowUp(
+      {
+        conversationId,
+        step: 1,
+        totalSteps: maxSteps,
+        phoneNumber,
+        phoneNumberId: providerConfig.businessPhoneNumberId,
+        accessToken: providerConfig.accessToken ?? undefined,
+      },
+      firstDelayMs,
+    );
+  } catch (e) {
+    console.warn("[Webhook] Failed to schedule follow-up:", String(e));
   }
 }
 

@@ -1,24 +1,31 @@
 /**
  * Next.js Instrumentation — runs once when the server process starts.
- * Sets up an internal keep-alive loop that pings /api/keepalive every 10 minutes
- * to prevent Render free-tier cold starts.
+ * Initialises: keep-alive loop + BullMQ follow-up worker.
  */
 export async function register() {
-  // Only run in Node.js runtime (not Edge), and only in production
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
+  // ── Keep-alive (prevents Render free-tier cold starts) ───────────────────
   const BASE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:10000";
-  const INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
-
-  // Delay first ping by 30s to let the server finish starting up
   setTimeout(() => {
-    const ping = () => {
-      fetch(`${BASE_URL}/api/keepalive`)
-        .then(() => console.log("[Keepalive] Internal ping OK"))
-        .catch((e) => console.warn("[Keepalive] Internal ping failed:", String(e)));
-    };
-
-    ping(); // first immediate ping
-    setInterval(ping, INTERVAL_MS);
+    const ping = () => fetch(`${BASE_URL}/api/keepalive`)
+      .then(() => console.log("[Keepalive] OK"))
+      .catch((e) => console.warn("[Keepalive] Failed:", String(e)));
+    ping();
+    setInterval(ping, 10 * 60 * 1000);
   }, 30_000);
+
+  // ── BullMQ Follow-up Worker ───────────────────────────────────────────────
+  // Only start if Redis is configured — gracefully skip otherwise
+  if (process.env.REDIS_URL) {
+    try {
+      const { startFollowUpWorker } = await import("./lib/queue/followup-queue");
+      startFollowUpWorker();
+      console.log("[Instrumentation] BullMQ follow-up worker started");
+    } catch (e) {
+      console.warn("[Instrumentation] BullMQ worker failed to start:", String(e));
+    }
+  } else {
+    console.warn("[Instrumentation] REDIS_URL not set — follow-up worker disabled (cron fallback active)");
+  }
 }
