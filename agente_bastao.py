@@ -89,6 +89,8 @@ DADOS DO CLIENTE E FATURAMENTO
   * Razão Social: {razao_social}
   * CNPJ: {cnpj}
   * Endereço: {endereco}
+  * Contato: {nome_contato}
+  * Telefone: {telefone}
   * E-mail do financeiro: {email_financeiro}
 
 Condições Comerciais
@@ -100,8 +102,8 @@ Condições Comerciais
 Solicito que, com base nessas informações, seja providenciado:
   * Emissão da Nota Fiscal;
   * Geração do link de pagamento (cartão de crédito) ou emissão do 1º boleto;
-  * Retorno por e-mail com os itens acima para que possamos dar continuidade
-    ao envio ao cliente.
+  * Envio do boleto para o cliente por e-mail com os itens acima;
+  * Contato com o cliente para orientações dos próximos passos.
 
 Atenciosamente,"""
 
@@ -230,11 +232,28 @@ def extrair_endereco(secao_contratante: str) -> str:
 
 def extrair_representante(secao_contratante: str) -> str:
     """Label 'Representante:' na seção CONTRATANTE."""
+    v = _m(r"Representante:\s*([^\n]+)", secao_contratante)
+    return v.rstrip(".,;:") if v else ""
+
+
+def extrair_nome_contato(secao_contratante: str) -> str:
+    """Mesmo que o representante legal — nome do contato do cliente."""
+    return extrair_representante(secao_contratante)
+
+
+def extrair_telefone(secao_contratante: str) -> str:
+    """Busca Telefone:/Tel:/Celular: na seção CONTRATANTE."""
     v = _m(
-        r"Representante:\s*([^\n]+)",
+        r"(?:Telefone|Tel|Celular|Fone)[:\s]+(\(?\d{2}\)?\s*[\d\s\-]{8,13})",
         secao_contratante,
     )
-    return v.rstrip(".,;:") if v else ""
+    if v:
+        return re.sub(r"\s+", " ", v).strip()
+    # Fallback: qualquer padrão de telefone na seção
+    m = re.search(r"\((\d{2})\)\s*(\d{4,5})[-\s]?(\d{4})", secao_contratante)
+    if m:
+        return f"({m.group(1)}) {m.group(2)}-{m.group(3)}"
+    return ""
 
 
 def extrair_email(texto: str, log: str, representante: str) -> str:
@@ -417,6 +436,8 @@ def processar_contrato(caminho: Path) -> dict:
         "cnpj":                extrair_cnpj(sec_contratante),
         "endereco":            extrair_endereco(sec_contratante),
         "representante":       extrair_representante(sec_contratante),
+        "nome_contato":        extrair_nome_contato(sec_contratante),
+        "telefone":            extrair_telefone(sec_contratante),
         "email_financeiro":    "",
         "valor_total":         extrair_valor(texto),
         "forma_pagamento":     extrair_modalidade(texto),
@@ -448,6 +469,8 @@ ROTULOS = {
     "cnpj":                "CNPJ",
     "endereco":            "Endereço",
     "representante":       "Representante",
+    "nome_contato":        "Contato",
+    "telefone":            "Telefone",
     "email_financeiro":    "E-mail do financeiro",
     "valor_total":         "Valor total",
     "forma_pagamento":     "Forma de pagamento",
