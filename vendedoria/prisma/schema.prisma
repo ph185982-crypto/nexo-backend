@@ -226,6 +226,7 @@ model WhatsappConversation {
   messages                   WhatsappMessage[]
   tags                       ConversationTag[]
   followUp                   ConversationFollowUp?
+  decisionLogs               DecisionLog[]
   conversationRatings        Json     @default("[]")
   lastMessageAt              DateTime?
   isActive                   Boolean  @default(true)
@@ -510,7 +511,11 @@ model AgentConfig {
   deliverySatEnd    Int      @default(13)
   maxFollowUps      Int      @default(4)
   followUpHours     String   @default("4,24,48,72")
+  followUpPrompt    String?  @db.Text
   deliveryArea      String   @default("Goiânia,Aparecida de Goiânia,Trindade,Senador Canedo,Goianira,Nerópolis,Hidrolândia,Abadia de Goiás,Aragoiânia,Guapó,Inhumas")
+  autoPassagem      Boolean  @default(true)
+  autoMedia         Boolean  @default(true)
+  escalacaoAtiva    Boolean  @default(true)
   currentPrompt     String   @db.Text
   promptVersion     Int      @default(1)
   updatedAt         DateTime @updatedAt
@@ -598,4 +603,19 @@ model PushSubscription {
   p256dh    String
   auth      String
   criadaEm  DateTime @default(now())
+}
+
+// ─── Decision Log ──────────────────────────────────────────────────────────
+
+model DecisionLog {
+  id             String   @id @default(cuid())
+  conversationId String
+  conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
+  action         String   // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
+  targetState    String?  // next state for the lead (e.g., ENGAGED, OBJECTION)
+  reasoning      String   @db.Text
+  metadata       Json?    // additional context if needed
+  createdAt      DateTime @default(now())
+
+  @@index([conversationId, createdAt])
 }

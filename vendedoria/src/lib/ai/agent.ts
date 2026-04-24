@@ -5,13 +5,19 @@ import { sendPushToAll } from "@/lib/push/notificar";
 // ─── AgentConfig DB cache (60s TTL) ──────────────────────────────────────────
 type DBAgentConfig = {
   currentPrompt: string;
+  agentName: string;
   bastaoNumber: string;
   deliveryWeekStart: number;
   deliveryWeekEnd: number;
   deliverySatStart: number;
   deliverySatEnd: number;
+  maxFollowUps: number;
   followUpHours: string;
+  followUpPrompt: string | null;
   deliveryArea: string;
+  autoPassagem: boolean;
+  autoMedia: boolean;
+  escalacaoAtiva: boolean;
 };
 let _dbConfigCache: DBAgentConfig | null = null;
 let _dbConfigExpiry = 0;
@@ -23,13 +29,19 @@ async function getDBAgentConfig(): Promise<DBAgentConfig | null> {
     if (cfg) {
       _dbConfigCache = {
         currentPrompt: cfg.currentPrompt,
+        agentName: cfg.agentName,
         bastaoNumber: cfg.bastaoNumber,
         deliveryWeekStart: cfg.deliveryWeekStart,
         deliveryWeekEnd: cfg.deliveryWeekEnd,
         deliverySatStart: cfg.deliverySatStart,
         deliverySatEnd: cfg.deliverySatEnd,
+        maxFollowUps: cfg.maxFollowUps,
         followUpHours: cfg.followUpHours,
+        followUpPrompt: (cfg as typeof cfg & { followUpPrompt?: string | null }).followUpPrompt ?? null,
         deliveryArea: cfg.deliveryArea,
+        autoPassagem: (cfg as typeof cfg & { autoPassagem?: boolean }).autoPassagem ?? true,
+        autoMedia: (cfg as typeof cfg & { autoMedia?: boolean }).autoMedia ?? true,
+        escalacaoAtiva: (cfg as typeof cfg & { escalacaoAtiva?: boolean }).escalacaoAtiva ?? true,
       };
       _dbConfigExpiry = Date.now() + 60_000; // 60s cache
       return _dbConfigCache;
@@ -40,13 +52,12 @@ async function getDBAgentConfig(): Promise<DBAgentConfig | null> {
   return null;
 }
 
-// ─── Follow-up intervals ─────────────────────────────────────────────────────
-const FOLLOWUP_INTERVALS_MS = [
-  4  * 60 * 60 * 1000,  // step 1 — 4h
-  24 * 60 * 60 * 1000,  // step 2 — 24h
-  48 * 60 * 60 * 1000,  // step 3 — 48h
-  72 * 60 * 60 * 1000,  // step 4 — 72h
-];
+// Converte "4,24,48,72" em array de milissegundos — fallback para padrão se inválido
+function parseFollowUpIntervals(hoursStr: string): number[] {
+  const parsed = hoursStr.split(",").map((h) => parseFloat(h.trim())).filter((h) => !isNaN(h) && h > 0);
+  if (parsed.length === 0) return [4, 24, 48, 72].map((h) => h * 3600_000);
+  return parsed.map((h) => h * 3600_000);
+}
 
 interface AgentConfig {
   id: string;
@@ -263,10 +274,9 @@ function detectHardEscalation(
   return { shouldEscalate: false, reason: "" };
 }
 
-// ── CORREÇÃO 2: Detecção de área de entrega ──────────────────────────────────
+// ── Detecção de área de entrega — usa deliveryArea do DB ────────────────────
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
-// Não dispara por menção casual de cidade em contexto de uso do produto.
-function detectForaDeArea(message: string): boolean {
+function detectForaDeArea(message: string, deliveryArea = ""): boolean {
   const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const norm = n(message);
 
@@ -274,11 +284,13 @@ function detectForaDeArea(message: string): boolean {
   const temContextoLocal = /\b(sou de|sou do|sou da|sou la de|sou la|moro em|fico em|estou em|to de|minha cidade|vivo em|resido em|meu bairro|minha regiao|na minha cidade)\b/.test(norm);
   if (!temContextoLocal) return false;
 
-  // Cidades da área de entrega — se mencionadas, não rejeitar
-  const dentroArea = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
-  if (dentroArea) return false;
+  // Cidades da área de entrega vêm do DB — se mencionadas, não rejeitar
+  if (deliveryArea) {
+    const cities = deliveryArea.split(",").map((c) => n(c.trim())).filter(Boolean);
+    if (cities.some((city) => norm.includes(city))) return false;
+  }
 
-  // Estados fora de Goiás — por nome completo normalizado
+  // Estados fora de Goiás — fallback estático
   const foraEstado = /\b(acre|alagoas|amapa|amazonas|bahia|ceara|distrito federal|espirito santo|maranhao|mato grosso do sul|mato grosso|minas gerais|paraiba|parana|pernambuco|piaui|rio de janeiro|rio grande do norte|rio grande do sul|rondonia|roraima|santa catarina|sao paulo|sergipe|tocantins)\b/.test(norm);
   if (foraEstado) return true;
 
@@ -344,9 +356,14 @@ function getSaoPauloTime(): { hour: number; minute: number; dayOfWeek: number } 
   return { hour, minute, dayOfWeek };
 }
 
-function isBusinessHours(hour: number, dayOfWeek: number): boolean {
-  if (dayOfWeek >= 1 && dayOfWeek <= 5) return hour >= 9 && hour < 18; // Seg-Sex 9-18h
-  if (dayOfWeek === 6) return hour >= 8 && hour < 13;                   // Sáb 8-13h
+function isBusinessHours(
+  hour: number,
+  dayOfWeek: number,
+  weekStart = 9, weekEnd = 18,
+  satStart = 8,  satEnd = 13,
+): boolean {
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) return hour >= weekStart && hour < weekEnd;
+  if (dayOfWeek === 6) return hour >= satStart && hour < satEnd;
   return false;
 }
 
@@ -471,15 +488,14 @@ export async function processAIResponse(
       return;
     }
 
-    // ── CORREÇÃO 2: Área de entrega ───────────────────────────────────────────
+    // ── Área de entrega ───────────────────────────────────────────────────────
     if (conversation.foraAreaEntrega) {
       console.log(`[AI Agent] foraAreaEntrega=true — ignorando mensagem para conv ${conversationId}`);
       return;
     }
 
-    // Out-of-area handling: AI now asks for CEP via [CEP_CLIENTE] flag instead of rejecting.
-    // detectForaDeArea is kept for logging only — no longer blocks the AI from responding.
-    if (detectForaDeArea(userMessage)) {
+    const dbCfgEarly = await getDBAgentConfig();
+    if (detectForaDeArea(userMessage, dbCfgEarly?.deliveryArea ?? "")) {
       console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — deixando IA pedir CEP: "${userMessage}"`);
     }
 
@@ -544,7 +560,8 @@ export async function processAIResponse(
 
     // ── Hard escalation check (antes do LLM, garante escalada mesmo que a IA erre) ──
     console.log(`[ESCALATION-TRACE] v2 | Conv ${conversationId} | Msgs no histórico: ${msgCount} | Msg recebida: "${userMessage}" | Lead status: ${lead?.status ?? "null"}`);
-    const hardEscalation = !temIntencaoCompra
+    const escalacaoAtiva = dbCfgEarly?.escalacaoAtiva ?? true;
+    const hardEscalation = (!temIntencaoCompra && escalacaoAtiva)
       ? detectHardEscalation(
           userMessage,
           recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
@@ -589,9 +606,9 @@ export async function processAIResponse(
       orderBy: { createdAt: "asc" },
     });
 
-    // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
+    // ── Envio de mídia no primeiro contato (controlado por autoMedia no SaaS) ──
     // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
-    // antes da IA responder. Não depende de flag — sempre funciona.
+    // antes da IA responder.
     const appUrlEarly = (
       process.env.NEXTAUTH_URL ??
       process.env.NEXT_PUBLIC_APP_URL ??
@@ -608,8 +625,9 @@ export async function processAIResponse(
       }
       return url;
     };
+    const autoMedia = dbCfgEarly?.autoMedia ?? true;
     const msgLower = userMessage.toLowerCase();
-    if (isFirstInteraction) {
+    if (isFirstInteraction && autoMedia) {
       const productsWithMediaEarly = await prisma.product.findMany({
         where: { organizationId: orgId, isActive: true },
         select: { id: true, name: true, imageUrl: true, imageUrls: true, videoUrl: true },
@@ -693,7 +711,7 @@ export async function processAIResponse(
 
     // ── Montar prompt final ───────────────────────────────────────────────────
     // Priority: 1) AgentConfig.currentPrompt (DB, 60s cache)  2) agent.systemPrompt  3) DEFAULT
-    const dbCfg = await getDBAgentConfig();
+    const dbCfg = dbCfgEarly ?? await getDBAgentConfig();
     const basePrompt = dbCfg?.currentPrompt ?? agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
 
     // Extrai dados já coletados — usa localizacaoRecebida do DB como sinal definitivo
@@ -716,15 +734,15 @@ export async function processAIResponse(
       ? `⚠️ DADOS JÁ COLETADOS — PROIBIDO SOLICITAR NOVAMENTE:\n${restricoes.join("\n")}\n\n`
       : "";
 
-    // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
+    // ── Passagem automática quando todos os dados estão coletados ──
+    // Controlada por autoPassagem no SaaS — pode ser desligada por completo.
+    const autoPassagem = dbCfg?.autoPassagem ?? true;
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
     const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
-    // BUG FIX: [PASSAGEM] is stripped before saving to DB, so text search always returns false.
-    // Use resumoEnviado (DB flag) as the authoritative guard. Also check etapa as secondary guard.
     const resumoJaEnviado = (conversation as typeof conversation & { resumoEnviado?: boolean }).resumoEnviado ?? false;
     const etapaJaConfirmada = conversation.etapa === "PEDIDO_CONFIRMADO";
     const passagemJaFeita = resumoJaEnviado || etapaJaConfirmada || recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
-    if (dadosCompletos && !passagemJaFeita) {
+    if (autoPassagem && dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
@@ -1147,8 +1165,9 @@ export async function processAIResponse(
         });
         console.log(`[AI Agent] Follow-up agendado para data solicitada: ${agendarDate.toISOString()}`);
       } else {
-        // Follow-up padrão: 4h
-        const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
+        // Follow-up padrão: primeiro intervalo configurado no SaaS (padrão 4h)
+        const intervals = parseFollowUpIntervals(dbCfg?.followUpHours ?? "4,24,48,72");
+        const nextSendAt = new Date(now.getTime() + intervals[0]);
         await prisma.conversationFollowUp.upsert({
           where: { conversationId },
           update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
