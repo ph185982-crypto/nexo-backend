@@ -3,8 +3,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
-import { sendAIResponse } from "@/lib/ai/responder";
-import { scheduleFollowUp, cancelFollowUpsForConversation } from "@/lib/queue/followup-queue";
+import { cancelFollowUpsForConversation } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
@@ -392,20 +391,25 @@ async function handleIncomingMessage(
     return;
   }
 
-  // ── New AI Flow: Orchestrator (Decision + Prompt Compiler) + Responder ────
-  // Runs async so webhook returns 200 immediately to Meta
-  handleWithOrchestrator(conversation.id, content, message.id, providerConfig, phone).catch((err) => {
-    console.error("[Webhook] Orchestrator flow error — falling back to legacy agent:", err);
-    // Fallback: legacy agent as safety net
-    processAIResponse(conversation.id, content, providerConfig.agent!, message.id).catch((e) =>
-      console.error("[Webhook] Legacy agent error:", e),
-    );
-  });
+  // ── AI Flow: Orchestrator (Decision + State Machine) → Pedro Agent (sends) ─
+  // Orchestrator logs decision + applies state; Pedro agent does the actual send.
+  // Runs async so webhook returns 200 immediately to Meta.
+  runAIFlow(conversation.id, content, message.id, providerConfig).catch((e) =>
+    console.error("[Webhook] AI flow error:", e),
+  );
 }
 
-// ─── Orchestrator Flow ────────────────────────────────────────────────────────
+// ─── Unified AI Flow: Orchestrator (Decision) + Pedro Agent (send) ───────────
+//
+// Architecture:
+//   1. orchestrateAIDecision — logs decision + applies state machine (no send)
+//   2. processAIResponse — Pedro's full agent: sends response, handles passagem,
+//      humanTakeover, multi-messages, follow-ups, media, etc.
+//
+// The orchestrator result is advisory for logging only. The Pedro agent always
+// runs and makes its own decision about whether/what to send.
 
-async function handleWithOrchestrator(
+async function runAIFlow(
   conversationId: string,
   userMessage: string,
   incomingMessageId: string,
@@ -424,112 +428,25 @@ async function handleWithOrchestrator(
       escalationThreshold?: number | null;
     } | null;
   },
-  phoneNumber: string,
 ): Promise<void> {
-  console.log(`[Orchestrator Flow] conv=${conversationId}`);
-
-  // 1. Decide action + compile prompt
-  const result = await orchestrateAIDecision({ conversationId, incomingMessage: userMessage });
-  if (!result) {
-    throw new Error("orchestrateAIDecision returned null");
+  // Step 1: Run orchestrator for decision logging + state transition (best-effort)
+  try {
+    const result = await orchestrateAIDecision({ conversationId, incomingMessage: userMessage });
+    if (result) {
+      console.log(`[Orchestrator] conv=${conversationId} action=${result.action} state=${result.targetState}`);
+    } else {
+      console.warn(`[Orchestrator] returned null for conv=${conversationId} — proceeding to agent`);
+    }
+  } catch (e) {
+    console.warn(`[Orchestrator] error (non-fatal) for conv=${conversationId}:`, e);
   }
 
-  console.log(`[Orchestrator Flow] action=${result.action} state=${result.targetState}`);
-
-  const ctx = {
-    conversationId,
-    phoneNumber,
-    phoneNumberId: providerConfig.businessPhoneNumberId,
-    incomingMessageId,
-    accessToken: providerConfig.accessToken ?? undefined,
-    aiProvider: providerConfig.agent?.aiProvider,
-    aiModel: providerConfig.agent?.aiModel,
-  };
-
-  switch (result.action) {
-    case "RESPOND":
-      await sendAIResponse(ctx, result, userMessage);
-      // After responding, schedule first follow-up
-      await scheduleFirstFollowUp(conversationId, phoneNumber, providerConfig);
-      break;
-
-    case "FOLLOW_UP":
-      // Decision engine says to wait and follow up later — schedule immediately
-      await scheduleFirstFollowUp(conversationId, phoneNumber, providerConfig);
-      break;
-
-    case "ESCALATE":
-      // Escalation is handled inside decision.ts logging; no message sent here
-      console.log(`[Orchestrator Flow] ESCALATE — conv ${conversationId}`);
-      break;
-
-    case "CLOSE":
-      // Mark lead as LOST if conversation should be closed
-      console.log(`[Orchestrator Flow] CLOSE — conv ${conversationId}`);
-      break;
-
-    case "WAIT":
-      console.log(`[Orchestrator Flow] WAIT — no action taken for conv ${conversationId}`);
-      break;
-
-    default:
-      // Fallback: respond with compiled prompt
-      await sendAIResponse(ctx, { ...result, action: "RESPOND" }, userMessage);
-  }
+  // Step 2: Always delegate sending to Pedro's full agent (handles all business logic)
+  await processAIResponse(conversationId, userMessage, providerConfig.agent!, incomingMessageId);
 }
 
 // ─── Schedule the first follow-up for a conversation ─────────────────────────
 
-async function scheduleFirstFollowUp(
-  conversationId: string,
-  phoneNumber: string,
-  providerConfig: {
-    businessPhoneNumberId: string;
-    accessToken?: string | null;
-  },
-): Promise<void> {
-  // Skip if Redis not configured — cron fallback handles it
-  if (!process.env.REDIS_URL) return;
-
-  try {
-    const agentConfig = await prisma.agentConfig.findFirst();
-    const hours = (agentConfig?.followUpHours ?? "4,24,48,72").split(",").map(Number).filter(Boolean);
-    const firstDelayMs = (hours[0] ?? 4) * 3_600_000;
-    const maxSteps = agentConfig?.maxFollowUps ?? 4;
-    const now = new Date();
-
-    // Upsert DB record
-    await prisma.conversationFollowUp.upsert({
-      where: { conversationId },
-      update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: new Date(Date.now() + firstDelayMs) },
-      create: {
-        conversationId,
-        step: 1,
-        status: "ACTIVE",
-        aiMessageAt: now,
-        nextSendAt: new Date(Date.now() + firstDelayMs),
-        phoneNumber,
-        phoneNumberId: providerConfig.businessPhoneNumberId,
-        accessToken: providerConfig.accessToken ?? undefined,
-      },
-    });
-
-    // Schedule BullMQ job
-    await scheduleFollowUp(
-      {
-        conversationId,
-        step: 1,
-        totalSteps: maxSteps,
-        phoneNumber,
-        phoneNumberId: providerConfig.businessPhoneNumberId,
-        accessToken: providerConfig.accessToken ?? undefined,
-      },
-      firstDelayMs,
-    );
-  } catch (e) {
-    console.warn("[Webhook] Failed to schedule follow-up:", String(e));
-  }
-}
 
 async function handleStatusUpdate(status: { id: string; status: string }) {
   const statusMap: Record<string, string> = {
