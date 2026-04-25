@@ -394,7 +394,8 @@ async function handleIncomingMessage(
   // ── AI Flow: Orchestrator (Decision + State Machine) → Pedro Agent (sends) ─
   // Orchestrator logs decision + applies state; Pedro agent does the actual send.
   // Runs async so webhook returns 200 immediately to Meta.
-  runAIFlow(conversation.id, content, message.id, providerConfig).catch((e) =>
+  const agentConfig = providerConfig.agent!;
+  runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
     console.error("[Webhook] AI flow error:", e),
   );
 }
@@ -413,20 +414,15 @@ async function runAIFlow(
   conversationId: string,
   userMessage: string,
   incomingMessageId: string,
-  providerConfig: {
+  agent: {
     id: string;
-    organizationId: string;
-    businessPhoneNumberId: string;
-    accessToken?: string | null;
-    agent: {
-      id: string;
-      kind: string;
-      status: string;
-      aiProvider?: string | null;
-      aiModel?: string | null;
-      sandboxMode?: boolean;
-      escalationThreshold?: number | null;
-    } | null;
+    kind: string;
+    status: string;
+    systemPrompt?: string | null;
+    aiProvider?: string | null;
+    aiModel?: string | null;
+    sandboxMode?: boolean;
+    escalationThreshold?: number | null;
   },
 ): Promise<void> {
   // Step 1: Run orchestrator for decision logging + state transition (best-effort)
@@ -442,7 +438,7 @@ async function runAIFlow(
   }
 
   // Step 2: Always delegate sending to Pedro's full agent (handles all business logic)
-  await processAIResponse(conversationId, userMessage, providerConfig.agent!, incomingMessageId);
+  await processAIResponse(conversationId, userMessage, agent, incomingMessageId);
 }
 
 // ─── Schedule the first follow-up for a conversation ─────────────────────────
