@@ -25,6 +25,14 @@ export async function register() {
     } catch (e) {
       console.warn("[Instrumentation] BullMQ worker failed to start:", String(e));
     }
+
+    // ── Admin Report Scheduler (13h & 18h Brasília) ─────────────────────────
+    try {
+      const { scheduleAdminReports } = await import("./lib/queue/admin-report-queue");
+      await scheduleAdminReports();
+    } catch (e) {
+      console.warn("[Instrumentation] Admin report scheduler failed:", String(e));
+    }
   } else {
     console.warn("[Instrumentation] REDIS_URL not set — follow-up worker disabled (cron fallback active)");
   }
