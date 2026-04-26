@@ -1,16 +1,13 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  output: "standalone",
+// Vercel = serverless (no standalone), Render/Docker = standalone
+const isVercel = !!process.env.VERCEL;
 
-  // ── Server-only packages ───────────────────────────────────────────────────
-  // BullMQ + ioredis use Node.js built-ins (child_process, net, worker_threads,
-  // crypto, string_decoder) that webpack cannot bundle.
-  //
-  // serverExternalPackages covers App Router Route Handlers.
-  // The explicit webpack externals below cover instrumentation.ts, which is
-  // compiled in a separate webpack pass that does NOT read serverExternalPackages.
-  serverExternalPackages: ["bullmq", "ioredis"],
+const nextConfig: NextConfig = {
+  ...(isVercel ? {} : { output: "standalone" }),
+
+  // BullMQ + ioredis use Node.js built-ins that webpack cannot bundle.
+  serverExternalPackages: ["bullmq", "ioredis", "bcryptjs"],
 
   webpack(config, { isServer }) {
     if (isServer) {
@@ -21,7 +18,6 @@ const nextConfig: NextConfig = {
           : [];
       config.externals = [
         ...prev,
-        // Emit native require() calls instead of trying to bundle these packages.
         { bullmq: "commonjs bullmq", ioredis: "commonjs ioredis" },
       ];
     }
