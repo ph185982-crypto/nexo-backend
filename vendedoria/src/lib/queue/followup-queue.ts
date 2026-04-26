@@ -1,5 +1,5 @@
 import { Queue, Worker, Job, QueueEvents } from "bullmq";
-import { getRedisClient } from "./redis-client";
+import type { RedisOptions } from "ioredis";
 import { prisma } from "@/lib/prisma/client";
 import { compilePrompt } from "@/lib/ai/prompt-compiler";
 import { callLLM } from "@/lib/ai/llm-client";
@@ -22,12 +22,31 @@ export interface FollowUpJobData {
 const QUEUE_NAME = "followup";
 let _queue: Queue<FollowUpJobData> | null = null;
 
+// Pass URL + options to BullMQ directly so it manages its own internal
+// connections (blocking, subscriber, etc.) with proper error handling,
+// instead of duplicating an ioredis instance which can lose lazyConnect.
+function getBullMQConnection(): RedisOptions {
+  const url = process.env.REDIS_URL ?? "redis://localhost:6379";
+  // Parse redis[s]://[user:pass@]host:port into ioredis options
+  const parsed = new URL(url);
+  return {
+    host: parsed.hostname,
+    port: parseInt(parsed.port || "6379", 10),
+    username: parsed.username || undefined,
+    password: parsed.password || undefined,
+    tls: parsed.protocol === "rediss:" ? {} : undefined,
+    maxRetriesPerRequest: null, // required by BullMQ
+    enableReadyCheck: false,
+    lazyConnect: false,
+  };
+}
+
 export function getFollowUpQueue(): Queue<FollowUpJobData> {
   if (!_queue) {
     _queue = new Queue<FollowUpJobData>(QUEUE_NAME, {
-      connection: getRedisClient(),
+      connection: getBullMQConnection(),
       defaultJobOptions: {
-        removeOnComplete: 100, // keep last 100 completed jobs for debugging
+        removeOnComplete: 100,
         removeOnFail: 200,
         attempts: 3,
         backoff: { type: "exponential", delay: 60_000 },
@@ -234,7 +253,7 @@ export function startFollowUpWorker(): Worker {
   if (_worker) return _worker;
 
   _worker = new Worker<FollowUpJobData>(QUEUE_NAME, processFollowUpJob, {
-    connection: getRedisClient(),
+    connection: getBullMQConnection(),
     concurrency: 5,
   });
 
