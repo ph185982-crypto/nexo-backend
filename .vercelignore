@@ -1,0 +1,14 @@
+# Python backend — não deployar como funções serverless
+*.py
+requirements.txt
+runtime.txt
+Dockerfile
+docker-compose.yml
+services/
+scrapers/
+routers/
+database/
+docs/
+scripts/
+config.py
+main.py
