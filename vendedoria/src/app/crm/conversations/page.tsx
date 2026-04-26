@@ -511,7 +511,10 @@ function ConversationsContent() {
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
-  const [showContactPanel, setShowContactPanel] = useState(false);
+  // On large screens (≥1280px) the right panel is visible by default
+  const [showContactPanel, setShowContactPanel] = useState(
+    typeof window !== "undefined" && window.innerWidth >= 1280
+  );
   // Advanced filters
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [produtoFilter, setProdutoFilter] = useState("");
@@ -844,7 +847,7 @@ function ConversationsContent() {
           On desktop: fixed 320px column
       ════════════════════════════════════════════════════════════════════════ */}
       <div className={cn(
-        "flex-shrink-0 border-r flex flex-col bg-white",
+        "flex-shrink-0 border-r flex flex-col bg-card",
         // Desktop: always visible at 320px
         "md:w-80 md:flex",
         // Mobile: full width, toggle visibility
@@ -1091,7 +1094,7 @@ function ConversationsContent() {
           On desktop: takes remaining width
       ════════════════════════════════════════════════════════════════════════ */}
       <div className={cn(
-        "flex-col overflow-hidden bg-[#f0f2f5]",
+        "flex-col overflow-hidden bg-[hsl(var(--chat-bg))]",
         "md:flex md:flex-1",
         mobilePanel === "chat" ? "flex flex-1 w-full" : "hidden",
       )}>
@@ -1104,7 +1107,7 @@ function ConversationsContent() {
         ) : (
           <>
             {/* ── Chat Header ─────────────────────────────────────────────────── */}
-            <div className="bg-white border-b px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
+            <div className="bg-card border-b px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
               {/* Back button — mobile only */}
               <button
                 onClick={handleBackToList}
@@ -1405,7 +1408,7 @@ function ConversationsContent() {
                   <React.Fragment key={msg.id}>
                     {showTime && (
                       <div className="flex justify-center my-3">
-                        <span className="text-[11px] text-muted-foreground bg-white/80 px-3 py-0.5 rounded-full shadow-sm">
+                        <span className="text-[11px] text-muted-foreground bg-card/90 backdrop-blur-sm px-3 py-0.5 rounded-full shadow-sm border border-border/50">
                           {new Date(msg.sentAt).toLocaleDateString("pt-BR", {
                             day: "2-digit", month: "short",
                           })} {formatTime(msg.sentAt)}
@@ -1416,8 +1419,8 @@ function ConversationsContent() {
                       <div className={cn(
                         "max-w-[80%] sm:max-w-[72%] rounded-2xl px-3.5 py-2 shadow-sm",
                         isMe
-                          ? "bg-[#dcf8c6] text-gray-800 rounded-tr-sm"
-                          : "bg-white text-gray-800 rounded-tl-sm"
+                          ? "bubble-sent rounded-tr-sm"
+                          : "bubble-recv rounded-tl-sm"
                       )}>
                         <MessageContent msg={msg} />
                         <div className="flex items-center justify-end gap-1 mt-1">
@@ -1439,7 +1442,7 @@ function ConversationsContent() {
             </div>
 
             {/* ── Message input ────────────────────────────────────────────────── */}
-            <div className="bg-white border-t flex-shrink-0">
+            <div className="bg-card border-t flex-shrink-0">
               {/* IA status bar */}
               {!isHumanControl && (
                 <div className="px-3 pt-2 pb-0">

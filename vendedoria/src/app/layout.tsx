@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
+import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "VendedorIA — CRM Inteligente para WhatsApp",
+  title: "Nexo Vendas — CRM Inteligente para WhatsApp",
   description: "Gerencie seus leads e automatize suas vendas via WhatsApp com IA",
   icons: {
     icon: "/favicon.ico",
@@ -12,7 +15,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "Vendedoria",
+    title: "Nexo Vendas",
     statusBarStyle: "default",
   },
   other: {
@@ -20,23 +23,26 @@ export const metadata: Metadata = {
   },
 };
 
-// Viewport precisa ser exportado separadamente no Next.js 15
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#F5C400",
-  // maximumScale removido — permitir zoom no mobile (acessibilidade)
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)",  color: "#0d0f17" },
+  ],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html
+      lang="pt-BR"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
       <body className="font-sans antialiased">
-        <ApolloProvider>{children}</ApolloProvider>
+        <ThemeProvider>
+          <ApolloProvider>{children}</ApolloProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

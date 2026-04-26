@@ -10,23 +10,16 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 function PushBanner() {
   const { permissao, suportado, ativar } = usePushNotifications();
   if (!suportado || permissao !== "default") return null;
+
   return (
-    <div style={{
-      background: "#F5C400", color: "#1A1A2E",
-      padding: "10px 16px", display: "flex",
-      alignItems: "center", justifyContent: "space-between",
-      flexShrink: 0, zIndex: 60,
-    }}>
-      <span style={{ fontSize: "13px", fontWeight: 500 }}>
-        🔔 Ative notificações para saber quando chegar mensagem
+    <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-primary/10 border-b border-primary/20 text-sm flex-shrink-0">
+      <span className="text-foreground/80 text-xs">
+        Ative notificações para saber quando chegar mensagem
       </span>
-      <button onClick={ativar} style={{
-        background: "#1A1A2E", color: "#F5C400",
-        border: "none", padding: "6px 16px",
-        borderRadius: "6px", cursor: "pointer",
-        fontWeight: 700, fontSize: "13px",
-        flexShrink: 0, marginLeft: "12px",
-      }}>
+      <button
+        onClick={ativar}
+        className="flex-shrink-0 px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+      >
         Ativar
       </button>
     </div>
@@ -51,15 +44,6 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen h-dvh overflow-hidden bg-background">
-      {/* Mobile backdrop overlay */}
-      {mobileSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={closeMobileSidebar}
-          aria-hidden="true"
-        />
-      )}
-
       <Sidebar
         collapsed={sidebarCollapsed}
         mobileOpen={mobileSidebarOpen}
@@ -74,7 +58,7 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onToggleSidebar={handleToggle} />
         <PushBanner />
-        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-[60px] md:pb-0">
+        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-16 md:pb-0">
           {children}
         </main>
         <MobileTabBar />
