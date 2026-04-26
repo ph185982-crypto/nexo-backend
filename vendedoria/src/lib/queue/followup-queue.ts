@@ -33,6 +33,9 @@ export function getFollowUpQueue(): Queue<FollowUpJobData> {
         backoff: { type: "exponential", delay: 60_000 },
       },
     });
+    _queue.on("error", (err) =>
+      console.error("[FollowUpQueue] Redis error:", err.message),
+    );
   }
   return _queue;
 }
@@ -240,6 +243,9 @@ export function startFollowUpWorker(): Worker {
   );
   _worker.on("failed", (job, err) =>
     console.error(`[FollowUpWorker] Job ${job?.id} failed:`, err.message),
+  );
+  _worker.on("error", (err) =>
+    console.error("[FollowUpWorker] Redis error:", err.message),
   );
 
   console.log("[FollowUpWorker] Started — listening for follow-up jobs");
