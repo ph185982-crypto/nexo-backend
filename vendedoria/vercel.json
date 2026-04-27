@@ -1,26 +1,20 @@
 {
   "crons": [
     {
-      "path": "/api/campaign/worker",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/cron/followup",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/cron/daily-summary",
       "schedule": "0 11 * * *"
     },
     {
+      "path": "/api/cron/followup",
+      "schedule": "0 */6 * * *"
+    },
+    {
       "path": "/api/cron/oferta",
-      "schedule": "*/30 * * * *",
-      "_comment": "Fires every 30 min; endpoint internally checks Brasília time slots (06:30–21:30)"
+      "schedule": "0 9,15,21 * * *"
     },
     {
       "path": "/api/cron/importar-produtos",
-      "schedule": "0 2 * * 1",
-      "_comment": "Sunday 23:00 Brasília = Monday 02:00 UTC — weekly supplier import"
+      "schedule": "0 2 * * 1"
     }
   ]
 }
