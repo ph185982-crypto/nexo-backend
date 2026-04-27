@@ -3,7 +3,7 @@ import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
 
 export const metadata: Metadata = {
-  title: "VendedorIA — CRM Inteligente para WhatsApp",
+  title: "Nexo Vendas — CRM Inteligente para WhatsApp",
   description: "Gerencie seus leads e automatize suas vendas via WhatsApp com IA",
   icons: { icon: "/favicon.ico" },
 };

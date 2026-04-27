@@ -402,7 +402,7 @@ export default function ChatPage() {
             <Bot className="w-10 h-10 text-primary" />
           </div>
           <div className="text-center">
-            <h3 className="font-semibold text-lg text-foreground">VendedorIA</h3>
+            <h3 className="font-semibold text-lg text-foreground">Nexo Vendas</h3>
             <p className="text-muted-foreground text-sm mt-1">
               Selecione uma conversa para começar
             </p>

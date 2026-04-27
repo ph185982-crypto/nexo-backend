@@ -47,8 +47,8 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="flex items-center justify-center gap-1">
-            <span className="text-3xl font-bold text-white">VENDEDOR</span>
-            <span className="text-3xl font-bold text-accent">IA</span>
+            <span className="text-3xl font-bold text-white">NEXO </span>
+            <span className="text-3xl font-bold text-accent">VENDAS</span>
           </div>
           <p className="text-white/60 text-sm">CRM Inteligente para WhatsApp</p>
         </div>
@@ -117,7 +117,7 @@ export default function LoginPage() {
         </Card>
 
         <p className="text-center text-white/40 text-xs">
-          © 2025 VendedorIA. Todos os direitos reservados.
+          © 2025 Nexo Vendas. Todos os direitos reservados.
         </p>
       </div>
     </div>
