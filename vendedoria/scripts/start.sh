@@ -7,5 +7,5 @@ node_modules/.bin/prisma db push --accept-data-loss
 echo "Running seed (skips if already seeded)..."
 node prisma/seed.js || echo "Seed skipped (already exists)"
 
-echo "Starting VendedorIA..."
+echo "Starting Nexo Vendas..."
 exec node server.js
