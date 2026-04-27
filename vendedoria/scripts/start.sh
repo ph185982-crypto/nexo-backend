@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-echo "Running database migrations..."
+echo "=== [1/3] Applying database schema ==="
 node_modules/.bin/prisma db push --accept-data-loss
 
-echo "Running seed (skips if already seeded)..."
-node prisma/seed.js || echo "Seed skipped (already exists)"
+echo "=== [2/3] Running seed ==="
+node prisma/seed.js && echo "Seed OK" || echo "Seed skipped (already seeded or error)"
 
-echo "Starting Nexo Vendas..."
+echo "=== [3/3] Starting Nexo Vendas ==="
 exec node server.js
