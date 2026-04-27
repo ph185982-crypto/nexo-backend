@@ -27,6 +27,8 @@ except ImportError:
         "   pip install pdfplumber>=0.11.0"
     )
 
+from contract_parser import parse_contract
+
 # ---------------------------------------------------------------------------
 # Constantes
 # ---------------------------------------------------------------------------
@@ -442,29 +444,10 @@ def validar(dados: dict) -> dict:
 
 def processar_contrato(caminho: Path) -> dict:
     texto, sec_contratante, log = extrair_texto_pdf(caminho)
-
-    dados = {
-        "razao_social":        extrair_razao_social(sec_contratante),
-        "cnpj":                extrair_cnpj(sec_contratante),
-        "endereco":            extrair_endereco(sec_contratante),
-        "representante":       extrair_representante(sec_contratante),
-        "nome_contato":        extrair_nome_contato(sec_contratante),
-        "telefone":            extrair_telefone(sec_contratante),
-        "email_financeiro":    "",
-        "valor_total":         extrair_valor(texto),
-        "forma_pagamento":     extrair_modalidade(texto),
-        "parcelamento":        extrair_parcelamento(texto),
-        "primeiro_vencimento": extrair_vencimento(texto),
-        "data_assinatura":     extrair_data_assinatura(texto, log),
-    }
-    dados["email_financeiro"] = extrair_email(texto, log, dados["representante"])
-
-    # Preencher vazios
-    for k, v in dados.items():
-        if not v:
-            dados[k] = NAO_ENCONTRADO
-
-    return validar(dados)
+    dados = parse_contract(texto, sec_contratante, log)
+    # Remove internal keys not used in templates
+    dados.pop("_anos", None)
+    return dados
 
 
 def gerar_email(dados: dict) -> tuple[str, str]:
