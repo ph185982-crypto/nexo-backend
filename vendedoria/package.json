@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/",
-    "start": "node .next/standalone/server.js",
+    "build": "prisma generate && next build",
+    "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
