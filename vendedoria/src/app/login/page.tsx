@@ -31,7 +31,13 @@ export default function LoginPage() {
     if (result?.ok) {
       router.push("/crm");
     } else {
-      setError("Email ou senha inválidos");
+      const msg =
+        result?.error === "CredentialsSignin"
+          ? "Email ou senha inválidos"
+          : result?.error
+          ? `Erro: ${result.error}`
+          : "Não foi possível conectar. Tente novamente.";
+      setError(msg);
     }
     setLoading(false);
   };

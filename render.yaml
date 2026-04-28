@@ -33,7 +33,7 @@ services:
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: AUTH_SECRET
-        sync: false         # mesmo valor que NEXTAUTH_SECRET
+        generateValue: true  # gerado automaticamente — não precisa copiar NEXTAUTH_SECRET
       - key: AUTH_TRUST_HOST
         value: "true"
 
