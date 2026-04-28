@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
   Send, Save, RotateCcw, FlaskConical, CheckCircle2,
   XCircle, ChevronDown, ChevronUp, Bot, User, Loader2,
-  Clock, History, SlidersHorizontal, Zap,
+  Clock, History, SlidersHorizontal, Zap, Smile, MessageCircle, TrendingUp,
 } from "lucide-react";
 
 // ── GraphQL ──────────────────────────────────────────────────────────────────
@@ -92,6 +94,12 @@ interface TestResult {
   ruleActivated: string | null;
 }
 
+interface AiConfig {
+  usarEmoji: boolean;
+  usarReticencias: boolean;
+  nivelVenda: string;
+}
+
 // ── Helper ────────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string) {
@@ -104,12 +112,24 @@ function formatDate(iso: string) {
   }
 }
 
+const NIVEL_OPTIONS: { value: string; label: string; desc: string; color: string }[] = [
+  { value: "leve",      label: "Suave",     desc: "Deixa o cliente conduzir", color: "bg-blue-50 border-blue-300 text-blue-700" },
+  { value: "medio",     label: "Equilibrado", desc: "Conduz naturalmente",     color: "bg-emerald-50 border-emerald-300 text-emerald-700" },
+  { value: "agressivo", label: "Agressivo",  desc: "Urgência e fechamento ativo", color: "bg-orange-50 border-orange-300 text-orange-700" },
+];
+
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function ConfigureAgentPage() {
   // Agent selection
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
+
+  // AI Behavior config
+  const [aiConfig, setAiConfig] = useState<AiConfig>({ usarEmoji: true, usarReticencias: true, nivelVenda: "medio" });
+  const [configSaving, setConfigSaving] = useState(false);
+  const [configSaved, setConfigSaved] = useState(false);
 
   // Chat state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -161,13 +181,48 @@ export default function ConfigureAgentPage() {
     });
   });
 
+  // Load AI behavior config for the selected org
+  const loadConfig = useCallback(async (orgId: string) => {
+    try {
+      const res = await fetch(`/api/config?organizationId=${orgId}`);
+      if (res.ok) {
+        const data = await res.json() as AiConfig;
+        setAiConfig({
+          usarEmoji: data.usarEmoji ?? true,
+          usarReticencias: data.usarReticencias ?? true,
+          nivelVenda: data.nivelVenda ?? "medio",
+        });
+      }
+    } catch { /* use defaults */ }
+  }, []);
+
+  // Save AI behavior config
+  const saveConfig = useCallback(async (patch: Partial<AiConfig>, orgId: string | null) => {
+    if (!orgId) return;
+    const next = { ...aiConfig, ...patch };
+    setAiConfig(next);
+    setConfigSaving(true);
+    try {
+      await fetch("/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organizationId: orgId, ...next }),
+      });
+      setConfigSaved(true);
+      setTimeout(() => setConfigSaved(false), 2000);
+    } catch { /* silent */ }
+    finally { setConfigSaving(false); }
+  }, [aiConfig]);
+
   // Auto-select first agent
   useEffect(() => {
     if (allAgents.length > 0 && !selectedAgentId) {
       const first = allAgents[0];
       setSelectedAgentId(first.agent.id);
       setSelectedAgent(first.agent);
+      setSelectedOrgId(first.org.id);
       setScriptContent(first.agent.systemPrompt ?? "");
+      loadConfig(first.org.id);
     }
   }, [allAgents.length, selectedAgentId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -177,13 +232,15 @@ export default function ConfigureAgentPage() {
   }, [chatMessages]);
 
   // Select agent
-  const handleSelectAgent = useCallback((entry: { agent: Agent }) => {
+  const handleSelectAgent = useCallback((entry: { agent: Agent; org: Org }) => {
     setSelectedAgentId(entry.agent.id);
     setSelectedAgent(entry.agent);
+    setSelectedOrgId(entry.org.id);
     setScriptContent(entry.agent.systemPrompt ?? "");
     setScriptModified(false);
     setTestResult(null);
-  }, []);
+    loadConfig(entry.org.id);
+  }, [loadConfig]);
 
   // Send chat message
   const handleSendChat = useCallback(async () => {
@@ -313,7 +370,6 @@ export default function ConfigureAgentPage() {
         <SlidersHorizontal className="w-5 h-5 text-primary" />
         <h1 className="font-semibold text-lg">Configurar Agente</h1>
 
-        {/* Agent selector */}
         {allAgents.length > 1 && (
           <select
             className="ml-2 text-sm border rounded-md px-2 py-1 bg-background"
@@ -337,6 +393,77 @@ export default function ConfigureAgentPage() {
             {selectedAgent.displayName} · ativo
           </Badge>
         )}
+      </div>
+
+      {/* ── AI Behavior Panel ── */}
+      <div className="border-b bg-white flex-shrink-0 px-4 py-3">
+        <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <TrendingUp className="w-4 h-4 text-primary flex-shrink-0" />
+            <span className="text-sm font-semibold text-gray-700">Comportamento da IA</span>
+            {configSaving && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+            {configSaved && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
+          </div>
+
+          {/* Tom de venda */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground font-medium mr-1">Tom de venda:</span>
+            <div className="flex gap-1">
+              {NIVEL_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => saveConfig({ nivelVenda: opt.value }, selectedOrgId)}
+                  title={opt.desc}
+                  className={cn(
+                    "px-2.5 py-1 rounded-md border text-xs font-medium transition-all",
+                    aiConfig.nivelVenda === opt.value
+                      ? opt.color + " ring-1 ring-offset-1 ring-current"
+                      : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Separador */}
+          <div className="hidden sm:block w-px h-6 bg-gray-200 self-center" />
+
+          {/* Emoji */}
+          <div className="flex items-center gap-2">
+            <Smile className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+            <Label htmlFor="toggle-emoji" className="text-xs text-gray-600 cursor-pointer select-none">
+              Usar emojis
+            </Label>
+            <Switch
+              id="toggle-emoji"
+              checked={aiConfig.usarEmoji}
+              onCheckedChange={(v) => saveConfig({ usarEmoji: v }, selectedOrgId)}
+              className="scale-90"
+            />
+          </div>
+
+          {/* Reticências */}
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
+            <Label htmlFor="toggle-reticencias" className="text-xs text-gray-600 cursor-pointer select-none">
+              Usar reticências
+            </Label>
+            <Switch
+              id="toggle-reticencias"
+              checked={aiConfig.usarReticencias}
+              onCheckedChange={(v) => saveConfig({ usarReticencias: v }, selectedOrgId)}
+              className="scale-90"
+            />
+          </div>
+        </div>
+
+        {/* Tom description */}
+        <p className="text-[11px] text-muted-foreground mt-1.5 ml-6">
+          {NIVEL_OPTIONS.find(o => o.value === aiConfig.nivelVenda)?.desc ?? ""}
+          {" · Alterações aplicadas imediatamente nas próximas conversas."}
+        </p>
       </div>
 
       {/* ── Mobile panel toggle ── */}
@@ -457,7 +584,7 @@ export default function ConfigureAgentPage() {
             "min-h-0"
           )}>
             <div className="flex items-center gap-2 px-4 py-2.5 border-b bg-gray-50 flex-shrink-0">
-              <span className="text-sm font-medium flex-1">Script Atual do Agente</span>
+              <span className="text-sm font-medium flex-1">Script do Agente (Argumentos e Roteiro)</span>
 
               {scriptModified && (
                 <Badge variant="outline" className="text-xs text-amber-600 border-amber-200 bg-amber-50">
@@ -470,7 +597,6 @@ export default function ConfigureAgentPage() {
                 </Badge>
               )}
 
-              {/* History toggle */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -592,7 +718,6 @@ export default function ConfigureAgentPage() {
 
             {testResult && (
               <div className="mx-3 mb-3 rounded-xl border bg-gray-50 overflow-hidden flex-shrink-0">
-                {/* Balloons preview */}
                 <div className="p-3 space-y-1.5">
                   <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-2">
                     Como o agente responderia:
@@ -606,7 +731,6 @@ export default function ConfigureAgentPage() {
                   ))}
                 </div>
 
-                {/* Rule activated */}
                 {testResult.ruleActivated && (
                   <div className="px-3 py-2 border-t bg-white">
                     <p className="text-[11px] text-muted-foreground">
@@ -616,7 +740,6 @@ export default function ConfigureAgentPage() {
                   </div>
                 )}
 
-                {/* Actions */}
                 <div className="flex gap-2 p-2 border-t bg-white">
                   <Button
                     size="sm"
