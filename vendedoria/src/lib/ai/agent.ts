@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
+import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -633,6 +634,7 @@ export async function processAIResponse(
         where: { conversationId, status: "ACTIVE" },
         data: { status: "DONE" },
       }).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
       return;
     }
 
@@ -924,6 +926,7 @@ export async function processAIResponse(
       await prisma.whatsappMessage.create({ data: { content: "pedido confirmado! 🎉", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
       await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date(), etapa: "PEDIDO_CONFIRMADO" } }).catch(() => {});
       await prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "DONE" } }).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
       return; // não chamar LLM — pedido já encerrado
     }
 
@@ -1022,6 +1025,7 @@ export async function processAIResponse(
         prisma.lead.update({ where: { id: conversation.leadId }, data: { status: "BLOCKED" } }),
         prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "OPT_OUT" } }),
       ]);
+      await cancelFollowUpJobs(conversationId).catch(() => {});
     }
 
     // ── [PASSAGEM] ────────────────────────────────────────────────────────────
@@ -1061,6 +1065,7 @@ export async function processAIResponse(
           where: { conversationId, status: "ACTIVE" },
           data: { status: "DONE" },
         }).catch(() => {});
+        await cancelFollowUpJobs(conversationId).catch(() => {});
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
     }
 
@@ -1209,7 +1214,7 @@ export async function processAIResponse(
       }
     }
 
-    // ── CORREÇÃO 4: Agendar follow-up (só se não confirmado/perdido/fora de área) ──
+    // ── Agendar follow-up (só se não confirmado/perdido/fora de área) ──────────
     const skipFollowup =
       conversation.etapa === "PEDIDO_CONFIRMADO" ||
       conversation.etapa === "PERDIDO" ||
@@ -1218,13 +1223,18 @@ export async function processAIResponse(
       lead?.status === "BLOCKED";
     if (!skipFollowup) {
       const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
-      await prisma.conversationFollowUp.upsert({
+      const fu = await prisma.conversationFollowUp.upsert({
         where: { conversationId },
         update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
         create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
       });
+      // Cancela jobs antigos e agenda o step 1 no BullMQ (complementa o cron)
+      await cancelFollowUpJobs(conversationId).catch(() => {});
+      await enqueueFollowUp(fu.id, conversationId, 1, to, provider.businessPhoneNumberId, lead?.profileName ?? null, provider.accessToken ?? null, now).catch(() => {});
     } else {
       console.log(`[AI Agent] Follow-up não agendado — etapa: ${conversation.etapa} | foraAreaEntrega: ${conversation.foraAreaEntrega} | lead: ${lead?.status}`);
+      // Cancela jobs pendentes quando a conversa é encerrada
+      await cancelFollowUpJobs(conversationId).catch(() => {});
     }
 
   } catch (error) {

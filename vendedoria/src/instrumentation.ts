@@ -1,16 +1,12 @@
-/**
- * Next.js Instrumentation — runs once when the server process starts.
- * Sets up an internal keep-alive loop that pings /api/keepalive every 10 minutes
- * to prevent Render free-tier cold starts.
- */
+// Next.js Instrumentation — runs once when the server process starts.
 export async function register() {
-  // Only run in Node.js runtime (not Edge), and only in production
+  // Only run in Node.js runtime (not Edge)
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
   const BASE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:10000";
-  const INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+  const KEEPALIVE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
-  // Delay first ping by 30s to let the server finish starting up
+  // Keep-alive loop to prevent Render free-tier cold starts
   setTimeout(() => {
     const ping = () => {
       fetch(`${BASE_URL}/api/keepalive`)
@@ -18,7 +14,20 @@ export async function register() {
         .catch((e) => console.warn("[Keepalive] Internal ping failed:", String(e)));
     };
 
-    ping(); // first immediate ping
-    setInterval(ping, INTERVAL_MS);
+    ping();
+    setInterval(ping, KEEPALIVE_INTERVAL_MS);
   }, 30_000);
+
+  // Follow-up queue worker — starts only if REDIS_URL is configured
+  if (process.env.REDIS_URL) {
+    try {
+      const { startFollowUpWorker } = await import("@/lib/queue/followup-queue");
+      startFollowUpWorker();
+      console.log("[Instrumentation] FollowUpWorker iniciado via BullMQ");
+    } catch (err) {
+      console.warn("[Instrumentation] FollowUpWorker falhou ao iniciar:", err);
+    }
+  } else {
+    console.log("[Instrumentation] REDIS_URL não configurado — follow-ups via cron polling");
+  }
 }
