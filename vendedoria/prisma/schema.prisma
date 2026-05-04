@@ -113,6 +113,7 @@ model Agent {
   escalationThreshold      Int      @default(3)
   orgHierarchyNode         OrgHierarchyItem?
   scriptVersions           AgentScriptVersion[]
+  configVersions           AgentConfigVersion[]
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 }
@@ -126,6 +127,26 @@ model AgentScriptVersion {
   content   String   @db.Text
   savedBy   String?  // user name or "configurador"
   createdAt DateTime @default(now())
+
+  @@index([agentId, createdAt])
+}
+
+// ─── Agent Config Version History ─────────────────────────────────────────
+
+model AgentConfigVersion {
+  id                  String   @id @default(cuid())
+  agentId             String
+  agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  systemPrompt        String?  @db.Text
+  aiProvider          String?
+  aiModel             String?
+  nivelVenda          String   @default("medio")
+  usarEmoji           Boolean  @default(true)
+  usarReticencias     Boolean  @default(true)
+  escalationThreshold Int      @default(3)
+  savedBy             String?
+  label               String?
+  createdAt           DateTime @default(now())
 
   @@index([agentId, createdAt])
 }
@@ -225,6 +246,7 @@ model WhatsappConversation {
   messages                   WhatsappMessage[]
   tags                       ConversationTag[]
   followUp                   ConversationFollowUp?
+  decisionLogs               DecisionLog[]
   conversationRatings        Json     @default("[]")
   lastMessageAt              DateTime?
   isActive                   Boolean  @default(true)
@@ -495,6 +517,20 @@ model AiConfig {
   usarReticencias Boolean  @default(true)
   nivelVenda      String   @default("medio") // leve | medio | agressivo
   updatedAt       DateTime @updatedAt
+}
+
+// ─── Decision Log ─────────────────────────────────────────────────────────
+
+model DecisionLog {
+  id             String               @id @default(cuid())
+  conversationId String
+  conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
+  action         String               // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
+  reason         String?              @db.Text
+  metadata       Json?
+  createdAt      DateTime             @default(now())
+
+  @@index([conversationId, createdAt])
 }
 
 // ─── Webhook Retry Queue ────────────────────────────────────────────────────
