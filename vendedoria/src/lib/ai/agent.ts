@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
+import { decisionService } from "@/lib/ai/decision";
+import { promptCompiler } from "@/lib/ai/prompt-compiler";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -935,12 +937,44 @@ export async function processAIResponse(
       }
     }
 
-    const runtimeCtx = buildRuntimeContext(
-      leadState, msgCount, isFirstInteraction, aiConfig, collectedData,
-      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+    // ── DecisionService: decide a ação e loga ─────────────────────────────────
+    const decisionCtx = {
+      conversationId,
+      userMessage,
+      messageCount: msgCount,
+      leadStatus: lead?.status ?? "OPEN",
+      etapa: conversation.etapa,
+      humanTakeover: !!(conversation as typeof conversation & { humanTakeover?: boolean }).humanTakeover,
+      foraAreaEntrega: conversation.foraAreaEntrega,
+      isOptOut: /\[OPT_OUT\]/i.test(recentMessages.map((m) => m.content).join(" ")),
+      hardEscalation,
+      hasIntentoBuy: temIntencaoCompra,
+      isFirstInteraction,
+      allDataCollected: dadosCompletos,
+    };
+    const decision = decisionService.decide(decisionCtx);
+    void decisionService.log(decisionCtx, decision); // fire-and-forget
+    console.log(`[DecisionService] Conv ${conversationId} → ${decision.action}: ${decision.reason}`);
+
+    if (decision.action === "WAIT" || decision.action === "CLOSE") {
+      return;
+    }
+
+    // ── PromptCompiler: monta systemPrompt em 5 camadas ──────────────────────
+    const now_sp = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+    const compiled = promptCompiler.compile({
+      basePersonaPrompt: basePrompt,
+      aiConfig,
       activeProducts,
-    );
-    const systemPromptFinal = basePrompt + productSection + leadContext + runtimeCtx;
+      businessHours: { hour: now_sp.getHours(), dayOfWeek: now_sp.getDay() },
+      collectedData,
+      recentMessages: recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+      leadState,
+      messageCount: msgCount,
+      isFirstInteraction,
+      etapa: conversation.etapa,
+    });
+    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
