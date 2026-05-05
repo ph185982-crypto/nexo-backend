@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Search, Send, Smile, Phone, MoreVertical, Filter,
-  Tag, CheckCheck, Check, Loader2, Bot,
+  Tag, CheckCheck, Check, Loader2, Bot, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -153,7 +153,21 @@ function MessageBubble({ message }: { message: Message }) {
             : "bg-white rounded-bl-sm border border-gray-100"
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        {message.type === "LOCATION" ? (() => {
+          const m = message.content.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/);
+          const lat = m?.[1]; const lng = m?.[2];
+          const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null;
+          const label = message.content.match(/ponto:\s*([^|]+)/)?.[1]?.trim()
+            ?? message.content.match(/endereço:\s*([^|]+)/)?.[1]?.trim()
+            ?? "Ver no mapa";
+          return (
+            <a href={mapsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+              <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
+              <span>{label}</span>
+            </a>
+          );
+        })() : <p className="whitespace-pre-wrap break-words">{message.content}</p>}
         <div className={cn("flex items-center gap-1 mt-1", isSent ? "justify-end" : "justify-start")}>
           <span className="text-[10px] text-gray-400">{formatTime(message.sentAt)}</span>
           {isSent && (
