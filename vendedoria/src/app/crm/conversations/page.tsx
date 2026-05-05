@@ -146,6 +146,21 @@ function MessageContent({ msg }: { msg: Message }) {
     </span>
   );
   if (msg.type === "AUDIO") return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
+  if (msg.type === "LOCATION") {
+    const m = msg.content.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/);
+    const lat = m?.[1]; const lng = m?.[2];
+    const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null;
+    const label = msg.content.match(/ponto:\s*([^|]+)/)?.[1]?.trim()
+      ?? msg.content.match(/endereço:\s*([^|]+)/)?.[1]?.trim()
+      ?? "📍 Ver localização no mapa";
+    return (
+      <a href={mapsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
+        className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+        <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
+        <span>{label}</span>
+      </a>
+    );
+  }
   return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
 }
 
@@ -188,6 +203,7 @@ function ConversationsContent() {
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [messages, setMessages]         = useState<Message[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [msgError, setMsgError]         = useState<string | null>(null);
   const [msgInput, setMsgInput]         = useState("");
   const [sending, setSending]           = useState(false);
   const [takingOver, setTakingOver]     = useState(false);
@@ -276,7 +292,7 @@ function ConversationsContent() {
 
   // ── Fetch messages ────────────────────────────────────────────────────────────
   const fetchMessages = useCallback(async (convId: string, silent = false) => {
-    if (!silent) setLoadingMessages(true);
+    if (!silent) { setLoadingMessages(true); setMsgError(null); }
     try {
       const res = await fetch(`/api/graphql`, {
         method: "POST",
@@ -290,10 +306,22 @@ function ConversationsContent() {
           variables: { id: convId },
         }),
       });
-      const { data } = await res.json() as {
-        data?: { getConversationMessages?: { messages?: Message[] } }
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+      }
+
+      const json = await res.json() as {
+        data?: { getConversationMessages?: { messages?: Message[] } };
+        errors?: Array<{ message: string }>;
       };
-      const newMsgs = data?.getConversationMessages?.messages ?? [];
+
+      if (json.errors?.length) {
+        throw new Error(json.errors.map(e => e.message).join("; "));
+      }
+
+      const newMsgs = json.data?.getConversationMessages?.messages ?? [];
       const newLastId = newMsgs[newMsgs.length - 1]?.id ?? "";
       // Stale-request guard: discard if user switched conversations while fetch was in-flight
       if (convId !== currentConvIdRef.current) return;
@@ -319,6 +347,11 @@ function ConversationsContent() {
         // New message arrived and user is already at bottom: smooth scroll
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
       }
+    } catch (err) {
+      if (convId !== currentConvIdRef.current) return;
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[fetchMessages]", msg);
+      if (!silent) setMsgError(msg);
     } finally {
       if (!silent) setLoadingMessages(false);
     }
@@ -571,9 +604,11 @@ function ConversationsContent() {
                         {lastMsg.role === "ASSISTANT"
                           ? (conv.humanTakeover ? "👤 " : "🤖 ")
                           : "💬 "}
-                        {lastMsg.type === "TEXT"
-                          ? lastMsg.content.slice(0, 60)
-                          : `[${lastMsg.type}]`}
+                        {lastMsg.type === "IMAGE"  ? "🖼 Imagem"
+                          : lastMsg.type === "VIDEO"  ? "🎥 Vídeo"
+                          : lastMsg.type === "AUDIO"  ? "🎙 Áudio"
+                          : lastMsg.type === "LOCATION" ? "📍 Localização recebida"
+                          : lastMsg.content.slice(0, 60)}
                       </p>
                     )}
                   </div>
@@ -832,6 +867,20 @@ function ConversationsContent() {
               {loadingMessages && messages.length === 0 && (
                 <div className="flex justify-center py-12">
                   <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              )}
+
+              {msgError && messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 gap-3 text-center px-4">
+                  <AlertTriangle className="w-8 h-8 text-amber-500" />
+                  <p className="text-sm font-medium text-gray-700">Erro ao carregar mensagens</p>
+                  <p className="text-xs text-muted-foreground max-w-xs break-all">{msgError}</p>
+                  <button
+                    onClick={() => fetchMessages(selectedId!, false)}
+                    className="text-xs text-primary underline underline-offset-2 hover:opacity-80"
+                  >
+                    Tentar novamente
+                  </button>
                 </div>
               )}
 

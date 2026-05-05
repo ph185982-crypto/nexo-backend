@@ -14,7 +14,7 @@ const CONV_SELECT = {
   messages: {
     orderBy: { sentAt: "desc" as const },
     take: 1,
-    select: { content: true, role: true, sentAt: true, type: true },
+    select: { id: true, content: true, role: true, sentAt: true, type: true },
   },
   followUp: { select: { status: true, step: true, nextSendAt: true } },
 };

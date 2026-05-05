@@ -21,22 +21,27 @@ const server = new ApolloServer<GraphQLContext>({
 
 const handler = startServerAndCreateNextHandler<NextRequest, GraphQLContext>(server, {
   context: async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
+    try {
+      const session = await auth();
+      if (!session?.user?.id) {
+        return { allowedOrgIds: [] };
+      }
+
+      // For a single-user internal tool, every org in the DB belongs to the owner.
+      // We still fetch them so the check works if more orgs are added.
+      const orgs = await prisma.whatsappBusinessOrganization.findMany({
+        select: { id: true },
+      });
+
+      return {
+        userId: session.user.id,
+        userRole: (session.user as { role?: string }).role,
+        allowedOrgIds: orgs.map((o) => o.id),
+      };
+    } catch {
+      // Never let context creation kill the whole request — return unauthenticated context
       return { allowedOrgIds: [] };
     }
-
-    // For a single-user internal tool, every org in the DB belongs to the owner.
-    // We still fetch them so the check works if more orgs are added.
-    const orgs = await prisma.whatsappBusinessOrganization.findMany({
-      select: { id: true },
-    });
-
-    return {
-      userId: session.user.id,
-      userRole: (session.user as { role?: string }).role,
-      allowedOrgIds: orgs.map((o) => o.id),
-    };
   },
 });
 
