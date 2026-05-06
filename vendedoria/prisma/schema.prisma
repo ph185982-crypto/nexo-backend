@@ -159,6 +159,44 @@ model AgentConfigVersion {
   @@index([agentId, createdAt])
 }
 
+// ─── Legacy AgentConfig (singleton — global agent settings) ───────────────
+
+model AgentConfig {
+  id                 String   @id @default(cuid())
+  agentName          String   @default("Pedro")
+  bastaoNumber       String   @default("5562984465388")
+  currentPrompt      String   @default("") @db.Text
+  promptVersion      Int      @default(1)
+  followUpHours      String   @default("4,24,48,72")
+  followUpPrompt     String?  @db.Text
+  maxFollowUps       Int      @default(4)
+  deliveryWeekStart  Int      @default(9)
+  deliveryWeekEnd    Int      @default(18)
+  deliverySatStart   Int      @default(8)
+  deliverySatEnd     Int      @default(13)
+  deliveryArea       String   @default("")
+  escalationThreshold Int     @default(3)
+  aiProvider         String?
+  aiModel            String?
+  autoPassagem       Boolean  @default(true)
+  autoMedia          Boolean  @default(true)
+  escalacaoAtiva     Boolean  @default(true)
+  promptHistory      AgentPromptHistory[]
+  updatedAt          DateTime @updatedAt
+  createdAt          DateTime @default(now())
+}
+
+model AgentPromptHistory {
+  id            String      @id @default(cuid())
+  agentConfigId String
+  agentConfig   AgentConfig @relation(fields: [agentConfigId], references: [id], onDelete: Cascade)
+  content       String      @db.Text
+  savedBy       String?
+  createdAt     DateTime    @default(now())
+
+  @@index([agentConfigId, createdAt])
+}
+
 // ─── Kanban ────────────────────────────────────────────────────────────────
 
 model KanbanColumn {

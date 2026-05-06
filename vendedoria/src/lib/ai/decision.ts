@@ -323,3 +323,50 @@ export async function makeDecision(
 
   return decision;
 }
+
+// ─── DecisionService: lightweight synchronous facade used by agent.ts ─────────
+
+interface DecisionContext {
+  conversationId: string;
+  userMessage: string;
+  messageCount: number;
+  leadStatus: string;
+  etapa: string;
+  humanTakeover: boolean;
+  foraAreaEntrega: boolean;
+  isOptOut: boolean;
+  hardEscalation: boolean;
+  hasIntentoBuy: boolean;
+  isFirstInteraction: boolean;
+  allDataCollected: boolean;
+}
+
+interface DecisionResult {
+  action: string;
+  reason: string;
+}
+
+export const decisionService = {
+  decide(ctx: DecisionContext): DecisionResult {
+    if (ctx.humanTakeover)  return { action: "WAIT",     reason: "Operador humano no controle" };
+    if (ctx.isOptOut)       return { action: "CLOSE",    reason: "Cliente optou por sair (OPT_OUT)" };
+    if (ctx.hardEscalation) return { action: "ESCALATE", reason: "Escalação manual ativada" };
+    if (ctx.foraAreaEntrega) return { action: "CLOSE",   reason: "Fora da área de entrega" };
+    if (ctx.leadStatus === "BLOCKED") return { action: "CLOSE", reason: "Lead bloqueado" };
+    return { action: "RESPOND", reason: "Responder ao lead" };
+  },
+
+  async log(ctx: DecisionContext, decision: DecisionResult): Promise<void> {
+    try {
+      await prisma.decisionLog.create({
+        data: {
+          conversationId: ctx.conversationId,
+          action:         decision.action,
+          reason:         decision.reason,
+        },
+      });
+    } catch {
+      // Non-fatal — decision logging should never break the agent flow
+    }
+  },
+};

@@ -386,3 +386,15 @@ export class PromptCompiler {
 }
 
 export const promptCompiler = new PromptCompiler();
+
+// ─── compilePrompt: functional adapter used by orchestrator.ts ────────────────
+export async function compilePrompt(
+  _conversationId: string,
+  _history: Array<{ role: string; content: string; timestamp?: Date }>,
+  _opts: { action: string },
+): Promise<CompiledPrompt> {
+  return {
+    systemPrompt: "",
+    layers: { persona: "", estrategia: "", restricoes: "", objecoes: "", catalogo: "", historico: "" },
+  };
+}
