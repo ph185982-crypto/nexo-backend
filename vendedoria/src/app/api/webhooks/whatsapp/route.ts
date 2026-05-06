@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { transcribeAudio } from "@/lib/ai/transcription";
+import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -282,6 +283,8 @@ async function handleIncomingMessage(
     where: { conversationId: conversation.id, status: "ACTIVE" },
     data: { status: "DONE" },
   }).catch(() => {});
+  // Also remove delayed jobs from Redis queue so they don't fire unnecessarily
+  await cancelFollowUpJobs(conversation.id).catch(() => {});
 
   // Trigger AI agent if configured — fire-and-forget with explicit error logging
   if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
