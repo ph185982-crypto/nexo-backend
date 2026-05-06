@@ -376,95 +376,45 @@ function buildRuntimeContext(
     ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra. ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). Varie o argumento.` : "Já tentou bastante. Tente um ângulo diferente — benefício, praticidade, entrega. NUNCA escale por preço."}`
     : "";
 
-  // ── Etapa da conversa ────────────────────────────────────────────────────────
-  let etapa: string;
+  // Flags de mídia disponíveis para o script usar
+  const mediaFlags = (activeProducts ?? [])
+    .filter((p) => p.imageUrl || p.videoUrl)
+    .map((p) => {
+      const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+      return `[FOTO_${s}]${p.videoUrl ? ` / [VIDEO_${s}]` : ""}`;
+    })
+    .join("  |  ");
 
-  if (isFirstInteraction) {
-    // Monta flags reais dos produtos com mídia para o LLM usar
-    const mediaFlags = (activeProducts ?? [])
-      .filter(p => p.imageUrl || p.videoUrl)
-      .map(p => {
-        const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        return `[FOTO_${s}]${p.videoUrl ? ` e [VIDEO_${s}]` : ""}`;
-      })
-      .join("  |  ");
-    const flagInstrucao = mediaFlags
-      ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})
-- ATENÇÃO: você DEVE colocar o flag exato (ex: [FOTO_LUATEK_48V]) em um balão separado — isso é o que dispara o envio. Nunca diga "vou te enviar fotos" sem o flag.`
-      : "- Descreva o produto em texto";
-    const prodNames = (activeProducts ?? []).map((p) => p.name).join(" | ");
-    etapa = `ETAPA 1 — PRIMEIRO CONTATO:
-- Produtos no catálogo: ${prodNames || "ver CATÁLOGO abaixo"}
-- Identifique qual produto o cliente quer e use o slug exato do CATÁLOGO para flags de mídia
-- Cumprimente com "${greeting}" em 1 balão separado, apresente-se em outro balão
-${flagInstrucao}
-- 2 benefícios curtos em balões separados
-- 1 pergunta de qualificação (ex: "pra que você vai usar?")
-- NÃO peça localização agora`;
-  } else if (leadState.tipo === "quente") {
-    // Verificar quais dados faltam
-    // Localização OU endereço é suficiente — não pedir os dois
+  // Dados pendentes de coleta (lead quente)
+  const faltaLinhas: string[] = [];
+  if (leadState.tipo === "quente") {
     const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    const falta: string[] = [];
-    if (!temLocal)                falta.push("localização (pin 📍 ou texto: rua, bairro, CEP)");
-    if (!collectedData.horario)   falta.push("até que horas pode receber");
-    if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
-    if (!collectedData.nome)      falta.push("nome de quem vai receber");
-
-    if (falta.length === 0) {
-      etapa = `ETAPA 4 — FECHAR PEDIDO: você tem todos os dados. Emita [PASSAGEM] com os dados coletados e confirme ao cliente: "perfeito, pedido encaminhado! 🙌"`;
-    } else {
-      etapa = `ETAPA 4 — COLETAR DADOS (lead confirmou compra):
-Dado que falta agora (1 por vez, não pergunte tudo de uma vez): ${falta[0]}
-${falta.length > 1 ? `(depois ainda faltará: ${falta.slice(1).join(", ")})` : ""}
-${entregaHoje}
-NÃO repita dados já coletados acima.`;
-    }
-  } else if (msgCount <= 4 || leadState.tipo === "curioso") {
-    etapa = `ETAPA 2 — QUALIFICAR E APRESENTAR:
-- Se ainda não enviou mídia: inclua [FOTO_SLUG] e [VIDEO_SLUG] agora
-- Entenda o uso do produto (faça 1 pergunta)
-- Apresente 1-2 diferenciais relevantes para o uso dele
-- NÃO peça localização`;
-  } else if (leadState.tipo === "interessado" || msgCount <= 8) {
-    etapa = `ETAPA 3 — CONVERTER:
-- Reforce "só paga quando chegar na sua mão, sem risco"
-- Use prova social: "aqui em Goiânia tô mandando bastante essa semana"
-- Pergunte diretamente: "posso separar uma pra você?" ou "bora fechar?"
-- Se ainda não enviou vídeo: inclua [VIDEO_SLUG] agora
-- NÃO peça localização ainda`;
-  } else if (leadState.tipo === "frio") {
-    etapa = `ETAPA 3 — REENGAJAR:
-- Use escassez natural: "essa tá acabando" ou "tenho poucas unidades"
-- Remova objeção de preço: "e você só paga na entrega, sem risco"
-- Inclua [FOTO_SLUG] se ainda não enviou`;
-  } else {
-    etapa = `ETAPA 3 — AVANÇAR: responda a dúvida e empurre suavemente para o fechamento. Se não enviou mídia, inclua agora.`;
+    if (!temLocal)                faltaLinhas.push("localização");
+    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
+    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
+    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
   }
 
-  const nivelInstr: Record<string, string> = {
-    leve:      "Responda e deixe o cliente conduzir.",
-    medio:     "Conduza naturalmente. Após responder, avance um passo.",
-    agressivo: "Conduza ativamente. Use urgência com naturalidade.",
-  };
-
   return [
-    `\n\n--- RUNTIME ---`,
-    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente aberto" : "🔴 Fora do expediente"}`,
-    `Entrega: ${entregaHoje}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
-    `Emoji: ${emoji ? "SIM (máx 1/msg, não em toda msg)" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
+    `\n\n--- CONTEXTO RUNTIME ---`,
+    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente" : "🔴 Fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    `Emoji: ${emoji ? "SIM (máx 1/msg)" : "NÃO"}`,
+    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    faltaLinhas.length > 0
+      ? `⚠️ Lead quente — dados faltando (colete 1 por vez, não pergunte tudo junto): ${faltaLinhas.join(" → ")}`
+      : leadState.tipo === "quente"
+        ? `✅ Todos os dados coletados — emita [PASSAGEM].`
+        : "",
     dadosColetados,
     priceInfo,
-    ``,
-    etapa,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
     `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
     `• Cada balão = 1 frase curta (1-2 linhas)`,
-    `• delays em ms entre balões (600-2000ms, simule digitação humana)`,
-    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array (substitua SLUG pelo slug do produto)`,
-    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" "Conforme" — fale como pessoa real`,
+    `• delays em ms (600-2000ms)`,
+    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array`,
+    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" — fale como pessoa real`,
     `--- FIM RUNTIME ---`,
   ].filter(Boolean).join("\n");
 }
