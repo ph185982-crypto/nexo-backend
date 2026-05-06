@@ -9,6 +9,7 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { useQuery, gql } from "@apollo/client";
 import { cn, getInitials } from "@/lib/utils";
 
@@ -34,7 +35,7 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 };
 
 const TYPE_COLOR: Record<string, string> = {
-  ORDER: "text-green-600",
+  ORDER: "text-emerald-500",
   ESCALATION: "text-orange-500",
   OPT_OUT: "text-red-500",
 };
@@ -56,8 +57,8 @@ function Clock() {
   useEffect(() => {
     const update = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
-      setDate(now.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" }));
+      setTime(now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+      setDate(now.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" }));
     };
     update();
     const interval = setInterval(update, 1000);
@@ -65,9 +66,9 @@ function Clock() {
   }, []);
 
   return (
-    <div className="text-right hidden sm:block">
-      <p className="text-sm font-semibold text-foreground">{time}</p>
-      <p className="text-xs text-muted-foreground capitalize">{date}</p>
+    <div className="text-right hidden sm:block select-none">
+      <p className="text-sm font-semibold tabular-nums text-foreground">{time}</p>
+      <p className="text-[11px] text-muted-foreground capitalize">{date}</p>
     </div>
   );
 }
@@ -91,7 +92,6 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     } catch { /* silent */ }
   }, [orgId]);
 
-  // Poll every 15s
   useEffect(() => {
     fetchNotifications();
     const t = setInterval(fetchNotifications, 15000);
@@ -111,30 +111,42 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-border flex items-center justify-between px-4 gap-4 flex-shrink-0">
+    <header className="h-14 bg-card border-b border-border flex items-center justify-between px-4 gap-4 flex-shrink-0">
       {/* Left */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon-sm" onClick={onToggleSidebar} className="text-muted-foreground">
-          <Menu className="w-5 h-5" />
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggleSidebar}
+          className="text-muted-foreground hover:text-foreground rounded-lg"
+        >
+          <Menu className="w-4 h-4" />
         </Button>
         <div className="hidden md:block">
           <p className="text-sm text-muted-foreground">
-            Bem vindo de volta, <span className="font-semibold text-foreground">{userName}</span>
+            Bem-vindo, <span className="font-semibold text-foreground">{userName}</span>
           </p>
         </div>
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5">
         <Clock />
+
+        <ThemeSwitcher />
 
         {/* Notification bell */}
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative rounded-full" onClick={fetchNotifications}>
-              <Bell className="w-5 h-5" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative rounded-lg text-muted-foreground hover:text-foreground"
+              onClick={fetchNotifications}
+            >
+              <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -178,10 +190,10 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         {/* User avatar */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar className="w-8 h-8">
+            <Button variant="ghost" size="icon" className="rounded-lg">
+              <Avatar className="w-7 h-7">
                 <AvatarImage src={session?.user?.image ?? ""} alt={userName} />
-                <AvatarFallback className="text-xs font-semibold text-white" style={{ backgroundColor: "#004c3f" }}>
+                <AvatarFallback className="text-[10px] font-semibold text-white bg-emerald-700">
                   {getInitials(userName)}
                 </AvatarFallback>
               </Avatar>

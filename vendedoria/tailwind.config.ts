@@ -11,8 +11,8 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#004c3f",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
           50: "#e6f2f0",
           100: "#b3d9d3",
           200: "#80bfb7",
@@ -25,34 +25,34 @@ const config: Config = {
           900: "#00100d",
         },
         accent: {
-          DEFAULT: "#00ff87",
-          foreground: "#004c3f",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
-        background: "#f5f5f5",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         card: {
-          DEFAULT: "#ffffff",
-          foreground: "#111827",
-        },
-        border: "#e5e7eb",
-        input: "#e5e7eb",
-        ring: "#004c3f",
-        destructive: {
-          DEFAULT: "#ef4444",
-          foreground: "#ffffff",
-        },
-        muted: {
-          DEFAULT: "#f3f4f6",
-          foreground: "#6b7280",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
         popover: {
-          DEFAULT: "#ffffff",
-          foreground: "#111827",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         secondary: {
-          DEFAULT: "#f3f4f6",
-          foreground: "#374151",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
-        foreground: "#111827",
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
         kanban: {
           blue: "#3b82f6",
           green: "#22c55e",
@@ -64,18 +64,20 @@ const config: Config = {
         },
       },
       borderRadius: {
-        lg: "0.5rem",
-        md: "0.375rem",
-        sm: "0.25rem",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-geist-sans)", "var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fadeIn 0.3s ease-in",
-        "slide-in": "slideIn 0.3s ease-out",
+        "fade-in": "fadeIn 0.2s ease-in",
+        "slide-in": "slideIn 0.25s ease-out",
+        "slide-up": "slideUp 0.2s ease-out",
       },
       keyframes: {
         "accordion-down": {
@@ -93,6 +95,10 @@ const config: Config = {
         slideIn: {
           from: { transform: "translateX(-100%)" },
           to: { transform: "translateX(0)" },
+        },
+        slideUp: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
     },

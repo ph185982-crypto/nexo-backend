@@ -4,79 +4,126 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96%;
-    --foreground: 220 13% 13%;
+    /* Light mode — clean slate with subtle warmth */
+    --background: 220 20% 97%;
+    --foreground: 220 15% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 13%;
+    --card-foreground: 220 15% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 13%;
+    --popover-foreground: 220 15% 10%;
     --primary: 168 100% 15%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 9% 96%;
-    --secondary-foreground: 220 9% 20%;
-    --muted: 220 9% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 151 100% 50%;
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 220 14% 22%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 48%;
+    --accent: 151 100% 45%;
     --accent-foreground: 168 100% 15%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 58%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 168 100% 15%;
-    --radius: 0.5rem;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 168 100% 25%;
+    --radius: 0.625rem;
+    --sidebar-bg: 168 100% 13%;
+    --sidebar-fg: 0 0% 100%;
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 220 13% 88% / 0.6;
+  }
+
+  .dark {
+    /* Dark mode — Vercel/Linear aesthetic */
+    --background: 222 20% 8%;
+    --foreground: 210 20% 94%;
+    --card: 222 18% 11%;
+    --card-foreground: 210 20% 94%;
+    --popover: 222 18% 11%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 151 80% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 16% 15%;
+    --secondary-foreground: 210 15% 75%;
+    --muted: 222 16% 14%;
+    --muted-foreground: 220 10% 52%;
+    --accent: 151 80% 45%;
+    --accent-foreground: 222 20% 8%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 16% 18%;
+    --input: 222 16% 18%;
+    --ring: 151 80% 40%;
+    --sidebar-bg: 222 22% 6%;
+    --sidebar-fg: 0 0% 100%;
+    --glass-bg: 222 20% 10% / 0.75;
+    --glass-border: 222 16% 20% / 0.5;
   }
 }
 
 @layer base {
   * { @apply border-border; }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    /* Prevent content shifting when mobile sidebar opens */
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-geist-sans), var(--font-inter), system-ui, sans-serif;
     overflow-x: hidden;
   }
-  html, body {
-    height: 100%;
-  }
-  /* Smoother tap targets on mobile */
-  button, a {
-    -webkit-tap-highlight-color: transparent;
-  }
+  html, body { height: 100%; }
+  button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @layer utilities {
+  /* Glassmorphism */
+  .glass {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid hsl(var(--glass-border));
+  }
+  .glass-dark {
+    background: rgba(10, 12, 20, 0.7);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Scrollbars */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #d1d5db transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #d1d5db;
+    background-color: hsl(var(--border));
     border-radius: 2px;
   }
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 
-/* WhatsApp chat bubbles */
+/* WhatsApp chat bubbles — dark mode aware */
 .msg-bubble-sent {
-  @apply bg-[#dcf8c6] rounded-2xl rounded-br-sm px-3 py-2 max-w-xs shadow-sm;
+  @apply rounded-2xl rounded-br-sm px-3 py-2 max-w-xs shadow-sm;
+  background: #dcf8c6;
+  color: #111;
+}
+.dark .msg-bubble-sent {
+  background: #1a4731;
+  color: #d1fae5;
 }
 .msg-bubble-received {
-  @apply bg-white rounded-2xl rounded-bl-sm px-3 py-2 max-w-xs shadow-sm;
+  @apply rounded-2xl rounded-bl-sm px-3 py-2 max-w-xs shadow-sm;
+  background: #ffffff;
+  color: #111;
+}
+.dark .msg-bubble-received {
+  background: hsl(222 18% 15%);
+  color: hsl(210 20% 94%);
 }
 
-/* Kanban column */
-.kanban-column {
-  @apply flex flex-col gap-2 min-w-[280px] max-w-[280px];
-}
+/* Kanban */
+.kanban-column { @apply flex flex-col gap-2 min-w-[280px] max-w-[280px]; }
 .kanban-card {
-  @apply bg-white rounded-lg border border-gray-200 p-3 cursor-pointer hover:shadow-md transition-shadow;
+  @apply bg-card rounded-xl border border-border p-3 cursor-pointer hover:shadow-md transition-shadow;
 }

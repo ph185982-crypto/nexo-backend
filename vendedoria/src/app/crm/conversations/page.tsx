@@ -8,6 +8,7 @@ import {
   ChevronLeft, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
+  Zap, TrendingUp, Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,10 +79,10 @@ interface Message {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  OPEN:      "bg-green-100 text-green-700",
-  ESCALATED: "bg-orange-100 text-orange-700",
-  BLOCKED:   "bg-red-100 text-red-700",
-  CLOSED:    "bg-gray-100 text-gray-600",
+  OPEN:      "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+  ESCALATED: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400",
+  BLOCKED:   "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400",
+  CLOSED:    "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
 };
 const STATUS_LABELS: Record<string, string> = {
   OPEN: "Aberto", ESCALATED: "Escalado", BLOCKED: "Bloqueado", CLOSED: "Fechado",
@@ -120,13 +121,13 @@ function formatPhone(raw: string): string {
 }
 
 const AVATAR_COLORS = [
-  "bg-indigo-100 text-indigo-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-amber-100 text-amber-700",
-  "bg-rose-100 text-rose-700",
-  "bg-sky-100 text-sky-700",
-  "bg-violet-100 text-violet-700",
-  "bg-orange-100 text-orange-700",
+  "bg-indigo-500 text-white",
+  "bg-emerald-600 text-white",
+  "bg-amber-500 text-white",
+  "bg-rose-500 text-white",
+  "bg-sky-500 text-white",
+  "bg-violet-500 text-white",
+  "bg-orange-500 text-white",
 ];
 function avatarColor(name: string): string {
   let h = 0;
@@ -179,7 +180,7 @@ function Avatar({ conv, size = "md" }: { conv: Conversation; size?: "sm" | "md" 
       <div className={cn("rounded-full font-semibold flex items-center justify-center", avatarColor(getContactName(conv)), sizeClass)}>
         {getContactInitial(conv)}
       </div>
-      <span className={cn("absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white", dotColor)} />
+      <span className={cn("absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-card", dotColor)} />
     </div>
   );
 }
@@ -213,6 +214,7 @@ function ConversationsContent() {
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(true);
 
   const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -453,14 +455,14 @@ function ConversationsContent() {
           On desktop: fixed 320px column
       ════════════════════════════════════════════════════════════════════════ */}
       <div className={cn(
-        "flex-shrink-0 border-r flex flex-col bg-white",
+        "flex-shrink-0 border-r border-border flex flex-col bg-card",
         // Desktop: always visible at 320px
         "md:w-80 md:flex",
         // Mobile: full width, toggle visibility
         mobilePanel === "list" ? "flex w-full" : "hidden",
       )}>
-        {/* Mobile header */}
-        <div className="p-3 border-b space-y-2.5">
+        {/* Header */}
+        <div className="p-3 border-b border-border space-y-2.5">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-base">Conversas</h2>
             <div className="flex items-center gap-1">
@@ -550,8 +552,8 @@ function ConversationsContent() {
                 key={conv.id}
                 onClick={() => selectConversation(conv.id, conv)}
                 className={cn(
-                  "w-full text-left px-3 py-3 border-b hover:bg-muted/40 active:bg-muted/60 transition-colors",
-                  isSelected && "bg-primary/5 border-l-2 border-l-primary"
+                  "w-full text-left px-3 py-3 border-b border-border hover:bg-muted/40 active:bg-muted/60 transition-colors",
+                  isSelected && "bg-primary/10 dark:bg-primary/15 border-l-2 border-l-primary"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -631,12 +633,13 @@ function ConversationsContent() {
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════════
-          RIGHT PANEL — Chat
+          CENTER PANEL — Chat
           On mobile: full screen, hidden when list is shown
           On desktop: takes remaining width
       ════════════════════════════════════════════════════════════════════════ */}
       <div className={cn(
-        "flex-col overflow-hidden bg-[#f0f2f5]",
+        "flex-col overflow-hidden",
+        "bg-[#f0f2f5] dark:bg-[#0d1117]",
         "md:flex md:flex-1",
         mobilePanel === "chat" ? "flex flex-1 w-full" : "hidden",
       )}>
@@ -649,7 +652,7 @@ function ConversationsContent() {
         ) : (
           <>
             {/* ── Chat Header ─────────────────────────────────────────────────── */}
-            <div className="bg-white border-b px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
+            <div className="bg-card border-b border-border px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
               {/* Back button — mobile only */}
               <button
                 onClick={handleBackToList}
@@ -766,6 +769,16 @@ function ConversationsContent() {
                     </div>
                   </>
                 )}
+
+                {/* Info panel toggle — desktop only */}
+                <Button
+                  variant="ghost" size="icon"
+                  className={cn("h-8 w-8 hidden xl:flex", showInfoPanel && "text-primary")}
+                  onClick={() => setShowInfoPanel(v => !v)}
+                  title="Painel de IA"
+                >
+                  <Info className="w-4 h-4" />
+                </Button>
 
                 {/* More options menu */}
                 <DropdownMenu>
@@ -894,7 +907,7 @@ function ConversationsContent() {
                   <React.Fragment key={msg.id}>
                     {showTime && (
                       <div className="flex justify-center my-3">
-                        <span className="text-[11px] text-muted-foreground bg-white/80 px-3 py-0.5 rounded-full shadow-sm">
+                        <span className="text-[11px] text-muted-foreground bg-card/80 dark:bg-card/60 px-3 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
                           {new Date(msg.sentAt).toLocaleDateString("pt-BR", {
                             day: "2-digit", month: "short",
                           })} {formatTime(msg.sentAt)}
@@ -905,18 +918,18 @@ function ConversationsContent() {
                       <div className={cn(
                         "max-w-[80%] sm:max-w-[72%] rounded-2xl px-3.5 py-2 shadow-sm",
                         isMe
-                          ? "bg-[#dcf8c6] text-gray-800 rounded-tr-sm"
-                          : "bg-white text-gray-800 rounded-tl-sm"
+                          ? "msg-bubble-sent"
+                          : "msg-bubble-received"
                       )}>
                         <MessageContent msg={msg} />
                         <div className="flex items-center justify-end gap-1 mt-1">
-                          <span className="text-[10px] text-gray-400">{formatTime(msg.sentAt)}</span>
+                          <span className="text-[10px] opacity-60">{formatTime(msg.sentAt)}</span>
                           {isMe && (
                             msg.status === "SENDING"
-                              ? <Clock className="w-3 h-3 text-gray-400" />
+                              ? <Clock className="w-3 h-3 opacity-50" />
                               : msg.status === "READ"
                               ? <CheckCheck className="w-3 h-3 text-blue-500" />
-                              : <Check className="w-3 h-3 text-gray-400" />
+                              : <Check className="w-3 h-3 opacity-50" />
                           )}
                         </div>
                       </div>
@@ -928,7 +941,7 @@ function ConversationsContent() {
             </div>
 
             {/* ── Message input ────────────────────────────────────────────────── */}
-            <div className="bg-white border-t flex-shrink-0">
+            <div className="bg-card border-t border-border flex-shrink-0">
               {!isHumanControl && (
                 <div className="px-3 pt-2 pb-0">
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1">
@@ -986,6 +999,128 @@ function ConversationsContent() {
           </>
         )}
       </div>
+
+      {/* ════════════════════════════════════════════════════════════════════════
+          RIGHT PANEL — AI Intelligence Panel (xl+ only)
+      ════════════════════════════════════════════════════════════════════════ */}
+      {selected && showInfoPanel && (
+        <div className="hidden xl:flex flex-col w-72 flex-shrink-0 border-l border-border bg-card overflow-y-auto">
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4 text-emerald-500" />
+              <h3 className="text-sm font-semibold">Inteligência IA</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
+          </div>
+
+          <div className="p-4 space-y-5">
+            {/* Contact info */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Contato</p>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <div className={cn("w-8 h-8 rounded-full font-semibold text-sm flex items-center justify-center flex-shrink-0", avatarColor(getContactName(selected)))}>
+                    {getContactInitial(selected)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{getContactName(selected)}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Lead status */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Status do Lead</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Status</span>
+                  <span className={cn("text-[11px] px-2 py-0.5 rounded-full font-medium", STATUS_COLORS[selected.lead?.status ?? "OPEN"])}>
+                    {STATUS_LABELS[selected.lead?.status ?? "OPEN"]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Etapa</span>
+                  <span className="text-xs font-medium text-foreground">{selected.etapa?.replace(/_/g, " ") ?? "—"}</span>
+                </div>
+                {selected.localizacaoRecebida && (
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                    <MapPin className="w-3 h-3" />
+                    <span>Localização recebida</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* AI mode */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Modo de Resposta</p>
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium",
+                selected.humanTakeover
+                  ? "bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-300"
+                  : selected.lead?.status === "ESCALATED"
+                  ? "bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-950 dark:border-orange-800 dark:text-orange-300"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950 dark:border-emerald-800 dark:text-emerald-300"
+              )}>
+                {selected.humanTakeover
+                  ? <><UserCheck className="w-4 h-4" /><span>Controle humano</span></>
+                  : selected.lead?.status === "ESCALATED"
+                  ? <><AlertTriangle className="w-4 h-4" /><span>Escalado</span></>
+                  : <><Bot className="w-4 h-4" /><span>IA ativa</span></>
+                }
+              </div>
+            </div>
+
+            {/* Follow-up */}
+            {selected.followUp && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Follow-up</p>
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 text-xs text-amber-700 dark:text-amber-300">
+                  <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Passo {selected.followUp.step} ativo</p>
+                    <p className="opacity-80 mt-0.5">
+                      {new Date(selected.followUp.nextSendAt).toLocaleString("pt-BR", {
+                        day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Message count */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Histórico</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 bg-muted rounded-lg px-3 py-2 text-center">
+                  <p className="text-lg font-bold text-foreground tabular-nums">{messages.length}</p>
+                  <p className="text-[10px] text-muted-foreground">mensagens</p>
+                </div>
+                <div className="flex-1 bg-muted rounded-lg px-3 py-2 text-center">
+                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                    {messages.filter(m => m.role === "ASSISTANT").length}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">respostas IA</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Última atividade</p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <TrendingUp className="w-3.5 h-3.5 flex-shrink-0 text-emerald-500" />
+                <span>{timeAgo(selected.lastMessageAt)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

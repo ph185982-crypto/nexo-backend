@@ -1,4 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
 
@@ -8,11 +11,9 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
 };
 
-// Viewport precisa ser exportado separadamente no Next.js 15
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // maximumScale removido — permitir zoom no mobile (acessibilidade)
 };
 
 export default function RootLayout({
@@ -21,9 +22,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className="font-sans antialiased">
-        <ApolloProvider>{children}</ApolloProvider>
+    <html
+      lang="pt-BR"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <ApolloProvider>{children}</ApolloProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
