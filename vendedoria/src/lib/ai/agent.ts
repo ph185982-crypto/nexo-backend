@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendTypingIndicator } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendTypingIndicator, markWhatsAppMessageRead } from "@/lib/whatsapp/send";
 import { productSourcingService } from "@/lib/ai/product-sourcing";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
@@ -670,6 +670,29 @@ export async function processAIResponse(
     const msgCount = recentMessages.length;
     const isFirstInteraction = recentMessages.filter((m) => m.role === "ASSISTANT").length === 0;
 
+    // ── Comportamento humano no primeiro contato ──────────────────────────────
+    // Lê imediatamente (check azul), depois espera ~2min antes de responder.
+    // Simula um vendedor real que viu a mensagem mas está terminando outro atendimento.
+    if (isFirstInteraction && incomingMessageId && conversation.provider.businessPhoneNumberId) {
+      await markWhatsAppMessageRead(
+        conversation.provider.businessPhoneNumberId,
+        incomingMessageId,
+        conversation.provider.accessToken ?? undefined,
+      ).catch(() => {});
+
+      const silentWait = 110_000 + Math.floor(Math.random() * 20_000); // 110-130 s
+      console.log(`[AI Agent] Primeiro contato — aguardando ${Math.round(silentWait / 1000)}s para conv ${conversationId}`);
+      await new Promise((r) => setTimeout(r, silentWait));
+
+      // Typing indicator nos últimos 8s antes de responder (cliente sente que estão digitando)
+      await sendTypingIndicator(
+        conversation.provider.businessPhoneNumberId,
+        conversation.customerWhatsappBusinessId,
+        8000,
+        conversation.provider.accessToken ?? undefined,
+      ).catch(() => {});
+    }
+
     // Quote the latest message if client sent 2+ in a row without reply
     let consecutiveUser = 0;
     for (const m of recentMessages) { if (m.role === "USER") consecutiveUser++; else break; }
@@ -1113,15 +1136,15 @@ export async function processAIResponse(
 
     // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
-      // Para bolhas 2+ mostra "digitando..." proporcional ao tamanho do texto
       if (i > 0) {
-        const interDelay = Math.min(Math.max(mensagens[i].length * 25, 1200), 5000);
+        // Typing proporcional ao texto + jitter humano (±400ms) — mínimo 1.2s, máximo 4.5s
+        const base = mensagens[i].length * 30;
+        const jitter = Math.floor(Math.random() * 800) - 400;
+        const interDelay = Math.min(Math.max(base + jitter, 1200), 4500);
         await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
-      }
 
-      const delayMs = delays[i] ?? 0;
-      if (delayMs > 0 && i > 0) {
-        // delay already covered by typing indicator above — skip extra wait
+        // Pausa extra curta entre balões (100-400ms) — simula "send" real
+        await new Promise((r) => setTimeout(r, 100 + Math.floor(Math.random() * 300)));
       }
 
       const msgNow = new Date();
