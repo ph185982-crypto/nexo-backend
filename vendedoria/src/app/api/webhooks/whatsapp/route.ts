@@ -8,6 +8,7 @@ import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
+import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { isManagerNumber, handleManagerMessage } from "@/lib/manager/handler";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
@@ -367,23 +368,22 @@ async function handleIncomingMessage(
   });
   console.log(`[Webhook] Conv ${conversation.id} atualizada | lastMessageAt=${sentAt.toISOString()} | localizacaoRecebida=${message.type === "location"}`);
 
-  // ── Regra de Ouro: qualquer mensagem do lead cancela TODOS os follow-ups ─────
-  // Tenta cancelar via BullMQ (se Redis disponível); fallback via DB apenas
-  cancelFollowUpsForConversation(conversation.id).catch(() =>
-    prisma.conversationFollowUp.updateMany({
-      where: { conversationId: conversation.id, status: "ACTIVE" },
-      data: { status: "DONE" },
-    }).catch(() => {}),
-  );
+  // Cancel any active follow-up — user replied, no need to follow up
+  await prisma.conversationFollowUp.updateMany({
+    where: { conversationId: conversation.id, status: "ACTIVE" },
+    data: { status: "DONE" },
+  }).catch(() => {});
+  await cancelFollowUpJobs(conversation.id).catch(() => {});
 
-  // Manager command handler
+  // Manager command handler — intercepts messages from the owner's number.
+  // Routes to admin bot instead of AI lead flow.
   if (isManagerNumber(phone)) {
+    console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
     const msgText = message.text?.body ?? content;
-    console.log(`[Webhook] Manager message detected | from=${message.from} → routing to manager handler`);
-    handleManagerMessage(msgText, providerConfig, message.from).catch((e) =>
-      console.error("[Webhook] Manager handler error:", e)
+    handleManagerMessage(msgText, providerConfig, phone).catch((e) =>
+      console.error("[Webhook] Manager handler error:", e),
     );
-    return;
+    return; // do not trigger AI lead agent
   }
 
   if (providerConfig.agent?.kind !== "AI" || providerConfig.agent?.status !== "ACTIVE") {

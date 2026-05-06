@@ -6,7 +6,9 @@ const isVercel = !!process.env.VERCEL;
 const nextConfig: NextConfig = {
   ...(isVercel ? {} : { output: "standalone" }),
 
-  // BullMQ + ioredis use Node.js built-ins that webpack cannot bundle.
+  // BullMQ + ioredis use Node.js built-ins (child_process, net, worker_threads)
+  // that webpack cannot bundle. serverExternalPackages covers Route Handlers;
+  // the webpack externals below cover the instrumentation.ts compilation pass.
   serverExternalPackages: ["bullmq", "ioredis", "bcryptjs"],
 
   webpack(config, { isServer }) {

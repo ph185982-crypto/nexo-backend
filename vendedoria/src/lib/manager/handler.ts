@@ -1,16 +1,16 @@
-// ── Manager WhatsApp Command Handler ────────────────────────────────────────
-// When the owner's number (MANAGER_NUMBER) sends a message to the business
-// WhatsApp, this module intercepts it, parses the command, queries the DB
-// and replies with real-time stats — no AI lead flow is triggered.
+// Manager WhatsApp Command Handler
+// When the owner's number (MANAGER_WHATSAPP_NUMBER) sends a message to the
+// business WhatsApp, this module intercepts it, parses the command, queries
+// the DB and replies with real-time stats — no AI lead flow is triggered.
 
 import { adminRepository } from "@/lib/admin/admin.repository";
 import { handleFreeQuery } from "@/lib/admin/admin-report.service";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 
 export const MANAGER_NUMBER =
-  process.env.MANAGER_WHATSAPP_NUMBER ?? "5562984465388";
+  process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 
-// ── Normalize BR phone: strip country code 55 and the mobile "9" prefix ────
+// Normalize BR phone: strip country code 55 and the mobile "9" prefix.
 // Makes comparison tolerant to both 12-digit (55 + DDD + 8) and 13-digit
 // (55 + DDD + 9 + 8) formats that WhatsApp/Meta deliver interchangeably.
 function canonicalBR(phone: string): string {
@@ -24,7 +24,7 @@ export function isManagerNumber(phone: string): boolean {
   return canonicalBR(phone) === canonicalBR(MANAGER_NUMBER);
 }
 
-// ── Command router ───────────────────────────────────────────────────────────
+// ─── Command router ───────────────────────────────────────────────────────────
 
 type ProviderConfig = {
   businessPhoneNumberId: string;
@@ -34,11 +34,10 @@ type ProviderConfig = {
 export async function handleManagerMessage(
   text: string,
   providerConfig: ProviderConfig,
-  replyTo?: string
+  replyTo?: string,
 ): Promise<void> {
   const { businessPhoneNumberId, accessToken } = providerConfig;
   const token = accessToken ?? undefined;
-  // Reply to the wa_id that sent the message (preserves 12/13-digit format Meta gave us).
   const target = replyTo ?? MANAGER_NUMBER;
   const cmd = text.toLowerCase().trim();
 
@@ -57,7 +56,11 @@ export async function handleManagerMessage(
         pedidos
           .map(
             (p, i) =>
-              `${i + 1}. ${p.title} — ${p.createdAt.toLocaleTimeString("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" })}`,
+              `${i + 1}. ${p.title} — ${p.createdAt.toLocaleTimeString("pt-BR", {
+                timeZone: "America/Sao_Paulo",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`,
           )
           .join("\n");
     }

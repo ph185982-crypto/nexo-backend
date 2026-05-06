@@ -148,11 +148,8 @@ export class AdminRepository {
     });
   }
 
-  async getBastaoNumber(): Promise<string> {
-    const config = await prisma.agentConfig.findFirst({
-      select: { bastaoNumber: true },
-    });
-    return config?.bastaoNumber ?? "5562984465388";
+  getManagerNumber(): string {
+    return process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
   }
 }
 

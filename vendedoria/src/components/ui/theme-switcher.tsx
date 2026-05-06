@@ -1,42 +1,23 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Sun, Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function ThemeSwitcher({ className }: { className?: string }) {
+export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="w-8 h-8" />;
-
-  const isDark = theme === "dark";
 
   return (
-    <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
-      className={cn(
-        "relative flex items-center justify-center w-8 h-8 rounded-lg",
-        "text-muted-foreground hover:text-foreground hover:bg-muted",
-        "transition-colors duration-200",
-        className
-      )}
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="rounded-full text-muted-foreground hover:text-foreground"
+      aria-label="Alternar tema"
     >
-      <Sun
-        className={cn(
-          "absolute w-4 h-4 transition-all duration-300",
-          isDark ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-50"
-        )}
-      />
-      <Moon
-        className={cn(
-          "absolute w-4 h-4 transition-all duration-300",
-          isDark ? "opacity-0 rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"
-        )}
-      />
-    </button>
+      <Sun className="w-4 h-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0 absolute" />
+      <Moon className="w-4 h-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100 absolute" />
+      <span className="sr-only">Alternar tema</span>
+    </Button>
   );
 }

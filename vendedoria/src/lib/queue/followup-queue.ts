@@ -1,272 +1,217 @@
-import { Queue, Worker, Job, QueueEvents } from "bullmq";
-import type { RedisOptions } from "ioredis";
+// Follow-up Queue — BullMQ + Redis
+// Agenda follow-ups com delay preciso. Complementa o cron de polling.
+// Se REDIS_URL não estiver disponível, cai silenciosamente para o modo cron.
+
+import { Queue, Worker, Job } from "bullmq";
+import IORedis from "ioredis";
 import { prisma } from "@/lib/prisma/client";
-import { compilePrompt } from "@/lib/ai/prompt-compiler";
-import { callLLM } from "@/lib/ai/llm-client";
-import { sendWhatsAppMessage, sendWhatsAppTyping } from "@/lib/whatsapp/send";
-
-// ─── Job Types ────────────────────────────────────────────────────────────────
-
-export interface FollowUpJobData {
-  conversationId: string;
-  step: number;
-  totalSteps: number;
-  phoneNumber: string;
-  phoneNumberId: string;
-  accessToken?: string;
-  leadName?: string | null;
-}
-
-// ─── Queue singleton ──────────────────────────────────────────────────────────
+import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 
 const QUEUE_NAME = "followup";
-let _queue: Queue<FollowUpJobData> | null = null;
 
-// Pass URL + options to BullMQ directly so it manages its own internal
-// connections (blocking, subscriber, etc.) with proper error handling,
-// instead of duplicating an ioredis instance which can lose lazyConnect.
-function getBullMQConnection(): RedisOptions {
-  const url = process.env.REDIS_URL ?? "redis://localhost:6379";
-  // Parse redis[s]://[user:pass@]host:port into ioredis options
-  const parsed = new URL(url);
-  return {
-    host: parsed.hostname,
-    port: parseInt(parsed.port || "6379", 10),
-    username: parsed.username || undefined,
-    password: parsed.password || undefined,
-    tls: parsed.protocol === "rediss:" ? {} : undefined,
-    maxRetriesPerRequest: null, // required by BullMQ
-    enableReadyCheck: false,
-    lazyConnect: false,
-  };
+// ── Intervalos por step ────────────────────────────────────────────────────────
+const STEP_INTERVALS_MS: Record<number, number> = {
+  1: 4  * 60 * 60 * 1000,   // step 1 — 4h
+  2: 24 * 60 * 60 * 1000,   // step 2 — 24h
+  3: 48 * 60 * 60 * 1000,   // step 3 — 48h
+  4: 72 * 60 * 60 * 1000,   // step 4 — 72h
+};
+
+// ── Mensagem por step ─────────────────────────────────────────────────────────
+function buildFollowupMessage(step: number, name: string | null): string {
+  switch (step) {
+    case 1: return "conseguiu ver aí? 🙂";
+    case 2: return "ainda tenho disponível...";
+    case 3: return "últimas unidades viu...";
+    case 4: return name ? `${name}, qualquer coisa pode me chamar 👊` : "qualquer coisa pode me chamar 👊";
+    default: return "";
+  }
 }
 
-export function getFollowUpQueue(): Queue<FollowUpJobData> {
-  if (!_queue) {
-    _queue = new Queue<FollowUpJobData>(QUEUE_NAME, {
-      connection: getBullMQConnection(),
-      defaultJobOptions: {
-        removeOnComplete: 100,
-        removeOnFail: 200,
-        attempts: 3,
-        backoff: { type: "exponential", delay: 60_000 },
-      },
+// ── Job payload ───────────────────────────────────────────────────────────────
+export interface FollowUpJobData {
+  followUpId: string;
+  conversationId: string;
+  step: number;
+  phoneNumber: string;
+  phoneNumberId: string;
+  leadName: string | null;
+  accessToken: string | null;
+}
+
+// ── Redis connection ───────────────────────────────────────────────────────────
+let redisConnection: IORedis | null = null;
+let followUpQueue: Queue<FollowUpJobData> | null = null;
+
+function getRedisConnection(): IORedis | null {
+  if (!process.env.REDIS_URL) return null;
+  if (redisConnection) return redisConnection;
+
+  try {
+    redisConnection = new IORedis(process.env.REDIS_URL, {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+      lazyConnect: true,
     });
-    _queue.on("error", (err) =>
-      console.error("[FollowUpQueue] Redis error:", err.message),
-    );
+
+    redisConnection.on("error", (err: Error) => {
+      console.warn("[FollowUpQueue] Redis error:", err.message);
+    });
+
+    return redisConnection;
+  } catch (err) {
+    console.warn("[FollowUpQueue] Redis connection failed:", err);
+    return null;
   }
-  return _queue;
 }
 
-// ─── Schedule a follow-up ──────────────────────────────────────────────────────
+function getQueue(): Queue<FollowUpJobData> | null {
+  if (followUpQueue) return followUpQueue;
+  const conn = getRedisConnection();
+  if (!conn) return null;
 
-/**
- * Enqueues a follow-up job with the given delay.
- * Returns the BullMQ job ID so it can be cancelled later.
- */
-export async function scheduleFollowUp(
-  data: FollowUpJobData,
-  delayMs: number,
-): Promise<string> {
-  const queue = getFollowUpQueue();
-  // Job ID = conversationId + step — ensures only ONE job per step per conversation
-  const jobId = `followup:${data.conversationId}:step${data.step}`;
-  await queue.add("send-followup", data, { jobId, delay: delayMs });
-  console.log(`[FollowUpQueue] Scheduled step=${data.step} for conv ${data.conversationId} in ${Math.round(delayMs / 60_000)}min`);
-  return jobId;
-}
-
-// ─── Cancel all pending follow-ups for a conversation ───────────────────────────
-// Regra de Ouro: qualquer mensagem do lead cancela TODOS os follow-ups pendentes.
-
-export async function cancelFollowUpsForConversation(conversationId: string): Promise<number> {
-  const queue = getFollowUpQueue();
-  let cancelled = 0;
-
-  // Get all jobs (waiting + delayed) and remove those matching this conversation
-  const [waiting, delayed] = await Promise.all([
-    queue.getJobs(["waiting"]),
-    queue.getJobs(["delayed"]),
-  ]);
-
-  const toCancel = [...waiting, ...delayed].filter(
-    (job) => job.data.conversationId === conversationId,
-  );
-
-  await Promise.all(
-    toCancel.map(async (job) => {
-      await job.remove();
-      cancelled++;
-    }),
-  );
-
-  // Also mark DB record as DONE
-  await prisma.conversationFollowUp.updateMany({
-    where: { conversationId, status: "ACTIVE" },
-    data: { status: "DONE" },
-  }).catch(() => {});
-
-  if (cancelled > 0) {
-    console.log(`[FollowUpQueue] Cancelled ${cancelled} follow-up job(s) for conv ${conversationId}`);
-  }
-  return cancelled;
-}
-
-// ─── Follow-up message generator using PromptCompiler ────────────────────────
-
-async function generateFollowUpMessage(job: Job<FollowUpJobData>): Promise<string> {
-  const { conversationId, step, totalSteps, leadName } = job.data;
-
-  // Load conversation messages
-  const messages = await prisma.whatsappMessage.findMany({
-    where: { conversationId },
-    orderBy: { sentAt: "asc" },
-    take: 20,
-    select: { role: true, content: true },
-  });
-  const history = messages.map((m) => ({ role: m.role, content: m.content }));
-
-  // Load agent config for provider/model
-  const agentConfig = await prisma.agentConfig.findFirst({
-    include: { personalityProfile: true },
+  followUpQueue = new Queue<FollowUpJobData>(QUEUE_NAME, {
+    connection: conn,
+    defaultJobOptions: {
+      removeOnComplete: 100,
+      removeOnFail: 200,
+      attempts: 3,
+      backoff: { type: "exponential", delay: 30_000 },
+    },
   });
 
-  // Use PromptCompiler to get the full system prompt (layers 1–3)
-  const compiled = await compilePrompt(conversationId, history, { action: "FOLLOW_UP" });
+  followUpQueue.on("error", (err: Error) => {
+    console.error("[FollowUpQueue] Queue error:", err.message);
+  });
 
-  const stepFraction = totalSteps <= 1 ? 1 : step / totalSteps;
-  const stepTone =
-    step === 1 ? "toque leve, sem pressão — pergunta se ficou alguma dúvida"
-    : stepFraction < 0.5 ? "mencione um benefício novo ou aborde a objeção que ficou"
-    : stepFraction < 0.85 ? "crie urgência leve (estoque, outros interessados)"
-    : "encerre com porta aberta, agradeça o interesse sem pressão";
-
-  const systemPrompt = `${compiled.systemPrompt}
-
-ATENÇÃO — Você está em modo FOLLOW-UP (etapa ${step}/${totalSteps}).
-Escreva UMA mensagem curta de recuperação de venda (máximo 2 frases), estilo WhatsApp informal.
-Tom: ${stepTone}
-${leadName ? `Nome do cliente: ${leadName}` : ""}
-Responda APENAS a mensagem, sem explicações.`;
-
-  const historyText = history
-    .slice(-6)
-    .map((m) => `${m.role === "USER" ? "Cliente" : "IA"}: ${m.content}`)
-    .join("\n");
-
-  const agent = await prisma.agent.findFirst({
-    where: { config: { conversations: { some: { id: conversationId } } } },
-  }).catch(() => null);
-
-  const response = await callLLM(
-    systemPrompt,
-    [],
-    `Histórico:\n${historyText}\n\nEscreva a mensagem de follow-up:`,
-    agent?.aiProvider,
-    agent?.aiModel,
-    { maxTokens: 120, temperature: 0.9 },
-  );
-
-  if (response) return response;
-
-  // Hard fallback — static messages if LLM unavailable
-  const fallbacks: Record<number, string> = {
-    1: "conseguiu ver aí? 🙂",
-    2: "ainda tenho disponível pra você",
-    3: "últimas unidades 👀",
-  };
-  return fallbacks[step] ?? (leadName ? `${leadName}, qualquer coisa pode me chamar 👊` : "qualquer coisa pode me chamar 👊");
+  return followUpQueue;
 }
 
-// ─── Worker processor ─────────────────────────────────────────────────────────
+// ── Enqueue: agenda um follow-up com delay calculado ──────────────────────────
+export async function enqueueFollowUp(
+  followUpId: string,
+  conversationId: string,
+  step: number,
+  phoneNumber: string,
+  phoneNumberId: string,
+  leadName: string | null,
+  accessToken: string | null,
+  aiMessageAt: Date,
+): Promise<boolean> {
+  const queue = getQueue();
+  if (!queue) {
+    console.log("[FollowUpQueue] Redis indisponível — usando modo cron (fallback)");
+    return false;
+  }
 
-async function processFollowUpJob(job: Job<FollowUpJobData>): Promise<void> {
-  const { conversationId, step, totalSteps, phoneNumber, phoneNumberId, accessToken } = job.data;
-  console.log(`[FollowUpWorker] Processing step=${step} for conv ${conversationId}`);
+  const intervalMs = STEP_INTERVALS_MS[step];
+  if (!intervalMs) return false;
 
-  // Guard: if lead already replied after this job was scheduled, skip
-  const fu = await prisma.conversationFollowUp.findUnique({ where: { conversationId } });
-  if (!fu || fu.status !== "ACTIVE") {
-    console.log(`[FollowUpWorker] Skipped — follow-up no longer active for conv ${conversationId}`);
+  const delay = Math.max(0, aiMessageAt.getTime() + intervalMs - Date.now());
+  const jobId = `fu_${conversationId}_step${step}`;
+
+  await queue.add(
+    "send-followup",
+    { followUpId, conversationId, step, phoneNumber, phoneNumberId, leadName, accessToken },
+    { delay, jobId, deduplication: { id: jobId } },
+  );
+
+  console.log(`[FollowUpQueue] Enqueued step ${step} for conv ${conversationId} | delay ${Math.round(delay / 1000)}s`);
+  return true;
+}
+
+// ── Cancel: remove jobs pendentes de uma conversa ────────────────────────────
+export async function cancelFollowUpJobs(conversationId: string): Promise<void> {
+  const queue = getQueue();
+  if (!queue) return;
+
+  for (let step = 1; step <= 4; step++) {
+    const jobId = `fu_${conversationId}_step${step}`;
+    const job = await queue.getJob(jobId).catch(() => null);
+    if (job) {
+      await job.remove().catch(() => {});
+      console.log(`[FollowUpQueue] Cancelled step ${step} for conv ${conversationId}`);
+    }
+  }
+}
+
+// ── Worker: processa jobs de follow-up ───────────────────────────────────────
+let workerStarted = false;
+
+export function startFollowUpWorker(): void {
+  if (workerStarted) return;
+
+  const conn = getRedisConnection();
+  if (!conn) {
+    console.log("[FollowUpWorker] Redis indisponível — worker não iniciado (usando cron)");
     return;
   }
 
-  // Guard: skip if lead escalated or closed
-  const conversation = await prisma.whatsappConversation.findUnique({
-    where: { id: conversationId },
-    include: { lead: true },
-  });
-  if (!conversation || conversation.lead?.status === "ESCALATED" || conversation.lead?.status === "CLOSED") {
-    await prisma.conversationFollowUp.updateMany({ where: { conversationId }, data: { status: "DONE" } });
-    return;
-  }
+  const worker = new Worker<FollowUpJobData>(
+    QUEUE_NAME,
+    async (job: Job<FollowUpJobData>) => {
+      const { followUpId, conversationId, step, phoneNumber, phoneNumberId, leadName, accessToken } = job.data;
+      console.log(`[FollowUpWorker] Processing step ${step} for conv ${conversationId}`);
 
-  const message = await generateFollowUpMessage(job);
+      // Verificar se o follow-up ainda está ativo no banco
+      const fu = await prisma.conversationFollowUp.findUnique({ where: { id: followUpId } });
+      if (!fu || fu.status !== "ACTIVE") {
+        console.log(`[FollowUpWorker] Follow-up ${followUpId} não está mais ativo (status: ${fu?.status ?? "not found"}) — skip`);
+        return;
+      }
 
-  // Simulate typing indicator (mark read + typing)
-  const lastUserMsg = await prisma.whatsappMessage.findFirst({
-    where: { conversationId, role: "USER" },
-    orderBy: { sentAt: "desc" },
-  });
-  if (lastUserMsg) {
-    await sendWhatsAppTyping(phoneNumberId, lastUserMsg.id, phoneNumber, accessToken).catch(() => {});
-    // Natural delay proportional to message length
-    const delayMs = Math.min(Math.max(message.length * 35, 1500), 5000);
-    await new Promise((r) => setTimeout(r, delayMs));
-  }
+      const msg = buildFollowupMessage(step, leadName);
+      if (!msg) return;
 
-  // Send the message
-  await sendWhatsAppMessage(phoneNumberId, phoneNumber, message, accessToken);
+      const token = accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? undefined;
+      await sendWhatsAppMessage(phoneNumberId, phoneNumber, msg, token);
 
-  // Save to DB
-  const now = new Date();
-  await prisma.whatsappMessage.create({
-    data: { content: message, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId },
-  });
+      await prisma.whatsappMessage.create({
+        data: { content: msg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+      });
 
-  // Schedule next step or close
-  const agentConfig = await prisma.agentConfig.findFirst();
-  const maxSteps = agentConfig?.maxFollowUps ?? 4;
+      if (step >= 4) {
+        await prisma.conversationFollowUp.update({ where: { id: followUpId }, data: { status: "DONE", step: 5 } });
+        console.log(`[FollowUpWorker] Conv ${conversationId} — todos os follow-ups concluídos`);
+      } else {
+        const nextStep = step + 1;
+        const now = new Date();
+        const nextInterval = STEP_INTERVALS_MS[nextStep];
+        const nextSendAt = new Date(fu.aiMessageAt.getTime() + nextInterval);
 
-  if (step >= maxSteps) {
-    await prisma.conversationFollowUp.update({ where: { conversationId }, data: { status: "DONE" } });
-    console.log(`[FollowUpWorker] All ${maxSteps} steps completed for conv ${conversationId}`);
-  } else {
-    const hours = (agentConfig?.followUpHours ?? "4,24,48,72").split(",").map(Number).filter(Boolean);
-    const nextDelayMs = (hours[step] ?? hours[hours.length - 1] ?? 24) * 3_600_000;
-    const nextStep = step + 1;
+        await prisma.conversationFollowUp.update({ where: { id: followUpId }, data: { step: nextStep, nextSendAt } });
 
-    await scheduleFollowUp({ ...job.data, step: nextStep }, nextDelayMs);
-    await prisma.conversationFollowUp.update({
-      where: { conversationId },
-      data: { step: nextStep, nextSendAt: new Date(Date.now() + nextDelayMs) },
-    });
-  }
-}
-
-// ─── Worker factory — called once from instrumentation.ts ─────────────────────
-
-let _worker: Worker | null = null;
-
-export function startFollowUpWorker(): Worker {
-  if (_worker) return _worker;
-
-  _worker = new Worker<FollowUpJobData>(QUEUE_NAME, processFollowUpJob, {
-    connection: getBullMQConnection(),
-    concurrency: 5,
-  });
-
-  _worker.on("completed", (job) =>
-    console.log(`[FollowUpWorker] Job ${job.id} completed`),
-  );
-  _worker.on("failed", (job, err) =>
-    console.error(`[FollowUpWorker] Job ${job?.id} failed:`, err.message),
-  );
-  _worker.on("error", (err) =>
-    console.error("[FollowUpWorker] Redis error:", err.message),
+        // Agenda o próximo step
+        const queue = getQueue();
+        if (queue) {
+          const delay = Math.max(0, nextSendAt.getTime() - now.getTime());
+          const jobId = `fu_${conversationId}_step${nextStep}`;
+          await queue.add(
+            "send-followup",
+            { followUpId, conversationId, step: nextStep, phoneNumber, phoneNumberId, leadName, accessToken },
+            { delay, jobId, deduplication: { id: jobId } },
+          );
+        }
+      }
+    },
+    {
+      connection: conn,
+      concurrency: 5,
+    },
   );
 
-  console.log("[FollowUpWorker] Started — listening for follow-up jobs");
-  return _worker;
+  worker.on("completed", (job: Job<FollowUpJobData>) => {
+    console.log(`[FollowUpWorker] Job ${job.id} completed`);
+  });
+
+  worker.on("failed", (job: Job<FollowUpJobData> | undefined, err: Error) => {
+    console.error(`[FollowUpWorker] Job ${job?.id ?? "unknown"} failed:`, err.message);
+  });
+
+  worker.on("error", (err: Error) => {
+    console.error("[FollowUpWorker] Worker error:", err.message);
+  });
+
+  workerStarted = true;
+  console.log("[FollowUpWorker] Worker iniciado e aguardando jobs");
 }

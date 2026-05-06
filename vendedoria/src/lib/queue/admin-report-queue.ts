@@ -8,17 +8,21 @@ const QUEUE_NAME = "admin-report";
 
 function getBullMQConnection(): RedisOptions {
   const url = process.env.REDIS_URL ?? "redis://localhost:6379";
-  const parsed = new URL(url);
-  return {
-    host: parsed.hostname,
-    port: parseInt(parsed.port || "6379", 10),
-    username: parsed.username || undefined,
-    password: parsed.password || undefined,
-    tls: parsed.protocol === "rediss:" ? {} : undefined,
-    maxRetriesPerRequest: null,
-    enableReadyCheck: false,
-    lazyConnect: false,
-  };
+  try {
+    const parsed = new URL(url);
+    return {
+      host: parsed.hostname,
+      port: parseInt(parsed.port || "6379", 10),
+      username: parsed.username || undefined,
+      password: parsed.password || undefined,
+      tls: parsed.protocol === "rediss:" ? {} : undefined,
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+      lazyConnect: false,
+    };
+  } catch {
+    return { host: "localhost", port: 6379, maxRetriesPerRequest: null, enableReadyCheck: false };
+  }
 }
 
 // ─── Queue singleton ──────────────────────────────────────────────────────────
@@ -79,7 +83,6 @@ function startAdminReportWorker(): Worker<AdminReportJobData> {
 
 // ─── Scheduler ────────────────────────────────────────────────────────────────
 // Registers two repeatable cron jobs: 13h and 18h Brasília time.
-// BullMQ v5 supports `tz` in repeat options, so we can use local time directly.
 
 export async function scheduleAdminReports(): Promise<void> {
   const queue = getAdminReportQueue();

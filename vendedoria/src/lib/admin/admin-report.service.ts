@@ -95,11 +95,11 @@ export async function buildDailyReport(label: "13h" | "18h"): Promise<string> {
 // ─── Send report to admin ─────────────────────────────────────────────────────
 
 export async function sendDailyReport(label: "13h" | "18h"): Promise<void> {
-  const [report, provider, bastaoNumber] = await Promise.all([
+  const [report, provider] = await Promise.all([
     buildDailyReport(label),
     adminRepository.getProviderConfig(),
-    adminRepository.getBastaoNumber(),
   ]);
+  const managerNumber = adminRepository.getManagerNumber();
 
   if (!provider) {
     console.warn("[AdminReport] No WhatsApp provider configured — skipping report");
@@ -108,11 +108,11 @@ export async function sendDailyReport(label: "13h" | "18h"): Promise<void> {
 
   await sendWhatsAppMessage(
     provider.businessPhoneNumberId,
-    bastaoNumber,
+    managerNumber,
     report,
     provider.accessToken ?? undefined,
   );
-  console.log(`[AdminReport] ${label} report sent to ${bastaoNumber}`);
+  console.log(`[AdminReport] ${label} report sent to ${managerNumber}`);
 }
 
 // ─── Free-form query via LLM ──────────────────────────────────────────────────

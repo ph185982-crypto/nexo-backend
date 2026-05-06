@@ -2,193 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Light theme (default) ────────────────────────────────────────────────── */
 @layer base {
   :root {
-    /* Backgrounds */
-    --background:         220 20% 97%;
-    --foreground:         224 71% 4%;
-    --card:               0 0% 100%;
-    --card-foreground:    224 71% 4%;
-    --popover:            0 0% 100%;
-    --popover-foreground: 224 71% 4%;
-
-    /* Primary — Deep Indigo */
-    --primary:            238 84% 55%;
+    /* Light mode — clean slate with subtle warmth */
+    --background: 220 20% 97%;
+    --foreground: 220 15% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 10%;
+    --primary: 168 100% 15%;
     --primary-foreground: 0 0% 100%;
-
-    /* Secondary */
-    --secondary:          220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
-
-    /* Muted */
-    --muted:              220 14% 96%;
-    --muted-foreground:   220 9% 46%;
-
-    /* Accent — Indigo tint */
-    --accent:             238 84% 55%;
-    --accent-foreground:  0 0% 100%;
-
-    /* Destructive */
-    --destructive:        0 84% 60%;
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 220 14% 22%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 48%;
+    --accent: 151 100% 45%;
+    --accent-foreground: 168 100% 15%;
+    --destructive: 0 84% 58%;
     --destructive-foreground: 0 0% 100%;
-
-    /* Borders & inputs */
-    --border:             220 13% 91%;
-    --input:              220 13% 91%;
-    --ring:               238 84% 55%;
-    --radius:             0.5rem;
-
-    /* Sidebar */
-    --sidebar-bg:         222 47% 11%;
-    --sidebar-fg:         210 40% 98%;
-    --sidebar-accent:     238 84% 65%;
-    --sidebar-border:     222 47% 18%;
-
-    /* Chat */
-    --chat-bg:            210 20% 95%;
-    --bubble-sent:        238 84% 55%;
-    --bubble-sent-fg:     0 0% 100%;
-    --bubble-recv:        0 0% 100%;
-    --bubble-recv-fg:     224 71% 4%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 168 100% 25%;
+    --radius: 0.625rem;
+    --sidebar-bg: 168 100% 13%;
+    --sidebar-fg: 0 0% 100%;
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 220 13% 88% / 0.6;
   }
 
-  /* ── Dark theme ─────────────────────────────────────────────────────────── */
   .dark {
-    /* Backgrounds — Deep Charcoal / Navy */
-    --background:         222 47% 6%;
-    --foreground:         213 31% 91%;
-    --card:               222 47% 9%;
-    --card-foreground:    213 31% 91%;
-    --popover:            222 47% 9%;
-    --popover-foreground: 213 31% 91%;
-
-    /* Primary — Neon Violet */
-    --primary:            262 83% 68%;
+    /* Dark mode — Vercel/Linear aesthetic */
+    --background: 222 20% 8%;
+    --foreground: 210 20% 94%;
+    --card: 222 18% 11%;
+    --card-foreground: 210 20% 94%;
+    --popover: 222 18% 11%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 151 80% 40%;
     --primary-foreground: 0 0% 100%;
-
-    /* Secondary */
-    --secondary:          222 47% 14%;
-    --secondary-foreground: 213 31% 91%;
-
-    /* Muted */
-    --muted:              222 47% 14%;
-    --muted-foreground:   215 20% 55%;
-
-    /* Accent — Violet */
-    --accent:             262 83% 68%;
-    --accent-foreground:  0 0% 100%;
-
-    /* Destructive */
-    --destructive:        0 63% 55%;
+    --secondary: 222 16% 15%;
+    --secondary-foreground: 210 15% 75%;
+    --muted: 222 16% 14%;
+    --muted-foreground: 220 10% 52%;
+    --accent: 151 80% 45%;
+    --accent-foreground: 222 20% 8%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
-
-    /* Borders & inputs */
-    --border:             222 47% 16%;
-    --input:              222 47% 16%;
-    --ring:               262 83% 68%;
-
-    /* Sidebar */
-    --sidebar-bg:         222 47% 4%;
-    --sidebar-fg:         213 31% 91%;
-    --sidebar-accent:     262 83% 68%;
-    --sidebar-border:     222 47% 12%;
-
-    /* Chat */
-    --chat-bg:            222 47% 8%;
-    --bubble-sent:        262 83% 55%;
-    --bubble-sent-fg:     0 0% 100%;
-    --bubble-recv:        222 47% 13%;
-    --bubble-recv-fg:     213 31% 91%;
+    --border: 222 16% 18%;
+    --input: 222 16% 18%;
+    --ring: 151 80% 40%;
+    --sidebar-bg: 222 22% 6%;
+    --sidebar-fg: 0 0% 100%;
+    --glass-bg: 222 20% 10% / 0.75;
+    --glass-border: 222 16% 20% / 0.5;
   }
 }
 
-/* ── Base resets ──────────────────────────────────────────────────────────── */
 @layer base {
-  * {
-    @apply border-border box-border;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
+  * { @apply border-border; }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-geist-sans), var(--font-inter), system-ui, sans-serif;
     overflow-x: hidden;
-    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html, body { height: 100%; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+}
+
+@layer utilities {
+  /* Glassmorphism */
+  .glass {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid hsl(var(--glass-border));
+  }
+  .glass-dark {
+    background: rgba(10, 12, 20, 0.7);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  html, body { height: 100%; }
-
-  button, a { -webkit-tap-highlight-color: transparent; }
-
-  /* Thin scrollbars globally */
-  * {
+  /* Scrollbars */
+  .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--border)) transparent;
   }
-  *::-webkit-scrollbar { width: 4px; height: 4px; }
-  *::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
-    border-radius: 9999px;
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 2px;
   }
-  *::-webkit-scrollbar-track { background: transparent; }
-}
-
-/* ── Utility classes ─────────────────────────────────────────────────────── */
-@layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
-
-  .glass {
-    @apply backdrop-blur-md bg-white/60 dark:bg-card/60;
-  }
-
-  .nexo-card {
-    @apply bg-card border border-border rounded-xl shadow-sm;
-  }
-
-  /* Subtle gradient for sidebar active item */
-  .sidebar-active-gradient {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--sidebar-accent) / 0.25) 0%,
-      hsl(var(--sidebar-accent) / 0.08) 100%
-    );
-  }
 }
 
-/* ── Chat bubbles ─────────────────────────────────────────────────────────── */
-.bubble-sent {
-  background: hsl(var(--bubble-sent));
-  color: hsl(var(--bubble-sent-fg));
-  @apply rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm;
+/* WhatsApp chat bubbles — dark mode aware */
+.msg-bubble-sent {
+  @apply rounded-2xl rounded-br-sm px-3 py-2 max-w-xs shadow-sm;
+  background: #dcf8c6;
+  color: #111;
+}
+.dark .msg-bubble-sent {
+  background: #1a4731;
+  color: #d1fae5;
+}
+.msg-bubble-received {
+  @apply rounded-2xl rounded-bl-sm px-3 py-2 max-w-xs shadow-sm;
+  background: #ffffff;
+  color: #111;
+}
+.dark .msg-bubble-received {
+  background: hsl(222 18% 15%);
+  color: hsl(210 20% 94%);
 }
 
-.bubble-recv {
-  background: hsl(var(--bubble-recv));
-  color: hsl(var(--bubble-recv-fg));
-  @apply rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm;
-}
-
-/* Legacy aliases for pages that haven't migrated yet */
-.msg-bubble-sent   { @apply bubble-sent;  max-width: 20rem; }
-.msg-bubble-received { @apply bubble-recv; max-width: 20rem; }
-
-/* ── Kanban ───────────────────────────────────────────────────────────────── */
+/* Kanban */
 .kanban-column { @apply flex flex-col gap-2 min-w-[280px] max-w-[280px]; }
-.kanban-card   { @apply nexo-card p-3 cursor-pointer hover:shadow-md transition-shadow; }
-
-/* ── Focus ring — accessible & branded ──────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
-
-/* ── Selection color ─────────────────────────────────────────────────────── */
-::selection {
-  background: hsl(var(--primary) / 0.25);
-  color: hsl(var(--foreground));
+.kanban-card {
+  @apply bg-card rounded-xl border border-border p-3 cursor-pointer hover:shadow-md transition-shadow;
 }

@@ -1,43 +1,42 @@
-/**
- * Next.js Instrumentation — runs once when the server process starts.
- * On Vercel (serverless): only lightweight tasks — no persistent workers.
- * On Render/Docker (long-running): starts BullMQ workers + keep-alive.
- */
+// Next.js Instrumentation — runs once when the server process starts.
 export async function register() {
+  // Only run in Node.js runtime (not Edge)
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  // Vercel is serverless — persistent workers and keep-alive loops don't work
-  const isVercel = !!process.env.VERCEL;
-  if (isVercel) return;
-
-  // ── Keep-alive (prevents Render free-tier cold starts) ───────────────────
   const BASE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:10000";
+  const KEEPALIVE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
+  // Keep-alive loop to prevent Render free-tier cold starts
   setTimeout(() => {
-    const ping = () =>
+    const ping = () => {
       fetch(`${BASE_URL}/api/keepalive`)
-        .then(() => console.log("[Keepalive] OK"))
-        .catch((e) => console.warn("[Keepalive] Failed:", String(e)));
+        .then(() => console.log("[Keepalive] Internal ping OK"))
+        .catch((e) => console.warn("[Keepalive] Internal ping failed:", String(e)));
+    };
+
     ping();
-    setInterval(ping, 10 * 60 * 1000);
+    setInterval(ping, KEEPALIVE_INTERVAL_MS);
   }, 30_000);
 
-  // ── BullMQ workers — only when Redis is configured ────────────────────────
+  // BullMQ workers — only start if Redis is configured
   if (process.env.REDIS_URL) {
     try {
-      const { startFollowUpWorker } = await import("./lib/queue/followup-queue");
+      const { startFollowUpWorker } = await import("@/lib/queue/followup-queue");
       startFollowUpWorker();
-      console.log("[Instrumentation] BullMQ follow-up worker started");
-    } catch (e) {
-      console.warn("[Instrumentation] BullMQ worker failed to start:", String(e));
+      console.log("[Instrumentation] FollowUpWorker iniciado via BullMQ");
+    } catch (err) {
+      console.warn("[Instrumentation] FollowUpWorker falhou ao iniciar:", err);
     }
 
+    // Admin report scheduler — relatórios diários 13h e 18h (Brasília)
     try {
-      const { scheduleAdminReports } = await import("./lib/queue/admin-report-queue");
+      const { scheduleAdminReports } = await import("@/lib/queue/admin-report-queue");
       await scheduleAdminReports();
-    } catch (e) {
-      console.warn("[Instrumentation] Admin report scheduler failed:", String(e));
+      console.log("[Instrumentation] AdminReport scheduler registrado (13h + 18h Brasília)");
+    } catch (err) {
+      console.warn("[Instrumentation] AdminReport scheduler falhou ao iniciar:", err);
     }
   } else {
-    console.warn("[Instrumentation] REDIS_URL not set — BullMQ disabled");
+    console.log("[Instrumentation] REDIS_URL não configurado — follow-ups via cron polling");
   }
 }

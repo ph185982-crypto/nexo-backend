@@ -1,17 +1,15 @@
 "use client";
 
 import React, { Suspense, useState, useEffect, useCallback, useRef } from "react";
-import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   MessageSquare, Search, RefreshCw, Phone, Clock,
-  ChevronLeft, ChevronDown, Loader2, Send, Bot, UserCheck,
+  ChevronLeft, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
-  User, SlidersHorizontal, Paperclip, Film, Smile,
+  Zap, TrendingUp, Info,
 } from "lucide-react";
-import { ContactPanel } from "@/components/crm/ContactPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -70,31 +68,21 @@ interface Conversation {
   humanTakeover: boolean;
   etapa: string;
   localizacaoRecebida: boolean;
-  produtoInteresse: string | null;
-  localizacaoTexto: string | null;
-  nomeRecebedor: string | null;
-  horarioEntrega: string | null;
-  formaPagamento: string | null;
   lead: Lead | null;
   messages: LastMessage[];
   followUp: FollowUp | null;
 }
 interface Message {
-  id: string; content: string; role: string; sentAt: string; type: string;
-  status?: string; mediaUrl?: string | null; caption?: string | null;
-}
-interface Product {
-  id: string; name: string; imageUrl: string | null; imageUrls: string[];
-  videoUrl: string | null; price: number;
+  id: string; content: string; role: string; sentAt: string; type: string; status?: string;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  OPEN:      "bg-green-100 text-green-700",
-  ESCALATED: "bg-orange-100 text-orange-700",
-  BLOCKED:   "bg-red-100 text-red-700",
-  CLOSED:    "bg-gray-100 text-gray-600",
+  OPEN:      "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+  ESCALATED: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400",
+  BLOCKED:   "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400",
+  CLOSED:    "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
 };
 const STATUS_LABELS: Record<string, string> = {
   OPEN: "Aberto", ESCALATED: "Escalado", BLOCKED: "Bloqueado", CLOSED: "Fechado",
@@ -126,26 +114,20 @@ function getContactInitial(conv: Conversation): string {
 // Format Brazilian phone for display
 function formatPhone(raw: string): string {
   const d = raw.replace(/\D/g, "");
-  // Normalise Brazilian 8-digit format (55 + DDD + 8digits) → 9-digit (55 + DDD + 9 + 8digits)
-  // so existing DB records stored before the webhook fix also display correctly
-  const norm =
-    /^55\d{10}$/.test(d) && /^[6-9]/.test(d.slice(4))
-      ? `55${d.slice(2, 4)}9${d.slice(4)}`
-      : d;
-  const local = norm.startsWith("55") && norm.length > 11 ? norm.slice(2) : norm;
+  const local = d.startsWith("55") && d.length > 11 ? d.slice(2) : d;
   if (local.length === 11) return `(${local.slice(0,2)}) ${local.slice(2,7)}-${local.slice(7)}`;
   if (local.length === 10) return `(${local.slice(0,2)}) ${local.slice(2,6)}-${local.slice(6)}`;
   return local || raw;
 }
 
 const AVATAR_COLORS = [
-  "bg-indigo-100 text-indigo-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-amber-100 text-amber-700",
-  "bg-rose-100 text-rose-700",
-  "bg-sky-100 text-sky-700",
-  "bg-violet-100 text-violet-700",
-  "bg-orange-100 text-orange-700",
+  "bg-indigo-500 text-white",
+  "bg-emerald-600 text-white",
+  "bg-amber-500 text-white",
+  "bg-rose-500 text-white",
+  "bg-sky-500 text-white",
+  "bg-violet-500 text-white",
+  "bg-orange-500 text-white",
 ];
 function avatarColor(name: string): string {
   let h = 0;
@@ -153,312 +135,33 @@ function avatarColor(name: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
-// ── PortalDropdown — renders floating menus at body level (avoids z-index clipping) ──
-
-function PortalDropdown({
-  open,
-  anchorRef,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  anchorRef: React.RefObject<HTMLElement | null>;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (!open || !anchorRef.current) return;
-    const rect = anchorRef.current.getBoundingClientRect();
-    setPos({ top: rect.top - 4, left: rect.left });
-  }, [open, anchorRef]);
-
-  if (!open || typeof document === "undefined") return null;
-
-  return createPortal(
-    <>
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
-      <div
-        style={{
-          position: "fixed",
-          bottom: `calc(100vh - ${pos.top}px)`,
-          left: pos.left,
-          zIndex: 9999,
-          background: "#fff",
-          border: "1px solid #E5E7EB",
-          borderRadius: "12px",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
-          padding: "4px 0",
-          minWidth: "160px",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </>,
-    document.body
-  );
-}
-
-// ── LocationCard — Google Maps Static API thumbnail ──────────────────────────
-
-function LocationCard({ lat, lng, endereco }: { lat?: string; lng?: string; endereco?: string }) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? "AIzaSyBieVsbis7QSowEGVVp12psG4ugrlk5uSg";
-  const mapsUrl = lat && lng ? `https://maps.google.com/?q=${lat},${lng}` : null;
-  const staticMapUrl = lat && lng && apiKey
-    ? `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=300x140&scale=2&markers=color:red%7C${lat},${lng}&key=${apiKey}&style=feature:poi%7Cvisibility:off`
-    : null;
-
-  const card = (
-    <div style={{
-      borderRadius: "12px", overflow: "hidden",
-      border: "1px solid #E5E7EB", background: "#fff",
-      maxWidth: "260px", cursor: mapsUrl ? "pointer" : "default",
-    }}>
-      {staticMapUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={staticMapUrl} alt="Mapa" style={{ width: "100%", height: "140px", objectFit: "cover", display: "block" }} />
-      ) : (
-        <div style={{ width: "100%", height: "140px", background: "#E8EAF0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>🗺️</div>
-      )}
-      <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
-        <MapPin className="w-4 h-4 text-red-500 shrink-0" />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: "13px", fontWeight: 600, color: "#111827", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {endereco ?? (lat && lng ? `${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}` : "Localização")}
-          </p>
-          {mapsUrl && <p style={{ fontSize: "12px", color: "#1976D2", margin: 0, marginTop: "2px" }}>Abrir no Google Maps →</p>}
-        </div>
-      </div>
-    </div>
-  );
-
-  if (mapsUrl) {
-    return <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", display: "block" }}>{card}</a>;
-  }
-  return card;
-}
-
-/** Resolves a media_id into a proxy URL the browser can fetch */
-function mediaProxyUrl(mediaUrl: string): string {
-  // If it's already a full URL (e.g. Cloudinary outbound image) — use directly
-  if (mediaUrl.startsWith("http://") || mediaUrl.startsWith("https://")) return mediaUrl;
-  // Otherwise it's a WhatsApp media_id — route through our proxy
-  return `/api/whatsapp/media/${mediaUrl}`;
-}
-
 function MessageContent({ msg }: { msg: Message }) {
-  if (msg.type === "IMAGE") {
-    if (msg.mediaUrl) {
-      const src = mediaProxyUrl(msg.mediaUrl);
-      return (
-        <span className="flex flex-col gap-1">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt={msg.caption ?? "Imagem"}
-            className="rounded-lg max-w-[260px] max-h-[260px] object-cover cursor-pointer"
-            onClick={() => window.open(src, "_blank")}
-            onError={(e) => {
-              console.warn("[CRM] Falha ao carregar imagem:", src);
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-              (e.currentTarget.nextSibling as HTMLElement | null)?.removeAttribute("hidden");
-            }}
-          />
-          <span hidden className="flex items-center gap-1.5 italic opacity-60 text-sm">
-            <ImageIcon className="w-4 h-4 shrink-0" /> Imagem indisponível
-          </span>
-          {msg.caption && <span className="text-xs opacity-70">{msg.caption}</span>}
-        </span>
-      );
-    }
-    return (
-      <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
-        <ImageIcon className="w-4 h-4 shrink-0" /> Imagem
-      </span>
-    );
-  }
-
-  if (msg.type === "VIDEO" || (msg.mediaUrl && /\.(mp4|mov|webm|3gpp?)(\?|$)/i.test(msg.mediaUrl))) {
-    if (msg.mediaUrl) {
-      const src = mediaProxyUrl(msg.mediaUrl);
-      return (
-        <span className="flex flex-col gap-1">
-          <div style={{ maxWidth: "260px", borderRadius: "12px", overflow: "hidden", background: "#000" }}>
-            <video controls preload="metadata"
-              style={{ width: "100%", display: "block", maxHeight: "200px" }}
-              onError={() => console.warn("[CRM] Falha ao carregar vídeo:", src)}
-            >
-              <source src={src} />
-              <a href={src} target="_blank" style={{ color: "#60a5fa", padding: "8px", display: "block" }}>Baixar vídeo</a>
-            </video>
-          </div>
-          {msg.caption && <span className="text-xs opacity-70">{msg.caption}</span>}
-        </span>
-      );
-    }
-    return (
-      <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
-        <Video className="w-4 h-4 shrink-0" /> Vídeo
-      </span>
-    );
-  }
-
-  if (msg.type === "AUDIO" || (msg.mediaUrl && /\.(ogg|mp3|m4a|opus|aac)(\?|$)/i.test(msg.mediaUrl))) {
-    if (msg.mediaUrl) {
-      const src = mediaProxyUrl(msg.mediaUrl);
-      return (
-        <span className="flex flex-col gap-1">
-          <div style={{
-            background: "#F0F0F0", borderRadius: "24px",
-            padding: "10px 16px", display: "flex",
-            alignItems: "center", gap: "10px", maxWidth: "260px",
-          }}>
-            <span style={{ fontSize: "20px" }}>🎙️</span>
-            <audio controls preload="metadata" style={{ flex: 1, height: "32px" }}
-              onError={() => console.warn("[CRM] Falha ao carregar áudio:", src)}>
-              <source src={src} />
-            </audio>
-          </div>
-          {/* Show transcript if AI transcribed it */}
-          {msg.content && !msg.content.startsWith("[Áudio") && (
-            <span className="text-xs italic opacity-70 mt-0.5">{msg.content}</span>
-          )}
-        </span>
-      );
-    }
-    // No mediaUrl — show transcript or placeholder
-    const transcript = msg.content?.replace(/^\[Áudio transcrito\]:\s*/i, "");
-    if (transcript && !transcript.startsWith("[Áudio")) {
-      return (
-        <span className="flex flex-col gap-0.5 text-sm">
-          <span className="text-[10px] text-muted-foreground flex items-center gap-1">🎙 Áudio transcrito</span>
-          <span className="italic">{transcript}</span>
-        </span>
-      );
-    }
-    return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
-  }
-
-  if (msg.type === "DOCUMENT" || (msg.mediaUrl && /\.(pdf|doc|docx|xls|xlsx)(\?|$)/i.test(msg.mediaUrl))) {
-    if (msg.mediaUrl) {
-      const src = mediaProxyUrl(msg.mediaUrl);
-      const filename = msg.caption ?? msg.content ?? "Documento";
-      return (
-        <a href={src} target="_blank" rel="noopener noreferrer"
-          style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            padding: "10px 14px", background: "#F3F4F6",
-            borderRadius: "12px", textDecoration: "none",
-            maxWidth: "260px", color: "#111827",
-          }}>
-          <span style={{ fontSize: "24px" }}>📄</span>
-          <div>
-            <div style={{ fontSize: "13px", fontWeight: 600 }}>{filename}</div>
-            <div style={{ fontSize: "12px", color: "#6B7280" }}>Toque para abrir</div>
-          </div>
-        </a>
-      );
-    }
-    return <span className="text-sm italic opacity-80">📄 Documento</span>;
-  }
-
+  if (msg.type === "IMAGE") return (
+    <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
+      <ImageIcon className="w-4 h-4 shrink-0" /> Imagem
+    </span>
+  );
+  if (msg.type === "VIDEO") return (
+    <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
+      <Video className="w-4 h-4 shrink-0" /> Vídeo
+    </span>
+  );
+  if (msg.type === "AUDIO") return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
   if (msg.type === "LOCATION") {
-    const text = msg.content ?? "";
-    const latMatch = text.match(/lat:([-\d.]+)/);
-    const lngMatch = text.match(/lng:([-\d.]+)/);
-    const addrMatch = text.match(/endereço:\s*([^|]+)/);
-    const pointMatch = text.match(/ponto:\s*(.+)/);
-    const lat = latMatch?.[1];
-    const lng = lngMatch?.[1];
-    const label = pointMatch?.[1]?.trim() ?? addrMatch?.[1]?.trim() ?? "Localização recebida";
-    return <LocationCard lat={lat} lng={lng} endereco={label} />;
-  }
-
-  // ── Contact card (shared contact via WhatsApp) ────────────────────────────
-  // Handles both: new structured [CONTATO_CARD] format and legacy "[Contato compartilhado]" text
-  const isContactMsg =
-    msg.content?.includes("[CONTATO_CARD]") ||
-    msg.content?.trim() === "[Contato compartilhado]";
-
-  if (isContactMsg) {
-    // New format: structured data with name, phones, etc.
-    if (msg.content?.includes("[CONTATO_CARD]")) {
-      const cards = msg.content.split("\n").filter(l => l.includes("[CONTATO_CARD]")).map(line => {
-        const get = (key: string) => {
-          const m = line.match(new RegExp(`${key}="([^"]*)"`, "i"));
-          return m?.[1] ?? "";
-        };
-        return { nome: get("nome"), phones: get("phones"), email: get("email"), org: get("org") };
-      });
-      return (
-        <span className="flex flex-col gap-2">
-          {cards.map((c, i) => (
-            <span key={i} className="flex items-center gap-3 p-3 bg-slate-100 border border-slate-300 rounded-xl max-w-[260px]">
-              <span className="w-10 h-10 rounded-full bg-slate-400 flex items-center justify-center text-white font-bold text-lg shrink-0">
-                {(c.nome || "?")[0].toUpperCase()}
-              </span>
-              <span className="flex flex-col min-w-0">
-                <span className="text-sm font-semibold text-slate-900 truncate">{c.nome || "Contato"}</span>
-                {c.org && <span className="text-xs text-muted-foreground truncate">{c.org}</span>}
-                {c.phones && (
-                  <a
-                    href={`https://wa.me/${c.phones.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-blue-600 underline mt-0.5"
-                  >
-                    📱 {c.phones}
-                  </a>
-                )}
-                {c.email && <span className="text-xs text-muted-foreground">{c.email}</span>}
-              </span>
-            </span>
-          ))}
-        </span>
-      );
-    }
-
-    // Legacy format: only text "[Contato compartilhado]" — data lost, show styled card
+    const m = msg.content.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/);
+    const lat = m?.[1]; const lng = m?.[2];
+    const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null;
+    const label = msg.content.match(/ponto:\s*([^|]+)/)?.[1]?.trim()
+      ?? msg.content.match(/endereço:\s*([^|]+)/)?.[1]?.trim()
+      ?? "📍 Ver localização no mapa";
     return (
-      <span className="flex items-center gap-3 p-3 bg-slate-100 border border-slate-300 rounded-xl max-w-[260px]">
-        <span className="w-10 h-10 rounded-full bg-slate-400 flex items-center justify-center text-white text-lg shrink-0">
-          👤
-        </span>
-        <span className="flex flex-col">
-          <span className="text-sm font-semibold text-slate-900">Contato compartilhado</span>
-          <span className="text-xs text-muted-foreground">Dados não disponíveis</span>
-        </span>
-      </span>
+      <a href={mapsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
+        className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+        <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
+        <span>{label}</span>
+      </a>
     );
   }
-
-  // Detect location coordinates or Maps links embedded in TEXT messages
-  if (msg.type === "TEXT" || !msg.type) {
-    const content = msg.content ?? "";
-    const mapsShort = content.match(/maps\.app\.goo\.gl\/\S+|goo\.gl\/maps\/\S+/);
-    const latLng1 = content.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/);
-    const latLng2 = content.match(/@([-\d.]+),([-\d.]+)/);
-    const latLng3 = content.match(/maps\.google\.com\/\?q=([-\d.]+),([-\d.]+)/);
-
-    if (latLng1) return <LocationCard lat={latLng1[1]} lng={latLng1[2]} />;
-    if (latLng2) return <LocationCard lat={latLng2[1]} lng={latLng2[2]} />;
-    if (latLng3) return <LocationCard lat={latLng3[1]} lng={latLng3[2]} />;
-    if (mapsShort) {
-      return (
-        <a href={mapsShort[0]} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl max-w-[260px] no-underline hover:bg-green-100 transition-colors">
-          <span className="text-xl">📍</span>
-          <div>
-            <p className="text-xs font-semibold text-green-800">Localização recebida</p>
-            <p className="text-xs text-blue-600">Abrir no Google Maps</p>
-          </div>
-        </a>
-      );
-    }
-  }
-
   return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
 }
 
@@ -477,7 +180,7 @@ function Avatar({ conv, size = "md" }: { conv: Conversation; size?: "sm" | "md" 
       <div className={cn("rounded-full font-semibold flex items-center justify-center", avatarColor(getContactName(conv)), sizeClass)}>
         {getContactInitial(conv)}
       </div>
-      <span className={cn("absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white", dotColor)} />
+      <span className={cn("absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-card", dotColor)} />
     </div>
   );
 }
@@ -501,33 +204,17 @@ function ConversationsContent() {
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [messages, setMessages]         = useState<Message[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [msgError, setMsgError]         = useState<string | null>(null);
   const [msgInput, setMsgInput]         = useState("");
   const [sending, setSending]           = useState(false);
   const [takingOver, setTakingOver]     = useState(false);
   const [deescalating, setDeescalating] = useState(false);
   const [diagResult, setDiagResult]     = useState<Record<string, unknown> | null>(null);
   const [diagLoading, setDiagLoading]   = useState(false);
-  const [diagExpanded, setDiagExpanded] = useState(false); // banner colapsado por padrão
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
-  // On large screens (≥1280px) the right panel is visible by default
-  const [showContactPanel, setShowContactPanel] = useState(
-    typeof window !== "undefined" && window.innerWidth >= 1280
-  );
-  // Advanced filters
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [produtoFilter, setProdutoFilter] = useState("");
-  const [etapaFilter, setEtapaFilter]     = useState("");
-  const [tempoFilter, setTempoFilter]     = useState("");
-  // BUG 2: rastrear se usuário está no final (state para effects, ref para callbacks async)
-  const [atBottom, setAtBottom]         = useState(true);
-  // Media sending
-  const [products, setProducts]           = useState<Product[]>([]);
-  const [mediaDropdown, setMediaDropdown] = useState<string | null>(null); // product id | "__clip" | null
-  const [mediaModal, setMediaModal]       = useState<"image" | "video" | null>(null);
-  const [sendingMedia, setSendingMedia]   = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(true);
 
   const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -537,18 +224,12 @@ function ConversationsContent() {
   const isFirstLoadRef       = useRef(false);
   const atBottomRef          = useRef(true);
   const inputRef             = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef         = useRef<HTMLInputElement>(null);
-  const clipBtnRef           = useRef<HTMLButtonElement>(null);
-  const productBtnRefs       = useRef<Map<string, HTMLButtonElement>>(new Map());
-  const emojiPickerRef       = useRef<HTMLDivElement>(null);
 
   const handleContainerScroll = useCallback(() => {
     const el = messagesContainerRef.current;
     if (!el) return;
     const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
-    const near = dist < 60;
-    atBottomRef.current = near;
-    setAtBottom(near);
+    atBottomRef.current = dist < 60;
   }, []);
 
   const [sendMessage]       = useMutation(SEND_MESSAGE);
@@ -559,15 +240,6 @@ function ConversationsContent() {
   useEffect(() => {
     if (!orgId && orgs.length > 0) setOrgId(orgs[0].id);
   }, [orgs, orgId]);
-
-  // Fetch products for media toolbar
-  useEffect(() => {
-    if (!orgId) return;
-    fetch(`/api/products?organizationId=${orgId}`)
-      .then(r => r.json())
-      .then((data: Product[]) => setProducts(data.filter(p => p.imageUrl || p.videoUrl)))
-      .catch(() => {});
-  }, [orgId]);
 
   // Open conversation from URL param (?id=xxx)
   useEffect(() => {
@@ -584,9 +256,6 @@ function ConversationsContent() {
       const params = new URLSearchParams({ organizationId: orgId, status: statusFilter });
       if (search) params.set("search", search);
       if (cursor) params.set("cursor", cursor);
-      if (produtoFilter) params.set("produto", produtoFilter);
-      if (etapaFilter)   params.set("etapa", etapaFilter);
-      if (tempoFilter)   params.set("tempo", tempoFilter);
       const res = await fetch(`/api/conversations?${params}`);
       const data = await res.json() as {
         conversations: Conversation[];
@@ -613,10 +282,10 @@ function ConversationsContent() {
     } finally {
       if (reset) setLoading(false);
     }
-  }, [orgId, search, statusFilter, produtoFilter, etapaFilter, tempoFilter, nextCursor]);
+  }, [orgId, search, statusFilter, nextCursor]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchConversations(true); }, [orgId, search, statusFilter, produtoFilter, etapaFilter, tempoFilter]);
+  useEffect(() => { fetchConversations(true); }, [orgId, search, statusFilter]);
 
   useEffect(() => {
     const t = setInterval(() => fetchConversations(true), 5000);
@@ -625,7 +294,7 @@ function ConversationsContent() {
 
   // ── Fetch messages ────────────────────────────────────────────────────────────
   const fetchMessages = useCallback(async (convId: string, silent = false) => {
-    if (!silent) setLoadingMessages(true);
+    if (!silent) { setLoadingMessages(true); setMsgError(null); }
     try {
       const res = await fetch(`/api/graphql`, {
         method: "POST",
@@ -633,16 +302,28 @@ function ConversationsContent() {
         body: JSON.stringify({
           query: `query($id: String!) {
             getConversationMessages(conversationId: $id) {
-              messages { id content type role sentAt status mediaUrl caption }
+              messages { id content type role sentAt status }
             }
           }`,
           variables: { id: convId },
         }),
       });
-      const { data } = await res.json() as {
-        data?: { getConversationMessages?: { messages?: Message[] } }
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+      }
+
+      const json = await res.json() as {
+        data?: { getConversationMessages?: { messages?: Message[] } };
+        errors?: Array<{ message: string }>;
       };
-      const newMsgs = data?.getConversationMessages?.messages ?? [];
+
+      if (json.errors?.length) {
+        throw new Error(json.errors.map(e => e.message).join("; "));
+      }
+
+      const newMsgs = json.data?.getConversationMessages?.messages ?? [];
       const newLastId = newMsgs[newMsgs.length - 1]?.id ?? "";
       // Stale-request guard: discard if user switched conversations while fetch was in-flight
       if (convId !== currentConvIdRef.current) return;
@@ -658,7 +339,21 @@ function ConversationsContent() {
       setMessages(newMsgs);
       prevLastMsgIdRef.current = newLastId;
       prevMsgCountRef.current  = newMsgs.length;
-      // Scroll é gerenciado pelo useEffect abaixo (inteligente, baseado em atBottom)
+
+      if (isFirstLoad) {
+        // First load of this conversation: jump instantly to bottom
+        isFirstLoadRef.current = false;
+        atBottomRef.current = true;
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant" }), 50);
+      } else if (hasNewMessages && atBottomRef.current) {
+        // New message arrived and user is already at bottom: smooth scroll
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
+      }
+    } catch (err) {
+      if (convId !== currentConvIdRef.current) return;
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[fetchMessages]", msg);
+      if (!silent) setMsgError(msg);
     } finally {
       if (!silent) setLoadingMessages(false);
     }
@@ -669,7 +364,6 @@ function ConversationsContent() {
       currentConvIdRef.current = selectedId;
       isFirstLoadRef.current   = true;
       atBottomRef.current      = true;
-      setAtBottom(true); // garante estado limpo ao abrir nova conversa
       prevMsgCountRef.current  = 0;
       prevLastMsgIdRef.current = "";
       fetchMessages(selectedId);
@@ -683,29 +377,6 @@ function ConversationsContent() {
     const t = setInterval(() => fetchMessages(selectedId, true), 3000);
     return () => clearInterval(t);
   }, [selectedId, fetchMessages]);
-
-  // ── Scroll inteligente ────────────────────────────────────────────────────────
-  // Roda sempre que as mensagens mudam ou o usuário volta ao final.
-  // Regras:
-  //   • Primeira carga da conversa  → scroll instant (sem animação)
-  //   • Nova mensagem + usuário no final → scroll suave
-  //   • Usuário rolou para cima → NENHUM scroll automático
-  useEffect(() => {
-    if (messages.length === 0) return;
-    if (isFirstLoadRef.current) {
-      // Primeira carga: sempre rola sem animação e marca como carregado
-      isFirstLoadRef.current = false;
-      requestAnimationFrame(() =>
-        messagesEndRef.current?.scrollIntoView({ behavior: "instant" })
-      );
-    } else if (atBottom) {
-      // Novas mensagens e usuário já estava no final: scroll suave
-      requestAnimationFrame(() =>
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-      );
-    }
-    // atBottom=false → usuário rolou para cima → não faz nada
-  }, [messages, atBottom]);
 
   // ── Select conversation ───────────────────────────────────────────────────────
   const selectConversation = useCallback((id: string, conv?: Conversation) => {
@@ -748,69 +419,7 @@ function ConversationsContent() {
     } finally { setTakingOver(false); }
   }, [selectedId, takingOver, takeoverMutation]);
 
-  // ── Send product media ────────────────────────────────────────────────────────
-  const handleSendProductMedia = useCallback(async (productId: string, mt: "image" | "video") => {
-    if (!selectedId || sendingMedia) return;
-    setSendingMedia(true);
-    setMediaDropdown(null);
-    setMediaModal(null);
-    try {
-      const res = await fetch(`/api/conversations/${selectedId}/send-media`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, mediaType: mt }),
-      });
-      if (!res.ok) {
-        const err = await res.json() as { error?: string };
-        console.error("[send-media]", err.error);
-      }
-      await fetchMessages(selectedId, true);
-    } finally {
-      setSendingMedia(false);
-    }
-  }, [selectedId, sendingMedia, fetchMessages]);
-
-  // ── Upload local file ─────────────────────────────────────────────────────────
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !selectedId || sendingMedia) return;
-    e.target.value = "";
-    setSendingMedia(true);
-    setMediaDropdown(null);
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const isVideo = file.type.startsWith("video/");
-      const isPdf   = file.type === "application/pdf";
-      form.append("type", isVideo ? "video" : isPdf ? "document" : "image");
-      form.append("caption", file.name);
-      const res = await fetch(`/api/conversations/${selectedId}/send-media`, {
-        method: "POST",
-        body: form,
-      });
-      if (!res.ok) {
-        const err = await res.json() as { error?: string };
-        console.error("[send-media file]", err.error);
-      }
-      await fetchMessages(selectedId, true);
-    } finally {
-      setSendingMedia(false);
-    }
-  }, [selectedId, sendingMedia, fetchMessages]);
-
   // ── Send message ──────────────────────────────────────────────────────────────
-  // Close emoji picker on outside click
-  useEffect(() => {
-    if (!showEmojiPicker) return;
-    const handler = (e: MouseEvent) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
-        setShowEmojiPicker(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [showEmojiPicker]);
-
   const handleSend = useCallback(async () => {
     const content = msgInput.trim();
     if (!content || !selectedId || sending) return;
@@ -838,7 +447,6 @@ function ConversationsContent() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <>
     <div className="flex flex-1 min-h-0 overflow-hidden bg-background" style={{ height: "100%" }}>
 
       {/* ════════════════════════════════════════════════════════════════════════
@@ -847,14 +455,14 @@ function ConversationsContent() {
           On desktop: fixed 320px column
       ════════════════════════════════════════════════════════════════════════ */}
       <div className={cn(
-        "flex-shrink-0 border-r flex flex-col bg-card",
+        "flex-shrink-0 border-r border-border flex flex-col bg-card",
         // Desktop: always visible at 320px
         "md:w-80 md:flex",
         // Mobile: full width, toggle visibility
         mobilePanel === "list" ? "flex w-full" : "hidden",
       )}>
-        {/* Mobile header */}
-        <div className="p-3 border-b space-y-2.5">
+        {/* Header */}
+        <div className="p-3 border-b border-border space-y-2.5">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-base">Conversas</h2>
             <div className="flex items-center gap-1">
@@ -922,69 +530,7 @@ function ConversationsContent() {
                 {l}
               </button>
             ))}
-            <button
-              onClick={() => setShowAdvancedFilters(v => !v)}
-              className={cn(
-                "px-2.5 py-1 rounded-full text-xs border transition-colors flex items-center gap-1",
-                (produtoFilter || etapaFilter || tempoFilter)
-                  ? "bg-primary text-white border-primary"
-                  : showAdvancedFilters
-                  ? "border-primary text-primary"
-                  : "border-border text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <SlidersHorizontal className="w-3 h-3" />
-              {(produtoFilter || etapaFilter || tempoFilter) ? "Filtrado" : "Filtros"}
-            </button>
           </div>
-
-          {/* Advanced filters */}
-          {showAdvancedFilters && (
-            <div className="space-y-1.5 pt-1">
-              <div className="flex gap-1.5">
-                <select
-                  value={produtoFilter}
-                  onChange={e => setProdutoFilter(e.target.value)}
-                  className="flex-1 h-8 text-xs rounded-md border border-input bg-background px-2"
-                >
-                  <option value="">Todos produtos</option>
-                  <option value="bomvink">Bomvink</option>
-                  <option value="luatek">Luatek</option>
-                </select>
-                <select
-                  value={tempoFilter}
-                  onChange={e => setTempoFilter(e.target.value)}
-                  className="flex-1 h-8 text-xs rounded-md border border-input bg-background px-2"
-                >
-                  <option value="">Qualquer tempo</option>
-                  <option value="1h">Sem resp. 1h+</option>
-                  <option value="3h">Sem resp. 3h+</option>
-                  <option value="24h">Sem resp. 24h+</option>
-                </select>
-              </div>
-              <select
-                value={etapaFilter}
-                onChange={e => setEtapaFilter(e.target.value)}
-                className="w-full h-8 text-xs rounded-md border border-input bg-background px-2"
-              >
-                <option value="">Todas etapas</option>
-                <option value="NOVO">Novo</option>
-                <option value="PRODUTO_IDENTIFICADO">Produto identificado</option>
-                <option value="NEGOCIANDO">Negociando</option>
-                <option value="COLETANDO_DADOS">Coletando dados</option>
-                <option value="PEDIDO_CONFIRMADO">Pedido confirmado</option>
-                <option value="PERDIDO">Perdido</option>
-              </select>
-              {(produtoFilter || etapaFilter || tempoFilter) && (
-                <button
-                  onClick={() => { setProdutoFilter(""); setEtapaFilter(""); setTempoFilter(""); }}
-                  className="text-xs text-red-500 hover:underline"
-                >
-                  Limpar filtros avançados
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Conversation list */}
@@ -1006,8 +552,8 @@ function ConversationsContent() {
                 key={conv.id}
                 onClick={() => selectConversation(conv.id, conv)}
                 className={cn(
-                  "w-full text-left px-3 py-3 border-b hover:bg-muted/40 active:bg-muted/60 transition-colors",
-                  isSelected && "bg-primary/5 border-l-2 border-l-primary"
+                  "w-full text-left px-3 py-3 border-b border-border hover:bg-muted/40 active:bg-muted/60 transition-colors",
+                  isSelected && "bg-primary/10 dark:bg-primary/15 border-l-2 border-l-primary"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -1060,13 +606,11 @@ function ConversationsContent() {
                         {lastMsg.role === "ASSISTANT"
                           ? (conv.humanTakeover ? "👤 " : "🤖 ")
                           : "💬 "}
-                        {lastMsg.type === "TEXT"   ? lastMsg.content.slice(0, 60)
-                         : lastMsg.type === "IMAGE"    ? "📷 Imagem"
-                         : lastMsg.type === "VIDEO"    ? "🎥 Vídeo"
-                         : lastMsg.type === "AUDIO"    ? "🎙 Áudio"
-                         : lastMsg.type === "DOCUMENT" ? "📄 Documento"
-                         : lastMsg.type === "LOCATION" ? "📍 Localização"
-                         : `[${lastMsg.type}]`}
+                        {lastMsg.type === "IMAGE"  ? "🖼 Imagem"
+                          : lastMsg.type === "VIDEO"  ? "🎥 Vídeo"
+                          : lastMsg.type === "AUDIO"  ? "🎙 Áudio"
+                          : lastMsg.type === "LOCATION" ? "📍 Localização recebida"
+                          : lastMsg.content.slice(0, 60)}
                       </p>
                     )}
                   </div>
@@ -1089,12 +633,13 @@ function ConversationsContent() {
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════════
-          RIGHT PANEL — Chat
+          CENTER PANEL — Chat
           On mobile: full screen, hidden when list is shown
           On desktop: takes remaining width
       ════════════════════════════════════════════════════════════════════════ */}
       <div className={cn(
-        "flex-col overflow-hidden bg-[hsl(var(--chat-bg))]",
+        "flex-col overflow-hidden",
+        "bg-[#f0f2f5] dark:bg-[#0d1117]",
         "md:flex md:flex-1",
         mobilePanel === "chat" ? "flex flex-1 w-full" : "hidden",
       )}>
@@ -1107,7 +652,7 @@ function ConversationsContent() {
         ) : (
           <>
             {/* ── Chat Header ─────────────────────────────────────────────────── */}
-            <div className="bg-card border-b px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
+            <div className="bg-card border-b border-border px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
               {/* Back button — mobile only */}
               <button
                 onClick={handleBackToList}
@@ -1138,16 +683,7 @@ function ConversationsContent() {
                 </div>
                 <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
                   <Phone className="w-3 h-3 shrink-0" />
-                  {/* Link opens WhatsApp directly with correct international format */}
-                  <a
-                    href={`https://wa.me/${(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId).replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-primary hover:underline"
-                    title="Abrir no WhatsApp"
-                  >
-                    {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
-                  </a>
+                  {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
                   {selected.followUp?.status === "ACTIVE" && (
                     <span className="hidden sm:inline ml-1 text-amber-600">
                       · Follow-up {selected.followUp.step}
@@ -1234,14 +770,14 @@ function ConversationsContent() {
                   </>
                 )}
 
-                {/* Contact panel toggle */}
+                {/* Info panel toggle — desktop only */}
                 <Button
                   variant="ghost" size="icon"
-                  className={cn("h-8 w-8", showContactPanel && "bg-primary/10 text-primary")}
-                  onClick={() => setShowContactPanel(v => !v)}
-                  title="Perfil do contato"
+                  className={cn("h-8 w-8 hidden xl:flex", showInfoPanel && "text-primary")}
+                  onClick={() => setShowInfoPanel(v => !v)}
+                  title="Painel de IA"
                 >
-                  <User className="w-4 h-4" />
+                  <Info className="w-4 h-4" />
                 </Button>
 
                 {/* More options menu */}
@@ -1273,86 +809,42 @@ function ConversationsContent() {
                         : <AlertTriangle className="w-4 h-4 mr-2 text-amber-500" />}
                       Diagnóstico passagem
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={async () => {
-                      if (!selectedId) return;
-                      if (!confirm("Reenviar passagem de bastão para o dono agora?")) return;
-                      try {
-                        const res = await fetch("/api/debug/reenviar-passagem", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ conversationId: selectedId }),
-                        });
-                        const data = await res.json() as { ok: boolean; msg?: string; error?: string };
-                        alert(data.ok ? `✅ ${data.msg}` : `❌ ${data.error}`);
-                      } catch (err) { alert(`Erro: ${err}`); }
-                    }}>
-                      <Send className="w-4 h-4 mr-2 text-green-500" />
-                      Reenviar passagem
-                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </div>
 
-            {/* ── Diagnóstico passagem — colapsado por padrão, max 60px ────────── */}
+            {/* ── Diagnóstico passagem ─────────────────────────────────────────── */}
             {diagResult && (
-              <div className="bg-slate-800 text-slate-100 text-[11px] flex-shrink-0">
-                {/* Linha compacta — sempre visível, clica para expandir */}
-                <div
-                  className="flex items-center gap-2 px-3 cursor-pointer select-none"
-                  style={{ minHeight: 36, maxHeight: 60 }}
-                  onClick={() => setDiagExpanded(e => !e)}
-                >
-                  <span className={cn(
-                    "font-semibold truncate flex-1",
-                    (diagResult.dadosCompletos as boolean) ? "text-green-300" : "text-amber-300"
-                  )}>
-                    {(diagResult.dadosCompletos as boolean)
-                      ? "✅ Dados completos"
-                      : "⚠️ Dados incompletos"}
-                    {Array.isArray(diagResult.camposFaltando) && (diagResult.camposFaltando as string[]).length > 0 && (
-                      <span className="text-red-300 ml-1 font-normal">
-                        — faltando: {(diagResult.camposFaltando as string[]).join(", ")}
-                      </span>
-                    )}
-                  </span>
-                  <ChevronDown className={cn(
-                    "w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-150",
-                    diagExpanded && "rotate-180"
-                  )} />
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setDiagResult(null); setDiagExpanded(false); }}
-                    className="text-slate-400 hover:text-white shrink-0 ml-1 p-0.5 rounded"
-                    aria-label="Fechar diagnóstico"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+              <div className="bg-slate-800 text-slate-100 text-[11px] px-3 py-2.5 flex-shrink-0 relative">
+                <button
+                  onClick={() => setDiagResult(null)}
+                  className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-base leading-none"
+                >×</button>
+                <p className="font-bold mb-1.5 text-amber-300">
+                  {(diagResult.dadosCompletos as boolean)
+                    ? "✅ Dados completos — passagem deveria disparar"
+                    : "❌ Dados INCOMPLETOS — passagem bloqueada"}
+                </p>
+                {Array.isArray(diagResult.camposFaltando) && (diagResult.camposFaltando as string[]).length > 0 && (
+                  <p className="text-red-300 mb-1">
+                    Faltando: {(diagResult.camposFaltando as string[]).join(" | ")}
+                  </p>
+                )}
+                {(diagResult.passagemJaFeita as boolean) && (
+                  <p className="text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
+                )}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1">
+                  {Object.entries(diagResult.camposDetectados as Record<string, string | null>).map(([k, v]) => (
+                    <span key={k}>
+                      <span className={v ? "text-green-300" : "text-red-400"}>{v ? "✅" : "❌"}</span>
+                      {" "}<span className="text-slate-400">{k}:</span>
+                      {" "}<span className="text-white">{v ? v.substring(0, 50) : "não detectado"}</span>
+                    </span>
+                  ))}
                 </div>
-
-                {/* Painel expandido — só aparece ao clicar */}
-                {diagExpanded && (
-                  <div className="px-3 pb-3 border-t border-slate-700 mt-0">
-                    <p className="font-bold mt-2 mb-1.5 text-amber-300">
-                      {(diagResult.dadosCompletos as boolean)
-                        ? "✅ Dados completos — passagem deveria disparar"
-                        : "❌ Dados INCOMPLETOS — passagem bloqueada"}
-                    </p>
-                    {(diagResult.passagemJaFeita as boolean) && (
-                      <p className="text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
-                    )}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1">
-                      {Object.entries(diagResult.camposDetectados as Record<string, string | null>).map(([k, v]) => (
-                        <span key={k}>
-                          <span className={v ? "text-green-300" : "text-red-400"}>{v ? "✅" : "❌"}</span>
-                          {" "}<span className="text-slate-400">{k}:</span>
-                          {" "}<span className="text-white">{v ? v.substring(0, 50) : "não detectado"}</span>
-                        </span>
-                      ))}
-                    </div>
-                    {(diagResult.etapa as string) && (
-                      <p className="mt-1.5 text-slate-400">etapa DB: <span className="text-white">{diagResult.etapa as string}</span></p>
-                    )}
-                  </div>
+                {(diagResult.etapa as string) && (
+                  <p className="mt-1 text-slate-400">etapa DB: <span className="text-white">{diagResult.etapa as string}</span></p>
                 )}
               </div>
             )}
@@ -1378,13 +870,6 @@ function ConversationsContent() {
               </div>
             )}
 
-            {/* ── Content area: messages + optional contact panel ──────────────── */}
-            <div className="flex flex-1 min-h-0 overflow-hidden">
-            {/* Chat column */}
-            <div className={cn(
-              "flex flex-col flex-1 min-w-0",
-              showContactPanel ? "hidden md:flex" : "flex"
-            )}>
             {/* ── Messages area ────────────────────────────────────────────────── */}
             <div
               ref={messagesContainerRef}
@@ -1398,6 +883,20 @@ function ConversationsContent() {
                 </div>
               )}
 
+              {msgError && messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 gap-3 text-center px-4">
+                  <AlertTriangle className="w-8 h-8 text-amber-500" />
+                  <p className="text-sm font-medium text-gray-700">Erro ao carregar mensagens</p>
+                  <p className="text-xs text-muted-foreground max-w-xs break-all">{msgError}</p>
+                  <button
+                    onClick={() => fetchMessages(selectedId!, false)}
+                    className="text-xs text-primary underline underline-offset-2 hover:opacity-80"
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              )}
+
               {messages.map((msg, i) => {
                 const isMe   = msg.role === "ASSISTANT";
                 const prevMsg = messages[i - 1];
@@ -1408,7 +907,7 @@ function ConversationsContent() {
                   <React.Fragment key={msg.id}>
                     {showTime && (
                       <div className="flex justify-center my-3">
-                        <span className="text-[11px] text-muted-foreground bg-card/90 backdrop-blur-sm px-3 py-0.5 rounded-full shadow-sm border border-border/50">
+                        <span className="text-[11px] text-muted-foreground bg-card/80 dark:bg-card/60 px-3 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
                           {new Date(msg.sentAt).toLocaleDateString("pt-BR", {
                             day: "2-digit", month: "short",
                           })} {formatTime(msg.sentAt)}
@@ -1419,18 +918,18 @@ function ConversationsContent() {
                       <div className={cn(
                         "max-w-[80%] sm:max-w-[72%] rounded-2xl px-3.5 py-2 shadow-sm",
                         isMe
-                          ? "bubble-sent rounded-tr-sm"
-                          : "bubble-recv rounded-tl-sm"
+                          ? "msg-bubble-sent"
+                          : "msg-bubble-received"
                       )}>
                         <MessageContent msg={msg} />
                         <div className="flex items-center justify-end gap-1 mt-1">
-                          <span className="text-[10px] text-gray-400">{formatTime(msg.sentAt)}</span>
+                          <span className="text-[10px] opacity-60">{formatTime(msg.sentAt)}</span>
                           {isMe && (
                             msg.status === "SENDING"
-                              ? <Clock className="w-3 h-3 text-gray-400" />
+                              ? <Clock className="w-3 h-3 opacity-50" />
                               : msg.status === "READ"
                               ? <CheckCheck className="w-3 h-3 text-blue-500" />
-                              : <Check className="w-3 h-3 text-gray-400" />
+                              : <Check className="w-3 h-3 opacity-50" />
                           )}
                         </div>
                       </div>
@@ -1442,8 +941,7 @@ function ConversationsContent() {
             </div>
 
             {/* ── Message input ────────────────────────────────────────────────── */}
-            <div className="bg-card border-t flex-shrink-0">
-              {/* IA status bar */}
+            <div className="bg-card border-t border-border flex-shrink-0">
               {!isHumanControl && (
                 <div className="px-3 pt-2 pb-0">
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1">
@@ -1459,149 +957,7 @@ function ConversationsContent() {
                   </p>
                 </div>
               )}
-
-              {/* Media toolbar — visible only when human is in control */}
-              {isHumanControl && (
-                <div
-                  className="px-3 pt-2 pb-1.5 flex items-center gap-1.5 border-b overflow-x-auto scrollbar-hide"
-                  onClick={() => setMediaDropdown(null)}
-                >
-                  {/* Quick-send product buttons — Portal dropdown */}
-                  {products.map(p => {
-                    const btnRef = { current: productBtnRefs.current.get(p.id) ?? null } as React.RefObject<HTMLButtonElement | null>;
-                    return (
-                      <div key={p.id} className="relative shrink-0">
-                        <button
-                          ref={(el) => { if (el) productBtnRefs.current.set(p.id, el); }}
-                          onClick={() => setMediaDropdown(mediaDropdown === p.id ? null : p.id)}
-                          disabled={sendingMedia}
-                          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
-                        >
-                          <ImageIcon className="w-3 h-3 shrink-0" />
-                          <span className="truncate max-w-[72px]">{p.name}</span>
-                          <ChevronDown className="w-3 h-3 shrink-0" />
-                        </button>
-                        <PortalDropdown open={mediaDropdown === p.id} anchorRef={btnRef} onClose={() => setMediaDropdown(null)}>
-                          {(p.imageUrl || (p.imageUrls && p.imageUrls.length > 0)) && (
-                            <button
-                              onClick={() => { void handleSendProductMedia(p.id, "image"); setMediaDropdown(null); }}
-                              className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                            >
-                              <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                              Foto
-                            </button>
-                          )}
-                          {p.videoUrl && (
-                            <button
-                              onClick={() => { void handleSendProductMedia(p.id, "video"); setMediaDropdown(null); }}
-                              className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                            >
-                              <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                              Vídeo
-                            </button>
-                          )}
-                        </PortalDropdown>
-                      </div>
-                    );
-                  })}
-
-                  {/* Separator */}
-                  {products.length > 0 && <span className="w-px h-4 bg-border shrink-0" />}
-
-                  {/* 📎 General attachment — Portal dropdown */}
-                  <div className="relative shrink-0">
-                    <button
-                      ref={clipBtnRef}
-                      onClick={() => setMediaDropdown(mediaDropdown === "__clip" ? null : "__clip")}
-                      disabled={sendingMedia}
-                      title="Anexar mídia"
-                      className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
-                    >
-                      {sendingMedia
-                        ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                        : <Paperclip className="w-4 h-4 text-muted-foreground" />
-                      }
-                    </button>
-                    <PortalDropdown open={mediaDropdown === "__clip"} anchorRef={clipBtnRef} onClose={() => setMediaDropdown(null)}>
-                      <button
-                        onClick={() => { setMediaModal("image"); setMediaDropdown(null); }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                      >
-                        <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                        Foto do produto
-                      </button>
-                      <button
-                        onClick={() => { setMediaModal("video"); setMediaDropdown(null); }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                      >
-                        <Film className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                        Vídeo do produto
-                      </button>
-                      <div className="border-t my-1" />
-                      <button
-                        onClick={() => { fileInputRef.current?.click(); setMediaDropdown(null); }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-muted transition-colors"
-                      >
-                        <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        Arquivo do celular
-                      </button>
-                    </PortalDropdown>
-                  </div>
-
-                  {/* Hidden file input */}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/quicktime,application/pdf"
-                    className="hidden"
-                    onChange={e => void handleFileChange(e)}
-                  />
-                </div>
-              )}
-
-              {/* Text input row */}
-              <div className="px-3 py-2 flex gap-2 items-end relative">
-                {/* Emoji picker button */}
-                <div className="relative shrink-0" ref={emojiPickerRef}>
-                  <button
-                    type="button"
-                    onClick={() => setShowEmojiPicker(v => !v)}
-                    className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
-                    title="Emojis"
-                  >
-                    <Smile className="w-5 h-5 text-muted-foreground" />
-                  </button>
-                  {showEmojiPicker && (
-                    <div className="absolute bottom-10 left-0 z-50 bg-white rounded-xl shadow-xl border p-2 w-72">
-                      {[
-                        { cat: "😊 Expressões", emojis: ["😀","😃","😄","😁","😅","😂","🤣","😊","😇","🥰","😍","🤩","😘","😗","😚","😙","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","😐","😑","😶","😏","😒","🙄","😬","🤥","😔","😪","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","😱","😨","😰","😥","😓","🥴","😵","🤡","😷","🤒","🤕","🤧","😇","🤠","🥳","😎","🤓","🧐"] },
-                        { cat: "👋 Gestos", emojis: ["👋","🤚","🖐","✋","🖖","👌","🤌","🤏","✌","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝","👍","👎","✊","👊","🤛","🤜","👏","🙌","🤲","🤝","🙏","💪","🦾","🫶"] },
-                        { cat: "❤️ Símbolos", emojis: ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","❤️‍🔥","💔","❣️","💕","💞","💓","💗","💖","💘","💝","🌟","⭐","✨","💫","🔥","🎉","🎊","🏆","💯","✅","❌","⚡","💥","🌈"] },
-                        { cat: "🛍️ Comércio", emojis: ["📦","🛒","💳","💰","💵","🏷️","🎁","📋","📱","💬","🔔","🚀","⏰","📍","🗺️","🏠","🚗","🛵","📸","🎥","🛠️","🔧","⚙️","📊","📈","🤝","👑","💎","🌟","🎯","✔️","📞"] },
-                      ].map(({ cat, emojis }) => (
-                        <div key={cat} className="mb-2">
-                          <p className="text-[10px] text-muted-foreground font-medium px-1 mb-1">{cat}</p>
-                          <div className="flex flex-wrap gap-0.5">
-                            {emojis.map(em => (
-                              <button
-                                key={em}
-                                type="button"
-                                className="text-xl hover:bg-muted rounded p-0.5 leading-none"
-                                onClick={() => {
-                                  setMsgInput(v => v + em);
-                                  inputRef.current?.focus();
-                                }}
-                              >
-                                {em}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
+              <div className="px-3 py-2 flex gap-2 items-end">
                 <Textarea
                   ref={inputRef}
                   value={msgInput}
@@ -1640,114 +996,132 @@ function ConversationsContent() {
                 Enter · enviar &nbsp;·&nbsp; Shift+Enter · nova linha
               </p>
             </div>
-            {/* End chat column */}
-            </div>
-
-            {/* Contact panel — mobile: full overlay, desktop: right sidebar */}
-            {showContactPanel && selected && (
-              <div className={cn(
-                "z-30",
-                // Mobile: fixed full overlay
-                "fixed inset-0 md:static md:inset-auto",
-                // Desktop: flex-shrink-0 right sidebar
-                "md:flex md:shrink-0"
-              )}>
-                <ContactPanel
-                  conv={selected}
-                  onClose={() => setShowContactPanel(false)}
-                />
-              </div>
-            )}
-            {/* End content area */}
-            </div>
           </>
         )}
       </div>
-    </div>
 
-    {/* ── Product media modal ──────────────────────────────────────────────── */}
-    {mediaModal && typeof document !== "undefined" && createPortal(
-      <div
-        className="fixed inset-0 z-[9990] flex items-center justify-center bg-black/60 p-4"
-        onClick={() => setMediaModal(null)}
-      >
-        <div
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
-          onClick={e => e.stopPropagation()}
-        >
-          {/* Modal header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b">
-            <h3 className="font-semibold text-sm flex items-center gap-2">
-              {mediaModal === "image"
-                ? <><ImageIcon className="w-4 h-4 text-blue-500" /> Selecionar foto</>
-                : <><Film className="w-4 h-4 text-purple-500" /> Selecionar vídeo</>}
-            </h3>
-            <button
-              onClick={() => setMediaModal(null)}
-              className="p-1 rounded-lg hover:bg-muted transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+      {/* ════════════════════════════════════════════════════════════════════════
+          RIGHT PANEL — AI Intelligence Panel (xl+ only)
+      ════════════════════════════════════════════════════════════════════════ */}
+      {selected && showInfoPanel && (
+        <div className="hidden xl:flex flex-col w-72 flex-shrink-0 border-l border-border bg-card overflow-y-auto">
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4 text-emerald-500" />
+              <h3 className="text-sm font-semibold">Inteligência IA</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
           </div>
 
-          {/* Products list */}
-          <div className="max-h-96 overflow-y-auto divide-y">
-            {products.filter(p => mediaModal === "image"
-              ? (p.imageUrl || (p.imageUrls && p.imageUrls.length > 0))
-              : p.videoUrl
-            ).map(p => {
-              const thumb = mediaModal === "image"
-                ? (p.imageUrls?.[0] ?? p.imageUrl ?? null)
-                : null;
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => void handleSendProductMedia(p.id, mediaModal)}
-                  disabled={sendingMedia}
-                  className="flex items-center gap-3 w-full px-4 py-3 hover:bg-muted/50 active:bg-muted transition-colors disabled:opacity-50 text-left"
-                >
-                  {/* Thumbnail */}
-                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0 flex items-center justify-center">
-                    {mediaModal === "image" && thumb ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={thumb} alt={p.name} className="w-full h-full object-cover" />
-                    ) : mediaModal === "video" ? (
-                      <Film className="w-6 h-6 text-purple-400" />
-                    ) : (
-                      <ImageIcon className="w-6 h-6 text-blue-300" />
-                    )}
+          <div className="p-4 space-y-5">
+            {/* Contact info */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Contato</p>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <div className={cn("w-8 h-8 rounded-full font-semibold text-sm flex items-center justify-center flex-shrink-0", avatarColor(getContactName(selected)))}>
+                    {getContactInitial(selected)}
                   </div>
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{p.name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {mediaModal === "image"
-                        ? `${p.imageUrls?.length ?? (p.imageUrl ? 1 : 0)} foto(s)`
-                        : "Vídeo disponível"}
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{getContactName(selected)}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
                     </p>
                   </div>
-                  {sendingMedia
-                    ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />
-                    : <Send className="w-4 h-4 text-primary shrink-0" />
-                  }
-                </button>
-              );
-            })}
-            {products.filter(p => mediaModal === "image"
-              ? (p.imageUrl || (p.imageUrls && p.imageUrls.length > 0))
-              : p.videoUrl
-            ).length === 0 && (
-              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                Nenhum produto com {mediaModal === "image" ? "foto" : "vídeo"} cadastrado
+                </div>
+              </div>
+            </div>
+
+            {/* Lead status */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Status do Lead</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Status</span>
+                  <span className={cn("text-[11px] px-2 py-0.5 rounded-full font-medium", STATUS_COLORS[selected.lead?.status ?? "OPEN"])}>
+                    {STATUS_LABELS[selected.lead?.status ?? "OPEN"]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Etapa</span>
+                  <span className="text-xs font-medium text-foreground">{selected.etapa?.replace(/_/g, " ") ?? "—"}</span>
+                </div>
+                {selected.localizacaoRecebida && (
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                    <MapPin className="w-3 h-3" />
+                    <span>Localização recebida</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* AI mode */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Modo de Resposta</p>
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium",
+                selected.humanTakeover
+                  ? "bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-300"
+                  : selected.lead?.status === "ESCALATED"
+                  ? "bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-950 dark:border-orange-800 dark:text-orange-300"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950 dark:border-emerald-800 dark:text-emerald-300"
+              )}>
+                {selected.humanTakeover
+                  ? <><UserCheck className="w-4 h-4" /><span>Controle humano</span></>
+                  : selected.lead?.status === "ESCALATED"
+                  ? <><AlertTriangle className="w-4 h-4" /><span>Escalado</span></>
+                  : <><Bot className="w-4 h-4" /><span>IA ativa</span></>
+                }
+              </div>
+            </div>
+
+            {/* Follow-up */}
+            {selected.followUp && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Follow-up</p>
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 text-xs text-amber-700 dark:text-amber-300">
+                  <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Passo {selected.followUp.step} ativo</p>
+                    <p className="opacity-80 mt-0.5">
+                      {new Date(selected.followUp.nextSendAt).toLocaleString("pt-BR", {
+                        day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
+                      })}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
+
+            {/* Message count */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Histórico</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 bg-muted rounded-lg px-3 py-2 text-center">
+                  <p className="text-lg font-bold text-foreground tabular-nums">{messages.length}</p>
+                  <p className="text-[10px] text-muted-foreground">mensagens</p>
+                </div>
+                <div className="flex-1 bg-muted rounded-lg px-3 py-2 text-center">
+                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                    {messages.filter(m => m.role === "ASSISTANT").length}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">respostas IA</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity */}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Última atividade</p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <TrendingUp className="w-3.5 h-3.5 flex-shrink-0 text-emerald-500" />
+                <span>{timeAgo(selected.lastMessageAt)}</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>,
-      document.body
-    )}
-    </>
+      )}
+    </div>
   );
 }
 
