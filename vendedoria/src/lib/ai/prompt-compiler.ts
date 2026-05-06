@@ -294,10 +294,12 @@ function buildHistoricoLayer(
       })
       .join("  |  ");
 
+    const prodNames = activeProducts.map((p) => p.name).join(" | ");
     etapaInstr = `ETAPA 1 — PRIMEIRO CONTATO:
-- Identifique o produto pela mensagem ("21v"/"bomvink" = Bomvink 21V; "48v"/"luatek" = Luatek 48V)
-- Cumprimente com "${greeting}" em 1 balão, apresente-se como Léo da Nexo em outro
-${mediaFlags ? `- Flags de mídia disponíveis: ${mediaFlags}` : "- Descreva o produto em texto"}
+- Produtos disponíveis no catálogo: ${prodNames || "ver CATÁLOGO abaixo"}
+- Identifique qual produto o cliente quer pela mensagem e use o slug exato do CATÁLOGO
+- Cumprimente com "${greeting}" em 1 balão, apresente-se em outro
+${mediaFlags ? `- Flags de mídia: ${mediaFlags}` : "- Descreva o produto em texto"}
 - 2 benefícios curtos em balões separados
 - 1 pergunta de qualificação
 - NÃO peça localização agora`;

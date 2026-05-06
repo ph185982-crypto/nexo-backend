@@ -392,9 +392,11 @@ function buildRuntimeContext(
       ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})
 - ATENÇÃO: você DEVE colocar o flag exato (ex: [FOTO_LUATEK_48V]) em um balão separado — isso é o que dispara o envio. Nunca diga "vou te enviar fotos" sem o flag.`
       : "- Descreva o produto em texto";
+    const prodNames = (activeProducts ?? []).map((p) => p.name).join(" | ");
     etapa = `ETAPA 1 — PRIMEIRO CONTATO:
-- Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
-- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Léo da Nexo em outro balão
+- Produtos no catálogo: ${prodNames || "ver CATÁLOGO abaixo"}
+- Identifique qual produto o cliente quer e use o slug exato do CATÁLOGO para flags de mídia
+- Cumprimente com "${greeting}" em 1 balão separado, apresente-se em outro balão
 ${flagInstrucao}
 - 2 benefícios curtos em balões separados
 - 1 pergunta de qualificação (ex: "pra que você vai usar?")
@@ -497,17 +499,9 @@ Você ajusta seu jeito de falar para espelhar o cliente. Com mecânico que escre
 
 ━━━ PRODUTOS ━━━
 
-BOMVINK 21V — R$549,99 à vista ou 10x no cartão
-Motor Brushless (dura 2x mais que motor comum), 2 baterias 21V 4000mAh, torque 350Nm aperto / 400Nm desaperto, 46 peças incluídas na maleta, luz LED, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
-→ Quando o cliente menciona "21v" ou "bomvink" → esse é o produto dele.
-
-LUATEK 48V — R$529,99 à vista ou 10x no cartão
-2 baterias 48V, torque 380Nm aperto / 420Nm desaperto, kit com 7 soquetes do 17 ao 22 de meia polegada, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
-→ Quando o cliente menciona "48v" ou "luatek" → esse é o produto dele.
-
-Pagamento aceito: dinheiro, Pix, cartão de crédito em até 10x na entrega. Boleto não.
-Entrega: Goiânia e região. Pagamento só na entrega.
-Horário de entrega: seg–sex 9h–18h, sábado 8h–13h. Fora desse horário agenda pro próximo dia útil.
+Os dados exatos dos produtos (nome, preço, parcelas, descrição, fotos, vídeo) são injetados pelo sistema no CATÁLOGO abaixo — use sempre esses dados, nunca invente preços ou especificações.
+Para enviar mídia, coloque o flag exato ([FOTO_SLUG] ou [VIDEO_SLUG]) em um balão separado — o sistema só envia quando o flag aparece.
+Identifique qual produto o cliente quer pela mensagem dele e use o slug correspondente do catálogo.
 
 ━━━ O QUE VOCÊ PRECISA ALCANÇAR EM CADA ETAPA — mas sem frases fixas, com suas próprias palavras ━━━
 
@@ -780,11 +774,10 @@ export async function processAIResponse(
       });
       for (const prod of productsWithMediaEarly) {
         const nm = prod.name.toLowerCase();
+        const words = nm.split(/\s+/).filter((w) => w.length >= 3);
         const matchesByName = msgLower.includes(nm);
-        const matchesByKeyword =
-          (/21v|bomvink/.test(msgLower) && (nm.includes("21") || nm.includes("bomvink"))) ||
-          (/48v|luatek/.test(msgLower) && (nm.includes("48") || nm.includes("luatek")));
-        if (!matchesByName && !matchesByKeyword) continue;
+        const matchesByWords = words.some((w) => msgLower.includes(w));
+        if (!matchesByName && !matchesByWords) continue;
 
         console.log(`[AI Agent] FORCED first-contact media for "${prod.name}" | appUrlEarly="${appUrlEarly}"`);
         const imgs: string[] = (Array.isArray(prod.imageUrls) && prod.imageUrls.length > 0)
