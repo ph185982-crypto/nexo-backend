@@ -18,7 +18,7 @@ export async function register() {
     setInterval(ping, KEEPALIVE_INTERVAL_MS);
   }, 30_000);
 
-  // Follow-up queue worker — starts only if REDIS_URL is configured
+  // BullMQ workers — only start if Redis is configured
   if (process.env.REDIS_URL) {
     try {
       const { startFollowUpWorker } = await import("@/lib/queue/followup-queue");
@@ -26,6 +26,15 @@ export async function register() {
       console.log("[Instrumentation] FollowUpWorker iniciado via BullMQ");
     } catch (err) {
       console.warn("[Instrumentation] FollowUpWorker falhou ao iniciar:", err);
+    }
+
+    // Admin report scheduler — relatórios diários 13h e 18h (Brasília)
+    try {
+      const { scheduleAdminReports } = await import("@/lib/queue/admin-report-queue");
+      await scheduleAdminReports();
+      console.log("[Instrumentation] AdminReport scheduler registrado (13h + 18h Brasília)");
+    } catch (err) {
+      console.warn("[Instrumentation] AdminReport scheduler falhou ao iniciar:", err);
     }
   } else {
     console.log("[Instrumentation] REDIS_URL não configurado — follow-ups via cron polling");

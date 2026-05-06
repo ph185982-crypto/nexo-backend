@@ -5,6 +5,7 @@ import { processAIResponse } from "@/lib/ai/agent";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { transcribeAudio } from "@/lib/ai/transcription";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { isManagerNumber, handleManagerMessage } from "@/lib/manager/handler";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -110,6 +111,7 @@ async function handleIncomingMessage(
   providerConfig: {
     id: string;
     organizationId: string;
+    businessPhoneNumberId: string;
     accessToken?: string | null;
     agent: {
       id: string;
@@ -285,6 +287,17 @@ async function handleIncomingMessage(
   }).catch(() => {});
   // Also remove delayed jobs from Redis queue so they don't fire unnecessarily
   await cancelFollowUpJobs(conversation.id).catch(() => {});
+
+  // Manager command handler — intercepts messages from the owner's number.
+  // Routes to admin bot instead of AI lead flow.
+  if (isManagerNumber(phone)) {
+    console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
+    const msgText = message.text?.body ?? content;
+    handleManagerMessage(msgText, providerConfig, phone).catch((e) =>
+      console.error("[Webhook] Manager handler error:", e),
+    );
+    return; // do not trigger AI lead agent
+  }
 
   // Trigger AI agent if configured — fire-and-forget with explicit error logging
   if (providerConfig.agent?.kind === "AI" && providerConfig.agent?.status === "ACTIVE") {
