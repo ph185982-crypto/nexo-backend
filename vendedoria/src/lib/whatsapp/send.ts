@@ -19,6 +19,35 @@ function normalizeBrazilianNumber(phone: string): string {
   return phone;
 }
 
+/**
+ * Show "digitando..." (typing) indicator in WhatsApp and wait proportionally.
+ * Uses Meta's `typing_on` action from the unofficial but functional endpoint.
+ * Falls back silently if the API rejects — the delay alone humanizes the UX.
+ */
+export async function sendTypingIndicator(
+  phoneNumberId: string,
+  to: string,
+  durationMs: number,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) return;
+
+  // Best-effort typing_on — Cloud API supports this via the messages endpoint
+  await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: normalizeBrazilianNumber(to),
+      typing: { action: "typing_on" },
+    }),
+  }).catch(() => {});
+
+  await new Promise((r) => setTimeout(r, Math.min(durationMs, 8000)));
+}
+
 /** Mark an incoming message as read — shows blue double-tick to customer */
 export async function markWhatsAppMessageRead(
   phoneNumberId: string,
@@ -35,21 +64,23 @@ export async function markWhatsAppMessageRead(
 }
 
 /**
- * Simulate human "typing" — marks message as read then waits.
- * Delay is proportional to response length: feels natural, not instant.
+ * Simulate human "typing" before a bubble.
+ * Marks message as read (blue ticks), sends typing_on indicator, then waits.
+ * Delay is proportional to the text length: feels natural, not instant.
  */
 export async function simulateTypingDelay(
   phoneNumberId: string,
   incomingMessageId: string,
   responseText: string,
+  to: string,
   accessToken?: string
 ): Promise<void> {
-  // Mark as read immediately (customer sees blue ticks — agent "read" the message)
+  // Mark as read immediately — customer sees blue ticks showing agent engaged
   await markWhatsAppMessageRead(phoneNumberId, incomingMessageId, accessToken);
 
-  // Typing delay: ~30ms per character, clamped between 1.5s and 6s
-  const ms = Math.min(Math.max(responseText.length * 30, 1500), 6000);
-  await new Promise((r) => setTimeout(r, ms));
+  // Typing delay: ~25ms per character, clamped between 1.5s and 6s
+  const ms = Math.min(Math.max(responseText.length * 25, 1500), 6000);
+  await sendTypingIndicator(phoneNumberId, to, ms, accessToken);
 }
 
 export async function sendWhatsAppMessage(

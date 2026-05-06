@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendTypingIndicator } from "@/lib/whatsapp/send";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
 import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
@@ -1089,13 +1089,22 @@ export async function processAIResponse(
 
     // ── Simular digitação antes da 1ª mensagem ────────────────────────────────
     if (incomingMessageId && provider.businessPhoneNumberId) {
-      await simulateTypingDelay(provider.businessPhoneNumberId, incomingMessageId, mensagens.join(" "), token);
+      await simulateTypingDelay(provider.businessPhoneNumberId, incomingMessageId, mensagens[0] ?? mensagens.join(" "), to, token);
     }
 
-    // ── Enviar mensagens com delays individuais ───────────────────────────────
+    // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
+      // Para bolhas 2+ mostra "digitando..." proporcional ao tamanho do texto
+      if (i > 0) {
+        const interDelay = Math.min(Math.max(mensagens[i].length * 25, 1200), 5000);
+        await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
+      }
+
       const delayMs = delays[i] ?? 0;
-      if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
+      if (delayMs > 0 && i > 0) {
+        // delay already covered by typing indicator above — skip extra wait
+      }
+
       const msgNow = new Date();
       await prisma.whatsappMessage.create({
         data: { content: mensagens[i], type: "TEXT", role: "ASSISTANT", sentAt: msgNow, status: "SENT", conversationId },
