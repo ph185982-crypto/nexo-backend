@@ -3,6 +3,7 @@ name: Deploy Vendedoria to Render
 on:
   push:
     branches:
+      - master
       - claude/whatsapp-ai-crm-hYSVU
     paths:
       - "vendedoria/**"
