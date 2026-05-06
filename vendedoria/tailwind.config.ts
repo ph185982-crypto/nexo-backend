@@ -69,8 +69,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "var(--font-inter)", "system-ui", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
+        sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        mono: ["ui-monospace", "monospace"],
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
