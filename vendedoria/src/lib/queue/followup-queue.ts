@@ -80,6 +80,10 @@ function getQueue(): Queue<FollowUpJobData> | null {
     },
   });
 
+  followUpQueue.on("error", (err: Error) => {
+    console.error("[FollowUpQueue] Queue error:", err.message);
+  });
+
   return followUpQueue;
 }
 
@@ -202,6 +206,10 @@ export function startFollowUpWorker(): void {
 
   worker.on("failed", (job: Job<FollowUpJobData> | undefined, err: Error) => {
     console.error(`[FollowUpWorker] Job ${job?.id ?? "unknown"} failed:`, err.message);
+  });
+
+  worker.on("error", (err: Error) => {
+    console.error("[FollowUpWorker] Worker error:", err.message);
   });
 
   workerStarted = true;

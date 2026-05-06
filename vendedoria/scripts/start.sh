@@ -1,25 +1,13 @@
 #!/bin/sh
-# Sem set -e global: DB temporariamente indisponível não derruba o container
 
-echo "=== [1/3] Applying database schema ==="
-MAX_TRIES=10
-WAIT=6
-i=1
-while [ $i -le $MAX_TRIES ]; do
-  if node_modules/.bin/prisma db push --accept-data-loss 2>&1; then
-    echo "DB schema push OK"
-    break
-  fi
-  echo "Attempt $i/$MAX_TRIES failed. Retrying in ${WAIT}s..."
-  i=$((i + 1))
-  sleep $WAIT
-done
-if [ $i -gt $MAX_TRIES ]; then
-  echo "WARNING: DB push falhou apos $MAX_TRIES tentativas — iniciando app mesmo assim"
-fi
+echo "=== Nexo Vendas — Starting ==="
 
-echo "=== [2/3] Running seed ==="
-node prisma/seed.js && echo "Seed OK" || echo "Seed skipped (already seeded or DB unavailable)"
+# Run DB migrations in background so Render health check passes immediately.
+# Workers verify DB state before processing, so late migration is safe.
+echo "[start] Running prisma db push in background..."
+(node_modules/.bin/prisma db push --accept-data-loss 2>&1 && \
+  echo "[start] DB schema OK" && \
+  node prisma/seed.js 2>&1 && echo "[start] Seed OK" || echo "[start] Seed skipped") &
 
-echo "=== [3/3] Starting Nexo Vendas ==="
+echo "[start] Starting server..."
 exec node server.js
