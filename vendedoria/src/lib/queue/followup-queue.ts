@@ -135,6 +135,9 @@ export async function cancelFollowUpJobs(conversationId: string): Promise<void> 
   }
 }
 
+/** Alias for cancelFollowUpJobs — used by the webhook route */
+export const cancelFollowUpsForConversation = cancelFollowUpJobs;
+
 // ── Worker: processa jobs de follow-up ───────────────────────────────────────
 let workerStarted = false;
 

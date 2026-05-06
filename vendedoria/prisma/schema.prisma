@@ -134,27 +134,35 @@ model AgentScriptVersion {
 // ─── Agent Config Version History ─────────────────────────────────────────
 
 model AgentConfigVersion {
-  id                  String   @id @default(cuid())
-  agentId             String
-  agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  systemPrompt        String?  @db.Text
-  aiProvider          String?
-  aiModel             String?
-  nivelVenda          String   @default("medio")
-  usarEmoji           Boolean  @default(true)
-  usarReticencias     Boolean  @default(true)
-  escalationThreshold Int      @default(3)
-  tomDeVoz            String   @default("sincero")
-  arquetipoIA         String?
-  objetivoVenda       String   @default("fechar_venda")
-  nivelUrgencia       Int      @default(3)
-  matrizObjecoes      Json     @default("[]")
-  restricoes          Json     @default("[]")
+  id                   String   @id @default(cuid())
+  agentId              String?
+  agent                Agent?   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  version              Int      @default(1)
+  isActive             Boolean  @default(false)
+  changeNote           String?
+  systemPrompt         String?  @db.Text
+  aiProvider           String?
+  aiModel              String?
+  nivelVenda           String   @default("medio")
+  usarEmoji            Boolean  @default(true)
+  usarReticencias      Boolean  @default(true)
+  escalationThreshold  Int      @default(3)
+  tomDeVoz             String   @default("sincero")
+  arquetipoIA          String?
+  objetivoVenda        String   @default("fechar_venda")
+  nivelUrgencia        Int      @default(3)
+  matrizObjecoes       Json     @default("[]")
+  restricoes           Json     @default("[]")
   followUpIntervalos        Json     @default("[4,24,48,72]")
   followUpMaxTentativas     Int      @default(4)
-  savedBy             String?
-  label               String?
-  createdAt           DateTime @default(now())
+  personalitySnapshot  Json     @default("[]")
+  strategySnapshot     Json     @default("[]")
+  constraintsSnapshot  Json     @default("[]")
+  objectionsSnapshot   Json     @default("[]")
+  followUpSnapshot     Json     @default("{}")
+  savedBy              String?
+  label                String?
+  createdAt            DateTime @default(now())
 
   @@index([agentId, createdAt])
 }
@@ -162,28 +170,32 @@ model AgentConfigVersion {
 // ─── Legacy AgentConfig (singleton — global agent settings) ───────────────
 
 model AgentConfig {
-  id                 String   @id @default(cuid())
-  agentName          String   @default("Pedro")
-  bastaoNumber       String   @default("5562984465388")
-  currentPrompt      String   @default("") @db.Text
-  promptVersion      Int      @default(1)
-  followUpHours      String   @default("4,24,48,72")
-  followUpPrompt     String?  @db.Text
-  maxFollowUps       Int      @default(4)
-  deliveryWeekStart  Int      @default(9)
-  deliveryWeekEnd    Int      @default(18)
-  deliverySatStart   Int      @default(8)
-  deliverySatEnd     Int      @default(13)
-  deliveryArea       String   @default("")
-  escalationThreshold Int     @default(3)
-  aiProvider         String?
-  aiModel            String?
-  autoPassagem       Boolean  @default(true)
-  autoMedia          Boolean  @default(true)
-  escalacaoAtiva     Boolean  @default(true)
-  promptHistory      AgentPromptHistory[]
-  updatedAt          DateTime @updatedAt
-  createdAt          DateTime @default(now())
+  id                   String              @id @default(cuid())
+  agentName            String              @default("Pedro")
+  bastaoNumber         String              @default("5562984465388")
+  currentPrompt        String              @default("") @db.Text
+  promptVersion        Int                 @default(1)
+  followUpHours        String              @default("4,24,48,72")
+  followUpPrompt       String?             @db.Text
+  maxFollowUps         Int                 @default(4)
+  deliveryWeekStart    Int                 @default(9)
+  deliveryWeekEnd      Int                 @default(18)
+  deliverySatStart     Int                 @default(8)
+  deliverySatEnd       Int                 @default(13)
+  deliveryArea         String              @default("")
+  escalationThreshold  Int                 @default(3)
+  aiProvider           String?
+  aiModel              String?
+  autoPassagem         Boolean             @default(true)
+  autoMedia            Boolean             @default(true)
+  escalacaoAtiva       Boolean             @default(true)
+  personalityProfileId String?
+  personalityProfile   PersonalityProfile? @relation(fields: [personalityProfileId], references: [id])
+  strategyProfileId    String?
+  strategyProfile      StrategyProfile?    @relation(fields: [strategyProfileId], references: [id])
+  promptHistory        AgentPromptHistory[]
+  updatedAt            DateTime            @updatedAt
+  createdAt            DateTime            @default(now())
 }
 
 model AgentPromptHistory {
@@ -191,6 +203,7 @@ model AgentPromptHistory {
   agentConfigId String
   agentConfig   AgentConfig @relation(fields: [agentConfigId], references: [id], onDelete: Cascade)
   content       String      @db.Text
+  version       Int         @default(1)
   savedBy       String?
   createdAt     DateTime    @default(now())
 
@@ -231,6 +244,7 @@ model Lead {
   activities     LeadActivity[]
   escalations    LeadEscalation[]
   tags           LeadTag[]
+  notes          LeadNote[]
   calendarEvents CalendarEvent[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -580,7 +594,9 @@ model DecisionLog {
   conversationId String
   conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
   action         String               // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
+  targetState    String?
   reason         String?              @db.Text
+  reasoning      String?              @db.Text
   metadata       Json?
   createdAt      DateTime             @default(now())
 
@@ -598,4 +614,124 @@ model WebhookQueue {
   error       String?  @db.Text
   createdAt   DateTime @default(now())
   retryAfter  DateTime @default(now())
+}
+
+// ─── Lead Notes ────────────────────────────────────────────────────────────────
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId, createdAt])
+}
+
+// ─── Push Subscriptions ────────────────────────────────────────────────────────
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
+
+// ─── Personality Profiles (AI Command Center) ─────────────────────────────────
+
+model PersonalityProfile {
+  id          String        @id @default(cuid())
+  name        String
+  tone        String        @db.Text
+  archetype   String
+  emoji       String        @default("👤")
+  isActive    Boolean       @default(true)
+  agentConfig AgentConfig[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ─── Strategy Profiles (AI Command Center) ────────────────────────────────────
+
+model StrategyProfile {
+  id          String        @id @default(cuid())
+  name        String
+  description String        @db.Text
+  salesGoal   String
+  urgency     String        @default("medium") // low | medium | high
+  isActive    Boolean       @default(true)
+  agentConfig AgentConfig[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ─── Objection Rules (AI Command Center) ──────────────────────────────────────
+
+model ObjectionRule {
+  id               String   @id @default(cuid())
+  keyword          String
+  objectionType    String   // PRICE | COMPETITOR | TIMING | DISINTEREST | TRUST | FEATURE
+  responseStrategy String   @db.Text
+  counterArgument  String   @db.Text
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ─── Constraint Rules (AI Command Center) ─────────────────────────────────────
+
+model ConstraintRule {
+  id        String   @id @default(cuid())
+  title     String
+  rule      String   @db.Text
+  reason    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Produto (Portuguese catalog — legacy feed importer) ──────────────────────
+
+model Produto {
+  id                 String        @id @default(cuid())
+  nome               String
+  slug               String        @unique
+  precoCusto         Float         @default(0)
+  precoVenda         Float
+  precoDesconto      Float
+  parcelamento       Float         @default(0)
+  fotoUrl            String?
+  descricao          String?       @db.Text
+  categoria          String?
+  ativo              Boolean       @default(true)
+  ehFerramenta       Boolean       @default(true)
+  importadoEm        DateTime      @default(now())
+  atualizadoEm       DateTime      @updatedAt
+  ultimaOfertaEm     DateTime?
+  vezesUsadoEmOferta Int           @default(0)
+  ofertas            OfertaGerada[]
+}
+
+// ─── Oferta Gerada ─────────────────────────────────────────────────────────────
+
+model OfertaGerada {
+  id                  String    @id @default(cuid())
+  produtoId           String
+  produto             Produto   @relation(fields: [produtoId], references: [id])
+  nomeProduto         String
+  precoCusto          Float
+  precoVenda          Float
+  precoDesconto       Float
+  parcelamento        Float
+  fotoOriginalUrl     String?
+  artePath            String?
+  textoOferta         String    @db.Text
+  status              String    @default("PRONTA") // PRONTA | ENVIADA | FALHA
+  enviadaParaWhatsApp Boolean   @default(false)
+  enviadaEm           DateTime?
+  criadaEm            DateTime  @default(now())
+
+  @@index([produtoId, criadaEm])
 }

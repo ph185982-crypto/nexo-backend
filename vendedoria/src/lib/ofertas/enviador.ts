@@ -49,7 +49,7 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
       precoVenda: produto.precoVenda,
       precoDesconto: produto.precoDesconto,
       parcelamento: produto.parcelamento,
-      fotoUrl: produto.fotoUrl,
+      fotoUrl: produto.fotoUrl ?? "",
     });
 
     // 4. Upload art to Cloudinary (needed for public URL to send via WhatsApp)

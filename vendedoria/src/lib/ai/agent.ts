@@ -959,7 +959,7 @@ export async function processAIResponse(
       humanTakeover: !!(conversation as typeof conversation & { humanTakeover?: boolean }).humanTakeover,
       foraAreaEntrega: conversation.foraAreaEntrega,
       isOptOut: /\[OPT_OUT\]/i.test(recentMessages.map((m) => m.content).join(" ")),
-      hardEscalation,
+      hardEscalation: !!hardEscalation.shouldEscalate,
       hasIntentoBuy: temIntencaoCompra,
       isFirstInteraction,
       allDataCollected: dadosCompletos,

@@ -7,7 +7,7 @@ export interface ProdutoSelecionado {
   precoVenda: number;
   precoDesconto: number;
   parcelamento: number;
-  fotoUrl: string;
+  fotoUrl: string | null;
   vezesUsadoEmOferta: number;
   ultimaOfertaEm: Date | null;
 }
