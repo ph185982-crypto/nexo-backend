@@ -1,63 +1,17 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendWhatsAppLocation, sendWhatsAppTyping } from "@/lib/whatsapp/send";
-import { sendPushToAll } from "@/lib/push/notificar";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendTypingIndicator } from "@/lib/whatsapp/send";
+import { productSourcingService } from "@/lib/ai/product-sourcing";
+import { decisionService } from "@/lib/ai/decision";
+import { promptCompiler } from "@/lib/ai/prompt-compiler";
+import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 
-// ─── AgentConfig DB cache (60s TTL) ──────────────────────────────────────────
-type DBAgentConfig = {
-  currentPrompt: string;
-  agentName: string;
-  bastaoNumber: string;
-  deliveryWeekStart: number;
-  deliveryWeekEnd: number;
-  deliverySatStart: number;
-  deliverySatEnd: number;
-  maxFollowUps: number;
-  followUpHours: string;
-  followUpPrompt: string | null;
-  deliveryArea: string;
-  autoPassagem: boolean;
-  autoMedia: boolean;
-  escalacaoAtiva: boolean;
-};
-let _dbConfigCache: DBAgentConfig | null = null;
-let _dbConfigExpiry = 0;
-
-async function getDBAgentConfig(): Promise<DBAgentConfig | null> {
-  if (_dbConfigCache && Date.now() < _dbConfigExpiry) return _dbConfigCache;
-  try {
-    const cfg = await prisma.agentConfig.findFirst();
-    if (cfg) {
-      _dbConfigCache = {
-        currentPrompt: cfg.currentPrompt,
-        agentName: cfg.agentName,
-        bastaoNumber: cfg.bastaoNumber,
-        deliveryWeekStart: cfg.deliveryWeekStart,
-        deliveryWeekEnd: cfg.deliveryWeekEnd,
-        deliverySatStart: cfg.deliverySatStart,
-        deliverySatEnd: cfg.deliverySatEnd,
-        maxFollowUps: cfg.maxFollowUps,
-        followUpHours: cfg.followUpHours,
-        followUpPrompt: (cfg as typeof cfg & { followUpPrompt?: string | null }).followUpPrompt ?? null,
-        deliveryArea: cfg.deliveryArea,
-        autoPassagem: (cfg as typeof cfg & { autoPassagem?: boolean }).autoPassagem ?? true,
-        autoMedia: (cfg as typeof cfg & { autoMedia?: boolean }).autoMedia ?? true,
-        escalacaoAtiva: (cfg as typeof cfg & { escalacaoAtiva?: boolean }).escalacaoAtiva ?? true,
-      };
-      _dbConfigExpiry = Date.now() + 60_000; // 60s cache
-      return _dbConfigCache;
-    }
-  } catch (e) {
-    console.warn("[AI Agent] Falha ao carregar AgentConfig do banco:", e);
-  }
-  return null;
-}
-
-// Converte "4,24,48,72" em array de milissegundos — fallback para padrão se inválido
-function parseFollowUpIntervals(hoursStr: string): number[] {
-  const parsed = hoursStr.split(",").map((h) => parseFloat(h.trim())).filter((h) => !isNaN(h) && h > 0);
-  if (parsed.length === 0) return [4, 24, 48, 72].map((h) => h * 3600_000);
-  return parsed.map((h) => h * 3600_000);
-}
+// ─── Follow-up intervals ─────────────────────────────────────────────────────
+const FOLLOWUP_INTERVALS_MS = [
+  4  * 60 * 60 * 1000,  // step 1 — 4h
+  24 * 60 * 60 * 1000,  // step 2 — 24h
+  48 * 60 * 60 * 1000,  // step 3 — 48h
+  72 * 60 * 60 * 1000,  // step 4 — 72h
+];
 
 interface AgentConfig {
   id: string;
@@ -104,23 +58,13 @@ interface CollectedData {
   nome?: string;
 }
 
-function extractCollectedData(
-  messages: Array<{ role: string; content: string }>,
-  localizacaoRecebidaDB = false,
-): CollectedData {
+function extractCollectedData(messages: Array<{ role: string; content: string }>): CollectedData {
   const data: CollectedData = {};
   const allText = messages.map((m) => m.content).join("\n").toLowerCase();
 
   // ── Localização ───────────────────────────────────────────────────────────
-  // DB flag (localizacaoRecebida) is the authoritative source — set when client sends WhatsApp pin.
-  // Text extraction below is a fallback for typed addresses.
-  if (localizacaoRecebidaDB) {
-    // Location was already received — mark both fields so AI never asks again
-    const locMsg = messages.find((m) => /\[Localiza[çc][aã]o\s+recebida\]/.test(m.content) || /lat:[-\d.]+\s+lng:[-\d.]+/.test(m.content));
-    data.localizacao = locMsg?.content ?? "[Localização recebida via WhatsApp]";
-    data.endereco = data.localizacao;
-  }
-
+  // Detecta: pin nativo WhatsApp, qualquer link Maps, CEP, texto com rua/av
+  // UMA VEZ DETECTADA, nunca mais pedir — coloca em AMBOS localizacao e endereco
   const locMsg = messages.find((m) =>
     /\[Localiza[çc][aã]o\s+recebida\]/.test(m.content) ||         // pin nativo
     /lat:[-\d.]+\s+lng:[-\d.]+/.test(m.content) ||                 // coordenadas
@@ -274,9 +218,10 @@ function detectHardEscalation(
   return { shouldEscalate: false, reason: "" };
 }
 
-// ── Detecção de área de entrega — usa deliveryArea do DB ────────────────────
+// ── CORREÇÃO 2: Detecção de área de entrega ──────────────────────────────────
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
-function detectForaDeArea(message: string, deliveryArea = ""): boolean {
+// Não dispara por menção casual de cidade em contexto de uso do produto.
+function detectForaDeArea(message: string): boolean {
   const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const norm = n(message);
 
@@ -284,13 +229,11 @@ function detectForaDeArea(message: string, deliveryArea = ""): boolean {
   const temContextoLocal = /\b(sou de|sou do|sou da|sou la de|sou la|moro em|fico em|estou em|to de|minha cidade|vivo em|resido em|meu bairro|minha regiao|na minha cidade)\b/.test(norm);
   if (!temContextoLocal) return false;
 
-  // Cidades da área de entrega vêm do DB — se mencionadas, não rejeitar
-  if (deliveryArea) {
-    const cities = deliveryArea.split(",").map((c) => n(c.trim())).filter(Boolean);
-    if (cities.some((city) => norm.includes(city))) return false;
-  }
+  // Cidades da área de entrega — se mencionadas, não rejeitar
+  const dentroArea = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
+  if (dentroArea) return false;
 
-  // Estados fora de Goiás — fallback estático
+  // Estados fora de Goiás — por nome completo normalizado
   const foraEstado = /\b(acre|alagoas|amapa|amazonas|bahia|ceara|distrito federal|espirito santo|maranhao|mato grosso do sul|mato grosso|minas gerais|paraiba|parana|pernambuco|piaui|rio de janeiro|rio grande do norte|rio grande do sul|rondonia|roraima|santa catarina|sao paulo|sergipe|tocantins)\b/.test(norm);
   if (foraEstado) return true;
 
@@ -356,14 +299,9 @@ function getSaoPauloTime(): { hour: number; minute: number; dayOfWeek: number } 
   return { hour, minute, dayOfWeek };
 }
 
-function isBusinessHours(
-  hour: number,
-  dayOfWeek: number,
-  weekStart = 9, weekEnd = 18,
-  satStart = 8,  satEnd = 13,
-): boolean {
-  if (dayOfWeek >= 1 && dayOfWeek <= 5) return hour >= weekStart && hour < weekEnd;
-  if (dayOfWeek === 6) return hour >= satStart && hour < satEnd;
+function isBusinessHours(hour: number, dayOfWeek: number): boolean {
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) return hour >= 9 && hour < 18; // Seg-Sex 9-18h
+  if (dayOfWeek === 6) return hour >= 8 && hour < 13;                   // Sáb 8-13h
   return false;
 }
 
@@ -395,8 +333,7 @@ function countPriceObjectionAttempts(messages: Array<{ role: string; content: st
   return Math.min(aiResponsesAfterObjection.length, 5);
 }
 
-// ── Contexto técnico injetado no prompt — apenas dados e flags, sem comportamento ──
-// Tudo que dita TOM, ESTILO ou ESTRATÉGIA deve vir do roteiro configurado no SaaS.
+// ── Contexto de runtime injetado no prompt a cada chamada ────────────────────
 function buildRuntimeContext(
   leadState: LeadState,
   msgCount: number,
@@ -406,57 +343,230 @@ function buildRuntimeContext(
   recentMessages?: Array<{ role: string; content: string }>,
   activeProducts?: Array<{ id: string; name: string; imageUrl?: string | null; videoUrl?: string | null }>,
 ): string {
-  void aiConfig; void recentMessages; // behavioral settings come from user's configured prompt
+  const { hour, dayOfWeek } = getSaoPauloTime();
+  const greeting = saudacao(); // usa fuso America/Sao_Paulo — nunca "bom dia" à meia-noite
+  const emoji    = aiConfig?.usarEmoji !== false;
+  const nivel    = aiConfig?.nivelVenda ?? "medio";
+  const dentroDoExpediente = isBusinessHours(hour, dayOfWeek);
 
-  // Collected data restrictions are prepended BEFORE the user's prompt (see restricoesBlock).
-  // Avoid repeating them here to prevent overloading the context window.
-  const dadosColetados = "";
+  const entregaHoje = dentroDoExpediente
+    ? "entrega pode ser HOJE — confirmar horário com o cliente"
+    : "fora do expediente (seg-sex 9-18h, sáb 8-13h) — ofereça agendar para o próximo dia útil";
 
-  // ── Estágio e flags de mídia disponíveis ─────────────────────────────────
-  const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-  const dadosFaltando: string[] = [];
-  if (!temLocal)                dadosFaltando.push("localização/endereço");
-  if (!collectedData.horario)   dadosFaltando.push("horário de recebimento");
-  if (!collectedData.pagamento) dadosFaltando.push("forma de pagamento");
-  if (!collectedData.nome)      dadosFaltando.push("nome do recebedor");
+  // ── Dados já coletados (não perguntar de novo) ──────────────────────────────
+  const coletados: string[] = [];
+  if (collectedData.localizacao) {
+    coletados.push(`✅ LOCALIZAÇÃO RECEBIDA: "${collectedData.localizacao.substring(0, 100)}" — PROIBIDO pedir localização de novo`);
+  }
+  if (collectedData.endereco && collectedData.endereco !== collectedData.localizacao) {
+    coletados.push(`✅ Endereço confirmado: ${collectedData.endereco.substring(0, 80)}`);
+  }
+  if (collectedData.pagamento)   coletados.push(`✅ Pagamento: ${collectedData.pagamento}`);
+  if (collectedData.horario)     coletados.push(`✅ Horário: ${collectedData.horario}`);
+  if (collectedData.nome)        coletados.push(`✅ Nome: ${collectedData.nome}`);
+  const dadosColetados = coletados.length > 0
+    ? `\nDADOS JÁ COLETADOS — NÃO PERGUNTAR DE NOVO:\n${coletados.join("\n")}`
+    : "";
 
-  const mediaFlags = (activeProducts ?? [])
-    .filter(p => p.imageUrl || p.videoUrl)
-    .map(p => {
-      const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-      return `[FOTO_${s}]${p.videoUrl ? ` [VIDEO_${s}]` : ""}`;
-    }).join(" | ");
+  // ── Tentativas de quebra de objeção de preço já feitas ──────────────────────
+  const priceAttempts = recentMessages ? countPriceObjectionAttempts(recentMessages) : 0;
+  // Informa à IA quantas tentativas de objeção de preço já foram feitas
+  // mas NUNCA sugere escalar — escalada por preço está completamente removida
+  const priceInfo = priceAttempts > 0
+    ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra. ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). Varie o argumento.` : "Já tentou bastante. Tente um ângulo diferente — benefício, praticidade, entrega. NUNCA escale por preço."}`
+    : "";
 
-  let estagio: string;
+  // ── Etapa da conversa ────────────────────────────────────────────────────────
+  let etapa: string;
+
   if (isFirstInteraction) {
-    estagio = `ESTÁGIO: primeiro contato (msg ${msgCount})`;
-  } else if (leadState.tipo === "quente" && dadosFaltando.length === 0) {
-    estagio = `ESTÁGIO: todos os dados coletados → emita [PASSAGEM]`;
+    // Monta flags reais dos produtos com mídia para o LLM usar
+    const mediaFlags = (activeProducts ?? [])
+      .filter(p => p.imageUrl || p.videoUrl)
+      .map(p => {
+        const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+        return `[FOTO_${s}]${p.videoUrl ? ` e [VIDEO_${s}]` : ""}`;
+      })
+      .join("  |  ");
+    const flagInstrucao = mediaFlags
+      ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})
+- ATENÇÃO: você DEVE colocar o flag exato (ex: [FOTO_LUATEK_48V]) em um balão separado — isso é o que dispara o envio. Nunca diga "vou te enviar fotos" sem o flag.`
+      : "- Descreva o produto em texto";
+    etapa = `ETAPA 1 — PRIMEIRO CONTATO:
+- Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
+- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Léo da Nexo em outro balão
+${flagInstrucao}
+- 2 benefícios curtos em balões separados
+- 1 pergunta de qualificação (ex: "pra que você vai usar?")
+- NÃO peça localização agora`;
   } else if (leadState.tipo === "quente") {
-    estagio = `ESTÁGIO: coletando dados — falta: ${dadosFaltando.join(", ")}`;
+    // Verificar quais dados faltam
+    // Localização OU endereço é suficiente — não pedir os dois
+    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
+    const falta: string[] = [];
+    if (!temLocal)                falta.push("localização (pin 📍 ou texto: rua, bairro, CEP)");
+    if (!collectedData.horario)   falta.push("até que horas pode receber");
+    if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
+    if (!collectedData.nome)      falta.push("nome de quem vai receber");
+
+    if (falta.length === 0) {
+      etapa = `ETAPA 4 — FECHAR PEDIDO: você tem todos os dados. Emita [PASSAGEM] com os dados coletados e confirme ao cliente: "perfeito, pedido encaminhado! 🙌"`;
+    } else {
+      etapa = `ETAPA 4 — COLETAR DADOS (lead confirmou compra):
+Dado que falta agora (1 por vez, não pergunte tudo de uma vez): ${falta[0]}
+${falta.length > 1 ? `(depois ainda faltará: ${falta.slice(1).join(", ")})` : ""}
+${entregaHoje}
+NÃO repita dados já coletados acima.`;
+    }
+  } else if (msgCount <= 4 || leadState.tipo === "curioso") {
+    etapa = `ETAPA 2 — QUALIFICAR E APRESENTAR:
+- Se ainda não enviou mídia: inclua [FOTO_SLUG] e [VIDEO_SLUG] agora
+- Entenda o uso do produto (faça 1 pergunta)
+- Apresente 1-2 diferenciais relevantes para o uso dele
+- NÃO peça localização`;
+  } else if (leadState.tipo === "interessado" || msgCount <= 8) {
+    etapa = `ETAPA 3 — CONVERTER:
+- Reforce "só paga quando chegar na sua mão, sem risco"
+- Use prova social: "aqui em Goiânia tô mandando bastante essa semana"
+- Pergunte diretamente: "posso separar uma pra você?" ou "bora fechar?"
+- Se ainda não enviou vídeo: inclua [VIDEO_SLUG] agora
+- NÃO peça localização ainda`;
+  } else if (leadState.tipo === "frio") {
+    etapa = `ETAPA 3 — REENGAJAR:
+- Use escassez natural: "essa tá acabando" ou "tenho poucas unidades"
+- Remova objeção de preço: "e você só paga na entrega, sem risco"
+- Inclua [FOTO_SLUG] se ainda não enviou`;
   } else {
-    estagio = `ESTÁGIO: ${leadState.tipo} | ${msgCount} msgs`;
+    etapa = `ETAPA 3 — AVANÇAR: responda a dúvida e empurre suavemente para o fechamento. Se não enviou mídia, inclua agora.`;
   }
 
+  const nivelInstr: Record<string, string> = {
+    leve:      "Responda e deixe o cliente conduzir.",
+    medio:     "Conduza naturalmente. Após responder, avance um passo.",
+    agressivo: "Conduza ativamente. Use urgência com naturalidade.",
+  };
+
   return [
-    `\n\n--- CONTEXTO DO SISTEMA (técnico) ---`,
-    estagio,
-    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    `\n\n--- RUNTIME ---`,
+    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente aberto" : "🔴 Fora do expediente"}`,
+    `Entrega: ${entregaHoje}`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    `Emoji: ${emoji ? "SIM (máx 1/msg, não em toda msg)" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
     dadosColetados,
+    priceInfo,
+    ``,
+    etapa,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
-    `{"mensagens": ["msg 1", "msg 2"], "delays": [0, 1200]}`,
-    `• Flags de mídia: inclua [FOTO_SLUG] ou [VIDEO_SLUG] como item separado no array "mensagens"`,
-    `--- FIM CONTEXTO ---`,
+    `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
+    `• Cada balão = 1 frase curta (1-2 linhas)`,
+    `• delays em ms entre balões (600-2000ms, simule digitação humana)`,
+    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array (substitua SLUG pelo slug do produto)`,
+    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" "Conforme" — fale como pessoa real`,
+    `--- FIM RUNTIME ---`,
   ].filter(Boolean).join("\n");
 }
 
-// ── Prompt padrão quando nenhum roteiro foi configurado na plataforma ─────────
-const DEFAULT_SYSTEM_PROMPT = `Configure o roteiro de vendas desta IA no painel "Agente IA" da plataforma.
-Enquanto não houver roteiro configurado, responda de forma genérica e cordial.
+// ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
+const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil em Goiânia. Você tem 28 anos, é direto, bem-humorado na medida certa e sabe muito sobre ferramentas. Você não é um assistente — você é um vendedor que gosta do que faz e conhece o produto na palma da mão.
+Você nunca usa frases prontas. Cada mensagem sua é escrita na hora, pensando naquele cliente específico, naquele momento específico da conversa.
 
-FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:
-{"mensagens": ["balão 1", "balão 2"], "delays": [0, 1500]}`;
+━━━ PERSONALIDADE ━━━
+
+Você é confiante sem ser chato. Quando o cliente hesita, você não empurra — você entende e contorna. Você faz o cliente sentir que está falando com alguém que realmente quer ajudar, não com um sistema automático. Você tem bom humor leve — uma comparação engraçada aqui, uma observação esperta ali — mas sabe a hora de ser sério.
+
+━━━ COMO VOCÊ ESCREVE ━━━
+
+Mensagens curtas. Sempre divide em vários balões. Nunca manda textão.
+Minúsculas na maior parte do tempo. Sem formalidade.
+Pontuação informal. Reticências às vezes. Nada de ponto final em todo parágrafo.
+Emojis com muita moderação — só quando reforça algo, não como decoração.
+Erros leves ocasionais são naturais — "pra", "tá", "né", "to", "vc"
+NUNCA use: "certamente", "claro", "com certeza", "fico feliz", "posso ajudá-lo", "prezado", "conforme", "segue"
+Quando o cliente manda 2 mensagens seguidas, responde só a mais importante.
+
+━━━ COMO VOCÊ LÊ O CLIENTE ━━━
+
+Antes de responder, você analisa:
+- Como ele escreve (formal, informal, gíria, direto, enrolado)
+- O que ele demonstrou sentir (empolgado, desconfiado, com pressa, curioso)
+- O que ele já disse antes na conversa — e usa isso
+- Qual objeção ele já deu — você NUNCA repete argumento que já não funcionou
+
+Você ajusta seu jeito de falar para espelhar o cliente. Com mecânico que escreve curto e direto, você é curto e direto. Com alguém mais animado, você anima junto. Com alguém desconfiado, você fica mais sério e objetivo.
+
+━━━ PRODUTOS ━━━
+
+BOMVINK 21V — R$549,99 à vista ou 10x no cartão
+Motor Brushless (dura 2x mais que motor comum), 2 baterias 21V 4000mAh, torque 350Nm aperto / 400Nm desaperto, 46 peças incluídas na maleta, luz LED, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
+→ Quando o cliente menciona "21v" ou "bomvink" → esse é o produto dele.
+
+LUATEK 48V — R$529,99 à vista ou 10x no cartão
+2 baterias 48V, torque 380Nm aperto / 420Nm desaperto, kit com 7 soquetes do 17 ao 22 de meia polegada, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
+→ Quando o cliente menciona "48v" ou "luatek" → esse é o produto dele.
+
+Pagamento aceito: dinheiro, Pix, cartão de crédito em até 10x na entrega. Boleto não.
+Entrega: Goiânia e região. Pagamento só na entrega.
+Horário de entrega: seg–sex 9h–18h, sábado 8h–13h. Fora desse horário agenda pro próximo dia útil.
+
+━━━ O QUE VOCÊ PRECISA ALCANÇAR EM CADA ETAPA — mas sem frases fixas, com suas próprias palavras ━━━
+
+Etapa 1 — Abertura: se apresentar de forma natural, identificar o produto pelo que o cliente escreveu, já mandar o vídeo + foto sem o cliente precisar pedir.
+Etapa 2 — Conexão: fazer uma pergunta que mostre interesse real no uso que ele vai dar. Não é interrogatório — é curiosidade genuína. "pra que você vai usar mais?" dito de formas diferentes sempre.
+Etapa 3 — Apresentação: falar de 2 ou 3 benefícios que fazem sentido pro perfil dele. Se é mecânico, foca no torque e na durabilidade. Se é uso em casa, foca na praticidade e no kit completo. Não lista tudo — escolhe o que importa pra aquele cliente.
+Etapa 4 — Micro-compromisso: antes de fechar, conseguir que o cliente concorde com pelo menos uma coisa. Uma pergunta que a resposta natural é sim.
+Etapa 5 — Fechamento: quando sentir que o cliente está pronto, fechar com naturalidade. Não é "vamos fechar?" — é "então bora, me passa o endereço".
+Etapa 6 — Coleta de dados: pegar os 4 dados em conversa natural, um de cada vez, sem parecer formulário:
+  1. endereço completo
+  2. até que horas pode receber
+  3. forma de pagamento
+  4. nome de quem vai receber
+
+Etapa 7 — Resumo: enviar para 62984465388 neste formato:
+🔔 PEDIDO — NEXO
+Produto:
+Nome:
+Endereço:
+Receber até:
+Pagamento:
+WhatsApp do cliente:
+
+━━━ OBJEÇÕES — você tenta de formas diferentes, nunca repete o mesmo argumento ━━━
+
+"tá caro":
+  → tente em ordem: parcelamento / comparação com ferragem / risco zero pagar na entrega / valor do kit completo / urgência de estoque
+  → NUNCA escala por preço — continue tentando enquanto o cliente estiver respondendo
+
+"preciso pensar":
+  → descobre o que está travando. "o que tá segurando?"
+  → Se não responder o que é, pergunta diretamente se é o preço ou outra coisa.
+
+"não conheço a marca":
+  → usa o argumento do risco zero. Pagar na entrega elimina qualquer risco de comprar de desconhecido.
+
+━━━ IMPORTANTE: VOCÊ NÃO DECIDE QUANDO ESCALAR ━━━
+
+Escalada é controlada pelo sistema, não por você.
+Você NUNCA deve emitir [ESCALAR] na sua resposta.
+Continue a conversa sempre, independente de quantas mensagens já foram trocadas ou quantas objeções de preço o cliente fez.
+A única coisa que encerra uma conversa é: pedido fechado [PASSAGEM] ou cliente pediu pra não ser contactado [OPT_OUT].
+
+━━━ FOLLOW-UP quando cliente para de responder ━━━
+4h → toca leve, pergunta se ficou dúvida
+24h → traz um benefício novo que não mencionou antes
+48h → usa prova social, alguém que comprou recentemente
+72h → encerra com porta aberta, sem pressão
+Após 4 sem resposta → PERDA, para de contatar.
+
+━━━ FLAGS — REGRAS CRÍTICAS ━━━
+NUNCA escreva "vou te enviar fotos", "mando as fotos agora" ou similar SEM incluir o flag correspondente.
+O sistema SOMENTE envia fotos/vídeo quando o flag aparece na resposta. Se você prometer mas não incluir o flag, a foto nunca chega.
+Sempre que quiser enviar mídia, coloque o flag na mesma resposta, em um balão separado (ex: "[FOTO_LUATEK_48V]").
+
+[OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
+[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real do catálogo)
+[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
+[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -474,7 +584,6 @@ export async function processAIResponse(
       prisma.whatsappConversation.findUnique({
         where: { id: conversationId },
         include: { provider: true, lead: true },
-        // localizacaoRecebida is a top-level scalar — always included automatically
       }),
     ]);
 
@@ -488,15 +597,46 @@ export async function processAIResponse(
       return;
     }
 
-    // ── Área de entrega ───────────────────────────────────────────────────────
+    // ── CORREÇÃO 2: Área de entrega ───────────────────────────────────────────
     if (conversation.foraAreaEntrega) {
       console.log(`[AI Agent] foraAreaEntrega=true — ignorando mensagem para conv ${conversationId}`);
       return;
     }
 
-    const dbCfgEarly = await getDBAgentConfig();
-    if (detectForaDeArea(userMessage, dbCfgEarly?.deliveryArea ?? "")) {
-      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — deixando IA pedir CEP: "${userMessage}"`);
+    if (detectForaDeArea(userMessage)) {
+      const to = conversation.customerWhatsappBusinessId;
+      const token = conversation.provider.accessToken ?? undefined;
+      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId}: "${userMessage}"`);
+
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅",
+        token,
+      ).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1400));
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊",
+        token,
+      ).catch(() => {});
+
+      const rejectionNow = new Date();
+      await prisma.whatsappMessage.createMany({
+        data: [
+          { content: "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅", type: "TEXT", role: "ASSISTANT", sentAt: rejectionNow, status: "SENT", conversationId },
+          { content: "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(rejectionNow.getTime() + 1400), status: "SENT", conversationId },
+        ],
+      }).catch(() => {});
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { foraAreaEntrega: true, etapa: "PERDIDO", lastMessageAt: rejectionNow },
+      }).catch(() => {});
+      await prisma.conversationFollowUp.updateMany({
+        where: { conversationId, status: "ACTIVE" },
+        data: { status: "DONE" },
+      }).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
+      return;
     }
 
     // ── CORREÇÃO 3: Silêncio pós-confirmação ──────────────────────────────────
@@ -560,8 +700,7 @@ export async function processAIResponse(
 
     // ── Hard escalation check (antes do LLM, garante escalada mesmo que a IA erre) ──
     console.log(`[ESCALATION-TRACE] v2 | Conv ${conversationId} | Msgs no histórico: ${msgCount} | Msg recebida: "${userMessage}" | Lead status: ${lead?.status ?? "null"}`);
-    const escalacaoAtiva = dbCfgEarly?.escalacaoAtiva ?? true;
-    const hardEscalation = (!temIntencaoCompra && escalacaoAtiva)
+    const hardEscalation = !temIntencaoCompra
       ? detectHardEscalation(
           userMessage,
           recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
@@ -597,8 +736,16 @@ export async function processAIResponse(
       return;
     }
 
-    // ── Carregar AiConfig ─────────────────────────────────────────────────────
+    // ── Carregar AiConfig (completo — inclui campos do Command Center) ────────
     const aiConfig = await prisma.aiConfig.findUnique({ where: { organizationId: orgId } }).catch(() => null);
+
+    // ── ProductSourcingService — detecta produto na msg e busca dados reais ───
+    const detectedProducts = await productSourcingService
+      .detectAndFetch(userMessage, orgId)
+      .catch(() => []);
+    if (detectedProducts.length > 0) {
+      console.log(`[AI Agent] ProductSourcing detectou ${detectedProducts.length} produto(s): ${detectedProducts.map(p => p.name).join(", ")}`);
+    }
 
     // ── Produtos ativos ───────────────────────────────────────────────────────
     const activeProducts = await prisma.product.findMany({
@@ -606,9 +753,9 @@ export async function processAIResponse(
       orderBy: { createdAt: "asc" },
     });
 
-    // ── Envio de mídia no primeiro contato (controlado por autoMedia no SaaS) ──
+    // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
     // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
-    // antes da IA responder.
+    // antes da IA responder. Não depende de flag — sempre funciona.
     const appUrlEarly = (
       process.env.NEXTAUTH_URL ??
       process.env.NEXT_PUBLIC_APP_URL ??
@@ -625,9 +772,8 @@ export async function processAIResponse(
       }
       return url;
     };
-    const autoMedia = dbCfgEarly?.autoMedia ?? true;
     const msgLower = userMessage.toLowerCase();
-    if (isFirstInteraction && autoMedia) {
+    if (isFirstInteraction) {
       const productsWithMediaEarly = await prisma.product.findMany({
         where: { organizationId: orgId, isActive: true },
         select: { id: true, name: true, imageUrl: true, imageUrls: true, videoUrl: true },
@@ -710,43 +856,21 @@ export async function processAIResponse(
     ].join("\n") : "";
 
     // ── Montar prompt final ───────────────────────────────────────────────────
-    // Priority: 1) AgentConfig.currentPrompt (DB, 60s cache)  2) agent.systemPrompt  3) DEFAULT
-    const dbCfg = dbCfgEarly ?? await getDBAgentConfig();
-    const basePrompt = dbCfg?.currentPrompt ?? agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-
-    // Extrai dados já coletados — usa localizacaoRecebida do DB como sinal definitivo
-    const localizacaoRecebidaDB = (conversation as typeof conversation & { localizacaoRecebida?: boolean }).localizacaoRecebida ?? false;
+    const basePrompt = agent.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
+    // Extrai dados já coletados para evitar perguntar de novo
     const collectedData = extractCollectedData(
-      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
-      localizacaoRecebidaDB,
+      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
     );
 
-    // Bloco de restrições gerado ANTES do prompt do usuário para ter precedência máxima.
-    // Cobre dados que já foram fornecidos e NÃO devem ser solicitados de novo.
-    const restricoes: string[] = [];
-    if (collectedData.localizacao || localizacaoRecebidaDB) {
-      restricoes.push("⛔ LOCALIZAÇÃO/ENDEREÇO — o cliente já enviou. NÃO peça de novo.");
-    }
-    if (collectedData.pagamento) restricoes.push(`⛔ FORMA DE PAGAMENTO — já informada (${collectedData.pagamento}). NÃO peça de novo.`);
-    if (collectedData.horario)   restricoes.push(`⛔ HORÁRIO — já informado. NÃO peça de novo.`);
-    if (collectedData.nome)      restricoes.push(`⛔ NOME — já informado (${collectedData.nome}). NÃO peça de novo.`);
-    const restricoesBlock = restricoes.length > 0
-      ? `⚠️ DADOS JÁ COLETADOS — PROIBIDO SOLICITAR NOVAMENTE:\n${restricoes.join("\n")}\n\n`
-      : "";
-
-    // ── Passagem automática quando todos os dados estão coletados ──
-    // Controlada por autoPassagem no SaaS — pode ser desligada por completo.
-    const autoPassagem = dbCfg?.autoPassagem ?? true;
+    // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
     const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
-    const resumoJaEnviado = (conversation as typeof conversation & { resumoEnviado?: boolean }).resumoEnviado ?? false;
-    const etapaJaConfirmada = conversation.etapa === "PEDIDO_CONFIRMADO";
-    const passagemJaFeita = resumoJaEnviado || etapaJaConfirmada || recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
-    if (autoPassagem && dadosCompletos && !passagemJaFeita) {
+    const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
+    if (dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
-      const ownerNumber = dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const to          = conversation.customerWhatsappBusinessId;
       const token       = conversation.provider.accessToken ?? undefined;
 
@@ -766,25 +890,22 @@ export async function processAIResponse(
         `🗺️ *Localização:* ${collectedData.localizacao ?? "não enviada"}\n` +
         `⏰ *Receber até:* ${collectedData.horario}\n` +
         `💳 *Pagamento:* ${collectedData.pagamento}\n` +
-        `📱 *WhatsApp:* https://wa.me/${to}\n` +
+        `📱 *WhatsApp cliente:* ${to}\n\n` +
         `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
         `_Organizar entrega e encaminhar motoboy._`;
 
-      // DB + push always fire, regardless of WhatsApp delivery status
-      await prisma.ownerNotification.create({
-        data: { type: "ORDER", title: `🎉 Pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
-      }).catch(() => {});
-      await sendPushToAll({ title: `🔔 Pedido novo: ${clientName}`, body: handoffMsg.slice(0, 120), url: `/crm/conversations?id=${conversationId}`, tag: `order-${conversationId}` }).catch(() => {});
-      await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
-      await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
-
-      // WhatsApp to owner — text summary + location pin (if available)
+      // Tenta enviar — retry 30s → 2min se falhar
       const enviarPassagem = async (tentativa = 1) => {
         try {
           await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
-          console.log(`[AI Agent] PASSAGEM WhatsApp enviada com sucesso (tentativa ${tentativa})`);
+          await prisma.ownerNotification.create({
+            data: { type: "ORDER", title: `🎉 Pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
+          }).catch(() => {});
+          await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
+          await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
+          console.log(`[AI Agent] PASSAGEM enviada com sucesso (tentativa ${tentativa})`);
         } catch (e) {
-          console.error(`[AI Agent] PASSAGEM WhatsApp falhou tentativa ${tentativa}:`, e);
+          console.error(`[AI Agent] PASSAGEM falhou tentativa ${tentativa}:`, e);
           if (tentativa === 1) {
             setTimeout(() => enviarPassagem(2), 30_000);
           } else if (tentativa === 2) {
@@ -793,24 +914,6 @@ export async function processAIResponse(
         }
       };
       await enviarPassagem();
-
-      // Forward client's location as a real WhatsApp location pin to owner
-      const locText = collectedData.localizacao ?? "";
-      const coordMatch = locText.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/i);
-      if (coordMatch) {
-        const lat = parseFloat(coordMatch[1]);
-        const lng = parseFloat(coordMatch[2]);
-        const addrMatch = locText.match(/endereço:\s*(.+?)(?:\s*\||\s*ponto:|$)/i);
-        const addr = addrMatch?.[1]?.trim() ?? "Localização do cliente";
-        await sendWhatsAppLocation(
-          conversation.provider.businessPhoneNumberId,
-          ownerNumber,
-          lat, lng,
-          `📍 ${collectedData.nome ?? "Cliente"}`,
-          addr,
-          token
-        ).catch(() => {});
-      }
 
       // Confirma ao cliente
       await sendWhatsAppMessage(
@@ -832,12 +935,13 @@ export async function processAIResponse(
       await prisma.whatsappMessage.create({ data: { content: "pedido confirmado! 🎉", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
       await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date(), etapa: "PEDIDO_CONFIRMADO" } }).catch(() => {});
       await prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "DONE" } }).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
       return; // não chamar LLM — pedido já encerrado
     }
 
     // ── Sandbox mode (após passagem — passagem sempre dispara, sandbox só bloqueia IA) ──
     if (agent.sandboxMode) {
-      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
       if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
         console.log(`[AI Agent] Sandbox mode — skipping AI for ${customerNum}`);
@@ -845,13 +949,61 @@ export async function processAIResponse(
       }
     }
 
-    const runtimeCtx = buildRuntimeContext(
-      leadState, msgCount, isFirstInteraction, aiConfig, collectedData,
-      recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+    // ── DecisionService: decide a ação e loga ─────────────────────────────────
+    const decisionCtx = {
+      conversationId,
+      userMessage,
+      messageCount: msgCount,
+      leadStatus: lead?.status ?? "OPEN",
+      etapa: conversation.etapa,
+      humanTakeover: !!(conversation as typeof conversation & { humanTakeover?: boolean }).humanTakeover,
+      foraAreaEntrega: conversation.foraAreaEntrega,
+      isOptOut: /\[OPT_OUT\]/i.test(recentMessages.map((m) => m.content).join(" ")),
+      hardEscalation,
+      hasIntentoBuy: temIntencaoCompra,
+      isFirstInteraction,
+      allDataCollected: dadosCompletos,
+    };
+    const decision = decisionService.decide(decisionCtx);
+    void decisionService.log(decisionCtx, decision); // fire-and-forget
+    console.log(`[DecisionService] Conv ${conversationId} → ${decision.action}: ${decision.reason}`);
+
+    if (decision.action === "WAIT" || decision.action === "CLOSE") {
+      return;
+    }
+
+    // ── PromptCompiler: monta systemPrompt em 6 camadas ──────────────────────
+    const now_sp = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+
+    // Build full aiConfig layer including Command Center fields
+    const aiConfigLayer = aiConfig ? {
+      usarEmoji:            aiConfig.usarEmoji,
+      usarReticencias:      aiConfig.usarReticencias,
+      nivelVenda:           aiConfig.nivelVenda,
+      tomDeVoz:             aiConfig.tomDeVoz,
+      arquetipoIA:          aiConfig.arquetipoIA,
+      objetivoVenda:        aiConfig.objetivoVenda,
+      nivelUrgencia:        aiConfig.nivelUrgencia,
+      matrizObjecoes:       Array.isArray(aiConfig.matrizObjecoes) ? (aiConfig.matrizObjecoes as unknown as import("@/lib/ai/prompt-compiler").ObjecaoEntry[]) : [],
+      restricoes:           Array.isArray(aiConfig.restricoes)     ? (aiConfig.restricoes as string[]) : [],
+      followUpIntervalos:   Array.isArray(aiConfig.followUpIntervalos) ? (aiConfig.followUpIntervalos as number[]) : [4,24,48,72],
+      followUpMaxTentativas: aiConfig.followUpMaxTentativas,
+    } : null;
+
+    const compiled = promptCompiler.compile({
+      basePersonaPrompt: basePrompt,
+      aiConfig: aiConfigLayer,
       activeProducts,
-    );
-    // restricoesBlock comes FIRST so it overrides any "ask for X" in the user's prompt
-    const systemPromptFinal = restricoesBlock + basePrompt + productSection + leadContext + runtimeCtx;
+      businessHours: { hour: now_sp.getHours(), dayOfWeek: now_sp.getDay() },
+      collectedData,
+      recentMessages: recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content })),
+      leadState,
+      messageCount: msgCount,
+      isFirstInteraction,
+      etapa: conversation.etapa,
+      detectedProducts, // Camada 5 — catálogo real
+    });
+    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
@@ -876,8 +1028,6 @@ export async function processAIResponse(
       m.replace(/^\[ESCALAR\]\s*/i, "")
         .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
         .replace(/\[OPT_OUT\]/gi, "")
-        .replace(/\[AGENDAR:\d{2}\/\d{2}(?:\/\d{4})?\]/gi, "")
-        .replace(/\[CEP_CLIENTE:\d{5,8}\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -901,6 +1051,7 @@ export async function processAIResponse(
         prisma.lead.update({ where: { id: conversation.leadId }, data: { status: "BLOCKED" } }),
         prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "OPT_OUT" } }),
       ]);
+      await cancelFollowUpJobs(conversationId).catch(() => {});
     }
 
     // ── [PASSAGEM] ────────────────────────────────────────────────────────────
@@ -917,7 +1068,7 @@ export async function processAIResponse(
         const handoffMsg =
           `*🔔 PEDIDO NOVO — NEXO BRASIL*\n\n` +
           `👤 *Cliente:* ${clientName}\n` +
-          `📱 *WhatsApp:* https://wa.me/${to}\n` +
+          `📱 *WhatsApp:* ${to}\n` +
           `📦 *Produto:* ${produtoStr}\n` +
           `📍 *Localização:* ${orderData.localizacao ?? "não enviada"}\n` +
           `🏠 *Endereço:* ${orderData.endereco ?? "?"}\n` +
@@ -925,76 +1076,23 @@ export async function processAIResponse(
           `🕐 *Recebe até:* ${orderData.horario ?? "?"}\n` +
           `🙍 *Nome recebedor:* ${orderData.nome ?? clientName}\n\n` +
           `_Organize a entrega e encaminhe o motoboy._`;
-        const ownerNumber = dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+        const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
         await prisma.ownerNotification.create({
           data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
         }).catch(() => {});
-        await sendPushToAll({ title: `🔔 Pedido novo: ${clientName}`, body: handoffMsg.slice(0, 120), url: `/crm/conversations?id=${conversationId}`, tag: `order-${conversationId}` }).catch(() => {});
-        // Marca conversa como pedido confirmado, seta resumoEnviado e cancela follow-ups
+        // Marca conversa como pedido confirmado e cancela follow-ups
         await prisma.whatsappConversation.update({
           where: { id: conversationId },
-          data: { etapa: "PEDIDO_CONFIRMADO", resumoEnviado: true },
+          data: { etapa: "PEDIDO_CONFIRMADO" },
         }).catch(() => {});
         await prisma.conversationFollowUp.updateMany({
           where: { conversationId, status: "ACTIVE" },
           data: { status: "DONE" },
         }).catch(() => {});
-        console.log(`[AI Agent] [PASSAGEM] via IA processada e resumoEnviado=true marcado`);
+        await cancelFollowUpJobs(conversationId).catch(() => {});
       } catch (e) { console.error("[AI Agent] PASSAGEM parse error:", e); }
-    }
-
-    // ── [AGENDAR:DD/MM/AAAA] ─────────────────────────────────────────────────
-    // Cliente pediu pra ser contactado em data específica → agenda follow-up para essa data
-    let agendarDate: Date | null = null;
-    const agendarMatch = combinedRaw.match(/\[AGENDAR:(\d{2})\/(\d{2})(?:\/(\d{4}))?\]/i);
-    if (agendarMatch) {
-      const day   = parseInt(agendarMatch[1], 10);
-      const month = parseInt(agendarMatch[2], 10) - 1; // 0-indexed
-      const year  = agendarMatch[3] ? parseInt(agendarMatch[3], 10) : now.getFullYear();
-      agendarDate = new Date(year, month, day, 9, 0, 0); // 9h do dia agendado
-      // Se a data já passou, usa o próximo ano (safety guard)
-      if (agendarDate <= now) agendarDate.setFullYear(agendarDate.getFullYear() + 1);
-      console.log(`[AI Agent] [AGENDAR] follow-up agendado para ${agendarDate.toISOString()} | conv ${conversationId}`);
-    }
-
-    // ── [CEP_CLIENTE:XXXXXXXX] ────────────────────────────────────────────────
-    // Cliente de fora de Goiânia informou o CEP → notifica Pedro, ativa humanTakeover
-    const cepMatch = combinedRaw.match(/\[CEP_CLIENTE:(\d{5,8})\]/i);
-    if (cepMatch) {
-      const cep        = cepMatch[1];
-      const clientName = lead?.profileName ?? "Cliente";
-      const cepMsg =
-        `*📦 FRETE CORREIOS — NEXO BRASIL*\n\n` +
-        `👤 *Cliente:* ${clientName}\n` +
-        `📱 *WhatsApp:* ${to}\n` +
-        `📮 *CEP:* ${cep}\n\n` +
-        `_Cliente de fora de Goiânia quer comprar via Correios. Calcule o frete e entre em contato com ele._`;
-      const ownerNumber = dbCfg?.bastaoNumber ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
-      await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, cepMsg, token)
-        .catch((e) => console.error("[AI Agent] CEP notification failed:", e));
-      await prisma.ownerNotification.create({
-        data: {
-          type: "ORDER",
-          title: `CEP para frete Correios: ${clientName} — ${cep}`,
-          body: cepMsg,
-          organizationId: orgId,
-          leadId: conversation.leadId,
-          conversationId,
-        },
-      }).catch(() => {});
-      // Marca humanTakeover: Pedro assume a conversa, IA para de responder
-      await prisma.whatsappConversation.update({
-        where: { id: conversationId },
-        data: { humanTakeover: true },
-      }).catch(() => {});
-      // Cancela follow-ups automáticos — Pedro entra em contato diretamente
-      await prisma.conversationFollowUp.updateMany({
-        where: { conversationId, status: "ACTIVE" },
-        data: { status: "DONE" },
-      }).catch(() => {});
-      console.log(`[AI Agent] [CEP_CLIENTE] CEP=${cep} | humanTakeover ativado para conv ${conversationId}`);
     }
 
     // ── [ESCALAR] soft trigger — DESATIVADO temporariamente ─────────────────
@@ -1015,18 +1113,24 @@ export async function processAIResponse(
       // NÃO chama handleEscalation — IA não pode escalar sozinha agora
     }
 
-    // ── Typing indicator + delay ─────────────────────────────────────────────
+    // ── Simular digitação antes da 1ª mensagem ────────────────────────────────
     if (incomingMessageId && provider.businessPhoneNumberId) {
-      // Send typing indicator (shows "digitando..." to the client)
-      await sendWhatsAppTyping(provider.businessPhoneNumberId, incomingMessageId, conversation.customerWhatsappBusinessId, token);
-      // Natural delay proportional to response length
-      await simulateTypingDelay(provider.businessPhoneNumberId, incomingMessageId, mensagens.join(" "), token);
+      await simulateTypingDelay(provider.businessPhoneNumberId, incomingMessageId, mensagens[0] ?? mensagens.join(" "), to, token);
     }
 
-    // ── Enviar mensagens com delays individuais ───────────────────────────────
+    // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
+      // Para bolhas 2+ mostra "digitando..." proporcional ao tamanho do texto
+      if (i > 0) {
+        const interDelay = Math.min(Math.max(mensagens[i].length * 25, 1200), 5000);
+        await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
+      }
+
       const delayMs = delays[i] ?? 0;
-      if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
+      if (delayMs > 0 && i > 0) {
+        // delay already covered by typing indicator above — skip extra wait
+      }
+
       const msgNow = new Date();
       await prisma.whatsappMessage.create({
         data: { content: mensagens[i], type: "TEXT", role: "ASSISTANT", sentAt: msgNow, status: "SENT", conversationId },
@@ -1145,37 +1249,27 @@ export async function processAIResponse(
       }
     }
 
-    // ── Agendar follow-up ─────────────────────────────────────────────────────
-    // Pula se: pedido confirmado, perdido, fora da área, fechado, bloqueado, ou CEP (Pedro assume)
+    // ── Agendar follow-up (só se não confirmado/perdido/fora de área) ──────────
     const skipFollowup =
       conversation.etapa === "PEDIDO_CONFIRMADO" ||
       conversation.etapa === "PERDIDO" ||
       conversation.foraAreaEntrega ||
       lead?.status === "CLOSED" ||
-      lead?.status === "BLOCKED" ||
-      cepMatch !== null; // Pedro assume — sem follow-up automático
-
+      lead?.status === "BLOCKED";
     if (!skipFollowup) {
-      if (agendarDate) {
-        // Cliente pediu data específica → agenda para essa data (não manda antes)
-        await prisma.conversationFollowUp.upsert({
-          where: { conversationId },
-          update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: agendarDate, leadName: lead?.profileName ?? null },
-          create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: agendarDate, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
-        });
-        console.log(`[AI Agent] Follow-up agendado para data solicitada: ${agendarDate.toISOString()}`);
-      } else {
-        // Follow-up padrão: primeiro intervalo configurado no SaaS (padrão 4h)
-        const intervals = parseFollowUpIntervals(dbCfg?.followUpHours ?? "4,24,48,72");
-        const nextSendAt = new Date(now.getTime() + intervals[0]);
-        await prisma.conversationFollowUp.upsert({
-          where: { conversationId },
-          update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
-          create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
-        });
-      }
+      const nextSendAt = new Date(now.getTime() + FOLLOWUP_INTERVALS_MS[0]);
+      const fu = await prisma.conversationFollowUp.upsert({
+        where: { conversationId },
+        update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null },
+        create: { conversationId, step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead?.profileName ?? null, phoneNumber: to, phoneNumberId: provider.businessPhoneNumberId, accessToken: provider.accessToken },
+      });
+      // Cancela jobs antigos e agenda o step 1 no BullMQ (complementa o cron)
+      await cancelFollowUpJobs(conversationId).catch(() => {});
+      await enqueueFollowUp(fu.id, conversationId, 1, to, provider.businessPhoneNumberId, lead?.profileName ?? null, provider.accessToken ?? null, now).catch(() => {});
     } else {
-      console.log(`[AI Agent] Follow-up não agendado — etapa: ${conversation.etapa} | foraAreaEntrega: ${conversation.foraAreaEntrega} | lead: ${lead?.status} | cep: ${cepMatch !== null}`);
+      console.log(`[AI Agent] Follow-up não agendado — etapa: ${conversation.etapa} | foraAreaEntrega: ${conversation.foraAreaEntrega} | lead: ${lead?.status}`);
+      // Cancela jobs pendentes quando a conversa é encerrada
+      await cancelFollowUpJobs(conversationId).catch(() => {});
     }
 
   } catch (error) {

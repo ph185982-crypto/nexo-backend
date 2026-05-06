@@ -113,6 +113,7 @@ model Agent {
   escalationThreshold      Int      @default(3)
   orgHierarchyNode         OrgHierarchyItem?
   scriptVersions           AgentScriptVersion[]
+  configVersions           AgentConfigVersion[]
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 }
@@ -126,6 +127,34 @@ model AgentScriptVersion {
   content   String   @db.Text
   savedBy   String?  // user name or "configurador"
   createdAt DateTime @default(now())
+
+  @@index([agentId, createdAt])
+}
+
+// ─── Agent Config Version History ─────────────────────────────────────────
+
+model AgentConfigVersion {
+  id                  String   @id @default(cuid())
+  agentId             String
+  agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  systemPrompt        String?  @db.Text
+  aiProvider          String?
+  aiModel             String?
+  nivelVenda          String   @default("medio")
+  usarEmoji           Boolean  @default(true)
+  usarReticencias     Boolean  @default(true)
+  escalationThreshold Int      @default(3)
+  tomDeVoz            String   @default("sincero")
+  arquetipoIA         String?
+  objetivoVenda       String   @default("fechar_venda")
+  nivelUrgencia       Int      @default(3)
+  matrizObjecoes      Json     @default("[]")
+  restricoes          Json     @default("[]")
+  followUpIntervalos        Json     @default("[4,24,48,72]")
+  followUpMaxTentativas     Int      @default(4)
+  savedBy             String?
+  label               String?
+  createdAt           DateTime @default(now())
 
   @@index([agentId, createdAt])
 }
@@ -163,7 +192,6 @@ model Lead {
   conversations  WhatsappConversation[]
   activities     LeadActivity[]
   escalations    LeadEscalation[]
-  notes          LeadNote[]
   tags           LeadTag[]
   calendarEvents CalendarEvent[]
   createdAt      DateTime @default(now())
@@ -495,129 +523,30 @@ model AiConfig {
   organization    WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
   usarEmoji       Boolean  @default(true)
   usarReticencias Boolean  @default(true)
-  nivelVenda      String   @default("medio") // leve | medio | agressivo
+  nivelVenda      String   @default("medio")         // leve | medio | agressivo
+  tomDeVoz        String   @default("sincero")        // sincero | agressivo | consultivo
+  arquetipoIA     String?
+  objetivoVenda   String   @default("fechar_venda")   // fechar_venda | gerar_lead | qualificar
+  nivelUrgencia   Int      @default(3)                // 1-5
+  matrizObjecoes  Json     @default("[]")             // [{palavraChave, estrategia, exemplo}]
+  restricoes      Json     @default("[]")             // string[]
+  followUpIntervalos    Json     @default("[4,24,48,72]") // hours[]
+  followUpMaxTentativas Int      @default(4)
   updatedAt       DateTime @updatedAt
 }
 
-// ─── Agent Config (singleton — configuração global do agente Léo/Pedro) ───────
+// ─── Decision Log ─────────────────────────────────────────────────────────
 
-model AgentConfig {
-  id                String   @id @default(cuid())
-  agentName         String   @default("Pedro")
-  bastaoNumber      String   @default("5562984465388")
-  deliveryWeekStart Int      @default(9)
-  deliveryWeekEnd   Int      @default(18)
-  deliverySatStart  Int      @default(8)
-  deliverySatEnd    Int      @default(13)
-  maxFollowUps      Int      @default(4)
-  followUpHours     String   @default("4,24,48,72")
-  followUpPrompt    String?  @db.Text
-  deliveryArea      String   @default("Goiânia,Aparecida de Goiânia,Trindade,Senador Canedo,Goianira,Nerópolis,Hidrolândia,Abadia de Goiás,Aragoiânia,Guapó,Inhumas")
-  autoPassagem      Boolean  @default(true)
-  autoMedia         Boolean  @default(true)
-  escalacaoAtiva    Boolean  @default(true)
-  currentPrompt     String   @db.Text
-  promptVersion     Int      @default(1)
+model DecisionLog {
+  id             String               @id @default(cuid())
+  conversationId String
+  conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
+  action         String               // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
+  reason         String?              @db.Text
+  metadata       Json?
+  createdAt      DateTime             @default(now())
 
-  // ── Sprint 3: Prompt Compiler profiles ──────────────────────────────────────
-  personalityProfileId String?
-  personalityProfile   PersonalityProfile? @relation(fields: [personalityProfileId], references: [id], onDelete: SetNull)
-
-  strategyProfileId    String?
-  strategyProfile      StrategyProfile?    @relation(fields: [strategyProfileId], references: [id], onDelete: SetNull)
-
-  updatedAt         DateTime @updatedAt
-  createdAt         DateTime @default(now())
-}
-
-model AgentPromptHistory {
-  id        String   @id @default(cuid())
-  content   String   @db.Text
-  version   Int
-  savedBy   String   @default("Pedro")
-  createdAt DateTime @default(now())
-}
-
-// ─── AgentConfigVersion — immutable snapshot on every config change ──────────
-// Each write to personality/strategy/constraints/objections/followup creates a
-// new version. The PromptCompiler always reads the isActive=true version so a
-// running conversation is never interrupted by a mid-flight config change.
-
-model AgentConfigVersion {
-  id          String   @id @default(cuid())
-  version     Int                        // auto-increment within the config
-  isActive    Boolean  @default(false)   // only one row is true at a time
-  changeNote  String?                    // what changed (e.g. "personality updated")
-
-  // JSON snapshots of each layer at the time of save
-  personalitySnapshot  Json?  // PersonalityProfile fields
-  strategySnapshot     Json?  // StrategyProfile fields
-  constraintsSnapshot  Json?  // ConstraintRule[] array
-  objectionsSnapshot   Json?  // ObjectionRule[] array
-  followUpSnapshot     Json?  // maxFollowUps + followUpHours
-
-  createdAt   DateTime @default(now())
-
-  @@index([isActive])
-  @@index([version])
-}
-
-// ─── Prompt Compiler Layers (Sprint 3) ─────────────────────────────────────
-
-model PersonalityProfile {
-  id           String   @id @default(cuid())
-  name         String   @unique // "Formal", "Agressivo", "Amigável", "Profissional"
-  tone         String   @db.Text
-  archetype    String   // Vendedor, Consultor, Amigo, Especialista
-  emoji        String   @default("📱")
-  isActive     Boolean  @default(true)
-  agentConfigs AgentConfig[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-model StrategyProfile {
-  id           String   @id @default(cuid())
-  name         String   @unique // "Venda Rápida", "Relacionamento", "Educacional"
-  description  String   @db.Text
-  salesGoal    String   // "Close imediato", "Lead qualificado", "Agendamento", "Contato"
-  urgency      String   @default("medium") // low, medium, high
-  isActive     Boolean  @default(true)
-  agentConfigs AgentConfig[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-model ConstraintRule {
-  id           String   @id @default(cuid())
-  title        String
-  rule         String   @db.Text // O que NÃO pode falar
-  reason       String?  @db.Text // Por que não pode
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-}
-
-model ObjectionRule {
-  id           String   @id @default(cuid())
-  keyword      String   @unique // "caro", "concorrente", "sem_interesse"
-  objectionType String   // PRICE, COMPETITOR, TIMING, DISINTEREST
-  responseStrategy String @db.Text // Como responder à objeção
-  counterArgument String  @db.Text // Argumento para contrapor
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([keyword])
-}
-
-// ─── Lead Notes ────────────────────────────────────────────────────────────────
-
-model LeadNote {
-  id        String   @id @default(cuid())
-  leadId    String
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  lead      Lead     @relation(fields: [leadId], references: [id])
+  @@index([conversationId, createdAt])
 }
 
 // ─── Webhook Retry Queue ────────────────────────────────────────────────────
@@ -631,71 +560,4 @@ model WebhookQueue {
   error       String?  @db.Text
   createdAt   DateTime @default(now())
   retryAfter  DateTime @default(now())
-}
-
-// ─── Produtos Fornecedor ────────────────────────────────────────────────────
-
-model Produto {
-  id                 String         @id @default(cuid())
-  nome               String
-  slug               String         @unique
-  precoCusto         Float
-  precoVenda         Float
-  precoDesconto      Float
-  parcelamento       Float
-  fotoUrl            String
-  descricao          String?        @db.Text
-  categoria          String?
-  ativo              Boolean        @default(true)
-  ehFerramenta       Boolean        @default(true)
-  importadoEm        DateTime       @default(now())
-  atualizadoEm       DateTime       @updatedAt
-  ultimaOfertaEm     DateTime?
-  vezesUsadoEmOferta Int            @default(0)
-  ofertas            OfertaGerada[]
-}
-
-// ─── Ofertas Geradas ────────────────────────────────────────────────────────
-
-model OfertaGerada {
-  id                  String    @id @default(cuid())
-  produtoId           String
-  nomeProduto         String
-  precoCusto          Float
-  precoVenda          Float
-  precoDesconto       Float
-  parcelamento        Float
-  fotoOriginalUrl     String
-  artePath            String
-  textoOferta         String    @db.Text
-  status              String    @default("PRONTA") // PRONTA | ENVIADA | FALHA
-  enviadaParaWhatsApp Boolean   @default(false)
-  enviadaEm           DateTime?
-  criadaEm            DateTime  @default(now())
-  produto             Produto   @relation(fields: [produtoId], references: [id])
-}
-
-// ─── PWA Push Subscriptions ────────────────────────────────────────────────
-
-model PushSubscription {
-  id        String   @id @default(cuid())
-  endpoint  String   @unique
-  p256dh    String
-  auth      String
-  criadaEm  DateTime @default(now())
-}
-
-// ─── Decision Log ──────────────────────────────────────────────────────────
-
-model DecisionLog {
-  id             String   @id @default(cuid())
-  conversationId String
-  conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
-  action         String   // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
-  targetState    String?  // next state for the lead (e.g., ENGAGED, OBJECTION)
-  reasoning      String   @db.Text
-  metadata       Json?    // additional context if needed
-  createdAt      DateTime @default(now())
-
-  @@index([conversationId, createdAt])
 }
