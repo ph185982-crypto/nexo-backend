@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 function urlBase64ToUint8Array(base64: string): Uint8Array {
   const padding = "=".repeat((4 - (base64.length % 4)) % 4);
@@ -9,56 +9,53 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
 
+async function subscribeAndSave(): Promise<boolean> {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const res = await fetch("/api/push/vapid-public-key");
+    if (!res.ok) return false;
+    const { publicKey } = await res.json() as { publicKey: string };
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly:      true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as ArrayBuffer,
+    });
+
+    const saved = await fetch("/api/push/subscribe", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(sub),
+    });
+    return saved.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function usePushNotifications() {
   const [permissao, setPermissao] = useState<NotificationPermission>("default");
   const [suportado, setSuportado] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setSuportado("serviceWorker" in navigator && "PushManager" in window);
-    if ("Notification" in window) {
-      setPermissao(Notification.permission);
-    }
-    // Register SW
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch((e) =>
-        console.warn("[SW] Registro falhou:", e)
-      );
-    }
+    const ok = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    setSuportado(ok);
+    if (ok) setPermissao(Notification.permission);
   }, []);
 
-  async function ativar(): Promise<void> {
-    if (!suportado) return;
-    try {
-      const perm = await Notification.requestPermission();
-      setPermissao(perm);
-      if (perm !== "granted") return;
+  // Re-subscribe silently if already granted (e.g. after SW update)
+  useEffect(() => {
+    if (!suportado || permissao !== "granted") return;
+    subscribeAndSave().catch(() => {});
+  }, [suportado, permissao]);
 
-      const reg = await navigator.serviceWorker.ready;
-
-      const res = await fetch("/api/push/vapid-public-key");
-      if (!res.ok) {
-        console.warn("[Push] VAPID public key não disponível");
-        return;
-      }
-      const { publicKey } = await res.json() as { publicKey: string };
-
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as ArrayBuffer,
-      });
-
-      await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub),
-      });
-
-      console.log("[Push] Notificações ativadas");
-    } catch (err) {
-      console.error("[Push] Erro ao ativar:", err);
-    }
-  }
+  const ativar = useCallback(async (): Promise<"granted" | "denied" | "default"> => {
+    if (!suportado) return "default";
+    const perm = await Notification.requestPermission();
+    setPermissao(perm);
+    if (perm === "granted") await subscribeAndSave();
+    return perm;
+  }, [suportado]);
 
   return { permissao, suportado, ativar };
 }

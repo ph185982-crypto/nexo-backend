@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth();
     const sub = await req.json() as {
       endpoint: string;
       keys: { p256dh: string; auth: string };
@@ -12,10 +14,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Subscription inválida" }, { status: 400 });
     }
 
+    const userAgent = req.headers.get("user-agent") ?? undefined;
+
     await prisma.pushSubscription.upsert({
       where: { endpoint: sub.endpoint },
-      create: { endpoint: sub.endpoint, p256dh: sub.keys.p256dh, auth: sub.keys.auth },
-      update: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
+      create: {
+        endpoint:  sub.endpoint,
+        p256dh:    sub.keys.p256dh,
+        auth:      sub.keys.auth,
+        userId:    session?.user?.id ?? null,
+        userAgent: userAgent ?? null,
+      },
+      update: {
+        p256dh:    sub.keys.p256dh,
+        auth:      sub.keys.auth,
+        userId:    session?.user?.id ?? null,
+        userAgent: userAgent ?? null,
+      },
     });
 
     return NextResponse.json({ ok: true });

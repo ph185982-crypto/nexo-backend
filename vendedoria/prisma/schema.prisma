@@ -19,6 +19,7 @@ model User {
   role          String    @default("ADMIN") // ADMIN | MANAGER | SELLER
   accounts      Account[]
   sessions      Session[]
+  pushSubscriptions PushSubscription[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -636,7 +637,11 @@ model PushSubscription {
   endpoint  String   @unique
   p256dh    String
   auth      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ─── Personality Profiles (AI Command Center) ─────────────────────────────────

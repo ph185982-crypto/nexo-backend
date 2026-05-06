@@ -5,26 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
-
-function PushBanner() {
-  const { permissao, suportado, ativar } = usePushNotifications();
-  if (!suportado || permissao !== "default") return null;
-
-  return (
-    <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-primary/10 border-b border-primary/20 text-sm flex-shrink-0">
-      <span className="text-foreground/80 text-xs">
-        Ative notificações para saber quando chegar mensagem
-      </span>
-      <button
-        onClick={ativar}
-        className="flex-shrink-0 px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
-      >
-        Ativar
-      </button>
-    </div>
-  );
-}
+import { NotificationPrompt } from "@/components/pwa/NotificationPrompt";
 
 function CRMLayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -57,12 +38,12 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onToggleSidebar={handleToggle} />
-        <PushBanner />
         <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-16 md:pb-0">
           {children}
         </main>
         <MobileTabBar />
       </div>
+      <NotificationPrompt />
     </div>
   );
 }

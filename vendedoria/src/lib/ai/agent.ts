@@ -4,6 +4,7 @@ import { productSourcingService } from "@/lib/ai/product-sourcing";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
 import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { notificarPassagem, notificarLeadQuente, notificarEscalacao } from "@/lib/push/notificar";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -728,6 +729,11 @@ export async function processAIResponse(
       }).catch(() => {});
 
       await handleEscalation(conversation.leadId, conversationId, hardEscalation.reason);
+      notificarEscalacao({
+        nomeCliente:    lead?.profileName ?? to,
+        motivo:         hardEscalation.reason,
+        conversationId,
+      }).catch(() => {});
       await sendWhatsAppMessage(
         conversation.provider.businessPhoneNumberId, to,
         "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊",
@@ -870,6 +876,13 @@ export async function processAIResponse(
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
+      notificarPassagem({
+        nomeCliente:    clientName,
+        produto:        produtoNome,
+        endereco:       collectedData.endereco ?? collectedData.localizacao ?? "não informado",
+        pagamento:      collectedData.pagamento ?? "não informado",
+        conversationId,
+      }).catch(() => {});
       const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const to          = conversation.customerWhatsappBusinessId;
       const token       = conversation.provider.accessToken ?? undefined;
@@ -1079,6 +1092,13 @@ export async function processAIResponse(
         const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
+        notificarPassagem({
+          nomeCliente:    clientName,
+          produto:        produtoStr,
+          endereco:       orderData.endereco ?? orderData.localizacao ?? "não informado",
+          pagamento:      orderData.pagamento ?? "não informado",
+          conversationId,
+        }).catch(() => {});
         await prisma.ownerNotification.create({
           data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
         }).catch(() => {});
@@ -1152,6 +1172,13 @@ export async function processAIResponse(
       data: { lastMessageAt: new Date(), ...(novaEtapa ? { etapa: novaEtapa } : {}) },
     });
     if (novaEtapa) console.log(`[AI Agent] etapa atualizada para "${novaEtapa}" | conv ${conversationId}`);
+    if (leadState.tipo === "quente" && novaEtapa === "COLETANDO_DADOS") {
+      notificarLeadQuente({
+        nomeCliente:    lead?.profileName ?? to,
+        mensagem:       userMessage,
+        conversationId,
+      }).catch(() => {});
+    }
 
     // ── Enviar fotos + vídeo do produto ───────────────────────────────────────
     // WhatsApp exige URLs HTTPS públicas — converte base64 para endpoint público
