@@ -197,24 +197,51 @@ function avatarColor(name: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
+/** Resolve WhatsApp raw media_id to proxy URL; pass through full URLs (Cloudinary etc.) */
+function resolveMedia(mediaUrl: string): string {
+  if (mediaUrl.startsWith("http://") || mediaUrl.startsWith("https://")) return mediaUrl;
+  return `/api/whatsapp/media/${mediaUrl}`;
+}
+
+function ContactCard({ content }: { content: string }) {
+  const nome   = content.match(/nome="([^"]+)"/)?.[1]  ?? "Contato";
+  const phones = content.match(/phones="([^"]+)"/)?.[1] ?? null;
+  const email  = content.match(/email="([^"]+)"/)?.[1]  ?? null;
+  const org    = content.match(/org="([^"]+)"/)?.[1]    ?? null;
+  return (
+    <div className="flex items-start gap-3 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 min-w-[200px] max-w-[260px]">
+      <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-base">👤</div>
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <span className="font-semibold text-sm truncate">{nome}</span>
+        {org    && <span className="text-xs opacity-60 truncate">{org}</span>}
+        {phones && <span className="text-xs opacity-70 truncate">📞 {phones}</span>}
+        {email  && <span className="text-xs opacity-70 truncate">✉️ {email}</span>}
+      </div>
+    </div>
+  );
+}
+
 function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (url: string) => void }) {
   if (msg.type === "IMAGE") {
-    if (msg.mediaUrl) return (
-      <img
-        src={msg.mediaUrl}
-        alt="imagem"
-        className="max-w-full rounded-xl cursor-pointer object-cover"
-        style={{ maxHeight: 240 }}
-        onClick={() => onImageClick?.(msg.mediaUrl!)}
-        loading="lazy"
-      />
-    );
+    if (msg.mediaUrl) {
+      const src = resolveMedia(msg.mediaUrl);
+      return (
+        <img
+          src={src}
+          alt="imagem"
+          className="max-w-full rounded-xl cursor-pointer object-cover"
+          style={{ maxHeight: 240 }}
+          onClick={() => onImageClick?.(src)}
+          loading="lazy"
+        />
+      );
+    }
     return <span className="flex items-center gap-1.5 italic opacity-80 text-sm"><ImageIcon className="w-4 h-4 shrink-0" /> Imagem</span>;
   }
   if (msg.type === "VIDEO") {
     if (msg.mediaUrl) return (
       <video
-        src={msg.mediaUrl}
+        src={resolveMedia(msg.mediaUrl)}
         controls
         playsInline
         className="max-w-full rounded-xl"
@@ -224,7 +251,7 @@ function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (u
     return <span className="flex items-center gap-1.5 italic opacity-80 text-sm"><Video className="w-4 h-4 shrink-0" /> Vídeo</span>;
   }
   if (msg.type === "AUDIO") {
-    if (msg.mediaUrl) return <AudioPlayer url={msg.mediaUrl} />;
+    if (msg.mediaUrl) return <AudioPlayer url={resolveMedia(msg.mediaUrl)} />;
     return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
   }
   if (msg.type === "LOCATION") {
@@ -233,14 +260,20 @@ function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (u
     const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null;
     const label = msg.content.match(/ponto:\s*([^|]+)/)?.[1]?.trim()
       ?? msg.content.match(/endereço:\s*([^|]+)/)?.[1]?.trim()
-      ?? "📍 Ver localização no mapa";
+      ?? null;
     return (
       <a href={mapsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
-        className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
-        <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
-        <span>{label}</span>
+        className="flex items-center gap-2 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-white/80 transition-colors min-w-[180px]">
+        <MapPin className="w-5 h-5 shrink-0 text-emerald-600" />
+        <div className="flex flex-col">
+          <span className="text-xs font-medium">{label ?? "Localização"}</span>
+          <span className="text-[10px] opacity-60 text-blue-600">Abrir no mapa →</span>
+        </div>
       </a>
     );
+  }
+  if (msg.content.startsWith("[CONTATO_CARD]")) {
+    return <ContactCard content={msg.content} />;
   }
   return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
 }

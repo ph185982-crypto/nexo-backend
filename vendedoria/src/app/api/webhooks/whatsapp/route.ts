@@ -240,9 +240,9 @@ async function handleIncomingMessage(
     }
   }
 
-  // Extract inbound media_id (image, video, document, sticker) for storage
+  // Extract inbound media_id (image, video, audio, document, sticker) for storage
   // We store the raw media_id — the proxy /api/whatsapp/media/[mediaId] serves it on demand
-  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
+  const inboundMediaId = message.audio?.id ?? message.voice?.id ?? message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
   const inboundCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
 
   if (inboundMediaId) {
