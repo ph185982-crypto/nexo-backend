@@ -79,8 +79,10 @@ export async function simulateTypingDelay(
   // Mark as read immediately — customer sees blue ticks showing agent engaged
   await markWhatsAppMessageRead(phoneNumberId, incomingMessageId, accessToken);
 
-  // Typing delay: ~25ms per character, clamped between 1.5s and 6s
-  const ms = Math.min(Math.max(responseText.length * 25, 1500), 6000);
+  // Typing delay: ~30ms per char + random jitter, clamped 1.5s–7s
+  const base = responseText.length * 30;
+  const jitter = Math.floor(Math.random() * 1000) - 500;
+  const ms = Math.min(Math.max(base + jitter, 1500), 7000);
   await sendTypingIndicator(phoneNumberId, to, ms, accessToken);
 }
 

@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
 import { InstallBanner } from "@/components/pwa/InstallBanner";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Nexo Vendas — CRM Inteligente para WhatsApp",
@@ -35,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={poppins.variable}
       suppressHydrationWarning
     >
       <head>

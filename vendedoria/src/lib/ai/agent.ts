@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendTypingIndicator } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, simulateTypingDelay, sendTypingIndicator, markWhatsAppMessageRead } from "@/lib/whatsapp/send";
 import { productSourcingService } from "@/lib/ai/product-sourcing";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
@@ -377,93 +377,45 @@ function buildRuntimeContext(
     ? `\nOBJEÇÃO DE PREÇO: você já fez ${priceAttempts} tentativa(s) de quebra. ${priceAttempts < 5 ? `Ainda tem ${5 - priceAttempts} tentativa(s). Varie o argumento.` : "Já tentou bastante. Tente um ângulo diferente — benefício, praticidade, entrega. NUNCA escale por preço."}`
     : "";
 
-  // ── Etapa da conversa ────────────────────────────────────────────────────────
-  let etapa: string;
+  // Flags de mídia disponíveis para o script usar
+  const mediaFlags = (activeProducts ?? [])
+    .filter((p) => p.imageUrl || p.videoUrl)
+    .map((p) => {
+      const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+      return `[FOTO_${s}]${p.videoUrl ? ` / [VIDEO_${s}]` : ""}`;
+    })
+    .join("  |  ");
 
-  if (isFirstInteraction) {
-    // Monta flags reais dos produtos com mídia para o LLM usar
-    const mediaFlags = (activeProducts ?? [])
-      .filter(p => p.imageUrl || p.videoUrl)
-      .map(p => {
-        const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        return `[FOTO_${s}]${p.videoUrl ? ` e [VIDEO_${s}]` : ""}`;
-      })
-      .join("  |  ");
-    const flagInstrucao = mediaFlags
-      ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})
-- ATENÇÃO: você DEVE colocar o flag exato (ex: [FOTO_LUATEK_48V]) em um balão separado — isso é o que dispara o envio. Nunca diga "vou te enviar fotos" sem o flag.`
-      : "- Descreva o produto em texto";
-    etapa = `ETAPA 1 — PRIMEIRO CONTATO:
-- Identifique o produto pela mensagem ("21v" ou "bomvink" = Bomvink 21V; "48v" ou "luatek" = Luatek 48V)
-- Cumprimente com "${greeting}" em 1 balão separado, apresente-se como Léo da Nexo em outro balão
-${flagInstrucao}
-- 2 benefícios curtos em balões separados
-- 1 pergunta de qualificação (ex: "pra que você vai usar?")
-- NÃO peça localização agora`;
-  } else if (leadState.tipo === "quente") {
-    // Verificar quais dados faltam
-    // Localização OU endereço é suficiente — não pedir os dois
+  // Dados pendentes de coleta (lead quente)
+  const faltaLinhas: string[] = [];
+  if (leadState.tipo === "quente") {
     const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    const falta: string[] = [];
-    if (!temLocal)                falta.push("localização (pin 📍 ou texto: rua, bairro, CEP)");
-    if (!collectedData.horario)   falta.push("até que horas pode receber");
-    if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
-    if (!collectedData.nome)      falta.push("nome de quem vai receber");
-
-    if (falta.length === 0) {
-      etapa = `ETAPA 4 — FECHAR PEDIDO: você tem todos os dados. Emita [PASSAGEM] com os dados coletados e confirme ao cliente: "perfeito, pedido encaminhado! 🙌"`;
-    } else {
-      etapa = `ETAPA 4 — COLETAR DADOS (lead confirmou compra):
-Dado que falta agora (1 por vez, não pergunte tudo de uma vez): ${falta[0]}
-${falta.length > 1 ? `(depois ainda faltará: ${falta.slice(1).join(", ")})` : ""}
-${entregaHoje}
-NÃO repita dados já coletados acima.`;
-    }
-  } else if (msgCount <= 4 || leadState.tipo === "curioso") {
-    etapa = `ETAPA 2 — QUALIFICAR E APRESENTAR:
-- Se ainda não enviou mídia: inclua [FOTO_SLUG] e [VIDEO_SLUG] agora
-- Entenda o uso do produto (faça 1 pergunta)
-- Apresente 1-2 diferenciais relevantes para o uso dele
-- NÃO peça localização`;
-  } else if (leadState.tipo === "interessado" || msgCount <= 8) {
-    etapa = `ETAPA 3 — CONVERTER:
-- Reforce "só paga quando chegar na sua mão, sem risco"
-- Use prova social: "aqui em Goiânia tô mandando bastante essa semana"
-- Pergunte diretamente: "posso separar uma pra você?" ou "bora fechar?"
-- Se ainda não enviou vídeo: inclua [VIDEO_SLUG] agora
-- NÃO peça localização ainda`;
-  } else if (leadState.tipo === "frio") {
-    etapa = `ETAPA 3 — REENGAJAR:
-- Use escassez natural: "essa tá acabando" ou "tenho poucas unidades"
-- Remova objeção de preço: "e você só paga na entrega, sem risco"
-- Inclua [FOTO_SLUG] se ainda não enviou`;
-  } else {
-    etapa = `ETAPA 3 — AVANÇAR: responda a dúvida e empurre suavemente para o fechamento. Se não enviou mídia, inclua agora.`;
+    if (!temLocal)                faltaLinhas.push("localização");
+    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
+    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
+    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
   }
 
-  const nivelInstr: Record<string, string> = {
-    leve:      "Responda e deixe o cliente conduzir.",
-    medio:     "Conduza naturalmente. Após responder, avance um passo.",
-    agressivo: "Conduza ativamente. Use urgência com naturalidade.",
-  };
-
   return [
-    `\n\n--- RUNTIME ---`,
-    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente aberto" : "🔴 Fora do expediente"}`,
-    `Entrega: ${entregaHoje}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"}`,
-    `Emoji: ${emoji ? "SIM (máx 1/msg, não em toda msg)" : "NÃO"} | Nível: ${nivelInstr[nivel] ?? nivelInstr.medio}`,
+    `\n\n--- CONTEXTO RUNTIME ---`,
+    `Hora SP: ${hour}h (${greeting}) | ${dentroDoExpediente ? "✅ Expediente" : "🔴 Fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${msgCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"}`,
+    `Emoji: ${emoji ? "SIM (máx 1/msg)" : "NÃO"}`,
+    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    faltaLinhas.length > 0
+      ? `⚠️ Lead quente — dados faltando (colete 1 por vez, não pergunte tudo junto): ${faltaLinhas.join(" → ")}`
+      : leadState.tipo === "quente"
+        ? `✅ Todos os dados coletados — emita [PASSAGEM].`
+        : "",
     dadosColetados,
     priceInfo,
-    ``,
-    etapa,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
     `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
     `• Cada balão = 1 frase curta (1-2 linhas)`,
-    `• delays em ms entre balões (600-2000ms, simule digitação humana)`,
-    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array (substitua SLUG pelo slug do produto)`,
-    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" "Conforme" — fale como pessoa real`,
+    `• delays em ms (600-2000ms)`,
+    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array`,
+    `• Sem "Claro!" "Ótimo!" "Entendido!" "Prezado" — fale como pessoa real`,
     `--- FIM RUNTIME ---`,
   ].filter(Boolean).join("\n");
 }
@@ -498,17 +450,9 @@ Você ajusta seu jeito de falar para espelhar o cliente. Com mecânico que escre
 
 ━━━ PRODUTOS ━━━
 
-BOMVINK 21V — R$549,99 à vista ou 10x no cartão
-Motor Brushless (dura 2x mais que motor comum), 2 baterias 21V 4000mAh, torque 350Nm aperto / 400Nm desaperto, 46 peças incluídas na maleta, luz LED, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
-→ Quando o cliente menciona "21v" ou "bomvink" → esse é o produto dele.
-
-LUATEK 48V — R$529,99 à vista ou 10x no cartão
-2 baterias 48V, torque 380Nm aperto / 420Nm desaperto, kit com 7 soquetes do 17 ao 22 de meia polegada, função furadeira e parafusadeira, 1 ano de garantia, nota fiscal.
-→ Quando o cliente menciona "48v" ou "luatek" → esse é o produto dele.
-
-Pagamento aceito: dinheiro, Pix, cartão de crédito em até 10x na entrega. Boleto não.
-Entrega: Goiânia e região. Pagamento só na entrega.
-Horário de entrega: seg–sex 9h–18h, sábado 8h–13h. Fora desse horário agenda pro próximo dia útil.
+Os dados exatos dos produtos (nome, preço, parcelas, descrição, fotos, vídeo) são injetados pelo sistema no CATÁLOGO abaixo — use sempre esses dados, nunca invente preços ou especificações.
+Para enviar mídia, coloque o flag exato ([FOTO_SLUG] ou [VIDEO_SLUG]) em um balão separado — o sistema só envia quando o flag aparece.
+Identifique qual produto o cliente quer pela mensagem dele e use o slug correspondente do catálogo.
 
 ━━━ O QUE VOCÊ PRECISA ALCANÇAR EM CADA ETAPA — mas sem frases fixas, com suas próprias palavras ━━━
 
@@ -677,6 +621,29 @@ export async function processAIResponse(
     const msgCount = recentMessages.length;
     const isFirstInteraction = recentMessages.filter((m) => m.role === "ASSISTANT").length === 0;
 
+    // ── Comportamento humano no primeiro contato ──────────────────────────────
+    // Lê imediatamente (check azul), depois espera ~2min antes de responder.
+    // Simula um vendedor real que viu a mensagem mas está terminando outro atendimento.
+    if (isFirstInteraction && incomingMessageId && conversation.provider.businessPhoneNumberId) {
+      await markWhatsAppMessageRead(
+        conversation.provider.businessPhoneNumberId,
+        incomingMessageId,
+        conversation.provider.accessToken ?? undefined,
+      ).catch(() => {});
+
+      const silentWait = 110_000 + Math.floor(Math.random() * 20_000); // 110-130 s
+      console.log(`[AI Agent] Primeiro contato — aguardando ${Math.round(silentWait / 1000)}s para conv ${conversationId}`);
+      await new Promise((r) => setTimeout(r, silentWait));
+
+      // Typing indicator nos últimos 8s antes de responder (cliente sente que estão digitando)
+      await sendTypingIndicator(
+        conversation.provider.businessPhoneNumberId,
+        conversation.customerWhatsappBusinessId,
+        8000,
+        conversation.provider.accessToken ?? undefined,
+      ).catch(() => {});
+    }
+
     // Quote the latest message if client sent 2+ in a row without reply
     let consecutiveUser = 0;
     for (const m of recentMessages) { if (m.role === "USER") consecutiveUser++; else break; }
@@ -786,11 +753,10 @@ export async function processAIResponse(
       });
       for (const prod of productsWithMediaEarly) {
         const nm = prod.name.toLowerCase();
+        const words = nm.split(/\s+/).filter((w) => w.length >= 3);
         const matchesByName = msgLower.includes(nm);
-        const matchesByKeyword =
-          (/21v|bomvink/.test(msgLower) && (nm.includes("21") || nm.includes("bomvink"))) ||
-          (/48v|luatek/.test(msgLower) && (nm.includes("48") || nm.includes("luatek")));
-        if (!matchesByName && !matchesByKeyword) continue;
+        const matchesByWords = words.some((w) => msgLower.includes(w));
+        if (!matchesByName && !matchesByWords) continue;
 
         console.log(`[AI Agent] FORCED first-contact media for "${prod.name}" | appUrlEarly="${appUrlEarly}"`);
         const imgs: string[] = (Array.isArray(prod.imageUrls) && prod.imageUrls.length > 0)
@@ -1140,15 +1106,15 @@ export async function processAIResponse(
 
     // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
-      // Para bolhas 2+ mostra "digitando..." proporcional ao tamanho do texto
       if (i > 0) {
-        const interDelay = Math.min(Math.max(mensagens[i].length * 25, 1200), 5000);
+        // Typing proporcional ao texto + jitter humano (±400ms) — mínimo 1.2s, máximo 4.5s
+        const base = mensagens[i].length * 30;
+        const jitter = Math.floor(Math.random() * 800) - 400;
+        const interDelay = Math.min(Math.max(base + jitter, 1200), 4500);
         await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
-      }
 
-      const delayMs = delays[i] ?? 0;
-      if (delayMs > 0 && i > 0) {
-        // delay already covered by typing indicator above — skip extra wait
+        // Pausa extra curta entre balões (100-400ms) — simula "send" real
+        await new Promise((r) => setTimeout(r, 100 + Math.floor(Math.random() * 300)));
       }
 
       const msgNow = new Date();

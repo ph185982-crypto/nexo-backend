@@ -266,7 +266,10 @@ function buildCatalogoLayer(products: ProductContext[]): string {
   ].join("\n\n");
 }
 
-// ── Camada 6: Histórico / Runtime ─────────────────────────────────────────────
+// ── Camada 6: Runtime — dados de contexto + formato obrigatório ───────────────
+// NÃO define etapas nem comportamento — o script configurado no SaaS faz isso.
+// Injeta apenas: estado atual da conversa, dados já coletados, flags de mídia,
+// saudação do momento e o formato JSON de resposta.
 function buildHistoricoLayer(
   leadState: { tipo: string; urgencia: string },
   messageCount: number,
@@ -279,79 +282,45 @@ function buildHistoricoLayer(
   const { hour, dayOfWeek } = businessHours;
   const dentroExpediente = isBusinessHours(hour, dayOfWeek);
   const greeting = getSaoPauloGreeting(hour);
-  const entregaHoje = dentroExpediente
-    ? "entrega pode ser HOJE — confirmar horário com o cliente"
-    : "fora do expediente — ofereça agendar para o próximo dia útil";
 
-  let etapaInstr: string;
+  // Flags de mídia disponíveis para o script usar
+  const mediaFlags = activeProducts
+    .filter((p) => p.imageUrl || p.videoUrl)
+    .map((p) => {
+      const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+      return `[FOTO_${s}]${p.videoUrl ? ` / [VIDEO_${s}]` : ""}`;
+    })
+    .join("  |  ");
 
-  if (isFirstInteraction) {
-    const mediaFlags = activeProducts
-      .filter((p) => p.imageUrl || p.videoUrl)
-      .map((p) => {
-        const s = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        return `[FOTO_${s}]${p.videoUrl ? ` e [VIDEO_${s}]` : ""}`;
-      })
-      .join("  |  ");
-
-    etapaInstr = `ETAPA 1 — PRIMEIRO CONTATO:
-- Identifique o produto pela mensagem ("21v"/"bomvink" = Bomvink 21V; "48v"/"luatek" = Luatek 48V)
-- Cumprimente com "${greeting}" em 1 balão, apresente-se como Léo da Nexo em outro
-${mediaFlags ? `- Flags de mídia disponíveis: ${mediaFlags}` : "- Descreva o produto em texto"}
-- 2 benefícios curtos em balões separados
-- 1 pergunta de qualificação
-- NÃO peça localização agora`;
-  } else if (leadState.tipo === "quente") {
+  // Dados pendentes de coleta (lead quente)
+  const faltaLinhas: string[] = [];
+  if (leadState.tipo === "quente") {
     const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    const falta: string[] = [];
-    if (!temLocal)                falta.push("localização (pin 📍 ou texto: rua, bairro, CEP)");
-    if (!collectedData.horario)   falta.push("até que horas pode receber");
-    if (!collectedData.pagamento) falta.push("forma de pagamento (dinheiro, pix ou cartão)");
-    if (!collectedData.nome)      falta.push("nome de quem vai receber");
-
-    if (falta.length === 0) {
-      etapaInstr = `ETAPA 4 — FECHAR PEDIDO: você tem todos os dados. Emita [PASSAGEM] com os dados.`;
-    } else {
-      etapaInstr = `ETAPA 4 — COLETAR DADOS (lead confirmou compra):
-Dado que falta agora (1 por vez): ${falta[0]}
-${falta.length > 1 ? `(depois ainda faltará: ${falta.slice(1).join(", ")})` : ""}
-${entregaHoje}
-NÃO repita dados já coletados.`;
-    }
-  } else if (messageCount <= 4 || leadState.tipo === "curioso") {
-    etapaInstr = `ETAPA 2 — QUALIFICAR E APRESENTAR:
-- Se ainda não enviou mídia: inclua [FOTO_SLUG] agora
-- Entenda o uso do produto (faça 1 pergunta)
-- Apresente 1-2 diferenciais relevantes
-- NÃO peça localização`;
-  } else if (leadState.tipo === "interessado" || messageCount <= 8) {
-    etapaInstr = `ETAPA 3 — CONVERTER:
-- Reforce "só paga quando chegar na sua mão, sem risco"
-- Pergunte diretamente: "posso separar uma pra você?"
-- Se ainda não enviou vídeo: inclua [VIDEO_SLUG] agora
-- NÃO peça localização ainda`;
-  } else if (leadState.tipo === "frio") {
-    etapaInstr = `ETAPA 3 — REENGAJAR:
-- Use escassez natural: "essa tá acabando"
-- Remova objeção: "você só paga na entrega, sem risco"
-- Inclua [FOTO_SLUG] se ainda não enviou`;
-  } else {
-    etapaInstr = `ETAPA 3 — AVANÇAR: responda a dúvida e empurre suavemente para o fechamento.`;
+    if (!temLocal)                faltaLinhas.push("localização");
+    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
+    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
+    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
   }
 
   return [
-    `--- HISTÓRICO / RUNTIME ---`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Msgs: ${messageCount} | 1ª vez: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
+    `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
+    `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
+    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    faltaLinhas.length > 0
+      ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
+      : faltaLinhas.length === 0 && leadState.tipo === "quente"
+        ? `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`
+        : "",
+    `--- FIM CONTEXTO ---`,
     ``,
-    etapaInstr,
-    ``,
-    `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON:`,
+    `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
     `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
-    `• Cada balão = 1 frase curta (1-2 linhas)`,
-    `• delays em ms entre balões (600-2000ms)`,
-    `• Flags de mídia: [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array`,
-    `• Sem "Claro!" "Ótimo!" "Entendido!" — fale como pessoa real`,
-    `--- FIM HISTÓRICO ---`,
+    `• Cada balão = 1 frase curta (máx 2 linhas)`,
+    `• delays em ms (600–2000ms por balão)`,
+    `• Mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos num balão — substitua SLUG pelo slug do catálogo`,
+    `• Nunca use frases robóticas: "Claro!", "Certamente!", "Entendido!", "Prezado"`,
+    `--- FIM FORMATO ---`,
   ]
     .filter(Boolean)
     .join("\n");
