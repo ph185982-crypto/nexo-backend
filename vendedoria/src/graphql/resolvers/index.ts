@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
 import { GraphQLScalarType, Kind } from "graphql";
 import bcrypt from "bcryptjs";
-import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
 
 interface ResolverContext {
   userId?: string;
@@ -880,6 +880,64 @@ export const resolvers = {
       }
 
       return { ...message, status: "SENT" };
+    },
+
+    sendWhatsappMedia: async (
+      _: unknown,
+      { conversationId, mediaUrl, type, caption }: { conversationId: string; mediaUrl: string; type: string; caption?: string | null },
+      ctx: ResolverContext
+    ) => {
+      requireAuth(ctx);
+      const conversation = await prisma.whatsappConversation.findUnique({
+        where: { id: conversationId },
+        include: { provider: true },
+      });
+      if (!conversation) throw new Error("Conversa não encontrada");
+      requireOrgAccess(ctx, conversation.provider.organizationId);
+
+      const message = await prisma.whatsappMessage.create({
+        data: {
+          content: caption ?? (type === "VIDEO" ? "[Vídeo]" : "[Imagem]"),
+          type,
+          role: "ASSISTANT",
+          sentAt: new Date(),
+          status: "SENDING",
+          mediaUrl,
+          caption: caption ?? null,
+          conversationId,
+        },
+      });
+
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { lastMessageAt: new Date() },
+      });
+
+      try {
+        if (type === "VIDEO") {
+          await sendWhatsAppVideo(
+            conversation.provider.businessPhoneNumberId,
+            conversation.customerWhatsappBusinessId,
+            mediaUrl,
+            caption ?? undefined,
+            conversation.provider.accessToken ?? undefined,
+          );
+        } else {
+          await sendWhatsAppImage(
+            conversation.provider.businessPhoneNumberId,
+            conversation.customerWhatsappBusinessId,
+            mediaUrl,
+            caption ?? undefined,
+            conversation.provider.accessToken ?? undefined,
+          );
+        }
+        await prisma.whatsappMessage.update({ where: { id: message.id }, data: { status: "SENT" } });
+      } catch (err) {
+        console.error("[sendWhatsappMedia] Meta API error:", err);
+        await prisma.whatsappMessage.update({ where: { id: message.id }, data: { status: "FAILED" } });
+      }
+
+      return { ...message, status: "SENT", mediaUrl };
     },
 
     takeoverConversation: async (

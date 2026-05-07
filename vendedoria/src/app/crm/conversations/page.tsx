@@ -8,7 +8,7 @@ import {
   ChevronLeft, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
-  Zap, TrendingUp, Info,
+  Zap, TrendingUp, Info, Smile, Play, Pause,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,15 @@ const GET_ORGS = gql`
 const SEND_MESSAGE = gql`
   mutation SendMessage($conversationId: String!, $content: String!) {
     sendWhatsappMessage(conversationId: $conversationId, content: $content) {
-      id content type role sentAt status
+      id content type role sentAt status mediaUrl
+    }
+  }
+`;
+
+const SEND_MEDIA = gql`
+  mutation SendMedia($conversationId: String!, $mediaUrl: String!, $type: String!, $caption: String) {
+    sendWhatsappMedia(conversationId: $conversationId, mediaUrl: $mediaUrl, type: $type, caption: $caption) {
+      id content type role sentAt status mediaUrl
     }
   }
 `;
@@ -73,7 +81,61 @@ interface Conversation {
   followUp: FollowUp | null;
 }
 interface Message {
-  id: string; content: string; role: string; sentAt: string; type: string; status?: string;
+  id: string; content: string; role: string; sentAt: string; type: string; status?: string; mediaUrl?: string | null;
+}
+
+// ── Emoji picker data ─────────────────────────────────────────────────────────
+const EMOJI_LIST = [
+  "😀","😂","🥲","😊","😍","🤩","😎","🤔","😮","😢","😡","🥹",
+  "😆","🤣","😅","🫡","😇","😋","😜","🤪","😏","😒","😔","😴",
+  "👍","👎","👋","🙌","👏","🤝","💪","🫶","🤜","🤛","🤞","✌️",
+  "❤️","🧡","💛","💚","💙","💜","🖤","🤍","💔","❤️‍🔥","✅","❌",
+  "🌟","⭐","🔥","💧","🌈","☀️","🌙","⚡","🎯","💡","📌","🚀",
+  "🎉","🎊","🏆","🥇","🎁","🎂","🎈","🎀","🍾","🥂","🪄","🎶",
+  "🍕","🍔","🌮","🍜","🍣","🍰","🍪","☕","🧃","🍺","🥤","🍭",
+  "💰","💳","📦","🚗","🏠","📱","💻","📷","🎥","🗓️","⏰","🔑",
+];
+
+// ── Audio player component ────────────────────────────────────────────────────
+function AudioPlayer({ url }: { url: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying]   = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const toggle = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) { a.pause(); setPlaying(false); }
+    else { void a.play().then(() => setPlaying(true)).catch(() => {}); }
+  };
+
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+
+  return (
+    <div className="flex items-center gap-2 min-w-[180px] max-w-[240px]">
+      <audio
+        ref={audioRef}
+        src={url}
+        onTimeUpdate={() => { const a = audioRef.current; if (a) setProgress(a.currentTime / (a.duration || 1)); }}
+        onLoadedMetadata={() => { const a = audioRef.current; if (a) setDuration(a.duration); }}
+        onEnded={() => setPlaying(false)}
+      />
+      <button
+        type="button"
+        onClick={toggle}
+        className="w-8 h-8 rounded-full bg-primary/20 hover:bg-primary/30 flex items-center justify-center shrink-0 transition-colors"
+      >
+        {playing ? <Pause className="w-3.5 h-3.5 text-primary" /> : <Play className="w-3.5 h-3.5 text-primary ml-0.5" />}
+      </button>
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="w-full h-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progress * 100}%` }} />
+        </div>
+        <span className="text-[10px] opacity-60">{duration > 0 ? fmt(duration) : "🎙 áudio"}</span>
+      </div>
+    </div>
+  );
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -135,18 +197,36 @@ function avatarColor(name: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
-function MessageContent({ msg }: { msg: Message }) {
-  if (msg.type === "IMAGE") return (
-    <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
-      <ImageIcon className="w-4 h-4 shrink-0" /> Imagem
-    </span>
-  );
-  if (msg.type === "VIDEO") return (
-    <span className="flex items-center gap-1.5 italic opacity-80 text-sm">
-      <Video className="w-4 h-4 shrink-0" /> Vídeo
-    </span>
-  );
-  if (msg.type === "AUDIO") return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
+function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (url: string) => void }) {
+  if (msg.type === "IMAGE") {
+    if (msg.mediaUrl) return (
+      <img
+        src={msg.mediaUrl}
+        alt="imagem"
+        className="max-w-full rounded-xl cursor-pointer object-cover"
+        style={{ maxHeight: 240 }}
+        onClick={() => onImageClick?.(msg.mediaUrl!)}
+        loading="lazy"
+      />
+    );
+    return <span className="flex items-center gap-1.5 italic opacity-80 text-sm"><ImageIcon className="w-4 h-4 shrink-0" /> Imagem</span>;
+  }
+  if (msg.type === "VIDEO") {
+    if (msg.mediaUrl) return (
+      <video
+        src={msg.mediaUrl}
+        controls
+        playsInline
+        className="max-w-full rounded-xl"
+        style={{ maxHeight: 260 }}
+      />
+    );
+    return <span className="flex items-center gap-1.5 italic opacity-80 text-sm"><Video className="w-4 h-4 shrink-0" /> Vídeo</span>;
+  }
+  if (msg.type === "AUDIO") {
+    if (msg.mediaUrl) return <AudioPlayer url={msg.mediaUrl} />;
+    return <span className="italic opacity-80 text-sm">🎙 Áudio</span>;
+  }
   if (msg.type === "LOCATION") {
     const m = msg.content.match(/lat:([-\d.]+)\s+lng:([-\d.]+)/);
     const lat = m?.[1]; const lng = m?.[2];
@@ -211,6 +291,9 @@ function ConversationsContent() {
   const [deescalating, setDeescalating] = useState(false);
   const [diagResult, setDiagResult]     = useState<Record<string, unknown> | null>(null);
   const [diagLoading, setDiagLoading]   = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [uploadingMedia, setUploadingMedia]   = useState(false);
+  const [lightboxUrl, setLightboxUrl]         = useState<string | null>(null);
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
@@ -224,6 +307,8 @@ function ConversationsContent() {
   const isFirstLoadRef       = useRef(false);
   const atBottomRef          = useRef(true);
   const inputRef             = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef         = useRef<HTMLInputElement>(null);
+  const emojiPickerRef       = useRef<HTMLDivElement>(null);
 
   const handleContainerScroll = useCallback(() => {
     const el = messagesContainerRef.current;
@@ -232,8 +317,9 @@ function ConversationsContent() {
     atBottomRef.current = dist < 60;
   }, []);
 
-  const [sendMessage]       = useMutation(SEND_MESSAGE);
-  const [takeoverMutation]  = useMutation(TAKEOVER);
+  const [sendMessage]        = useMutation(SEND_MESSAGE);
+  const [sendMedia]          = useMutation(SEND_MEDIA);
+  const [takeoverMutation]   = useMutation(TAKEOVER);
   const [deescalateMutation] = useMutation(DEESCALATE);
 
   // Auto-select org
@@ -302,7 +388,7 @@ function ConversationsContent() {
         body: JSON.stringify({
           query: `query($id: String!) {
             getConversationMessages(conversationId: $id) {
-              messages { id content type role sentAt status }
+              messages { id content type role sentAt status mediaUrl }
             }
           }`,
           variables: { id: convId },
@@ -441,6 +527,47 @@ function ConversationsContent() {
     } finally { setSending(false); }
   }, [msgInput, selectedId, sending, sendMessage, fetchMessages]);
 
+  // ── File upload (image / video) ───────────────────────────────────────────────
+  const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !selectedId) return;
+    const type = file.type.startsWith("video/") ? "VIDEO" : "IMAGE";
+    setUploadingMedia(true);
+    const optimistic: Message = {
+      id: `opt-${Date.now()}`, content: type === "VIDEO" ? "[Vídeo]" : "[Imagem]",
+      role: "ASSISTANT", sentAt: new Date().toISOString(), type, status: "SENDING",
+    };
+    setMessages(prev => [...prev, optimistic]);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!uploadRes.ok) throw new Error("Upload falhou");
+      const { url } = await uploadRes.json() as { url: string };
+      await sendMedia({ variables: { conversationId: selectedId, mediaUrl: url, type } });
+      await fetchMessages(selectedId, true);
+    } catch (err) {
+      console.error("[handleFileSelected]", err);
+      setMessages(prev => prev.filter(m => m.id !== optimistic.id));
+    } finally {
+      setUploadingMedia(false);
+    }
+  }, [selectedId, sendMedia, fetchMessages]);
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showEmojiPicker]);
+
   const selected       = selectedConv;
   const isHumanControl = selected?.humanTakeover ?? false;
   const isEscalated    = selected?.lead?.status === "ESCALATED";
@@ -448,6 +575,28 @@ function ConversationsContent() {
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-1 min-h-0 overflow-hidden bg-background" style={{ height: "100%" }}>
+
+      {/* ── Lightbox ──────────────────────────────────────────────────────────── */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <button
+            type="button"
+            className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors"
+            onClick={() => setLightboxUrl(null)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img
+            src={lightboxUrl}
+            alt="imagem ampliada"
+            className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* ════════════════════════════════════════════════════════════════════════
           LEFT PANEL — Conversation list
@@ -921,7 +1070,7 @@ function ConversationsContent() {
                           ? "msg-bubble-sent"
                           : "msg-bubble-received"
                       )}>
-                        <MessageContent msg={msg} />
+                        <MessageContent msg={msg} onImageClick={setLightboxUrl} />
                         <div className="flex items-center justify-end gap-1 mt-1">
                           <span className="text-[10px] opacity-60">{formatTime(msg.sentAt)}</span>
                           {isMe && (
@@ -957,7 +1106,63 @@ function ConversationsContent() {
                   </p>
                 </div>
               )}
-              <div className="px-3 py-2 flex gap-2 items-end">
+              <div className="px-2 py-2 flex gap-1 items-end relative">
+                {/* Emoji picker */}
+                {showEmojiPicker && (
+                  <div
+                    ref={emojiPickerRef}
+                    className="absolute bottom-full mb-2 left-2 bg-card border border-border rounded-2xl shadow-2xl p-2.5 z-50"
+                  >
+                    <div className="grid grid-cols-12 gap-0.5" style={{ width: 312 }}>
+                      {EMOJI_LIST.map(e => (
+                        <button
+                          key={e}
+                          type="button"
+                          onClick={() => {
+                            setMsgInput(prev => prev + e);
+                            setShowEmojiPicker(false);
+                            inputRef.current?.focus();
+                          }}
+                          className="w-6 h-6 flex items-center justify-center text-base hover:bg-muted rounded-lg transition-colors"
+                        >
+                          {e}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Emoji button */}
+                <button
+                  type="button"
+                  title="Emojis"
+                  disabled={!isHumanControl}
+                  onClick={() => setShowEmojiPicker(s => !s)}
+                  className="h-11 w-9 shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
+                >
+                  <Smile className="w-5 h-5" />
+                </button>
+
+                {/* Image / video upload */}
+                <button
+                  type="button"
+                  title="Enviar foto ou vídeo"
+                  disabled={!isHumanControl || uploadingMedia}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-11 w-9 shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
+                >
+                  {uploadingMedia
+                    ? <Loader2 className="w-5 h-5 animate-spin" />
+                    : <ImageIcon className="w-5 h-5" />}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  className="hidden"
+                  onChange={handleFileSelected}
+                />
+
                 <Textarea
                   ref={inputRef}
                   value={msgInput}
