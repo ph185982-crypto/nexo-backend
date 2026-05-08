@@ -282,7 +282,7 @@ function buildHistoricoLayer(
   messageCount: number,
   isFirstInteraction: boolean,
   etapa: string,
-  collectedData: CollectedDataLayer,
+  _collectedData: CollectedDataLayer,
   businessHours: { hour: number; dayOfWeek: number },
   activeProducts: ProductRef[],
 ): string {
@@ -290,7 +290,6 @@ function buildHistoricoLayer(
   const dentroExpediente = isBusinessHours(hour, dayOfWeek);
   const greeting = getSaoPauloGreeting(hour);
 
-  // Flags de mídia disponíveis para o script usar
   const mediaFlags = activeProducts
     .filter((p) => p.imageUrl || p.videoUrl)
     .map((p) => {
@@ -299,26 +298,11 @@ function buildHistoricoLayer(
     })
     .join("  |  ");
 
-  // Dados pendentes de coleta (lead quente)
-  const faltaLinhas: string[] = [];
-  if (leadState.tipo === "quente") {
-    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    if (!temLocal)                faltaLinhas.push("localização");
-    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
-    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
-    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
-  }
-
   return [
-    `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
+    `--- CONTEXTO RUNTIME ---`,
     `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
-    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
-    faltaLinhas.length > 0
-      ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
-      : faltaLinhas.length === 0 && leadState.tipo === "quente"
-        ? `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`
-        : "",
+    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa: ${etapa}`,
+    mediaFlags ? `Flags de mídia: ${mediaFlags}` : "",
     `--- FIM CONTEXTO ---`,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
@@ -326,7 +310,6 @@ function buildHistoricoLayer(
     `• Cada balão = 1 frase curta (máx 2 linhas)`,
     `• delays em ms (600–2000ms por balão)`,
     `• Mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos num balão — substitua SLUG pelo slug do catálogo`,
-    `• Nunca use frases robóticas: "Claro!", "Certamente!", "Entendido!", "Prezado"`,
     `--- FIM FORMATO ---`,
   ]
     .filter(Boolean)
@@ -334,17 +317,17 @@ function buildHistoricoLayer(
 }
 
 // ── API pública ───────────────────────────────────────────────────────────────
+// O script configurado pelo usuário na ferramenta é a única instrução estática.
+// Injetamos apenas dados que o script não consegue saber em tempo de compilação:
+//   1. Catálogo real (preços/slugs do banco)
+//   2. Dados já coletados (evitar re-perguntar)
+//   3. Contexto de runtime (hora, etapa, formato JSON obrigatório)
 export class PromptCompiler {
   compile(input: PromptCompilerInput): CompiledPrompt {
-    const persona    = input.basePersonaPrompt;
-    const estrategia = buildEstrategiaLayer(input.aiConfig, input.activeProducts, input.businessHours, input.isFirstInteraction);
-    const restricoes = [
-      buildRestricoesColetadasLayer(input.collectedData),
-      buildRestricoesConfigLayer(input.aiConfig?.restricoes ?? []),
-    ].filter(Boolean).join("\n\n");
-    const objecoes   = buildObjecoesLayer(input.recentMessages, input.aiConfig?.matrizObjecoes);
-    const catalogo   = buildCatalogoLayer(input.detectedProducts ?? []);
-    const historico  = buildHistoricoLayer(
+    const persona   = input.basePersonaPrompt;
+    const restricoes = buildRestricoesColetadasLayer(input.collectedData);
+    const catalogo  = buildCatalogoLayer(input.detectedProducts ?? []);
+    const historico = buildHistoricoLayer(
       input.leadState,
       input.messageCount,
       input.isFirstInteraction,
@@ -354,10 +337,10 @@ export class PromptCompiler {
       input.activeProducts,
     );
 
-    const parts = [persona, estrategia, restricoes, objecoes, catalogo, historico].filter(Boolean);
+    const parts = [persona, restricoes, catalogo, historico].filter(Boolean);
     const systemPrompt = parts.join("\n\n");
 
-    return { systemPrompt, layers: { persona, estrategia, restricoes, objecoes, catalogo, historico } };
+    return { systemPrompt, layers: { persona, estrategia: "", restricoes, objecoes: "", catalogo, historico } };
   }
 }
 
