@@ -222,14 +222,14 @@ Se está ignorando pergunta do cliente: ERRO.
 
 Sua resposta é única, partindo do que ESSE cliente escreveu, AGORA.`;
 
-  // Always update the system prompt on each deploy (force latest version)
+  // systemPrompt só é definido na CRIAÇÃO — nunca sobrescreve o que o usuário configurou no SaaS
   const agent = await prisma.agent.upsert({
     where: { whatsappProviderConfigId: "acc-demo" },
     update: {
       displayName: "Pedro — Nexo Brasil",
       aiProvider,
       aiModel,
-      systemPrompt: PEDRO_SYSTEM_PROMPT,
+      // systemPrompt NÃO atualizado — preserva o script configurado pelo usuário na ferramenta
     },
     create: {
       displayName: "Pedro — Nexo Brasil",
@@ -238,7 +238,7 @@ Sua resposta é única, partindo do que ESSE cliente escreveu, AGORA.`;
       whatsappProviderConfigId: account.id,
       aiProvider,
       aiModel,
-      systemPrompt: PEDRO_SYSTEM_PROMPT,
+      systemPrompt: PEDRO_SYSTEM_PROMPT, // padrão inicial somente
     },
   });
   console.log("✓ Agent:", agent.displayName);

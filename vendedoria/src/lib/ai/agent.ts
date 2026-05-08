@@ -577,59 +577,29 @@ export async function processAIResponse(
     }
 
     if (detectForaDeArea(userMessage)) {
-      const to = conversation.customerWhatsappBusinessId;
-      const token = conversation.provider.accessToken ?? undefined;
-      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId}: "${userMessage}"`);
-
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅",
-        token,
-      ).catch(() => {});
-      await new Promise((r) => setTimeout(r, 1400));
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊",
-        token,
-      ).catch(() => {});
-
-      const rejectionNow = new Date();
-      await prisma.whatsappMessage.createMany({
-        data: [
-          { content: "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅", type: "TEXT", role: "ASSISTANT", sentAt: rejectionNow, status: "SENT", conversationId },
-          { content: "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(rejectionNow.getTime() + 1400), status: "SENT", conversationId },
-        ],
-      }).catch(() => {});
+      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — marcando DB, IA responde`);
       await prisma.whatsappConversation.update({
         where: { id: conversationId },
-        data: { foraAreaEntrega: true, etapa: "PERDIDO", lastMessageAt: rejectionNow },
+        data: { foraAreaEntrega: true, etapa: "PERDIDO" },
       }).catch(() => {});
       await prisma.conversationFollowUp.updateMany({
         where: { conversationId, status: "ACTIVE" },
         data: { status: "DONE" },
       }).catch(() => {});
       await cancelFollowUpJobs(conversationId).catch(() => {});
-      return;
+      // Não retorna — IA continua e responde conforme o script configurado
     }
 
-    // ── TASK 2: Desinteresse explícito — fecha lead e cancela follow-ups imediatamente ──
     if (detectDesinteresse(userMessage)) {
-      console.log(`[AI Agent] Desinteresse detectado para conv ${conversationId}: "${userMessage}"`);
-      const to   = conversation.customerWhatsappBusinessId;
-      const token = conversation.provider.accessToken ?? undefined;
+      console.log(`[AI Agent] Desinteresse detectado para conv ${conversationId} — marcando DB, IA responde`);
       const orgId = conversation.provider.organizationId;
-
       const lostColumn = await prisma.kanbanColumn.findFirst({
         where: { organizationId: orgId, type: "LOST" },
       }).catch(() => null);
-
       await Promise.all([
         prisma.lead.update({
           where: { id: conversation.leadId! },
-          data: {
-            status: "BLOCKED",
-            ...(lostColumn ? { kanbanColumnId: lostColumn.id } : {}),
-          },
+          data: { status: "BLOCKED", ...(lostColumn ? { kanbanColumnId: lostColumn.id } : {}) },
         }),
         prisma.conversationFollowUp.updateMany({
           where: { conversationId, status: "ACTIVE" },
@@ -639,47 +609,15 @@ export async function processAIResponse(
       await cancelFollowUpJobs(conversationId).catch(() => {});
       await prisma.whatsappConversation.update({
         where: { id: conversationId },
-        data: { etapa: "PERDIDO", lastMessageAt: new Date() },
+        data: { etapa: "PERDIDO" },
       }).catch(() => {});
-
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "tudo bem! fica à vontade pra chamar quando precisar 👊",
-        token,
-      ).catch(() => {});
-      await prisma.whatsappMessage.create({
-        data: { content: "tudo bem! fica à vontade pra chamar quando precisar 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-      }).catch(() => {});
-      console.log(`[AI Agent] Lead ${conversation.leadId} marcado BLOCKED/LOST + follow-ups cancelados`);
-      return;
+      // Não retorna — IA continua e responde conforme o script configurado
     }
 
-    // ── Silêncio pós-confirmação ──────────────────────────────────────────────
-    if (conversation.etapa === "PEDIDO_CONFIRMADO") {
-      if (isCourtesyMessage(userMessage)) {
-        console.log(`[AI Agent] Pós-confirmação: cortesia ignorada "${userMessage}"`);
-        return;
-      }
-      const cortesias = conversation.cortesiasAposConf ?? 0;
-      if (cortesias >= 2) {
-        console.log(`[AI Agent] Pós-confirmação: cortesiasAposConf=${cortesias} >= 2 — não responder mais`);
-        return;
-      }
-      const to = conversation.customerWhatsappBusinessId;
-      const token = conversation.provider.accessToken ?? undefined;
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "qualquer dúvida pode chamar 👊 nossa equipe entra em contato em breve",
-        token,
-      ).catch(() => {});
-      await prisma.whatsappMessage.create({
-        data: { content: "qualquer dúvida pode chamar 👊 nossa equipe entra em contato em breve", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-      }).catch(() => {});
-      await prisma.whatsappConversation.update({
-        where: { id: conversationId },
-        data: { cortesiasAposConf: cortesias + 1, lastMessageAt: new Date() },
-      }).catch(() => {});
-      console.log(`[AI Agent] Pós-confirmação: respondeu cortesia ${cortesias + 1}/2`);
+    // Pós-confirmação: silencia mensagens de cortesia (ok, obrigado, etc.)
+    // Mensagens substantivas continuam para a IA conforme o script
+    if (conversation.etapa === "PEDIDO_CONFIRMADO" && isCourtesyMessage(userMessage)) {
+      console.log(`[AI Agent] Pós-confirmação: cortesia ignorada "${userMessage}"`);
       return;
     }
 
