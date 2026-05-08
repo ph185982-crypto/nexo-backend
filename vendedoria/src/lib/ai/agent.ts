@@ -219,7 +219,30 @@ function detectHardEscalation(
   return { shouldEscalate: false, reason: "" };
 }
 
-// ── CORREÇÃO 2: Detecção de área de entrega ──────────────────────────────────
+// ── TASK 2: Desinteresse explícito (Anti-Zumbi) ──────────────────────────────
+// Detecta sinais claros de rejeição/opt-out. Não confunde com objeção de preço.
+function detectDesinteresse(message: string): boolean {
+  const n = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
+  const msg = n(message);
+  return (
+    /\bnao\s+quero\b/.test(msg) ||
+    /\bnao\s+tenho\s+interesse\b/.test(msg) ||
+    /\bnao\s+preciso\b/.test(msg) ||
+    /\bnao\s+me\s+interessa\b/.test(msg) ||
+    /\bnao\s+quero\s+mais\b/.test(msg) ||
+    /\bpode\s+parar\b/.test(msg) ||
+    /\bpara\s+de\s+(mandar|enviar)\b/.test(msg) ||
+    /\bnao\s+mand[ae]\s+mais\b/.test(msg) ||
+    /\bme\s+tira\s+(da\s+lista|da\s+conversa|daqui)\b/.test(msg) ||
+    /\bme\s+remove\b/.test(msg) ||
+    /\bchega\s+de\s+(mensagem|contato|propaganda)\b/.test(msg) ||
+    /\bpara\s+de\s+me\s+incomodar\b/.test(msg) ||
+    /\[OPT_OUT\]/i.test(message)
+  );
+}
+
+// ── Detecção de área de entrega ──────────────────────────────────────────────
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
 // Não dispara por menção casual de cidade em contexto de uso do produto.
 function detectForaDeArea(message: string): boolean {
@@ -454,14 +477,19 @@ Os dados exatos dos produtos (nome, preço, parcelas, descrição, fotos, vídeo
 Para enviar mídia, coloque o flag exato ([FOTO_SLUG] ou [VIDEO_SLUG]) em um balão separado — o sistema só envia quando o flag aparece.
 Identifique qual produto o cliente quer pela mensagem dele e use o slug correspondente do catálogo.
 
-━━━ O QUE VOCÊ PRECISA ALCANÇAR EM CADA ETAPA — mas sem frases fixas, com suas próprias palavras ━━━
+━━━ COMO VOCÊ ABORDA CADA CONVERSA ━━━
 
-Etapa 1 — Abertura: se apresentar de forma natural, identificar o produto pelo que o cliente escreveu, já mandar o vídeo + foto sem o cliente precisar pedir.
-Etapa 2 — Conexão: fazer uma pergunta que mostre interesse real no uso que ele vai dar. Não é interrogatório — é curiosidade genuína. "pra que você vai usar mais?" dito de formas diferentes sempre.
-Etapa 3 — Apresentação: falar de 2 ou 3 benefícios que fazem sentido pro perfil dele. Se é mecânico, foca no torque e na durabilidade. Se é uso em casa, foca na praticidade e no kit completo. Não lista tudo — escolhe o que importa pra aquele cliente.
-Etapa 4 — Micro-compromisso: antes de fechar, conseguir que o cliente concorde com pelo menos uma coisa. Uma pergunta que a resposta natural é sim.
-Etapa 5 — Fechamento: quando sentir que o cliente está pronto, fechar com naturalidade. Não é "vamos fechar?" — é "então bora, me passa o endereço".
-Etapa 6 — Coleta de dados: pegar os 4 dados em conversa natural, um de cada vez, sem parecer formulário:
+Primeiro: você lê o que o cliente escreveu DE VERDADE. Se ele perguntou o preço, você responde o preço. Se ele disse o produto, você fala do produto. Você nunca ignora o que o cliente falou para começar um script de abertura.
+
+Apresentação: você se apresenta de forma orgânica, dentro da resposta — não como introdução separada. Se o cliente já foi direto, você também vai direto.
+
+Conexão: uma pergunta de interesse genuíno sobre o uso. Não é formulário — é curiosidade real. "pra que você vai usar mais?" de formas diferentes.
+
+Apresentação do produto: 2 ou 3 benefícios que fazem sentido pro perfil do cliente. Se é mecânico, fala em torque e durabilidade. Se é uso em casa, fala em praticidade. Não lista tudo — escolhe o que importa.
+
+Fechamento: quando sentir que o cliente está pronto, fecha com naturalidade. Não é "vamos fechar?" — é "então bora, me passa o endereço".
+
+Coleta de dados: 4 dados em conversa natural, um de cada vez, sem parecer formulário:
   1. endereço completo
   2. até que horas pode receber
   3. forma de pagamento
@@ -584,7 +612,49 @@ export async function processAIResponse(
       return;
     }
 
-    // ── CORREÇÃO 3: Silêncio pós-confirmação ──────────────────────────────────
+    // ── TASK 2: Desinteresse explícito — fecha lead e cancela follow-ups imediatamente ──
+    if (detectDesinteresse(userMessage)) {
+      console.log(`[AI Agent] Desinteresse detectado para conv ${conversationId}: "${userMessage}"`);
+      const to   = conversation.customerWhatsappBusinessId;
+      const token = conversation.provider.accessToken ?? undefined;
+      const orgId = conversation.provider.organizationId;
+
+      const lostColumn = await prisma.kanbanColumn.findFirst({
+        where: { organizationId: orgId, type: "LOST" },
+      }).catch(() => null);
+
+      await Promise.all([
+        prisma.lead.update({
+          where: { id: conversation.leadId! },
+          data: {
+            status: "BLOCKED",
+            ...(lostColumn ? { kanbanColumnId: lostColumn.id } : {}),
+          },
+        }),
+        prisma.conversationFollowUp.updateMany({
+          where: { conversationId, status: "ACTIVE" },
+          data: { status: "OPT_OUT" },
+        }),
+      ]).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { etapa: "PERDIDO", lastMessageAt: new Date() },
+      }).catch(() => {});
+
+      await sendWhatsAppMessage(
+        conversation.provider.businessPhoneNumberId, to,
+        "tudo bem! fica à vontade pra chamar quando precisar 👊",
+        token,
+      ).catch(() => {});
+      await prisma.whatsappMessage.create({
+        data: { content: "tudo bem! fica à vontade pra chamar quando precisar 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+      }).catch(() => {});
+      console.log(`[AI Agent] Lead ${conversation.leadId} marcado BLOCKED/LOST + follow-ups cancelados`);
+      return;
+    }
+
+    // ── Silêncio pós-confirmação ──────────────────────────────────────────────
     if (conversation.etapa === "PEDIDO_CONFIRMADO") {
       if (isCourtesyMessage(userMessage)) {
         console.log(`[AI Agent] Pós-confirmação: cortesia ignorada "${userMessage}"`);
@@ -942,6 +1012,7 @@ export async function processAIResponse(
       hasIntentoBuy: temIntencaoCompra,
       isFirstInteraction,
       allDataCollected: dadosCompletos,
+      isDesinteresse: detectDesinteresse(userMessage),
     };
     const decision = decisionService.decide(decisionCtx);
     void decisionService.log(decisionCtx, decision); // fire-and-forget
@@ -1107,14 +1178,13 @@ export async function processAIResponse(
     // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
       if (i > 0) {
-        // Typing proporcional ao texto + jitter humano (±400ms) — mínimo 1.2s, máximo 4.5s
-        const base = mensagens[i].length * 30;
-        const jitter = Math.floor(Math.random() * 800) - 400;
-        const interDelay = Math.min(Math.max(base + jitter, 1200), 4500);
+        // Typing proporcional ao texto + jitter humano (±600ms) — mínimo 3s, máximo 7s
+        const base = mensagens[i].length * 45;
+        const jitter = Math.floor(Math.random() * 1200) - 600;
+        const interDelay = Math.min(Math.max(base + jitter, 3000), 7000);
         await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
-
-        // Pausa extra curta entre balões (100-400ms) — simula "send" real
-        await new Promise((r) => setTimeout(r, 100 + Math.floor(Math.random() * 300)));
+        // Pausa micro entre typing e envio (simula o "send" humano)
+        await new Promise((r) => setTimeout(r, 150 + Math.floor(Math.random() * 250)));
       }
 
       const msgNow = new Date();

@@ -163,6 +163,25 @@ export function startFollowUpWorker(): void {
         return;
       }
 
+      // TASK 2: Verificar status do lead ANTES de enviar — nunca mandar follow-up para BLOCKED/CLOSED
+      const conv = await prisma.whatsappConversation.findUnique({
+        where: { id: conversationId },
+        include: { lead: true },
+      }).catch(() => null);
+      if (conv?.lead?.status === "BLOCKED" || conv?.lead?.status === "CLOSED") {
+        console.log(`[FollowUpWorker] Lead ${conv.lead.status} — cancelando follow-up ${followUpId} para conv ${conversationId}`);
+        await prisma.conversationFollowUp.update({
+          where: { id: followUpId },
+          data: { status: "OPT_OUT" },
+        }).catch(() => {});
+        return;
+      }
+      if (conv?.etapa === "PERDIDO" || conv?.etapa === "PEDIDO_CONFIRMADO") {
+        console.log(`[FollowUpWorker] Conv etapa=${conv.etapa} — skip follow-up ${followUpId}`);
+        await prisma.conversationFollowUp.update({ where: { id: followUpId }, data: { status: "DONE" } }).catch(() => {});
+        return;
+      }
+
       const msg = buildFollowupMessage(step, leadName);
       if (!msg) return;
 

@@ -34,19 +34,29 @@ export async function sendTypingIndicator(
   const token = resolveToken(accessToken);
   if (!token) return;
 
-  // Best-effort typing_on — Cloud API supports this via the messages endpoint
-  await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: normalizeBrazilianNumber(to),
-      typing: { action: "typing_on" },
-    }),
-  }).catch(() => {});
+  const sendTypingOn = () =>
+    fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: normalizeBrazilianNumber(to),
+        typing: { action: "typing_on" },
+      }),
+    }).catch(() => {});
 
-  await new Promise((r) => setTimeout(r, Math.min(durationMs, 8000)));
+  const clamped = Math.min(durationMs, 8000);
+  await sendTypingOn();
+
+  // WhatsApp typing indicator expires ~5s on client — refresh at 4s for longer delays
+  if (clamped > 4500) {
+    await new Promise((r) => setTimeout(r, 4000));
+    await sendTypingOn();
+    await new Promise((r) => setTimeout(r, clamped - 4000));
+  } else {
+    await new Promise((r) => setTimeout(r, clamped));
+  }
 }
 
 /** Mark an incoming message as read — shows blue double-tick to customer */

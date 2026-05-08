@@ -138,9 +138,8 @@ function buildEstrategiaLayer(
     })
     .join("  |  ");
 
-  const firstContactInstr = isFirstInteraction && mediaFlags
-    ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})\n- ATENÇÃO: coloque o flag exato em um balão separado — isso dispara o envio.`
-    : "";
+  // firstContactInstr removido: agent.ts já envia mídia forçada no primeiro contato por código.
+  // Incluir aqui causava duplo envio (código + flag da IA).
 
   return [
     `--- ESTRATÉGIA ---`,
@@ -151,7 +150,15 @@ function buildEstrategiaLayer(
     `Objetivo: ${OBJETIVO_INSTRUCTIONS[objetivo] ?? OBJETIVO_INSTRUCTIONS.fechar_venda}`,
     `Urgência: ${URGENCIA_LABELS[urgencia] ?? "Moderada"}`,
     arquetipo ? `Arquétipo: ${arquetipo}` : "",
-    firstContactInstr,
+    ``,
+    `ESCUTA ATIVA — REGRA CRÍTICA:`,
+    `Se a mensagem do cliente contém uma PERGUNTA, responda ela COMPLETAMENTE antes de qualquer outro passo.`,
+    `Exemplo: cliente perguntou "vocês têm loja?" → responda o endereço E depois, de forma natural, faça a ponte: "mas se preferir a gente entrega pra você — é só me passar o endereço".`,
+    `NUNCA ignore uma pergunta do cliente para coletar dados ou avançar etapa.`,
+    ``,
+    `PRIMEIRO CONTATO — REGRA:`,
+    `Se é o primeiro contato e o cliente já perguntou algo específico (preço, disponibilidade, produto), RESPONDA isso na primeira mensagem.`,
+    `Integre sua apresentação natural DENTRO da resposta — não faça uma introdução separada antes de responder o que ele perguntou.`,
     `--- FIM ESTRATÉGIA ---`,
   ].filter(Boolean).join("\n");
 }
