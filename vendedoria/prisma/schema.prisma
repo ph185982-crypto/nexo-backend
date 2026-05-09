@@ -317,6 +317,7 @@ model WhatsappConversation {
   nomeRecebedor      String?
   horarioEntrega     String?
   formaPagamento     String?
+  sessaoNacional     Json?                           // dados do fluxo de venda nacional
 
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
@@ -573,8 +574,8 @@ model AiConfig {
   arquetipoIA     String?
   objetivoVenda   String   @default("fechar_venda")   // fechar_venda | gerar_lead | qualificar
   nivelUrgencia   Int      @default(3)                // 1-5
-  matrizObjecoes  Json     @default("[]")             // [{palavraChave, estrategia, exemplo}]
-  restricoes      Json     @default("[]")             // string[]
+  matrizObjecoes  Json     @default("[]")
+  restricoes      Json     @default("[]")
   followUpIntervalos    Json     @default("[4,24,48,72]") // hours[]
   followUpMaxTentativas Int      @default(4)
   updatedAt       DateTime @updatedAt
@@ -588,7 +589,7 @@ model DecisionLog {
   conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
   action         String               // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
   reason         String?              @db.Text
-  metadata       Json?                 
+  metadata       Json?
   createdAt      DateTime             @default(now())
 
   @@index([conversationId, createdAt])
@@ -606,6 +607,7 @@ model WebhookQueue {
   createdAt   DateTime @default(now())
   retryAfter  DateTime @default(now())
 }
+
 
 // ─── Lead Notes ────────────────────────────────────────────────────────────────
 
@@ -763,7 +765,7 @@ model OfertaGerada {
   textoOferta         String    @db.Text
   status              String    @default("PRONTA") // PRONTA | ENVIADA | FALHA
   enviadaParaWhatsApp Boolean   @default(false)
-  enviadaEm          DateTime?
+  enviadaEm           DateTime?
   criadaEm            DateTime  @default(now())
 
   @@index([produtoId, criadaEm])

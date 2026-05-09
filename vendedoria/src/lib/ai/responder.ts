@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { compilePrompt } from "./prompt-compiler";
+import type { CompiledPrompt } from "./prompt-compiler";
 import { callLLM } from "./llm-client";
 import { sendWhatsAppMessage, sendWhatsAppTyping } from "@/lib/whatsapp/send";
 import type { AIDecisionResult } from "./orchestrator";
@@ -46,10 +46,11 @@ export async function sendAIResponse(
     .reverse()
     .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
-  // Use compiled prompt from decision if available, otherwise compile now
-  const compiled =
-    decision.compiledPrompt ??
-    (await compilePrompt(ctx.conversationId, history, { action: "RESPOND" }));
+  // Use compiled prompt from decision if available, otherwise use empty fallback
+  const compiled: CompiledPrompt = decision.compiledPrompt ?? {
+    systemPrompt: "",
+    layers: { persona: "", estrategia: "", restricoes: "", objecoes: "", catalogo: "", historico: "" },
+  };
 
   // Call LLM with the compiled system prompt
   const rawResponse = await callLLM(

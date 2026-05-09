@@ -6,41 +6,71 @@ import { sendPushToAll } from '@/lib/push/notificar';
 // POST /api/pedidos/nacional
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json() as Record<string, unknown>;
     const {
       telefoneCliente,
       nomeCliente,
       produto,
+      produtoId,
       cepDestino,
       enderecoCompleto,
-      valorProduto,
       servicoFreteId,
       transportadora,
       prazoFrete,
       valorFrete,
       formaPagamento,
       conversationId,
-    } = body;
+    } = body as {
+      telefoneCliente: string;
+      nomeCliente: string;
+      produto: string;
+      produtoId?: string;
+      cepDestino: string;
+      enderecoCompleto: string;
+      servicoFreteId: string;
+      transportadora: string;
+      prazoFrete: number;
+      valorFrete: number;
+      formaPagamento: string;
+      conversationId?: string;
+    };
 
     if (!telefoneCliente || !nomeCliente || !produto || !cepDestino || !enderecoCompleto ||
-        valorProduto == null || !servicoFreteId || !transportadora || prazoFrete == null ||
+        !servicoFreteId || !transportadora || prazoFrete == null ||
         valorFrete == null || !formaPagamento) {
       return NextResponse.json({ error: 'Campos obrigatórios ausentes' }, { status: 400 });
     }
 
-    const valorTotal = Number(valorProduto) + Number(valorFrete);
+    // Busca preço real no banco — SEMPRE, nunca usa valor do body para cobrar
+    const produtoDB = await prisma.produto.findFirst({
+      where: {
+        OR: [
+          ...(produtoId ? [{ id: produtoId }] : []),
+          { nome: { contains: produto, mode: 'insensitive' as const } },
+        ],
+        ativo: true,
+      },
+    });
+
+    if (!produtoDB) {
+      return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
+    }
+
+    const valorProdutoReal = produtoDB.precoDesconto ?? produtoDB.precoVenda;
+    const valorFreteReal = Number(valorFrete); // custo real do frete — controle interno
+    const valorCobrado = valorProdutoReal;     // cliente paga só o produto — frete grátis
 
     const pedido = await prisma.pedidoNacional.create({
       data: {
-        conversationId: conversationId ?? null,
+        conversationId: (conversationId as string) ?? null,
         telefoneCliente,
         nomeCliente,
-        produto,
+        produto: produtoDB.nome,
         cepDestino,
         enderecoCompleto,
-        valorProduto: Number(valorProduto),
-        valorFrete: Number(valorFrete),
-        valorTotal,
+        valorProduto: valorProdutoReal,
+        valorFrete: valorFreteReal,
+        valorTotal: valorCobrado,
         transportadora,
         prazoFrete: Number(prazoFrete),
         servicoFreteId,
@@ -48,13 +78,22 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    let resposta: Record<string, unknown> = { pedidoId: pedido.id };
+    let resposta: Record<string, unknown> = {
+      pedidoId: pedido.id,
+      valorTotal: valorCobrado,
+      formaPagamento,
+      freteGratis: true,
+      transportadora,
+      prazoFrete: Number(prazoFrete),
+    };
+
+    const descricaoProduto = `${produtoDB.nome} — Nexo Brasil`;
 
     if (formaPagamento === 'pix') {
       const pix = await criarPix({
         pedidoId: pedido.id,
-        valor: valorTotal,
-        descricao: `${produto} — Nexo Brasil`,
+        valor: valorCobrado,
+        descricao: descricaoProduto,
         nomeCliente,
       });
 
@@ -67,8 +106,8 @@ export async function POST(req: NextRequest) {
     } else {
       const parcelado = await criarLinkParcelado({
         pedidoId: pedido.id,
-        valor: valorTotal,
-        descricao: `${produto} — Nexo Brasil`,
+        valor: valorCobrado,
+        descricao: descricaoProduto,
         nomeCliente,
       });
 
@@ -82,7 +121,7 @@ export async function POST(req: NextRequest) {
 
     await sendPushToAll({
       title: `📦 Novo Pedido Nacional`,
-      body: `${nomeCliente} — ${produto} — R$ ${valorTotal.toFixed(2)} (${formaPagamento === 'pix' ? 'Pix' : 'Parcelado'})`,
+      body: `${nomeCliente} — ${produtoDB.nome} — R$ ${valorCobrado.toFixed(2)} (${formaPagamento === 'pix' ? 'Pix' : 'Parcelado'}) | Frete grátis`,
       url: '/crm/pedidos',
       tag: `pedido-${pedido.id}`,
     });
