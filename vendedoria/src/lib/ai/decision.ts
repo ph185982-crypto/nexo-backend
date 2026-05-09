@@ -69,12 +69,7 @@ Retorne um JSON com EXATAMENTE esta estrutura (sem markdown):
     .map((msg) => `[${msg.role === "user" ? "CLIENTE" : "IA"}] ${msg.content}`)
     .join("\n");
 
-  const userPrompt = `Histórico da conversa:
-${historyText}
-
-Nova mensagem do cliente: "${incomingMessage}"
-
-Baseado no histórico e na mensagem, qual é a próxima ação?`;
+  const userPrompt = `Histórico da conversa:\n${historyText}\n\nNova mensagem do cliente: "${incomingMessage}"\n\nBaseado no histórico e na mensagem, qual é a próxima ação?`;
 
   try {
     const response = await callLLMForDecision(
@@ -87,7 +82,6 @@ Baseado no histórico e na mensagem, qual é a próxima ação?`;
 
     if (!response) return null;
 
-    // Parse the JSON response (expect: {"action": "...", "targetState": "...", "reasoning": "..."})
     const parsed = JSON.parse(response);
 
     return {
@@ -112,60 +106,30 @@ function makeFallbackDecision(
   const msgLower = incomingMessage.toLowerCase();
   const responseCount = history.filter((h) => h.role === "assistant").length;
 
-  // Escalation signals
   if (/insatisfeito|problema|reclamação|não quer|chega|cansei|ninguém responde/.test(msgLower)) {
-    return {
-      action: "ESCALATE",
-      targetState: "ESCALATED",
-      reasoning: "Cliente mostrou sinais de insatisfação ou reclamação",
-    };
+    return { action: "ESCALATE", targetState: "ESCALATED", reasoning: "Cliente mostrou sinais de insatisfação" };
   }
 
-  // Immediate response signals (hot lead)
   if (/quero|compra|vou|confirma|fecha|pedido|paga/.test(msgLower)) {
-    return {
-      action: "RESPOND",
-      targetState: "NEGOCIANDO",
-      reasoning: "Cliente mostrou interesse de compra — resposta imediata",
-    };
+    return { action: "RESPOND", targetState: "NEGOCIANDO", reasoning: "Cliente mostrou interesse de compra" };
   }
 
-  // Ask for location signals
   if (leadState.etapa === "NOVO" && !leadState.localizacaoRecebida && !leadState.midiaEnviada) {
-    return {
-      action: "RESPOND",
-      targetState: "QUALIFICANDO",
-      reasoning: "Primeiro contato — solicitar informações",
-    };
+    return { action: "RESPOND", targetState: "QUALIFICANDO", reasoning: "Primeiro contato" };
   }
 
-  // Out of delivery area
   if (leadState.foraAreaEntrega) {
-    return {
-      action: "CLOSE",
-      targetState: "PERDIDO",
-      reasoning: "Cliente está fora da área de entrega",
-    };
+    return { action: "CLOSE", targetState: "PERDIDO", reasoning: "Fora da área de entrega" };
   }
 
-  // No response for a while (threshold: 3+ IA messages without client response)
   if (responseCount >= 3 && history[history.length - 1]?.role === "assistant") {
-    return {
-      action: "FOLLOW_UP",
-      targetState: null,
-      reasoning: "Sem respostas após múltiplas tentativas — agendar follow-up",
-    };
+    return { action: "FOLLOW_UP", targetState: null, reasoning: "Sem respostas após múltiplas tentativas" };
   }
 
-  // Default: respond to any client message
-  return {
-    action: "RESPOND",
-    targetState: null,
-    reasoning: "Padrão: responder ao cliente",
-  };
+  return { action: "RESPOND", targetState: null, reasoning: "Padrão: responder ao cliente" };
 }
 
-// ─── LLM Caller (reuses logic from agent.ts) ────────────────────────────────
+// ─── LLM Caller ────────────────────────────────────────────────────────────────
 
 async function callLLMForDecision(
   systemPrompt: string,
@@ -175,7 +139,6 @@ async function callLLMForDecision(
   aiModel?: string | null,
 ): Promise<string | null> {
   const p = aiProvider?.toUpperCase();
-  // Try configured provider first
   if (p === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
     const r = await callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-haiku-4-5-20251001");
     if (r) return r;
@@ -188,7 +151,6 @@ async function callLLMForDecision(
     const r = await callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite");
     if (r) return r;
   }
-  // Fallback chain
   if (process.env.ANTHROPIC_API_KEY) {
     const r = await callAnthropic(systemPrompt, history, userMessage, "claude-haiku-4-5-20251001");
     if (r) return r;
@@ -221,10 +183,7 @@ async function callOpenAI(
       temperature: 0.7,
     }),
   });
-  if (!res.ok) {
-    console.error("[OpenAI] Error:", await res.text());
-    return null;
-  }
+  if (!res.ok) { console.error("[OpenAI] Error:", await res.text()); return null; }
   const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   return data.choices?.[0]?.message?.content ?? null;
 }
@@ -249,10 +208,7 @@ async function callAnthropic(
       max_tokens: 300,
     }),
   });
-  if (!res.ok) {
-    console.error("[Anthropic] Error:", await res.text());
-    return null;
-  }
+  if (!res.ok) { console.error("[Anthropic] Error:", await res.text()); return null; }
   const data = (await res.json()) as { content?: Array<{ text?: string }> };
   return data.content?.[0]?.text ?? null;
 }
@@ -270,19 +226,13 @@ async function callGemini(
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemPrompt }] },
       contents: [
-        ...history.map((m) => ({
-          role: m.role === "assistant" ? "model" : "user",
-          parts: [{ text: m.content }],
-        })),
+        ...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
         { role: "user", parts: [{ text: userMessage }] },
       ],
       generationConfig: { maxOutputTokens: 300, temperature: 0.7 },
     }),
   });
-  if (!res.ok) {
-    console.error("[Gemini] Error:", await res.text());
-    return null;
-  }
+  if (!res.ok) { console.error("[Gemini] Error:", await res.text()); return null; }
   const data = (await res.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
 }
@@ -296,16 +246,13 @@ export async function makeDecision(
   config: AgentConfigInput,
   incomingMessage: string,
 ): Promise<DecisionOutput> {
-  // Try LLM router first
   let decision = await callLLMRouter(history, leadState, config, incomingMessage);
 
-  // Fall back to rule-based decision if LLM fails
   if (!decision) {
     console.warn("[DecisionEngine] LLM router failed, using fallback rules");
     decision = makeFallbackDecision(history, leadState, incomingMessage);
   }
 
-  // Log the decision
   try {
     await prisma.decisionLog.create({
       data: {
@@ -318,57 +265,44 @@ export async function makeDecision(
     });
   } catch (error) {
     console.error("[DecisionEngine] Failed to log decision:", error);
-    // Don't fail the entire flow if logging fails
   }
 
   return decision;
 }
 
-// ─── DecisionService: lightweight synchronous facade used by agent.ts ─────────
+// ─── Synchronous rule-based service (used by agent.ts) ──────────────────────
 
-interface DecisionContext {
+interface DecisionCtx {
   conversationId: string;
-  userMessage: string;
-  messageCount: number;
-  leadStatus: string;
-  etapa: string;
-  humanTakeover: boolean;
-  foraAreaEntrega: boolean;
-  isOptOut: boolean;
-  hardEscalation: boolean;
-  hasIntentoBuy: boolean;
-  isFirstInteraction: boolean;
-  allDataCollected: boolean;
-  isDesinteresse: boolean;
+  userMessage?: string;
+  messageCount?: number;
+  leadStatus?: string;
+  etapa?: string;
+  humanTakeover?: boolean;
+  foraAreaEntrega?: boolean;
+  isOptOut?: boolean;
+  hardEscalation?: boolean | { shouldEscalate: boolean; reason: string };
+  hasIntentoBuy?: boolean;
+  isFirstInteraction?: boolean;
+  allDataCollected?: boolean;
 }
 
-interface DecisionResult {
-  action: string;
+interface SimpleDecision {
+  action: "RESPOND" | "WAIT" | "CLOSE" | "ESCALATE";
   reason: string;
 }
 
 export const decisionService = {
-  decide(ctx: DecisionContext): DecisionResult {
-    if (ctx.humanTakeover)    return { action: "WAIT",     reason: "Operador humano no controle" };
-    if (ctx.isOptOut)         return { action: "CLOSE",    reason: "Cliente optou por sair (OPT_OUT)" };
-    if (ctx.isDesinteresse)   return { action: "CLOSE",    reason: "Cliente demonstrou desinteresse explícito — lead marcado LOST" };
-    if (ctx.hardEscalation)   return { action: "ESCALATE", reason: "Escalação manual ativada" };
-    if (ctx.foraAreaEntrega)  return { action: "CLOSE",    reason: "Fora da área de entrega" };
-    if (ctx.leadStatus === "BLOCKED") return { action: "CLOSE", reason: "Lead bloqueado" };
-    return { action: "RESPOND", reason: "Responder ao lead" };
+  decide(ctx: DecisionCtx): SimpleDecision {
+    if (ctx.humanTakeover) return { action: "WAIT", reason: "human takeover ativo" };
+    if (ctx.isOptOut)      return { action: "CLOSE", reason: "cliente optou por sair" };
+    const isEscalation = ctx.hardEscalation && (typeof ctx.hardEscalation === "boolean" ? ctx.hardEscalation : ctx.hardEscalation.shouldEscalate);
+    if (isEscalation) return { action: "ESCALATE", reason: "escalação forçada" };
+    if (ctx.foraAreaEntrega) return { action: "RESPOND", reason: "fora área — informar e encerrar" };
+    return { action: "RESPOND", reason: "fluxo normal" };
   },
-
-  async log(ctx: DecisionContext, decision: DecisionResult): Promise<void> {
-    try {
-      await prisma.decisionLog.create({
-        data: {
-          conversationId: ctx.conversationId,
-          action:         decision.action,
-          reason:         decision.reason,
-        },
-      });
-    } catch {
-      // Non-fatal — decision logging should never break the agent flow
-    }
+  log(ctx: DecisionCtx, decision: SimpleDecision): Promise<void> {
+    console.log(`[DecisionService] conv=${ctx.conversationId} action=${decision.action} reason=${decision.reason}`);
+    return Promise.resolve();
   },
 };
