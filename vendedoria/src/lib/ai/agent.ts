@@ -4,6 +4,10 @@ import { productSourcingService } from "@/lib/ai/product-sourcing";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
 import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { atualizarSessaoNacional, buscarSessaoNacional } from "@/lib/ai/sessao-nacional";
+import { buscarPrecoProduto } from "@/lib/ai/buscar-produto";
+import { detectarCEP, detectarEscolhaFrete, detectarFormaPagamento, detectarClienteNacional } from "@/lib/ai/deteccao-nacional";
+import { cotarFrete, type OpcaoFrete } from "@/lib/envio/melhor-envio";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -938,6 +942,43 @@ export async function processAIResponse(
       return;
     }
 
+    // ── NACIONAL: Carrega sessão e detecta dados nas mensagens ────────────────
+    const sessaoNacional = await buscarSessaoNacional(conversationId);
+    const atualizacoesNacional: Record<string, unknown> = {};
+
+    const cepDetectado = detectarCEP(userMessage);
+    if (cepDetectado && !sessaoNacional.cepDestino) {
+      atualizacoesNacional.cepDestino = cepDetectado;
+      atualizacoesNacional.modoNacional = true;
+      console.log(`[NACIONAL] CEP detectado: ${cepDetectado}`);
+    }
+
+    if ((sessaoNacional.cotacoesFrete as OpcaoFrete[] | undefined)?.length && !sessaoNacional.opcaoFreteEscolhida) {
+      const escolha = detectarEscolhaFrete(userMessage, sessaoNacional.cotacoesFrete as OpcaoFrete[]);
+      if (escolha) {
+        atualizacoesNacional.opcaoFreteEscolhida = escolha;
+        console.log(`[NACIONAL] Frete escolhido: ${escolha}`);
+      }
+    }
+
+    if (!sessaoNacional.formaPagamento) {
+      const pagamento = detectarFormaPagamento(userMessage);
+      if (pagamento) {
+        atualizacoesNacional.formaPagamento = pagamento;
+        console.log(`[NACIONAL] Pagamento detectado: ${pagamento}`);
+      }
+    }
+
+    if (!sessaoNacional.modoNacional && detectarClienteNacional([userMessage])) {
+      atualizacoesNacional.modoNacional = true;
+      console.log(`[NACIONAL] Cliente nacional detectado`);
+    }
+
+    if (Object.keys(atualizacoesNacional).length > 0) {
+      await atualizarSessaoNacional(conversationId, atualizacoesNacional);
+      Object.assign(sessaoNacional, atualizacoesNacional);
+    }
+
     // ── PromptCompiler: monta systemPrompt em 6 camadas ──────────────────────
     const now_sp = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
 
@@ -969,7 +1010,42 @@ export async function processAIResponse(
       etapa: conversation.etapa,
       detectedProducts, // Camada 5 — catálogo real
     });
-    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext;
+    let systemPromptFinal = compiled.systemPrompt + productSection + leadContext;
+
+    // ── NACIONAL: Injetar contexto nacional no systemPrompt ───────────────────
+    const isNacional = !!(sessaoNacional.modoNacional) || detectarClienteNacional(
+      recentMessages.slice().reverse().map(m => m.content)
+    );
+    if (isNacional) {
+      const sn = sessaoNacional;
+      let ctx = `\n--- CONTEXTO NACIONAL ---\nMODO: Venda nacional (fora de Goiânia e região)\nPAGAMENTO: Pix ou parcelado em até 10x — sempre antes do envio\nFRETE: Grátis para o cliente\n`;
+
+      ctx += sn.cepDestino ? `CEP_COLETADO: ${sn.cepDestino}\n` : `CEP_COLETADO: não\n`;
+
+      const cotacoes = sn.cotacoesFrete as OpcaoFrete[] | undefined;
+      if (cotacoes?.length) {
+        const maisBarata = [...cotacoes].sort((a, b) => a.preco - b.preco)[0];
+        const maisRapida = [...cotacoes].sort((a, b) => a.prazo - b.prazo)[0];
+        ctx += `OPCOES_FRETE_DISPONIVEIS:\n`;
+        ctx += `  - ${maisBarata.transportadora}: ${maisBarata.prazo} dias úteis (mais econômica)\n`;
+        if (maisBarata.id !== maisRapida.id) {
+          ctx += `  - ${maisRapida.transportadora}: ${maisRapida.prazo} dia(s) útil(is) (mais rápida)\n`;
+        }
+      }
+
+      if (sn.opcaoFreteEscolhida) {
+        const opcao = cotacoes?.find(o => o.id === sn.opcaoFreteEscolhida);
+        if (opcao) ctx += `FRETE_ESCOLHIDO: ${opcao.transportadora} — ${opcao.prazo} dias úteis\n`;
+      }
+
+      if (sn.formaPagamento)     ctx += `PAGAMENTO_ESCOLHIDO: ${sn.formaPagamento}\n`;
+      if (sn.nomeCliente)        ctx += `NOME_COLETADO: ${sn.nomeCliente}\n`;
+      if (sn.enderecoCompleto)   ctx += `ENDERECO_COLETADO: ${sn.enderecoCompleto}\n`;
+      if (sn.etapa === 'AGUARDANDO_PAGAMENTO') ctx += `STATUS: Pedido criado — aguardando pagamento do cliente\n`;
+
+      ctx += `\nFLAGS_DISPONIVEIS:\n[COTAR_FRETE:XXXXXXXX] — use quando tiver o CEP do cliente para calcular o frete\n[PEDIDO_NACIONAL] — use quando tiver todos os dados coletados para gerar o pagamento\nDados necessários antes de emitir [PEDIDO_NACIONAL]: CEP_COLETADO, FRETE_ESCOLHIDO, PAGAMENTO_ESCOLHIDO, NOME_COLETADO, ENDERECO_COLETADO\n--- FIM CONTEXTO NACIONAL ---\n`;
+      systemPromptFinal += ctx;
+    }
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
@@ -989,11 +1065,140 @@ export async function processAIResponse(
     console.log(`[AI Agent] Parsed ${rawMsgs.length} messages. combinedRaw length: ${combinedRaw.length}`);
     const mediaFlagRe = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
 
+    // ── NACIONAL: Processar [COTAR_FRETE:CEP] ────────────────────────────────
+    const matchFrete = combinedRaw.match(/\[COTAR_FRETE:(\d{8})\]/i);
+    if (matchFrete) {
+      const cepFrete = matchFrete[1];
+      console.log(`[NACIONAL] Cotando frete para CEP ${cepFrete}`);
+      try {
+        const opcoes = await cotarFrete(cepFrete);
+        if (opcoes.length) {
+          await atualizarSessaoNacional(conversationId, {
+            cepDestino: cepFrete,
+            modoNacional: true,
+            cotacoesFrete: opcoes,
+          });
+          Object.assign(sessaoNacional, { cepDestino: cepFrete, cotacoesFrete: opcoes });
+          console.log(`[NACIONAL] ${opcoes.length} opção(ões) de frete armazenadas`);
+
+          // Envia mensagem direta com as opções para o cliente
+          const linhaOpcoes = opcoes
+            .slice(0, 3)
+            .map((o, i) => `${i + 1}. ${o.transportadora} — ${o.prazo} dias úteis (frete grátis)`)
+            .join('\n');
+          await sendWhatsAppMessage(
+            conversation.provider.businessPhoneNumberId,
+            conversation.customerWhatsappBusinessId,
+            `📦 Opções de entrega para o seu CEP:\n${linhaOpcoes}\n\nQual prefere?`,
+            conversation.provider.accessToken ?? undefined,
+          ).catch(e => console.error('[NACIONAL] Erro ao enviar opções de frete:', e));
+          await prisma.whatsappMessage.create({
+            data: { content: `[NACIONAL] Opções de frete enviadas`, type: 'TEXT', role: 'ASSISTANT', sentAt: new Date(), status: 'SENT', conversationId },
+          }).catch(() => {});
+        } else {
+          await atualizarSessaoNacional(conversationId, { cepDestino: cepFrete, modoNacional: true, erroFrete: 'CEP sem cobertura' });
+          console.error(`[NACIONAL] Nenhuma opção de frete para CEP ${cepFrete}`);
+        }
+      } catch (err: unknown) {
+        console.error('[NACIONAL] Erro ao cotar frete:', (err as Error).message);
+      }
+    }
+
+    // ── NACIONAL: Processar [PEDIDO_NACIONAL] ─────────────────────────────────
+    if (/\[PEDIDO_NACIONAL\]/i.test(combinedRaw)) {
+      const sn = { ...sessaoNacional, ...(await buscarSessaoNacional(conversationId)) };
+      const dadosFaltando: string[] = [];
+      if (!sn.cepDestino)          dadosFaltando.push('CEP');
+      if (!sn.nomeCliente)         dadosFaltando.push('nome');
+      if (!sn.enderecoCompleto)    dadosFaltando.push('endereço');
+      if (!sn.formaPagamento)      dadosFaltando.push('forma de pagamento');
+      if (!sn.produto)             dadosFaltando.push('produto');
+
+      const cotacoes = sn.cotacoesFrete as OpcaoFrete[] | undefined;
+      if (!sn.opcaoFreteEscolhida && !cotacoes?.length) dadosFaltando.push('frete');
+
+      if (dadosFaltando.length > 0) {
+        console.error('[NACIONAL] Dados faltando para criar pedido:', dadosFaltando);
+      } else {
+        const produtoDB = await buscarPrecoProduto(String(sn.produto));
+        if (!produtoDB) {
+          console.error('[NACIONAL] Produto não encontrado no banco:', sn.produto);
+        } else {
+          const opcaoFrete = (cotacoes ?? []).find(o => o.id === sn.opcaoFreteEscolhida)
+            ?? [...(cotacoes ?? [])].sort((a, b) => a.preco - b.preco)[0];
+
+          if (!opcaoFrete) {
+            console.error('[NACIONAL] Opção de frete não encontrada para criar pedido');
+          } else {
+            try {
+              const appBase = (
+                process.env.NEXTAUTH_URL ??
+                process.env.NEXT_PUBLIC_APP_URL ??
+                process.env.RENDER_EXTERNAL_URL ??
+                (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : '')
+              ).replace(/\/$/, '');
+              const resp = await fetch(`${appBase}/api/pedidos/nacional`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  conversationId,
+                  telefoneCliente: conversation.customerWhatsappBusinessId,
+                  nomeCliente: String(sn.nomeCliente),
+                  produto: produtoDB.nome,
+                  produtoId: produtoDB.id,
+                  cepDestino: String(sn.cepDestino),
+                  enderecoCompleto: String(sn.enderecoCompleto),
+                  valorProduto: produtoDB.preco,
+                  valorFrete: opcaoFrete.preco,
+                  servicoFreteId: opcaoFrete.id,
+                  transportadora: opcaoFrete.transportadora,
+                  prazoFrete: opcaoFrete.prazo,
+                  formaPagamento: String(sn.formaPagamento),
+                  freteGratis: true,
+                }),
+              });
+              const pedido = await resp.json() as Record<string, unknown>;
+              if (!resp.ok) throw new Error(String(pedido.error ?? 'Erro ao criar pedido'));
+
+              await atualizarSessaoNacional(conversationId, {
+                pedidoNacionalId: pedido.pedidoId,
+                etapa: 'AGUARDANDO_PAGAMENTO',
+              });
+              console.log(`[NACIONAL] Pedido criado: ${pedido.pedidoId}`);
+
+              // Envia pagamento diretamente para o cliente
+              const to    = conversation.customerWhatsappBusinessId;
+              const token = conversation.provider.accessToken ?? undefined;
+              if (sn.formaPagamento === 'pix' && pedido.pixCopiaECola) {
+                await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, to,
+                  `✅ Pedido gerado!\n\nPague via Pix (copia e cola):\n\n${pedido.pixCopiaECola}`,
+                  token).catch(() => {});
+                await prisma.whatsappMessage.create({
+                  data: { content: '[NACIONAL] Pix enviado', type: 'TEXT', role: 'ASSISTANT', sentAt: new Date(), status: 'SENT', conversationId },
+                }).catch(() => {});
+              } else if (pedido.linkPagamento) {
+                await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, to,
+                  `✅ Pedido gerado!\n\nPague em até 10x no link:\n${pedido.linkPagamento}`,
+                  token).catch(() => {});
+                await prisma.whatsappMessage.create({
+                  data: { content: '[NACIONAL] Link parcelado enviado', type: 'TEXT', role: 'ASSISTANT', sentAt: new Date(), status: 'SENT', conversationId },
+                }).catch(() => {});
+              }
+            } catch (err: unknown) {
+              console.error('[NACIONAL] Erro ao criar pedido:', (err as Error).message);
+            }
+          }
+        }
+      }
+    }
+
     // ── Limpar flags das mensagens que vão pro cliente ────────────────────────
     const mensagens = rawMsgs.map((m) =>
       m.replace(/^\[ESCALAR\]\s*/i, "")
         .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
         .replace(/\[OPT_OUT\]/gi, "")
+        .replace(/\[COTAR_FRETE:\d{8}\]/gi, "")
+        .replace(/\[PEDIDO_NACIONAL\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);

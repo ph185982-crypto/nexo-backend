@@ -317,6 +317,7 @@ model WhatsappConversation {
   nomeRecebedor      String?
   horarioEntrega     String?
   formaPagamento     String?
+  sessaoNacional     Json?                           // dados do fluxo de venda nacional
 
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt

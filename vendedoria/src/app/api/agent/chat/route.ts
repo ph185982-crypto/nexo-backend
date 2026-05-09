@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
       // Save current to history
       await prisma.agentPromptHistory.create({
         data: {
+          agentConfigId: config.id,
           content: config.currentPrompt,
           version: config.promptVersion,
           savedBy: "configuradora-ia",

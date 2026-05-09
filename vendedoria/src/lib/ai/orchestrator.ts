@@ -1,6 +1,6 @@
 import { makeDecision } from "./decision";
 import { applyStateTransition, logStateTransition, etapaToState } from "./state-machine";
-import { compilePrompt, CompiledPrompt } from "./prompt-compiler";
+import type { CompiledPrompt } from "./prompt-compiler";
 import { prisma } from "@/lib/prisma/client";
 
 // ─── AI Orchestrator: Coordinates Decision Engine + State Machine ─────────────
@@ -111,12 +111,8 @@ export async function orchestrateAIDecision(context: AIDecisionContext): Promise
       ).catch((e) => console.error("[Orchestrator] Transition logging error:", e));
     }
 
-    // If action is RESPOND, compile the prompt from layers
-    let compiledPrompt: CompiledPrompt | undefined;
-    if (decision.action === "RESPOND") {
-      console.log(`[Orchestrator] Compiling dynamic prompt for conversation ${context.conversationId}`);
-      compiledPrompt = await compilePrompt(context.conversationId, conversationHistory, { action: decision.action });
-    }
+    // Prompt compilation happens in the agent layer — not needed here
+    const compiledPrompt: CompiledPrompt | undefined = undefined;
 
     return {
       action: decision.action,

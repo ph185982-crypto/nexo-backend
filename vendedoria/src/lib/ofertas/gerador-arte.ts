@@ -8,7 +8,7 @@ export interface DadosArte {
   precoVenda: number;
   precoDesconto: number;
   parcelamento: number;
-  fotoUrl: string;
+  fotoUrl: string | null;
 }
 
 function htmlTemplate(dados: DadosArte): string {

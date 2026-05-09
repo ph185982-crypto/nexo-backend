@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
-import { cancelFollowUpsForConversation } from "@/lib/queue/followup-queue";
+import { cancelFollowUpJobs as _cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";

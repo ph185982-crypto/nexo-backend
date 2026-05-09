@@ -32,6 +32,7 @@ export async function PUT(req: NextRequest) {
     // 1. Save current version to history before overwriting
     await prisma.agentPromptHistory.create({
       data: {
+        agentConfigId: config.id,
         content: config.currentPrompt,
         version: config.promptVersion,
         savedBy: savedBy ?? "Pedro",

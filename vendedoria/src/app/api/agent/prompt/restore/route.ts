@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
     // Save current version to history before restoring
     await prisma.agentPromptHistory.create({
       data: {
+        agentConfigId: config.id,
         content: config.currentPrompt,
         version: config.promptVersion,
         savedBy: "restore",
