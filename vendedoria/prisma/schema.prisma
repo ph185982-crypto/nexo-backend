@@ -19,6 +19,7 @@ model User {
   role          String    @default("ADMIN") // ADMIN | MANAGER | SELLER
   accounts      Account[]
   sessions      Session[]
+  pushSubscriptions PushSubscription[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -159,6 +160,49 @@ model AgentConfigVersion {
   @@index([agentId, createdAt])
 }
 
+// ─── Legacy AgentConfig (singleton — global agent settings) ───────────────
+
+model AgentConfig {
+  id                   String              @id @default(cuid())
+  agentName            String              @default("Pedro")
+  bastaoNumber         String              @default("5562984465388")
+  currentPrompt        String              @default("") @db.Text
+  promptVersion        Int                 @default(1)
+  followUpHours        String              @default("4,24,48,72")
+  followUpPrompt       String?             @db.Text
+  maxFollowUps         Int                 @default(4)
+  deliveryWeekStart    Int                 @default(9)
+  deliveryWeekEnd      Int                 @default(18)
+  deliverySatStart     Int                 @default(8)
+  deliverySatEnd       Int                 @default(13)
+  deliveryArea         String              @default("")
+  escalationThreshold  Int                 @default(3)
+  aiProvider           String?
+  aiModel              String?
+  autoPassagem         Boolean             @default(true)
+  autoMedia            Boolean             @default(true)
+  escalacaoAtiva       Boolean             @default(true)
+  personalityProfileId String?
+  personalityProfile   PersonalityProfile? @relation(fields: [personalityProfileId], references: [id])
+  strategyProfileId    String?
+  strategyProfile      StrategyProfile?    @relation(fields: [strategyProfileId], references: [id])
+  promptHistory        AgentPromptHistory[]
+  updatedAt            DateTime            @updatedAt
+  createdAt            DateTime            @default(now())
+}
+
+model AgentPromptHistory {
+  id            String      @id @default(cuid())
+  agentConfigId String
+  agentConfig   AgentConfig @relation(fields: [agentConfigId], references: [id], onDelete: Cascade)
+  content       String      @db.Text
+  version       Int         @default(1)
+  savedBy       String?
+  createdAt     DateTime    @default(now())
+
+  @@index([agentConfigId, createdAt])
+}
+
 // ─── Kanban ────────────────────────────────────────────────────────────────
 
 model KanbanColumn {
@@ -194,6 +238,7 @@ model Lead {
   escalations    LeadEscalation[]
   tags           LeadTag[]
   calendarEvents CalendarEvent[]
+  notes          LeadNote[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
@@ -560,4 +605,167 @@ model WebhookQueue {
   error       String?  @db.Text
   createdAt   DateTime @default(now())
   retryAfter  DateTime @default(now())
+}
+
+
+// ─── Lead Notes ────────────────────────────────────────────────────────────────
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId, createdAt])
+}
+
+// ─── Push Subscriptions ────────────────────────────────────────────────────────
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Personality Profiles (AI Command Center) ─────────────────────────────────
+
+model PersonalityProfile {
+  id          String        @id @default(cuid())
+  name        String
+  tone        String        @db.Text
+  archetype   String
+  emoji       String        @default("👤")
+  isActive    Boolean       @default(true)
+  agentConfig AgentConfig[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ─── Strategy Profiles (AI Command Center) ────────────────────────────────────
+
+model StrategyProfile {
+  id          String        @id @default(cuid())
+  name        String
+  description String        @db.Text
+  salesGoal   String
+  urgency     String        @default("medium") // low | medium | high
+  isActive    Boolean       @default(true)
+  agentConfig AgentConfig[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ─── Objection Rules (AI Command Center) ──────────────────────────────────────
+
+model ObjectionRule {
+  id               String   @id @default(cuid())
+  keyword          String
+  objectionType    String   // PRICE | COMPETITOR | TIMING | DISINTEREST | TRUST | FEATURE
+  responseStrategy String   @db.Text
+  counterArgument  String   @db.Text
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ─── Constraint Rules (AI Command Center) ─────────────────────────────────────
+
+model ConstraintRule {
+  id        String   @id @default(cuid())
+  title     String
+  rule      String   @db.Text
+  reason    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Produto (Portuguese catalog — legacy feed importer) ──────────────────────
+
+model Produto {
+  id                 String        @id @default(cuid())
+  nome               String
+  slug               String        @unique
+  precoCusto         Float         @default(0)
+  precoVenda         Float
+  precoDesconto      Float
+  parcelamento       Float         @default(0)
+  fotoUrl            String?
+  descricao          String?       @db.Text
+  categoria          String?
+  ativo              Boolean       @default(true)
+  ehFerramenta       Boolean       @default(true)
+  importadoEm        DateTime      @default(now())
+  atualizadoEm       DateTime      @updatedAt
+  ultimaOfertaEm     DateTime?
+  vezesUsadoEmOferta Int           @default(0)
+  ofertas            OfertaGerada[]
+}
+
+// ─── Vendas Nacionais ──────────────────────────────────────────────────────────
+
+model PedidoNacional {
+  id                    String    @id @default(cuid())
+  conversationId        String?
+  telefoneCliente       String
+  nomeCliente           String
+  produto               String
+  cepDestino            String
+  enderecoCompleto      String
+  valorProduto          Float
+  valorFrete            Float
+  valorTotal            Float
+  transportadora        String
+  prazoFrete            Int
+  servicoFreteId        String
+  formaPagamento        String
+  pagamentoId           String?
+  pagamentoStatus       String    @default("PENDENTE")
+  pagamentoConfirmado   Boolean   @default(false)
+  pagamentoConfirmadoEm DateTime?
+  cartItemId            String?
+  urlEtiqueta           String?
+  codigoRastreamento    String?
+  etapaEnvio            String    @default("AGUARDANDO_PAGAMENTO")
+  criadoEm              DateTime  @default(now())
+  atualizadoEm          DateTime  @updatedAt
+}
+
+model CotacaoFrete {
+  id              String   @id @default(cuid())
+  telefoneCliente String
+  cepDestino      String
+  cotacoes        Json
+  expiradoEm      DateTime
+  criadoEm        DateTime @default(now())
+}
+
+// ─── Oferta Gerada ─────────────────────────────────────────────────────────────
+
+model OfertaGerada {
+  id                  String    @id @default(cuid())
+  produtoId           String
+  produto             Produto   @relation(fields: [produtoId], references: [id])
+  nomeProduto         String
+  precoCusto          Float
+  precoVenda          Float
+  precoDesconto       Float
+  parcelamento        Float
+  fotoOriginalUrl     String?
+  artePath            String?
+  textoOferta         String    @db.Text
+  status              String    @default("PRONTA") // PRONTA | ENVIADA | FALHA
+  enviadaParaWhatsApp Boolean   @default(false)
+  enviadaEm           DateTime?
+  criadaEm            DateTime  @default(now())
+
+  @@index([produtoId, criadaEm])
 }
