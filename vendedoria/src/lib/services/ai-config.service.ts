@@ -28,46 +28,10 @@ type FollowUpSettings   = z.output<typeof FollowUpSettingsSchema>;
 // The PromptCompiler can read the active version instead of live rows,
 // ensuring conversations in-flight are never disrupted by config changes.
 
-async function snapshotActiveConfig(changeNote: string): Promise<void> {
-  try {
-    const [personality, strategy, constraints, objections, agentConfig] = await Promise.all([
-      prisma.personalityProfile.findMany({ where: { isActive: true } }),
-      prisma.strategyProfile.findMany({ where: { isActive: true } }),
-      prisma.constraintRule.findMany({ where: { isActive: true } }),
-      prisma.objectionRule.findMany({ where: { isActive: true } }),
-      prisma.agentConfig.findFirst(),
-    ]);
-
-    // Determine next version number
-    const latest = await prisma.agentConfigVersion.findFirst({ orderBy: { version: "desc" } });
-    const nextVersion = (latest?.version ?? 0) + 1;
-
-    // Deactivate previous version and create new one in a transaction
-    await prisma.$transaction([
-      prisma.agentConfigVersion.updateMany({ where: { isActive: true }, data: { isActive: false } }),
-      prisma.agentConfigVersion.create({
-        data: {
-          version: nextVersion,
-          isActive: true,
-          changeNote,
-          personalitySnapshot: personality as object[],
-          strategySnapshot:    strategy as object[],
-          constraintsSnapshot: constraints as object[],
-          objectionsSnapshot:  objections as object[],
-          followUpSnapshot: {
-            maxFollowUps:  agentConfig?.maxFollowUps  ?? 4,
-            followUpHours: agentConfig?.followUpHours ?? "4,24,48,72",
-            followUpPrompt: agentConfig?.followUpPrompt ?? null,
-          },
-        },
-      }),
-    ]);
-
-    console.log(`[AiConfigService] New version ${nextVersion} created — ${changeNote}`);
-  } catch (err) {
-    // Versioning failure must never break the main mutation
-    console.error("[AiConfigService] Snapshot failed (non-fatal):", err);
-  }
+async function snapshotActiveConfig(_changeNote: string): Promise<void> {
+  // Versioning via AgentConfigVersion is handled by /api/config route.
+  // This snapshot path is disabled to match the current schema.
+  console.log(`[AiConfigService] Snapshot skipped (use /api/config for versioning)`);
 }
 
 // ─── Personality ──────────────────────────────────────────────────────────────
@@ -277,16 +241,11 @@ export const FollowUpService = {
 export const VersionService = {
   async list(take = 20) {
     return prisma.agentConfigVersion.findMany({
-      orderBy: { version: "desc" },
+      orderBy: { createdAt: "desc" },
       take,
       select: {
-        id: true, version: true, isActive: true, changeNote: true, createdAt: true,
-        // omit large JSON snapshots from the list view
-        personalitySnapshot: false,
-        strategySnapshot:    false,
-        constraintsSnapshot: false,
-        objectionsSnapshot:  false,
-        followUpSnapshot:    false,
+        id: true, savedBy: true, label: true, createdAt: true,
+        nivelVenda: true, usarEmoji: true, tomDeVoz: true, objetivoVenda: true,
       },
     });
   },
@@ -296,6 +255,6 @@ export const VersionService = {
   },
 
   async getActive() {
-    return prisma.agentConfigVersion.findFirst({ where: { isActive: true } });
+    return prisma.agentConfigVersion.findFirst({ orderBy: { createdAt: "desc" } });
   },
 };

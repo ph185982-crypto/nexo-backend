@@ -311,9 +311,10 @@ export async function makeDecision(
       data: {
         conversationId,
         action: decision.action,
-        targetState: decision.targetState,
-        reasoning: decision.reasoning,
-        metadata: decision.metadata ? JSON.stringify(decision.metadata) : undefined,
+        reason: decision.reasoning,
+        metadata: decision.metadata
+          ? (JSON.parse(JSON.stringify(decision.metadata)) as import('@prisma/client').Prisma.InputJsonValue)
+          : undefined,
       },
     });
   } catch (error) {
@@ -323,3 +324,40 @@ export async function makeDecision(
 
   return decision;
 }
+
+// ─── Synchronous rule-based service (used by agent.ts) ──────────────────────
+
+interface DecisionCtx {
+  conversationId: string;
+  userMessage?: string;
+  messageCount?: number;
+  leadStatus?: string;
+  etapa?: string;
+  humanTakeover?: boolean;
+  foraAreaEntrega?: boolean;
+  isOptOut?: boolean;
+  hardEscalation?: boolean | { shouldEscalate: boolean; reason: string };
+  hasIntentoBuy?: boolean;
+  isFirstInteraction?: boolean;
+  allDataCollected?: boolean;
+}
+
+interface SimpleDecision {
+  action: "RESPOND" | "WAIT" | "CLOSE" | "ESCALATE";
+  reason: string;
+}
+
+export const decisionService = {
+  decide(ctx: DecisionCtx): SimpleDecision {
+    if (ctx.humanTakeover) return { action: "WAIT", reason: "human takeover ativo" };
+    if (ctx.isOptOut)      return { action: "CLOSE", reason: "cliente optou por sair" };
+    const isEscalation = ctx.hardEscalation && (typeof ctx.hardEscalation === "boolean" ? ctx.hardEscalation : ctx.hardEscalation.shouldEscalate);
+    if (isEscalation) return { action: "ESCALATE", reason: "escalação forçada" };
+    if (ctx.foraAreaEntrega) return { action: "RESPOND", reason: "fora área — informar e encerrar" };
+    return { action: "RESPOND", reason: "fluxo normal" };
+  },
+  log(ctx: DecisionCtx, decision: SimpleDecision): Promise<void> {
+    console.log(`[DecisionService] conv=${ctx.conversationId} action=${decision.action} reason=${decision.reason}`);
+    return Promise.resolve();
+  },
+};
