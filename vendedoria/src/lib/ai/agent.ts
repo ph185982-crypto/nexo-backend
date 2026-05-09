@@ -559,9 +559,7 @@ export async function processAIResponse(
     const msgCount = recentMessages.length;
     const isFirstInteraction = recentMessages.filter((m) => m.role === "ASSISTANT").length === 0;
 
-    // ── Comportamento humano no primeiro contato ──────────────────────────────
-    // Lê imediatamente (check azul), depois espera ~2min antes de responder.
-    // Simula um vendedor real que viu a mensagem mas está terminando outro atendimento.
+    // ── Primeiro contato — lê (check azul) e mostra typing curto ──────────────
     if (isFirstInteraction && incomingMessageId && conversation.provider.businessPhoneNumberId) {
       await markWhatsAppMessageRead(
         conversation.provider.businessPhoneNumberId,
