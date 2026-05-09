@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
+import { cancelFollowUpJobs as _cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
@@ -10,7 +11,7 @@ import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { isManagerNumber, handleManagerMessage } from "@/lib/manager/handler";
 
-// ─── Webhook Verification (GET) ──────────────────────────────────────────────────
+// ─── Webhook Verification (GET) ──────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const mode = url.searchParams.get("hub.mode");
@@ -25,11 +26,12 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 }
 
-// ─── Message Processing (POST) ──────────────────────────────────────────────────
+// ─── Message Processing (POST) ───────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("x-hub-signature-256") ?? "";
   const body = await req.text();
 
+  // ── CORREÇÃO 4: Diagnostic log on every incoming webhook ─────────────────────
   const ts = new Date().toISOString();
   try {
     const preview = JSON.parse(body);
@@ -47,6 +49,7 @@ export async function POST(req: NextRequest) {
 
     const data = JSON.parse(body);
 
+    // Process each entry
     for (const entry of data.entry ?? []) {
       for (const change of entry.changes ?? []) {
         if (change.field !== "messages") continue;
@@ -54,6 +57,7 @@ export async function POST(req: NextRequest) {
         const value = change.value;
         const phoneNumberId = value.metadata?.phone_number_id;
 
+        // Find the WhatsApp provider config
         const providerConfig = await prisma.whatsappProviderConfig.findFirst({
           where: { businessPhoneNumberId: phoneNumberId },
           include: { agent: true },
@@ -66,10 +70,12 @@ export async function POST(req: NextRequest) {
 
         console.log("[WhatsApp Webhook] ProviderConfig encontrado:", providerConfig.id, "| Agente:", providerConfig.agent?.kind, providerConfig.agent?.status);
 
+        // Process messages
         for (const message of value.messages ?? []) {
           await handleIncomingMessage(message, value.contacts?.[0], providerConfig);
         }
 
+        // Process status updates
         for (const status of value.statuses ?? []) {
           await handleStatusUpdate(status);
         }
@@ -80,14 +86,16 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("[WhatsApp Webhook] Error — enqueuing for retry:", error);
 
+    // ── CORREÇÃO 3: Save to retry queue on failure ───────────────────────
     await prisma.webhookQueue.create({
       data: {
         payload: body,
         signature,
-        retryAfter: new Date(Date.now() + 30_000),
+        retryAfter: new Date(Date.now() + 30_000), // retry in 30s
       },
     }).catch((e) => console.error("[WebhookQueue] Failed to enqueue:", e));
 
+    // Always return 200 to Meta so it doesn't keep retrying immediately
     return NextResponse.json({ success: true, queued: true });
   }
 }
@@ -156,13 +164,18 @@ async function handleIncomingMessage(
   const mediaPayload = message.audio ?? message.voice;
 
   if (isAudio && mediaPayload?.id) {
-    const token = providerConfig.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
+    const token =
+      providerConfig.accessToken ??
+      process.env.META_WHATSAPP_ACCESS_TOKEN;
 
     if (token) {
       try {
         const mediaUrl = await getMediaUrl(mediaPayload.id, token);
         const audioBuffer = await downloadMedia(mediaUrl, token);
-        const transcript = await transcribeAudio(audioBuffer, mediaPayload.mime_type ?? "audio/ogg");
+        const transcript = await transcribeAudio(
+          audioBuffer,
+          mediaPayload.mime_type ?? "audio/ogg"
+        );
 
         if (transcript) {
           content = `[Áudio transcrito]: ${transcript}`;
@@ -202,7 +215,6 @@ async function handleIncomingMessage(
     console.log(`[Webhook] Contato recebido: ${content.substring(0, 120)}`);
   } else {
     content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
-
     const inlineCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
     if (inlineCaption) {
       content = `${content} "${inlineCaption}"`;
