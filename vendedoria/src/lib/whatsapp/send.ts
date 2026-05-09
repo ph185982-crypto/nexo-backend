@@ -269,6 +269,29 @@ export async function sendWhatsAppLocation(
   if (!res.ok) console.error("[sendWhatsAppLocation]", await res.text());
 }
 
+/** Send a WhatsApp audio message via public URL */
+export async function sendWhatsAppAudio(
+  phoneNumberId: string,
+  to: string,
+  audioUrl: string,
+  accessToken?: string
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  if (!token) return;
+  const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: normalizeBrazilianNumber(to),
+      type: "audio",
+      audio: { link: audioUrl },
+    }),
+  });
+  if (!res.ok) throw new Error(`[sendWhatsAppAudio] ${await res.text()}`);
+}
+
 /** Send typing indicator — marks message read then shows "digitando..." via Meta API */
 export async function sendWhatsAppTyping(
   phoneNumberId: string,
