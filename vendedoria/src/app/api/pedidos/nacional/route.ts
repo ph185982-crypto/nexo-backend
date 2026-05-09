@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
 import { criarPix, criarLinkParcelado } from '@/lib/pagamento/mercado-pago';
-import { sendPushToAdmins } from '@/lib/push/notificar';
+import { sendPushToAll } from '@/lib/push/notificar';
 
 // POST /api/pedidos/nacional
 export async function POST(req: NextRequest) {
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       resposta = { ...resposta, ...parcelado };
     }
 
-    await sendPushToAdmins({
+    await sendPushToAll({
       title: `📦 Novo Pedido Nacional`,
       body: `${nomeCliente} — ${produto} — R$ ${valorTotal.toFixed(2)} (${formaPagamento === 'pix' ? 'Pix' : 'Parcelado'})`,
       url: '/crm/pedidos',
