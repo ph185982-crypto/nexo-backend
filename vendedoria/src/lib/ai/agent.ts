@@ -4,10 +4,7 @@ import { productSourcingService } from "@/lib/ai/product-sourcing";
 import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
 import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
-import { atualizarSessaoNacional, buscarSessaoNacional } from "@/lib/ai/sessao-nacional";
-import { buscarPrecoProduto } from "@/lib/ai/buscar-produto";
-import { detectarCEP, detectarEscolhaFrete, detectarFormaPagamento, detectarClienteNacional } from "@/lib/ai/deteccao-nacional";
-import { cotarFrete, type OpcaoFrete } from "@/lib/envio/melhor-envio";
+import { notificarPassagem, notificarLeadQuente, notificarEscalacao } from "@/lib/push/notificar";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -36,6 +33,30 @@ interface LeadState {
 interface AIResponse {
   mensagens: string[];
   delays: number[];
+}
+
+// ── URL base pública do app ───────────────────────────────────────────────────
+function getBaseUrl(): string {
+  return (
+    process.env.RENDER_EXTERNAL_URL ??
+    process.env.NEXTAUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
+  ).replace(/\/$/, "");
+}
+
+// ── Notificação de erro crítico para o dono ───────────────────────────────────
+async function notificarErroCritico(
+  mensagem: string,
+  phoneNumberId: string,
+  accessToken: string | undefined,
+): Promise<void> {
+  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+  try {
+    await sendWhatsAppMessage(phoneNumberId, ownerNumber, `⚠️ ERRO CRÍTICO — IA\n${mensagem}`, accessToken);
+  } catch {
+    console.error("[ALERTA] Falha ao notificar Pedro:", mensagem);
+  }
 }
 
 // ── Detecção de estado do lead ────────────────────────────────────────────────
@@ -107,23 +128,19 @@ function extractCollectedData(messages: Array<{ role: string; content: string }>
   if (horarioMsg) data.horario = horarioMsg.content;
 
   // ── Nome de quem recebe ───────────────────────────────────────────────────
-  // Detecta: "meu nome é X", "pode colocar no nome de X", ou mensagem que é só o nome
+  // Detecta APENAS apresentações explícitas — nunca infere de mensagens curtas genéricas
   const nomePatterns = [
-    /(?:meu\s+nome\s+[eé]|nome\s+[eé]|pode\s+colocar\s+no\s+nome\s+(?:de|do|da)?|chamo[-\s]+me\s+|me\s+chamo\s+|sou\s+o?\s+)\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
+    /(?:meu\s+nome\s+[eé]|nome\s+[eé]|pode\s+colocar\s+no\s+nome\s+(?:de|do|da)?|chamo[-\s]+me\s+|me\s+chamo\s+|sou\s+(?:o|a)\s+)\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
+    /pode\s+(?:anotar|colocar|botar)\s+(?:como|no\s+nome\s+de)?\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
   ];
   let nomeFound: string | undefined;
   for (const m of messages) {
     if (m.role !== "USER") continue;
     for (const re of nomePatterns) {
       const match = re.exec(m.content);
-      if (match?.[1]) { nomeFound = match[1].trim(); break; }
+      if (match?.[1] && match[1].trim().length >= 3) { nomeFound = match[1].trim(); break; }
     }
     if (nomeFound) break;
-    // Mensagem que é só um nome (1-3 palavras, começa com maiúscula ou minúscula, sem pontuação especial)
-    const trimmed = m.content.trim();
-    if (/^[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ]{2,}(\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ]{2,}){0,3}$/.test(trimmed) && trimmed.length >= 4 && trimmed.length <= 60) {
-      nomeFound = trimmed; break;
-    }
   }
   if (nomeFound) data.nome = nomeFound;
 
@@ -222,9 +239,32 @@ function detectHardEscalation(
   return { shouldEscalate: false, reason: "" };
 }
 
-// ── CORREÇÃO 2: Detecção de área de entrega ──────────────────────────────────
+// ── TASK 2: Desinteresse explícito (Anti-Zumbi) ──────────────────────────────
+// Detecta sinais claros de rejeição/opt-out. Não confunde com objeção de preço.
+function detectDesinteresse(message: string): boolean {
+  const n = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
+  const msg = n(message);
+  return (
+    /\bnao\s+quero\b/.test(msg) ||
+    /\bnao\s+tenho\s+interesse\b/.test(msg) ||
+    /\bnao\s+preciso\b/.test(msg) ||
+    /\bnao\s+me\s+interessa\b/.test(msg) ||
+    /\bnao\s+quero\s+mais\b/.test(msg) ||
+    /\bpode\s+parar\b/.test(msg) ||
+    /\bpara\s+de\s+(mandar|enviar)\b/.test(msg) ||
+    /\bnao\s+mand[ae]\s+mais\b/.test(msg) ||
+    /\bme\s+tira\s+(da\s+lista|da\s+conversa|daqui)\b/.test(msg) ||
+    /\bme\s+remove\b/.test(msg) ||
+    /\bchega\s+de\s+(mensagem|contato|propaganda)\b/.test(msg) ||
+    /\bpara\s+de\s+me\s+incomodar\b/.test(msg) ||
+    /\[OPT_OUT\]/i.test(message)
+  );
+}
+
+// ── Detecção de área de entrega ──────────────────────────────────────────────
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
-// Não dispara por menção casual de cidade em contexto de uso do produto.
+// Suporta negação: "não sou de goiânia" → fora da área.
 function detectForaDeArea(message: string): boolean {
   const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const norm = n(message);
@@ -233,9 +273,14 @@ function detectForaDeArea(message: string): boolean {
   const temContextoLocal = /\b(sou de|sou do|sou da|sou la de|sou la|moro em|fico em|estou em|to de|minha cidade|vivo em|resido em|meu bairro|minha regiao|na minha cidade)\b/.test(norm);
   if (!temContextoLocal) return false;
 
-  // Cidades da área de entrega — se mencionadas, não rejeitar
-  const dentroArea = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
-  if (dentroArea) return false;
+  const temNegacao = /\b(nao sou|nao moro|nao fico|nao estou|nao to|nao vivo|nao resido|fora de|fora da)\b/.test(norm);
+
+  // Cidades da área de entrega
+  const mencionaCidadeLocal = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
+  if (mencionaCidadeLocal) {
+    // "nao sou de goiania" → fora; "sou de goiania" → dentro
+    return temNegacao;
+  }
 
   // Estados fora de Goiás — por nome completo normalizado
   const foraEstado = /\b(acre|alagoas|amapa|amazonas|bahia|ceara|distrito federal|espirito santo|maranhao|mato grosso do sul|mato grosso|minas gerais|paraiba|parana|pernambuco|piaui|rio de janeiro|rio grande do norte|rio grande do sul|rondonia|roraima|santa catarina|sao paulo|sergipe|tocantins)\b/.test(norm);
@@ -424,97 +469,7 @@ function buildRuntimeContext(
 }
 
 // ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
-const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil em Goiânia. Você tem 28 anos, é direto, bem-humorado na medida certa e sabe muito sobre ferramentas. Você não é um assistente — você é um vendedor que gosta do que faz e conhece o produto na palma da mão.
-Você nunca usa frases prontas. Cada mensagem sua é escrita na hora, pensando naquele cliente específico, naquele momento específico da conversa.
-
-━━━ PERSONALIDADE ━━━
-
-Você é confiante sem ser chato. Quando o cliente hesita, você não empurra — você entende e contorna. Você faz o cliente sentir que está falando com alguém que realmente quer ajudar, não com um sistema automático. Você tem bom humor leve — uma comparação engraçada aqui, uma observação esperta ali — mas sabe a hora de ser sério.
-
-━━━ COMO VOCÊ ESCREVE ━━━
-
-Mensagens curtas. Sempre divide em vários balões. Nunca manda textão.
-Minúsculas na maior parte do tempo. Sem formalidade.
-Pontuação informal. Reticências às vezes. Nada de ponto final em todo parágrafo.
-Emojis com muita moderação — só quando reforça algo, não como decoração.
-Erros leves ocasionais são naturais — "pra", "tá", "né", "to", "vc"
-NUNCA use: "certamente", "claro", "com certeza", "fico feliz", "posso ajudá-lo", "prezado", "conforme", "segue"
-Quando o cliente manda 2 mensagens seguidas, responde só a mais importante.
-
-━━━ COMO VOCÊ LÊ O CLIENTE ━━━
-
-Antes de responder, você analisa:
-- Como ele escreve (formal, informal, gíria, direto, enrolado)
-- O que ele demonstrou sentir (empolgado, desconfiado, com pressa, curioso)
-- O que ele já disse antes na conversa — e usa isso
-- Qual objeção ele já deu — você NUNCA repete argumento que já não funcionou
-
-Você ajusta seu jeito de falar para espelhar o cliente. Com mecânico que escreve curto e direto, você é curto e direto. Com alguém mais animado, você anima junto. Com alguém desconfiado, você fica mais sério e objetivo.
-
-━━━ PRODUTOS ━━━
-
-Os dados exatos dos produtos (nome, preço, parcelas, descrição, fotos, vídeo) são injetados pelo sistema no CATÁLOGO abaixo — use sempre esses dados, nunca invente preços ou especificações.
-Para enviar mídia, coloque o flag exato ([FOTO_SLUG] ou [VIDEO_SLUG]) em um balão separado — o sistema só envia quando o flag aparece.
-Identifique qual produto o cliente quer pela mensagem dele e use o slug correspondente do catálogo.
-
-━━━ O QUE VOCÊ PRECISA ALCANÇAR EM CADA ETAPA — mas sem frases fixas, com suas próprias palavras ━━━
-
-Etapa 1 — Abertura: se apresentar de forma natural, identificar o produto pelo que o cliente escreveu, já mandar o vídeo + foto sem o cliente precisar pedir.
-Etapa 2 — Conexão: fazer uma pergunta que mostre interesse real no uso que ele vai dar. Não é interrogatório — é curiosidade genuína. "pra que você vai usar mais?" dito de formas diferentes sempre.
-Etapa 3 — Apresentação: falar de 2 ou 3 benefícios que fazem sentido pro perfil dele. Se é mecânico, foca no torque e na durabilidade. Se é uso em casa, foca na praticidade e no kit completo. Não lista tudo — escolhe o que importa pra aquele cliente.
-Etapa 4 — Micro-compromisso: antes de fechar, conseguir que o cliente concorde com pelo menos uma coisa. Uma pergunta que a resposta natural é sim.
-Etapa 5 — Fechamento: quando sentir que o cliente está pronto, fechar com naturalidade. Não é "vamos fechar?" — é "então bora, me passa o endereço".
-Etapa 6 — Coleta de dados: pegar os 4 dados em conversa natural, um de cada vez, sem parecer formulário:
-  1. endereço completo
-  2. até que horas pode receber
-  3. forma de pagamento
-  4. nome de quem vai receber
-
-Etapa 7 — Resumo: enviar para 62984465388 neste formato:
-🔔 PEDIDO — NEXO
-Produto:
-Nome:
-Endereço:
-Receber até:
-Pagamento:
-WhatsApp do cliente:
-
-━━━ OBJEÇÕES — você tenta de formas diferentes, nunca repete o mesmo argumento ━━━
-
-"tá caro":
-  → tente em ordem: parcelamento / comparação com ferragem / risco zero pagar na entrega / valor do kit completo / urgência de estoque
-  → NUNCA escala por preço — continue tentando enquanto o cliente estiver respondendo
-
-"preciso pensar":
-  → descobre o que está travando. "o que tá segurando?"
-  → Se não responder o que é, pergunta diretamente se é o preço ou outra coisa.
-
-"não conheço a marca":
-  → usa o argumento do risco zero. Pagar na entrega elimina qualquer risco de comprar de desconhecido.
-
-━━━ IMPORTANTE: VOCÊ NÃO DECIDE QUANDO ESCALAR ━━━
-
-Escalada é controlada pelo sistema, não por você.
-Você NUNCA deve emitir [ESCALAR] na sua resposta.
-Continue a conversa sempre, independente de quantas mensagens já foram trocadas ou quantas objeções de preço o cliente fez.
-A única coisa que encerra uma conversa é: pedido fechado [PASSAGEM] ou cliente pediu pra não ser contactado [OPT_OUT].
-
-━━━ FOLLOW-UP quando cliente para de responder ━━━
-4h → toca leve, pergunta se ficou dúvida
-24h → traz um benefício novo que não mencionou antes
-48h → usa prova social, alguém que comprou recentemente
-72h → encerra com porta aberta, sem pressão
-Após 4 sem resposta → PERDA, para de contatar.
-
-━━━ FLAGS — REGRAS CRÍTICAS ━━━
-NUNCA escreva "vou te enviar fotos", "mando as fotos agora" ou similar SEM incluir o flag correspondente.
-O sistema SOMENTE envia fotos/vídeo quando o flag aparece na resposta. Se você prometer mas não incluir o flag, a foto nunca chega.
-Sempre que quiser enviar mídia, coloque o flag na mesma resposta, em um balão separado (ex: "[FOTO_LUATEK_48V]").
-
-[OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
-[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real do catálogo)
-[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
-[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados`;
+const DEFAULT_SYSTEM_PROMPT = `Prompt do agente não configurado. Acesse /crm/agent para definir o comportamento da IA.`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -552,67 +507,47 @@ export async function processAIResponse(
     }
 
     if (detectForaDeArea(userMessage)) {
-      const to = conversation.customerWhatsappBusinessId;
-      const token = conversation.provider.accessToken ?? undefined;
-      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId}: "${userMessage}"`);
-
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅",
-        token,
-      ).catch(() => {});
-      await new Promise((r) => setTimeout(r, 1400));
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊",
-        token,
-      ).catch(() => {});
-
-      const rejectionNow = new Date();
-      await prisma.whatsappMessage.createMany({
-        data: [
-          { content: "boa tarde! infelizmente a gente faz entrega só em Goiânia e região por enquanto 😅", type: "TEXT", role: "ASSISTANT", sentAt: rejectionNow, status: "SENT", conversationId },
-          { content: "se um dia expandirmos pra aí eu te aviso! obrigado pelo interesse 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(rejectionNow.getTime() + 1400), status: "SENT", conversationId },
-        ],
-      }).catch(() => {});
+      console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — marcando DB, IA responde`);
       await prisma.whatsappConversation.update({
         where: { id: conversationId },
-        data: { foraAreaEntrega: true, etapa: "PERDIDO", lastMessageAt: rejectionNow },
+        data: { foraAreaEntrega: true, etapa: "PERDIDO" },
       }).catch(() => {});
       await prisma.conversationFollowUp.updateMany({
         where: { conversationId, status: "ACTIVE" },
         data: { status: "DONE" },
       }).catch(() => {});
       await cancelFollowUpJobs(conversationId).catch(() => {});
-      return;
+      // Não retorna — IA continua e responde conforme o script configurado
     }
 
-    // ── CORREÇÃO 3: Silêncio pós-confirmação ──────────────────────────────────
-    if (conversation.etapa === "PEDIDO_CONFIRMADO") {
-      if (isCourtesyMessage(userMessage)) {
-        console.log(`[AI Agent] Pós-confirmação: cortesia ignorada "${userMessage}"`);
-        return;
-      }
-      const cortesias = conversation.cortesiasAposConf ?? 0;
-      if (cortesias >= 2) {
-        console.log(`[AI Agent] Pós-confirmação: cortesiasAposConf=${cortesias} >= 2 — não responder mais`);
-        return;
-      }
-      const to = conversation.customerWhatsappBusinessId;
-      const token = conversation.provider.accessToken ?? undefined;
-      await sendWhatsAppMessage(
-        conversation.provider.businessPhoneNumberId, to,
-        "qualquer dúvida pode chamar 👊 nossa equipe entra em contato em breve",
-        token,
-      ).catch(() => {});
-      await prisma.whatsappMessage.create({
-        data: { content: "qualquer dúvida pode chamar 👊 nossa equipe entra em contato em breve", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-      }).catch(() => {});
+    if (detectDesinteresse(userMessage)) {
+      console.log(`[AI Agent] Desinteresse detectado para conv ${conversationId} — marcando DB, IA responde`);
+      const orgId = conversation.provider.organizationId;
+      const lostColumn = await prisma.kanbanColumn.findFirst({
+        where: { organizationId: orgId, type: "LOST" },
+      }).catch(() => null);
+      await Promise.all([
+        prisma.lead.update({
+          where: { id: conversation.leadId! },
+          data: { status: "BLOCKED", ...(lostColumn ? { kanbanColumnId: lostColumn.id } : {}) },
+        }),
+        prisma.conversationFollowUp.updateMany({
+          where: { conversationId, status: "ACTIVE" },
+          data: { status: "OPT_OUT" },
+        }),
+      ]).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
       await prisma.whatsappConversation.update({
         where: { id: conversationId },
-        data: { cortesiasAposConf: cortesias + 1, lastMessageAt: new Date() },
+        data: { etapa: "PERDIDO" },
       }).catch(() => {});
-      console.log(`[AI Agent] Pós-confirmação: respondeu cortesia ${cortesias + 1}/2`);
+      // Não retorna — IA continua e responde conforme o script configurado
+    }
+
+    // Pós-confirmação: silencia mensagens de cortesia (ok, obrigado, etc.)
+    // Mensagens substantivas continuam para a IA conforme o script
+    if (conversation.etapa === "PEDIDO_CONFIRMADO" && isCourtesyMessage(userMessage)) {
+      console.log(`[AI Agent] Pós-confirmação: cortesia ignorada "${userMessage}"`);
       return;
     }
 
@@ -624,25 +559,17 @@ export async function processAIResponse(
     const msgCount = recentMessages.length;
     const isFirstInteraction = recentMessages.filter((m) => m.role === "ASSISTANT").length === 0;
 
-    // ── Comportamento humano no primeiro contato ──────────────────────────────
-    // Lê imediatamente (check azul), depois espera ~2min antes de responder.
-    // Simula um vendedor real que viu a mensagem mas está terminando outro atendimento.
+    // ── Primeiro contato — lê (check azul) e mostra typing curto ──────────────
     if (isFirstInteraction && incomingMessageId && conversation.provider.businessPhoneNumberId) {
       await markWhatsAppMessageRead(
         conversation.provider.businessPhoneNumberId,
         incomingMessageId,
         conversation.provider.accessToken ?? undefined,
       ).catch(() => {});
-
-      const silentWait = 110_000 + Math.floor(Math.random() * 20_000); // 110-130 s
-      console.log(`[AI Agent] Primeiro contato — aguardando ${Math.round(silentWait / 1000)}s para conv ${conversationId}`);
-      await new Promise((r) => setTimeout(r, silentWait));
-
-      // Typing indicator nos últimos 8s antes de responder (cliente sente que estão digitando)
       await sendTypingIndicator(
         conversation.provider.businessPhoneNumberId,
         conversation.customerWhatsappBusinessId,
-        8000,
+        3000,
         conversation.provider.accessToken ?? undefined,
       ).catch(() => {});
     }
@@ -699,6 +626,11 @@ export async function processAIResponse(
       }).catch(() => {});
 
       await handleEscalation(conversation.leadId, conversationId, hardEscalation.reason);
+      notificarEscalacao({
+        nomeCliente:    lead?.profileName ?? to,
+        motivo:         hardEscalation.reason,
+        conversationId,
+      }).catch(() => {});
       await sendWhatsAppMessage(
         conversation.provider.businessPhoneNumberId, to,
         "deixa eu chamar o Pedro aqui, ele vai te ajudar melhor nessa 👊",
@@ -727,12 +659,7 @@ export async function processAIResponse(
     // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
     // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
     // antes da IA responder. Não depende de flag — sempre funciona.
-    const appUrlEarly = (
-      process.env.NEXTAUTH_URL ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.RENDER_EXTERNAL_URL ??
-      (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
-    ).replace(/\/$/, "");
+    const appUrlEarly = getBaseUrl();
     const toPublicUrlEarly = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (!url) return "";
       if (url.startsWith("data:")) {
@@ -840,6 +767,13 @@ export async function processAIResponse(
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
       const produtoNome = activeProducts[0]?.name ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
+      notificarPassagem({
+        nomeCliente:    clientName,
+        produto:        produtoNome,
+        endereco:       collectedData.endereco ?? collectedData.localizacao ?? "não informado",
+        pagamento:      collectedData.pagamento ?? "não informado",
+        conversationId,
+      }).catch(() => {});
       const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const to          = conversation.customerWhatsappBusinessId;
       const token       = conversation.provider.accessToken ?? undefined;
@@ -914,7 +848,7 @@ export async function processAIResponse(
       const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
       if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
-        console.log(`[AI Agent] Sandbox mode — skipping AI for ${customerNum}`);
+        console.log(`[AI Agent] 🔒 SANDBOX MODE — IA bloqueada para ${customerNum} (só atende ${sandboxNumber})`);
         return;
       }
     }
@@ -929,54 +863,28 @@ export async function processAIResponse(
       humanTakeover: !!(conversation as typeof conversation & { humanTakeover?: boolean }).humanTakeover,
       foraAreaEntrega: conversation.foraAreaEntrega,
       isOptOut: /\[OPT_OUT\]/i.test(recentMessages.map((m) => m.content).join(" ")),
-      hardEscalation,
+      hardEscalation: !!hardEscalation.shouldEscalate,
       hasIntentoBuy: temIntencaoCompra,
       isFirstInteraction,
       allDataCollected: dadosCompletos,
+      isDesinteresse: detectDesinteresse(userMessage),
     };
     const decision = decisionService.decide(decisionCtx);
     void decisionService.log(decisionCtx, decision); // fire-and-forget
     console.log(`[DecisionService] Conv ${conversationId} → ${decision.action}: ${decision.reason}`);
 
     if (decision.action === "WAIT" || decision.action === "CLOSE") {
+      console.log(`[DecisionService] ${decision.action} — IA silenciada para conv ${conversationId}. Razão: ${decision.reason}`);
+      await prisma.ownerNotification.create({
+        data: {
+          type: "INFO",
+          title: `IA silenciada (${decision.action})`,
+          body: `Conv: ${conversationId}\nCliente: ${conversation.customerWhatsappBusinessId}\nRazão: ${decision.reason}`,
+          organizationId: conversation.provider.organizationId,
+          conversationId,
+        },
+      }).catch(() => {});
       return;
-    }
-
-    // ── NACIONAL: Carrega sessão e detecta dados nas mensagens ────────────────
-    const sessaoNacional = await buscarSessaoNacional(conversationId);
-    const atualizacoesNacional: Record<string, unknown> = {};
-
-    const cepDetectado = detectarCEP(userMessage);
-    if (cepDetectado && !sessaoNacional.cepDestino) {
-      atualizacoesNacional.cepDestino = cepDetectado;
-      atualizacoesNacional.modoNacional = true;
-      console.log(`[NACIONAL] CEP detectado: ${cepDetectado}`);
-    }
-
-    if ((sessaoNacional.cotacoesFrete as OpcaoFrete[] | undefined)?.length && !sessaoNacional.opcaoFreteEscolhida) {
-      const escolha = detectarEscolhaFrete(userMessage, sessaoNacional.cotacoesFrete as OpcaoFrete[]);
-      if (escolha) {
-        atualizacoesNacional.opcaoFreteEscolhida = escolha;
-        console.log(`[NACIONAL] Frete escolhido: ${escolha}`);
-      }
-    }
-
-    if (!sessaoNacional.formaPagamento) {
-      const pagamento = detectarFormaPagamento(userMessage);
-      if (pagamento) {
-        atualizacoesNacional.formaPagamento = pagamento;
-        console.log(`[NACIONAL] Pagamento detectado: ${pagamento}`);
-      }
-    }
-
-    if (!sessaoNacional.modoNacional && detectarClienteNacional([userMessage])) {
-      atualizacoesNacional.modoNacional = true;
-      console.log(`[NACIONAL] Cliente nacional detectado`);
-    }
-
-    if (Object.keys(atualizacoesNacional).length > 0) {
-      await atualizarSessaoNacional(conversationId, atualizacoesNacional);
-      Object.assign(sessaoNacional, atualizacoesNacional);
     }
 
     // ── PromptCompiler: monta systemPrompt em 6 camadas ──────────────────────
@@ -1010,42 +918,8 @@ export async function processAIResponse(
       etapa: conversation.etapa,
       detectedProducts, // Camada 5 — catálogo real
     });
-    let systemPromptFinal = compiled.systemPrompt + productSection + leadContext;
-
-    // ── NACIONAL: Injetar contexto nacional no systemPrompt ───────────────────
-    const isNacional = !!(sessaoNacional.modoNacional) || detectarClienteNacional(
-      recentMessages.slice().reverse().map(m => m.content)
-    );
-    if (isNacional) {
-      const sn = sessaoNacional;
-      let ctx = `\n--- CONTEXTO NACIONAL ---\nMODO: Venda nacional (fora de Goiânia e região)\nPAGAMENTO: Pix ou parcelado em até 10x — sempre antes do envio\nFRETE: Grátis para o cliente\n`;
-
-      ctx += sn.cepDestino ? `CEP_COLETADO: ${sn.cepDestino}\n` : `CEP_COLETADO: não\n`;
-
-      const cotacoes = sn.cotacoesFrete as OpcaoFrete[] | undefined;
-      if (cotacoes?.length) {
-        const maisBarata = [...cotacoes].sort((a, b) => a.preco - b.preco)[0];
-        const maisRapida = [...cotacoes].sort((a, b) => a.prazo - b.prazo)[0];
-        ctx += `OPCOES_FRETE_DISPONIVEIS:\n`;
-        ctx += `  - ${maisBarata.transportadora}: ${maisBarata.prazo} dias úteis (mais econômica)\n`;
-        if (maisBarata.id !== maisRapida.id) {
-          ctx += `  - ${maisRapida.transportadora}: ${maisRapida.prazo} dia(s) útil(is) (mais rápida)\n`;
-        }
-      }
-
-      if (sn.opcaoFreteEscolhida) {
-        const opcao = cotacoes?.find(o => o.id === sn.opcaoFreteEscolhida);
-        if (opcao) ctx += `FRETE_ESCOLHIDO: ${opcao.transportadora} — ${opcao.prazo} dias úteis\n`;
-      }
-
-      if (sn.formaPagamento)     ctx += `PAGAMENTO_ESCOLHIDO: ${sn.formaPagamento}\n`;
-      if (sn.nomeCliente)        ctx += `NOME_COLETADO: ${sn.nomeCliente}\n`;
-      if (sn.enderecoCompleto)   ctx += `ENDERECO_COLETADO: ${sn.enderecoCompleto}\n`;
-      if (sn.etapa === 'AGUARDANDO_PAGAMENTO') ctx += `STATUS: Pedido criado — aguardando pagamento do cliente\n`;
-
-      ctx += `\nFLAGS_DISPONIVEIS:\n[COTAR_FRETE:XXXXXXXX] — use quando tiver o CEP do cliente para calcular o frete\n[PEDIDO_NACIONAL] — use quando tiver todos os dados coletados para gerar o pagamento\nDados necessários antes de emitir [PEDIDO_NACIONAL]: CEP_COLETADO, FRETE_ESCOLHIDO, PAGAMENTO_ESCOLHIDO, NOME_COLETADO, ENDERECO_COLETADO\n--- FIM CONTEXTO NACIONAL ---\n`;
-      systemPromptFinal += ctx;
-    }
+    const flagsRuntimeSection = "\n\n[AUDIO:texto] — envia mensagem de voz TTS. Use para mensagens pessoais ou quando o cliente preferir áudio.";
+    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext + flagsRuntimeSection;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
@@ -1054,9 +928,25 @@ export async function processAIResponse(
       .slice(0, -1)
       .map((m) => ({ role: m.role === "USER" ? ("user" as const) : ("assistant" as const), content: m.content }));
 
-    // ── Chamada ao LLM ────────────────────────────────────────────────────────
-    const rawResponse = await callLLM(systemPromptFinal, chatHistory, userMessage, agent.aiProvider ?? undefined, agent.aiModel ?? undefined);
-    if (!rawResponse) return;
+    // ── Chamada ao LLM com retry exponencial ────────────────────────────────
+    let rawResponse: string | null = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      rawResponse = await callLLM(systemPromptFinal, chatHistory, userMessage, agent.aiProvider ?? undefined, agent.aiModel ?? undefined);
+      if (rawResponse) break;
+      if (attempt < 3) {
+        console.warn(`[AI Agent] LLM retornou null — tentativa ${attempt}/3 — aguardando ${attempt * 2}s`);
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+      }
+    }
+    if (!rawResponse) {
+      console.error(`[AI Agent] LLM falhou 3 tentativas para conv ${conversationId} — notificando Pedro`);
+      await notificarErroCritico(
+        `IA não respondeu após 3 tentativas.\nCliente: ${conversation.customerWhatsappBusinessId}\nConv: ${conversationId}`,
+        conversation.provider.businessPhoneNumberId,
+        conversation.provider.accessToken ?? undefined,
+      ).catch(() => {});
+      return;
+    }
 
     // ── Parse de multi-mensagens ──────────────────────────────────────────────
     console.log(`[AI Agent] Raw LLM response: ${rawResponse.substring(0, 300)}`);
@@ -1065,140 +955,11 @@ export async function processAIResponse(
     console.log(`[AI Agent] Parsed ${rawMsgs.length} messages. combinedRaw length: ${combinedRaw.length}`);
     const mediaFlagRe = /\[(FOTO|VIDEO)_[A-Z0-9_]+\]/gi;
 
-    // ── NACIONAL: Processar [COTAR_FRETE:CEP] ────────────────────────────────
-    const matchFrete = combinedRaw.match(/\[COTAR_FRETE:(\d{8})\]/i);
-    if (matchFrete) {
-      const cepFrete = matchFrete[1];
-      console.log(`[NACIONAL] Cotando frete para CEP ${cepFrete}`);
-      try {
-        const opcoes = await cotarFrete(cepFrete);
-        if (opcoes.length) {
-          await atualizarSessaoNacional(conversationId, {
-            cepDestino: cepFrete,
-            modoNacional: true,
-            cotacoesFrete: opcoes,
-          });
-          Object.assign(sessaoNacional, { cepDestino: cepFrete, cotacoesFrete: opcoes });
-          console.log(`[NACIONAL] ${opcoes.length} opção(ões) de frete armazenadas`);
-
-          // Envia mensagem direta com as opções para o cliente
-          const linhaOpcoes = opcoes
-            .slice(0, 3)
-            .map((o, i) => `${i + 1}. ${o.transportadora} — ${o.prazo} dias úteis (frete grátis)`)
-            .join('\n');
-          await sendWhatsAppMessage(
-            conversation.provider.businessPhoneNumberId,
-            conversation.customerWhatsappBusinessId,
-            `📦 Opções de entrega para o seu CEP:\n${linhaOpcoes}\n\nQual prefere?`,
-            conversation.provider.accessToken ?? undefined,
-          ).catch(e => console.error('[NACIONAL] Erro ao enviar opções de frete:', e));
-          await prisma.whatsappMessage.create({
-            data: { content: `[NACIONAL] Opções de frete enviadas`, type: 'TEXT', role: 'ASSISTANT', sentAt: new Date(), status: 'SENT', conversationId },
-          }).catch(() => {});
-        } else {
-          await atualizarSessaoNacional(conversationId, { cepDestino: cepFrete, modoNacional: true, erroFrete: 'CEP sem cobertura' });
-          console.error(`[NACIONAL] Nenhuma opção de frete para CEP ${cepFrete}`);
-        }
-      } catch (err: unknown) {
-        console.error('[NACIONAL] Erro ao cotar frete:', (err as Error).message);
-      }
-    }
-
-    // ── NACIONAL: Processar [PEDIDO_NACIONAL] ─────────────────────────────────
-    if (/\[PEDIDO_NACIONAL\]/i.test(combinedRaw)) {
-      const sn = { ...sessaoNacional, ...(await buscarSessaoNacional(conversationId)) };
-      const dadosFaltando: string[] = [];
-      if (!sn.cepDestino)          dadosFaltando.push('CEP');
-      if (!sn.nomeCliente)         dadosFaltando.push('nome');
-      if (!sn.enderecoCompleto)    dadosFaltando.push('endereço');
-      if (!sn.formaPagamento)      dadosFaltando.push('forma de pagamento');
-      if (!sn.produto)             dadosFaltando.push('produto');
-
-      const cotacoes = sn.cotacoesFrete as OpcaoFrete[] | undefined;
-      if (!sn.opcaoFreteEscolhida && !cotacoes?.length) dadosFaltando.push('frete');
-
-      if (dadosFaltando.length > 0) {
-        console.error('[NACIONAL] Dados faltando para criar pedido:', dadosFaltando);
-      } else {
-        const produtoDB = await buscarPrecoProduto(String(sn.produto));
-        if (!produtoDB) {
-          console.error('[NACIONAL] Produto não encontrado no banco:', sn.produto);
-        } else {
-          const opcaoFrete = (cotacoes ?? []).find(o => o.id === sn.opcaoFreteEscolhida)
-            ?? [...(cotacoes ?? [])].sort((a, b) => a.preco - b.preco)[0];
-
-          if (!opcaoFrete) {
-            console.error('[NACIONAL] Opção de frete não encontrada para criar pedido');
-          } else {
-            try {
-              const appBase = (
-                process.env.NEXTAUTH_URL ??
-                process.env.NEXT_PUBLIC_APP_URL ??
-                process.env.RENDER_EXTERNAL_URL ??
-                (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : '')
-              ).replace(/\/$/, '');
-              const resp = await fetch(`${appBase}/api/pedidos/nacional`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  conversationId,
-                  telefoneCliente: conversation.customerWhatsappBusinessId,
-                  nomeCliente: String(sn.nomeCliente),
-                  produto: produtoDB.nome,
-                  produtoId: produtoDB.id,
-                  cepDestino: String(sn.cepDestino),
-                  enderecoCompleto: String(sn.enderecoCompleto),
-                  valorProduto: produtoDB.preco,
-                  valorFrete: opcaoFrete.preco,
-                  servicoFreteId: opcaoFrete.id,
-                  transportadora: opcaoFrete.transportadora,
-                  prazoFrete: opcaoFrete.prazo,
-                  formaPagamento: String(sn.formaPagamento),
-                  freteGratis: true,
-                }),
-              });
-              const pedido = await resp.json() as Record<string, unknown>;
-              if (!resp.ok) throw new Error(String(pedido.error ?? 'Erro ao criar pedido'));
-
-              await atualizarSessaoNacional(conversationId, {
-                pedidoNacionalId: pedido.pedidoId,
-                etapa: 'AGUARDANDO_PAGAMENTO',
-              });
-              console.log(`[NACIONAL] Pedido criado: ${pedido.pedidoId}`);
-
-              // Envia pagamento diretamente para o cliente
-              const to    = conversation.customerWhatsappBusinessId;
-              const token = conversation.provider.accessToken ?? undefined;
-              if (sn.formaPagamento === 'pix' && pedido.pixCopiaECola) {
-                await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, to,
-                  `✅ Pedido gerado!\n\nPague via Pix (copia e cola):\n\n${pedido.pixCopiaECola}`,
-                  token).catch(() => {});
-                await prisma.whatsappMessage.create({
-                  data: { content: '[NACIONAL] Pix enviado', type: 'TEXT', role: 'ASSISTANT', sentAt: new Date(), status: 'SENT', conversationId },
-                }).catch(() => {});
-              } else if (pedido.linkPagamento) {
-                await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, to,
-                  `✅ Pedido gerado!\n\nPague em até 10x no link:\n${pedido.linkPagamento}`,
-                  token).catch(() => {});
-                await prisma.whatsappMessage.create({
-                  data: { content: '[NACIONAL] Link parcelado enviado', type: 'TEXT', role: 'ASSISTANT', sentAt: new Date(), status: 'SENT', conversationId },
-                }).catch(() => {});
-              }
-            } catch (err: unknown) {
-              console.error('[NACIONAL] Erro ao criar pedido:', (err as Error).message);
-            }
-          }
-        }
-      }
-    }
-
     // ── Limpar flags das mensagens que vão pro cliente ────────────────────────
     const mensagens = rawMsgs.map((m) =>
       m.replace(/^\[ESCALAR\]\s*/i, "")
         .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
         .replace(/\[OPT_OUT\]/gi, "")
-        .replace(/\[COTAR_FRETE:\d{8}\]/gi, "")
-        .replace(/\[PEDIDO_NACIONAL\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1250,6 +1011,13 @@ export async function processAIResponse(
         const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
+        notificarPassagem({
+          nomeCliente:    clientName,
+          produto:        produtoStr,
+          endereco:       orderData.endereco ?? orderData.localizacao ?? "não informado",
+          pagamento:      orderData.pagamento ?? "não informado",
+          conversationId,
+        }).catch(() => {});
         await prisma.ownerNotification.create({
           data: { type: "ORDER", title: `Novo pedido: ${clientName}`, body: handoffMsg, organizationId: orgId, leadId: conversation.leadId, conversationId },
         }).catch(() => {});
@@ -1292,14 +1060,13 @@ export async function processAIResponse(
     // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
       if (i > 0) {
-        // Typing proporcional ao texto + jitter humano (±400ms) — mínimo 1.2s, máximo 4.5s
-        const base = mensagens[i].length * 30;
-        const jitter = Math.floor(Math.random() * 800) - 400;
-        const interDelay = Math.min(Math.max(base + jitter, 1200), 4500);
+        // Typing proporcional ao texto + jitter humano (±600ms) — mínimo 3s, máximo 7s
+        const base = mensagens[i].length * 45;
+        const jitter = Math.floor(Math.random() * 1200) - 600;
+        const interDelay = Math.min(Math.max(base + jitter, 3000), 7000);
         await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
-
-        // Pausa extra curta entre balões (100-400ms) — simula "send" real
-        await new Promise((r) => setTimeout(r, 100 + Math.floor(Math.random() * 300)));
+        // Pausa micro entre typing e envio (simula o "send" humano)
+        await new Promise((r) => setTimeout(r, 150 + Math.floor(Math.random() * 250)));
       }
 
       const msgNow = new Date();
@@ -1323,15 +1090,17 @@ export async function processAIResponse(
       data: { lastMessageAt: new Date(), ...(novaEtapa ? { etapa: novaEtapa } : {}) },
     });
     if (novaEtapa) console.log(`[AI Agent] etapa atualizada para "${novaEtapa}" | conv ${conversationId}`);
+    if (leadState.tipo === "quente" && novaEtapa === "COLETANDO_DADOS") {
+      notificarLeadQuente({
+        nomeCliente:    lead?.profileName ?? to,
+        mensagem:       userMessage,
+        conversationId,
+      }).catch(() => {});
+    }
 
     // ── Enviar fotos + vídeo do produto ───────────────────────────────────────
     // WhatsApp exige URLs HTTPS públicas — converte base64 para endpoint público
-    const appUrl = (
-      process.env.NEXTAUTH_URL ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.RENDER_EXTERNAL_URL ??
-      (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
-    ).replace(/\/$/, "");
+    const appUrl = getBaseUrl();
     console.log(`[AI Agent] appUrl resolvido: "${appUrl}" | NEXTAUTH_URL=${process.env.NEXTAUTH_URL ?? "unset"} | RENDER_EXTERNAL_URL=${process.env.RENDER_EXTERNAL_URL ?? "unset"}`);
     const toPublicUrl = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (url.startsWith("data:")) {
@@ -1416,6 +1185,30 @@ export async function processAIResponse(
           console.log(`[AI Agent] ✅ Vídeo enviado para "${product.name}"`);
         } catch (e) {
           console.error(`[AI Agent] ❌ Video failed "${product.name}":`, e);
+        }
+      }
+    }
+
+    // ── [AUDIO:texto] — TTS via ElevenLabs/OpenAI ───────────────────────────────
+    const audioFlagMatch = combinedRaw.match(/\[AUDIO:([^\]]+)\]/i);
+    if (audioFlagMatch) {
+      const audioText = audioFlagMatch[1].trim();
+      if (audioText) {
+        try {
+          const { gerarAudio } = await import("@/lib/audio/gerar-audio");
+          const { sendWhatsAppAudio } = await import("@/lib/whatsapp/send");
+          const audioUrl = await gerarAudio(audioText);
+          if (audioUrl) {
+            await sendWhatsAppAudio(provider.businessPhoneNumberId, to, audioUrl, token);
+            await prisma.whatsappMessage.create({
+              data: { content: `[Áudio TTS] ${audioText.substring(0, 80)}`, type: "AUDIO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+            }).catch(() => {});
+            console.log(`[AI Agent] ✅ Áudio TTS enviado: "${audioText.substring(0, 50)}"`);
+          } else {
+            console.warn(`[AI Agent] ⚠️ gerarAudio retornou null para: "${audioText.substring(0, 50)}"`);
+          }
+        } catch (e) {
+          console.error("[AI Agent] ❌ Áudio TTS falhou:", e);
         }
       }
     }
