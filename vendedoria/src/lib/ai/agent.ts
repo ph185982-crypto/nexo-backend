@@ -35,6 +35,30 @@ interface AIResponse {
   delays: number[];
 }
 
+// ── URL base pública do app ───────────────────────────────────────────────────
+function getBaseUrl(): string {
+  return (
+    process.env.RENDER_EXTERNAL_URL ??
+    process.env.NEXTAUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
+  ).replace(/\/$/, "");
+}
+
+// ── Notificação de erro crítico para o dono ───────────────────────────────────
+async function notificarErroCritico(
+  mensagem: string,
+  phoneNumberId: string,
+  accessToken: string | undefined,
+): Promise<void> {
+  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+  try {
+    await sendWhatsAppMessage(phoneNumberId, ownerNumber, `⚠️ ERRO CRÍTICO — IA\n${mensagem}`, accessToken);
+  } catch {
+    console.error("[ALERTA] Falha ao notificar Pedro:", mensagem);
+  }
+}
+
 // ── Detecção de estado do lead ────────────────────────────────────────────────
 function detectLeadState(message: string): LeadState {
   const msg = message.toLowerCase();
@@ -104,23 +128,19 @@ function extractCollectedData(messages: Array<{ role: string; content: string }>
   if (horarioMsg) data.horario = horarioMsg.content;
 
   // ── Nome de quem recebe ───────────────────────────────────────────────────
-  // Detecta: "meu nome é X", "pode colocar no nome de X", ou mensagem que é só o nome
+  // Detecta APENAS apresentações explícitas — nunca infere de mensagens curtas genéricas
   const nomePatterns = [
-    /(?:meu\s+nome\s+[eé]|nome\s+[eé]|pode\s+colocar\s+no\s+nome\s+(?:de|do|da)?|chamo[-\s]+me\s+|me\s+chamo\s+|sou\s+o?\s+)\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
+    /(?:meu\s+nome\s+[eé]|nome\s+[eé]|pode\s+colocar\s+no\s+nome\s+(?:de|do|da)?|chamo[-\s]+me\s+|me\s+chamo\s+|sou\s+(?:o|a)\s+)\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
+    /pode\s+(?:anotar|colocar|botar)\s+(?:como|no\s+nome\s+de)?\s*([A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,}(?:\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ][a-záéíóúãõâêôç]{1,})*)/i,
   ];
   let nomeFound: string | undefined;
   for (const m of messages) {
     if (m.role !== "USER") continue;
     for (const re of nomePatterns) {
       const match = re.exec(m.content);
-      if (match?.[1]) { nomeFound = match[1].trim(); break; }
+      if (match?.[1] && match[1].trim().length >= 3) { nomeFound = match[1].trim(); break; }
     }
     if (nomeFound) break;
-    // Mensagem que é só um nome (1-3 palavras, começa com maiúscula ou minúscula, sem pontuação especial)
-    const trimmed = m.content.trim();
-    if (/^[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ]{2,}(\s+[A-Za-záéíóúãõâêôçÁÉÍÓÚÃÕÂÊÔÇ]{2,}){0,3}$/.test(trimmed) && trimmed.length >= 4 && trimmed.length <= 60) {
-      nomeFound = trimmed; break;
-    }
   }
   if (nomeFound) data.nome = nomeFound;
 
@@ -244,7 +264,7 @@ function detectDesinteresse(message: string): boolean {
 
 // ── Detecção de área de entrega ──────────────────────────────────────────────
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
-// Não dispara por menção casual de cidade em contexto de uso do produto.
+// Suporta negação: "não sou de goiânia" → fora da área.
 function detectForaDeArea(message: string): boolean {
   const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const norm = n(message);
@@ -253,9 +273,14 @@ function detectForaDeArea(message: string): boolean {
   const temContextoLocal = /\b(sou de|sou do|sou da|sou la de|sou la|moro em|fico em|estou em|to de|minha cidade|vivo em|resido em|meu bairro|minha regiao|na minha cidade)\b/.test(norm);
   if (!temContextoLocal) return false;
 
-  // Cidades da área de entrega — se mencionadas, não rejeitar
-  const dentroArea = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
-  if (dentroArea) return false;
+  const temNegacao = /\b(nao sou|nao moro|nao fico|nao estou|nao to|nao vivo|nao resido|fora de|fora da)\b/.test(norm);
+
+  // Cidades da área de entrega
+  const mencionaCidadeLocal = /\b(goiania|goias|aparecida de goiania|senador canedo|trindade|goianira|neropolis|hidrolandia|guapo|aragoiania|anapolis|bonfinopolis|terezopolis)\b/.test(norm);
+  if (mencionaCidadeLocal) {
+    // "nao sou de goiania" → fora; "sou de goiania" → dentro
+    return temNegacao;
+  }
 
   // Estados fora de Goiás — por nome completo normalizado
   const foraEstado = /\b(acre|alagoas|amapa|amazonas|bahia|ceara|distrito federal|espirito santo|maranhao|mato grosso do sul|mato grosso|minas gerais|paraiba|parana|pernambuco|piaui|rio de janeiro|rio grande do norte|rio grande do sul|rondonia|roraima|santa catarina|sao paulo|sergipe|tocantins)\b/.test(norm);
@@ -444,102 +469,7 @@ function buildRuntimeContext(
 }
 
 // ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
-const DEFAULT_SYSTEM_PROMPT = `Você é Léo, vendedor da Nexo Brasil em Goiânia. Você tem 28 anos, é direto, bem-humorado na medida certa e sabe muito sobre ferramentas. Você não é um assistente — você é um vendedor que gosta do que faz e conhece o produto na palma da mão.
-Você nunca usa frases prontas. Cada mensagem sua é escrita na hora, pensando naquele cliente específico, naquele momento específico da conversa.
-
-━━━ PERSONALIDADE ━━━
-
-Você é confiante sem ser chato. Quando o cliente hesita, você não empurra — você entende e contorna. Você faz o cliente sentir que está falando com alguém que realmente quer ajudar, não com um sistema automático. Você tem bom humor leve — uma comparação engraçada aqui, uma observação esperta ali — mas sabe a hora de ser sério.
-
-━━━ COMO VOCÊ ESCREVE ━━━
-
-Mensagens curtas. Sempre divide em vários balões. Nunca manda textão.
-Minúsculas na maior parte do tempo. Sem formalidade.
-Pontuação informal. Reticências às vezes. Nada de ponto final em todo parágrafo.
-Emojis com muita moderação — só quando reforça algo, não como decoração.
-Erros leves ocasionais são naturais — "pra", "tá", "né", "to", "vc"
-NUNCA use: "certamente", "claro", "com certeza", "fico feliz", "posso ajudá-lo", "prezado", "conforme", "segue"
-Quando o cliente manda 2 mensagens seguidas, responde só a mais importante.
-
-━━━ COMO VOCÊ LÊ O CLIENTE ━━━
-
-Antes de responder, você analisa:
-- Como ele escreve (formal, informal, gíria, direto, enrolado)
-- O que ele demonstrou sentir (empolgado, desconfiado, com pressa, curioso)
-- O que ele já disse antes na conversa — e usa isso
-- Qual objeção ele já deu — você NUNCA repete argumento que já não funcionou
-
-Você ajusta seu jeito de falar para espelhar o cliente. Com mecânico que escreve curto e direto, você é curto e direto. Com alguém mais animado, você anima junto. Com alguém desconfiado, você fica mais sério e objetivo.
-
-━━━ PRODUTOS ━━━
-
-Os dados exatos dos produtos (nome, preço, parcelas, descrição, fotos, vídeo) são injetados pelo sistema no CATÁLOGO abaixo — use sempre esses dados, nunca invente preços ou especificações.
-Para enviar mídia, coloque o flag exato ([FOTO_SLUG] ou [VIDEO_SLUG]) em um balão separado — o sistema só envia quando o flag aparece.
-Identifique qual produto o cliente quer pela mensagem dele e use o slug correspondente do catálogo.
-
-━━━ COMO VOCÊ ABORDA CADA CONVERSA ━━━
-
-Primeiro: você lê o que o cliente escreveu DE VERDADE. Se ele perguntou o preço, você responde o preço. Se ele disse o produto, você fala do produto. Você nunca ignora o que o cliente falou para começar um script de abertura.
-
-Apresentação: você se apresenta de forma orgânica, dentro da resposta — não como introdução separada. Se o cliente já foi direto, você também vai direto.
-
-Conexão: uma pergunta de interesse genuíno sobre o uso. Não é formulário — é curiosidade real. "pra que você vai usar mais?" de formas diferentes.
-
-Apresentação do produto: 2 ou 3 benefícios que fazem sentido pro perfil do cliente. Se é mecânico, fala em torque e durabilidade. Se é uso em casa, fala em praticidade. Não lista tudo — escolhe o que importa.
-
-Fechamento: quando sentir que o cliente está pronto, fecha com naturalidade. Não é "vamos fechar?" — é "então bora, me passa o endereço".
-
-Coleta de dados: 4 dados em conversa natural, um de cada vez, sem parecer formulário:
-  1. endereço completo
-  2. até que horas pode receber
-  3. forma de pagamento
-  4. nome de quem vai receber
-
-Etapa 7 — Resumo: enviar para 62984465388 neste formato:
-🔔 PEDIDO — NEXO
-Produto:
-Nome:
-Endereço:
-Receber até:
-Pagamento:
-WhatsApp do cliente:
-
-━━━ OBJEÇÕES — você tenta de formas diferentes, nunca repete o mesmo argumento ━━━
-
-"tá caro":
-  → tente em ordem: parcelamento / comparação com ferragem / risco zero pagar na entrega / valor do kit completo / urgência de estoque
-  → NUNCA escala por preço — continue tentando enquanto o cliente estiver respondendo
-
-"preciso pensar":
-  → descobre o que está travando. "o que tá segurando?"
-  → Se não responder o que é, pergunta diretamente se é o preço ou outra coisa.
-
-"não conheço a marca":
-  → usa o argumento do risco zero. Pagar na entrega elimina qualquer risco de comprar de desconhecido.
-
-━━━ IMPORTANTE: VOCÊ NÃO DECIDE QUANDO ESCALAR ━━━
-
-Escalada é controlada pelo sistema, não por você.
-Você NUNCA deve emitir [ESCALAR] na sua resposta.
-Continue a conversa sempre, independente de quantas mensagens já foram trocadas ou quantas objeções de preço o cliente fez.
-A única coisa que encerra uma conversa é: pedido fechado [PASSAGEM] ou cliente pediu pra não ser contactado [OPT_OUT].
-
-━━━ FOLLOW-UP quando cliente para de responder ━━━
-4h → toca leve, pergunta se ficou dúvida
-24h → traz um benefício novo que não mencionou antes
-48h → usa prova social, alguém que comprou recentemente
-72h → encerra com porta aberta, sem pressão
-Após 4 sem resposta → PERDA, para de contatar.
-
-━━━ FLAGS — REGRAS CRÍTICAS ━━━
-NUNCA escreva "vou te enviar fotos", "mando as fotos agora" ou similar SEM incluir o flag correspondente.
-O sistema SOMENTE envia fotos/vídeo quando o flag aparece na resposta. Se você prometer mas não incluir o flag, a foto nunca chega.
-Sempre que quiser enviar mídia, coloque o flag na mesma resposta, em um balão separado (ex: "[FOTO_LUATEK_48V]").
-
-[OPT_OUT] — cliente pediu pra não ser contactado (nunca mais contatar)
-[FOTO_SLUG] — envia foto(s) do produto (substitua SLUG pelo slug real do catálogo)
-[VIDEO_SLUG] — envia vídeo do produto (substitua SLUG pelo slug real)
-[PASSAGEM]{"endereco":"...","localizacao":"...","pagamento":"...","horario":"...","nome":"...","produto":"..."} — emitir ao ter todos os 4 dados`;
+const DEFAULT_SYSTEM_PROMPT = `Prompt do agente não configurado. Acesse /crm/agent para definir o comportamento da IA.`;
 
 export async function processAIResponse(
   conversationId: string,
@@ -638,16 +568,10 @@ export async function processAIResponse(
         incomingMessageId,
         conversation.provider.accessToken ?? undefined,
       ).catch(() => {});
-
-      const silentWait = 110_000 + Math.floor(Math.random() * 20_000); // 110-130 s
-      console.log(`[AI Agent] Primeiro contato — aguardando ${Math.round(silentWait / 1000)}s para conv ${conversationId}`);
-      await new Promise((r) => setTimeout(r, silentWait));
-
-      // Typing indicator nos últimos 8s antes de responder (cliente sente que estão digitando)
       await sendTypingIndicator(
         conversation.provider.businessPhoneNumberId,
         conversation.customerWhatsappBusinessId,
-        8000,
+        3000,
         conversation.provider.accessToken ?? undefined,
       ).catch(() => {});
     }
@@ -737,12 +661,7 @@ export async function processAIResponse(
     // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
     // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
     // antes da IA responder. Não depende de flag — sempre funciona.
-    const appUrlEarly = (
-      process.env.NEXTAUTH_URL ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.RENDER_EXTERNAL_URL ??
-      (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
-    ).replace(/\/$/, "");
+    const appUrlEarly = getBaseUrl();
     const toPublicUrlEarly = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (!url) return "";
       if (url.startsWith("data:")) {
@@ -931,7 +850,7 @@ export async function processAIResponse(
       const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
       const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
       if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
-        console.log(`[AI Agent] Sandbox mode — skipping AI for ${customerNum}`);
+        console.log(`[AI Agent] 🔒 SANDBOX MODE — IA bloqueada para ${customerNum} (só atende ${sandboxNumber})`);
         return;
       }
     }
@@ -957,6 +876,16 @@ export async function processAIResponse(
     console.log(`[DecisionService] Conv ${conversationId} → ${decision.action}: ${decision.reason}`);
 
     if (decision.action === "WAIT" || decision.action === "CLOSE") {
+      console.log(`[DecisionService] ${decision.action} — IA silenciada para conv ${conversationId}. Razão: ${decision.reason}`);
+      await prisma.ownerNotification.create({
+        data: {
+          type: "INFO",
+          title: `IA silenciada (${decision.action})`,
+          body: `Conv: ${conversationId}\nCliente: ${conversation.customerWhatsappBusinessId}\nRazão: ${decision.reason}`,
+          organizationId: conversation.provider.organizationId,
+          conversationId,
+        },
+      }).catch(() => {});
       return;
     }
 
@@ -991,7 +920,8 @@ export async function processAIResponse(
       etapa: conversation.etapa,
       detectedProducts, // Camada 5 — catálogo real
     });
-    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext;
+    const flagsRuntimeSection = "\n\n[AUDIO:texto] — envia mensagem de voz TTS. Use para mensagens pessoais ou quando o cliente preferir áudio.";
+    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext + flagsRuntimeSection;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
@@ -1000,9 +930,25 @@ export async function processAIResponse(
       .slice(0, -1)
       .map((m) => ({ role: m.role === "USER" ? ("user" as const) : ("assistant" as const), content: m.content }));
 
-    // ── Chamada ao LLM ────────────────────────────────────────────────────────
-    const rawResponse = await callLLM(systemPromptFinal, chatHistory, userMessage, agent.aiProvider ?? undefined, agent.aiModel ?? undefined);
-    if (!rawResponse) return;
+    // ── Chamada ao LLM com retry exponencial ────────────────────────────────
+    let rawResponse: string | null = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      rawResponse = await callLLM(systemPromptFinal, chatHistory, userMessage, agent.aiProvider ?? undefined, agent.aiModel ?? undefined);
+      if (rawResponse) break;
+      if (attempt < 3) {
+        console.warn(`[AI Agent] LLM retornou null — tentativa ${attempt}/3 — aguardando ${attempt * 2}s`);
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+      }
+    }
+    if (!rawResponse) {
+      console.error(`[AI Agent] LLM falhou 3 tentativas para conv ${conversationId} — notificando Pedro`);
+      await notificarErroCritico(
+        `IA não respondeu após 3 tentativas.\nCliente: ${conversation.customerWhatsappBusinessId}\nConv: ${conversationId}`,
+        conversation.provider.businessPhoneNumberId,
+        conversation.provider.accessToken ?? undefined,
+      ).catch(() => {});
+      return;
+    }
 
     // ── Parse de multi-mensagens ──────────────────────────────────────────────
     console.log(`[AI Agent] Raw LLM response: ${rawResponse.substring(0, 300)}`);
@@ -1156,12 +1102,7 @@ export async function processAIResponse(
 
     // ── Enviar fotos + vídeo do produto ───────────────────────────────────────
     // WhatsApp exige URLs HTTPS públicas — converte base64 para endpoint público
-    const appUrl = (
-      process.env.NEXTAUTH_URL ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.RENDER_EXTERNAL_URL ??
-      (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
-    ).replace(/\/$/, "");
+    const appUrl = getBaseUrl();
     console.log(`[AI Agent] appUrl resolvido: "${appUrl}" | NEXTAUTH_URL=${process.env.NEXTAUTH_URL ?? "unset"} | RENDER_EXTERNAL_URL=${process.env.RENDER_EXTERNAL_URL ?? "unset"}`);
     const toPublicUrl = (url: string, productId: string, idx: number, isVideo = false): string => {
       if (url.startsWith("data:")) {
@@ -1246,6 +1187,30 @@ export async function processAIResponse(
           console.log(`[AI Agent] ✅ Vídeo enviado para "${product.name}"`);
         } catch (e) {
           console.error(`[AI Agent] ❌ Video failed "${product.name}":`, e);
+        }
+      }
+    }
+
+    // ── [AUDIO:texto] — TTS via ElevenLabs/OpenAI ───────────────────────────────
+    const audioFlagMatch = combinedRaw.match(/\[AUDIO:([^\]]+)\]/i);
+    if (audioFlagMatch) {
+      const audioText = audioFlagMatch[1].trim();
+      if (audioText) {
+        try {
+          const { gerarAudio } = await import("@/lib/audio/gerar-audio");
+          const { sendWhatsAppAudio } = await import("@/lib/whatsapp/send");
+          const audioUrl = await gerarAudio(audioText);
+          if (audioUrl) {
+            await sendWhatsAppAudio(provider.businessPhoneNumberId, to, audioUrl, token);
+            await prisma.whatsappMessage.create({
+              data: { content: `[Áudio TTS] ${audioText.substring(0, 80)}`, type: "AUDIO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+            }).catch(() => {});
+            console.log(`[AI Agent] ✅ Áudio TTS enviado: "${audioText.substring(0, 50)}"`);
+          } else {
+            console.warn(`[AI Agent] ⚠️ gerarAudio retornou null para: "${audioText.substring(0, 50)}"`);
+          }
+        } catch (e) {
+          console.error("[AI Agent] ❌ Áudio TTS falhou:", e);
         }
       }
     }
