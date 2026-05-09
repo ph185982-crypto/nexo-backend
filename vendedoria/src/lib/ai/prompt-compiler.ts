@@ -12,11 +12,11 @@ export interface ObjecaoEntry {
 export interface AiConfigLayer {
   usarEmoji: boolean;
   usarReticencias: boolean;
-  nivelVenda: string;             // leve | medio | agressivo
-  tomDeVoz?: string;              // sincero | agressivo | consultivo
+  nivelVenda: string;
+  tomDeVoz?: string;
   arquetipoIA?: string | null;
-  objetivoVenda?: string;         // fechar_venda | gerar_lead | qualificar
-  nivelUrgencia?: number;         // 1-5
+  objetivoVenda?: string;
+  nivelUrgencia?: number;
   matrizObjecoes?: ObjecaoEntry[];
   restricoes?: string[];
   followUpIntervalos?: number[];
@@ -57,7 +57,7 @@ export interface PromptCompilerInput {
   detectedProducts?: ProductContext[];
 
   // Camada 6 — Histórico / Runtime
-  leadState: { tipo: string; urgencia: string };
+  leadState: { tipo: string; urgencia: string } | null;
   messageCount: number;
   isFirstInteraction: boolean;
   etapa: string;
@@ -75,11 +75,11 @@ export interface CompiledPrompt {
   };
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────────────────
 
 const NIVEL_INSTRUCTIONS: Record<string, string> = {
   leve:      "Responda e deixe o cliente conduzir.",
-  medio:     "Conduza naturalmente. Após responder, avance um passo.",
+  medio:     "Conduza naturalmente. Após responder, avançe um passo.",
   agressivo: "Conduza ativamente. Use urgência com naturalidade.",
 };
 
@@ -109,7 +109,7 @@ function isBusinessHours(hour: number, dayOfWeek: number): boolean {
   return false;
 }
 
-// ── Camada 2: Estratégia ──────────────────────────────────────────────────────
+// ── Camada 2: Estratégia ──────────────────────────────────────────────────────────
 function buildEstrategiaLayer(
   aiConfig: AiConfigLayer | null,
   activeProducts: ProductRef[],
@@ -138,8 +138,9 @@ function buildEstrategiaLayer(
     })
     .join("  |  ");
 
-  // firstContactInstr removido: agent.ts já envia mídia forçada no primeiro contato por código.
-  // Incluir aqui causava duplo envio (código + flag da IA).
+  const firstContactInstr = isFirstInteraction && mediaFlags
+    ? `- Inclua IMEDIATAMENTE os flags de mídia do produto identificado (flags disponíveis: ${mediaFlags})\n- ATENÇÃO: coloque o flag exato em um balão separado — isso dispara o envio.`
+    : "";
 
   return [
     `--- ESTRATÉGIA ---`,
@@ -150,20 +151,12 @@ function buildEstrategiaLayer(
     `Objetivo: ${OBJETIVO_INSTRUCTIONS[objetivo] ?? OBJETIVO_INSTRUCTIONS.fechar_venda}`,
     `Urgência: ${URGENCIA_LABELS[urgencia] ?? "Moderada"}`,
     arquetipo ? `Arquétipo: ${arquetipo}` : "",
-    ``,
-    `ESCUTA ATIVA — REGRA CRÍTICA:`,
-    `Se a mensagem do cliente contém uma PERGUNTA, responda ela COMPLETAMENTE antes de qualquer outro passo.`,
-    `Exemplo: cliente perguntou "vocês têm loja?" → responda o endereço E depois, de forma natural, faça a ponte: "mas se preferir a gente entrega pra você — é só me passar o endereço".`,
-    `NUNCA ignore uma pergunta do cliente para coletar dados ou avançar etapa.`,
-    ``,
-    `PRIMEIRO CONTATO — REGRA:`,
-    `Se é o primeiro contato e o cliente já perguntou algo específico (preço, disponibilidade, produto), RESPONDA isso na primeira mensagem.`,
-    `Integre sua apresentação natural DENTRO da resposta — não faça uma introdução separada antes de responder o que ele perguntou.`,
+    firstContactInstr,
     `--- FIM ESTRATÉGIA ---`,
   ].filter(Boolean).join("\n");
 }
 
-// ── Camada 3a: Restrições — dados coletados ───────────────────────────────────
+// ── Camada 3a: Restrições — dados coletados ───────────────────────────────────────────
 function buildRestricoesColetadasLayer(data: CollectedDataLayer): string {
   const itens: string[] = [];
   if (data.localizacao) itens.push(`✅ LOCALIZAÇÃO RECEBIDA: "${data.localizacao.substring(0, 100)}" — PROIBIDO pedir de novo`);
@@ -179,7 +172,7 @@ function buildRestricoesColetadasLayer(data: CollectedDataLayer): string {
   ].join("\n");
 }
 
-// ── Camada 3b: Restrições — configuradas pelo usuário ─────────────────────────
+// ── Camada 3b: Restrições — configuradas pelo usuário ───────────────────────────────────
 function buildRestricoesConfigLayer(restricoes: string[]): string {
   if (!restricoes.length) return "";
   return [
@@ -189,7 +182,7 @@ function buildRestricoesConfigLayer(restricoes: string[]): string {
   ].join("\n");
 }
 
-// ── Camada 4: Objeções ────────────────────────────────────────────────────────
+// ── Camada 4: Objeções ────────────────────────────────────────────────────────────────
 function buildObjecoesLayer(
   recentMessages: Array<{ role: string; content: string }>,
   customMatrix?: ObjecaoEntry[],
@@ -199,7 +192,6 @@ function buildObjecoesLayer(
 
   const lines: string[] = [];
 
-  // Custom objection matrix from command center
   if (customMatrix && customMatrix.length > 0) {
     lines.push(`--- MATRIZ DE OBJEÇÕES PERSONALIZADA ---`);
     for (const entry of customMatrix) {
@@ -210,7 +202,6 @@ function buildObjecoesLayer(
     lines.push("");
   }
 
-  // Auto-detected price objection tracking
   const clientPriceObj = recentMessages.filter(
     (m) =>
       m.role === "USER" &&
@@ -242,7 +233,7 @@ function buildObjecoesLayer(
   return lines.join("\n");
 }
 
-// ── Camada 5: Catálogo dinâmico ───────────────────────────────────────────────
+// ── Camada 5: Catálogo dinâmico ────────────────────────────────────────────────────────
 function buildCatalogoLayer(products: ProductContext[]): string {
   if (!products.length) return "";
 
@@ -273,16 +264,13 @@ function buildCatalogoLayer(products: ProductContext[]): string {
   ].join("\n\n");
 }
 
-// ── Camada 6: Runtime — dados de contexto + formato obrigatório ───────────────
-// NÃO define etapas nem comportamento — o script configurado no SaaS faz isso.
-// Injeta apenas: estado atual da conversa, dados já coletados, flags de mídia,
-// saudação do momento e o formato JSON de resposta.
+// ── Camada 6: Runtime ───────────────────────────────────────────────────────────────────
 function buildHistoricoLayer(
-  leadState: { tipo: string; urgencia: string },
+  leadState: { tipo: string; urgencia: string } | null,
   messageCount: number,
   isFirstInteraction: boolean,
   etapa: string,
-  _collectedData: CollectedDataLayer,
+  collectedData: CollectedDataLayer,
   businessHours: { hour: number; dayOfWeek: number },
   activeProducts: ProductRef[],
 ): string {
@@ -298,11 +286,25 @@ function buildHistoricoLayer(
     })
     .join("  |  ");
 
+  const faltaLinhas: string[] = [];
+  if (leadState?.tipo === "quente") {
+    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
+    if (!temLocal)                faltaLinhas.push("localização");
+    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
+    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
+    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
+  }
+
   return [
-    `--- CONTEXTO RUNTIME ---`,
+    `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
     `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa: ${etapa}`,
-    mediaFlags ? `Flags de mídia: ${mediaFlags}` : "",
+    `Lead: ${leadState?.tipo ?? "desconhecido"} | Urgência: ${leadState?.urgencia ?? "normal"} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
+    mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    faltaLinhas.length > 0
+      ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
+      : faltaLinhas.length === 0 && leadState?.tipo === "quente"
+        ? `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`
+        : "",
     `--- FIM CONTEXTO ---`,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
@@ -310,24 +312,25 @@ function buildHistoricoLayer(
     `• Cada balão = 1 frase curta (máx 2 linhas)`,
     `• delays em ms (600–2000ms por balão)`,
     `• Mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos num balão — substitua SLUG pelo slug do catálogo`,
+    `• Nunca use frases robóticas: "Claro!", "Certamente!", "Entendido!", "Prezado"`,
     `--- FIM FORMATO ---`,
   ]
     .filter(Boolean)
     .join("\n");
 }
 
-// ── API pública ───────────────────────────────────────────────────────────────
-// O script configurado pelo usuário na ferramenta é a única instrução estática.
-// Injetamos apenas dados que o script não consegue saber em tempo de compilação:
-//   1. Catálogo real (preços/slugs do banco)
-//   2. Dados já coletados (evitar re-perguntar)
-//   3. Contexto de runtime (hora, etapa, formato JSON obrigatório)
+// ── API pública ──────────────────────────────────────────────────────────────────────────────
 export class PromptCompiler {
   compile(input: PromptCompilerInput): CompiledPrompt {
-    const persona   = input.basePersonaPrompt;
-    const restricoes = buildRestricoesColetadasLayer(input.collectedData);
-    const catalogo  = buildCatalogoLayer(input.detectedProducts ?? []);
-    const historico = buildHistoricoLayer(
+    const persona    = input.basePersonaPrompt;
+    const estrategia = buildEstrategiaLayer(input.aiConfig, input.activeProducts, input.businessHours, input.isFirstInteraction);
+    const restricoes = [
+      buildRestricoesColetadasLayer(input.collectedData),
+      buildRestricoesConfigLayer(input.aiConfig?.restricoes ?? []),
+    ].filter(Boolean).join("\n\n");
+    const objecoes   = buildObjecoesLayer(input.recentMessages, input.aiConfig?.matrizObjecoes);
+    const catalogo   = buildCatalogoLayer(input.detectedProducts ?? []);
+    const historico  = buildHistoricoLayer(
       input.leadState,
       input.messageCount,
       input.isFirstInteraction,
@@ -337,23 +340,34 @@ export class PromptCompiler {
       input.activeProducts,
     );
 
-    const parts = [persona, restricoes, catalogo, historico].filter(Boolean);
+    const parts = [persona, estrategia, restricoes, objecoes, catalogo, historico].filter(Boolean);
     const systemPrompt = parts.join("\n\n");
 
-    return { systemPrompt, layers: { persona, estrategia: "", restricoes, objecoes: "", catalogo, historico } };
+    return { systemPrompt, layers: { persona, estrategia, restricoes, objecoes, catalogo, historico } };
   }
 }
 
 export const promptCompiler = new PromptCompiler();
 
-// ─── compilePrompt: functional adapter used by orchestrator.ts ────────────────
+// Async helper used by orchestrator / responder
 export async function compilePrompt(
   _conversationId: string,
-  _history: Array<{ role: string; content: string; timestamp?: Date }>,
-  _opts: { action: string },
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  _options?: { action?: string },
 ): Promise<CompiledPrompt> {
-  return {
-    systemPrompt: "",
-    layers: { persona: "", estrategia: "", restricoes: "", objecoes: "", catalogo: "", historico: "" },
-  };
+  const { prisma } = await import("@/lib/prisma/client");
+  const config = await prisma.agentConfig.findFirst();
+  return promptCompiler.compile({
+    basePersonaPrompt: config?.currentPrompt ?? "",
+    aiConfig: null,
+    activeProducts: [],
+    businessHours: { hour: new Date().getHours(), dayOfWeek: new Date().getDay() },
+    collectedData: {},
+    recentMessages: history,
+    leadState: null,
+    messageCount: history.length,
+    isFirstInteraction: history.length <= 1,
+    etapa: "NOVO",
+    detectedProducts: [],
+  });
 }

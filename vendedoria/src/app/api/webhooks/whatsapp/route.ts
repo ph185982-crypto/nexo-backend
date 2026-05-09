@@ -3,7 +3,6 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
-import { cancelFollowUpsForConversation } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
@@ -11,7 +10,7 @@ import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { isManagerNumber, handleManagerMessage } from "@/lib/manager/handler";
 
-// ─── Webhook Verification (GET) ────────────────────────────────────────────
+// ─── Webhook Verification (GET) ──────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const mode = url.searchParams.get("hub.mode");
@@ -26,12 +25,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 }
 
-// ─── Message Processing (POST) ─────────────────────────────────────────────
+// ─── Message Processing (POST) ──────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("x-hub-signature-256") ?? "";
   const body = await req.text();
 
-  // ── CORREÇÃO 4: Diagnostic log on every incoming webhook ──────────────────
   const ts = new Date().toISOString();
   try {
     const preview = JSON.parse(body);
@@ -49,7 +47,6 @@ export async function POST(req: NextRequest) {
 
     const data = JSON.parse(body);
 
-    // Process each entry
     for (const entry of data.entry ?? []) {
       for (const change of entry.changes ?? []) {
         if (change.field !== "messages") continue;
@@ -57,7 +54,6 @@ export async function POST(req: NextRequest) {
         const value = change.value;
         const phoneNumberId = value.metadata?.phone_number_id;
 
-        // Find the WhatsApp provider config
         const providerConfig = await prisma.whatsappProviderConfig.findFirst({
           where: { businessPhoneNumberId: phoneNumberId },
           include: { agent: true },
@@ -70,12 +66,10 @@ export async function POST(req: NextRequest) {
 
         console.log("[WhatsApp Webhook] ProviderConfig encontrado:", providerConfig.id, "| Agente:", providerConfig.agent?.kind, providerConfig.agent?.status);
 
-        // Process messages
         for (const message of value.messages ?? []) {
           await handleIncomingMessage(message, value.contacts?.[0], providerConfig);
         }
 
-        // Process status updates
         for (const status of value.statuses ?? []) {
           await handleStatusUpdate(status);
         }
@@ -86,16 +80,14 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("[WhatsApp Webhook] Error — enqueuing for retry:", error);
 
-    // ── CORREÇÃO 3: Save to retry queue on failure ─────────────────────────
     await prisma.webhookQueue.create({
       data: {
         payload: body,
         signature,
-        retryAfter: new Date(Date.now() + 30_000), // retry in 30s
+        retryAfter: new Date(Date.now() + 30_000),
       },
     }).catch((e) => console.error("[WebhookQueue] Failed to enqueue:", e));
 
-    // Always return 200 to Meta so it doesn't keep retrying immediately
     return NextResponse.json({ success: true, queued: true });
   }
 }
@@ -137,23 +129,16 @@ async function handleIncomingMessage(
     } | null;
   }
 ) {
-  // Normalize WhatsApp message type to GraphQL MessageType enum values.
-  // Unknown types (sticker, contacts, reaction, interactive, button) fall back to TEXT
-  // so the GraphQL serializer never encounters an invalid enum value.
   const TYPE_MAP: Record<string, string> = {
     text: "TEXT", image: "IMAGE", video: "VIDEO",
     audio: "AUDIO", voice: "AUDIO", document: "DOCUMENT", location: "LOCATION",
   };
   const normalizedType = TYPE_MAP[message.type.toLowerCase()] ?? "TEXT";
 
-  // Always store/lookup the 9-digit normalised number (55 + DDD + 9 + 8 digits).
-  // Meta sometimes delivers old 8-digit format (55XX8digits); normalise at entry
-  // so both the DB record and the phone column are consistent.
   const phone = normalizeBrazilianNumber(message.from);
   const profileName = contact?.profile?.name;
   const sentAt = new Date(Number(message.timestamp) * 1000);
 
-  // Humanize media type descriptions so AI understands what was received
   const mediaLabels: Record<string, string> = {
     image: "[Imagem recebida]",
     video: "[Vídeo recebido]",
@@ -164,32 +149,22 @@ async function handleIncomingMessage(
     reaction: "[Reação a mensagem]",
     interactive: "[Resposta interativa]",
     button: "[Botão clicado]",
-    // audio / voice are handled separately below with Whisper transcription
   };
 
-  // ── Audio transcription ───────────────────────────────────────────────────
-  // WhatsApp sends voice notes as type="audio" (recorded in-app) or type="voice".
-  // We attempt to transcribe via Whisper so the AI agent reads the actual words.
   let content: string;
   const isAudio = message.type === "audio" || message.type === "voice";
   const mediaPayload = message.audio ?? message.voice;
 
   if (isAudio && mediaPayload?.id) {
-    const token =
-      providerConfig.accessToken ??
-      process.env.META_WHATSAPP_ACCESS_TOKEN;
+    const token = providerConfig.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
 
     if (token) {
       try {
         const mediaUrl = await getMediaUrl(mediaPayload.id, token);
         const audioBuffer = await downloadMedia(mediaUrl, token);
-        const transcript = await transcribeAudio(
-          audioBuffer,
-          mediaPayload.mime_type ?? "audio/ogg"
-        );
+        const transcript = await transcribeAudio(audioBuffer, mediaPayload.mime_type ?? "audio/ogg");
 
         if (transcript) {
-          // Prefix makes it clear to the AI agent this was transcribed from audio
           content = `[Áudio transcrito]: ${transcript}`;
         } else {
           content = "[Áudio recebido — transcrição indisponível]";
@@ -202,9 +177,6 @@ async function handleIncomingMessage(
       content = "[Áudio recebido]";
     }
   } else if (message.type === "location") {
-    // Extrair coordenadas reais para que a IA reconheça e agradeça a localização.
-    // Guard: message.location may be absent in malformed payloads → fallback label ensures
-    // content is never null/empty (would break String! GraphQL field → empty chat).
     const loc = message.location;
     if (loc) {
       const parts = [`[Localização recebida] lat:${loc.latitude} lng:${loc.longitude}`];
@@ -215,7 +187,6 @@ async function handleIncomingMessage(
       content = "[Localização recebida]";
     }
   } else if (message.type === "contacts" && message.contacts?.length) {
-    // Extract structured contact data (name + phones) so the CRM can render a card
     const cards = message.contacts.map((c) => {
       const nome = c.name?.formatted_name ?? c.name?.first_name ?? "Contato";
       const phones = (c.phones ?? []).map((p) => p.phone ?? p.wa_id).filter(Boolean).join(", ");
@@ -230,26 +201,21 @@ async function handleIncomingMessage(
     content = cards.join("\n");
     console.log(`[Webhook] Contato recebido: ${content.substring(0, 120)}`);
   } else {
-    // Base content from text or media label
     content = message.text?.body ?? mediaLabels[message.type] ?? `[${message.type}]`;
 
-    // If image/video/document has a caption, append it so the AI has context
     const inlineCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
     if (inlineCaption) {
       content = `${content} "${inlineCaption}"`;
     }
   }
 
-  // Extract inbound media_id (image, video, audio, document, sticker) for storage
-  // We store the raw media_id — the proxy /api/whatsapp/media/[mediaId] serves it on demand
-  const inboundMediaId = message.audio?.id ?? message.voice?.id ?? message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
+  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
   const inboundCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
 
   if (inboundMediaId) {
     console.log(`[Webhook] Mídia inbound | type=${message.type} | media_id=${inboundMediaId}`);
   }
 
-  // Find or create lead — OR clause handles existing records stored with old 8-digit format
   let lead = await prisma.lead.findFirst({
     where: {
       organizationId: providerConfig.organizationId,
@@ -258,7 +224,6 @@ async function handleIncomingMessage(
   });
 
   if (!lead) {
-    // Find default kanban column
     const defaultColumn = await prisma.kanbanColumn.findFirst({
       where: {
         organizationId: providerConfig.organizationId,
@@ -283,7 +248,6 @@ async function handleIncomingMessage(
     console.log("[WhatsApp Webhook] Novo lead criado:", lead.id, "| telefone:", phone);
   }
 
-  // Find or create conversation
   let conversation = await prisma.whatsappConversation.findFirst({
     where: {
       leadId: lead.id,
@@ -304,15 +268,12 @@ async function handleIncomingMessage(
     });
   }
 
-  // Idempotency: skip if this exact message was already processed
-  // Uses message.id (Meta's ID) as PK — also catches race conditions via try-catch on create
   const alreadyProcessed = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });
   if (alreadyProcessed) {
     console.log(`[Webhook] Mensagem duplicada ignorada: ${message.id}`);
     return;
   }
 
-  // Save user message — if unique constraint fails (race condition), another worker processed it
   let savedMessage;
   try {
     savedMessage = await prisma.whatsappMessage.create({
@@ -335,7 +296,6 @@ async function handleIncomingMessage(
     throw e;
   }
 
-  // Persist inbound media_id — fire-and-forget so it never blocks the webhook response
   if (inboundMediaId) {
     prisma.whatsappMessage.update({
       where: { id: savedMessage.id },
@@ -350,14 +310,12 @@ async function handleIncomingMessage(
     });
   }
 
-  // Push notification — fire-and-forget, never blocks webhook response
   const nomeCliente = conversation.profileName ?? conversation.customerWhatsappBusinessId;
   const preview = content.substring(0, 100) || (normalizedType !== "TEXT" ? `[${normalizedType}]` : "Nova mensagem");
   notificarNovaMensagem(nomeCliente, preview, conversation.id).catch((e) =>
     console.error("[Webhook] Push notification error:", e)
   );
 
-  // Update conversation: lastMessageAt + localizacaoRecebida (se for localização)
   await prisma.whatsappConversation.update({
     where: { id: conversation.id },
     data: {
@@ -368,22 +326,19 @@ async function handleIncomingMessage(
   });
   console.log(`[Webhook] Conv ${conversation.id} atualizada | lastMessageAt=${sentAt.toISOString()} | localizacaoRecebida=${message.type === "location"}`);
 
-  // Cancel any active follow-up — user replied, no need to follow up
   await prisma.conversationFollowUp.updateMany({
     where: { conversationId: conversation.id, status: "ACTIVE" },
     data: { status: "DONE" },
   }).catch(() => {});
   await cancelFollowUpJobs(conversation.id).catch(() => {});
 
-  // Manager command handler — intercepts messages from the owner's number.
-  // Routes to admin bot instead of AI lead flow.
   if (isManagerNumber(phone)) {
     console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
     const msgText = message.text?.body ?? content;
     handleManagerMessage(msgText, providerConfig, phone).catch((e) =>
       console.error("[Webhook] Manager handler error:", e),
     );
-    return; // do not trigger AI lead agent
+    return;
   }
 
   if (providerConfig.agent?.kind !== "AI" || providerConfig.agent?.status !== "ACTIVE") {
@@ -391,24 +346,11 @@ async function handleIncomingMessage(
     return;
   }
 
-  // ── AI Flow: Orchestrator (Decision + State Machine) → Pedro Agent (sends) ─
-  // Orchestrator logs decision + applies state; Pedro agent does the actual send.
-  // Runs async so webhook returns 200 immediately to Meta.
   const agentConfig = providerConfig.agent!;
   runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
     console.error("[Webhook] AI flow error:", e),
   );
 }
-
-// ─── Unified AI Flow: Orchestrator (Decision) + Pedro Agent (send) ───────────
-//
-// Architecture:
-//   1. orchestrateAIDecision — logs decision + applies state machine (no send)
-//   2. processAIResponse — Pedro's full agent: sends response, handles passagem,
-//      humanTakeover, multi-messages, follow-ups, media, etc.
-//
-// The orchestrator result is advisory for logging only. The Pedro agent always
-// runs and makes its own decision about whether/what to send.
 
 async function runAIFlow(
   conversationId: string,
@@ -425,7 +367,6 @@ async function runAIFlow(
     escalationThreshold?: number | null;
   },
 ): Promise<void> {
-  // Step 1: Run orchestrator for decision logging + state transition (best-effort)
   try {
     const result = await orchestrateAIDecision({ conversationId, incomingMessage: userMessage });
     if (result) {
@@ -437,12 +378,8 @@ async function runAIFlow(
     console.warn(`[Orchestrator] error (non-fatal) for conv=${conversationId}:`, e);
   }
 
-  // Step 2: Always delegate sending to Pedro's full agent (handles all business logic)
   await processAIResponse(conversationId, userMessage, agent, incomingMessageId);
 }
-
-// ─── Schedule the first follow-up for a conversation ─────────────────────────
-
 
 async function handleStatusUpdate(status: { id: string; status: string }) {
   const statusMap: Record<string, string> = {
@@ -458,16 +395,14 @@ async function handleStatusUpdate(status: { id: string; status: string }) {
   await prisma.whatsappMessage.updateMany({
     where: { id: status.id },
     data: { status: newStatus },
-  }).catch(() => {}); // Ignore if message not found
+  }).catch(() => {});
 }
 
 function verifySignature(body: string, signature: string | null): boolean {
   const secret = process.env.META_WHATSAPP_APP_SECRET;
 
-  // In development without a secret configured, allow requests to ease local testing
   if (!secret) {
     if (process.env.NODE_ENV === "development") return true;
-    // In production, reject all requests if secret is not configured
     console.error("[WhatsApp Webhook] META_WHATSAPP_APP_SECRET is not set — rejecting request");
     return false;
   }
@@ -476,7 +411,6 @@ function verifySignature(body: string, signature: string | null): boolean {
 
   const expected = "sha256=" + createHmac("sha256", secret).update(body).digest("hex");
 
-  // Ensure buffers are the same length before timingSafeEqual to avoid exceptions
   const sigBuf = Buffer.from(signature);
   const expBuf = Buffer.from(expected);
   if (sigBuf.length !== expBuf.length) return false;
