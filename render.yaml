@@ -79,6 +79,24 @@ services:
       - key: VAPID_EMAIL
         sync: false         # mailto:contato@nexobrasil.com.br
 
+      # ── Mercado Pago ──────────────────────────────────────────────────────
+      - key: MERCADO_PAGO_ACCESS_TOKEN
+        sync: false
+      - key: MERCADO_PAGO_PUBLIC_KEY
+        sync: false
+      - key: MERCADO_PAGO_CLIENT_ID
+        sync: false
+      - key: MERCADO_PAGO_CLIENT_SECRET
+        sync: false
+
+      # ── Melhor Envio ──────────────────────────────────────────────────────
+      - key: MELHOR_ENVIO_TOKEN
+        sync: false
+      - key: MELHOR_ENVIO_SANDBOX
+        value: "false"
+      - key: CEP_ORIGEM
+        value: "74480120"
+
       # ── Cron Protection ───────────────────────────────────────────────────
       - key: CRON_SECRET
         generateValue: true

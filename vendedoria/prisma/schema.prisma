@@ -135,35 +135,27 @@ model AgentScriptVersion {
 // ─── Agent Config Version History ─────────────────────────────────────────
 
 model AgentConfigVersion {
-  id                   String   @id @default(cuid())
-  agentId              String?
-  agent                Agent?   @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  version              Int      @default(1)
-  isActive             Boolean  @default(false)
-  changeNote           String?
-  systemPrompt         String?  @db.Text
-  aiProvider           String?
-  aiModel              String?
-  nivelVenda           String   @default("medio")
-  usarEmoji            Boolean  @default(true)
-  usarReticencias      Boolean  @default(true)
-  escalationThreshold  Int      @default(3)
-  tomDeVoz             String   @default("sincero")
-  arquetipoIA          String?
-  objetivoVenda        String   @default("fechar_venda")
-  nivelUrgencia        Int      @default(3)
-  matrizObjecoes       Json     @default("[]")
-  restricoes           Json     @default("[]")
+  id                  String   @id @default(cuid())
+  agentId             String
+  agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  systemPrompt        String?  @db.Text
+  aiProvider          String?
+  aiModel             String?
+  nivelVenda          String   @default("medio")
+  usarEmoji           Boolean  @default(true)
+  usarReticencias     Boolean  @default(true)
+  escalationThreshold Int      @default(3)
+  tomDeVoz            String   @default("sincero")
+  arquetipoIA         String?
+  objetivoVenda       String   @default("fechar_venda")
+  nivelUrgencia       Int      @default(3)
+  matrizObjecoes      Json     @default("[]")
+  restricoes          Json     @default("[]")
   followUpIntervalos        Json     @default("[4,24,48,72]")
   followUpMaxTentativas     Int      @default(4)
-  personalitySnapshot  Json     @default("[]")
-  strategySnapshot     Json     @default("[]")
-  constraintsSnapshot  Json     @default("[]")
-  objectionsSnapshot   Json     @default("[]")
-  followUpSnapshot     Json     @default("{}")
-  savedBy              String?
-  label                String?
-  createdAt            DateTime @default(now())
+  savedBy             String?
+  label               String?
+  createdAt           DateTime @default(now())
 
   @@index([agentId, createdAt])
 }
@@ -245,8 +237,8 @@ model Lead {
   activities     LeadActivity[]
   escalations    LeadEscalation[]
   tags           LeadTag[]
-  notes          LeadNote[]
   calendarEvents CalendarEvent[]
+  notes          LeadNote[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
@@ -595,10 +587,8 @@ model DecisionLog {
   conversationId String
   conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
   action         String               // RESPOND | FOLLOW_UP | ESCALATE | WAIT | CLOSE
-  targetState    String?
   reason         String?              @db.Text
-  reasoning      String?              @db.Text
-  metadata       Json?
+  metadata       Json?                 
   createdAt      DateTime             @default(now())
 
   @@index([conversationId, createdAt])
@@ -719,6 +709,44 @@ model Produto {
   ofertas            OfertaGerada[]
 }
 
+// ─── Vendas Nacionais ──────────────────────────────────────────────────────────
+
+model PedidoNacional {
+  id                    String    @id @default(cuid())
+  conversationId        String?
+  telefoneCliente       String
+  nomeCliente           String
+  produto               String
+  cepDestino            String
+  enderecoCompleto      String
+  valorProduto          Float
+  valorFrete            Float
+  valorTotal            Float
+  transportadora        String
+  prazoFrete            Int
+  servicoFreteId        String
+  formaPagamento        String
+  pagamentoId           String?
+  pagamentoStatus       String    @default("PENDENTE")
+  pagamentoConfirmado   Boolean   @default(false)
+  pagamentoConfirmadoEm DateTime?
+  cartItemId            String?
+  urlEtiqueta           String?
+  codigoRastreamento    String?
+  etapaEnvio            String    @default("AGUARDANDO_PAGAMENTO")
+  criadoEm              DateTime  @default(now())
+  atualizadoEm          DateTime  @updatedAt
+}
+
+model CotacaoFrete {
+  id              String   @id @default(cuid())
+  telefoneCliente String
+  cepDestino      String
+  cotacoes        Json
+  expiradoEm      DateTime
+  criadoEm        DateTime @default(now())
+}
+
 // ─── Oferta Gerada ─────────────────────────────────────────────────────────────
 
 model OfertaGerada {
@@ -735,7 +763,7 @@ model OfertaGerada {
   textoOferta         String    @db.Text
   status              String    @default("PRONTA") // PRONTA | ENVIADA | FALHA
   enviadaParaWhatsApp Boolean   @default(false)
-  enviadaEm           DateTime?
+  enviadaEm          DateTime?
   criadaEm            DateTime  @default(now())
 
   @@index([produtoId, criadaEm])

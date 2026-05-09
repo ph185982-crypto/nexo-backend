@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Kanban, Calendar, Megaphone,
   ChevronDown, ChevronRight, MessageSquare, Bot,
   Folder, Settings, Phone, Package, BarChart2, X, SlidersHorizontal,
-  Zap,
+  Zap, Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -51,6 +51,7 @@ const navItems = [
   { href: "/crm/campaigns", label: "Campanhas", icon: Megaphone },
   { href: "/crm/products", label: "Produtos", icon: Package },
   { href: "/crm/configure-agent", label: "Configurar Agente", icon: SlidersHorizontal },
+  { href: "/crm/pedidos",         label: "Pedidos Nacionais", icon: Globe },
 ];
 
 export function Sidebar({
