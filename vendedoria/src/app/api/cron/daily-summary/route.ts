@@ -149,7 +149,7 @@ export async function GET(req: NextRequest) {
     `\n\n💡 *ANÁLISE DA IA:*\n${insights}`;
 
   // ── Enviar para o dono ────────────────────────────────────────────────────
-  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "";
 
   // Busca qualquer providerConfig para usar o token/phoneNumberId
   const provider = await prisma.whatsappProviderConfig.findFirst({

@@ -149,7 +149,7 @@ export class AdminRepository {
   }
 
   getManagerNumber(): string {
-    return process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+    return process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "";
   }
 }
 

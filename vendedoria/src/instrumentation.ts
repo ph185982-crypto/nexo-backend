@@ -3,6 +3,10 @@ export async function register() {
   // Only run in Node.js runtime (not Edge)
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
+  // Validate required environment variables on startup
+  const { validarConfig } = await import("@/lib/config/env");
+  validarConfig();
+
   const BASE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:10000";
   const KEEPALIVE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 

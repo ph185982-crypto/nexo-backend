@@ -29,6 +29,7 @@ interface Product {
   id: string;
   name: string;
   description: string | null;
+  especificacoes: string | null;
   price: number;
   priceInstallments: number | null;
   installments: number;
@@ -43,6 +44,7 @@ interface Product {
 interface FormState {
   name: string;
   description: string;
+  especificacoes: string;
   price: string;
   priceInstallments: string;
   installments: string;
@@ -55,6 +57,7 @@ interface FormState {
 const EMPTY_FORM: FormState = {
   name: "",
   description: "",
+  especificacoes: "",
   price: "",
   priceInstallments: "",
   installments: "10",
@@ -244,6 +247,7 @@ export default function ProductsPage() {
     setForm({
       name: p.name,
       description: p.description ?? "",
+      especificacoes: p.especificacoes ?? "",
       price: String(p.price),
       priceInstallments: p.priceInstallments != null ? String(p.priceInstallments) : "",
       installments: String(p.installments),
@@ -281,6 +285,7 @@ export default function ProductsPage() {
       const payload = {
         name: form.name,
         description: form.description || null,
+        especificacoes: form.especificacoes || null,
         price: parseFloat(form.price),
         priceInstallments: form.priceInstallments ? parseFloat(form.priceInstallments) : null,
         installments: parseInt(form.installments) || 10,
@@ -500,13 +505,20 @@ export default function ProductsPage() {
             {/* Name */}
             <div>
               <Label htmlFor="p-name">Nome *</Label>
-              <Input id="p-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ex: BOMVINK 21V" className="mt-1" />
+              <Input id="p-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ex: Furadeira de Impacto 220V" className="mt-1" />
             </div>
 
             {/* Description */}
             <div>
               <Label htmlFor="p-desc">Descrição</Label>
-              <Textarea id="p-desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Motor Brushless, 2 baterias, torque 210–320Nm, maleta, LED…" rows={3} className="mt-1" />
+              <Textarea id="p-desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descrição curta do produto para o cliente…" rows={3} className="mt-1" />
+            </div>
+
+            {/* Especificações técnicas */}
+            <div>
+              <Label htmlFor="p-specs">Especificações técnicas</Label>
+              <p className="text-xs text-muted-foreground mt-0.5 mb-1">A IA usa essas informações para responder perguntas técnicas dos clientes.</p>
+              <Textarea id="p-specs" value={form.especificacoes} onChange={(e) => setForm({ ...form, especificacoes: e.target.value })} placeholder="Ex: Motor brushless 220V, torque 95Nm, velocidade 0–3000 rpm, 2 baterias 2Ah, carregador duplo, maleta resistente…" rows={4} className="mt-1" />
             </div>
 
             {/* Category */}
@@ -519,7 +531,7 @@ export default function ProductsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="p-price">Preço à vista (R$) *</Label>
-                <Input id="p-price" type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="549.99" className="mt-1" />
+                <Input id="p-price" type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="299.99" className="mt-1" />
               </div>
               <div>
                 <Label htmlFor="p-inst">Parcelas</Label>
@@ -529,7 +541,7 @@ export default function ProductsPage() {
 
             <div>
               <Label htmlFor="p-price-inst">Valor por parcela (R$)</Label>
-              <Input id="p-price-inst" type="number" step="0.01" value={form.priceInstallments} onChange={(e) => setForm({ ...form, priceInstallments: e.target.value })} placeholder="61.74" className="mt-1" />
+              <Input id="p-price-inst" type="number" step="0.01" value={form.priceInstallments} onChange={(e) => setForm({ ...form, priceInstallments: e.target.value })} placeholder="29.99" className="mt-1" />
             </div>
 
             {/* Multi-image gallery */}

@@ -64,11 +64,11 @@ export default function AgentPage() {
 
   // Config state
   const [config, setConfig] = useState<AgentConfig>({
-    agentName: "Léo", bastaoNumber: "5562984465388",
+    agentName: "Léo", bastaoNumber: "",
     deliveryWeekStart: 9, deliveryWeekEnd: 18,
     deliverySatStart: 8, deliverySatEnd: 13,
     maxFollowUps: 4, followUpHours: "4,24,48,72",
-    deliveryArea: "Goiânia",
+    deliveryArea: "",
   });
   const [savingConfig, setSavingConfig] = useState(false);
 
@@ -214,6 +214,15 @@ export default function AgentPage() {
       {/* ── Tab: Roteiro ─────────────────────────────────────────────────────── */}
       {tab === "roteiro" && (
         <div className="flex flex-col flex-1 min-h-0 p-4 gap-3">
+
+          {/* ── Aviso arquitetural ──────────────────────────────────────────── */}
+          <div style={{ background: "#FEF3C7", border: "1px solid #F59E0B", borderRadius: "8px", padding: "12px 16px", fontSize: "13px", color: "#92400E" }}>
+            ⚠️ <strong>Este é o único lugar onde o comportamento da IA é configurado.</strong>
+            {" "}O código não interfere no que a IA fala — só no que ela pode fazer (enviar mídia, calcular frete, gerar pagamento).
+            Qualquer mudança de produto, tom de voz ou script deve ser feita aqui.
+            Cadastre novos produtos em <strong>/crm/produtos</strong> — eles aparecem automaticamente no contexto da IA.
+          </div>
+
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
               <h2 className="font-semibold text-[var(--texto)]">Roteiro do Agente</h2>

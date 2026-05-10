@@ -6,6 +6,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { config } from "@/lib/config/env";
 
 const GRAPH_API_VERSION = "v20.0";
 const BASE_URL = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
@@ -55,8 +56,8 @@ async function runDiagnostic() {
   const phoneNumberId = provider.businessPhoneNumberId;
 
   const handoffMsg =
-    `*🔔 [SIMULAÇÃO] PEDIDO NOVO — NEXO BRASIL*\n\n` +
-    `📦 *Produto:* BOMVINK 21V\n` +
+    `*🔔 [SIMULAÇÃO] PEDIDO NOVO — ${config.businessName.toUpperCase()}*\n\n` +
+    `📦 *Produto:* PRODUTO TESTE\n` +
     `👤 *Nome:* João da Silva\n` +
     `🏠 *Endereço:* Rua das Flores, 123, Setor Bueno\n` +
     `🗺️ *Localização:* não enviada\n` +

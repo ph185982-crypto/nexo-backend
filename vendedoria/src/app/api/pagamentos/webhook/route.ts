@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma/client';
 import { consultarStatus } from '@/lib/pagamento/mercado-pago';
 import { adicionarAoCarrinho, gerarEtiqueta } from '@/lib/envio/melhor-envio';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/send';
+import { config as envConfig } from '@/lib/config/env';
 
 export async function GET() {
   return NextResponse.json({ status: 'ok', service: 'webhook-mercadopago' });
@@ -102,7 +103,7 @@ async function gerarEtiquetaENotificar(
 
     await sendWhatsAppMessage(
       config.businessPhoneNumberId,
-      '5562984465388',
+      envConfig.ownerWhatsapp,
       `🔔 *PEDIDO PAGO — EMBALAR E DESPACHAR*\n\n📦 Produto: ${pedido.produto}\n👤 Cliente: ${pedido.nomeCliente}\n📍 CEP: ${pedido.cepDestino}\n📮 Endereço: ${pedido.enderecoCompleto}\n🚚 ${pedido.transportadora} — ${pedido.prazoFrete} dia(s) útil(is)\n💰 Total: R$ ${pedido.valorTotal.toFixed(2)}\n\n🏷️ Etiqueta pronta para imprimir:\n${urlEtiqueta}`,
       config.accessToken ?? undefined,
     );
@@ -113,7 +114,7 @@ async function gerarEtiquetaENotificar(
 
     await sendWhatsAppMessage(
       config.businessPhoneNumberId,
-      '5562984465388',
+      envConfig.ownerWhatsapp,
       `⚠️ *PEDIDO PAGO — GERAR ETIQUETA MANUALMENTE*\n\nPedido: ${pedido.id}\nCliente: ${pedido.nomeCliente}\nCEP: ${pedido.cepDestino}\nProduto: ${pedido.produto}\n\nErro ao gerar etiqueta automática. Acesse o Melhor Envio manualmente.`,
       config.accessToken ?? undefined,
     );

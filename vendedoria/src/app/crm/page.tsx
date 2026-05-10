@@ -157,7 +157,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Painel de vendas</h1>
-          <p className="text-sm text-muted-foreground">Funil do agente Léo — Nexo Brasil</p>
+          <p className="text-sm text-muted-foreground">Funil de atendimento via WhatsApp</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {(["today", "7d", "30d"] as Period[]).map((p) => (
