@@ -1,4 +1,5 @@
 import MercadoPago, { Payment, Preference } from 'mercadopago';
+import { config } from '@/lib/config/env';
 
 const getMp = () => new MercadoPago({
   accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN!,
@@ -75,7 +76,7 @@ export async function criarLinkParcelado(params: {
       },
       external_reference: params.pedidoId,
       notification_url: `${process.env.RENDER_EXTERNAL_URL}/api/pagamentos/webhook`,
-      statement_descriptor: 'NEXO BRASIL',
+      statement_descriptor: config.businessName.toUpperCase().slice(0, 22),
       expires: true,
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     },

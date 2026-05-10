@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
+import { config } from "@/lib/config/env";
 import { sendWhatsAppMessage, sendWhatsAppImage } from "@/lib/whatsapp/send";
 import { gerarArte } from "./gerador-arte";
 import { gerarTextoOferta } from "./gerador-texto";
@@ -35,9 +36,9 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
     return { ok: false, error: "WhatsApp provider não configurado" };
   }
 
-  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ??
-    (await prisma.agentConfig.findFirst()?.then((c) => c?.bastaoNumber)) ??
-    "5562984465388";
+  const ownerNumber = config.ownerWhatsapp
+    || (await prisma.agentConfig.findFirst()?.then((c) => c?.bastaoNumber))
+    || "";
 
   let artePath: string | null = null;
   let artePublicUrl: string | null = null;

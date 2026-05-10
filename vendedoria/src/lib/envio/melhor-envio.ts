@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { config } from '@/lib/config/env';
 
 const BASE = 'https://melhorenvio.com.br/api/v2';
 
@@ -74,11 +75,11 @@ export async function adicionarAoCarrinho(pedido: {
     {
       service: pedido.servicoId,
       from: {
-        name: 'Nexo Brasil',
-        postal_code: process.env.CEP_ORIGEM?.replace(/\D/g, ''),
+        name: config.businessName,
+        postal_code: config.cepOrigem?.replace(/\D/g, ''),
         address: 'Endereço de despacho',
-        city: 'Goiânia',
-        state_abbr: 'GO',
+        city: config.deliveryRegion,
+        state_abbr: process.env.DELIVERY_STATE || 'GO',
         country_id: 'BR',
       },
       to: {

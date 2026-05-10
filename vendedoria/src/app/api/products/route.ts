@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     organizationId?: string;
     name?: string;
     description?: string;
+    especificacoes?: string | null;
     price?: number | string;
     priceInstallments?: number | string | null;
     installments?: number | string;
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
     category?: string | null;
   };
 
-  const { organizationId, name, description, price, priceInstallments, installments, imageUrl, imageUrls, videoUrl, category } = body;
+  const { organizationId, name, description, especificacoes, price, priceInstallments, installments, imageUrl, imageUrls, videoUrl, category } = body;
 
   if (!organizationId || !name || price == null) {
     return NextResponse.json({ error: "organizationId, name and price are required" }, { status: 400 });
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       organizationId,
       name,
       description: description ?? null,
+      especificacoes: especificacoes ?? null,
       price: Number(price),
       priceInstallments: priceInstallments != null ? Number(priceInstallments) : null,
       installments: installments ? Number(installments) : 10,

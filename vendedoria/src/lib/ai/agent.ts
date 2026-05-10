@@ -5,6 +5,8 @@ import { decisionService } from "@/lib/ai/decision";
 import { promptCompiler } from "@/lib/ai/prompt-compiler";
 import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { notificarPassagem, notificarLeadQuente, notificarEscalacao } from "@/lib/push/notificar";
+import { buscarProdutosAtivos, formatarProdutosParaContexto } from "@/lib/ai/contexto-produtos";
+import { config } from "@/lib/config/env";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -51,11 +53,12 @@ async function notificarErroCritico(
   phoneNumberId: string,
   accessToken: string | undefined,
 ): Promise<void> {
-  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+  const ownerNumber = config.ownerWhatsapp;
+  if (!ownerNumber) { console.error("[ALERTA] OWNER_WHATSAPP_NUMBER não configurado — falha silenciosa:", mensagem); return; }
   try {
     await sendWhatsAppMessage(phoneNumberId, ownerNumber, `⚠️ ERRO CRÍTICO — IA\n${mensagem}`, accessToken);
   } catch {
-    console.error("[ALERTA] Falha ao notificar Pedro:", mensagem);
+    console.error("[ALERTA] Falha ao notificar owner:", mensagem);
   }
 }
 
@@ -650,11 +653,16 @@ export async function processAIResponse(
       console.log(`[AI Agent] ProductSourcing detectou ${detectedProducts.length} produto(s): ${detectedProducts.map(p => p.name).join(", ")}`);
     }
 
-    // ── Produtos ativos ───────────────────────────────────────────────────────
-    const activeProducts = await prisma.product.findMany({
-      where: { organizationId: orgId, isActive: true },
-      orderBy: { createdAt: "asc" },
-    });
+    // ── Produtos ativos — fonte única: buscarProdutosAtivos() ────────────────
+    // Inclui especificacoes para IA usar ao responder perguntas técnicas
+    const produtosContexto = await buscarProdutosAtivos(orgId);
+    // Mapeamento para ProductRef (compatibilidade com promptCompiler)
+    const activeProducts = produtosContexto.map((p) => ({
+      id: p.id,
+      name: p.nome,
+      imageUrl: p.temFoto ? "has_media" : null,
+      videoUrl: p.temVideo ? "has_media" : null,
+    }));
 
     // ── CORREÇÃO 4: Envio forçado de mídia no primeiro contato ───────────────
     // Detecta produto pela mensagem do usuário e envia foto+vídeo IMEDIATAMENTE,
@@ -672,6 +680,7 @@ export async function processAIResponse(
     };
     const msgLower = userMessage.toLowerCase();
     if (isFirstInteraction) {
+      // Reutiliza produtosContexto — sem query extra ao banco
       const productsWithMediaEarly = await prisma.product.findMany({
         where: { organizationId: orgId, isActive: true },
         select: { id: true, name: true, imageUrl: true, imageUrls: true, videoUrl: true },
@@ -728,20 +737,10 @@ export async function processAIResponse(
       }
     }
 
-    let productSection = "";
-    if (activeProducts.length > 0) {
-      const lines = activeProducts.map((p, i) => {
-        const slug = p.name.toUpperCase().replace(/[^A-Z0-9]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
-        const hasMedia = p.imageUrl || (p as typeof p & { imageUrls?: string[] }).imageUrls?.length || p.videoUrl;
-        return [
-          `Produto ${i + 1} — ${p.name} [slug: ${slug}]`,
-          p.description ?? null,
-          `Preço: R$${p.price.toFixed(2)}${p.priceInstallments && p.installments ? ` à vista | ${p.installments}x de R$${p.priceInstallments.toFixed(2)}` : ""}`,
-          hasMedia ? `→ Para enviar fotos/vídeo: inclua [FOTO_${slug}] ou [VIDEO_${slug}] em uma das mensagens` : null,
-        ].filter(Boolean).join("\n");
-      });
-      productSection = "\n\nCATÁLOGO:\n" + lines.join("\n\n");
-    }
+    // Catálogo dinâmico injetado no prompt — inclui especificacoes para a IA usar
+    const productSection = produtosContexto.length > 0
+      ? "\n\nCATÁLOGO:\n" + formatarProdutosParaContexto(produtosContexto)
+      : "";
 
     // ── Contexto do lead ──────────────────────────────────────────────────────
     const leadContext = lead ? [
@@ -765,7 +764,7 @@ export async function processAIResponse(
     const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
     if (dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
-      const produtoNome = activeProducts[0]?.name ?? "produto";
+      const produtoNome = produtosContexto[0]?.nome ?? "produto";
       const clientName  = lead?.profileName ?? "Cliente";
       notificarPassagem({
         nomeCliente:    clientName,
@@ -774,7 +773,7 @@ export async function processAIResponse(
         pagamento:      collectedData.pagamento ?? "não informado",
         conversationId,
       }).catch(() => {});
-      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const ownerNumber = config.ownerWhatsapp;
       const to          = conversation.customerWhatsappBusinessId;
       const token       = conversation.provider.accessToken ?? undefined;
 
@@ -787,7 +786,7 @@ export async function processAIResponse(
         .join("\n");
 
       const handoffMsg =
-        `*🔔 PEDIDO NOVO — NEXO BRASIL*\n\n` +
+        `*🔔 PEDIDO NOVO — ${config.businessName.toUpperCase()}*\n\n` +
         `📦 *Produto:* ${produtoNome}\n` +
         `👤 *Nome:* ${collectedData.nome}\n` +
         `🏠 *Endereço:* ${collectedData.endereco ?? collectedData.localizacao}\n` +
@@ -845,7 +844,7 @@ export async function processAIResponse(
 
     // ── Sandbox mode (após passagem — passagem sempre dispara, sandbox só bloqueia IA) ──
     if (agent.sandboxMode) {
-      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+      const sandboxNumber = process.env.SANDBOX_TEST_NUMBER ?? config.ownerWhatsapp;
       const customerNum = conversation.customerWhatsappBusinessId.replace(/\D/g, "");
       if (customerNum !== sandboxNumber.replace(/\D/g, "")) {
         console.log(`[AI Agent] 🔒 SANDBOX MODE — IA bloqueada para ${customerNum} (só atende ${sandboxNumber})`);
@@ -998,7 +997,7 @@ export async function processAIResponse(
               : String(orderData.produtos))
           : "N/A";
         const handoffMsg =
-          `*🔔 PEDIDO NOVO — NEXO BRASIL*\n\n` +
+          `*🔔 PEDIDO NOVO — ${config.businessName.toUpperCase()}*\n\n` +
           `👤 *Cliente:* ${clientName}\n` +
           `📱 *WhatsApp:* ${to}\n` +
           `📦 *Produto:* ${produtoStr}\n` +
@@ -1008,7 +1007,7 @@ export async function processAIResponse(
           `🕐 *Recebe até:* ${orderData.horario ?? "?"}\n` +
           `🙍 *Nome recebedor:* ${orderData.nome ?? clientName}\n\n` +
           `_Organize a entrega e encaminhe o motoboy._`;
-        const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+        const ownerNumber = config.ownerWhatsapp;
         await sendWhatsAppMessage(provider.businessPhoneNumberId, ownerNumber, handoffMsg, token)
           .catch((e) => console.error("[AI Agent] Passagem send failed:", e));
         notificarPassagem({
@@ -1133,10 +1132,11 @@ export async function processAIResponse(
 
       // Trigger 2: Heurística — nome/keyword do produto na resposta + LLM falou em foto/vídeo
       const nameMentioned = new RegExp(product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(combinedRaw);
+      // Dynamic keyword match — any word >3 chars from the product name appearing in IA response
       const nm = product.name.toLowerCase();
-      const keywordMatch =
-        (/luatek|48\s*v/i.test(combinedRaw) && (nm.includes("luatek") || nm.includes("48"))) ||
-        (/bomvink|21\s*v/i.test(combinedRaw) && (nm.includes("bomvink") || nm.includes("21")));
+      const keywordMatch = nm.split(/\s+/).filter((w) => w.length > 3).some((w) =>
+        combinedRaw.toLowerCase().includes(w)
+      );
       const llmMentionedMedia = /\b(foto|fotos|v[ií]deo|videos?|imagem|imagens|enviar\s+as?\s+fotos?|mando\s+as?\s+fotos?)\b/i.test(combinedRaw);
       const autoSend = !mediaAlreadySent && msgCount <= 15 && (nameMentioned || keywordMatch) && llmMentionedMedia;
 

@@ -547,6 +547,7 @@ model Product {
   id                String   @id @default(cuid())
   name              String
   description       String?  @db.Text
+  especificacoes    String?  @db.Text  // specs técnicas injetadas no contexto da IA
   price             Float
   priceInstallments Float?
   installments      Int      @default(10)

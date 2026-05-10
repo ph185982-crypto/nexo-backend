@@ -1,3 +1,5 @@
+import { config } from '@/lib/config/env';
+
 export interface DadosTexto {
   nome: string;
   precoVenda: number;
@@ -18,7 +20,7 @@ Siga EXATAMENTE este formato na resposta (não adicione nada além disso):
 
 💰 *Preço especial: [preço com desconto]*
 💳 10x de *[parcelamento]* sem juros
-🚚 Frete grátis p/ Goiânia e região!
+🚚 Frete grátis p/ ${config.deliveryRegion} e região!
 
 Condições: Pix, cartão ou dinheiro na entrega
 
@@ -38,7 +40,7 @@ function fallbackTexto(dados: DadosTexto): string {
     `Ferramenta profissional de alta performance. Ideal para uso doméstico e industrial com eficiência e durabilidade.\n\n` +
     `💰 *Preço especial: ${fmt(dados.precoDesconto)}*\n` +
     `💳 10x de *${fmt(dados.parcelamento)}* sem juros\n` +
-    `🚚 Frete grátis p/ Goiânia e região!\n\n` +
+    `🚚 Frete grátis p/ ${config.deliveryRegion} e região!\n\n` +
     `Condições: Pix, cartão ou dinheiro na entrega\n\n` +
     `👇 Comenta *"eu quero"* e garanta agora!`
   );

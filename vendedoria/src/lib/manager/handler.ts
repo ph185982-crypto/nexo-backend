@@ -8,7 +8,7 @@ import { handleFreeQuery } from "@/lib/admin/admin-report.service";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 
 export const MANAGER_NUMBER =
-  process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
+  process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "";
 
 // Normalize BR phone: strip country code 55 and the mobile "9" prefix.
 // Makes comparison tolerant to both 12-digit (55 + DDD + 8) and 13-digit
