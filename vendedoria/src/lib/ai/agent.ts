@@ -302,13 +302,32 @@ function isCourtesyMessage(message: string): boolean {
   return /^(ok|oi|sim|nao|obrigado|obrigada|valeu|vlw|vlr|top|boa|show|certo|entendi|combinado|perfeito|blz|blzinha|beleza|otimo|😊|👍|🙏|✅|❤️|🙌|👏|k+|haha+|huhu|rs+|\.)$/.test(norm);
 }
 
-// ── Sanitiza mensagens — remove sobrecarga de dados e trunca textos longos ───
+// ── Sanitiza mensagens — remove sobrecarga de dados ───────────────────────────
 function sanitizeMessages(msgs: string[]): string[] {
   return msgs.map((m) => {
     if (isOverloadedRequest(m)) return "me manda sua localização 📍";
-    if (m.length > 160) return m.substring(0, 157) + "...";
     return m;
   });
+}
+
+// ── Concatena mensagens incompletas que terminam com "..." ────────────────────
+// Garante que nenhuma mensagem seja enviada no meio de uma ideia.
+function mergeIncomplete(msgs: string[], delays: number[]): AIResponse {
+  const outMsgs: string[] = [];
+  const outDelays: number[] = [];
+  let buf = "";
+  let bufDelay = 0;
+  for (let i = 0; i < msgs.length; i++) {
+    if (!buf) bufDelay = delays[i] ?? 0;
+    buf = buf ? `${buf} ${msgs[i]}` : msgs[i];
+    if (!buf.trimEnd().endsWith("...")) {
+      outMsgs.push(buf.trim());
+      outDelays.push(bufDelay);
+      buf = "";
+    }
+  }
+  if (buf.trim()) { outMsgs.push(buf.trim()); outDelays.push(bufDelay); }
+  return { mensagens: outMsgs, delays: outDelays };
 }
 
 // ── Parser da resposta JSON do LLM ────────────────────────────────────────────
@@ -322,17 +341,18 @@ function parseAIResponse(raw: string): AIResponse {
       const delays: number[] = msgs.map((_, i) =>
         typeof rawDelays[i] === "number" ? (rawDelays[i] as number) : i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500
       );
-      return { mensagens: sanitizeMessages(msgs), delays };
+      return mergeIncomplete(sanitizeMessages(msgs), delays);
     }
   } catch { /* fall through */ }
 
   // Fallback: separador ||
   const byPipe = stripped.split("||").map((m) => m.trim()).filter(Boolean);
   if (byPipe.length > 1) {
-    return { mensagens: sanitizeMessages(byPipe), delays: byPipe.map((_, i) => (i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500)) };
+    const delays = byPipe.map((_, i) => (i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500));
+    return mergeIncomplete(sanitizeMessages(byPipe), delays);
   }
 
-  return { mensagens: sanitizeMessages([stripped]), delays: [0] };
+  return mergeIncomplete(sanitizeMessages([stripped]), [0]);
 }
 
 // ── Horário em São Paulo + verifica expediente ────────────────────────────────
@@ -576,10 +596,8 @@ export async function processAIResponse(
       ).catch(() => {});
     }
 
-    // Quote the latest message if client sent 2+ in a row without reply
-    let consecutiveUser = 0;
-    for (const m of recentMessages) { if (m.role === "USER") consecutiveUser++; else break; }
-    const contextMessageId = consecutiveUser > 1 && incomingMessageId ? incomingMessageId : undefined;
+    // Primeira mensagem do array sempre cita a última mensagem do cliente
+    const contextMessageId = incomingMessageId;
 
     // ── Detectar estado do lead ───────────────────────────────────────────────
     const leadState = detectLeadState(userMessage);
@@ -1058,10 +1076,8 @@ export async function processAIResponse(
     // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
       if (i > 0) {
-        // Typing proporcional ao texto + jitter humano (±600ms) — mínimo 3s, máximo 7s
-        const base = mensagens[i].length * 45;
-        const jitter = Math.floor(Math.random() * 1200) - 600;
-        const interDelay = Math.min(Math.max(base + jitter, 3000), 7000);
+        // Typing proporcional ao texto — 50ms por char, mínimo 800ms, máximo 3000ms
+        const interDelay = Math.min(Math.max(mensagens[i].length * 50, 800), 3000);
         await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
         // Pausa micro entre typing e envio (simula o "send" humano)
         await new Promise((r) => setTimeout(r, 150 + Math.floor(Math.random() * 250)));
