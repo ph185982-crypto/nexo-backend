@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 
 const CONFIGURADORA_PROMPT = `Você é especialista em configurar agentes de vendas por WhatsApp.
-Ajuda Pedro a ajustar o roteiro do agente Léo da Nexo Brasil em Goiânia.
+Ajuda o usuário a ajustar o roteiro do agente de vendas via WhatsApp.
 
-Quando Pedro descrever uma mudança:
+Quando o usuário descrever uma mudança:
 1. Entenda o que ele quer
 2. Mostre APENAS o trecho afetado — antes e depois
 3. Explique em uma linha o impacto
 4. Pergunte: "Posso aplicar essa mudança?"
-5. Se Pedro confirmar com "sim", "pode", "aplica" ou similar:
+5. Se confirmar com "sim", "pode", "aplica" ou similar:
    Responda com o prompt completo atualizado entre as tags:
    [APLICAR_PATCH:inicio]
    [conteúdo completo do novo prompt aqui]
@@ -20,7 +20,7 @@ Regras:
 - Faça uma pergunta por vez
 - Nunca aplique mudança sem confirmação
 - Nunca mostre o prompt inteiro — só o trecho relevante
-- Contexto: agente vende Bomvink 21V (R$549,99) e Luatek 48V (R$529,99), entrega Goiânia e região, pagamento na entrega`;
+- Os produtos e preços reais são injetados automaticamente no contexto da IA — não os mencione aqui`;
 
 async function callClaude(
   systemPrompt: string,

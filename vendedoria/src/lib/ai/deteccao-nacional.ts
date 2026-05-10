@@ -43,7 +43,7 @@ export function detectarEscolhaFrete(
   if (!opcoes?.length) return null;
   const texto = normalize(mensagem);
 
-  if (/\b(1|um|primeira|mais barat|econom)/.test(texto)) {
+  if (/\b(1|um|primeira|mais barat|econom)/. test(texto)) {
     return [...opcoes].sort((a, b) => a.preco - b.preco)[0]?.id ?? null;
   }
   if (/\b(2|dois|segunda|mais rapid|rapido|sedex|expresso)/.test(texto)) {

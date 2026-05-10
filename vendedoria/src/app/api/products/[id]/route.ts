@@ -9,6 +9,7 @@ export async function PATCH(
   const body = await req.json() as {
     name?: string;
     description?: string;
+    especificacoes?: string | null;
     price?: number | string;
     priceInstallments?: number | string | null;
     installments?: number | string;
@@ -19,7 +20,7 @@ export async function PATCH(
     isActive?: boolean;
   };
 
-  const { name, description, price, priceInstallments, installments, imageUrl, imageUrls, videoUrl, category, isActive } = body;
+  const { name, description, especificacoes, price, priceInstallments, installments, imageUrl, imageUrls, videoUrl, category, isActive } = body;
 
   // If imageUrls array is being updated, sync imageUrl to first element
   const images = Array.isArray(imageUrls) ? imageUrls.slice(0, 8) : undefined;
@@ -32,6 +33,7 @@ export async function PATCH(
     data: {
       ...(name !== undefined && { name }),
       ...(description !== undefined && { description }),
+      ...(especificacoes !== undefined && { especificacoes }),
       ...(price !== undefined && { price: Number(price) }),
       ...(priceInstallments !== undefined && { priceInstallments: priceInstallments != null ? Number(priceInstallments) : null }),
       ...(installments !== undefined && { installments: Number(installments) }),

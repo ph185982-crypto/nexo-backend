@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   const cursor   = searchParams.get("cursor");
   const fetchId  = searchParams.get("id"); // fetch a single conversation by id
   // Advanced filters
-  const produto  = searchParams.get("produto") ?? ""; // "bomvink" | "luatek" | ""
+  const produto  = searchParams.get("produto") ?? ""; // slug parcial do produto (dinâmico)
   const etapa    = searchParams.get("etapa")   ?? ""; // etapa slug
   const tempo    = searchParams.get("tempo")   ?? ""; // "1h" | "3h" | "24h"
   const take     = 250;
@@ -95,9 +95,9 @@ export async function GET(req: NextRequest) {
     ];
   })();
 
-  // Advanced filter: produto
-  const produtoWhere = produto === "bomvink" ? { produtoInteresse: { contains: "BOMVINK", mode: "insensitive" as const } }
-    : produto === "luatek" ? { produtoInteresse: { contains: "LUATEK", mode: "insensitive" as const } }
+  // Advanced filter: produto — dinâmico, filtra por slug parcial
+  const produtoWhere = produto
+    ? { produtoInteresse: { contains: produto, mode: "insensitive" as const } }
     : {};
 
   // Advanced filter: etapa

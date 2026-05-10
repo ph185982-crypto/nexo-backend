@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { sendPushToAll } from "@/lib/push/notificar";
+import { config } from "@/lib/config/env";
 
 async function handler(conversationId: string): Promise<{ ok: boolean; msg?: string; error?: string }> {
   const conversation = await prisma.whatsappConversation.findUnique({
@@ -60,15 +61,15 @@ async function handler(conversationId: string): Promise<{ ok: boolean; msg?: str
     ? (/(?:meu\s+nome\s+[eé]|me\s+chamo|chamo[-\s]+me)\s+([A-Za-záéíóú][A-Za-záéíóú\s]{1,})/i.exec(nomeMsg.content)?.[1] ?? lead?.profileName)
     : lead?.profileName ?? "não informado";
 
-  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ??
-    (await prisma.agentConfig.findFirst().then((c) => c?.bastaoNumber)) ??
-    "5562984465388";
+  const ownerNumber = config.ownerWhatsapp
+    || (await prisma.agentConfig.findFirst().then((c) => c?.bastaoNumber))
+    || "";
 
   const to = conversation.customerWhatsappBusinessId;
   const token = provider.accessToken ?? undefined;
 
   const handoffMsg =
-    `*🔔 PEDIDO NOVO (REENVIO) — NEXO BRASIL*\n\n` +
+    `*🔔 PEDIDO NOVO (REENVIO) — ${config.businessName.toUpperCase()}*\n\n` +
     `👤 *Cliente:* ${lead?.profileName ?? to}\n` +
     `📱 *WhatsApp:* ${to}\n` +
     `🏠 *Endereço/Localização:* ${endereco}\n` +
