@@ -53,12 +53,11 @@ async function notificarErroCritico(
   phoneNumberId: string,
   accessToken: string | undefined,
 ): Promise<void> {
-  const ownerNumber = config.ownerWhatsapp;
-  if (!ownerNumber) { console.error("[ALERTA] OWNER_WHATSAPP_NUMBER não configurado — falha silenciosa:", mensagem); return; }
+  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
   try {
     await sendWhatsAppMessage(phoneNumberId, ownerNumber, `⚠️ ERRO CRÍTICO — IA\n${mensagem}`, accessToken);
   } catch {
-    console.error("[ALERTA] Falha ao notificar owner:", mensagem);
+    console.error("[ALERTA] Falha ao notificar Pedro:", mensagem);
   }
 }
 
@@ -178,7 +177,7 @@ function detectHardEscalation(
   const normalize = (s: string) =>
     s.toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[̀-ͯ]/g, "")
       .replace(/[^\x00-\x7F]/g, "?");
   const msg = normalize(message);
   console.log(`[ESCALATION-DETAIL] msg normalizada: "${msg}" | histórico size: ${recentMessages.length}`);
@@ -269,7 +268,7 @@ function detectDesinteresse(message: string): boolean {
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
 // Suporta negação: "não sou de goiânia" → fora da área.
 function detectForaDeArea(message: string): boolean {
-  const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const norm = n(message);
 
   // Exige contexto de localização pessoal do cliente
@@ -299,7 +298,7 @@ function detectForaDeArea(message: string): boolean {
 // ── CORREÇÃO 3: Detecta mensagem de cortesia pós-confirmação ─────────────────
 // Mensagens curtas de agradecimento/confirmação não merecem resposta após pedido fechado.
 function isCourtesyMessage(message: string): boolean {
-  const norm = message.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const norm = message.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   return /^(ok|oi|sim|nao|obrigado|obrigada|valeu|vlw|vlr|top|boa|show|certo|entendi|combinado|perfeito|blz|blzinha|beleza|otimo|😊|👍|🙏|✅|❤️|🙌|👏|k+|haha+|huhu|rs+|\.)$/.test(norm);
 }
 
@@ -370,7 +369,7 @@ function saudacao(): string {
 // ── Conta tentativas de quebra de objeção de preço já feitas pela IA ─────────
 function countPriceObjectionAttempts(messages: Array<{ role: string; content: string }>): number {
   const normalize = (s: string) =>
-    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x00-\x7F]/g, "?");
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
 
   // Detecta mensagens do cliente com objeção de preço
   const clientPriceObjMsgs = messages.filter(
@@ -587,7 +586,7 @@ export async function processAIResponse(
 
     // ── Guard: intenção de compra bloqueia qualquer escalação ────────────────
     // Se o cliente quer fechar/comprar, NUNCA escalar — vai direto para coleta de dados
-    const msgNorm = userMessage.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const msgNorm = userMessage.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
     const INTENCAO_COMPRA = [
       /quero\s+fechar/, /vamos\s+fechar/, /pode\s+fechar/, /quero\s+comprar/,
       /\bfechado\b/, /pode\s+mandar/, /bora\s+fechar/, /me\s+manda\s+/,
