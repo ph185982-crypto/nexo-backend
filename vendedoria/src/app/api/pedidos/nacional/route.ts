@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
 import { criarPix, criarLinkParcelado } from '@/lib/pagamento/mercado-pago';
 import { sendPushToAll } from '@/lib/push/notificar';
+import { config } from '@/lib/config/env';
 
 // POST /api/pedidos/nacional
 export async function POST(req: NextRequest) {
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
       prazoFrete: Number(prazoFrete),
     };
 
-    const descricaoProduto = `${produtoDB.nome} — Nexo Brasil`;
+    const descricaoProduto = `${produtoDB.nome} — ${config.businessName}`;
 
     if (formaPagamento === 'pix') {
       const pix = await criarPix({

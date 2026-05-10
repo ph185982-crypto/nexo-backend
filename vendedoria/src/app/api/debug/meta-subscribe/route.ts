@@ -2,6 +2,7 @@
  * TEMPORARY — calls Meta Graph API to subscribe WABA to app webhooks + test send
  */
 import { NextResponse } from "next/server";
+import { config } from "@/lib/config/env";
 
 export async function GET(req: Request) {
   const token = process.env.META_WHATSAPP_ACCESS_TOKEN;
@@ -76,7 +77,7 @@ export async function GET(req: Request) {
         messaging_product: "whatsapp",
         to: targetPhone,
         type: "text",
-        text: { body: "✅ Teste direto da API — Léo, Nexo Brasil. Se você recebeu isso, o envio está funcionando!" },
+        text: { body: `✅ Teste direto da API — ${config.businessName}. Se você recebeu isso, o envio está funcionando!` },
       }),
     });
     results.testSend = await sendRes.json();
