@@ -9,7 +9,7 @@ import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
-import { isManagerNumber, handleManagerMessage } from "@/lib/manager/handler";
+import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@/lib/manager/handler";
 
 // ─── Webhook Verification (GET) ────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -380,10 +380,29 @@ async function handleIncomingMessage(
   if (isManagerNumber(phone)) {
     console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
     const msgText = message.text?.body ?? content;
-    handleManagerMessage(msgText, providerConfig, phone).catch((e) =>
-      console.error("[Webhook] Manager handler error:", e),
-    );
-    return; // do not trigger AI lead agent
+    // Build media info if the manager sent an image (payment proof)
+    let managerMedia: IncomingMediaInfo | undefined;
+    if (message.type === "image" && message.image?.id) {
+      managerMedia = {
+        mediaId: message.image.id,
+        mimeType: message.image.mime_type ?? "image/jpeg",
+        type: "image",
+      };
+    } else if (message.type === "document" && message.document?.id) {
+      managerMedia = {
+        mediaId: message.document.id,
+        mimeType: message.document.mime_type ?? "application/pdf",
+        type: "document",
+      };
+    }
+
+    handleManagerMessage(
+      msgText,
+      { businessPhoneNumberId: providerConfig.businessPhoneNumberId, organizationId: providerConfig.organizationId, accessToken: providerConfig.accessToken },
+      phone,
+      managerMedia,
+    ).catch((e) => console.error("[Webhook] Manager handler error:", e));
+    return;
   }
 
   if (providerConfig.agent?.kind !== "AI" || providerConfig.agent?.status !== "ACTIVE") {

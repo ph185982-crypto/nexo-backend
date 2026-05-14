@@ -6,6 +6,11 @@
 import { adminRepository } from "@/lib/admin/admin.repository";
 import { handleFreeQuery } from "@/lib/admin/admin-report.service";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import {
+  handleFinancialTextMessage,
+  handleFinancialImageProof,
+  isFinancialMessage,
+} from "@/lib/finance/agent";
 
 export const MANAGER_NUMBER =
   process.env.MANAGER_WHATSAPP_NUMBER ?? process.env.OWNER_WHATSAPP_NUMBER ?? "";
@@ -28,23 +33,53 @@ export function isManagerNumber(phone: string): boolean {
 
 type ProviderConfig = {
   businessPhoneNumberId: string;
+  organizationId: string;
   accessToken?: string | null;
+};
+
+export type IncomingMediaInfo = {
+  mediaId: string;
+  mimeType: string;
+  type: "image" | "video" | "audio" | "document";
 };
 
 export async function handleManagerMessage(
   text: string,
   providerConfig: ProviderConfig,
   replyTo?: string,
+  media?: IncomingMediaInfo,
 ): Promise<void> {
-  const { businessPhoneNumberId, accessToken } = providerConfig;
+  const { businessPhoneNumberId, organizationId, accessToken } = providerConfig;
   const token = accessToken ?? undefined;
   const target = replyTo ?? MANAGER_NUMBER;
   const cmd = text.toLowerCase().trim();
 
-  console.log(`[Manager] cmd="${cmd.slice(0, 60)}" → reply to ${target}`);
+  console.log(`[Manager] cmd="${cmd.slice(0, 60)}" | hasMedia=${!!media} | reply to ${target}`);
 
   const send = (msg: string) =>
     sendWhatsAppMessage(businessPhoneNumberId, target, msg, token);
+
+  const finCtx = {
+    organizationId,
+    phoneNumber: target,
+    providerConfig: { businessPhoneNumberId, accessToken },
+  };
+
+  // ── Comprovante de pagamento (imagem) ──────────────────────────────────────
+  if (media?.type === "image" && media.mediaId) {
+    console.log(`[Manager] Image proof received — routing to financial agent`);
+    const reply = await handleFinancialImageProof(media.mediaId, media.mimeType, finCtx);
+    await send(reply);
+    return;
+  }
+
+  // ── Comandos financeiros ────────────────────────────────────────────────────
+  if (isFinancialMessage(cmd, false)) {
+    console.log(`[Manager] Financial command detected — routing to financial agent`);
+    const reply = await handleFinancialTextMessage(text, finCtx);
+    await send(reply);
+    return;
+  }
 
   // ── vendas / pedidos ───────────────────────────────────────────────────────
   if (/vend[as]|pedid[os]|confirmad[os]|quantas vendas/i.test(cmd)) {
@@ -165,6 +200,7 @@ export async function handleManagerMessage(
   if (/ajuda|help|comando|oque.*faz|o que.*faz/i.test(cmd)) {
     await send(
       `*🤖 COMANDOS DISPONÍVEIS*\n\n` +
+        `*📊 CRM:*\n` +
         `• *vendas* — pedidos confirmados hoje\n` +
         `• *leads* — quantos leads ativos\n` +
         `• *números* — whatsapp dos clientes recentes\n` +
@@ -172,7 +208,13 @@ export async function handleManagerMessage(
         `• *perdidos* — leads que não fecharam\n` +
         `• *qualidade* — análise dos leads\n` +
         `• *resumo* — dashboard completo\n\n` +
-        `Ou pergunte qualquer coisa sobre as vendas! 💬`,
+        `*💰 FINANCEIRO:*\n` +
+        `• *overview financeiro* — situação completa\n` +
+        `• *recorrentes* — contas mensais fixas\n` +
+        `• *parcelamentos* — empréstimos e cartões\n` +
+        `• *extrato* — últimos lançamentos\n` +
+        `• _Envie uma foto_ — lançar comprovante\n\n` +
+        `Ou pergunte qualquer coisa! 💬`,
     );
     return;
   }
