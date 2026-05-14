@@ -347,9 +347,20 @@ async function handleIncomingMessage(
   if (isManagerNumber(phone)) {
     console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
     const msgText = message.text?.body ?? content;
-    handleManagerMessage(msgText, providerConfig, phone).catch((e) =>
-      console.error("[Webhook] Manager handler error:", e),
-    );
+
+    let managerMedia: IncomingMediaInfo | undefined;
+    if (message.type === "image" && message.image?.id) {
+      managerMedia = { mediaId: message.image.id, mimeType: message.image.mime_type ?? "image/jpeg", type: "image" };
+    } else if (message.type === "document" && message.document?.id) {
+      managerMedia = { mediaId: message.document.id, mimeType: message.document.mime_type ?? "application/pdf", type: "document" };
+    }
+
+    handleManagerMessage(
+      msgText,
+      { businessPhoneNumberId: providerConfig.businessPhoneNumberId, organizationId: providerConfig.organizationId, accessToken: providerConfig.accessToken },
+      phone,
+      managerMedia,
+    ).catch((e) => console.error("[Webhook] Manager handler error:", e));
     return;
   }
 
