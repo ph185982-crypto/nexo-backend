@@ -76,6 +76,13 @@ model WhatsappBusinessOrganization {
   products              Product[]
   ownerNotifications    OwnerNotification[]
   aiConfig              AiConfig?
+  financialProfiles     FinancialProfile[]
+  financialAccounts     FinancialAccount[]
+  financialCategories   FinancialCategory[]
+  financialTransactions FinancialTransaction[]
+  recurringBills        RecurringBill[]
+  installmentPlans      InstallmentPlan[]
+  financialProofSessions FinancialProofSession[]
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
@@ -751,6 +758,160 @@ model CotacaoFrete {
 }
 
 // ─── Oferta Gerada ─────────────────────────────────────────────────────────────
+
+// ─── Financial Management ──────────────────────────────────────────────────────
+
+model FinancialProfile {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  personType     String   // PESSOA_FISICA | PESSOA_JURIDICA
+  cpfCnpj        String?
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  accounts       FinancialAccount[]
+  transactions   FinancialTransaction[]
+  recurringBills RecurringBill[]
+  installmentPlans InstallmentPlan[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model FinancialAccount {
+  id             String   @id @default(cuid())
+  organizationId String
+  profileId      String?
+  name           String
+  accountType    String   // CORRENTE | POUPANCA | CARTAO_CREDITO | DINHEIRO | INVESTIMENTO
+  balance        Float    @default(0)
+  creditLimit    Float?
+  closingDay     Int?
+  dueDay         Int?
+  color          String?
+  icon           String?
+  isActive       Boolean  @default(true)
+  profile        FinancialProfile? @relation(fields: [profileId], references: [id])
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  transactions   FinancialTransaction[]
+  installmentPlans InstallmentPlan[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model FinancialCategory {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  type           String   // RECEITA | DESPESA
+  icon           String?
+  color          String?
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  transactions   FinancialTransaction[]
+  recurringBills RecurringBill[]
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId])
+}
+
+model FinancialTransaction {
+  id                String   @id @default(cuid())
+  organizationId    String
+  profileId         String?
+  accountId         String?
+  categoryId        String?
+  type              String   // RECEITA | DESPESA
+  amount            Float
+  description       String
+  competencia       String?  // "2025-05" competency month for loans/cards
+  status            String   @default("PENDENTE") // PENDENTE | PAGO | VENCIDO | CANCELADO
+  dueDate           DateTime?
+  paidAt            DateTime?
+  proofMediaId      String?
+  proofMediaUrl     String?
+  recurringBillId   String?
+  installmentPlanId String?
+  installmentNumber Int?
+  notes             String?  @db.Text
+  profile           FinancialProfile? @relation(fields: [profileId], references: [id])
+  account           FinancialAccount? @relation(fields: [accountId], references: [id])
+  category          FinancialCategory? @relation(fields: [categoryId], references: [id])
+  organization      WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  recurringBill     RecurringBill? @relation(fields: [recurringBillId], references: [id])
+  installmentPlan   InstallmentPlan? @relation(fields: [installmentPlanId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, status])
+  @@index([organizationId, type])
+}
+
+model RecurringBill {
+  id             String   @id @default(cuid())
+  organizationId String
+  profileId      String?
+  categoryId     String?
+  name           String
+  amount         Float
+  dueDay         Int      // day of month (1-31)
+  isActive       Boolean  @default(true)
+  startDate      DateTime
+  endDate        DateTime?
+  profile        FinancialProfile? @relation(fields: [profileId], references: [id])
+  category       FinancialCategory? @relation(fields: [categoryId], references: [id])
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  transactions   FinancialTransaction[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model InstallmentPlan {
+  id               String   @id @default(cuid())
+  organizationId   String
+  profileId        String?
+  accountId        String?
+  name             String
+  totalAmount      Float
+  installmentCount Int
+  installmentValue Float
+  competenciaStart String   // "2025-02" first competency month
+  paidCount        Int      @default(0)
+  isActive         Boolean  @default(true)
+  profile          FinancialProfile? @relation(fields: [profileId], references: [id])
+  account          FinancialAccount? @relation(fields: [accountId], references: [id])
+  organization     WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  transactions     FinancialTransaction[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model FinancialProofSession {
+  id             String   @id @default(cuid())
+  organizationId String
+  phoneNumber    String
+  mediaId        String
+  mediaUrl       String?
+  extractedText  String?  @db.Text
+  extractedData  Json?
+  status         String   @default("PENDING") // PENDING | IDENTIFIED | AWAITING_CONFIRM | AWAITING_CATEGORY | COMPLETED | REJECTED
+  pendingData    Json?
+  transactionId  String?
+  organization   WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId, phoneNumber])
+  @@index([phoneNumber, status])
+}
+
+// ─── (end financial) ───────────────────────────────────────────────────────────
 
 model OfertaGerada {
   id                  String    @id @default(cuid())
