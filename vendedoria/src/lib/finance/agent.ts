@@ -42,7 +42,6 @@ async function analyzePaymentProof(
   bank?: string;
   type?: "RECEITA" | "DESPESA";
 }> {
-  const base64 = imageBuffer.toString("base64");
   const mediaTypeMap: Record<string, string> = {
     "image/jpeg": "image/jpeg",
     "image/jpg": "image/jpeg",
@@ -51,9 +50,18 @@ async function analyzePaymentProof(
   };
   const safeType = mediaTypeMap[mimeType.toLowerCase()] ?? "image/jpeg";
 
-  const prompt = `Analise este comprovante financeiro e extraia as informações. Responda APENAS em JSON com este formato:
+  // Check image size — Anthropic accepts up to ~3.75MB base64
+  const base64 = imageBuffer.toString("base64");
+  const base64SizeMB = base64.length / 1024 / 1024;
+  console.log(`[FinancialAgent] Imagem: ${imageBuffer.length} bytes raw, ${base64SizeMB.toFixed(2)}MB base64, type=${safeType}`);
+
+  if (base64SizeMB > 3.5) {
+    throw new Error(`Imagem muito grande (${base64SizeMB.toFixed(1)}MB base64). WhatsApp deveria comprimir — tente novamente.`);
+  }
+
+  const prompt = `Analise este comprovante financeiro brasileiro e extraia as informações. Responda APENAS em JSON com este formato:
 {
-  "description": "descrição curta do que é (ex: Conta de luz, Parcela empréstimo, Pix recebido)",
+  "description": "descrição curta (ex: Conta de luz CEMIG, PIX Nubank, Parcela empréstimo CEF)",
   "amount": 123.45,
   "beneficiary": "Nome da empresa/pessoa destinatária",
   "date": "DD/MM/AAAA",
@@ -62,7 +70,7 @@ async function analyzePaymentProof(
   "type": "DESPESA ou RECEITA"
 }
 
-Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON, sem explicações.`;
+Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON válido, sem markdown, sem explicações.`;
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -72,7 +80,7 @@ Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON, sem
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-6",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 500,
       messages: [
         {
@@ -86,14 +94,29 @@ Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON, sem
     }),
   });
 
-  if (!res.ok) throw new Error(`Anthropic API error: ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.error(`[FinancialAgent] Anthropic API error ${res.status}:`, errBody);
+    throw new Error(`Anthropic API ${res.status}: ${errBody.slice(0, 200)}`);
+  }
+
   const data = await res.json() as { content?: Array<{ type: string; text?: string }> };
-  const text = data.content?.find((b) => b.type === "text")?.text ?? "{}";
+  const text = data.content?.find((b) => b.type === "text")?.text ?? "";
+  console.log(`[FinancialAgent] Anthropic response:`, text.slice(0, 300));
+
+  if (!text) throw new Error("Anthropic retornou resposta vazia");
 
   try {
     const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-    return JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
+    return parsed;
   } catch {
+    // Tenta extrair JSON de dentro do texto
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try { return JSON.parse(jsonMatch[0]); } catch { /* fall through */ }
+    }
+    console.warn("[FinancialAgent] Não conseguiu parsear JSON:", text.slice(0, 200));
     return { description: "Comprovante financeiro", type: "DESPESA" };
   }
 }

@@ -68,8 +68,13 @@ export async function handleManagerMessage(
   // ── Comprovante de pagamento (imagem) ──────────────────────────────────────
   if (media?.type === "image" && media.mediaId) {
     console.log(`[Manager] Image proof received — routing to financial agent`);
-    const reply = await handleFinancialImageProof(media.mediaId, media.mimeType, finCtx);
-    await send(reply);
+    try {
+      const reply = await handleFinancialImageProof(media.mediaId, media.mimeType, finCtx);
+      await send(reply);
+    } catch (err) {
+      console.error("[Manager] Financial image proof error:", err);
+      await send("❌ Erro ao processar comprovante. Tente novamente em alguns instantes.");
+    }
     return;
   }
 
