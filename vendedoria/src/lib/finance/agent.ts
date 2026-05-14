@@ -50,13 +50,12 @@ async function analyzePaymentProof(
   };
   const safeType = mediaTypeMap[mimeType.toLowerCase()] ?? "image/jpeg";
 
-  // Check image size — Anthropic accepts up to ~3.75MB base64
   const base64 = imageBuffer.toString("base64");
   const base64SizeMB = base64.length / 1024 / 1024;
   console.log(`[FinancialAgent] Imagem: ${imageBuffer.length} bytes raw, ${base64SizeMB.toFixed(2)}MB base64, type=${safeType}`);
 
-  if (base64SizeMB > 3.5) {
-    throw new Error(`Imagem muito grande (${base64SizeMB.toFixed(1)}MB base64). WhatsApp deveria comprimir — tente novamente.`);
+  if (base64SizeMB > 20) {
+    throw new Error(`Imagem muito grande (${base64SizeMB.toFixed(1)}MB). Tente com uma imagem menor.`);
   }
 
   const prompt = `Analise este comprovante financeiro brasileiro e extraia as informações. Responda APENAS em JSON com este formato:
@@ -72,21 +71,23 @@ async function analyzePaymentProof(
 
 Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON válido, sem markdown, sem explicações.`;
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY!,
-      "anthropic-version": "2023-06-01",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: "gpt-4o-mini",
       max_tokens: 500,
       messages: [
         {
           role: "user",
           content: [
-            { type: "image", source: { type: "base64", media_type: safeType, data: base64 } },
+            {
+              type: "image_url",
+              image_url: { url: `data:${safeType};base64,${base64}` },
+            },
             { type: "text", text: prompt },
           ],
         },
@@ -96,15 +97,15 @@ Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON vál
 
   if (!res.ok) {
     const errBody = await res.text();
-    console.error(`[FinancialAgent] Anthropic API error ${res.status}:`, errBody);
-    throw new Error(`Anthropic API ${res.status}: ${errBody.slice(0, 200)}`);
+    console.error(`[FinancialAgent] OpenAI API error ${res.status}:`, errBody);
+    throw new Error(`OpenAI API ${res.status}: ${errBody.slice(0, 200)}`);
   }
 
-  const data = await res.json() as { content?: Array<{ type: string; text?: string }> };
-  const text = data.content?.find((b) => b.type === "text")?.text ?? "";
-  console.log(`[FinancialAgent] Anthropic response:`, text.slice(0, 300));
+  const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
+  const text = data.choices?.[0]?.message?.content ?? "";
+  console.log(`[FinancialAgent] OpenAI response:`, text.slice(0, 300));
 
-  if (!text) throw new Error("Anthropic retornou resposta vazia");
+  if (!text) throw new Error("OpenAI retornou resposta vazia");
 
   try {
     const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
