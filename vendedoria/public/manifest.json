@@ -1,14 +1,36 @@
 {
-  "name": "Vendedoria",
-  "short_name": "Vendedoria",
-  "description": "CRM WhatsApp — Nexo Brasil",
+  "name": "Nexo Vendas",
+  "short_name": "Nexo",
+  "description": "CRM Inteligente para WhatsApp com IA — Feche mais vendas no automático",
   "start_url": "/crm/conversations",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#1A1A2E",
-  "theme_color": "#F5C400",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "background_color": "#0d1117",
+  "theme_color": "#10b981",
+  "lang": "pt-BR",
+  "categories": ["business", "productivity"],
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Conversas",
+      "short_name": "Conversas",
+      "description": "Abrir lista de conversas",
+      "url": "/crm/conversations",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pipeline",
+      "short_name": "Pipeline",
+      "description": "Ver Kanban de leads",
+      "url": "/crm/pipeline",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
 }

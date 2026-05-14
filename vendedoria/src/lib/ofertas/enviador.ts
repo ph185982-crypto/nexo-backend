@@ -20,14 +20,12 @@ export interface ResultadoEnvio {
  * Full pipeline: select product → generate art → generate caption → upload to Cloudinary → send via WhatsApp → save OfertaGerada.
  */
 export async function enviarOferta(): Promise<ResultadoEnvio> {
-  // 1. Select product via rotation logic
   const produto = await selecionarProduto();
   if (!produto) {
     console.warn("[enviador] Nenhum produto disponível para oferta");
     return { ok: false, error: "Nenhum produto ativo disponível" };
   }
 
-  // 2. Get WhatsApp provider
   const provider = await prisma.whatsappProviderConfig.findFirst({
     orderBy: { createdAt: "asc" },
   });
@@ -44,28 +42,24 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
   let artePublicUrl: string | null = null;
 
   try {
-    // 3. Generate 1080×1080 art
     artePath = await gerarArte({
       nome: produto.nome,
       precoVenda: produto.precoVenda,
       precoDesconto: produto.precoDesconto,
       parcelamento: produto.parcelamento,
-      fotoUrl: produto.fotoUrl,
+      fotoUrl: produto.fotoUrl ?? "",
     });
 
-    // 4. Upload art to Cloudinary (needed for public URL to send via WhatsApp)
     if (isCloudinaryConfigured()) {
       const artBuf = await fs.readFile(artePath);
       const artFile = new File([artBuf], path.basename(artePath), { type: "image/png" });
       const cloudResult = await uploadToCloudinary(artFile, "vendedoria/ofertas");
       artePublicUrl = cloudResult.url;
     } else {
-      // Fallback: use original product photo if no Cloudinary
       artePublicUrl = produto.fotoUrl || null;
       console.warn("[enviador] Cloudinary não configurado — usando fotoUrl original");
     }
 
-    // 5. Generate caption text
     const textoOferta = await gerarTextoOferta({
       nome: produto.nome,
       precoVenda: produto.precoVenda,
@@ -73,7 +67,6 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
       parcelamento: produto.parcelamento,
     });
 
-    // 6. Save OfertaGerada record with status PRONTA
     const oferta = await prisma.ofertaGerada.create({
       data: {
         produtoId: produto.id,
@@ -89,7 +82,6 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
       },
     });
 
-    // 7. Send via WhatsApp
     try {
       if (artePublicUrl) {
         await sendWhatsAppImage(
@@ -100,7 +92,6 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
           provider.accessToken ?? undefined
         );
       } else {
-        // Text only fallback
         await sendWhatsAppMessage(
           provider.businessPhoneNumberId,
           ownerNumber,
@@ -109,13 +100,11 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
         );
       }
 
-      // 8. Mark as ENVIADA
       await prisma.ofertaGerada.update({
         where: { id: oferta.id },
         data: { status: "ENVIADA", enviadaParaWhatsApp: true, enviadaEm: new Date() },
       });
 
-      // 9. Update product rotation stats
       await prisma.produto.update({
         where: { id: produto.id },
         data: {
@@ -138,7 +127,6 @@ export async function enviarOferta(): Promise<ResultadoEnvio> {
     console.error("[enviador] Erro no pipeline:", err);
     return { ok: false, error: String(err) };
   } finally {
-    // Clean up temp art file
     if (artePath) {
       fs.unlink(artePath).catch(() => {});
     }

@@ -582,8 +582,8 @@ model AiConfig {
   arquetipoIA     String?
   objetivoVenda   String   @default("fechar_venda")   // fechar_venda | gerar_lead | qualificar
   nivelUrgencia   Int      @default(3)                // 1-5
-  matrizObjecoes  Json     @default("[]")             // [{palavraChave, estrategia, exemplo}]
-  restricoes      Json     @default("[]")             // string[]
+  matrizObjecoes  Json     @default("[]")
+  restricoes      Json     @default("[]")
   followUpIntervalos    Json     @default("[4,24,48,72]") // hours[]
   followUpMaxTentativas Int      @default(4)
   updatedAt       DateTime @updatedAt

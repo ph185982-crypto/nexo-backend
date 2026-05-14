@@ -53,12 +53,11 @@ async function notificarErroCritico(
   phoneNumberId: string,
   accessToken: string | undefined,
 ): Promise<void> {
-  const ownerNumber = config.ownerWhatsapp;
-  if (!ownerNumber) { console.error("[ALERTA] OWNER_WHATSAPP_NUMBER não configurado — falha silenciosa:", mensagem); return; }
+  const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
   try {
     await sendWhatsAppMessage(phoneNumberId, ownerNumber, `⚠️ ERRO CRÍTICO — IA\n${mensagem}`, accessToken);
   } catch {
-    console.error("[ALERTA] Falha ao notificar owner:", mensagem);
+    console.error("[ALERTA] Falha ao notificar Pedro:", mensagem);
   }
 }
 
@@ -178,7 +177,7 @@ function detectHardEscalation(
   const normalize = (s: string) =>
     s.toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[̀-ͯ]/g, "")
       .replace(/[^\x00-\x7F]/g, "?");
   const msg = normalize(message);
   console.log(`[ESCALATION-DETAIL] msg normalizada: "${msg}" | histórico size: ${recentMessages.length}`);
@@ -269,7 +268,7 @@ function detectDesinteresse(message: string): boolean {
 // Só dispara quando o cliente informa explicitamente que é de outra cidade/estado.
 // Suporta negação: "não sou de goiânia" → fora da área.
 function detectForaDeArea(message: string): boolean {
-  const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const n = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const norm = n(message);
 
   // Exige contexto de localização pessoal do cliente
@@ -299,17 +298,36 @@ function detectForaDeArea(message: string): boolean {
 // ── CORREÇÃO 3: Detecta mensagem de cortesia pós-confirmação ─────────────────
 // Mensagens curtas de agradecimento/confirmação não merecem resposta após pedido fechado.
 function isCourtesyMessage(message: string): boolean {
-  const norm = message.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const norm = message.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   return /^(ok|oi|sim|nao|obrigado|obrigada|valeu|vlw|vlr|top|boa|show|certo|entendi|combinado|perfeito|blz|blzinha|beleza|otimo|😊|👍|🙏|✅|❤️|🙌|👏|k+|haha+|huhu|rs+|\.)$/.test(norm);
 }
 
-// ── Sanitiza mensagens — remove sobrecarga de dados e trunca textos longos ───
+// ── Sanitiza mensagens — remove sobrecarga de dados ───────────────────────────
 function sanitizeMessages(msgs: string[]): string[] {
   return msgs.map((m) => {
     if (isOverloadedRequest(m)) return "me manda sua localização 📍";
-    if (m.length > 160) return m.substring(0, 157) + "...";
     return m;
   });
+}
+
+// ── Concatena mensagens incompletas que terminam com "..." ────────────────────
+// Garante que nenhuma mensagem seja enviada no meio de uma ideia.
+function mergeIncomplete(msgs: string[], delays: number[]): AIResponse {
+  const outMsgs: string[] = [];
+  const outDelays: number[] = [];
+  let buf = "";
+  let bufDelay = 0;
+  for (let i = 0; i < msgs.length; i++) {
+    if (!buf) bufDelay = delays[i] ?? 0;
+    buf = buf ? `${buf} ${msgs[i]}` : msgs[i];
+    if (!buf.trimEnd().endsWith("...")) {
+      outMsgs.push(buf.trim());
+      outDelays.push(bufDelay);
+      buf = "";
+    }
+  }
+  if (buf.trim()) { outMsgs.push(buf.trim()); outDelays.push(bufDelay); }
+  return { mensagens: outMsgs, delays: outDelays };
 }
 
 // ── Parser da resposta JSON do LLM ────────────────────────────────────────────
@@ -323,17 +341,18 @@ function parseAIResponse(raw: string): AIResponse {
       const delays: number[] = msgs.map((_, i) =>
         typeof rawDelays[i] === "number" ? (rawDelays[i] as number) : i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500
       );
-      return { mensagens: sanitizeMessages(msgs), delays };
+      return mergeIncomplete(sanitizeMessages(msgs), delays);
     }
   } catch { /* fall through */ }
 
   // Fallback: separador ||
   const byPipe = stripped.split("||").map((m) => m.trim()).filter(Boolean);
   if (byPipe.length > 1) {
-    return { mensagens: sanitizeMessages(byPipe), delays: byPipe.map((_, i) => (i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500)) };
+    const delays = byPipe.map((_, i) => (i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500));
+    return mergeIncomplete(sanitizeMessages(byPipe), delays);
   }
 
-  return { mensagens: sanitizeMessages([stripped]), delays: [0] };
+  return mergeIncomplete(sanitizeMessages([stripped]), [0]);
 }
 
 // ── Horário em São Paulo + verifica expediente ────────────────────────────────
@@ -370,7 +389,7 @@ function saudacao(): string {
 // ── Conta tentativas de quebra de objeção de preço já feitas pela IA ─────────
 function countPriceObjectionAttempts(messages: Array<{ role: string; content: string }>): number {
   const normalize = (s: string) =>
-    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x00-\x7F]/g, "?");
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
 
   // Detecta mensagens do cliente com objeção de preço
   const clientPriceObjMsgs = messages.filter(
@@ -577,17 +596,15 @@ export async function processAIResponse(
       ).catch(() => {});
     }
 
-    // Quote the latest message if client sent 2+ in a row without reply
-    let consecutiveUser = 0;
-    for (const m of recentMessages) { if (m.role === "USER") consecutiveUser++; else break; }
-    const contextMessageId = consecutiveUser > 1 && incomingMessageId ? incomingMessageId : undefined;
+    // Primeira mensagem do array sempre cita a última mensagem do cliente
+    const contextMessageId = incomingMessageId;
 
     // ── Detectar estado do lead ───────────────────────────────────────────────
     const leadState = detectLeadState(userMessage);
 
     // ── Guard: intenção de compra bloqueia qualquer escalação ────────────────
     // Se o cliente quer fechar/comprar, NUNCA escalar — vai direto para coleta de dados
-    const msgNorm = userMessage.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const msgNorm = userMessage.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
     const INTENCAO_COMPRA = [
       /quero\s+fechar/, /vamos\s+fechar/, /pode\s+fechar/, /quero\s+comprar/,
       /\bfechado\b/, /pode\s+mandar/, /bora\s+fechar/, /me\s+manda\s+/,
@@ -1059,10 +1076,8 @@ export async function processAIResponse(
     // ── Enviar mensagens com typing indicator entre cada bolha ────────────────
     for (let i = 0; i < mensagens.length; i++) {
       if (i > 0) {
-        // Typing proporcional ao texto + jitter humano (±600ms) — mínimo 3s, máximo 7s
-        const base = mensagens[i].length * 45;
-        const jitter = Math.floor(Math.random() * 1200) - 600;
-        const interDelay = Math.min(Math.max(base + jitter, 3000), 7000);
+        // Typing proporcional ao texto — 50ms por char, mínimo 800ms, máximo 3000ms
+        const interDelay = Math.min(Math.max(mensagens[i].length * 50, 800), 3000);
         await sendTypingIndicator(provider.businessPhoneNumberId, to, interDelay, token);
         // Pausa micro entre typing e envio (simula o "send" humano)
         await new Promise((r) => setTimeout(r, 150 + Math.floor(Math.random() * 250)));

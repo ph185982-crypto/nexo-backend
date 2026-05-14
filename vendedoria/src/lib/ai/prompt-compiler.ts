@@ -12,11 +12,11 @@ export interface ObjecaoEntry {
 export interface AiConfigLayer {
   usarEmoji: boolean;
   usarReticencias: boolean;
-  nivelVenda: string;             // leve | medio | agressivo
-  tomDeVoz?: string;              // sincero | agressivo | consultivo
+  nivelVenda: string;
+  tomDeVoz?: string;
   arquetipoIA?: string | null;
-  objetivoVenda?: string;         // fechar_venda | gerar_lead | qualificar
-  nivelUrgencia?: number;         // 1-5
+  objetivoVenda?: string;
+  nivelUrgencia?: number;
   matrizObjecoes?: ObjecaoEntry[];
   restricoes?: string[];
   followUpIntervalos?: number[];
@@ -57,7 +57,7 @@ export interface PromptCompilerInput {
   detectedProducts?: ProductContext[];
 
   // Camada 6 — Histórico / Runtime
-  leadState: { tipo: string; urgencia: string };
+  leadState: { tipo: string; urgencia: string } | null;
   messageCount: number;
   isFirstInteraction: boolean;
   etapa: string;
@@ -75,11 +75,11 @@ export interface CompiledPrompt {
   };
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────────────────
 
 const NIVEL_INSTRUCTIONS: Record<string, string> = {
   leve:      "Responda e deixe o cliente conduzir.",
-  medio:     "Conduza naturalmente. Após responder, avance um passo.",
+  medio:     "Conduza naturalmente. Após responder, avançe um passo.",
   agressivo: "Conduza ativamente. Use urgência com naturalidade.",
 };
 
@@ -109,7 +109,7 @@ function isBusinessHours(hour: number, dayOfWeek: number): boolean {
   return false;
 }
 
-// ── Camada 2: Estratégia ──────────────────────────────────────────────────────
+// ── Camada 2: Estratégia ──────────────────────────────────────────────────────────
 function buildEstrategiaLayer(
   aiConfig: AiConfigLayer | null,
   activeProducts: ProductRef[],
@@ -156,7 +156,7 @@ function buildEstrategiaLayer(
   ].filter(Boolean).join("\n");
 }
 
-// ── Camada 3a: Restrições — dados coletados ───────────────────────────────────
+// ── Camada 3a: Restrições — dados coletados ───────────────────────────────────────────
 function buildRestricoesColetadasLayer(data: CollectedDataLayer): string {
   const itens: string[] = [];
   if (data.localizacao) itens.push(`✅ LOCALIZAÇÃO RECEBIDA: "${data.localizacao.substring(0, 100)}" — PROIBIDO pedir de novo`);
@@ -172,7 +172,7 @@ function buildRestricoesColetadasLayer(data: CollectedDataLayer): string {
   ].join("\n");
 }
 
-// ── Camada 3b: Restrições — configuradas pelo usuário ─────────────────────────
+// ── Camada 3b: Restrições — configuradas pelo usuário ───────────────────────────────────
 function buildRestricoesConfigLayer(restricoes: string[]): string {
   if (!restricoes.length) return "";
   return [
@@ -182,7 +182,7 @@ function buildRestricoesConfigLayer(restricoes: string[]): string {
   ].join("\n");
 }
 
-// ── Camada 4: Objeções ────────────────────────────────────────────────────────
+// ── Camada 4: Objeções ────────────────────────────────────────────────────────────────
 function buildObjecoesLayer(
   recentMessages: Array<{ role: string; content: string }>,
   customMatrix?: ObjecaoEntry[],
@@ -192,7 +192,6 @@ function buildObjecoesLayer(
 
   const lines: string[] = [];
 
-  // Custom objection matrix from command center
   if (customMatrix && customMatrix.length > 0) {
     lines.push(`--- MATRIZ DE OBJEÇÕES PERSONALIZADA ---`);
     for (const entry of customMatrix) {
@@ -203,7 +202,6 @@ function buildObjecoesLayer(
     lines.push("");
   }
 
-  // Auto-detected price objection tracking
   const clientPriceObj = recentMessages.filter(
     (m) =>
       m.role === "USER" &&
@@ -235,7 +233,7 @@ function buildObjecoesLayer(
   return lines.join("\n");
 }
 
-// ── Camada 5: Catálogo dinâmico ───────────────────────────────────────────────
+// ── Camada 5: Catálogo dinâmico ────────────────────────────────────────────────────────
 function buildCatalogoLayer(products: ProductContext[]): string {
   if (!products.length) return "";
 
@@ -266,12 +264,9 @@ function buildCatalogoLayer(products: ProductContext[]): string {
   ].join("\n\n");
 }
 
-// ── Camada 6: Runtime — dados de contexto + formato obrigatório ───────────────
-// NÃO define etapas nem comportamento — o script configurado no SaaS faz isso.
-// Injeta apenas: estado atual da conversa, dados já coletados, flags de mídia,
-// saudação do momento e o formato JSON de resposta.
+// ── Camada 6: Runtime ───────────────────────────────────────────────────────────────────
 function buildHistoricoLayer(
-  leadState: { tipo: string; urgencia: string },
+  leadState: { tipo: string; urgencia: string } | null,
   messageCount: number,
   isFirstInteraction: boolean,
   etapa: string,
@@ -283,7 +278,6 @@ function buildHistoricoLayer(
   const dentroExpediente = isBusinessHours(hour, dayOfWeek);
   const greeting = getSaoPauloGreeting(hour);
 
-  // Flags de mídia disponíveis para o script usar
   const mediaFlags = activeProducts
     .filter((p) => p.imageUrl || p.videoUrl)
     .map((p) => {
@@ -292,9 +286,8 @@ function buildHistoricoLayer(
     })
     .join("  |  ");
 
-  // Dados pendentes de coleta (lead quente)
   const faltaLinhas: string[] = [];
-  if (leadState.tipo === "quente") {
+  if (leadState?.tipo === "quente") {
     const temLocal = !!(collectedData.localizacao || collectedData.endereco);
     if (!temLocal)                faltaLinhas.push("localização");
     if (!collectedData.horario)   faltaLinhas.push("horário para receber");
@@ -305,11 +298,11 @@ function buildHistoricoLayer(
   return [
     `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
     `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
-    `Lead: ${leadState.tipo} | Urgência: ${leadState.urgencia} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
+    `Lead: ${leadState?.tipo ?? "desconhecido"} | Urgência: ${leadState?.urgencia ?? "normal"} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
     mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
     faltaLinhas.length > 0
       ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
-      : faltaLinhas.length === 0 && leadState.tipo === "quente"
+      : faltaLinhas.length === 0 && leadState?.tipo === "quente"
         ? `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`
         : "",
     `--- FIM CONTEXTO ---`,
@@ -326,7 +319,7 @@ function buildHistoricoLayer(
     .join("\n");
 }
 
-// ── API pública ───────────────────────────────────────────────────────────────
+// ── API pública ──────────────────────────────────────────────────────────────────────────────
 export class PromptCompiler {
   compile(input: PromptCompilerInput): CompiledPrompt {
     const persona    = input.basePersonaPrompt;
@@ -355,3 +348,26 @@ export class PromptCompiler {
 }
 
 export const promptCompiler = new PromptCompiler();
+
+// Async helper used by orchestrator / responder
+export async function compilePrompt(
+  _conversationId: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  _options?: { action?: string },
+): Promise<CompiledPrompt> {
+  const { prisma } = await import("@/lib/prisma/client");
+  const config = await prisma.agentConfig.findFirst();
+  return promptCompiler.compile({
+    basePersonaPrompt: config?.currentPrompt ?? "",
+    aiConfig: null,
+    activeProducts: [],
+    businessHours: { hour: new Date().getHours(), dayOfWeek: new Date().getDay() },
+    collectedData: {},
+    recentMessages: history,
+    leadState: null,
+    messageCount: history.length,
+    isFirstInteraction: history.length <= 1,
+    etapa: "NOVO",
+    detectedProducts: [],
+  });
+}
