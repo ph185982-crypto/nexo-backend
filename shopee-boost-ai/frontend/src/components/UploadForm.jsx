@@ -3,8 +3,6 @@ import { useState, useRef, useCallback } from 'react';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export default function UploadForm({ onSubmit, loading }) {
-  const [apiKey, setApiKey] = useState('');
-  const [showKey, setShowKey] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
@@ -52,9 +50,6 @@ export default function UploadForm({ onSubmit, loading }) {
 
   function validate() {
     const errors = {};
-    if (!apiKey.trim() || !apiKey.startsWith('sk-')) {
-      errors.apiKey = 'Insira uma API Key válida da OpenAI (começa com sk-).';
-    }
     if (!image) errors.image = 'Selecione uma imagem do produto.';
     if (!title.trim()) errors.title = 'Título é obrigatório.';
     if (!description.trim()) errors.description = 'Descrição é obrigatória.';
@@ -69,7 +64,7 @@ export default function UploadForm({ onSubmit, loading }) {
       return;
     }
     setFieldErrors({});
-    onSubmit({ image, title, description, apiKey });
+    onSubmit({ image, title, description });
   }
 
   function removeImage() {
@@ -82,36 +77,7 @@ export default function UploadForm({ onSubmit, loading }) {
     <form onSubmit={handleSubmit} className="card space-y-5">
       <div>
         <h2 className="text-lg font-bold text-white mb-1">Dados do Produto</h2>
-        <p className="text-xs text-gray-500">Preencha todos os campos para gerar seus assets</p>
-      </div>
-
-      {/* API Key */}
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1.5">
-          🔑 OpenAI API Key
-        </label>
-        <div className="relative">
-          <input
-            type={showKey ? 'text' : 'password'}
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="sk-proj-..."
-            className={`input-field pr-10 text-sm font-mono ${fieldErrors.apiKey ? 'border-red-500' : ''}`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowKey((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-          >
-            {showKey ? '🙈' : '👁️'}
-          </button>
-        </div>
-        {fieldErrors.apiKey && (
-          <p className="mt-1 text-xs text-red-400">{fieldErrors.apiKey}</p>
-        )}
-        <p className="mt-1 text-xs text-gray-600">
-          Nunca armazenada — usada apenas para esta requisição.
-        </p>
+        <p className="text-xs text-gray-500">Preencha os campos abaixo para gerar seus assets</p>
       </div>
 
       {/* Image upload */}

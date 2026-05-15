@@ -11,7 +11,7 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
-  async function handleGenerate({ image, title, description, apiKey }) {
+  async function handleGenerate({ image, title, description }) {
     setLoading(true);
     setError('');
     setResult(null);
@@ -25,7 +25,6 @@ export default function App() {
       const response = await axios.post(`${API_URL}/api/generate`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'x-openai-key': apiKey,
         },
         timeout: 180000, // 3 minutes — image generation takes time
       });

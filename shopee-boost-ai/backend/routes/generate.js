@@ -20,15 +20,14 @@ const upload = multer({
 /**
  * POST /api/generate
  * Body: multipart/form-data { image, title, description }
- * Header: x-openai-key
  */
 router.post('/generate', upload.single('image'), async (req, res) => {
   try {
-    // --- Validate API key ---
-    const apiKey = req.headers['x-openai-key'];
-    if (!apiKey || !apiKey.startsWith('sk-')) {
-      return res.status(400).json({
-        error: 'Chave de API inválida. Verifique sua OpenAI API Key.',
+    // API key lives in the server environment — never sent by the client
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({
+        error: 'Servidor não configurado. Entre em contato com o suporte.',
       });
     }
 
