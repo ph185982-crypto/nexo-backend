@@ -43,7 +43,6 @@ async function generateProductImages(optimizedTitle, productCategory, keywords, 
       n: 1,
       size: '1024x1024',
       quality: 'standard',
-      response_format: 'url',
     })
   );
 
