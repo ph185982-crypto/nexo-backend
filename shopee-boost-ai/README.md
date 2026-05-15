@@ -1,5 +1,8 @@
 # ShopeeBoost AI
 
+**🔗 Frontend (produção):** https://shopee-boost-ai.netlify.app
+**🔗 Backend (produção):** https://shopee-boost-ai-backend.onrender.com
+
 Aplicação web full-stack que gera assets de produto otimizados para a Shopee usando Inteligência Artificial.
 
 **O que faz:**
