@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
 import { consultarStatus } from '@/lib/pagamento/mercado-pago';
-import { adicionarAoCarrinho, gerarEtiqueta } from '@/lib/envio/melhor-envio';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/send';
 import { config as envConfig } from '@/lib/config/env';
 
@@ -67,56 +66,12 @@ async function processarPagamento(paymentId: string) {
     config.accessToken ?? undefined,
   );
 
-  await gerarEtiquetaENotificar(pedido, config);
-}
+  await sendWhatsAppMessage(
+    config.businessPhoneNumberId,
+    envConfig.ownerWhatsapp,
+    `🔔 *PEDIDO PAGO — ENVIAR AGORA*\n\n📦 Produto: ${pedido.produto}\n👤 Nome: ${pedido.nomeCliente}\n📍 CEP: ${pedido.cepDestino}\n📮 Endereço: ${pedido.enderecoCompleto}\n💰 Valor pago: R$ ${pedido.valorTotal.toFixed(2)}\n💳 Pagamento: ${pedido.formaPagamento}\n📱 WhatsApp: ${pedido.telefoneCliente}\n\n✅ Pagamento confirmado — pronto para envio`,
+    config.accessToken ?? undefined,
+  );
 
-async function gerarEtiquetaENotificar(
-  pedido: {
-    id: string;
-    cepDestino: string;
-    nomeCliente: string;
-    servicoFreteId: string;
-    produto: string;
-    valorProduto: number;
-    valorTotal: number;
-    enderecoCompleto: string;
-    transportadora: string;
-    prazoFrete: number;
-  },
-  config: { businessPhoneNumberId: string; accessToken: string | null },
-) {
-  try {
-    const cartItemId = await adicionarAoCarrinho({
-      cepDestino: pedido.cepDestino,
-      nomeDestinatario: pedido.nomeCliente,
-      servicoId: pedido.servicoFreteId,
-      produtoNome: pedido.produto,
-      valorProduto: pedido.valorProduto,
-    });
-
-    const urlEtiqueta = await gerarEtiqueta(cartItemId);
-
-    await prisma.pedidoNacional.update({
-      where: { id: pedido.id },
-      data: { cartItemId, urlEtiqueta, etapaEnvio: 'ETIQUETA_GERADA' },
-    });
-
-    await sendWhatsAppMessage(
-      config.businessPhoneNumberId,
-      envConfig.ownerWhatsapp,
-      `🔔 *PEDIDO PAGO — EMBALAR E DESPACHAR*\n\n📦 Produto: ${pedido.produto}\n👤 Cliente: ${pedido.nomeCliente}\n📍 CEP: ${pedido.cepDestino}\n📮 Endereço: ${pedido.enderecoCompleto}\n🚚 ${pedido.transportadora} — ${pedido.prazoFrete} dia(s) útil(is)\n💰 Total: R$ ${pedido.valorTotal.toFixed(2)}\n\n🏷️ Etiqueta pronta para imprimir:\n${urlEtiqueta}`,
-      config.accessToken ?? undefined,
-    );
-
-    console.log(`[ETIQUETA] ✅ Gerada para pedido ${pedido.id}`);
-  } catch (err: unknown) {
-    console.error(`[ETIQUETA] ❌ Erro para pedido ${pedido.id}:`, (err as Error).message);
-
-    await sendWhatsAppMessage(
-      config.businessPhoneNumberId,
-      envConfig.ownerWhatsapp,
-      `⚠️ *PEDIDO PAGO — GERAR ETIQUETA MANUALMENTE*\n\nPedido: ${pedido.id}\nCliente: ${pedido.nomeCliente}\nCEP: ${pedido.cepDestino}\nProduto: ${pedido.produto}\n\nErro ao gerar etiqueta automática. Acesse o Melhor Envio manualmente.`,
-      config.accessToken ?? undefined,
-    );
-  }
+  console.log(`[MP WEBHOOK] ✅ Notificação de pedido pago enviada para Pedro | pedido ${pedido.id}`);
 }

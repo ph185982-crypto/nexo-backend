@@ -15,10 +15,6 @@ export async function POST(req: NextRequest) {
       produtoId,
       cepDestino,
       enderecoCompleto,
-      servicoFreteId,
-      transportadora,
-      prazoFrete,
-      valorFrete,
       formaPagamento,
       conversationId,
     } = body as {
@@ -28,17 +24,11 @@ export async function POST(req: NextRequest) {
       produtoId?: string;
       cepDestino: string;
       enderecoCompleto: string;
-      servicoFreteId: string;
-      transportadora: string;
-      prazoFrete: number;
-      valorFrete: number;
       formaPagamento: string;
       conversationId?: string;
     };
 
-    if (!telefoneCliente || !nomeCliente || !produto || !cepDestino || !enderecoCompleto ||
-        !servicoFreteId || !transportadora || prazoFrete == null ||
-        valorFrete == null || !formaPagamento) {
+    if (!telefoneCliente || !nomeCliente || !produto || !cepDestino || !enderecoCompleto || !formaPagamento) {
       return NextResponse.json({ error: 'Campos obrigatórios ausentes' }, { status: 400 });
     }
 
@@ -58,8 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     const valorProdutoReal = produtoDB.precoDesconto ?? produtoDB.precoVenda;
-    const valorFreteReal = Number(valorFrete); // custo real do frete — controle interno
-    const valorCobrado = valorProdutoReal;     // cliente paga só o produto — frete grátis
+    const valorCobrado = valorProdutoReal; // frete grátis — cliente paga só o produto
 
     const pedido = await prisma.pedidoNacional.create({
       data: {
@@ -70,11 +59,11 @@ export async function POST(req: NextRequest) {
         cepDestino,
         enderecoCompleto,
         valorProduto: valorProdutoReal,
-        valorFrete: valorFreteReal,
+        valorFrete: 0,
         valorTotal: valorCobrado,
-        transportadora,
-        prazoFrete: Number(prazoFrete),
-        servicoFreteId,
+        transportadora: 'A definir',
+        prazoFrete: 0,
+        servicoFreteId: 'manual',
         formaPagamento,
       },
     });
@@ -84,8 +73,6 @@ export async function POST(req: NextRequest) {
       valorTotal: valorCobrado,
       formaPagamento,
       freteGratis: true,
-      transportadora,
-      prazoFrete: Number(prazoFrete),
     };
 
     const descricaoProduto = `${produtoDB.nome} — ${config.businessName}`;

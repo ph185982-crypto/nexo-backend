@@ -83,6 +83,7 @@ interface CollectedData {
   pagamento?: string;
   horario?: string;
   nome?: string;
+  cep?: string;
 }
 
 function extractCollectedData(messages: Array<{ role: string; content: string }>): CollectedData {
@@ -116,6 +117,15 @@ function extractCollectedData(messages: Array<{ role: string; content: string }>
       data.localizacao = endMsg.content;
       data.endereco = endMsg.content;
     }
+  }
+
+  // ── CEP (entrega nacional) ───────────────────────────────────────────────
+  const cepMsg = messages.find((m) =>
+    m.role === "USER" && /\b\d{5}[-\s]?\d{3}\b/.test(m.content)
+  );
+  if (cepMsg) {
+    const match = cepMsg.content.match(/\b(\d{5})[-\s]?(\d{3})\b/);
+    if (match) data.cep = match[1] + match[2]; // normaliza para 8 dígitos
   }
 
   // ── Pagamento ─────────────────────────────────────────────────────────────
@@ -976,6 +986,7 @@ export async function processAIResponse(
       m.replace(/^\[ESCALAR\]\s*/i, "")
         .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
         .replace(/\[OPT_OUT\]/gi, "")
+        .replace(/\[PEDIDO_NACIONAL\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1088,6 +1099,90 @@ export async function processAIResponse(
         data: { content: mensagens[i], type: "TEXT", role: "ASSISTANT", sentAt: msgNow, status: "SENT", conversationId },
       });
       await sendWhatsAppMessage(provider.businessPhoneNumberId, to, mensagens[i], token, i === 0 ? contextMessageId : undefined);
+    }
+
+    // ── [PEDIDO_NACIONAL] — cria pedido e gera Pix/link ──────────────────────
+    if (/\[PEDIDO_NACIONAL\]/i.test(combinedRaw)) {
+      try {
+        const cepDestino    = collectedData.cep;
+        const enderecoCompleto = collectedData.endereco;
+        const nomeCliente   = collectedData.nome ?? lead?.profileName;
+        const formaPagamento = collectedData.pagamento;
+        const produto       = produtosContexto[0];
+
+        if (cepDestino && enderecoCompleto && nomeCliente && formaPagamento && produto) {
+          const baseUrl = getBaseUrl();
+          const res = await fetch(`${baseUrl}/api/pedidos/nacional`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              conversationId,
+              telefoneCliente: to,
+              nomeCliente,
+              produto: produto.nome,
+              produtoId: produto.id,
+              cepDestino,
+              enderecoCompleto,
+              formaPagamento: formaPagamento === "pix" ? "pix" : "parcelado",
+            }),
+          });
+
+          if (res.ok) {
+            const pedido = await res.json() as {
+              pixCopiaECola?: string;
+              linkPagamento?: string;
+              valorTotal?: number;
+              pedidoId?: string;
+            };
+
+            await prisma.whatsappConversation.update({
+              where: { id: conversationId },
+              data: { etapa: "PEDIDO_CONFIRMADO" },
+            }).catch(() => {});
+            await prisma.conversationFollowUp.updateMany({
+              where: { conversationId, status: "ACTIVE" },
+              data: { status: "DONE" },
+            }).catch(() => {});
+            await cancelFollowUpJobs(conversationId).catch(() => {});
+
+            const valorStr = pedido.valorTotal
+              ? `R$ ${pedido.valorTotal.toFixed(2).replace(".", ",")}`
+              : "";
+
+            if (pedido.pixCopiaECola) {
+              await new Promise((r) => setTimeout(r, 1200));
+              await sendWhatsAppMessage(
+                provider.businessPhoneNumberId, to,
+                `💰 *Pix gerado!* ${valorStr}\n\n🔑 *Código copia e cola:*\n\n${pedido.pixCopiaECola}\n\n⏰ Válido por 30 minutos`,
+                token,
+              );
+              await prisma.whatsappMessage.create({
+                data: { content: `[Pix gerado] ${valorStr}`, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+              }).catch(() => {});
+            } else if (pedido.linkPagamento) {
+              await new Promise((r) => setTimeout(r, 1200));
+              await sendWhatsAppMessage(
+                provider.businessPhoneNumberId, to,
+                `💳 *Link para pagamento parcelado:*\n${pedido.linkPagamento}\n\n⏰ Válido por 24 horas`,
+                token,
+              );
+              await prisma.whatsappMessage.create({
+                data: { content: `[Link parcelado gerado]`, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+              }).catch(() => {});
+            }
+            console.log(`[AI Agent] ✅ PEDIDO_NACIONAL criado | pedidoId=${pedido.pedidoId}`);
+          } else {
+            const errText = await res.text();
+            console.error(`[AI Agent] PEDIDO_NACIONAL API ${res.status}:`, errText);
+            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+              "❌ Erro ao gerar o pagamento. Aguarde um instante e tente novamente.", token);
+          }
+        } else {
+          console.warn(`[AI Agent] PEDIDO_NACIONAL emitido mas dados incompletos | cep=${cepDestino} endereco=${!!enderecoCompleto} nome=${nomeCliente} pagamento=${formaPagamento} produto=${produto?.nome}`);
+        }
+      } catch (e) {
+        console.error("[AI Agent] PEDIDO_NACIONAL error:", e);
+      }
     }
 
     // Atualiza lastMessageAt e, se lead quente, avança etapa no banco

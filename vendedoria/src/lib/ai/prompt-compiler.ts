@@ -29,6 +29,7 @@ export interface CollectedDataLayer {
   pagamento?: string;
   horario?: string;
   nome?: string;
+  cep?: string;
 }
 
 export interface ProductRef {
@@ -286,24 +287,42 @@ function buildHistoricoLayer(
     })
     .join("  |  ");
 
+  const isNacional = !!(collectedData.cep);
   const faltaLinhas: string[] = [];
   if (leadState?.tipo === "quente") {
-    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    if (!temLocal)                faltaLinhas.push("localização");
-    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
-    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
-    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
+    if (isNacional) {
+      // Endereço completo = deve ter mais que só o CEP
+      const temEnderecoCompleto = !!(collectedData.endereco && collectedData.endereco !== collectedData.cep && collectedData.endereco.length > 10);
+      if (!temEnderecoCompleto)     faltaLinhas.push("endereço completo (rua, número, complemento)");
+      if (!collectedData.nome)      faltaLinhas.push("nome completo de quem vai receber");
+      if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento (Pix ou parcelado)");
+    } else {
+      const temLocal = !!(collectedData.localizacao || collectedData.endereco);
+      if (!temLocal)                faltaLinhas.push("localização");
+      if (!collectedData.horario)   faltaLinhas.push("horário para receber");
+      if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
+      if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
+    }
   }
+
+  const allCollectedAction = isNacional
+    ? `✅ Todos os dados coletados — emita [PEDIDO_NACIONAL].`
+    : `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`;
+
+  const modoNacionalBlock = isNacional
+    ? `MODO NACIONAL: Frete grátis — não mencionar valor de frete.\nColetar em ordem: CEP ✅ → endereço completo → nome → pagamento\nQuando tiver os 4 dados: emitir [PEDIDO_NACIONAL]`
+    : "";
 
   return [
     `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
     `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
     `Lead: ${leadState?.tipo ?? "desconhecido"} | Urgência: ${leadState?.urgencia ?? "normal"} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
     mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    modoNacionalBlock,
     faltaLinhas.length > 0
       ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
       : faltaLinhas.length === 0 && leadState?.tipo === "quente"
-        ? `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`
+        ? allCollectedAction
         : "",
     `--- FIM CONTEXTO ---`,
     ``,

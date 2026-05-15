@@ -1,37 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
-import { buscarRastreamento } from '@/lib/envio/melhor-envio';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/send';
 
 // PUT /api/pedidos/nacional/:id/despachar
 export async function PUT(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  const body = await req.json().catch(() => ({})) as { codigoRastreamento?: string };
+  const codigoRastreamento: string | null = body.codigoRastreamento?.trim() || null;
 
   const pedido = await prisma.pedidoNacional.findUnique({ where: { id } });
   if (!pedido) {
     return NextResponse.json({ error: 'Pedido não encontrado' }, { status: 404 });
   }
 
-  if (!pedido.cartItemId) {
-    return NextResponse.json({ error: 'Etiqueta ainda não gerada' }, { status: 400 });
-  }
-
-  let codigoRastreamento: string | null = null;
-
-  try {
-    codigoRastreamento = await buscarRastreamento(pedido.cartItemId);
-  } catch (err) {
-    console.error('[despachar] Erro ao buscar rastreamento:', err);
-  }
-
   await prisma.pedidoNacional.update({
     where: { id },
     data: {
       codigoRastreamento,
-      etapaEnvio: 'DESPACHADO',
+      etapaEnvio: 'ENVIADO',
     },
   });
 
@@ -39,8 +28,8 @@ export async function PUT(
 
   if (config) {
     const msgRastreio = codigoRastreamento
-      ? `📦 Seu pedido foi despachado!\n\n🚚 ${pedido.transportadora}\n🔍 Código de rastreamento: *${codigoRastreamento}*\n\nPrevisão: ${pedido.prazoFrete} dia(s) útil(is) 🎯`
-      : `📦 Seu pedido foi despachado!\n\n🚚 ${pedido.transportadora}\nPrevisão: ${pedido.prazoFrete} dia(s) útil(is) 🎯\n\nAcompanhe pelo site da transportadora 📱`;
+      ? `📦 Seu pedido foi enviado!\n\n🔍 Código de rastreamento: *${codigoRastreamento}*\n\nAcompanhe em: correios.com.br\n\nQualquer dúvida é só chamar 👊`
+      : `📦 Seu pedido foi enviado!\n\nAssim que tivermos o código de rastreamento, te avisamos aqui 😊\n\nQualquer dúvida é só chamar 👊`;
 
     await sendWhatsAppMessage(
       config.businessPhoneNumberId,
@@ -50,5 +39,5 @@ export async function PUT(
     );
   }
 
-  return NextResponse.json({ codigoRastreamento });
+  return NextResponse.json({ ok: true, codigoRastreamento });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Package, Printer, Truck, RefreshCw } from "lucide-react";
+import { Package, Truck, RefreshCw, Send } from "lucide-react";
 
 interface PedidoNacional {
   id: string;
@@ -19,14 +19,14 @@ interface PedidoNacional {
   urlEtiqueta: string | null;
   codigoRastreamento: string | null;
   pagamentoStatus: string;
+  telefoneCliente: string;
   criadoEm: string;
 }
 
 const COLUNAS: { key: string; label: string; cor: string }[] = [
   { key: "AGUARDANDO_PAGAMENTO", label: "Aguardando Pagamento", cor: "border-yellow-400" },
   { key: "PAGO",                 label: "Pago",                 cor: "border-green-400" },
-  { key: "ETIQUETA_GERADA",      label: "Etiqueta Gerada",      cor: "border-blue-400" },
-  { key: "DESPACHADO",           label: "Despachado",           cor: "border-purple-400" },
+  { key: "ENVIADO",              label: "Enviado",              cor: "border-blue-400" },
   { key: "ENTREGUE",             label: "Entregue",             cor: "border-emerald-400" },
 ];
 
@@ -34,7 +34,7 @@ export default function PedidosNacionaisPage() {
   const [pedidos, setPedidos] = useState<PedidoNacional[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
-  const [despachando, setDespachando] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -59,20 +59,24 @@ export default function PedidosNacionaisPage() {
     return () => clearInterval(interval);
   }, [fetchPedidos]);
 
-  const handleDespachar = async (id: string) => {
-    setDespachando(id);
+  const handleEnviar = async (id: string, codigo: string) => {
+    setEnviando(id);
     try {
-      const res = await fetch(`/api/pedidos/nacional/${id}/despachar`, { method: "PUT" });
+      const res = await fetch(`/api/pedidos/nacional/${id}/despachar`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ codigoRastreamento: codigo }),
+      });
       if (res.ok) {
-        showToast("Rastreamento enviado para o cliente ✅");
+        showToast("Pedido marcado como enviado ✅");
         await fetchPedidos();
       } else {
-        showToast("Erro ao marcar como despachado ❌");
+        showToast("Erro ao marcar como enviado ❌");
       }
     } catch {
       showToast("Erro de conexão ❌");
     } finally {
-      setDespachando(null);
+      setEnviando(null);
     }
   };
 
@@ -129,8 +133,8 @@ export default function PedidosNacionaisPage() {
                       <PedidoCard
                         key={pedido.id}
                         pedido={pedido}
-                        onDespachar={handleDespachar}
-                        despachando={despachando === pedido.id}
+                        onEnviar={handleEnviar}
+                        enviando={enviando === pedido.id}
                       />
                     ))}
                   </div>
@@ -153,18 +157,27 @@ export default function PedidosNacionaisPage() {
 
 function PedidoCard({
   pedido,
-  onDespachar,
-  despachando,
+  onEnviar,
+  enviando,
 }: {
   pedido: PedidoNacional;
-  onDespachar: (id: string) => void;
-  despachando: boolean;
+  onEnviar: (id: string, codigo: string) => void;
+  enviando: boolean;
 }) {
+  const [showEnvio, setShowEnvio] = useState(false);
+  const [rastreio, setRastreio] = useState("");
+
   const estadoCep = pedido.enderecoCompleto.split(",").slice(-1)[0]?.trim() ?? pedido.cepDestino;
+
+  const confirmarEnvio = () => {
+    onEnviar(pedido.id, rastreio);
+    setShowEnvio(false);
+    setRastreio("");
+  };
 
   return (
     <div className="bg-background rounded-lg border border-border p-3 space-y-2 shadow-sm text-sm">
-      {/* Nome e estado */}
+      {/* Nome e localização */}
       <div>
         <p className="font-semibold text-foreground truncate">{pedido.nomeCliente}</p>
         <p className="text-xs text-muted-foreground truncate">{estadoCep}</p>
@@ -173,13 +186,15 @@ function PedidoCard({
       {/* Produto */}
       <p className="text-xs text-foreground/80 truncate">{pedido.produto}</p>
 
-      {/* Valores */}
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Produto: R$ {pedido.valorProduto.toFixed(2)}</span>
-        <span className="text-muted-foreground">Frete: R$ {pedido.valorFrete.toFixed(2)}</span>
-      </div>
+      {/* CEP */}
+      <p className="text-xs text-muted-foreground">📍 CEP: {pedido.cepDestino}</p>
+
+      {/* Endereço */}
+      <p className="text-xs text-muted-foreground truncate">📮 {pedido.enderecoCompleto}</p>
+
+      {/* Valor */}
       <div className="text-xs font-semibold text-foreground">
-        Total: R$ {pedido.valorTotal.toFixed(2)}
+        Total: R$ {pedido.valorTotal.toFixed(2)} — Frete grátis
       </div>
 
       {/* Pagamento */}
@@ -191,11 +206,14 @@ function PedidoCard({
         }`}>
           {pedido.formaPagamento === 'pix' ? 'Pix' : 'Parcelado'}
         </span>
-      </div>
-
-      {/* Transportadora */}
-      <div className="text-xs text-muted-foreground">
-        🚚 {pedido.transportadora} — {pedido.prazoFrete} dia(s) útil(is)
+        <a
+          href={`https://wa.me/${pedido.telefoneCliente}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-emerald-500 hover:underline"
+        >
+          {pedido.telefoneCliente}
+        </a>
       </div>
 
       {/* Rastreamento */}
@@ -205,28 +223,44 @@ function PedidoCard({
         </div>
       )}
 
-      {/* Ações */}
-      {pedido.etapaEnvio === 'ETIQUETA_GERADA' && (
-        <div className="flex flex-col gap-1.5 pt-1">
-          {pedido.urlEtiqueta && (
-            <a
-              href={pedido.urlEtiqueta}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border transition-colors"
+      {/* Botão Marcar como enviado — aparece apenas no status PAGO */}
+      {pedido.etapaEnvio === 'PAGO' && !showEnvio && (
+        <button
+          onClick={() => setShowEnvio(true)}
+          disabled={enviando}
+          className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+        >
+          <Truck className="w-3.5 h-3.5" />
+          Marcar como enviado
+        </button>
+      )}
+
+      {/* Input de rastreamento inline */}
+      {pedido.etapaEnvio === 'PAGO' && showEnvio && (
+        <div className="space-y-1.5">
+          <input
+            type="text"
+            value={rastreio}
+            onChange={(e) => setRastreio(e.target.value)}
+            placeholder="Código de rastreamento (opcional)"
+            className="w-full text-xs px-2 py-1.5 rounded-lg border border-border bg-muted focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+          <div className="flex gap-1.5">
+            <button
+              onClick={confirmarEnvio}
+              disabled={enviando}
+              className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-60 transition-colors"
             >
-              <Printer className="w-3.5 h-3.5" />
-              Imprimir etiqueta
-            </a>
-          )}
-          <button
-            onClick={() => onDespachar(pedido.id)}
-            disabled={despachando}
-            className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-          >
-            <Truck className="w-3.5 h-3.5" />
-            {despachando ? "Marcando…" : "Marcar como despachado"}
-          </button>
+              <Send className="w-3 h-3" />
+              {enviando ? "Enviando…" : "Confirmar"}
+            </button>
+            <button
+              onClick={() => { setShowEnvio(false); setRastreio(""); }}
+              className="px-2 py-1.5 text-xs rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground border border-border transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
       )}
 
