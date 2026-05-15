@@ -12,3 +12,9 @@ venv/
 
 # Claude Code local settings (may contain secrets)
 .claude/settings.local.json
+
+# ShopeeBoost AI
+shopee-boost-ai/backend/node_modules/
+shopee-boost-ai/frontend/node_modules/
+shopee-boost-ai/frontend/dist/
+shopee-boost-ai/**/.env
