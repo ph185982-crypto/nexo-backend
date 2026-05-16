@@ -29,12 +29,11 @@ async function criarCampanha() {
 
   const resultado = await api('post', `/${AD_ACCOUNT}/campaigns`, {
     name: 'GPS_CONVERSAS_WHATSAPP_BR',
-    objective: 'MESSAGES',
+    objective: 'OUTCOME_ENGAGEMENT',
     status: 'PAUSED',
     special_ad_categories: [],
     buying_type: 'AUCTION',
-    daily_budget: 15000,
-    budget_rebalance_flag: true
+    daily_budget: 15000
   });
 
   console.log(`✅ Campanha criada: ${resultado.id}`);
