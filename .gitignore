@@ -12,3 +12,6 @@ venv/
 
 # Claude Code local settings (may contain secrets)
 .claude/settings.local.json
+
+node_modules/
+dist/
