@@ -119,15 +119,6 @@ function extractCollectedData(messages: Array<{ role: string; content: string }>
     }
   }
 
-  // ── CEP (entrega nacional) ───────────────────────────────────────────────
-  const cepMsg = messages.find((m) =>
-    m.role === "USER" && /\b\d{5}[-\s]?\d{3}\b/.test(m.content)
-  );
-  if (cepMsg) {
-    const match = cepMsg.content.match(/\b(\d{5})[-\s]?(\d{3})\b/);
-    if (match) data.cep = match[1] + match[2]; // normaliza para 8 dígitos
-  }
-
   // ── Pagamento ─────────────────────────────────────────────────────────────
   if (/\bdinheiro\b/.test(allText)) data.pagamento = "dinheiro";
   else if (/\bpix\b/.test(allText)) data.pagamento = "pix";
@@ -523,20 +514,6 @@ export async function processAIResponse(
     ]);
 
     if (!conversation) return;
-
-    // ── Debounce: aguarda mensagens rápidas ("48" + "v" → processa "48v") ────────
-    // Se chegar mensagem mais nova enquanto espera, abandona — o fluxo mais novo assume
-    if (incomingMessageId) {
-      await new Promise((r) => setTimeout(r, 1500));
-      const latestUserMsg = await prisma.whatsappMessage.findFirst({
-        where: { conversationId, role: "USER" },
-        orderBy: { sentAt: "desc" },
-      });
-      if (latestUserMsg && latestUserMsg.id !== incomingMessageId) {
-        console.log(`[AI Agent] ⏭️ Debounce — msg obsoleta ${incomingMessageId.slice(-6)} | mais recente: ${latestUserMsg.id.slice(-6)} | conv ${conversationId}`);
-        return;
-      }
-    }
     if (conversation.lead?.status === "ESCALATED") {
       console.log(`[ESCALATION-CHECK] Conv ${conversationId} | lead já está ESCALATED — IA ignorando msg: "${userMessage}"`);
       return;
@@ -696,7 +673,10 @@ export async function processAIResponse(
 
     // ── Produtos ativos — fonte única: buscarProdutosAtivos() ────────────────
     // Inclui especificacoes para IA usar ao responder perguntas técnicas
-    const produtosContexto = await buscarProdutosAtivos(orgId);
+    // Filtra apenas produtos GPS (único produto vendido neste canal)
+    const produtosContexto = (await buscarProdutosAtivos(orgId)).filter(
+      (p) => /gps/i.test(p.nome) || /gps/i.test(p.slug)
+    );
     // Mapeamento para ProductRef (compatibilidade com promptCompiler)
     const activeProducts = produtosContexto.map((p) => ({
       id: p.id,
@@ -989,8 +969,8 @@ export async function processAIResponse(
     }
 
     // ── Filtro anti-alucinação de dados de pagamento ──────────────────────────
-    // Se a IA escreveu chave Pix/link de pagamento sem emitir [PEDIDO_NACIONAL], é alucinação
-    if (!rawResponse.includes("[PEDIDO_NACIONAL]")) {
+    // Se a IA escreveu chave Pix/link de pagamento sem emitir [PEDIDO_NACIONAL] ou [CHECKOUT], é alucinação
+    if (!rawResponse.includes("[PEDIDO_NACIONAL]") && !rawResponse.includes("[CHECKOUT]")) {
       const pixHallucination = /chave\s*pix\s*[:\-=]\s*\S+|código\s*(pix|de\s+pagamento)\s*[:\-=]\s*\S+|pix\s*[:\-=]\s*[\w@.]{5,}/i;
       if (pixHallucination.test(rawResponse)) {
         console.error(`[AI Agent] 🚨 ALUCINAÇÃO DE PIX detectada — resposta bloqueada | conv ${conversationId} | raw="${rawResponse.substring(0, 200)}"`);
@@ -1000,6 +980,7 @@ export async function processAIResponse(
         });
       }
     }
+
 
     // ── Parse de multi-mensagens ──────────────────────────────────────────────
     console.log(`[AI Agent] Raw LLM response: ${rawResponse.substring(0, 300)}`);
@@ -1014,6 +995,7 @@ export async function processAIResponse(
         .replace(/\[PASSAGEM\]\s*\{[\s\S]*?\}/gi, "")
         .replace(/\[OPT_OUT\]/gi, "")
         .replace(/\[PEDIDO_NACIONAL\]/gi, "")
+        .replace(/\[CHECKOUT\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1213,6 +1195,75 @@ export async function processAIResponse(
       }
     }
 
+    // ── [CHECKOUT] — cria checkout GPS e envia link público ──────────────────
+    if (/\[CHECKOUT\]/i.test(combinedRaw)) {
+      console.log(`[AI Agent] 🔔 [CHECKOUT] flag detectada | conv ${conversationId} | cep=${collectedData.cep} | produto=${produtosContexto[0]?.nome ?? "?"}`);
+      try {
+        const cepDestino      = collectedData.cep;
+        const enderecoCompleto = collectedData.endereco;
+        const nomeCliente     = collectedData.nome ?? lead?.profileName ?? "Cliente";
+        const produto         = produtosContexto[0];
+
+        if (cepDestino && enderecoCompleto && produto) {
+          const baseUrl = getBaseUrl();
+
+          const resCheckout = await fetch(`${baseUrl}/api/checkout`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              conversationId,
+              telefoneCliente: to,
+              nomeCliente,
+              produto: produto.nome,
+              valorProduto: produto.preco,
+              cep: cepDestino,
+              enderecoCompleto,
+            }),
+          });
+
+          if (resCheckout.ok) {
+            const { url: checkoutUrl } = await resCheckout.json() as { id: string; url: string };
+
+            await prisma.whatsappConversation.update({
+              where: { id: conversationId },
+              data: { etapa: "PEDIDO_CONFIRMADO" },
+            }).catch(() => {});
+            await cancelFollowUpJobs(conversationId).catch(() => {});
+
+            const valorStr = `R$ ${produto.preco.toFixed(2).replace(".", ",")}`;
+
+            await new Promise((r) => setTimeout(r, 800));
+            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+              `🛒 *Seu link de pagamento está pronto!*\n\n📦 ${produto.nome}\n💰 ${valorStr} — frete grátis`,
+              token);
+            await new Promise((r) => setTimeout(r, 1000));
+            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+              `🔗 Acesse aqui e escolha Pix ou parcelado:\n\n${checkoutUrl}`,
+              token);
+            await new Promise((r) => setTimeout(r, 800));
+            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+              `⏰ Link válido por 24h. Qualquer dúvida é só chamar! 👊`,
+              token);
+
+            await prisma.whatsappMessage.create({
+              data: { content: `[Checkout gerado] ${checkoutUrl}`, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+            }).catch(() => {});
+
+            console.log(`[AI Agent] ✅ CHECKOUT criado e link enviado | url=${checkoutUrl}`);
+          } else {
+            const errText = await resCheckout.text();
+            console.error(`[AI Agent] CHECKOUT API ${resCheckout.status}:`, errText);
+            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+              "❌ Erro ao gerar o link. Aguarde um instante e tente novamente.", token);
+          }
+        } else {
+          console.warn(`[AI Agent] CHECKOUT emitido mas dados incompletos | cep=${cepDestino} endereco=${!!enderecoCompleto} produto=${produto?.nome}`);
+        }
+      } catch (e) {
+        console.error("[AI Agent] CHECKOUT error:", e);
+      }
+    }
+
     // Atualiza lastMessageAt e, se lead quente, avança etapa no banco
     // (necessário para o filtro "Quentes" do CRM detectar essas conversas)
     const novaEtapa = (() => {
@@ -1252,7 +1303,9 @@ export async function processAIResponse(
       return url;
     };
 
-    // Verifica se algum produto já teve mídia enviada nesta conversa (evita duplicar)
+    // ── midiasEnviadas: slugs de mídia já enviados nesta conversa (anti-duplicação) ──
+    const midiasEnviadasRaw = (conversation as typeof conversation & { midiasEnviadas?: unknown }).midiasEnviadas;
+    const midiasEnviadas: string[] = Array.isArray(midiasEnviadasRaw) ? (midiasEnviadasRaw as string[]) : [];
     const mediaAlreadySent = recentMessages.some((m) => m.type === "IMAGE" || m.type === "VIDEO");
 
     // Busca imageUrls de forma explícita (campo novo no schema)
@@ -1282,30 +1335,45 @@ export async function processAIResponse(
       const genericFotoFlag  = /\[FOTO\b/i.test(combinedRaw) && !flagFoto;
       const genericVideoFlag = /\[VIDEO\b/i.test(combinedRaw) && !flagVideo;
 
-      const sendFoto  = flagFoto  || autoSend || (genericFotoFlag  && !mediaAlreadySent);
-      const sendVideo = flagVideo || (autoSend && !!product.videoUrl) || (genericVideoFlag && !!product.videoUrl && !mediaAlreadySent);
+      const slugFoto  = `FOTO_${slug}`;
+      const slugVideo = `VIDEO_${slug}`;
 
-      console.log(`[AI Agent] Product "${product.name}" slug=${slug}: flagFoto=${flagFoto} flagVideo=${flagVideo} nameMentioned=${nameMentioned} keywordMatch=${keywordMatch} llmMentionedMedia=${llmMentionedMedia} autoSend=${autoSend} sendFoto=${sendFoto} sendVideo=${sendVideo}`);
+      // Bloqueia se já enviou esta mídia nesta conversa
+      const fotoJaEnviada  = midiasEnviadas.includes(slugFoto);
+      const videoJaEnviado = midiasEnviadas.includes(slugVideo);
+
+      const sendFoto  = !fotoJaEnviada  && (flagFoto  || autoSend || (genericFotoFlag  && !mediaAlreadySent));
+      const sendVideo = !videoJaEnviado && (flagVideo || (autoSend && !!product.videoUrl) || (genericVideoFlag && !!product.videoUrl && !mediaAlreadySent));
+
+      console.log(`[AI Agent] Product "${product.name}" slug=${slug}: flagFoto=${flagFoto} flagVideo=${flagVideo} nameMentioned=${nameMentioned} keywordMatch=${keywordMatch} llmMentionedMedia=${llmMentionedMedia} autoSend=${autoSend} sendFoto=${sendFoto} sendVideo=${sendVideo} fotoJaEnviada=${fotoJaEnviada} videoJaEnviado=${videoJaEnviado}`);
 
       if (sendFoto) {
         const imgs: string[] = (Array.isArray(product.imageUrls) && product.imageUrls.length > 0)
           ? product.imageUrls as string[]
           : product.imageUrl ? [product.imageUrl] : [];
         console.log(`[AI Agent] Sending ${imgs.length} image(s) for "${product.name}" | appUrl="${appUrl}"`);
+        let imagesSent = 0;
         for (let i = 0; i < imgs.length; i++) {
           const imgUrl = toPublicUrl(imgs[i], product.id, i);
           if (!imgUrl) { console.error(`[AI Agent] imgUrl[${i}] vazio para "${product.name}" — pulando`); continue; }
           await new Promise((r) => setTimeout(r, 800));
           try {
             await sendWhatsAppImage(provider.businessPhoneNumberId, to, imgUrl, product.name, token);
-            // Salva no banco para aparecer no CRM e evitar reenvio
             await prisma.whatsappMessage.create({
               data: { content: `[Imagem] ${product.name}`, type: "IMAGE", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
             }).catch(() => {});
+            imagesSent++;
             console.log(`[AI Agent] ✅ Imagem ${i + 1}/${imgs.length} enviada para "${product.name}"`);
           } catch (e) {
             console.error(`[AI Agent] ❌ Image failed "${product.name}" idx=${i}:`, e);
           }
+        }
+        if (imagesSent > 0) {
+          midiasEnviadas.push(slugFoto);
+          await prisma.whatsappConversation.update({
+            where: { id: conversationId },
+            data: { midiasEnviadas: midiasEnviadas as unknown as import("@prisma/client").Prisma.InputJsonValue },
+          }).catch(() => {});
         }
       }
 
@@ -1316,9 +1384,13 @@ export async function processAIResponse(
         await new Promise((r) => setTimeout(r, 1000));
         try {
           await sendWhatsAppVideo(provider.businessPhoneNumberId, to, videoUrl, product.name, token);
-          // Salva no banco para aparecer no CRM
           await prisma.whatsappMessage.create({
             data: { content: `[Vídeo] ${product.name}`, type: "VIDEO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+          }).catch(() => {});
+          midiasEnviadas.push(slugVideo);
+          await prisma.whatsappConversation.update({
+            where: { id: conversationId },
+            data: { midiasEnviadas: midiasEnviadas as unknown as import("@prisma/client").Prisma.InputJsonValue },
           }).catch(() => {});
           console.log(`[AI Agent] ✅ Vídeo enviado para "${product.name}"`);
         } catch (e) {

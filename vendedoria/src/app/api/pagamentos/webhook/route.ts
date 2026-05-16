@@ -32,12 +32,50 @@ async function processarPagamento(paymentId: string) {
 
   if (status !== 'approved') return;
 
+  // ── Tenta Checkout primeiro ────────────────────────────────────────────────
+  const checkout = await prisma.checkout.findFirst({
+    where: { pagamentoId: paymentId },
+  });
+
+  if (checkout) {
+    if (checkout.status === 'PAGO') {
+      console.log(`[MP WEBHOOK] Checkout já confirmado — ignorando`);
+      return;
+    }
+
+    await prisma.checkout.update({
+      where: { id: checkout.id },
+      data: { status: 'PAGO' },
+    });
+
+    const whatsappConfig = await prisma.whatsappProviderConfig.findFirst();
+    if (!whatsappConfig) return;
+
+    await sendWhatsAppMessage(
+      whatsappConfig.businessPhoneNumberId,
+      checkout.telefoneCliente,
+      `✅ Pagamento confirmado!\n\nSeu pedido foi aprovado 🎉\nJá estamos separando pra envio 📦\n\nEm breve você recebe o código de rastreamento. Qualquer dúvida é só chamar 👊`,
+      whatsappConfig.accessToken ?? undefined,
+    );
+
+    await sendWhatsAppMessage(
+      whatsappConfig.businessPhoneNumberId,
+      envConfig.ownerWhatsapp,
+      `🔔 *CHECKOUT PAGO — ENVIAR AGORA*\n\n📦 Produto: ${checkout.produto}\n👤 Nome: ${checkout.nomeCliente}\n📍 CEP: ${checkout.cep}\n📮 Endereço: ${checkout.enderecoCompleto}\n💰 Valor pago: R$ ${checkout.valorProduto.toFixed(2)}\n💳 Pagamento: ${checkout.pagamentoTipo}\n📱 WhatsApp: ${checkout.telefoneCliente}\n\n✅ Pagamento confirmado — pronto para envio`,
+      whatsappConfig.accessToken ?? undefined,
+    );
+
+    console.log(`[MP WEBHOOK] ✅ Checkout pago notificado | checkout ${checkout.id}`);
+    return;
+  }
+
+  // ── Fallback: PedidoNacional ───────────────────────────────────────────────
   const pedido = await prisma.pedidoNacional.findFirst({
     where: { pagamentoId: paymentId },
   });
 
   if (!pedido) {
-    console.error(`[MP WEBHOOK] Pedido não encontrado para payment ${paymentId}`);
+    console.error(`[MP WEBHOOK] Nenhum checkout ou pedido encontrado para payment ${paymentId}`);
     return;
   }
 

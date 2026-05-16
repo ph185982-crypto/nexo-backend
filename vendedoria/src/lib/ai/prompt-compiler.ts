@@ -295,7 +295,7 @@ function buildHistoricoLayer(
       const temEnderecoCompleto = !!(collectedData.endereco && collectedData.endereco !== collectedData.cep && collectedData.endereco.length > 10);
       if (!temEnderecoCompleto)     faltaLinhas.push("endereço completo (rua, número, complemento)");
       if (!collectedData.nome)      faltaLinhas.push("nome completo de quem vai receber");
-      if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento (Pix ou parcelado)");
+      // pagamento não é coletado aqui — o cliente escolhe no link de checkout
     } else {
       const temLocal = !!(collectedData.localizacao || collectedData.endereco);
       if (!temLocal)                faltaLinhas.push("localização");
@@ -306,12 +306,12 @@ function buildHistoricoLayer(
   }
 
   const allCollectedAction = isNacional
-    ? `✅ Todos os dados coletados — emita [PEDIDO_NACIONAL].`
+    ? `✅ Todos os dados coletados — emita [CHECKOUT] no array JSON para gerar o link de pagamento.`
     : `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`;
 
   const modoEntregaBlock = isNacional
-    ? `MODO NACIONAL: Frete grátis — não mencionar frete.\nDados coletados até agora: CEP ✅${collectedData.endereco && collectedData.endereco !== collectedData.cep ? " → endereço ✅" : " → endereço ⏳"}\nColetar em ordem: endereço completo → nome → pagamento → [PEDIDO_NACIONAL]`
-    : `ENTREGAS:\n• Goiânia/GO: pedir localização (pin ou endereço) + horário + pagamento + nome → [PASSAGEM]\n• Outras cidades (SP, RJ, BH...): pedir CEP + endereço completo + nome + pagamento → [PEDIDO_NACIONAL]`;
+    ? `MODO NACIONAL: Frete grátis — não mencionar frete.\nDados coletados até agora: CEP ✅${collectedData.endereco && collectedData.endereco !== collectedData.cep ? " → endereço ✅" : " → endereço ⏳"}\nColetar em ordem: endereço completo → nome → [CHECKOUT] (pagamento via link gerado automaticamente)`
+    : `ENTREGAS:\n• Goiânia/GO: pedir localização (pin ou endereço) + horário + pagamento + nome → [PASSAGEM]\n• Outras cidades (SP, RJ, BH...): pedir CEP + endereço completo + nome → [CHECKOUT]`;
 
   return [
     `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
@@ -331,8 +331,8 @@ function buildHistoricoLayer(
     `• Cada balão = 1 frase curta (máx 2 linhas) | delays em ms (600–2000ms)`,
     `• MÍDIA: se vai enviar foto/vídeo, coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array. NUNCA prometa "vou mandar foto" sem incluir a flag. A flag substitui o texto — não diga "estou enviando" junto.`,
     `• PALAVRAS PROIBIDAS: "show!", "ótimo!", "perfeito!", "incrível!", "super!", "certamente", "claro!", "entendido!", "prezado" — fale como pessoa real em conversa`,
-    `• PAGAMENTO: para gerar Pix ou parcelado, emita [PEDIDO_NACIONAL] no array. NUNCA escreva chave Pix, CPF, e-mail ou link de pagamento no texto — o sistema gera e envia automaticamente. Se o cliente perguntar a chave antes de confirmar, diga: "o sistema gera quando você confirmar o pedido!"`,
-    `• FORMAS ACEITAS: Pix (à vista) | Cartão de crédito parcelado em até 10x (link gerado automático) | Dinheiro (só Goiânia, na entrega)`,
+    `• CHECKOUT (nacional): quando o cliente de outra cidade confirmar a compra e você tiver CEP + endereço + nome, emita [CHECKOUT] no array. O sistema gera e envia automaticamente um link de pagamento onde o cliente escolhe Pix ou parcelado. NUNCA escreva chave Pix, CPF, e-mail ou link no texto.`,
+    `• FORMAS ACEITAS: Pix (à vista) | Cartão de crédito parcelado em até 10x | Dinheiro (só Goiânia, na entrega)`,
     `--- FIM FORMATO ---`,
   ]
     .filter(Boolean)
