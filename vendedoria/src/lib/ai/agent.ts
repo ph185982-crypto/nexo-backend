@@ -523,6 +523,20 @@ export async function processAIResponse(
     ]);
 
     if (!conversation) return;
+
+    // ── Debounce: aguarda mensagens rápidas ("48" + "v" → processa "48v") ────────
+    // Se chegar mensagem mais nova enquanto espera, abandona — o fluxo mais novo assume
+    if (incomingMessageId) {
+      await new Promise((r) => setTimeout(r, 1500));
+      const latestUserMsg = await prisma.whatsappMessage.findFirst({
+        where: { conversationId, role: "USER" },
+        orderBy: { sentAt: "desc" },
+      });
+      if (latestUserMsg && latestUserMsg.id !== incomingMessageId) {
+        console.log(`[AI Agent] ⏭️ Debounce — msg obsoleta ${incomingMessageId.slice(-6)} | mais recente: ${latestUserMsg.id.slice(-6)} | conv ${conversationId}`);
+        return;
+      }
+    }
     if (conversation.lead?.status === "ESCALATED") {
       console.log(`[ESCALATION-CHECK] Conv ${conversationId} | lead já está ESCALATED — IA ignorando msg: "${userMessage}"`);
       return;
@@ -974,6 +988,19 @@ export async function processAIResponse(
       return;
     }
 
+    // ── Filtro anti-alucinação de dados de pagamento ──────────────────────────
+    // Se a IA escreveu chave Pix/link de pagamento sem emitir [PEDIDO_NACIONAL], é alucinação
+    if (!rawResponse.includes("[PEDIDO_NACIONAL]")) {
+      const pixHallucination = /chave\s*pix\s*[:\-=]\s*\S+|código\s*(pix|de\s+pagamento)\s*[:\-=]\s*\S+|pix\s*[:\-=]\s*[\w@.]{5,}/i;
+      if (pixHallucination.test(rawResponse)) {
+        console.error(`[AI Agent] 🚨 ALUCINAÇÃO DE PIX detectada — resposta bloqueada | conv ${conversationId} | raw="${rawResponse.substring(0, 200)}"`);
+        rawResponse = JSON.stringify({
+          mensagens: ["deixa eu verificar o pedido aqui... 🔄", "me aguarda um segundo!"],
+          delays: [0, 1500],
+        });
+      }
+    }
+
     // ── Parse de multi-mensagens ──────────────────────────────────────────────
     console.log(`[AI Agent] Raw LLM response: ${rawResponse.substring(0, 300)}`);
     const { mensagens: rawMsgs, delays } = parseAIResponse(rawResponse);
@@ -1103,6 +1130,7 @@ export async function processAIResponse(
 
     // ── [PEDIDO_NACIONAL] — cria pedido e gera Pix/link ──────────────────────
     if (/\[PEDIDO_NACIONAL\]/i.test(combinedRaw)) {
+      console.log(`[AI Agent] 🔔 [PEDIDO_NACIONAL] flag detectada — iniciando criação de pedido | conv ${conversationId} | cep=${collectedData.cep} | produto=${produtosContexto[0]?.nome ?? "?"} | pagamento=${collectedData.pagamento}`);
       try {
         const cepDestino    = collectedData.cep;
         const enderecoCompleto = collectedData.endereco;

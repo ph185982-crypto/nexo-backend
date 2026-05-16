@@ -309,16 +309,16 @@ function buildHistoricoLayer(
     ? `✅ Todos os dados coletados — emita [PEDIDO_NACIONAL].`
     : `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`;
 
-  const modoNacionalBlock = isNacional
-    ? `MODO NACIONAL: Frete grátis — não mencionar valor de frete.\nColetar em ordem: CEP ✅ → endereço completo → nome → pagamento\nQuando tiver os 4 dados: emitir [PEDIDO_NACIONAL]`
-    : "";
+  const modoEntregaBlock = isNacional
+    ? `MODO NACIONAL: Frete grátis — não mencionar frete.\nDados coletados até agora: CEP ✅${collectedData.endereco && collectedData.endereco !== collectedData.cep ? " → endereço ✅" : " → endereço ⏳"}\nColetar em ordem: endereço completo → nome → pagamento → [PEDIDO_NACIONAL]`
+    : `ENTREGAS:\n• Goiânia/GO: pedir localização (pin ou endereço) + horário + pagamento + nome → [PASSAGEM]\n• Outras cidades (SP, RJ, BH...): pedir CEP + endereço completo + nome + pagamento → [PEDIDO_NACIONAL]`;
 
   return [
     `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
     `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
     `Lead: ${leadState?.tipo ?? "desconhecido"} | Urgência: ${leadState?.urgencia ?? "normal"} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
     mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
-    modoNacionalBlock,
+    modoEntregaBlock,
     faltaLinhas.length > 0
       ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
       : faltaLinhas.length === 0 && leadState?.tipo === "quente"
@@ -328,10 +328,11 @@ function buildHistoricoLayer(
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
     `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
-    `• Cada balão = 1 frase curta (máx 2 linhas)`,
-    `• delays em ms (600–2000ms por balão)`,
-    `• Mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos num balão — substitua SLUG pelo slug do catálogo`,
-    `• Nunca use frases robóticas: "Claro!", "Certamente!", "Entendido!", "Prezado"`,
+    `• Cada balão = 1 frase curta (máx 2 linhas) | delays em ms (600–2000ms)`,
+    `• MÍDIA: se vai enviar foto/vídeo, coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array. NUNCA prometa "vou mandar foto" sem incluir a flag. A flag substitui o texto — não diga "estou enviando" junto.`,
+    `• PALAVRAS PROIBIDAS: "show!", "ótimo!", "perfeito!", "incrível!", "super!", "certamente", "claro!", "entendido!", "prezado" — fale como pessoa real em conversa`,
+    `• PAGAMENTO: para gerar Pix ou parcelado, emita [PEDIDO_NACIONAL] no array. NUNCA escreva chave Pix, CPF, e-mail ou link de pagamento no texto — o sistema gera e envia automaticamente. Se o cliente perguntar a chave antes de confirmar, diga: "o sistema gera quando você confirmar o pedido!"`,
+    `• FORMAS ACEITAS: Pix (à vista) | Cartão de crédito parcelado em até 10x (link gerado automático) | Dinheiro (só Goiânia, na entrega)`,
     `--- FIM FORMATO ---`,
   ]
     .filter(Boolean)
