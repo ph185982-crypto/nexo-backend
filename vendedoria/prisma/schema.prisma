@@ -325,6 +325,7 @@ model WhatsappConversation {
   horarioEntrega     String?
   formaPagamento     String?
   sessaoNacional     Json?                           // dados do fluxo de venda nacional
+  midiasEnviadas     Json?    @default("[]")          // slugs de mídia já enviados nesta conversa
 
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
@@ -912,6 +913,31 @@ model FinancialProofSession {
 }
 
 // ─── (end financial) ───────────────────────────────────────────────────────────
+
+// ─── Checkout (link público de pagamento) ──────────────────────────────────────
+
+model Checkout {
+  id               String   @id @default(cuid())
+  conversationId   String
+  telefoneCliente  String
+  nomeCliente      String
+  produto          String
+  valorProduto     Float
+  cep              String
+  enderecoCompleto String
+  status           String   @default("PENDENTE")  // PENDENTE | PAGO | EXPIRADO
+  pagamentoId      String?
+  pagamentoTipo    String?  // pix | parcelado
+  pixCopiaECola    String?  @db.Text
+  pixQrCodeBase64  String?  @db.Text
+  linkParcelado    String?
+  criadoEm        DateTime @default(now())
+  expiradoEm      DateTime
+  atualizadoEm    DateTime @updatedAt
+
+  @@index([conversationId])
+  @@index([telefoneCliente])
+}
 
 model OfertaGerada {
   id                  String    @id @default(cuid())

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
 import { consultarStatus } from '@/lib/pagamento/mercado-pago';
-import { adicionarAoCarrinho, gerarEtiqueta } from '@/lib/envio/melhor-envio';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/send';
 import { config as envConfig } from '@/lib/config/env';
 
@@ -33,12 +32,50 @@ async function processarPagamento(paymentId: string) {
 
   if (status !== 'approved') return;
 
+  // ── Tenta Checkout primeiro ────────────────────────────────────────────────
+  const checkout = await prisma.checkout.findFirst({
+    where: { pagamentoId: paymentId },
+  });
+
+  if (checkout) {
+    if (checkout.status === 'PAGO') {
+      console.log(`[MP WEBHOOK] Checkout já confirmado — ignorando`);
+      return;
+    }
+
+    await prisma.checkout.update({
+      where: { id: checkout.id },
+      data: { status: 'PAGO' },
+    });
+
+    const whatsappConfig = await prisma.whatsappProviderConfig.findFirst();
+    if (!whatsappConfig) return;
+
+    await sendWhatsAppMessage(
+      whatsappConfig.businessPhoneNumberId,
+      checkout.telefoneCliente,
+      `✅ Pagamento confirmado!\n\nSeu pedido foi aprovado 🎉\nJá estamos separando pra envio 📦\n\nEm breve você recebe o código de rastreamento. Qualquer dúvida é só chamar 👊`,
+      whatsappConfig.accessToken ?? undefined,
+    );
+
+    await sendWhatsAppMessage(
+      whatsappConfig.businessPhoneNumberId,
+      envConfig.ownerWhatsapp,
+      `🔔 *CHECKOUT PAGO — ENVIAR AGORA*\n\n📦 Produto: ${checkout.produto}\n👤 Nome: ${checkout.nomeCliente}\n📍 CEP: ${checkout.cep}\n📮 Endereço: ${checkout.enderecoCompleto}\n💰 Valor pago: R$ ${checkout.valorProduto.toFixed(2)}\n💳 Pagamento: ${checkout.pagamentoTipo}\n📱 WhatsApp: ${checkout.telefoneCliente}\n\n✅ Pagamento confirmado — pronto para envio`,
+      whatsappConfig.accessToken ?? undefined,
+    );
+
+    console.log(`[MP WEBHOOK] ✅ Checkout pago notificado | checkout ${checkout.id}`);
+    return;
+  }
+
+  // ── Fallback: PedidoNacional ───────────────────────────────────────────────
   const pedido = await prisma.pedidoNacional.findFirst({
     where: { pagamentoId: paymentId },
   });
 
   if (!pedido) {
-    console.error(`[MP WEBHOOK] Pedido não encontrado para payment ${paymentId}`);
+    console.error(`[MP WEBHOOK] Nenhum checkout ou pedido encontrado para payment ${paymentId}`);
     return;
   }
 
@@ -67,56 +104,12 @@ async function processarPagamento(paymentId: string) {
     config.accessToken ?? undefined,
   );
 
-  await gerarEtiquetaENotificar(pedido, config);
-}
+  await sendWhatsAppMessage(
+    config.businessPhoneNumberId,
+    envConfig.ownerWhatsapp,
+    `🔔 *PEDIDO PAGO — ENVIAR AGORA*\n\n📦 Produto: ${pedido.produto}\n👤 Nome: ${pedido.nomeCliente}\n📍 CEP: ${pedido.cepDestino}\n📮 Endereço: ${pedido.enderecoCompleto}\n💰 Valor pago: R$ ${pedido.valorTotal.toFixed(2)}\n💳 Pagamento: ${pedido.formaPagamento}\n📱 WhatsApp: ${pedido.telefoneCliente}\n\n✅ Pagamento confirmado — pronto para envio`,
+    config.accessToken ?? undefined,
+  );
 
-async function gerarEtiquetaENotificar(
-  pedido: {
-    id: string;
-    cepDestino: string;
-    nomeCliente: string;
-    servicoFreteId: string;
-    produto: string;
-    valorProduto: number;
-    valorTotal: number;
-    enderecoCompleto: string;
-    transportadora: string;
-    prazoFrete: number;
-  },
-  config: { businessPhoneNumberId: string; accessToken: string | null },
-) {
-  try {
-    const cartItemId = await adicionarAoCarrinho({
-      cepDestino: pedido.cepDestino,
-      nomeDestinatario: pedido.nomeCliente,
-      servicoId: pedido.servicoFreteId,
-      produtoNome: pedido.produto,
-      valorProduto: pedido.valorProduto,
-    });
-
-    const urlEtiqueta = await gerarEtiqueta(cartItemId);
-
-    await prisma.pedidoNacional.update({
-      where: { id: pedido.id },
-      data: { cartItemId, urlEtiqueta, etapaEnvio: 'ETIQUETA_GERADA' },
-    });
-
-    await sendWhatsAppMessage(
-      config.businessPhoneNumberId,
-      envConfig.ownerWhatsapp,
-      `🔔 *PEDIDO PAGO — EMBALAR E DESPACHAR*\n\n📦 Produto: ${pedido.produto}\n👤 Cliente: ${pedido.nomeCliente}\n📍 CEP: ${pedido.cepDestino}\n📮 Endereço: ${pedido.enderecoCompleto}\n🚚 ${pedido.transportadora} — ${pedido.prazoFrete} dia(s) útil(is)\n💰 Total: R$ ${pedido.valorTotal.toFixed(2)}\n\n🏷️ Etiqueta pronta para imprimir:\n${urlEtiqueta}`,
-      config.accessToken ?? undefined,
-    );
-
-    console.log(`[ETIQUETA] ✅ Gerada para pedido ${pedido.id}`);
-  } catch (err: unknown) {
-    console.error(`[ETIQUETA] ❌ Erro para pedido ${pedido.id}:`, (err as Error).message);
-
-    await sendWhatsAppMessage(
-      config.businessPhoneNumberId,
-      envConfig.ownerWhatsapp,
-      `⚠️ *PEDIDO PAGO — GERAR ETIQUETA MANUALMENTE*\n\nPedido: ${pedido.id}\nCliente: ${pedido.nomeCliente}\nCEP: ${pedido.cepDestino}\nProduto: ${pedido.produto}\n\nErro ao gerar etiqueta automática. Acesse o Melhor Envio manualmente.`,
-      config.accessToken ?? undefined,
-    );
-  }
+  console.log(`[MP WEBHOOK] ✅ Notificação de pedido pago enviada para Pedro | pedido ${pedido.id}`);
 }

@@ -29,6 +29,7 @@ export interface CollectedDataLayer {
   pagamento?: string;
   horario?: string;
   nome?: string;
+  cep?: string;
 }
 
 export interface ProductRef {
@@ -286,33 +287,52 @@ function buildHistoricoLayer(
     })
     .join("  |  ");
 
+  const isNacional = !!(collectedData.cep);
   const faltaLinhas: string[] = [];
   if (leadState?.tipo === "quente") {
-    const temLocal = !!(collectedData.localizacao || collectedData.endereco);
-    if (!temLocal)                faltaLinhas.push("localização");
-    if (!collectedData.horario)   faltaLinhas.push("horário para receber");
-    if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
-    if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
+    if (isNacional) {
+      // Endereço completo = deve ter mais que só o CEP
+      const temEnderecoCompleto = !!(collectedData.endereco && collectedData.endereco !== collectedData.cep && collectedData.endereco.length > 10);
+      if (!temEnderecoCompleto)     faltaLinhas.push("endereço completo (rua, número, complemento)");
+      if (!collectedData.nome)      faltaLinhas.push("nome completo de quem vai receber");
+      // pagamento não é coletado aqui — o cliente escolhe no link de checkout
+    } else {
+      const temLocal = !!(collectedData.localizacao || collectedData.endereco);
+      if (!temLocal)                faltaLinhas.push("localização");
+      if (!collectedData.horario)   faltaLinhas.push("horário para receber");
+      if (!collectedData.pagamento) faltaLinhas.push("forma de pagamento");
+      if (!collectedData.nome)      faltaLinhas.push("nome do recebedor");
+    }
   }
+
+  const allCollectedAction = isNacional
+    ? `✅ Todos os dados coletados — emita [CHECKOUT] no array JSON para gerar o link de pagamento.`
+    : `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`;
+
+  const modoEntregaBlock = isNacional
+    ? `MODO NACIONAL: Frete grátis — não mencionar frete.\nDados coletados até agora: CEP ✅${collectedData.endereco && collectedData.endereco !== collectedData.cep ? " → endereço ✅" : " → endereço ⏳"}\nColetar em ordem: endereço completo → nome → [CHECKOUT] (pagamento via link gerado automaticamente)`
+    : `ENTREGAS:\n• Goiânia/GO: pedir localização (pin ou endereço) + horário + pagamento + nome → [PASSAGEM]\n• Outras cidades (SP, RJ, BH...): pedir CEP + endereço completo + nome → [CHECKOUT]`;
 
   return [
     `--- CONTEXTO RUNTIME (não muda o script, apenas informa o estado atual) ---`,
     `Hora SP: ${hour}h — saudação: "${greeting}" | ${dentroExpediente ? "✅ dentro do expediente" : "🔴 fora do expediente (seg-sex 9-18h, sáb 8-13h)"}`,
     `Lead: ${leadState?.tipo ?? "desconhecido"} | Urgência: ${leadState?.urgencia ?? "normal"} | Mensagens trocadas: ${messageCount} | Primeiro contato: ${isFirstInteraction ? "SIM" : "NÃO"} | Etapa DB: ${etapa}`,
     mediaFlags ? `Flags de mídia disponíveis: ${mediaFlags}` : "",
+    modoEntregaBlock,
     faltaLinhas.length > 0
       ? `⚠️ Lead quente — dados ainda faltando (colete 1 por vez): ${faltaLinhas.join(" → ")}`
       : faltaLinhas.length === 0 && leadState?.tipo === "quente"
-        ? `✅ Todos os dados coletados — emita [PASSAGEM] com os dados.`
+        ? allCollectedAction
         : "",
     `--- FIM CONTEXTO ---`,
     ``,
     `FORMATO OBRIGATÓRIO — responda SEMPRE em JSON válido:`,
     `{"mensagens": ["balão 1", "balão 2", "[FOTO_SLUG]", "balão 3"], "delays": [0, 1200, 600, 1500]}`,
-    `• Cada balão = 1 frase curta (máx 2 linhas)`,
-    `• delays em ms (600–2000ms por balão)`,
-    `• Mídia: coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos num balão — substitua SLUG pelo slug do catálogo`,
-    `• Nunca use frases robóticas: "Claro!", "Certamente!", "Entendido!", "Prezado"`,
+    `• Cada balão = 1 frase curta (máx 2 linhas) | delays em ms (600–2000ms)`,
+    `• MÍDIA: se vai enviar foto/vídeo, coloque [FOTO_SLUG] ou [VIDEO_SLUG] sozinhos no array. NUNCA prometa "vou mandar foto" sem incluir a flag. A flag substitui o texto — não diga "estou enviando" junto.`,
+    `• PALAVRAS PROIBIDAS: "show!", "ótimo!", "perfeito!", "incrível!", "super!", "certamente", "claro!", "entendido!", "prezado" — fale como pessoa real em conversa`,
+    `• CHECKOUT (nacional): quando o cliente de outra cidade confirmar a compra e você tiver CEP + endereço + nome, emita [CHECKOUT] no array. O sistema gera e envia automaticamente um link de pagamento onde o cliente escolhe Pix ou parcelado. NUNCA escreva chave Pix, CPF, e-mail ou link no texto.`,
+    `• FORMAS ACEITAS: Pix (à vista) | Cartão de crédito parcelado em até 10x | Dinheiro (só Goiânia, na entrega)`,
     `--- FIM FORMATO ---`,
   ]
     .filter(Boolean)
