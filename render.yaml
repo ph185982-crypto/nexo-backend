@@ -40,6 +40,8 @@ services:
       # ── App URL ──────────────────────────────────────────────────────────
       - key: NEXT_PUBLIC_APP_URL
         sync: false         # https://vendedoria.onrender.com
+      - key: RENDER_EXTERNAL_URL
+        sync: false         # https://vendedoria.onrender.com
 
       # ── WhatsApp Business API ─────────────────────────────────────────────
       - key: META_WHATSAPP_VERIFY_TOKEN
@@ -105,6 +107,42 @@ services:
       - key: NODE_ENV
         value: production
 
+  # ── Cron: Daily Summary (todo dia às 08h BRT / 11h UTC) ──────────────────
+  - type: cron
+    name: vendedoria-daily-summary
+    runtime: node
+    schedule: "0 11 * * *"
+    buildCommand: "echo 'no build'"
+    startCommand: >
+      node -e "
+        const https = require('https');
+        const url = new URL(process.env.APP_URL + '/api/cron/daily-summary');
+        const opts = { hostname: url.hostname, path: url.pathname, headers: { Authorization: 'Bearer ' + process.env.CRON_SECRET } };
+        https.get(opts, r => { let d=''; r.on('data', c => d+=c); r.on('end', () => { console.log(r.statusCode, d); if (r.statusCode >= 400) process.exit(1); }); }).on('error', e => { console.error(e); process.exit(1); });
+      "
+    envVars:
+      - key: APP_URL
+        sync: false         # https://vendedoria.onrender.com
+      - key: CRON_SECRET
+        sync: false
+
+  # ── Cron: Importar Produtos (segunda às 02h BRT / 05h UTC) ───────────────
+  - type: cron
+    name: vendedoria-importar-produtos
+    runtime: node
+    schedule: "0 5 * * 1"
+    buildCommand: "echo 'no build'"
+    startCommand: >
+      node -e "
+        const https = require('https');
+        const url = new URL(process.env.APP_URL + '/api/cron/importar-produtos?secret=' + process.env.CRON_SECRET);
+        https.get({ hostname: url.hostname, path: url.pathname + url.search }, r => { let d=''; r.on('data', c => d+=c); r.on('end', () => { console.log(r.statusCode, d); if (r.statusCode >= 400) process.exit(1); }); }).on('error', e => { console.error(e); process.exit(1); });
+      "
+    envVars:
+      - key: APP_URL
+        sync: false         # https://vendedoria.onrender.com
+      - key: CRON_SECRET
+        sync: false
 
 databases:
   # ── PostgreSQL ──────────────────────────────────────────────────────────
