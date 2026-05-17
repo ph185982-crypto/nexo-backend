@@ -67,28 +67,58 @@ export async function sendAIResponse(
     return { sent: false, skipped: "LLM returned null" };
   }
 
+  // Parse JSON response before sending (CORREÇÃO 1)
+  let messagesToSend: string[];
+  try {
+    const stripped = rawResponse.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    const parsed = JSON.parse(stripped) as { mensagens?: unknown };
+    messagesToSend = Array.isArray(parsed.mensagens)
+      ? (parsed.mensagens as unknown[]).map((m) => String(m).trim()).filter(Boolean)
+      : [rawResponse];
+  } catch {
+    // Try extracting embedded JSON
+    const jsonMatch = rawResponse.match(/\{[\s\S]*"mensagens"[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]) as { mensagens?: unknown };
+        messagesToSend = Array.isArray(parsed.mensagens)
+          ? (parsed.mensagens as unknown[]).map((m) => String(m).trim()).filter(Boolean)
+          : [rawResponse];
+      } catch {
+        messagesToSend = [rawResponse];
+      }
+    } else {
+      messagesToSend = [rawResponse];
+    }
+  }
+
   // Typing indicator — fires before sending the actual response
   if (ctx.incomingMessageId) {
     await sendWhatsAppTyping(ctx.phoneNumberId, ctx.incomingMessageId, ctx.phoneNumber, ctx.accessToken).catch(() => {});
-    // Proportional delay: min 1.5s, max 6s
-    const delayMs = Math.min(Math.max(rawResponse.length * 32, 1500), 6000);
+    const firstMsg = messagesToSend[0] ?? rawResponse;
+    const delayMs = Math.min(Math.max(firstMsg.length * 32, 1500), 6000);
     await new Promise((r) => setTimeout(r, delayMs));
   }
 
-  // Send message
-  await sendWhatsAppMessage(ctx.phoneNumberId, ctx.phoneNumber, rawResponse, ctx.accessToken);
+  // Send messages
+  for (let i = 0; i < messagesToSend.length; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, 1000));
+    await sendWhatsAppMessage(ctx.phoneNumberId, ctx.phoneNumber, messagesToSend[i], ctx.accessToken);
+  }
 
-  // Persist AI message
-  await prisma.whatsappMessage.create({
-    data: {
-      content: rawResponse,
-      type: "TEXT",
-      role: "ASSISTANT",
-      sentAt: new Date(),
-      status: "SENT",
-      conversationId: ctx.conversationId,
-    },
-  });
+  // Persist AI messages
+  for (const msg of messagesToSend) {
+    await prisma.whatsappMessage.create({
+      data: {
+        content: msg,
+        type: "TEXT",
+        role: "ASSISTANT",
+        sentAt: new Date(),
+        status: "SENT",
+        conversationId: ctx.conversationId,
+      },
+    });
+  }
 
   // Update conversation timestamp
   await prisma.whatsappConversation.update({
@@ -96,8 +126,8 @@ export async function sendAIResponse(
     data: { lastMessageAt: new Date() },
   }).catch(() => {});
 
-  console.log(`[Responder] Sent ${rawResponse.length}ch to conv ${ctx.conversationId}`);
-  return { sent: true, message: rawResponse };
+  console.log(`[Responder] Sent ${messagesToSend.length} msg(s) to conv ${ctx.conversationId}`);
+  return { sent: true, message: messagesToSend[messagesToSend.length - 1] ?? rawResponse };
 }
 
 /**

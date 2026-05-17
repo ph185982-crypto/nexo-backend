@@ -114,12 +114,27 @@ async function generateFollowupMessage(
   return null;
 }
 
-function fallbackFollowupMessage(step: number, totalSteps: number, name: string | null): string {
+function fallbackFollowupMessage(step: number, totalSteps: number, name: string | null): string[] {
   const isLast = step >= totalSteps;
-  if (step === 1) return "conseguiu ver aí? 🙂";
-  if (step === 2) return "ainda tenho disponível...";
-  if (isLast) return name ? `${name}, qualquer coisa pode me chamar 👊` : "qualquer coisa pode me chamar 👊";
-  return "últimas unidades viu...";
+  if (step === 1) return [
+    "oi! ficou alguma dúvida sobre o rastreador?",
+    "pode perguntar à vontade 😊",
+  ];
+  if (step === 2) return [
+    "lembrei de te falar uma coisa",
+    "o rastreador funciona tanto no Android quanto no iPhone",
+    "e não precisa de mensalidade — é só comprar e usar",
+  ];
+  if (isLast) return [
+    "tudo bem, não vou mais te incomodar 😄",
+    "se um dia precisar de um rastreador GPS aqui no Brasil",
+    name ? `pode me chamar que a gente resolve — abraço ${name}! 👊` : "pode me chamar que a gente resolve — abraço! 👊",
+  ];
+  return [
+    "ainda tenho unidades disponíveis",
+    "mas o estoque tá acabando essa semana",
+    "consegue fechar hoje?",
+  ];
 }
 
 export async function GET() {
@@ -150,18 +165,19 @@ export async function GET() {
       });
       const history = messages.reverse().map((m) => ({ role: m.role, content: m.content }));
 
-      const msg =
-        (await generateFollowupMessage(fu.step, maxFollowUps, agentName, followUpPrompt, fu.leadName, history)) ??
-        fallbackFollowupMessage(fu.step, maxFollowUps, fu.leadName);
+      const aiMsg = await generateFollowupMessage(fu.step, maxFollowUps, agentName, followUpPrompt, fu.leadName, history);
+      const msgs: string[] = aiMsg ? [aiMsg] : fallbackFollowupMessage(fu.step, maxFollowUps, fu.leadName);
 
-      if (!msg) continue;
+      if (!msgs.length) continue;
 
       const token = fu.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? undefined;
-      await sendWhatsAppMessage(fu.phoneNumberId, fu.phoneNumber, msg, token);
-
-      await prisma.whatsappMessage.create({
-        data: { content: msg, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId: fu.conversationId },
-      });
+      for (let i = 0; i < msgs.length; i++) {
+        if (i > 0) await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(fu.phoneNumberId, fu.phoneNumber, msgs[i], token);
+        await prisma.whatsappMessage.create({
+          data: { content: msgs[i], type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId: fu.conversationId },
+        });
+      }
 
       if (fu.step >= maxFollowUps) {
         await prisma.conversationFollowUp.update({ where: { id: fu.id }, data: { status: "DONE", step: fu.step + 1 } });
