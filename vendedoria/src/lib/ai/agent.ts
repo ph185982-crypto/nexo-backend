@@ -1382,67 +1382,63 @@ export async function processAIResponse(
 
     // ── [CHECKOUT] — cria checkout GPS e envia link público ──────────────────
     if (/\[CHECKOUT\]/i.test(combinedRaw)) {
-      console.log(`[AI Agent] 🔔 [CHECKOUT] flag detectada | conv ${conversationId} | cep=${collectedData.cep} | produto=${produtosContexto[0]?.nome ?? "?"}`);
+      console.log(`[AI Agent] 🔔 [CHECKOUT] flag detectada | conv ${conversationId}`);
       try {
-        const cepDestino      = collectedData.cep;
-        const enderecoCompleto = collectedData.endereco;
-        const nomeCliente     = collectedData.nome ?? lead?.profileName ?? "Cliente";
-        const produto         = produtosContexto[0];
+        const nomeCliente      = (sessaoNacional.nomeCliente as string | undefined) ?? collectedData.nome ?? lead?.profileName ?? undefined;
+        const produto          = produtosContexto[0];
+        const cepDestino       = (sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? undefined;
+        const enderecoCompleto = (sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? undefined;
 
-        if (cepDestino && enderecoCompleto && produto) {
-          const baseUrl = getBaseUrl();
+        const baseUrl = getBaseUrl();
 
-          const resCheckout = await fetch(`${baseUrl}/api/checkout`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              conversationId,
-              telefoneCliente: to,
-              nomeCliente,
-              produto: produto.nome,
-              valorProduto: produto.preco,
-              cep: cepDestino,
-              enderecoCompleto,
-            }),
-          });
+        const resCheckout = await fetch(`${baseUrl}/api/checkout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversationId,
+            telefoneCliente: to,
+            nomeCliente,
+            produto: produto?.nome ?? "Rastreador GPS 2 em 1",
+            valorProduto: produto?.preco ?? 197,
+            cep: cepDestino,
+            enderecoCompleto,
+          }),
+        });
 
-          if (resCheckout.ok) {
-            const { url: checkoutUrl } = await resCheckout.json() as { id: string; url: string };
+        if (resCheckout.ok) {
+          const { url: checkoutUrl } = await resCheckout.json() as { id: string; url: string };
 
-            await prisma.whatsappConversation.update({
-              where: { id: conversationId },
-              data: { etapa: "PEDIDO_CONFIRMADO" },
-            }).catch(() => {});
-            await cancelFollowUpJobs(conversationId).catch(() => {});
+          await prisma.whatsappConversation.update({
+            where: { id: conversationId },
+            data: { etapa: "PEDIDO_CONFIRMADO" },
+          }).catch(() => {});
+          await cancelFollowUpJobs(conversationId).catch(() => {});
 
-            const valorStr = `R$ ${produto.preco.toFixed(2).replace(".", ",")}`;
+          const valorStr = produto ? `R$ ${produto.preco.toFixed(2).replace(".", ",")}` : "R$ 197,00";
 
-            await new Promise((r) => setTimeout(r, 800));
-            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
-              `🛒 *Seu link de pagamento está pronto!*\n\n📦 ${produto.nome}\n💰 ${valorStr} — frete grátis`,
-              token);
-            await new Promise((r) => setTimeout(r, 1000));
-            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
-              `🔗 Acesse aqui e escolha Pix ou parcelado:\n\n${checkoutUrl}`,
-              token);
-            await new Promise((r) => setTimeout(r, 800));
-            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
-              `⏰ Link válido por 24h. Qualquer dúvida é só chamar! 👊`,
-              token);
+          await new Promise((r) => setTimeout(r, 800));
+          await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+            `🛒 *Seu link de pagamento está pronto!*\n\n📦 ${produto?.nome ?? "Rastreador GPS 2 em 1"}\n💰 ${valorStr} — frete grátis`,
+            token);
+          await new Promise((r) => setTimeout(r, 1000));
+          await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+            `🔗 Acesse aqui e escolha Pix, cartão parcelado ou boleto:\n\n${checkoutUrl}`,
+            token);
+          await new Promise((r) => setTimeout(r, 800));
+          await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+            `⏰ Link válido por 24h. Qualquer dúvida é só chamar! 👊`,
+            token);
 
-            await prisma.whatsappMessage.create({
-              data: { content: `[Checkout gerado] ${checkoutUrl}`, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-            }).catch(() => {});
+          await prisma.whatsappMessage.create({
+            data: { content: `[Checkout gerado] ${checkoutUrl}`, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+          }).catch(() => {});
 
-            console.log(`[AI Agent] ✅ CHECKOUT criado e link enviado | url=${checkoutUrl}`);
-          } else {
-            const errText = await resCheckout.text();
-            console.error(`[AI Agent] CHECKOUT API ${resCheckout.status}:`, errText);
-            await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
-              "❌ Erro ao gerar o link. Aguarde um instante e tente novamente.", token);
-          }
+          console.log(`[AI Agent] ✅ CHECKOUT criado e link enviado | url=${checkoutUrl}`);
         } else {
-          console.warn(`[AI Agent] CHECKOUT emitido mas dados incompletos | cep=${cepDestino} endereco=${!!enderecoCompleto} produto=${produto?.nome}`);
+          const errText = await resCheckout.text();
+          console.error(`[AI Agent] CHECKOUT API ${resCheckout.status}:`, errText);
+          await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+            "❌ Erro ao gerar o link. Aguarde um instante e tente novamente.", token);
         }
       } catch (e) {
         console.error("[AI Agent] CHECKOUT error:", e);
