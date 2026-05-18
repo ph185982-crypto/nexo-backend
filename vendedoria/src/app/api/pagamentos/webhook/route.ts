@@ -58,10 +58,22 @@ async function processarPagamento(paymentId: string) {
       whatsappConfig.accessToken ?? undefined,
     );
 
+    const enderecoFormatado = [
+      checkout.enderecoCompleto,
+      checkout.numero,
+      checkout.complemento,
+      checkout.cidade,
+      checkout.estado,
+      checkout.cep,
+    ].filter(Boolean).join(', ');
+
+    const formaPagTipo = checkout.formaPagamento ?? checkout.pagamentoTipo ?? '';
+    const formaPagLabel = formaPagTipo === 'pix' ? 'Pix ✅' : formaPagTipo === 'bolbradesco' || formaPagTipo === 'boleto' ? 'Boleto' : 'Cartão parcelado';
+
     await sendWhatsAppMessage(
       whatsappConfig.businessPhoneNumberId,
       envConfig.ownerWhatsapp,
-      `🔔 *CHECKOUT PAGO — ENVIAR AGORA*\n\n📦 Produto: ${checkout.produto}\n👤 Nome: ${checkout.nomeCliente}\n📍 CEP: ${checkout.cep}\n📮 Endereço: ${checkout.enderecoCompleto}\n💰 Valor pago: R$ ${checkout.valorProduto.toFixed(2)}\n💳 Pagamento: ${checkout.pagamentoTipo}\n📱 WhatsApp: ${checkout.telefoneCliente}\n\n✅ Pagamento confirmado — pronto para envio`,
+      `🔔 *CHECKOUT PAGO — ENVIAR AGORA*\n\n📦 Produto: ${checkout.produto ?? 'Rastreador GPS 2 em 1'}\n👤 Nome: ${checkout.nomeCliente ?? 'Não informado'}\n📍 Endereço: ${enderecoFormatado || 'Não informado'}\n💰 Valor: R$ ${checkout.valorProduto.toFixed(2)}\n💳 Pagamento: ${formaPagLabel}\n📱 WhatsApp: ${checkout.telefoneCliente}\n\n✅ Pagamento confirmado — pronto para envio`,
       whatsappConfig.accessToken ?? undefined,
     );
 

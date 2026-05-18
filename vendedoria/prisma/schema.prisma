@@ -918,19 +918,24 @@ model FinancialProofSession {
 
 model Checkout {
   id               String   @id @default(cuid())
-  conversationId   String
+  conversationId   String?
   telefoneCliente  String
-  nomeCliente      String
-  produto          String
-  valorProduto     Float
-  cep              String
-  enderecoCompleto String
   status           String   @default("PENDENTE")  // PENDENTE | PAGO | EXPIRADO
+  nomeCliente      String?
+  cep              String?
+  enderecoCompleto String?
+  numero           String?
+  complemento      String?
+  cidade           String?
+  estado           String?
+  produto          String?
+  formaPagamento   String?
   pagamentoId      String?
-  pagamentoTipo    String?  // pix | parcelado
+  pagamentoTipo    String?  // legado — usar formaPagamento
   pixCopiaECola    String?  @db.Text
   pixQrCodeBase64  String?  @db.Text
   linkParcelado    String?
+  valorProduto     Float    @default(197)
   criadoEm        DateTime @default(now())
   expiradoEm      DateTime
   atualizadoEm    DateTime @updatedAt

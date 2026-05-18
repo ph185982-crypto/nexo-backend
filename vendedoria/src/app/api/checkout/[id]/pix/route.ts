@@ -3,44 +3,57 @@ import { prisma } from '@/lib/prisma/client';
 import { criarPix } from '@/lib/pagamento/mercado-pago';
 import { config } from '@/lib/config/env';
 
-// POST /api/checkout/:id/pix — gera Pix real via MP SDK (idempotente)
+// POST /api/checkout/:id/pix
+// body: { nome, cep, endereco, numero, complemento, cidade, estado }
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
   const checkout = await prisma.checkout.findUnique({ where: { id } });
+  if (!checkout) return NextResponse.json({ erro: 'Checkout não encontrado' }, { status: 404 });
+  if (checkout.status === 'EXPIRADO' || checkout.expiradoEm < new Date())
+    return NextResponse.json({ erro: 'Checkout expirado' }, { status: 410 });
+  if (checkout.status === 'PAGO')
+    return NextResponse.json({ erro: 'Checkout já pago' }, { status: 409 });
 
-  if (!checkout) {
-    return NextResponse.json({ error: 'Checkout não encontrado' }, { status: 404 });
-  }
+  const body = await req.json() as Record<string, string>;
+  const { nome, cep, endereco, numero, complemento, cidade, estado } = body;
 
-  if (checkout.status === 'EXPIRADO' || checkout.expiradoEm < new Date()) {
-    return NextResponse.json({ error: 'Checkout expirado' }, { status: 410 });
-  }
-
-  if (checkout.status === 'PAGO') {
-    return NextResponse.json({ error: 'Checkout já pago' }, { status: 409 });
+  if (!nome?.trim() || !cep?.trim() || !endereco?.trim() || !cidade?.trim()) {
+    return NextResponse.json({ erro: 'Dados obrigatórios: nome, cep, endereco, cidade' }, { status: 400 });
   }
 
   // Idempotente: retorna Pix já gerado se existir
   if (checkout.pixCopiaECola && checkout.pagamentoTipo === 'pix') {
     return NextResponse.json({
       pixCopiaECola: checkout.pixCopiaECola,
-      qrCodeBase64: checkout.pixQrCodeBase64,
-      pagamentoId: checkout.pagamentoId,
-      valor: checkout.valorProduto,
+      pixQrCodeBase64: checkout.pixQrCodeBase64,
     });
   }
 
-  const descricao = `${checkout.produto} — ${config.businessName}`;
+  // Salva dados do formulário
+  await prisma.checkout.update({
+    where: { id },
+    data: {
+      nomeCliente: nome.trim(),
+      cep: cep.trim(),
+      enderecoCompleto: endereco.trim(),
+      numero: numero?.trim() ?? null,
+      complemento: complemento?.trim() ?? null,
+      cidade: cidade.trim(),
+      estado: estado?.trim() ?? null,
+      formaPagamento: 'pix',
+    },
+  });
 
+  const descricao = `Rastreador GPS 2 em 1 — ${config.businessName}`;
   const pix = await criarPix({
     pedidoId: checkout.id,
     valor: checkout.valorProduto,
     descricao,
-    nomeCliente: checkout.nomeCliente,
+    nomeCliente: nome.trim(),
   });
 
   await prisma.checkout.update({
@@ -55,8 +68,6 @@ export async function POST(
 
   return NextResponse.json({
     pixCopiaECola: pix.pixCopiaECola,
-    qrCodeBase64: pix.qrCodeBase64,
-    pagamentoId: pix.pagamentoId,
-    valor: pix.valor,
+    pixQrCodeBase64: pix.qrCodeBase64,
   });
 }

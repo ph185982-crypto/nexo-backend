@@ -1198,25 +1198,70 @@ export async function processAIResponse(
       // NÃO chama handleEscalation — IA não pode escalar sozinha agora
     }
 
-    // ── [AGUARDANDO_PAGAMENTO] — pausa IA e notifica Pedro (CORREÇÃO 2) ─────────
+    // ── [AGUARDANDO_PAGAMENTO] — cria checkout, envia link, pausa IA ──────────
     if (/\[AGUARDANDO_PAGAMENTO\]/i.test(combinedRaw)) {
       console.log(`[AI Agent] 🔔 [AGUARDANDO_PAGAMENTO] | conv ${conversationId} | cliente ${to}`);
+
+      // Mensagem imediata enquanto cria o checkout
       await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "um segundo! estou gerando seu link de pagamento agora 🔗", token).catch(() => {});
       await prisma.whatsappMessage.create({ data: { content: "um segundo! estou gerando seu link de pagamento agora 🔗", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
       await new Promise((r) => setTimeout(r, 1200));
-      await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "já te mando aqui ⏳", token).catch(() => {});
-      await prisma.whatsappMessage.create({ data: { content: "já te mando aqui ⏳", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
 
+      // Criar checkout via API
+      let checkoutUrl: string | null = null;
+      try {
+        const baseUrl = getBaseUrl();
+        const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            telefoneCliente: to,
+            conversationId,
+            nomeCliente: (sessaoNacional.nomeCliente as string | undefined) ?? lead?.profileName ?? undefined,
+            produto: produtosContexto[0]?.nome ?? "Rastreador GPS 2 em 1",
+            valorProduto: produtosContexto[0]?.preco ?? 197,
+            cep: (sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? undefined,
+            enderecoCompleto: (sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? undefined,
+          }),
+        });
+        if (checkoutRes.ok) {
+          const checkoutData = await checkoutRes.json() as { id: string; url: string };
+          checkoutUrl = checkoutData.url;
+          console.log(`[PAGAMENTO] Checkout criado: ${checkoutData.id} | url: ${checkoutUrl}`);
+        }
+      } catch (err) {
+        console.error(`[PAGAMENTO] Erro ao criar checkout:`, err);
+      }
+
+      // Enviar link para o cliente (4 mensagens)
+      if (checkoutUrl) {
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "aqui está seu link de pagamento 👇", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "aqui está seu link de pagamento 👇", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, checkoutUrl, token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: checkoutUrl, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "pode escolher pagar por Pix, cartão parcelado ou boleto 😊", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "pode escolher pagar por Pix, cartão parcelado ou boleto 😊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "qualquer dúvida pode chamar aqui 👊", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "qualquer dúvida pode chamar aqui 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+      } else {
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "já te mando aqui ⏳", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "já te mando aqui ⏳", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+      }
+
+      // Notificar Pedro
       const notificacaoPag =
-        `💰 *CLIENTE PRONTO PARA PAGAR*\n\n` +
+        `🛒 *CLIENTE NO CHECKOUT*\n\n` +
         `👤 Nome: ${(sessaoNacional.nomeCliente as string | undefined) ?? lead?.profileName ?? "Não informado"}\n` +
         `📱 WhatsApp: ${to}\n` +
         `📦 Produto: ${produtosContexto[0]?.nome ?? "Rastreador GPS 2 em 1"}\n` +
         `💵 Valor: R$ ${produtosContexto[0]?.preco?.toFixed(2).replace(".", ",") ?? "197,00"}\n` +
         `📍 CEP: ${(sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? "Não informado"}\n` +
-        `📮 Endereço: ${(sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? "Não informado"}\n\n` +
-        `⚡ Cliente aguardando link de pagamento.\n` +
-        `Envie manualmente para: wa.me/${to}`;
+        `📮 Endereço: ${(sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? "Não informado"}\n` +
+        (checkoutUrl ? `\n🔗 Link checkout: ${checkoutUrl}\n` : `\n⚡ Envie link manualmente para: wa.me/${to}\n`) +
+        `\n✅ Link enviado ao cliente — aguardando pagamento`;
       await sendWhatsAppMessage(provider.businessPhoneNumberId, config.ownerWhatsapp, notificacaoPag, token).catch(() => {});
 
       await prisma.whatsappConversation.update({
@@ -1224,7 +1269,7 @@ export async function processAIResponse(
         data: { humanTakeover: true, etapa: "AGUARDANDO_PAGAMENTO_MANUAL", lastMessageAt: new Date() },
       }).catch(() => {});
       await cancelFollowUpJobs(conversationId).catch(() => {});
-      console.log(`[PAGAMENTO] Pedro notificado — IA pausada para conv ${conversationId}`);
+      console.log(`[PAGAMENTO] Checkout enviado + Pedro notificado — IA pausada para conv ${conversationId}`);
       return;
     }
 
