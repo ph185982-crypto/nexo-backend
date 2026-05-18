@@ -17,14 +17,29 @@ const STEP_INTERVALS_MS: Record<number, number> = {
   4: 72 * 60 * 60 * 1000,   // step 4 — 72h
 };
 
-// ── Mensagem por step ─────────────────────────────────────────────────────────
-function buildFollowupMessage(step: number, name: string | null): string {
+// ── Mensagens por step (CORREÇÃO 3) ──────────────────────────────────────────
+function buildFollowupMessage(step: number, name: string | null): string[] {
   switch (step) {
-    case 1: return "conseguiu ver aí? 🙂";
-    case 2: return "ainda tenho disponível...";
-    case 3: return "últimas unidades viu...";
-    case 4: return name ? `${name}, qualquer coisa pode me chamar 👊` : "qualquer coisa pode me chamar 👊";
-    default: return "";
+    case 1: return [
+      "oi! ficou alguma dúvida sobre o rastreador?",
+      "pode perguntar à vontade 😊",
+    ];
+    case 2: return [
+      "lembrei de te falar uma coisa",
+      "o rastreador funciona tanto no Android quanto no iPhone",
+      "e não precisa de mensalidade — é só comprar e usar",
+    ];
+    case 3: return [
+      "ainda tenho unidades disponíveis",
+      "mas o estoque tá acabando essa semana",
+      "consegue fechar hoje?",
+    ];
+    case 4: return [
+      "tudo bem, não vou mais te incomodar 😄",
+      "se um dia precisar de um rastreador GPS aqui no Brasil",
+      name ? `pode me chamar que a gente resolve — abraço ${name}! 👊` : "pode me chamar que a gente resolve — abraço! 👊",
+    ];
+    default: return [];
   }
 }
 
@@ -182,15 +197,17 @@ export function startFollowUpWorker(): void {
         return;
       }
 
-      const msg = buildFollowupMessage(step, leadName);
-      if (!msg) return;
+      const msgs = buildFollowupMessage(step, leadName);
+      if (!msgs.length) return;
 
       const token = accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? undefined;
-      await sendWhatsAppMessage(phoneNumberId, phoneNumber, msg, token);
-
-      await prisma.whatsappMessage.create({
-        data: { content: msg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-      });
+      for (let i = 0; i < msgs.length; i++) {
+        if (i > 0) await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(phoneNumberId, phoneNumber, msgs[i], token);
+        await prisma.whatsappMessage.create({
+          data: { content: msgs[i], type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+        });
+      }
 
       if (step >= 4) {
         await prisma.conversationFollowUp.update({ where: { id: followUpId }, data: { status: "DONE", step: 5 } });

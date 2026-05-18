@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
-import { criarLinkParcelado } from '@/lib/pagamento/mercado-pago';
+import { criarBoleto } from '@/lib/pagamento/mercado-pago';
 import { config } from '@/lib/config/env';
 
-// POST /api/checkout/:id/parcelado
-// body: { nome, cep, endereco, numero, complemento, cidade, estado }
+// POST /api/checkout/:id/boleto
+// body: { nome, cpf, cep, endereco, numero, complemento, cidade, estado }
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -19,15 +19,15 @@ export async function POST(
     return NextResponse.json({ erro: 'Checkout já pago' }, { status: 409 });
 
   const body = await req.json() as Record<string, string>;
-  const { nome, cep, endereco, numero, complemento, cidade, estado } = body;
+  const { nome, cpf, cep, endereco, numero, complemento, cidade, estado } = body;
 
-  if (!nome?.trim() || !cep?.trim() || !endereco?.trim() || !cidade?.trim()) {
-    return NextResponse.json({ erro: 'Dados obrigatórios: nome, cep, endereco, cidade' }, { status: 400 });
+  if (!nome?.trim() || !cpf?.trim() || !cep?.trim() || !endereco?.trim() || !cidade?.trim()) {
+    return NextResponse.json({ erro: 'Dados obrigatórios: nome, cpf, cep, endereco, cidade' }, { status: 400 });
   }
 
-  // Idempotente: retorna link já gerado se existir
-  if (checkout.linkParcelado && checkout.pagamentoTipo === 'parcelado') {
-    return NextResponse.json({ linkPagamento: checkout.linkParcelado });
+  const cpfLimpo = cpf.replace(/\D/g, '');
+  if (cpfLimpo.length !== 11) {
+    return NextResponse.json({ erro: 'CPF inválido' }, { status: 400 });
   }
 
   // Salva dados do formulário
@@ -41,26 +41,35 @@ export async function POST(
       complemento: complemento?.trim() ?? null,
       cidade: cidade.trim(),
       estado: estado?.trim() ?? null,
-      formaPagamento: 'parcelado',
+      formaPagamento: 'boleto',
     },
   });
 
   const descricao = `Rastreador GPS 2 em 1 — ${config.businessName}`;
-  const parcelado = await criarLinkParcelado({
+  const boleto = await criarBoleto({
     pedidoId: checkout.id,
     valor: checkout.valorProduto,
     descricao,
     nomeCliente: nome.trim(),
+    cpf: cpfLimpo,
+    cep: cep.replace(/\D/g, ''),
+    endereco: endereco.trim(),
+    numero: numero?.trim() ?? 'S/N',
+    cidade: cidade.trim(),
+    estado: estado?.trim() ?? 'GO',
   });
 
   await prisma.checkout.update({
     where: { id },
     data: {
-      pagamentoId: parcelado.pagamentoId,
-      pagamentoTipo: 'parcelado',
-      linkParcelado: parcelado.linkPagamento,
+      pagamentoId: boleto.pagamentoId,
+      pagamentoTipo: 'boleto',
     },
   });
 
-  return NextResponse.json({ linkPagamento: parcelado.linkPagamento });
+  return NextResponse.json({
+    boletoUrl: boleto.boletoUrl,
+    boletoCodigoBarra: boleto.boletoCodigoBarra,
+    dataVencimento: boleto.dataVencimento,
+  });
 }

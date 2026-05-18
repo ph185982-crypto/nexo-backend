@@ -6,6 +6,7 @@ import { promptCompiler } from "@/lib/ai/prompt-compiler";
 import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { notificarPassagem, notificarLeadQuente, notificarEscalacao } from "@/lib/push/notificar";
 import { buscarProdutosAtivos, formatarProdutosParaContexto } from "@/lib/ai/contexto-produtos";
+import { buscarSessaoNacional, atualizarSessaoNacional } from "@/lib/ai/sessao-nacional";
 import { config } from "@/lib/config/env";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
@@ -334,25 +335,47 @@ function mergeIncomplete(msgs: string[], delays: number[]): AIResponse {
 // ── Parser da resposta JSON do LLM ────────────────────────────────────────────
 function parseAIResponse(raw: string): AIResponse {
   const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-  try {
-    const parsed = JSON.parse(stripped) as { mensagens?: unknown; delays?: unknown };
-    if (Array.isArray(parsed.mensagens) && parsed.mensagens.length > 0) {
-      const msgs: string[] = (parsed.mensagens as unknown[]).map((m) => String(m).trim()).filter(Boolean);
-      const rawDelays = Array.isArray(parsed.delays) ? (parsed.delays as unknown[]) : [];
-      const delays: number[] = msgs.map((_, i) =>
-        typeof rawDelays[i] === "number" ? (rawDelays[i] as number) : i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500
-      );
-      return mergeIncomplete(sanitizeMessages(msgs), delays);
-    }
-  } catch { /* fall through */ }
 
-  // Fallback: separador ||
+  const tryParseJson = (s: string): AIResponse | null => {
+    try {
+      const parsed = JSON.parse(s) as { mensagens?: unknown; delays?: unknown };
+      if (Array.isArray(parsed.mensagens) && parsed.mensagens.length > 0) {
+        const msgs: string[] = (parsed.mensagens as unknown[]).map((m) => String(m).trim()).filter(Boolean);
+        const rawDelays = Array.isArray(parsed.delays) ? (parsed.delays as unknown[]) : [];
+        const delays: number[] = msgs.map((_, i) =>
+          typeof rawDelays[i] === "number" ? (rawDelays[i] as number) : i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500
+        );
+        return mergeIncomplete(sanitizeMessages(msgs), delays);
+      }
+    } catch { /* fall through */ }
+    return null;
+  };
+
+  // 1. Tenta parse direto
+  const direct = tryParseJson(stripped);
+  if (direct) {
+    console.log(`[PARSE] JSON parseado com sucesso: ${direct.mensagens.length} msg(s)`);
+    return direct;
+  }
+
+  // 2. Tenta extrair JSON embutido no texto (LLM colocou texto antes do JSON)
+  const jsonMatch = stripped.match(/\{[\s\S]*"mensagens"[\s\S]*\}/);
+  if (jsonMatch) {
+    const embedded = tryParseJson(jsonMatch[0]);
+    if (embedded) {
+      console.log(`[PARSE] JSON extraído de texto: ${embedded.mensagens.length} msg(s)`);
+      return embedded;
+    }
+  }
+
+  // 3. Fallback: separador ||
   const byPipe = stripped.split("||").map((m) => m.trim()).filter(Boolean);
   if (byPipe.length > 1) {
     const delays = byPipe.map((_, i) => (i === 0 ? 0 : 1500 + Math.min(i - 1, 2) * 500));
     return mergeIncomplete(sanitizeMessages(byPipe), delays);
   }
 
+  console.warn(`[PARSE] Resposta não é JSON válido — enviando como texto: "${stripped.substring(0, 100)}"`);
   return mergeIncomplete(sanitizeMessages([stripped]), [0]);
 }
 
@@ -491,6 +514,61 @@ function buildRuntimeContext(
   ].filter(Boolean).join("\n");
 }
 
+// ── Detecta motivo de interesse do lead (CORREÇÃO 4) ─────────────────────────
+function detectarMotivoInteresse(mensagem: string): string | null {
+  const n = mensagem.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const temCarro   = /\b(carro|veiculo|auto|caminhonete|moto)\b/.test(n);
+  const temFamilia = /\b(famil|filh|espos|filho|filha|crianca|kid)\b/.test(n);
+  if (n.includes("os dois") || n.includes("ambos") || (temCarro && temFamilia)) return "os dois";
+  if (temCarro)   return "carro";
+  if (temFamilia) return "familiar";
+  return null;
+}
+
+// ── Contexto de sessão injetado no prompt (CORREÇÕES 4, 5, 6) ─────────────────
+function buildSessaoContext(
+  sessao: Record<string, unknown>,
+  collectedData: CollectedData,
+): string {
+  const lines: string[] = [];
+
+  // Dados já coletados — evita a IA perguntar de novo (CORREÇÃO 4)
+  const itens: string[] = [];
+  const motivo = sessao.motivoInteresse as string | undefined;
+  if (motivo) itens.push(`MOTIVO_DE_INTERESSE: ${motivo} — NÃO perguntar de novo`);
+  const cep = (sessao.cep as string | undefined) ?? collectedData.cep;
+  if (cep) itens.push(`CEP: ${cep} — NÃO pedir de novo`);
+  const endSessao = sessao.enderecoCompleto as string | undefined;
+  if (endSessao) itens.push(`ENDEREÇO: ${endSessao} — NÃO pedir de novo`);
+  const nomeSessao = (sessao.nomeCliente as string | undefined) ?? collectedData.nome;
+  if (nomeSessao) itens.push(`NOME: ${nomeSessao} — NÃO pedir de novo`);
+  if (itens.length > 0) {
+    lines.push(`\n--- DADOS JÁ COLETADOS NESSA CONVERSA ---`);
+    lines.push(...itens);
+    lines.push(`--- FIM DOS DADOS COLETADOS ---`);
+  }
+
+  // Regra de fechamento — CEP só após confirmação (CORREÇÃO 5)
+  lines.push(`\nREGRA DE FECHAMENTO:`);
+  lines.push(`NUNCA pedir CEP ou endereço sem antes receber confirmação explícita de compra.`);
+  lines.push(`Confirmação explícita = cliente disse "sim", "quero", "fecha", "bora", "pode ser", "fechado".`);
+  lines.push(`Sequência correta: 1. CTA de fechamento → 2. Aguardar confirmação → 3. APÓS confirmação → pedir CEP`);
+
+  // Especificações técnicas GPS (CORREÇÃO 6)
+  lines.push(`\nESPECIFICAÇÕES TÉCNICAS DO RASTREADOR GPS:`);
+  lines.push(`COMO FUNCIONA: Rede passiva Apple (Find My) e Google (Find Hub). Sem chip de dados próprio — emite Bluetooth captado por celulares próximos que enviam a localização ao app sem que o dono saiba.`);
+  lines.push(`COBERTURA: Funciona onde há celulares por perto. Em áreas remotas sem celulares próximos pode não localizar.`);
+  lines.push(`PRECISÃO: ~10 a 100 metros dependendo da densidade de dispositivos próximos.`);
+  lines.push(`CHIP DE DADOS: NÃO tem chip de dados próprio. Depende exclusivamente da rede passiva.`);
+  lines.push(`COMPATIBILIDADE: iOS (Find My) e Android (Find Hub). Precisa baixar o app gratuito.`);
+  lines.push(`INSTALAÇÃO: Plug and play no acendedor do carro. Sem fio, sem instalação técnica.`);
+  lines.push(`MENSALIDADE: Sem mensalidade.`);
+  lines.push(`SE ROUBADO: Localiza enquanto o ladrão passa por outros celulares no trajeto.`);
+  lines.push(`NUNCA afirmar que "funciona em qualquer lugar" — a cobertura depende de celulares próximos.`);
+
+  return lines.join("\n");
+}
+
 // ── Prompt base (usado quando o agente não tem prompt customizado) ─────────────
 const DEFAULT_SYSTEM_PROMPT = `Prompt do agente não configurado. Acesse /crm/agent para definir o comportamento da IA.`;
 
@@ -501,7 +579,7 @@ export async function processAIResponse(
   incomingMessageId?: string
 ): Promise<void> {
   try {
-    const [recentMessages, conversation] = await Promise.all([
+    const [recentMessages, conversation, sessaoNacionalDb] = await Promise.all([
       prisma.whatsappMessage.findMany({
         where: { conversationId },
         orderBy: { sentAt: "desc" },
@@ -511,6 +589,7 @@ export async function processAIResponse(
         where: { id: conversationId },
         include: { provider: true, lead: true },
       }),
+      buscarSessaoNacional(conversationId),
     ]);
 
     if (!conversation) return;
@@ -779,6 +858,35 @@ export async function processAIResponse(
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
     );
 
+    // ── Sessão nacional — mutable copy para atualizar localmente (CORREÇÃO 4) ──
+    const sessaoNacional: Record<string, unknown> = { ...sessaoNacionalDb };
+    // Detectar motivo de interesse na mensagem atual
+    if (!sessaoNacional.motivoInteresse) {
+      const motivo = detectarMotivoInteresse(userMessage);
+      if (motivo) {
+        void atualizarSessaoNacional(conversationId, { motivoInteresse: motivo }).catch(() => {});
+        sessaoNacional.motivoInteresse = motivo;
+      }
+    }
+    // Detectar CEP na mensagem atual
+    if (!sessaoNacional.cep) {
+      const cepMatch = userMessage.match(/\b(\d{5})[-\s]?(\d{3})\b/);
+      if (cepMatch) {
+        const cepFormatted = `${cepMatch[1]}-${cepMatch[2]}`;
+        void atualizarSessaoNacional(conversationId, { cep: cepFormatted }).catch(() => {});
+        sessaoNacional.cep = cepFormatted;
+      }
+    }
+    // Sincronizar endereço e nome com sessaoNacional (para o [AGUARDANDO_PAGAMENTO])
+    if (!sessaoNacional.enderecoCompleto && collectedData.endereco) {
+      void atualizarSessaoNacional(conversationId, { enderecoCompleto: collectedData.endereco }).catch(() => {});
+      sessaoNacional.enderecoCompleto = collectedData.endereco;
+    }
+    if (!sessaoNacional.nomeCliente && collectedData.nome) {
+      void atualizarSessaoNacional(conversationId, { nomeCliente: collectedData.nome }).catch(() => {});
+      sessaoNacional.nomeCliente = collectedData.nome;
+    }
+
     // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
     const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
@@ -939,7 +1047,8 @@ export async function processAIResponse(
       detectedProducts, // Camada 5 — catálogo real
     });
     const flagsRuntimeSection = "\n\n[AUDIO:texto] — envia mensagem de voz TTS. Use para mensagens pessoais ou quando o cliente preferir áudio.";
-    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext + flagsRuntimeSection;
+    const sessaoContext = buildSessaoContext(sessaoNacional, collectedData);
+    const systemPromptFinal = compiled.systemPrompt + productSection + leadContext + flagsRuntimeSection + sessaoContext;
 
     // ── Histórico de chat ─────────────────────────────────────────────────────
     const chatHistory = recentMessages
@@ -996,6 +1105,7 @@ export async function processAIResponse(
         .replace(/\[OPT_OUT\]/gi, "")
         .replace(/\[PEDIDO_NACIONAL\]/gi, "")
         .replace(/\[CHECKOUT\]/gi, "")
+        .replace(/\[AGUARDANDO_PAGAMENTO\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1086,6 +1196,81 @@ export async function processAIResponse(
         },
       }).catch(() => {});
       // NÃO chama handleEscalation — IA não pode escalar sozinha agora
+    }
+
+    // ── [AGUARDANDO_PAGAMENTO] — cria checkout, envia link, pausa IA ──────────
+    if (/\[AGUARDANDO_PAGAMENTO\]/i.test(combinedRaw)) {
+      console.log(`[AI Agent] 🔔 [AGUARDANDO_PAGAMENTO] | conv ${conversationId} | cliente ${to}`);
+
+      // Mensagem imediata enquanto cria o checkout
+      await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "um segundo! estou gerando seu link de pagamento agora 🔗", token).catch(() => {});
+      await prisma.whatsappMessage.create({ data: { content: "um segundo! estou gerando seu link de pagamento agora 🔗", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1200));
+
+      // Criar checkout via API
+      let checkoutUrl: string | null = null;
+      try {
+        const baseUrl = getBaseUrl();
+        const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            telefoneCliente: to,
+            conversationId,
+            nomeCliente: (sessaoNacional.nomeCliente as string | undefined) ?? lead?.profileName ?? undefined,
+            produto: produtosContexto[0]?.nome ?? "Rastreador GPS 2 em 1",
+            valorProduto: produtosContexto[0]?.preco ?? 197,
+            cep: (sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? undefined,
+            enderecoCompleto: (sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? undefined,
+          }),
+        });
+        if (checkoutRes.ok) {
+          const checkoutData = await checkoutRes.json() as { id: string; url: string };
+          checkoutUrl = checkoutData.url;
+          console.log(`[PAGAMENTO] Checkout criado: ${checkoutData.id} | url: ${checkoutUrl}`);
+        }
+      } catch (err) {
+        console.error(`[PAGAMENTO] Erro ao criar checkout:`, err);
+      }
+
+      // Enviar link para o cliente (4 mensagens)
+      if (checkoutUrl) {
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "aqui está seu link de pagamento 👇", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "aqui está seu link de pagamento 👇", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, checkoutUrl, token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: checkoutUrl, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "pode escolher pagar por Pix, cartão parcelado ou boleto 😊", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "pode escolher pagar por Pix, cartão parcelado ou boleto 😊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 800));
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "qualquer dúvida pode chamar aqui 👊", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "qualquer dúvida pode chamar aqui 👊", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+      } else {
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, "já te mando aqui ⏳", token).catch(() => {});
+        await prisma.whatsappMessage.create({ data: { content: "já te mando aqui ⏳", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId } }).catch(() => {});
+      }
+
+      // Notificar Pedro
+      const notificacaoPag =
+        `🛒 *CLIENTE NO CHECKOUT*\n\n` +
+        `👤 Nome: ${(sessaoNacional.nomeCliente as string | undefined) ?? lead?.profileName ?? "Não informado"}\n` +
+        `📱 WhatsApp: ${to}\n` +
+        `📦 Produto: ${produtosContexto[0]?.nome ?? "Rastreador GPS 2 em 1"}\n` +
+        `💵 Valor: R$ ${produtosContexto[0]?.preco?.toFixed(2).replace(".", ",") ?? "197,00"}\n` +
+        `📍 CEP: ${(sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? "Não informado"}\n` +
+        `📮 Endereço: ${(sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? "Não informado"}\n` +
+        (checkoutUrl ? `\n🔗 Link checkout: ${checkoutUrl}\n` : `\n⚡ Envie link manualmente para: wa.me/${to}\n`) +
+        `\n✅ Link enviado ao cliente — aguardando pagamento`;
+      await sendWhatsAppMessage(provider.businessPhoneNumberId, config.ownerWhatsapp, notificacaoPag, token).catch(() => {});
+
+      await prisma.whatsappConversation.update({
+        where: { id: conversationId },
+        data: { humanTakeover: true, etapa: "AGUARDANDO_PAGAMENTO_MANUAL", lastMessageAt: new Date() },
+      }).catch(() => {});
+      await cancelFollowUpJobs(conversationId).catch(() => {});
+      console.log(`[PAGAMENTO] Checkout enviado + Pedro notificado — IA pausada para conv ${conversationId}`);
+      return;
     }
 
     // ── Simular digitação antes da 1ª mensagem ────────────────────────────────

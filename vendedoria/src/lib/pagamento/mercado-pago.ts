@@ -89,6 +89,65 @@ export async function criarLinkParcelado(params: {
   };
 }
 
+export interface ResultadoBoleto {
+  pagamentoId: string;
+  boletoUrl: string;
+  boletoCodigoBarra: string;
+  dataVencimento: string;
+}
+
+export async function criarBoleto(params: {
+  pedidoId: string;
+  valor: number;
+  descricao: string;
+  nomeCliente: string;
+  cpf: string;
+  cep: string;
+  endereco: string;
+  numero: string;
+  cidade: string;
+  estado: string;
+}): Promise<ResultadoBoleto> {
+  const payment = new Payment(getMp());
+
+  // Vencimento em 3 dias úteis (aproximado como 4 dias corridos)
+  const vencimento = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000);
+
+  const resultado = await payment.create({
+    body: {
+      transaction_amount: params.valor,
+      description: params.descricao,
+      payment_method_id: 'bolbradesco',
+      payer: {
+        email: 'pagamento@nexobrasil.com.br',
+        first_name: params.nomeCliente.split(' ')[0],
+        last_name: params.nomeCliente.split(' ').slice(1).join(' ') || 'Cliente',
+        identification: { type: 'CPF', number: params.cpf },
+        address: {
+          zip_code: params.cep,
+          street_name: params.endereco,
+          street_number: params.numero,
+          city: params.cidade,
+          federal_unit: params.estado,
+        },
+      },
+      external_reference: params.pedidoId,
+      notification_url: `${process.env.RENDER_EXTERNAL_URL}/api/pagamentos/webhook`,
+      date_of_expiration: vencimento.toISOString(),
+    },
+  });
+
+  const dataVenc = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    .format(vencimento);
+
+  return {
+    pagamentoId: String(resultado.id),
+    boletoUrl: resultado.transaction_details?.external_resource_url ?? '',
+    boletoCodigoBarra: resultado.transaction_details?.barcode?.content ?? '',
+    dataVencimento: dataVenc,
+  };
+}
+
 export async function consultarStatus(paymentId: string): Promise<string> {
   const payment = new Payment(getMp());
   const resultado = await payment.get({ id: Number(paymentId) });
