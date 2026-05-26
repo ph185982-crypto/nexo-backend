@@ -11,13 +11,22 @@ const IMAGE_LABELS = [
   { label: 'Embalagem', emoji: '📦', desc: 'Packaging e entrega' },
 ];
 
+function dataUrlToBlob(dataUrl) {
+  const [header, b64] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(b64);
+  const arr = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
 async function downloadSingleImage(url, filename) {
   try {
-    const response = await fetch(url);
-    const blob = await response.blob();
+    const blob = url.startsWith('data:')
+      ? dataUrlToBlob(url)
+      : await fetch(url).then((r) => r.blob());
     saveAs(blob, filename);
   } catch {
-    // Fallback — open in new tab if fetch fails (CORS)
     window.open(url, '_blank');
   }
 }
@@ -34,8 +43,9 @@ export default function ImageGrid({ images, productTitle }) {
 
       await Promise.all(
         images.map(async (url, i) => {
-          const response = await fetch(url);
-          const blob = await response.blob();
+          const blob = url.startsWith('data:')
+            ? dataUrlToBlob(url)
+            : await fetch(url).then((r) => r.blob());
           const ext = blob.type.includes('png') ? 'png' : 'jpg';
           folder.file(`${i + 1}-${IMAGE_LABELS[i].label.toLowerCase()}.${ext}`, blob);
         })
