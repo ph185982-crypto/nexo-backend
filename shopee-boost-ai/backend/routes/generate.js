@@ -39,10 +39,13 @@ function mapOpenAIError(err) {
   if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || status === 504) {
     return { status: 504, error: 'Tempo limite excedido. Tente novamente.' };
   }
+  if (msg.includes('invalid_image') || msg.toLowerCase().includes('image format') || msg.toLowerCase().includes('unsupported')) {
+    return { status: 400, error: 'Formato de imagem não suportado pela API de edição. Use PNG.' };
+  }
   if (msg.includes('Falha ao interpretar') || msg.includes('Resposta da IA')) {
     return { status: 500, error: msg };
   }
-  return { status: 500, error: `Erro ao processar o produto: ${msg || 'tente novamente.'}` };
+  return { status: 500, error: 'Erro ao processar o produto. Tente novamente em instantes.' };
 }
 
 /**

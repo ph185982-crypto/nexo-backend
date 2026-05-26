@@ -69,7 +69,7 @@ export default function ImageGrid({ images, productTitle }) {
       {/* Header with download all button */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-bold text-white">
-          🎨 6 Imagens Geradas
+          🎨 5 Imagens Geradas
         </h3>
         <button
           onClick={downloadAllAsZip}
