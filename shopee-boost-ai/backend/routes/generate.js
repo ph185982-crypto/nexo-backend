@@ -5,7 +5,6 @@ const { generateProductImages } = require('../services/imageService');
 
 const router = express.Router();
 
-// Store upload in memory (no disk I/O) — max 10MB
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 },
@@ -17,21 +16,45 @@ const upload = multer({
   },
 });
 
+function mapOpenAIError(err) {
+  const msg = err.message || '';
+  const status = err.status || err.statusCode || 500;
+
+  if (status === 401 || err.code === 'invalid_api_key') {
+    return { status: 401, error: 'Chave de API da OpenAI inválida ou sem permissão.' };
+  }
+  if (status === 429) {
+    return { status: 429, error: 'Limite de requisições da OpenAI atingido. Aguarde 1 minuto e tente novamente.' };
+  }
+  if (status === 400 && msg.includes('billing')) {
+    return { status: 402, error: 'Conta OpenAI sem créditos. Verifique seu saldo em platform.openai.com.' };
+  }
+  if (msg.toLowerCase().includes('content_policy') || msg.toLowerCase().includes('safety')) {
+    return { status: 400, error: 'A imagem foi recusada pela política de conteúdo da OpenAI. Use outra imagem do produto.' };
+  }
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return { status: 413, error: 'Imagem muito grande. Use imagens de até 10MB.' };
+  }
+  if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || status === 504) {
+    return { status: 504, error: 'Tempo limite excedido. Tente novamente.' };
+  }
+  if (msg.includes('Falha ao interpretar') || msg.includes('Resposta da IA')) {
+    return { status: 500, error: msg };
+  }
+  return { status: 500, error: 'Erro ao processar o produto. Tente novamente em instantes.' };
+}
+
 /**
  * POST /api/generate
  * Body: multipart/form-data { image, title, description }
  */
 router.post('/generate', upload.single('image'), async (req, res) => {
   try {
-    // API key lives in the server environment — never sent by the client
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({
-        error: 'Servidor não configurado. Entre em contato com o suporte.',
-      });
+      return res.status(500).json({ error: 'Servidor não configurado. Contate o suporte.' });
     }
 
-    // --- Validate required fields ---
     const { title, description } = req.body;
     if (!req.file) {
       return res.status(400).json({ error: 'Imagem do produto é obrigatória.' });
@@ -43,59 +66,28 @@ router.post('/generate', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'Descrição do produto é obrigatória.' });
     }
 
-    // Convert image buffer to base64
     const imageBase64 = req.file.buffer.toString('base64');
     const mimeType = req.file.mimetype;
 
-    // Step 1: Analyze image + generate optimized text
-    console.log('[generate] Running GPT-4o text optimization...');
+    console.log(`[generate] Starting for: "${title.trim()}"`);
+
+    // Step 1 — GPT-4o Vision: analyze image + generate optimized text
     const { optimizedTitle, optimizedDescription, productCategory, keywords } =
       await generateOptimizedText(imageBase64, mimeType, title.trim(), description.trim(), apiKey);
 
-    // Step 2: Generate 6 product images with DALL-E 3
-    console.log('[generate] Generating 6 images with DALL-E 3...');
+    console.log(`[generate] Text done. Category: ${productCategory}. Generating 6 images...`);
+
+    // Step 2 — DALL-E 3: generate 6 images sequentially
     const images = await generateProductImages(optimizedTitle, productCategory, keywords, apiKey);
 
-    res.json({
-      optimizedTitle,
-      optimizedDescription,
-      productCategory,
-      keywords,
-      images,
-    });
+    console.log(`[generate] Done. ${images.length} images generated.`);
+
+    res.json({ optimizedTitle, optimizedDescription, productCategory, keywords, images });
+
   } catch (err) {
-    console.error('[generate] Error:', err.message);
-
-    // Map OpenAI error codes to user-friendly messages
-    if (err.status === 401 || err.code === 'invalid_api_key') {
-      return res.status(401).json({
-        error: 'Chave de API inválida. Verifique sua OpenAI API Key.',
-      });
-    }
-    if (err.status === 429) {
-      return res.status(429).json({
-        error: 'Limite de requisições atingido. Aguarde alguns segundos e tente novamente.',
-      });
-    }
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(413).json({
-        error: 'Imagem muito grande. Use imagens até 10MB.',
-      });
-    }
-    if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT') {
-      return res.status(504).json({
-        error: 'O processo demorou mais que o esperado. Tente novamente.',
-      });
-    }
-    if (err.message && err.message.includes('content_policy')) {
-      return res.status(400).json({
-        error: 'Imagem recusada pela política de conteúdo da OpenAI. Use outra imagem.',
-      });
-    }
-
-    res.status(500).json({
-      error: err.message || 'Erro ao processar produto. Tente novamente.',
-    });
+    console.error('[generate] Error:', err.status || '', err.message);
+    const { status, error } = mapOpenAIError(err);
+    res.status(status).json({ error });
   }
 });
 

@@ -7,12 +7,12 @@ Sempre responda em português brasileiro.
 Retorne APENAS um JSON válido, sem markdown, sem explicações fora do JSON.`;
 
 /**
- * Analyzes product image with GPT-4o vision and returns optimized text content.
+ * Analyzes product image with GPT-4o vision and returns optimized text + metadata.
  * @param {string} imageBase64 - Base64-encoded product image
  * @param {string} mimeType - Image MIME type (e.g. image/jpeg)
  * @param {string} title - Original product title
  * @param {string} description - Original product description
- * @param {string} apiKey - OpenAI API key from client
+ * @param {string} apiKey - OpenAI API key
  * @returns {{ optimizedTitle, optimizedDescription, productCategory, keywords }}
  */
 async function generateOptimizedText(imageBase64, mimeType, title, description, apiKey) {
@@ -27,13 +27,15 @@ Com base na análise visual da imagem e nas informações acima, retorne um JSON
 {
   "optimizedTitle": "título aqui com palavras-chave SEO Shopee, máx 120 caracteres",
   "optimizedDescription": "descrição completa aqui com emojis, bullets e CTA, mínimo 300 palavras",
-  "productCategory": "categoria identificada",
+  "productCategory": "categoria identificada em português",
   "keywords": ["palavra1", "palavra2", "palavra3", "palavra4", "palavra5"]
 }
 
-Para o título: inclua as palavras-chave mais buscadas na Shopee para esse tipo de produto. Máximo 120 caracteres.
-Para a descrição: use emojis estratégicos (✅ ⭐ 🔥 📦 🎁 💎 etc), bullets com benefícios claros, especificações técnicas, informações de entrega/garantia, e CTA forte no final. Mínimo 300 palavras.
-Para keywords: identifique os 5 termos mais buscados na Shopee para esse produto.`;
+Regras obrigatórias:
+- optimizedTitle: máximo 120 caracteres, com as palavras-chave mais buscadas na Shopee para esse tipo de produto
+- optimizedDescription: mínimo 300 palavras, estruturada com emojis estratégicos (✅ ⭐ 🔥 📦 🎁 💎 🛡️ 🚀), seções com bullets de benefícios, especificações técnicas, garantia/entrega, e CTA forte no final
+- productCategory: categoria em português (ex: "Ferramentas Elétricas", "Eletrônicos", "Moda Feminina")
+- keywords: 5 termos exatos mais buscados na Shopee Brasil para esse produto`;
 
   const response = await client.chat.completions.create({
     model: 'gpt-4o',
@@ -53,24 +55,40 @@ Para keywords: identifique os 5 termos mais buscados na Shopee para esse produto
         ],
       },
     ],
-    max_tokens: 2000,
-    temperature: 0.7,
+    max_tokens: 3000,
+    temperature: 0.5,
   });
 
   const rawContent = response.choices[0].message.content.trim();
 
   // Strip markdown code fences if model wraps the JSON
-  const jsonString = rawContent.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
+  const jsonString = rawContent
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/, '')
+    .trim();
 
   let parsed;
   try {
     parsed = JSON.parse(jsonString);
   } catch {
-    throw new Error('A IA retornou um formato inesperado. Tente novamente.');
+    // Last-resort: try to extract JSON with a regex
+    const match = jsonString.match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        parsed = JSON.parse(match[0]);
+      } catch {
+        throw new Error('Falha ao interpretar resposta da IA. Tente novamente.');
+      }
+    } else {
+      throw new Error('Falha ao interpretar resposta da IA. Tente novamente.');
+    }
   }
 
-  // Enforce title character limit
-  if (parsed.optimizedTitle && parsed.optimizedTitle.length > 120) {
+  if (!parsed.optimizedTitle || !parsed.optimizedDescription) {
+    throw new Error('Resposta da IA incompleta. Tente novamente.');
+  }
+
+  if (parsed.optimizedTitle.length > 120) {
     parsed.optimizedTitle = parsed.optimizedTitle.substring(0, 120);
   }
 
