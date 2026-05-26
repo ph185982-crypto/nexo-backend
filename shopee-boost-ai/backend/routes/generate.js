@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const { searchShopeeKeywords } = require('../services/keywordService');
 const { generateOptimizedText } = require('../services/textService');
 const { generateProductImages } = require('../services/imageService');
 
@@ -41,12 +42,12 @@ function mapOpenAIError(err) {
   if (msg.includes('Falha ao interpretar') || msg.includes('Resposta da IA')) {
     return { status: 500, error: msg };
   }
-  return { status: 500, error: 'Erro ao processar o produto. Tente novamente em instantes.' };
+  return { status: 500, error: `Erro ao processar o produto: ${msg || 'tente novamente.'}` };
 }
 
 /**
  * POST /api/generate
- * Body: multipart/form-data { image, title, description }
+ * Body: multipart/form-data { image (PNG preferred), title, description }
  */
 router.post('/generate', upload.single('image'), async (req, res) => {
   try {
@@ -66,23 +67,58 @@ router.post('/generate', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'Descrição do produto é obrigatória.' });
     }
 
-    const imageBase64 = req.file.buffer.toString('base64');
+    const imageBuffer = req.file.buffer;
+    const imageBase64 = imageBuffer.toString('base64');
     const mimeType = req.file.mimetype;
 
-    console.log(`[generate] Starting for: "${title.trim()}"`);
+    console.log(`[generate] Starting for: "${title.trim()}" (${mimeType}, ${imageBuffer.length} bytes)`);
 
-    // Step 1 — GPT-4o Vision: analyze image + generate optimized text
-    const { optimizedTitle, optimizedDescription, productCategory, keywords } =
-      await generateOptimizedText(imageBase64, mimeType, title.trim(), description.trim(), apiKey);
+    // Step 1 — Shopee keyword search (best-effort, empty array on failure)
+    const shopeeKeywords = await searchShopeeKeywords(title.trim());
+    console.log(`[generate] Shopee keywords: ${shopeeKeywords.length > 0 ? shopeeKeywords.join(', ') : 'none (using GPT-4o keywords)'}`);
 
-    console.log(`[generate] Text done. Category: ${productCategory}. Generating 6 images...`);
+    // Step 2 — GPT-4o Vision: analyze image + generate all text + visual description
+    const {
+      optimizedTitle,
+      optimizedDescription,
+      productCategory,
+      keywords,
+      productVisualDescription,
+      differentials,
+      purchaseObjections,
+      sellerTrustPoints,
+    } = await generateOptimizedText(
+      imageBase64,
+      mimeType,
+      title.trim(),
+      description.trim(),
+      shopeeKeywords,
+      apiKey
+    );
 
-    // Step 2 — DALL-E 3: generate 6 images sequentially
-    const images = await generateProductImages(optimizedTitle, productCategory, keywords, apiKey);
+    console.log(`[generate] Text done. Category: ${productCategory}. Generating 5 images...`);
+
+    // Step 3 — gpt-image-1 via images.edit: 5 images using product photo as reference
+    const images = await generateProductImages(
+      imageBuffer,
+      mimeType,
+      productVisualDescription,
+      productCategory,
+      differentials,
+      purchaseObjections,
+      sellerTrustPoints,
+      apiKey
+    );
 
     console.log(`[generate] Done. ${images.length} images generated.`);
 
-    res.json({ optimizedTitle, optimizedDescription, productCategory, keywords, images });
+    res.json({
+      optimizedTitle,
+      optimizedDescription,
+      productCategory,
+      keywords,
+      images,
+    });
 
   } catch (err) {
     console.error('[generate] Error:', err.status || '', err.message);

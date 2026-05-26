@@ -3,12 +3,11 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 const IMAGE_LABELS = [
-  { label: 'Principal', emoji: '⭐', desc: 'Fundo branco, estilo e-commerce' },
-  { label: 'Lifestyle', emoji: '🌟', desc: 'Uso real / contexto de vida' },
-  { label: 'Detalhes', emoji: '🔍', desc: 'Close-up e diferenciais' },
-  { label: 'Benefícios', emoji: '✅', desc: 'Layout visual de vantagens' },
-  { label: 'Destaque', emoji: '🔥', desc: 'Fundo colorido Shopee style' },
-  { label: 'Embalagem', emoji: '📦', desc: 'Packaging e entrega' },
+  { label: 'Principal', emoji: '⭐', desc: 'Fundo branco profissional' },
+  { label: 'Em Uso', emoji: '👤', desc: 'Produto sendo utilizado' },
+  { label: 'Diferenciais', emoji: '💎', desc: 'Diferenciais do produto' },
+  { label: 'Objeções', emoji: '✅', desc: 'Quebrando objeções de compra' },
+  { label: 'Por Nós', emoji: '🏆', desc: 'Por que comprar conosco' },
 ];
 
 function dataUrlToBlob(dataUrl) {

@@ -2,10 +2,38 @@ import { useState, useRef, useCallback } from 'react';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+// Convert any image to a 1024x1024 PNG (required by gpt-image-1 images.edit)
+async function convertToPng(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const size = 1024;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      const scale = Math.min(size / img.width, size / img.height);
+      const x = (size - img.width * scale) / 2;
+      const y = (size - img.height * scale) / 2;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+      canvas.toBlob((blob) => {
+        resolve(new File([blob], 'product.png', { type: 'image/png' }));
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    };
+    img.onerror = () => resolve(file); // fallback: send original
+    img.src = url;
+  });
+}
+
 export default function UploadForm({ onSubmit, loading }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
+  const [converting, setConverting] = useState(false);
   const [preview, setPreview] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -56,7 +84,7 @@ export default function UploadForm({ onSubmit, loading }) {
     return errors;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errors = validate();
     if (Object.keys(errors).length > 0) {
@@ -64,7 +92,13 @@ export default function UploadForm({ onSubmit, loading }) {
       return;
     }
     setFieldErrors({});
-    onSubmit({ image, title, description });
+    setConverting(true);
+    try {
+      const pngImage = await convertToPng(image);
+      onSubmit({ image: pngImage, title, description });
+    } finally {
+      setConverting(false);
+    }
   }
 
   function removeImage() {
@@ -172,10 +206,15 @@ export default function UploadForm({ onSubmit, loading }) {
       {/* Submit */}
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || converting}
         className="btn-primary w-full text-base flex items-center justify-center gap-2"
       >
-        {loading ? (
+        {converting ? (
+          <>
+            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Preparando imagem...
+          </>
+        ) : loading ? (
           <>
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             Gerando assets...
