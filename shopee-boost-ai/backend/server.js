@@ -25,7 +25,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'x-openai-key'],
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -34,6 +34,8 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api', generateRouter);
+const marketAnalysisRouter = require('./routes/marketAnalysis');
+app.use('/api', marketAnalysisRouter);
 
 // Global error handler
 app.use((err, req, res, next) => {

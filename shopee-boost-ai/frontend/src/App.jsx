@@ -3,10 +3,12 @@ import axios from 'axios';
 import UploadForm from './components/UploadForm.jsx';
 import ResultPanel from './components/ResultPanel.jsx';
 import LoadingOverlay from './components/LoadingOverlay.jsx';
+import MarketAnalysis from './components/MarketAnalysis.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export default function App() {
+  const [tab, setTab] = useState('generator');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -50,13 +52,37 @@ export default function App() {
       {/* Header */}
       <header className="border-b border-dark-700 bg-dark-800/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-shopee-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-              SB
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-shopee-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                SB
+              </div>
+              <span className="font-bold text-white text-lg tracking-tight">
+                ShopeeBoost <span className="text-shopee-500">AI</span>
+              </span>
             </div>
-            <span className="font-bold text-white text-lg tracking-tight">
-              ShopeeBoost <span className="text-shopee-500">AI</span>
-            </span>
+            <nav className="hidden sm:flex gap-1 bg-dark-700 rounded-xl p-1">
+              <button
+                onClick={() => setTab('generator')}
+                className={
+                  tab === 'generator'
+                    ? 'bg-shopee-500 text-white px-4 py-1.5 rounded-lg text-sm font-semibold'
+                    : 'text-gray-400 hover:text-white px-4 py-1.5 rounded-lg text-sm transition-colors'
+                }
+              >
+                🚀 Gerar Assets
+              </button>
+              <button
+                onClick={() => setTab('market')}
+                className={
+                  tab === 'market'
+                    ? 'bg-shopee-500 text-white px-4 py-1.5 rounded-lg text-sm font-semibold'
+                    : 'text-gray-400 hover:text-white px-4 py-1.5 rounded-lg text-sm transition-colors'
+                }
+              >
+                📊 Análise de Mercado
+              </button>
+            </nav>
           </div>
           <div className="text-xs text-gray-500 hidden sm:block">
             Powered by GPT-4o + DALL-E 3
@@ -70,42 +96,86 @@ export default function App() {
           <div className="inline-flex items-center gap-2 bg-shopee-500/10 border border-shopee-500/30 text-shopee-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
             <span>🚀</span> IA para Shopee Brasil
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight">
-            Crie assets de produto{' '}
-            <span className="text-shopee-500">otimizados</span> para a Shopee
-          </h1>
-          <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
-            Envie a foto do produto, e a IA gera título SEO, descrição persuasiva e 6 imagens profissionais prontas para publicar.
-          </p>
+          {tab === 'generator' ? (
+            <>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight">
+                Crie assets de produto{' '}
+                <span className="text-shopee-500">otimizados</span> para a Shopee
+              </h1>
+              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+                Envie a foto do produto, e a IA gera título SEO, descrição persuasiva e 6 imagens profissionais prontas para publicar.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight">
+                Análise de Mercado{' '}
+                <span className="text-shopee-500">Shopee Brasil</span>
+              </h1>
+              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+                Descubra tendências, palavras-chave e produtos mais vendidos — inteligência de mercado gerada por GPT-4o.
+              </p>
+            </>
+          )}
+
+          {/* Mobile tab bar */}
+          <div className="sm:hidden flex gap-2 justify-center mt-6">
+            <button
+              onClick={() => setTab('generator')}
+              className={`flex-1 max-w-[160px] px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                tab === 'generator'
+                  ? 'bg-shopee-500 text-white'
+                  : 'bg-dark-700 border border-dark-500 text-gray-400'
+              }`}
+            >
+              🚀 Gerar Assets
+            </button>
+            <button
+              onClick={() => setTab('market')}
+              className={`flex-1 max-w-[180px] px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                tab === 'market'
+                  ? 'bg-shopee-500 text-white'
+                  : 'bg-dark-700 border border-dark-500 text-gray-400'
+              }`}
+            >
+              📊 Análise de Mercado
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl flex items-start gap-3 animate-fade-in">
-            <span className="text-lg flex-shrink-0">⚠️</span>
-            <p className="text-sm">{error}</p>
-          </div>
+        {tab === 'generator' && (
+          <>
+            {error && (
+              <div className="mb-6 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl flex items-start gap-3 animate-fade-in">
+                <span className="text-lg flex-shrink-0">⚠️</span>
+                <p className="text-sm">{error}</p>
+              </div>
+            )}
+
+            <div className={`grid gap-8 ${result ? 'lg:grid-cols-[420px_1fr]' : 'max-w-2xl mx-auto'}`}>
+              {/* Left: Form */}
+              <div className={result ? '' : 'w-full'}>
+                <UploadForm onSubmit={handleGenerate} loading={loading} />
+              </div>
+
+              {/* Right: Results */}
+              {result && (
+                <div className="animate-slide-up">
+                  <ResultPanel result={result} />
+                </div>
+              )}
+            </div>
+          </>
         )}
 
-        <div className={`grid gap-8 ${result ? 'lg:grid-cols-[420px_1fr]' : 'max-w-2xl mx-auto'}`}>
-          {/* Left: Form */}
-          <div className={result ? '' : 'w-full'}>
-            <UploadForm onSubmit={handleGenerate} loading={loading} />
-          </div>
-
-          {/* Right: Results */}
-          {result && (
-            <div className="animate-slide-up">
-              <ResultPanel result={result} />
-            </div>
-          )}
-        </div>
+        {tab === 'market' && <MarketAnalysis />}
       </main>
 
-      {/* Loading overlay */}
-      {loading && <LoadingOverlay />}
+      {/* Loading overlay (generator only) */}
+      {loading && tab === 'generator' && <LoadingOverlay />}
 
       {/* Footer */}
       <footer className="mt-16 border-t border-dark-700 py-6 text-center text-gray-600 text-xs">
