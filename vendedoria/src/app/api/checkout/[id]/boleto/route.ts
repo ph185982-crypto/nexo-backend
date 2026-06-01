@@ -45,7 +45,7 @@ export async function POST(
     },
   });
 
-  const descricao = `Rastreador GPS 2 em 1 — ${config.businessName}`;
+  const descricao = `${checkout.produto ?? config.businessName}`;
   const boleto = await criarBoleto({
     pedidoId: checkout.id,
     valor: checkout.valorProduto,

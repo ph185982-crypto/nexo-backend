@@ -17,17 +17,17 @@ const STEP_INTERVALS_MS: Record<number, number> = {
   4: 72 * 60 * 60 * 1000,   // step 4 — 72h
 };
 
-// ── Mensagens por step (CORREÇÃO 3) ──────────────────────────────────────────
+// ── Mensagens por step ───────────────────────────────────────────────────────
 function buildFollowupMessage(step: number, name: string | null): string[] {
   switch (step) {
     case 1: return [
-      "oi! ficou alguma dúvida sobre o rastreador?",
+      "oi! ficou alguma dúvida?",
       "pode perguntar à vontade 😊",
     ];
     case 2: return [
-      "lembrei de te falar uma coisa",
-      "o rastreador funciona tanto no Android quanto no iPhone",
-      "e não precisa de mensalidade — é só comprar e usar",
+      "lembrei de você",
+      "qualquer coisa que quiser saber é só chamar",
+      "tô por aqui 👊",
     ];
     case 3: return [
       "ainda tenho unidades disponíveis",
@@ -36,7 +36,7 @@ function buildFollowupMessage(step: number, name: string | null): string[] {
     ];
     case 4: return [
       "tudo bem, não vou mais te incomodar 😄",
-      "se um dia precisar de um rastreador GPS aqui no Brasil",
+      "se um dia precisar",
       name ? `pode me chamar que a gente resolve — abraço ${name}! 👊` : "pode me chamar que a gente resolve — abraço! 👊",
     ];
     default: return [];
