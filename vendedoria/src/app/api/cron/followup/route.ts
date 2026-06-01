@@ -117,17 +117,17 @@ async function generateFollowupMessage(
 function fallbackFollowupMessage(step: number, totalSteps: number, name: string | null): string[] {
   const isLast = step >= totalSteps;
   if (step === 1) return [
-    "oi! ficou alguma dúvida sobre o rastreador?",
+    "oi! ficou alguma dúvida?",
     "pode perguntar à vontade 😊",
   ];
   if (step === 2) return [
-    "lembrei de te falar uma coisa",
-    "o rastreador funciona tanto no Android quanto no iPhone",
-    "e não precisa de mensalidade — é só comprar e usar",
+    "lembrei de você",
+    "qualquer coisa que quiser saber é só chamar",
+    "tô por aqui 👊",
   ];
   if (isLast) return [
     "tudo bem, não vou mais te incomodar 😄",
-    "se um dia precisar de um rastreador GPS aqui no Brasil",
+    "se um dia precisar",
     name ? `pode me chamar que a gente resolve — abraço ${name}! 👊` : "pode me chamar que a gente resolve — abraço! 👊",
   ];
   return [

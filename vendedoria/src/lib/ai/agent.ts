@@ -548,23 +548,11 @@ function buildSessaoContext(
     lines.push(`--- FIM DOS DADOS COLETADOS ---`);
   }
 
-  // Regra de fechamento — CEP só após confirmação (CORREÇÃO 5)
+  // Regra de fechamento — CEP só após confirmação
   lines.push(`\nREGRA DE FECHAMENTO:`);
   lines.push(`NUNCA pedir CEP ou endereço sem antes receber confirmação explícita de compra.`);
   lines.push(`Confirmação explícita = cliente disse "sim", "quero", "fecha", "bora", "pode ser", "fechado".`);
   lines.push(`Sequência correta: 1. CTA de fechamento → 2. Aguardar confirmação → 3. APÓS confirmação → pedir CEP`);
-
-  // Especificações técnicas GPS (CORREÇÃO 6)
-  lines.push(`\nESPECIFICAÇÕES TÉCNICAS DO RASTREADOR GPS:`);
-  lines.push(`COMO FUNCIONA: Rede passiva Apple (Find My) e Google (Find Hub). Sem chip de dados próprio — emite Bluetooth captado por celulares próximos que enviam a localização ao app sem que o dono saiba.`);
-  lines.push(`COBERTURA: Funciona onde há celulares por perto. Em áreas remotas sem celulares próximos pode não localizar.`);
-  lines.push(`PRECISÃO: ~10 a 100 metros dependendo da densidade de dispositivos próximos.`);
-  lines.push(`CHIP DE DADOS: NÃO tem chip de dados próprio. Depende exclusivamente da rede passiva.`);
-  lines.push(`COMPATIBILIDADE: iOS (Find My) e Android (Find Hub). Precisa baixar o app gratuito.`);
-  lines.push(`INSTALAÇÃO: Plug and play no acendedor do carro. Sem fio, sem instalação técnica.`);
-  lines.push(`MENSALIDADE: Sem mensalidade.`);
-  lines.push(`SE ROUBADO: Localiza enquanto o ladrão passa por outros celulares no trajeto.`);
-  lines.push(`NUNCA afirmar que "funciona em qualquer lugar" — a cobertura depende de celulares próximos.`);
 
   return lines.join("\n");
 }
@@ -1218,8 +1206,8 @@ export async function processAIResponse(
             telefoneCliente: to,
             conversationId,
             nomeCliente: (sessaoNacional.nomeCliente as string | undefined) ?? lead?.profileName ?? undefined,
-            produto: produtosContexto[0]?.nome ?? "Rastreador GPS 2 em 1",
-            valorProduto: produtosContexto[0]?.preco ?? 197,
+            produto: produtosContexto[0]?.nome ?? undefined,
+            valorProduto: produtosContexto[0]?.preco ?? undefined,
             cep: (sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? undefined,
             enderecoCompleto: (sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? undefined,
           }),
@@ -1256,8 +1244,8 @@ export async function processAIResponse(
         `🛒 *CLIENTE NO CHECKOUT*\n\n` +
         `👤 Nome: ${(sessaoNacional.nomeCliente as string | undefined) ?? lead?.profileName ?? "Não informado"}\n` +
         `📱 WhatsApp: ${to}\n` +
-        `📦 Produto: ${produtosContexto[0]?.nome ?? "Rastreador GPS 2 em 1"}\n` +
-        `💵 Valor: R$ ${produtosContexto[0]?.preco?.toFixed(2).replace(".", ",") ?? "197,00"}\n` +
+        `📦 Produto: ${produtosContexto[0]?.nome ?? "Não informado"}\n` +
+        `💵 Valor: R$ ${produtosContexto[0]?.preco?.toFixed(2).replace(".", ",") ?? "—"}\n` +
         `📍 CEP: ${(sessaoNacional.cep as string | undefined) ?? collectedData.cep ?? "Não informado"}\n` +
         `📮 Endereço: ${(sessaoNacional.enderecoCompleto as string | undefined) ?? collectedData.endereco ?? "Não informado"}\n` +
         (checkoutUrl ? `\n🔗 Link checkout: ${checkoutUrl}\n` : `\n⚡ Envie link manualmente para: wa.me/${to}\n`) +
@@ -1398,8 +1386,8 @@ export async function processAIResponse(
             conversationId,
             telefoneCliente: to,
             nomeCliente,
-            produto: produto?.nome ?? "Rastreador GPS 2 em 1",
-            valorProduto: produto?.preco ?? 197,
+            produto: produto?.nome ?? undefined,
+            valorProduto: produto?.preco ?? undefined,
             cep: cepDestino,
             enderecoCompleto,
           }),
@@ -1414,11 +1402,11 @@ export async function processAIResponse(
           }).catch(() => {});
           await cancelFollowUpJobs(conversationId).catch(() => {});
 
-          const valorStr = produto ? `R$ ${produto.preco.toFixed(2).replace(".", ",")}` : "R$ 197,00";
+          const valorStr = produto ? `R$ ${produto.preco.toFixed(2).replace(".", ",")}` : "";
 
           await new Promise((r) => setTimeout(r, 800));
           await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
-            `🛒 *Seu link de pagamento está pronto!*\n\n📦 ${produto?.nome ?? "Rastreador GPS 2 em 1"}\n💰 ${valorStr} — frete grátis`,
+            `🛒 *Seu link de pagamento está pronto!*\n\n📦 ${produto?.nome ?? ""}${valorStr ? `\n💰 ${valorStr} — frete grátis` : ""}`.trim(),
             token);
           await new Promise((r) => setTimeout(r, 1000));
           await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
