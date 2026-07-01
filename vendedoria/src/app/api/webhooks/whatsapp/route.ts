@@ -233,6 +233,15 @@ async function handleIncomingMessage(
       organizationId: providerConfig.organizationId,
       OR: [{ phoneNumber: phone }, { phoneNumber: message.from }],
     },
+    select: {
+      id: true,
+      phoneNumber: true,
+      profileName: true,
+      leadOrigin: true,
+      organizationId: true,
+      kanbanColumnId: true,
+      prospectLeadId: true,
+    },
   });
 
   if (!lead) {
@@ -278,6 +287,15 @@ async function handleIncomingMessage(
         lastMessageAt: sentAt,
       },
     });
+  }
+
+  // Atualiza ProspectLead ABORDADO → RESPONDEU quando o lead responde
+  if ((lead as typeof lead & { prospectLeadId?: string | null })?.prospectLeadId) {
+    const plId = (lead as typeof lead & { prospectLeadId?: string | null }).prospectLeadId!;
+    prisma.prospectLead.updateMany({
+      where: { id: plId, status: "ABORDADO" },
+      data: { status: "RESPONDEU" },
+    }).catch(() => {});
   }
 
   const alreadyProcessed = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });

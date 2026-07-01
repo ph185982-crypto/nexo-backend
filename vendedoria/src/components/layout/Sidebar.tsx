@@ -54,6 +54,7 @@ const navItems = [
   { href: "/crm/pedidos",              label: "Pedidos Nacionais", icon: Globe },
   { href: "/crm/financeiro",           label: "Financeiro",        icon: Wallet },
   { href: "/crm/prospeccao/fila",      label: "Prospecção B2B",    icon: Users },
+  { href: "/crm/prospeccao/dashboard", label: "Funil Prospecção",  icon: BarChart2 },
 ];
 
 export function Sidebar({
