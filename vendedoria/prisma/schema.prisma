@@ -66,6 +66,7 @@ model WhatsappBusinessOrganization {
   documentId   String
   documentType String   // CNPJ | CPF
   status       String   @default("ACTIVE") // ACTIVE | INACTIVE
+  tipo         String   @default("VENDAS") // VENDAS | PROSPECCAO
   accounts     WhatsappProviderConfig[]
   leads        Lead[]
   campaigns    Campaign[]
@@ -76,6 +77,7 @@ model WhatsappBusinessOrganization {
   products              Product[]
   ownerNotifications    OwnerNotification[]
   aiConfig              AiConfig?
+  prospectLeads         ProspectLead[]
   financialProfiles     FinancialProfile[]
   financialAccounts     FinancialAccount[]
   financialCategories   FinancialCategory[]
@@ -246,6 +248,8 @@ model Lead {
   tags           LeadTag[]
   calendarEvents CalendarEvent[]
   notes          LeadNote[]
+  prospectLead   ProspectLead? @relation(fields: [prospectLeadId], references: [id])
+  prospectLeadId String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
@@ -325,6 +329,7 @@ model WhatsappConversation {
   horarioEntrega     String?
   formaPagamento     String?
   sessaoNacional     Json?                           // dados do fluxo de venda nacional
+  sessaoProspeccao   Json?                           // dados do fluxo de prospecção B2B
   midiasEnviadas     Json?    @default("[]")          // slugs de mídia já enviados nesta conversa
 
   createdAt                  DateTime @default(now())
@@ -942,6 +947,27 @@ model Checkout {
 
   @@index([conversationId])
   @@index([telefoneCliente])
+}
+
+// ─── ProspectLead (B2B Prospecção Nexos Brasil) ────────────────────────────────
+
+model ProspectLead {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  organization          WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  leads                 Lead[]
+  status                String   @default("NOVO") // NOVO | QUALIFICADO | REUNIAO_AGENDADA | DESQUALIFICADO | PERDIDO
+  tipoNegocio           String?  // tipo de negócio do prospect
+  urgencia              String?  // baixa | media | alta
+  sinalOportunidade     String?  @db.Text
+  notas                 String?  @db.Text
+  dataHoraReuniao       DateTime?
+  googleCalendarEventId String?
+  googleMeetLink        String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([organizationId, status])
 }
 
 model OfertaGerada {

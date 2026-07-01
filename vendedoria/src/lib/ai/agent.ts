@@ -7,6 +7,8 @@ import { enqueueFollowUp, cancelFollowUpJobs } from "@/lib/queue/followup-queue"
 import { notificarPassagem, notificarLeadQuente, notificarEscalacao } from "@/lib/push/notificar";
 import { buscarProdutosAtivos, formatarProdutosParaContexto } from "@/lib/ai/contexto-produtos";
 import { buscarSessaoNacional, atualizarSessaoNacional } from "@/lib/ai/sessao-nacional";
+import { buscarSessaoProspeccao, atualizarSessaoProspeccao, type SessaoProspeccao } from "@/lib/ai/sessao-prospeccao";
+import { criarEventoReuniao, verificarDisponibilidade, buscarSlotsDisponiveis } from "@/lib/integrations/google-calendar";
 import { config } from "@/lib/config/env";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
@@ -567,7 +569,7 @@ export async function processAIResponse(
   incomingMessageId?: string
 ): Promise<void> {
   try {
-    const [recentMessages, conversation, sessaoNacionalDb] = await Promise.all([
+    const [recentMessages, conversation, sessaoNacionalDb, sessaoProspeccaoDb] = await Promise.all([
       prisma.whatsappMessage.findMany({
         where: { conversationId },
         orderBy: { sentAt: "desc" },
@@ -575,9 +577,10 @@ export async function processAIResponse(
       }),
       prisma.whatsappConversation.findUnique({
         where: { id: conversationId },
-        include: { provider: true, lead: true },
+        include: { provider: { include: { organization: { select: { tipo: true } } } }, lead: true },
       }),
       buscarSessaoNacional(conversationId),
+      buscarSessaoProspeccao(conversationId),
     ]);
 
     if (!conversation) return;
@@ -644,6 +647,7 @@ export async function processAIResponse(
     // ── Contexto ──────────────────────────────────────────────────────────────
     const lead = conversation.lead;
     const orgId = conversation.provider.organizationId;
+    const orgTipo: string = (conversation.provider as typeof conversation.provider & { organization?: { tipo?: string } }).organization?.tipo ?? "VENDAS";
 
     // Contagem de mensagens trocadas (para detectar etapa da conversa)
     const msgCount = recentMessages.length;
@@ -846,6 +850,22 @@ export async function processAIResponse(
       recentMessages.slice().reverse().map((m) => ({ role: m.role, content: m.content }))
     );
 
+    // ── Sessão de prospecção B2B ──────────────────────────────────────────────
+    const sessaoProspeccao: SessaoProspeccao = { ...sessaoProspeccaoDb };
+
+    // Atualiza campos de prospecção extraídos da mensagem
+    if (orgTipo === "PROSPECCAO") {
+      // Extrai nome da empresa se mencionado
+      if (!sessaoProspeccao.empresaNome) {
+        const empresaMatch = userMessage.match(/(?:empresa|negócio|negocio|firma|loja|escritório|escritorio)[:\s]+([A-Z][^,.\n]{2,40})/i);
+        if (empresaMatch) {
+          const nome = empresaMatch[1].trim();
+          void atualizarSessaoProspeccao(conversationId, { empresaNome: nome }).catch(() => {});
+          sessaoProspeccao.empresaNome = nome;
+        }
+      }
+    }
+
     // ── Sessão nacional — mutable copy para atualizar localmente (CORREÇÃO 4) ──
     const sessaoNacional: Record<string, unknown> = { ...sessaoNacionalDb };
     // Detectar motivo de interesse na mensagem atual
@@ -1006,6 +1026,11 @@ export async function processAIResponse(
     // ── PromptCompiler: monta systemPrompt em 6 camadas ──────────────────────
     const now_sp = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
 
+    // Slots de agenda para orgs de prospecção (carregado de forma lazy)
+    const slotsDisponiveis = orgTipo === "PROSPECCAO"
+      ? await buscarSlotsDisponiveis(5).catch(() => [] as Array<{ label: string; inicio: Date; fim: Date }>)
+      : [];
+
     // Build full aiConfig layer including Command Center fields
     const aiConfigLayer = aiConfig ? {
       usarEmoji:            aiConfig.usarEmoji,
@@ -1032,7 +1057,10 @@ export async function processAIResponse(
       messageCount: msgCount,
       isFirstInteraction,
       etapa: conversation.etapa,
-      detectedProducts, // Camada 5 — catálogo real
+      detectedProducts, // Camada 5 — catálogo real (ignorada em PROSPECCAO)
+      organizationTipo: orgTipo,
+      slotsDisponiveis,
+      sessaoProspeccao,
     });
     const flagsRuntimeSection = "\n\n[AUDIO:texto] — envia mensagem de voz TTS. Use para mensagens pessoais ou quando o cliente preferir áudio.";
     const sessaoContext = buildSessaoContext(sessaoNacional, collectedData);
@@ -1094,6 +1122,7 @@ export async function processAIResponse(
         .replace(/\[PEDIDO_NACIONAL\]/gi, "")
         .replace(/\[CHECKOUT\]/gi, "")
         .replace(/\[AGUARDANDO_PAGAMENTO\]/gi, "")
+        .replace(/\[REUNIAO_AGENDADA\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1259,6 +1288,108 @@ export async function processAIResponse(
       await cancelFollowUpJobs(conversationId).catch(() => {});
       console.log(`[PAGAMENTO] Checkout enviado + Pedro notificado — IA pausada para conv ${conversationId}`);
       return;
+    }
+
+    // ── [REUNIAO_AGENDADA] — cria evento no Google Calendar, notifica Pedro ───
+    if (/\[REUNIAO_AGENDADA\]/i.test(combinedRaw) && orgTipo === "PROSPECCAO") {
+      console.log(`[AI Agent] 🔔 [REUNIAO_AGENDADA] | conv ${conversationId} | prospect ${to}`);
+
+      try {
+        // Extrai data/hora preferida da sessão de prospecção
+        const dataHoraStr = sessaoProspeccao.dataHoraPreferida;
+        const dataHoraInicio = dataHoraStr ? new Date(dataHoraStr) : (() => {
+          // Fallback: próximo dia útil às 10h
+          const d = new Date();
+          d.setDate(d.getDate() + 1);
+          if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+          if (d.getDay() === 6) d.setDate(d.getDate() + 2);
+          d.setHours(10, 0, 0, 0);
+          return d;
+        })();
+
+        const nomeNegocio = sessaoProspeccao.empresaNome ?? lead?.profileName ?? to;
+
+        // Verifica disponibilidade antes de criar
+        const disponivel = await verificarDisponibilidade(dataHoraInicio, 30).catch(() => true);
+        if (!disponivel) {
+          console.warn(`[REUNIAO_AGENDADA] Horário ocupado — aguardando reagendamento | conv ${conversationId}`);
+          await sendWhatsAppMessage(provider.businessPhoneNumberId, to,
+            "esse horário ficou ocupado agora 😅 me diz outra opção que eu confirmo!", token).catch(() => {});
+          await prisma.whatsappMessage.create({
+            data: { content: "esse horário ficou ocupado agora 😅 me diz outra opção que eu confirmo!", type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+          }).catch(() => {});
+          return;
+        }
+
+        const evento = await criarEventoReuniao({
+          nomeNegocio,
+          telefone: to,
+          dataHoraInicio,
+          duracaoMinutos: 30,
+        }).catch(() => null);
+
+        if (evento) {
+          // Salva na sessão e no banco
+          void atualizarSessaoProspeccao(conversationId, { sinalOportunidade: "REUNIAO_AGENDADA" }).catch(() => {});
+
+          // Busca ou cria ProspectLead
+          const leadProspectId = (lead as typeof lead & { prospectLeadId?: string | null })?.prospectLeadId;
+          const existingProspect = leadProspectId
+            ? await prisma.prospectLead.findUnique({ where: { id: leadProspectId } }).catch(() => null)
+            : null;
+
+          if (existingProspect) {
+            await prisma.prospectLead.update({
+              where: { id: existingProspect.id },
+              data: {
+                status: "REUNIAO_AGENDADA",
+                dataHoraReuniao: dataHoraInicio,
+                googleCalendarEventId: evento.eventId,
+                googleMeetLink: evento.meetLink ?? null,
+              },
+            }).catch(() => {});
+          } else {
+            const novoProspect = await prisma.prospectLead.create({
+              data: {
+                organizationId: orgId,
+                status: "REUNIAO_AGENDADA",
+                tipoNegocio: sessaoProspeccao.tipoNegocio ?? null,
+                urgencia: sessaoProspeccao.urgencia ?? null,
+                sinalOportunidade: sessaoProspeccao.sinalOportunidade ?? null,
+                dataHoraReuniao: dataHoraInicio,
+                googleCalendarEventId: evento.eventId,
+                googleMeetLink: evento.meetLink ?? null,
+              },
+            }).catch(() => null);
+
+            if (novoProspect && lead) {
+              await prisma.lead.update({
+                where: { id: lead.id },
+                data: { prospectLeadId: novoProspect.id },
+              }).catch(() => {});
+            }
+          }
+
+          // Notifica Pedro
+          const dataLabel = dataHoraInicio.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
+          const notifMsg =
+            `📅 *REUNIÃO AGENDADA — NEXOS BRASIL*\n\n` +
+            `🏢 Empresa: ${nomeNegocio}\n` +
+            `📱 WhatsApp: ${to}\n` +
+            `🗓️ Data/hora: ${dataLabel}\n` +
+            (sessaoProspeccao.tipoNegocio ? `💼 Tipo de negócio: ${sessaoProspeccao.tipoNegocio}\n` : "") +
+            (evento.meetLink ? `🔗 Google Meet: ${evento.meetLink}\n` : "") +
+            `📋 Evento: ${evento.eventLink}`;
+          await sendWhatsAppMessage(provider.businessPhoneNumberId, config.ownerWhatsapp, notifMsg, token).catch(() => {});
+
+          console.log(`[REUNIAO_AGENDADA] ✅ Evento criado | eventId=${evento.eventId} | conv ${conversationId}`);
+        } else {
+          console.error(`[REUNIAO_AGENDADA] Falha ao criar evento Google Calendar | conv ${conversationId}`);
+        }
+      } catch (e) {
+        console.error("[REUNIAO_AGENDADA] Erro:", e);
+      }
+      // humanTakeover = false — IA continua disponível para reagendamentos
     }
 
     // ── Simular digitação antes da 1ª mensagem ────────────────────────────────

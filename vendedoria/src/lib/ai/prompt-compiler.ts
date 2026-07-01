@@ -62,6 +62,18 @@ export interface PromptCompilerInput {
   messageCount: number;
   isFirstInteraction: boolean;
   etapa: string;
+
+  // Modo prospecção B2B
+  organizationTipo?: string; // VENDAS | PROSPECCAO
+  slotsDisponiveis?: Array<{ label: string }>; // horários disponíveis para reunião
+  sessaoProspeccao?: {
+    tipoNegocio?: string;
+    urgencia?: string;
+    dataHoraPreferida?: string;
+    sinalOportunidade?: string;
+    nomeContato?: string;
+    empresaNome?: string;
+  };
 }
 
 export interface CompiledPrompt {
@@ -234,6 +246,52 @@ function buildObjecoesLayer(
   return lines.join("\n");
 }
 
+// ── Camada 5 Prospecção: Calendário (substitui Catálogo para orgs PROSPECCAO) ────────────
+function buildCalendarioLayer(
+  slots: Array<{ label: string }>,
+  sessao?: {
+    tipoNegocio?: string;
+    urgencia?: string;
+    dataHoraPreferida?: string;
+    sinalOportunidade?: string;
+    nomeContato?: string;
+    empresaNome?: string;
+  },
+): string {
+  const linhas: string[] = [
+    `--- AGENDA — HORÁRIOS DISPONÍVEIS PARA REUNIÃO ---`,
+  ];
+
+  if (slots.length > 0) {
+    linhas.push(`Ofereça ao cliente UM DESTES horários (não todos de vez):`);
+    slots.slice(0, 5).forEach((s, i) => linhas.push(`  ${i + 1}. ${s.label}`));
+  } else {
+    linhas.push(`Nenhum slot pré-carregado — pergunte a disponibilidade do cliente.`);
+  }
+
+  if (sessao) {
+    const itens: string[] = [];
+    if (sessao.tipoNegocio)        itens.push(`Tipo de negócio: ${sessao.tipoNegocio}`);
+    if (sessao.empresaNome)        itens.push(`Empresa: ${sessao.empresaNome}`);
+    if (sessao.nomeContato)        itens.push(`Contato: ${sessao.nomeContato}`);
+    if (sessao.urgencia)           itens.push(`Urgência: ${sessao.urgencia}`);
+    if (sessao.sinalOportunidade)  itens.push(`Sinal de oportunidade: ${sessao.sinalOportunidade}`);
+    if (sessao.dataHoraPreferida)  itens.push(`Preferência do cliente: ${sessao.dataHoraPreferida}`);
+    if (itens.length > 0) {
+      linhas.push(``, `Dados já coletados (NÃO perguntar de novo):`);
+      itens.forEach((it) => linhas.push(`✅ ${it}`));
+    }
+  }
+
+  linhas.push(
+    ``,
+    `Quando o cliente confirmar data e hora, emita [REUNIAO_AGENDADA] no array JSON.`,
+    `--- FIM AGENDA ---`,
+  );
+
+  return linhas.join("\n");
+}
+
 // ── Camada 5: Catálogo dinâmico ────────────────────────────────────────────────────────
 function buildCatalogoLayer(products: ProductContext[]): string {
   if (!products.length) return "";
@@ -349,7 +407,12 @@ export class PromptCompiler {
       buildRestricoesConfigLayer(input.aiConfig?.restricoes ?? []),
     ].filter(Boolean).join("\n\n");
     const objecoes   = buildObjecoesLayer(input.recentMessages, input.aiConfig?.matrizObjecoes);
-    const catalogo   = buildCatalogoLayer(input.detectedProducts ?? []);
+
+    const isProspeccao = input.organizationTipo === "PROSPECCAO";
+    const catalogo = isProspeccao
+      ? buildCalendarioLayer(input.slotsDisponiveis ?? [], input.sessaoProspeccao)
+      : buildCatalogoLayer(input.detectedProducts ?? []);
+
     const historico  = buildHistoricoLayer(
       input.leadState,
       input.messageCount,
