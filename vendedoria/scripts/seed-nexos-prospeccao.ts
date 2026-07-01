@@ -129,13 +129,48 @@ async function main() {
     console.log(`[Seed] AiConfig já existe`);
   }
 
+  // ── 6. Criar segmento de exemplo ─────────────────────────────────────────────
+  const existingSegment = await prisma.prospectSegment.findFirst({
+    where: { organizationId: org.id },
+  });
+
+  if (!existingSegment) {
+    const seg = await prisma.prospectSegment.create({
+      data: {
+        organizationId:        org.id,
+        nome:                  "Lojas de Roupa Local",
+        termoBusca:            "loja de roupa",
+        termosSecundarios:     ["boutique feminina", "moda feminina", "loja de moda"],
+        cidades:               ["Goiânia", "Aparecida de Goiânia"],
+        pesoSemSite:           3,
+        pesoSemAnuncioAtivo:   2,
+        pesoInstagramParado:   1,
+        pesoRatingBaixo:       1,
+        limiarScoreQualificado: 4,
+      },
+    });
+    console.log(`[Seed] Segmento de exemplo criado: ${seg.id}`);
+    console.log(`\n  → Para iniciar sourcing: POST /api/prospeccao/sourcing/${seg.id}`);
+  } else {
+    console.log(`[Seed] Segmento já existe: ${existingSegment.id}`);
+  }
+
   console.log("\n[Seed] ✅ Concluído com sucesso!");
   console.log(`\nOrg ID: ${org.id}`);
   console.log(`\nPróximos passos:`);
   console.log(`  1. Configurar businessPhoneNumberId e accessToken no WhatsappProviderConfig`);
   console.log(`  2. Definir systemPrompt do agente via CRM > Agente`);
-  console.log(`  3. Configurar env vars GOOGLE_CALENDAR_* para integração de agenda`);
+  console.log(`  3. Configurar env vars:`);
+  console.log(`     GOOGLE_PLACES_API_KEY= (sourcing)`);
+  console.log(`     GOOGLE_CALENDAR_CLIENT_ID= GOOGLE_CALENDAR_CLIENT_SECRET= GOOGLE_CALENDAR_REFRESH_TOKEN= GOOGLE_CALENDAR_ID= (agenda)`);
+  console.log(`     RAPIDAPI_KEY= (Instagram enrichment — opcional)`);
+  console.log(`     META_AD_LIBRARY_TOKEN= (Meta Ad Library — opcional)`);
   console.log(`  4. Desativar sandboxMode quando pronto para produção`);
+  console.log(`\n  Pipeline de uso:`);
+  console.log(`  POST /api/prospeccao/sourcing/:segmentId     → busca leads no Google Places`);
+  console.log(`  POST /api/prospeccao/enriquecimento/lote/:id → enriquece + pontua`);
+  console.log(`  POST /api/prospeccao/analise/lote/:id        → classifica com IA`);
+  console.log(`  /crm/prospeccao/fila                          → fila de aprovação humana`);
 }
 
 main()
