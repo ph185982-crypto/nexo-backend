@@ -79,6 +79,8 @@ model WhatsappBusinessOrganization {
   aiConfig              AiConfig?
   prospectLeads         ProspectLead[]
   prospectSegments      ProspectSegment[]
+  templateProspeccao    TemplateProspeccao[]
+  disparoConfig         DisparoConfig?
   financialProfiles     FinancialProfile[]
   financialAccounts     FinancialAccount[]
   financialCategories   FinancialCategory[]
@@ -1009,6 +1011,12 @@ model ProspectLead {
   // ABORDADO | RESPONDEU | QUALIFICADO | REUNIAO_AGENDADA | PERDIDO
   status                String   @default("NOVO")
 
+  // Disparo
+  templateUsadoId       String?
+  templateUsado         TemplateProspeccao? @relation(fields: [templateUsadoId], references: [id])
+  dataAbordagem         DateTime?
+  tentativasDisparo     Int      @default(0)
+
   // Dados de prospecção ativa (preenchidos pela conversa)
   tipoNegocio           String?
   urgencia              String?
@@ -1024,6 +1032,42 @@ model ProspectLead {
   @@unique([placeId])
   @@index([organizationId, status])
   @@index([segmentId, status])
+}
+
+// ─── TemplateProspeccao ────────────────────────────────────────────────────────
+
+model TemplateProspeccao {
+  id               String   @id @default(cuid())
+  organizationId   String
+  organization     WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  nomeTemplateMeta String
+  idioma           String   @default("pt_BR")
+  variaveis        String[]
+  ativo            Boolean  @default(true)
+  prospects        ProspectLead[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([organizationId, ativo])
+}
+
+// ─── DisparoConfig ─────────────────────────────────────────────────────────────
+
+model DisparoConfig {
+  id                      String    @id @default(cuid())
+  organizationId          String    @unique
+  organization            WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  limiteDiarioAtual       Int       @default(15)
+  incrementoSemanal       Int       @default(10)
+  limiteMaximoDiario      Int       @default(100)
+  janelaInicioHora        Int       @default(9)
+  janelaFimHora           Int       @default(18)
+  diasSemana              Int[]     @default([1, 2, 3, 4, 5])
+  pausadoManualmente      Boolean   @default(false)
+  motivoPausa             String?
+  ultimaAtualizacaoLimite DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
 }
 
 model OfertaGerada {
