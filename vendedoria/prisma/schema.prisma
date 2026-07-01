@@ -66,6 +66,7 @@ model WhatsappBusinessOrganization {
   documentId   String
   documentType String   // CNPJ | CPF
   status       String   @default("ACTIVE") // ACTIVE | INACTIVE
+  tipo         String   @default("VENDAS") // VENDAS | PROSPECCAO
   accounts     WhatsappProviderConfig[]
   leads        Lead[]
   campaigns    Campaign[]
@@ -76,6 +77,8 @@ model WhatsappBusinessOrganization {
   products              Product[]
   ownerNotifications    OwnerNotification[]
   aiConfig              AiConfig?
+  prospectLeads         ProspectLead[]
+  prospectSegments      ProspectSegment[]
   financialProfiles     FinancialProfile[]
   financialAccounts     FinancialAccount[]
   financialCategories   FinancialCategory[]
@@ -246,6 +249,8 @@ model Lead {
   tags           LeadTag[]
   calendarEvents CalendarEvent[]
   notes          LeadNote[]
+  prospectLead   ProspectLead? @relation(fields: [prospectLeadId], references: [id])
+  prospectLeadId String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
@@ -325,6 +330,7 @@ model WhatsappConversation {
   horarioEntrega     String?
   formaPagamento     String?
   sessaoNacional     Json?                           // dados do fluxo de venda nacional
+  sessaoProspeccao   Json?                           // dados do fluxo de prospecção B2B
   midiasEnviadas     Json?    @default("[]")          // slugs de mídia já enviados nesta conversa
 
   createdAt                  DateTime @default(now())
@@ -942,6 +948,82 @@ model Checkout {
 
   @@index([conversationId])
   @@index([telefoneCliente])
+}
+
+// ─── ProspectSegment (Nexos Brasil — segmentos de prospecção) ──────────────────
+
+model ProspectSegment {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  organization          WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  nome                  String
+  termoBusca            String
+  termosSecundarios     String[]
+  cidades               String[]
+  ativo                 Boolean  @default(true)
+  pesoSemSite           Int      @default(3)
+  pesoSemAnuncioAtivo   Int      @default(2)
+  pesoInstagramParado   Int      @default(1)
+  pesoRatingBaixo       Int      @default(1)
+  limiarScoreQualificado Int     @default(4)
+  prospects             ProspectLead[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([organizationId, ativo])
+}
+
+// ─── ProspectLead (B2B Prospecção Nexos Brasil) ────────────────────────────────
+
+model ProspectLead {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  organization          WhatsappBusinessOrganization @relation(fields: [organizationId], references: [id])
+  leads                 Lead[]
+  segmentId             String?
+  segment               ProspectSegment? @relation(fields: [segmentId], references: [id])
+
+  // Dados do negócio (vindos do sourcing)
+  nome                  String?
+  telefone              String?
+  enderecoCompleto      String?
+  website               String?
+  placeId               String?  // Google Places ID — usado para dedupe
+
+  // Dados de enriquecimento
+  temSite               Boolean?
+  temAnuncioAtivo       Boolean?
+  instagramAtivo        Boolean?
+  ultimaPostagemIG      DateTime?
+  followersIG           Int?
+  ratingGoogle          Float?
+  numeroAvaliacoes      Int?
+
+  // Scoring e análise
+  score                 Int?
+  analiseIA             String?  // PENDENTE | APROVAR_AUTO | REVISAR | DESCARTAR
+  motivoAnaliseIA       String?
+
+  // Status do pipeline
+  // NOVO | ENRIQUECIDO | PONTUADO | ANALISADO | APROVADO | DESCARTADO
+  // ABORDADO | RESPONDEU | QUALIFICADO | REUNIAO_AGENDADA | PERDIDO
+  status                String   @default("NOVO")
+
+  // Dados de prospecção ativa (preenchidos pela conversa)
+  tipoNegocio           String?
+  urgencia              String?
+  sinalOportunidade     String?  @db.Text
+  notas                 String?  @db.Text
+  dataHoraReuniao       DateTime?
+  googleCalendarEventId String?
+  googleMeetLink        String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([placeId])
+  @@index([organizationId, status])
+  @@index([segmentId, status])
 }
 
 model OfertaGerada {
