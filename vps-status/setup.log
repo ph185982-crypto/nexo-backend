@@ -514,3 +514,20 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 tentativa 1: HTTP 307
 
 ═══ 12:07:34 PASSO 14 — SSL (Let's Encrypt) ═══
+Certificate is saved at: /etc/letsencrypt/live/srv1797517.hstgr.cloud/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/srv1797517.hstgr.cloud/privkey.pem
+This certificate expires on 2026-09-30.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
+
+Deploying certificate
+Successfully deployed certificate for srv1797517.hstgr.cloud to /etc/nginx/sites-enabled/vendedoria
+Congratulations! You have successfully enabled HTTPS on https://srv1797517.hstgr.cloud
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+═══ 12:08:08 PASSO 15 — Verificar webhook local (HTTPS) ═══
