@@ -400,3 +400,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 12:05:50 PASSO 6 — .env ═══
 
 ═══ 12:05:53 PASSO 7 — Prisma ═══
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+═══ 12:06:00 PASSO 8 — Seed VENDAS (agente Pedro) ═══
