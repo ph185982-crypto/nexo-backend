@@ -1,1 +1,341 @@
-IyEvYmluL2Jhc2gKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyAgU0VUVVAgQ09NUExFVE8gVkVOREVET1JJQSDigJQgb25lLXNob3QgKFZQUyBIb3N0aW5nZXIpCiMgIEZhejogc2lzdGVtYSwgYXBwLCBzZWVkLCBTU0wsIHdlYmhvb2sgTWV0YSwgc3RhdHVzIHJlcG9ydAojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpzZXQgK2UgICAjIG7Do28gYWJvcnRhIOKAlCBxdWVyZW1vcyBjYXB0dXJhciBjYWRhIGV0YXBhIG5vIHJlbGF0w7NyaW8KClNUQVRVU19ESVI9Ii92YXIvd3d3L3N0YXR1cyIKbWtkaXIgLXAgIiRTVEFUVVNfRElSIgpMT0c9IiRTVEFUVVNfRElSL3NldHVwLmxvZyIKUkVQT1JUPSIkU1RBVFVTX0RJUi9yZXBvcnQuanNvbiIKZXhlYyA+ID4odGVlICIkTE9HIikgMj4mMQoKIyBKU09OIHN0YXR1cyBoZWxwZXJzCmRlY2xhcmUgLUEgU1QKc2V0c3QoKSB7IGxvY2FsIHY9IiR7Mi8vXCIvfSI7IHY9IiR7di8vJCdcbicvIH0iOyBTVFsiJDEiXT0iJHYiOyB3cml0ZV9yZXBvcnQ7IH0Kd3JpdGVfcmVwb3J0KCkgewogIHsKICAgIGVjaG8gInsiCiAgICBsb2NhbCBmaXJzdD0xCiAgICBmb3IgayBpbiAiJHshU1RbQF19IjsgZG8KICAgICAgW1sgJGZpcnN0IC1lcSAwIF1dICYmIGVjaG8gIiwiCiAgICAgIHByaW50ZiAnICAiJXMiOiAiJXMiJyAiJGsiICIke1NUWyRrXX0iCiAgICAgIGZpcnN0PTAKICAgIGRvbmUKICAgIGVjaG8gIiIKICAgIGVjaG8gIn0iCiAgfSA+ICIkUkVQT1JUIgogIGNobW9kIDY0NCAiJFJFUE9SVCIgIiRMT0ciIDI+L2Rldi9udWxsCn0KCnN0ZXAoKSB7IGVjaG8gIiI7IGVjaG8gIuKVkOKVkOKVkCAkKGRhdGUgKyVIOiVNOiVTKSAkMSDilZDilZDilZAiOyBwdWJsaXNoIDI+L2Rldi9udWxsOyB9CgojIFB1c2ggc3RhdHVzK2xvZyBwYXJhIG8gR2l0SHViIChjYW5hbCBkZSBvYnNlcnZhYmlsaWRhZGUgY29uZmnDoXZlbCkKR0hfUEFUPSJnaHBfMlNYRms0andyMWpDRXRYWFVWMk9wRklOTWZySVlGMDhxaW9jIgpHSF9SRVBPPSJwaDE4NTk4Mi1jcnlwdG8vbmV4by1iYWNrZW5kIgpHSF9CUkFOQ0g9ImNsYXVkZS93aGF0c2FwcC1haS1jcm0taFlTVlUiCnB1c2hfZ2l0aHViKCkgewogIGxvY2FsIHBhdGg9IiQxIiBmaWxlPSIkMiIKICBbWyAtZiAiJGZpbGUiIF1dIHx8IHJldHVybiAwCiAgbG9jYWwgY29udGVudCBzaGEKICBjb250ZW50PSQoYmFzZTY0IC13MCAiJGZpbGUiIDI+L2Rldi9udWxsKQogIHNoYT0kKGN1cmwgLXMgLS1tYXgtdGltZSAyMCAtSCAiQXV0aG9yaXphdGlvbjogQmVhcmVyICRHSF9QQVQiIFwKICAgICJodHRwczovL2FwaS5naXRodWIuY29tL3JlcG9zLyRHSF9SRVBPL2NvbnRlbnRzLyRwYXRoP3JlZj0kR0hfQlJBTkNIIiAyPi9kZXYvbnVsbCB8IGpxIC1yICcuc2hhIC8vIGVtcHR5JyAyPi9kZXYvbnVsbCkKICBsb2NhbCBwYXlsb2FkCiAgaWYgW1sgLW4gIiRzaGEiIF1dOyB0aGVuCiAgICBwYXlsb2FkPSQocHJpbnRmICd7Im1lc3NhZ2UiOiJ2cHMgc3RhdHVzIiwiY29udGVudCI6IiVzIiwiYnJhbmNoIjoiJXMiLCJzaGEiOiIlcyJ9JyAiJGNvbnRlbnQiICIkR0hfQlJBTkNIIiAiJHNoYSIpCiAgZWxzZQogICAgcGF5bG9hZD0kKHByaW50ZiAneyJtZXNzYWdlIjoidnBzIHN0YXR1cyIsImNvbnRlbnQiOiIlcyIsImJyYW5jaCI6IiVzIn0nICIkY29udGVudCIgIiRHSF9CUkFOQ0giKQogIGZpCiAgY3VybCAtcyAtLW1heC10aW1lIDI1IC1YIFBVVCAtSCAiQXV0aG9yaXphdGlvbjogQmVhcmVyICRHSF9QQVQiIFwKICAgICJodHRwczovL2FwaS5naXRodWIuY29tL3JlcG9zLyRHSF9SRVBPL2NvbnRlbnRzLyRwYXRoIiAtZCAiJHBheWxvYWQiID4vZGV2L251bGwgMj4mMQp9CnB1Ymxpc2goKSB7IHB1c2hfZ2l0aHViICJ2cHMtc3RhdHVzL3JlcG9ydC5qc29uIiAiJFJFUE9SVCI7IHB1c2hfZ2l0aHViICJ2cHMtc3RhdHVzL3NldHVwLmxvZyIgIiRMT0ciOyB9CnRyYXAgJ3B1Ymxpc2gnIEVYSVQKc3RlcHB1YigpIHsgcHVibGlzaDsgfQoKc2V0c3QgInN0YXJ0ZWRfYXQiICIkKGRhdGUgLXUgKyVZLSVtLSVkVCVIOiVNOiVTWikiCnNldHN0ICJwaGFzZSIgImluaXQiCgojIOKUgOKUgCBDb25maWcg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACkdJVEhVQl9QQVQ9ImdocF8yU1hGazRqd3IxakNFdFhYVVYyT3BGSU5NZnJJWUYwOHFpb2MiClNFUlZFUl9JUD0iMTg3LjEyNy40My44MiIKRE9NQUlOPSJzcnYxNzk3NTE3LmhzdGdyLmNsb3VkIgpDRVJUQk9UX0VNQUlMPSJwaDE4NTk4MkBnbWFpbC5jb20iCkRCX1BBU1M9IlZuZCQob3BlbnNzbCByYW5kIC1oZXggMTIpIgpSRVBPX0RJUj0iL3Zhci93d3cvbmV4by1iYWNrZW5kIgoKQVBQX0lEPSIxOTQ3Mzc2ODQ5MjA0MDQyIgpBUFBfU0VDUkVUPSIxMDExOWE4M2RkNTE5NTI4NzhlZWZlMzJiOWU5OGExMCIKVkVSSUZZX1RPS0VOPSJuZXhvcy13ZWJob29rLTIwMjUiCk1FVEFfVE9LRU49IkVBQWJySVFGWE0wb0JScEJPeGRaQ2VZU3dYaGRaQkFUSnZxTE1lc2I1WkJzVGlhRG9iZTBZWkNPbFpCRkJkcUpsNGZnbWxaQzZLdjdMWWt4T2REVXg4c0ZDOWthbGNYcVB0bjluY2VjaFgxc3l3WTJyY1pDa3MzRHRYT0tIQkdzZ3piR0pQV3Vna3VCcjVGOUx0bDlSWW1jYWdBTmwwMlpDcVVlN0toaHRaQm42Z0tXaUgzM2VtM2ZlNDhVekFRcDZOOXdaRFpEIgpQSE9ORV9JRD0iMTAwOTYzMTc4MjI0MjA1NiIKCmV4cG9ydCBERUJJQU5fRlJPTlRFTkQ9bm9uaW50ZXJhY3RpdmUKCnN0ZXAgIlBBU1NPIDEg4oCUIFNpc3RlbWEgKyBmaXJld2FsbCIKc2V0c3QgInBoYXNlIiAic2lzdGVtYSIKYXB0LWdldCB1cGRhdGUgLXFxICYmIGFwdC1nZXQgdXBncmFkZSAteSAtcXEKdWZ3IC0tZm9yY2UgcmVzZXQgPi9kZXYvbnVsbCAyPiYxCnVmdyBkZWZhdWx0IGRlbnkgaW5jb21pbmcgPi9kZXYvbnVsbAp1ZncgZGVmYXVsdCBhbGxvdyBvdXRnb2luZyA+L2Rldi9udWxsCnVmdyBhbGxvdyAyMi90Y3AgPi9kZXYvbnVsbAp1ZncgYWxsb3cgODAvdGNwID4vZGV2L251bGwKdWZ3IGFsbG93IDQ0My90Y3AgPi9kZXYvbnVsbAp1ZncgYWxsb3cgMzAwMC90Y3AgPi9kZXYvbnVsbAp1ZncgLS1mb3JjZSBlbmFibGUgPi9kZXYvbnVsbAphcHQtZ2V0IGluc3RhbGwgLXkgLXFxIGZhaWwyYmFuID4vZGV2L251bGwgMj4mMQpzZXRzdCAic2lzdGVtYSIgIm9rIgoKc3RlcCAiUEFTU08gMiDigJQgRGVwZW5kw6puY2lhcyIKc2V0c3QgInBoYXNlIiAiZGVwcyIKYXB0LWdldCBpbnN0YWxsIC15IC1xcSBnaXQgY3VybCB3Z2V0IGJ1aWxkLWVzc2VudGlhbCBuZ2lueCByZWRpcy1zZXJ2ZXIgY2VydGJvdCBweXRob24zLWNlcnRib3QtbmdpbnggcG9zdGdyZXNxbCBwb3N0Z3Jlc3FsLWNvbnRyaWIganEKZXhwb3J0IE5WTV9ESVI9IiRIT01FLy5udm0iCltbICEgLWQgIiROVk1fRElSIiBdXSAmJiBjdXJsIC1vLSBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vbnZtLXNoL252bS92MC4zOS43L2luc3RhbGwuc2ggfCBiYXNoCnNvdXJjZSAiJE5WTV9ESVIvbnZtLnNoIgpudm0gaW5zdGFsbCAtLWx0cyAmJiBudm0gdXNlIC0tbHRzICYmIG52bSBhbGlhcyBkZWZhdWx0IG5vZGUKbnBtIGluc3RhbGwgLWcgcG0yID4vZGV2L251bGwgMj4mMQpzeXN0ZW1jdGwgZW5hYmxlIHBvc3RncmVzcWwgcmVkaXMtc2VydmVyIG5naW54IC0tcXVpZXQKc3lzdGVtY3RsIHN0YXJ0IHBvc3RncmVzcWwgcmVkaXMtc2VydmVyIG5naW54CnNldHN0ICJub2RlX3ZlcnNpb24iICIkKG5vZGUgLXYpIgpzZXRzdCAiZGVwcyIgIm9rIgoKc3RlcCAiUEFTU08gMyDigJQgUG9zdGdyZVNRTCIKc2V0c3QgInBoYXNlIiAicG9zdGdyZXMiCnN1ZG8gLXUgcG9zdGdyZXMgcHNxbCA8PFNRTApETyBcJFwkCkJFR0lOCiAgSUYgTk9UIEVYSVNUUyAoU0VMRUNUIEZST00gcGdfcm9sZXMgV0hFUkUgcm9sbmFtZT0ndmVuZGVkb3JpYV91c2VyJykgVEhFTgogICAgQ1JFQVRFIFVTRVIgdmVuZGVkb3JpYV91c2VyIFdJVEggUEFTU1dPUkQgJyR7REJfUEFTU30nOwogIEVMU0UKICAgIEFMVEVSIFVTRVIgdmVuZGVkb3JpYV91c2VyIFdJVEggUEFTU1dPUkQgJyR7REJfUEFTU30nOwogIEVORCBJRjsKICBJRiBOT1QgRVhJU1RTIChTRUxFQ1QgRlJPTSBwZ19kYXRhYmFzZSBXSEVSRSBkYXRuYW1lPSd2ZW5kZWRvcmlhX2RiJykgVEhFTgogICAgQ1JFQVRFIERBVEFCQVNFIHZlbmRlZG9yaWFfZGIgT1dORVIgdmVuZGVkb3JpYV91c2VyOwogIEVORCBJRjsKICBHUkFOVCBBTEwgUFJJVklMRUdFUyBPTiBEQVRBQkFTRSB2ZW5kZWRvcmlhX2RiIFRPIHZlbmRlZG9yaWFfdXNlcjsKRU5EClwkXCQ7ClNRTApMT0NBTF9EQl9VUkw9InBvc3RncmVzcWw6Ly92ZW5kZWRvcmlhX3VzZXI6JHtEQl9QQVNTfUBsb2NhbGhvc3Q6NTQzMi92ZW5kZWRvcmlhX2RiIgpzZXRzdCAicG9zdGdyZXMiICJvayIKCnN0ZXAgIlBBU1NPIDQg4oCUIENsb25hciByZXBvIgpzZXRzdCAicGhhc2UiICJjbG9uZSIKaWYgW1sgLWQgIiRSRVBPX0RJUiIgXV07IHRoZW4gY2QgIiRSRVBPX0RJUiIgJiYgZ2l0IHB1bGwgb3JpZ2luIG1hc3RlcjsgZWxzZQogIGdpdCBjbG9uZSAiaHR0cHM6Ly8ke0dJVEhVQl9QQVR9QGdpdGh1Yi5jb20vcGgxODU5ODItY3J5cHRvL25leG8tYmFja2VuZC5naXQiICIkUkVQT19ESVIiOyBmaQpjZCAiJFJFUE9fRElSIiAmJiBnaXQgcmVtb3RlIHNldC11cmwgb3JpZ2luICJodHRwczovL2dpdGh1Yi5jb20vcGgxODU5ODItY3J5cHRvL25leG8tYmFja2VuZC5naXQiCmxuIC1zZm4gIiRSRVBPX0RJUi92ZW5kZWRvcmlhIiAvdmFyL3d3dy92ZW5kZWRvcmlhCnNldHN0ICJjb21taXQiICIkKGNkICRSRVBPX0RJUiAmJiBnaXQgcmV2LXBhcnNlIC0tc2hvcnQgSEVBRCkiCnNldHN0ICJjbG9uZSIgIm9rIgoKc3RlcCAiUEFTU08gNSDigJQgbnBtIGluc3RhbGwiCnNldHN0ICJwaGFzZSIgIm5wbSIKY2QgIiRSRVBPX0RJUi92ZW5kZWRvcmlhIgpucG0gaW5zdGFsbCAyPiYxIHwgdGFpbCAtNQpzZXRzdCAibnBtIiAib2siCgpzdGVwICJQQVNTTyA2IOKAlCAuZW52IgpzZXRzdCAicGhhc2UiICJlbnYiCmNhdCA+ICIkUkVQT19ESVIvdmVuZGVkb3JpYS8uZW52IiA8PEVOVkZJTEUKREFUQUJBU0VfVVJMPSR7TE9DQUxfREJfVVJMfQpORVhUQVVUSF9TRUNSRVQ9MHBQL3V2dUZRVktQcTY3OUVnVHV6UUJrYkRDaVRHb2RSUW9JN003ZVdlbz0KTkVYVEFVVEhfVVJMPWh0dHBzOi8vJHtET01BSU59Ck1FVEFfV0hBVFNBUFBfQUNDRVNTX1RPS0VOPSR7TUVUQV9UT0tFTn0KTUVUQV9XSEFUU0FQUF9QSE9ORV9OVU1CRVJfSUQ9JHtQSE9ORV9JRH0KTUVUQV9XSEFUU0FQUF9BUFBfU0VDUkVUPSR7QVBQX1NFQ1JFVH0KTUVUQV9XSEFUU0FQUF9WRVJJRllfVE9LRU49JHtWRVJJRllfVE9LRU59Ck9QRU5BSV9BUElfS0VZPXNrLXByb2otUlQ4MnJwcHd2R3RtU1RoeXZ3V1dXWndFSms1eG02NWVMZFlDSDFEcFd4S0l4SDQtMHlqN3pHa3JzaWRtN29kOC1vX25yS3pwdVlUM0JsYmtGSlhnbm1GOTYteUgxNDJ2LU1YcHZadGt6NllJZWIwemp1ODJQdFNRZHlnVEJHaS1LemRwdFppVFljNmhKWDlFcXN0bDZ2UjBIR0VBClJFRElTX1VSTD1yZWRpczovL2xvY2FsaG9zdDo2Mzc5CkNMT1VESU5BUllfQ0xPVURfTkFNRT1kdXNxNXZoYmoKQ0xPVURJTkFSWV9BUElfS0VZPTMzNTQzNjY4MzQ2NDM4NApDTE9VRElOQVJZX0FQSV9TRUNSRVQ9UUg1VkFFdWRwOE5fUlk4QllpM1JEaGRfVk9rClZBUElEX1BVQkxJQ19LRVk9QkF1QzBjalBvYklpVzQ0ZVJVVWJsNGRTeVZDYmRDci1YWk9oLU5tejZqTGd0dEgyeFZfRktlY3ZROFhKSmcySzdVVlNBNDB3ekNRZC05Qm1DU3BOeWdVClZBUElEX1BSSVZBVEVfS0VZPVZwRkJIX2g5NS05MW40T19VbWh4WHdRUy0xT1lUMHpvUEtEYWlWeTJTbWMKVkFQSURfRU1BSUw9bWFpbHRvOmNvbnRhdG9AbmV4b2JyYXNpbC5jb20uYnIKTkVYVF9QVUJMSUNfR09PR0xFX01BUFNfS0VZPUFJemFTeUJpZVZzYmlzN1FTb3dFR1ZWcDEycHNHNHVncmxrNXVTZwpNRVJDQURPX1BBR09fQUNDRVNTX1RPS0VOPUFQUF9VU1ItMzU5MzE1NjAxMTg4NTY0Ny0wNTA4MjEtMmE0NzJhNzlhZjU5MTBkN2Q4NjE4M2MwZDc4YzE5ODItMjIxODA4OTExMwpNRVJDQURPX1BBR09fUFVCTElDX0tFWT1BUFBfVVNSLWY5NGJmMDVhLWNhN2ItNGUyZC1hZTc0LWUxOGI3MzU3NjQ1YQpNRVJDQURPX1BBR09fQ0xJRU5UX0lEPTM1OTMxNTYwMTE4ODU2NDcKTUVSQ0FET19QQUdPX0NMSUVOVF9TRUNSRVQ9NVVvenpmMHM2YlJiSDhTY0R2ajZtd0trY2o1T3I2V2kKTUVMSE9SX0VOVklPX1RPS0VOPWV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpwWVhRaU9qRTNOemd5T1RBM05ETXNJbk4xWWlJNklqZFZUakpWUVdGUGFUTmFWelZZUldSSGEyVndlalF3VEc5S2VUSWlmUS5DUVk0VnM0dENSTUtZeHpjTU9oWFlYODJJX01qd0FISkhING42cXpjLUNrCk1FTEhPUl9FTlZJT19TQU5EQk9YPWZhbHNlCkNFUF9PUklHRU09NzQ0ODAxMjAKTUFOQUdFUl9QSE9ORV9OVU1CRVI9NTU2Mjk4NDQ2NTM4OApPV05FUl9XSEFUU0FQUF9OVU1CRVI9NTU2Mjk4NDQ2NTM4OApOT0RFX0VOVj1wcm9kdWN0aW9uClBPUlQ9MzAwMApFTlZGSUxFCmNobW9kIDYwMCAiJFJFUE9fRElSL3ZlbmRlZG9yaWEvLmVudiIKc2V0c3QgImVudiIgIm9rIgoKc3RlcCAiUEFTU08gNyDigJQgUHJpc21hIgpzZXRzdCAicGhhc2UiICJwcmlzbWEiCmNkICIkUkVQT19ESVIvdmVuZGVkb3JpYSIKbnB4IHByaXNtYSBnZW5lcmF0ZSAyPiYxIHwgdGFpbCAtMgpucHggcHJpc21hIGRiIHB1c2ggLS1hY2NlcHQtZGF0YS1sb3NzIDI+JjEgfCB0YWlsIC01CnNldHN0ICJwcmlzbWEiICJvayIKCnN0ZXAgIlBBU1NPIDgg4oCUIFNlZWQgVkVOREFTIChhZ2VudGUgUGVkcm8pIgpzZXRzdCAicGhhc2UiICJzZWVkIgpjZCAiJFJFUE9fRElSL3ZlbmRlZG9yaWEiCm5weCBwcmlzbWEgZGIgc2VlZCAyPiYxIHwgdGFpbCAtMTUKU0VFRF9SQz0ke1BJUEVTVEFUVVNbMF19CnNldHN0ICJzZWVkX3ZlbmRhcyIgIiQoW1sgJFNFRURfUkMgLWVxIDAgXV0gJiYgZWNobyBvayB8fCBlY2hvIGVycm8pIgoKc3RlcCAiUEFTU08gOSDigJQgU2VlZCBQUk9TUEVDw4fDg08gKEZhc2UgMikiCm5weCB0c3ggc2NyaXB0cy9zZWVkLW5leG9zLXByb3NwZWNjYW8udHMgMj4mMSB8IHRhaWwgLTEwClBTRUVEX1JDPSR7UElQRVNUQVRVU1swXX0Kc2V0c3QgInNlZWRfcHJvc3BlY2NhbyIgIiQoW1sgJFBTRUVEX1JDIC1lcSAwIF1dICYmIGVjaG8gb2sgfHwgZWNobyBlcnJvKSIKCnN0ZXAgIlBBU1NPIDEwIOKAlCBCdWlsZCBOZXh0LmpzIgpzZXRzdCAicGhhc2UiICJidWlsZCIKY2QgIiRSRVBPX0RJUi92ZW5kZWRvcmlhIgpucG0gcnVuIGJ1aWxkIDI+JjEgfCB0YWlsIC0xNQpCVUlMRF9SQz0ke1BJUEVTVEFUVVNbMF19CnNldHN0ICJidWlsZCIgIiQoW1sgJEJVSUxEX1JDIC1lcSAwIF1dICYmIGVjaG8gb2sgfHwgZWNobyBlcnJvKSIKCnN0ZXAgIlBBU1NPIDExIOKAlCBQTTIiCnNldHN0ICJwaGFzZSIgInBtMiIKY2F0ID4gIiRSRVBPX0RJUi92ZW5kZWRvcmlhL2Vjb3N5c3RlbS5jb25maWcuanMiIDw8J0VDTycKbW9kdWxlLmV4cG9ydHMgPSB7IGFwcHM6IFt7CiAgbmFtZTogJ3ZlbmRlZG9yaWEnLCBzY3JpcHQ6ICdub2RlX21vZHVsZXMvLmJpbi9uZXh0JywgYXJnczogJ3N0YXJ0JywKICBjd2Q6ICcvdmFyL3d3dy9uZXhvLWJhY2tlbmQvdmVuZGVkb3JpYScsIGluc3RhbmNlczogMSwgZXhlY19tb2RlOiAnZm9yaycsCiAgZW52OiB7IE5PREVfRU5WOiAncHJvZHVjdGlvbicsIFBPUlQ6IDMwMDAgfSwgbWF4X21lbW9yeV9yZXN0YXJ0OiAnNjAwTScsCiAgZXJyb3JfZmlsZTogJy92YXIvbG9nL3BtMi92ZW5kZWRvcmlhLWVycm9yLmxvZycsCiAgb3V0X2ZpbGU6ICcvdmFyL2xvZy9wbTIvdmVuZGVkb3JpYS1vdXQubG9nJywKICBsb2dfZGF0ZV9mb3JtYXQ6ICdZWVlZLU1NLUREIEhIOm1tOnNzJyB9XX0KRUNPCm1rZGlyIC1wIC92YXIvbG9nL3BtMiAiJFJFUE9fRElSL3ZlbmRlZG9yaWEvc2NyaXB0cyIKY2F0ID4gIiRSRVBPX0RJUi92ZW5kZWRvcmlhL3NjcmlwdHMvY3Jvbi1mb2xsb3d1cC5zaCIgPDwnQzEnCiMhL2Jpbi9iYXNoCmN1cmwgLXMgaHR0cDovL2xvY2FsaG9zdDozMDAwL2FwaS9jcm9uL2ZvbGxvd3VwID4+IC92YXIvbG9nL3BtMi9jcm9uLWZvbGxvd3VwLmxvZyAyPiYxCkMxCmNhdCA+ICIkUkVQT19ESVIvdmVuZGVkb3JpYS9zY3JpcHRzL2Nyb24tZGlzcGFyby5zaCIgPDwnQzInCiMhL2Jpbi9iYXNoCmN1cmwgLXMgaHR0cDovL2xvY2FsaG9zdDozMDAwL2FwaS9jcm9uL2Rpc3Bhcm8tZGlhcmlvID4+IC92YXIvbG9nL3BtMi9jcm9uLWRpc3Bhcm8ubG9nIDI+JjEKQzIKY2htb2QgK3ggIiRSRVBPX0RJUi92ZW5kZWRvcmlhL3NjcmlwdHMvImNyb24tKi5zaApwbTIgZGVsZXRlIHZlbmRlZG9yaWEgMj4vZGV2L251bGwKcG0yIHN0YXJ0ICIkUkVQT19ESVIvdmVuZGVkb3JpYS9lY29zeXN0ZW0uY29uZmlnLmpzIgpwbTIgc2F2ZQpQTTJTVD0kKHBtMiBzdGFydHVwIHN5c3RlbWQgLXUgcm9vdCAtLWhwIC9yb290IDI+JjEgfCBncmVwICJzdWRvIikKW1sgLW4gIiRQTTJTVCIgXV0gJiYgZXZhbCAiJFBNMlNUIiAyPi9kZXYvbnVsbApwbTIgc2F2ZQooIGNyb250YWIgLWwgMj4vZGV2L251bGw7IGVjaG8gIiovNSAqICogKiAqICRSRVBPX0RJUi92ZW5kZWRvcmlhL3NjcmlwdHMvY3Jvbi1mb2xsb3d1cC5zaCI7CiAgZWNobyAiMCA5ICogKiAxLTUgJFJFUE9fRElSL3ZlbmRlZG9yaWEvc2NyaXB0cy9jcm9uLWRpc3Bhcm8uc2giICkgfCBzb3J0IC11IHwgY3JvbnRhYiAtCnNldHN0ICJwbTIiICJvayIKCnN0ZXAgIlBBU1NPIDEyIOKAlCBOZ2lueCIKc2V0c3QgInBoYXNlIiAibmdpbngiCmNhdCA+IC9ldGMvbmdpbngvc2l0ZXMtYXZhaWxhYmxlL3ZlbmRlZG9yaWEgPDxOR0lOWApzZXJ2ZXIgewogICAgbGlzdGVuIDgwOwogICAgc2VydmVyX25hbWUgJHtET01BSU59ICR7U0VSVkVSX0lQfTsKICAgIGNsaWVudF9tYXhfYm9keV9zaXplIDUwTTsKICAgIGxvY2F0aW9uIC9fc3RhdHVzLyB7IGFsaWFzIC92YXIvd3d3L3N0YXR1cy87IGF1dG9pbmRleCBvbjsgZGVmYXVsdF90eXBlIHRleHQvcGxhaW47IH0KICAgIGxvY2F0aW9uIC8gewogICAgICAgIHByb3h5X3Bhc3MgaHR0cDovL2xvY2FsaG9zdDozMDAwOwogICAgICAgIHByb3h5X2h0dHBfdmVyc2lvbiAxLjE7CiAgICAgICAgcHJveHlfc2V0X2hlYWRlciBVcGdyYWRlIFwkaHR0cF91cGdyYWRlOwogICAgICAgIHByb3h5X3NldF9oZWFkZXIgQ29ubmVjdGlvbiAndXBncmFkZSc7CiAgICAgICAgcHJveHlfc2V0X2hlYWRlciBIb3N0IFwkaG9zdDsKICAgICAgICBwcm94eV9zZXRfaGVhZGVyIFgtUmVhbC1JUCBcJHJlbW90ZV9hZGRyOwogICAgICAgIHByb3h5X3NldF9oZWFkZXIgWC1Gb3J3YXJkZWQtRm9yIFwkcHJveHlfYWRkX3hfZm9yd2FyZGVkX2ZvcjsKICAgICAgICBwcm94eV9zZXRfaGVhZGVyIFgtRm9yd2FyZGVkLVByb3RvIFwkc2NoZW1lOwogICAgICAgIHByb3h5X2NhY2hlX2J5cGFzcyBcJGh0dHBfdXBncmFkZTsKICAgICAgICBwcm94eV9yZWFkX3RpbWVvdXQgMzAwczsKICAgICAgICBwcm94eV9jb25uZWN0X3RpbWVvdXQgMzAwczsKICAgIH0KfQpOR0lOWApybSAtZiAvZXRjL25naW54L3NpdGVzLWVuYWJsZWQvZGVmYXVsdApsbiAtc2YgL2V0Yy9uZ2lueC9zaXRlcy1hdmFpbGFibGUvdmVuZGVkb3JpYSAvZXRjL25naW54L3NpdGVzLWVuYWJsZWQvCm5naW54IC10ICYmIHN5c3RlbWN0bCByZWxvYWQgbmdpbngKc2V0c3QgIm5naW54IiAib2siCgpzdGVwICJQQVNTTyAxMyDigJQgQWd1YXJkYXIgYXBwIHN1YmlyIgpzZXRzdCAicGhhc2UiICJhcHBfd2FpdCIKQVBQX1VQPSJubyIKZm9yIGkgaW4gJChzZXEgMSA0MCk7IGRvCiAgQ09ERT0kKGN1cmwgLXMgLW8gL2Rldi9udWxsIC13ICIle2h0dHBfY29kZX0iIC0tbWF4LXRpbWUgMTAgaHR0cDovL2xvY2FsaG9zdDozMDAwLyAyPi9kZXYvbnVsbCkKICBlY2hvICJ0ZW50YXRpdmEgJGk6IEhUVFAgJENPREUiCiAgaWYgW1sgIiRDT0RFIiA9PSAiMjAwIiB8fCAiJENPREUiID09ICIzMDciIHx8ICIkQ09ERSIgPT0gIjMwMiIgfHwgIiRDT0RFIiA9PSAiMzA4IiBdXTsgdGhlbiBBUFBfVVA9InllcyI7IGJyZWFrOyBmaQogIHNsZWVwIDYKZG9uZQpzZXRzdCAiYXBwX3VwIiAiJEFQUF9VUCIKCnN0ZXAgIlBBU1NPIDE0IOKAlCBTU0wgKExldCdzIEVuY3J5cHQpIgpzZXRzdCAicGhhc2UiICJzc2wiCmNlcnRib3QgLS1uZ2lueCAtZCAiJHtET01BSU59IiAtLW5vbi1pbnRlcmFjdGl2ZSAtLWFncmVlLXRvcyAtbSAiJHtDRVJUQk9UX0VNQUlMfSIgLS1yZWRpcmVjdCAyPiYxIHwgdGFpbCAtMTUKaWYgW1sgLWYgIi9ldGMvbGV0c2VuY3J5cHQvbGl2ZS8ke0RPTUFJTn0vZnVsbGNoYWluLnBlbSIgXV07IHRoZW4KICBzZXRzdCAic3NsIiAib2siOyBzeXN0ZW1jdGwgcmVsb2FkIG5naW54CmVsc2UKICBzZXRzdCAic3NsIiAiZXJybyIKZmkKCnN0ZXAgIlBBU1NPIDE1IOKAlCBWZXJpZmljYXIgd2ViaG9vayBsb2NhbCAoSFRUUFMpIgpzZXRzdCAicGhhc2UiICJ3ZWJob29rX3ZlcmlmeSIKc2xlZXAgMwpXSD0kKGN1cmwgLXNrIC0tbWF4LXRpbWUgMTUgImh0dHBzOi8vJHtET01BSU59L2FwaS93ZWJob29rcy93aGF0c2FwcD9odWIubW9kZT1zdWJzY3JpYmUmaHViLnZlcmlmeV90b2tlbj0ke1ZFUklGWV9UT0tFTn0maHViLmNoYWxsZW5nZT1QSU5HMTIzIiAyPi9kZXYvbnVsbCkKZWNobyAid2ViaG9vayBsb2NhbCByZXNwOiAkV0giCnNldHN0ICJ3ZWJob29rX2xvY2FsIiAiJChbWyAiJFdIIiA9PSAiUElORzEyMyIgXV0gJiYgZWNobyBvayB8fCBlY2hvICJyZXNwOiRXSCIpIgoKc3RlcCAiUEFTU08gMTYg4oCUIENvbmZpZ3VyYXIgd2ViaG9vayBuYSBNZXRhIgpzZXRzdCAicGhhc2UiICJtZXRhIgpDQUxMQkFDSz0iaHR0cHM6Ly8ke0RPTUFJTn0vYXBpL3dlYmhvb2tzL3doYXRzYXBwIgpBUFBfVE9LRU49IiR7QVBQX0lEfXwke0FQUF9TRUNSRVR9IgpNRVRBX1JFU1A9JChjdXJsIC1zIC0tbWF4LXRpbWUgMzAgLVggUE9TVCBcCiAgImh0dHBzOi8vZ3JhcGguZmFjZWJvb2suY29tL3YyMC4wLyR7QVBQX0lEfS9zdWJzY3JpcHRpb25zIiBcCiAgLWQgIm9iamVjdD13aGF0c2FwcF9idXNpbmVzc19hY2NvdW50IiBcCiAgLWQgImNhbGxiYWNrX3VybD0ke0NBTExCQUNLfSIgXAogIC1kICJ2ZXJpZnlfdG9rZW49JHtWRVJJRllfVE9LRU59IiBcCiAgLWQgImZpZWxkcz1tZXNzYWdlcyxtZXNzYWdlX3RlbXBsYXRlX3N0YXR1c191cGRhdGUiIFwKICAtZCAiYWNjZXNzX3Rva2VuPSR7QVBQX1RPS0VOfSIgMj4mMSkKZWNobyAiTWV0YSBzdWJzY3JpcHRpb24gcmVzcDogJE1FVEFfUkVTUCIKZWNobyAiJE1FVEFfUkVTUCIgfCBncmVwIC1xICcic3VjY2VzcyI6dHJ1ZScgJiYgc2V0c3QgIm1ldGFfc3Vic2NyaXB0aW9uIiAib2siIHx8IHNldHN0ICJtZXRhX3N1YnNjcmlwdGlvbiIgInJlc3A6JChlY2hvICRNRVRBX1JFU1AgfCB0ciAtZCAnXG4nIHwgaGVhZCAtYyAyMDApIgoKIyBEZXNjb2JyaXIgV0FCQSBhIHBhcnRpciBkbyBwaG9uZSBpZCB2aWEgQnVzaW5lc3MgTWFuYWdlciBvd25lZCBhY2NvdW50cyBkbyBhcHAKV0FCQV9JTkZPPSQoY3VybCAtcyAtLW1heC10aW1lIDIwICJodHRwczovL2dyYXBoLmZhY2Vib29rLmNvbS92MjAuMC8ke1BIT05FX0lEfT9maWVsZHM9ZGlzcGxheV9waG9uZV9udW1iZXIsdmVyaWZpZWRfbmFtZSxxdWFsaXR5X3JhdGluZyZhY2Nlc3NfdG9rZW49JHtNRVRBX1RPS0VOfSIgMj4mMSkKZWNobyAicGhvbmUgaW5mbzogJFdBQkFfSU5GTyIKc2V0c3QgInBob25lX3F1YWxpdHkiICIkKGVjaG8gJFdBQkFfSU5GTyB8IGpxIC1yICcucXVhbGl0eV9yYXRpbmcgLy8gIj8iJyAyPi9kZXYvbnVsbCkiCgojIEluc2NyZXZlciBvIG7Dum1lcm8gbm8gd2ViaG9vayAob3ZlcnJpZGUgcG9yIHBob25lKSDigJQgZ2FyYW50ZSBlbnRyZWdhCmN1cmwgLXMgLS1tYXgtdGltZSAyMCAtWCBQT1NUIFwKICAiaHR0cHM6Ly9ncmFwaC5mYWNlYm9vay5jb20vdjIwLjAvJHtQSE9ORV9JRH0vc3Vic2NyaWJlZF9hcHBzIiBcCiAgLWQgImFjY2Vzc190b2tlbj0ke01FVEFfVE9LRU59IiAyPiYxIHwgaGVhZCAtYyAyMDAKZWNobyAiIgoKc3RlcCAiUEFTU08gMTcg4oCUIFRlc3RlIE9wZW5BSSAoYWdlbnRlIHJlc3BvbmRlKSIKc2V0c3QgInBoYXNlIiAiYWlfdGVzdCIKT0FJPSQoY3VybCAtcyAtLW1heC10aW1lIDI1IGh0dHBzOi8vYXBpLm9wZW5haS5jb20vdjEvbW9kZWxzIFwKICAtSCAiQXV0aG9yaXphdGlvbjogQmVhcmVyICQoZ3JlcCBPUEVOQUlfQVBJX0tFWSAkUkVQT19ESVIvdmVuZGVkb3JpYS8uZW52IHwgY3V0IC1kPSAtZjItKSIgMj4mMSB8IGpxIC1yICcuZGF0YVswXS5pZCAvLyAuZXJyb3IubWVzc2FnZSAvLyAiPyInIDI+L2Rldi9udWxsKQplY2hvICJPcGVuQUk6ICRPQUkiCnNldHN0ICJvcGVuYWkiICIkKFtbICIkT0FJIiAhPSAiPyIgJiYgIiRPQUkiICE9IG51bGwgXV0gJiYgZWNobyBvayB8fCBlY2hvICJlcnJvOiRPQUkiKSIKCnN0ZXAgIlBBU1NPIDE4IOKAlCBWZXJpZmljYcOnw6NvIGV4dGVybmEgZmluYWwiCnNldHN0ICJwaGFzZSIgImZpbmFsIgpzbGVlcCAyCkVYVD0kKGN1cmwgLXNrIC1vIC9kZXYvbnVsbCAtdyAiJXtodHRwX2NvZGV9IiAtLW1heC10aW1lIDE1ICJodHRwczovLyR7RE9NQUlOfS8iIDI+L2Rldi9udWxsKQpzZXRzdCAiaHR0cHNfZXh0ZXJubyIgIiRFWFQiCgojIENvbnRhIHJlZ2lzdHJvcyBubyBiYW5jbwpjZCAiJFJFUE9fRElSL3ZlbmRlZG9yaWEiCk9SR1M9JChzdWRvIC11IHBvc3RncmVzIHBzcWwgLWQgdmVuZGVkb3JpYV9kYiAtdEFjICJTRUxFQ1QgY291bnQoKikgRlJPTSBcIldoYXRzYXBwQnVzaW5lc3NPcmdhbml6YXRpb25cIjsiIDI+L2Rldi9udWxsKQpBR0VOVFM9JChzdWRvIC11IHBvc3RncmVzIHBzcWwgLWQgdmVuZGVkb3JpYV9kYiAtdEFjICJTRUxFQ1QgY291bnQoKikgRlJPTSBcIkFnZW50XCI7IiAyPi9kZXYvbnVsbCkKUFJPVlM9JChzdWRvIC11IHBvc3RncmVzIHBzcWwgLWQgdmVuZGVkb3JpYV9kYiAtdEFjICJTRUxFQ1QgY291bnQoKikgRlJPTSBcIldoYXRzYXBwUHJvdmlkZXJDb25maWdcIjsiIDI+L2Rldi9udWxsKQpzZXRzdCAiZGJfb3JncyIgIiR7T1JHUzotP30iCnNldHN0ICJkYl9hZ2VudHMiICIke0FHRU5UUzotP30iCnNldHN0ICJkYl9wcm92aWRlcnMiICIke1BST1ZTOi0/fSIKCmVjaG8gIkRCX1BBU1M9JERCX1BBU1MiID4gL3Jvb3QvY3JlZGVudGlhbHMudHh0CmNobW9kIDYwMCAvcm9vdC9jcmVkZW50aWFscy50eHQKCnNldHN0ICJwaGFzZSIgImRvbmUiCnNldHN0ICJmaW5pc2hlZF9hdCIgIiQoZGF0ZSAtdSArJVktJW0tJWRUJUg6JU06JVNaKSIKc3RlcCAiQ09OQ0xVw41ETyIKcG0yIHN0YXR1cwpjYXQgIiRSRVBPUlQiCg==
+#!/bin/bash
+# ============================================================
+#  SETUP COMPLETO VENDEDORIA — v3 (VPS Hostinger)
+#  Segredos ficam em /root/secrets.env (fora do repo).
+#  Faz: sistema, app, seed, SSL, webhook Meta, status report
+# ============================================================
+set +e   # não aborta — queremos capturar cada etapa no relatório
+
+# ── Segredos (gravados pelo post-install da Hostinger) ──────
+if [[ ! -f /root/secrets.env ]]; then
+  echo "ERRO: /root/secrets.env não encontrado. Abortando."
+  exit 1
+fi
+set -a
+source /root/secrets.env
+set +a
+
+STATUS_DIR="/var/www/status"
+mkdir -p "$STATUS_DIR"
+LOG="$STATUS_DIR/setup.log"
+REPORT="$STATUS_DIR/report.json"
+exec > >(tee "$LOG") 2>&1
+
+# JSON status helpers
+declare -A ST
+setst() { local v="${2//\"/}"; v="${v//$'\n'/ }"; ST["$1"]="$v"; write_report; }
+write_report() {
+  {
+    echo "{"
+    local first=1
+    for k in "${!ST[@]}"; do
+      [[ $first -eq 0 ]] && echo ","
+      printf '  "%s": "%s"' "$k" "${ST[$k]}"
+      first=0
+    done
+    echo ""
+    echo "}"
+  } > "$REPORT"
+  chmod 644 "$REPORT" "$LOG" 2>/dev/null
+}
+
+step() { echo ""; echo "═══ $(date +%H:%M:%S) $1 ═══"; publish 2>/dev/null; }
+
+# Push status+log para o GitHub (canal de observabilidade confiável)
+GH_REPO="ph185982-crypto/nexo-backend"
+GH_BRANCH="claude/whatsapp-ai-crm-hYSVU"
+push_github() {
+  local path="$1" file="$2"
+  [[ -f "$file" ]] || return 0
+  local content sha
+  content=$(base64 -w0 "$file" 2>/dev/null)
+  sha=$(curl -s --max-time 20 -H "Authorization: Bearer $GH_PAT" \
+    "https://api.github.com/repos/$GH_REPO/contents/$path?ref=$GH_BRANCH" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null)
+  local payload
+  if [[ -n "$sha" ]]; then
+    payload=$(printf '{"message":"vps status","content":"%s","branch":"%s","sha":"%s"}' "$content" "$GH_BRANCH" "$sha")
+  else
+    payload=$(printf '{"message":"vps status","content":"%s","branch":"%s"}' "$content" "$GH_BRANCH")
+  fi
+  curl -s --max-time 25 -X PUT -H "Authorization: Bearer $GH_PAT" \
+    "https://api.github.com/repos/$GH_REPO/contents/$path" -d "$payload" >/dev/null 2>&1
+}
+publish() { push_github "vps-status/report.json" "$REPORT"; push_github "vps-status/setup.log" "$LOG"; }
+trap 'publish' EXIT
+
+setst "started_at" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+setst "phase" "init"
+
+# ── Config (não-sensível) ───────────────────────────────────
+SERVER_IP="187.127.43.82"
+DOMAIN="srv1797517.hstgr.cloud"
+CERTBOT_EMAIL="ph185982@gmail.com"
+DB_PASS="Vnd$(openssl rand -hex 12)"
+REPO_DIR="/var/www/nexo-backend"
+
+export DEBIAN_FRONTEND=noninteractive
+APT="apt-get -o DPkg::Lock::Timeout=600"
+
+step "PASSO 1 — Sistema + firewall"
+setst "phase" "sistema"
+$APT update -qq
+ufw --force reset >/dev/null 2>&1
+ufw default deny incoming >/dev/null
+ufw default allow outgoing >/dev/null
+ufw allow 22/tcp >/dev/null
+ufw allow 80/tcp >/dev/null
+ufw allow 443/tcp >/dev/null
+ufw allow 3000/tcp >/dev/null
+ufw --force enable >/dev/null
+$APT install -y -qq fail2ban >/dev/null 2>&1
+setst "sistema" "ok"
+
+step "PASSO 2 — Dependências"
+setst "phase" "deps"
+$APT install -y -qq git curl wget build-essential nginx redis-server certbot python3-certbot-nginx postgresql postgresql-contrib jq
+export NVM_DIR="$HOME/.nvm"
+[[ ! -d "$NVM_DIR" ]] && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source "$NVM_DIR/nvm.sh"
+nvm install --lts && nvm use --lts && nvm alias default node
+npm install -g pm2 >/dev/null 2>&1
+systemctl enable postgresql redis-server nginx --quiet
+systemctl start postgresql redis-server nginx
+setst "node_version" "$(node -v)"
+setst "deps" "ok"
+
+step "PASSO 3 — PostgreSQL"
+setst "phase" "postgres"
+sudo -u postgres psql <<SQL
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='vendedoria_user') THEN
+    CREATE USER vendedoria_user WITH PASSWORD '${DB_PASS}';
+  ELSE
+    ALTER USER vendedoria_user WITH PASSWORD '${DB_PASS}';
+  END IF;
+END
+\$\$;
+SQL
+sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='vendedoria_db'" | grep -q 1 || \
+  sudo -u postgres createdb -O vendedoria_user vendedoria_db
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vendedoria_db TO vendedoria_user;"
+LOCAL_DB_URL="postgresql://vendedoria_user:${DB_PASS}@localhost:5432/vendedoria_db"
+setst "postgres" "ok"
+
+step "PASSO 4 — Clonar repo"
+setst "phase" "clone"
+if [[ -d "$REPO_DIR/.git" ]]; then
+  cd "$REPO_DIR" && git fetch origin "$GH_BRANCH" && git checkout "$GH_BRANCH" && git pull origin "$GH_BRANCH"
+else
+  git clone --branch "$GH_BRANCH" "https://${GH_PAT}@github.com/ph185982-crypto/nexo-backend.git" "$REPO_DIR"
+fi
+cd "$REPO_DIR" && git remote set-url origin "https://${GH_PAT}@github.com/ph185982-crypto/nexo-backend.git"
+ln -sfn "$REPO_DIR/vendedoria" /var/www/vendedoria
+setst "commit" "$(cd $REPO_DIR && git rev-parse --short HEAD)"
+setst "clone" "ok"
+
+step "PASSO 5 — npm install"
+setst "phase" "npm"
+cd "$REPO_DIR/vendedoria"
+npm install 2>&1 | tail -5
+setst "npm" "ok"
+
+step "PASSO 6 — .env"
+setst "phase" "env"
+cat > "$REPO_DIR/vendedoria/.env" <<ENVFILE
+DATABASE_URL=${LOCAL_DB_URL}
+NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+NEXTAUTH_URL=https://${DOMAIN}
+META_WHATSAPP_ACCESS_TOKEN=${META_TOKEN}
+META_WHATSAPP_PHONE_NUMBER_ID=${PHONE_ID}
+META_WHATSAPP_APP_SECRET=${APP_SECRET}
+META_WHATSAPP_VERIFY_TOKEN=${VERIFY_TOKEN}
+OPENAI_API_KEY=${OPENAI_API_KEY}
+REDIS_URL=redis://localhost:6379
+CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+VAPID_EMAIL=${VAPID_EMAIL}
+NEXT_PUBLIC_GOOGLE_MAPS_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_KEY}
+MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN}
+MERCADO_PAGO_PUBLIC_KEY=${MERCADO_PAGO_PUBLIC_KEY}
+MERCADO_PAGO_CLIENT_ID=${MERCADO_PAGO_CLIENT_ID}
+MERCADO_PAGO_CLIENT_SECRET=${MERCADO_PAGO_CLIENT_SECRET}
+MELHOR_ENVIO_TOKEN=${MELHOR_ENVIO_TOKEN}
+MELHOR_ENVIO_SANDBOX=false
+CEP_ORIGEM=74480120
+MANAGER_PHONE_NUMBER=5562984465388
+OWNER_WHATSAPP_NUMBER=5562984465388
+NODE_ENV=production
+PORT=3000
+ENVFILE
+chmod 600 "$REPO_DIR/vendedoria/.env"
+setst "env" "ok"
+
+step "PASSO 7 — Prisma"
+setst "phase" "prisma"
+cd "$REPO_DIR/vendedoria"
+npx prisma generate 2>&1 | tail -2
+npx prisma db push --accept-data-loss 2>&1 | tail -5
+setst "prisma" "ok"
+
+step "PASSO 8 — Seed VENDAS (agente Pedro)"
+setst "phase" "seed"
+cd "$REPO_DIR/vendedoria"
+npx prisma db seed 2>&1 | tail -15
+SEED_RC=${PIPESTATUS[0]}
+setst "seed_vendas" "$([[ $SEED_RC -eq 0 ]] && echo ok || echo erro)"
+
+step "PASSO 9 — Seed PROSPECÇÃO (Fase 2)"
+npx tsx scripts/seed-nexos-prospeccao.ts 2>&1 | tail -10
+PSEED_RC=${PIPESTATUS[0]}
+setst "seed_prospeccao" "$([[ $PSEED_RC -eq 0 ]] && echo ok || echo erro)"
+
+step "PASSO 10 — Build Next.js"
+setst "phase" "build"
+cd "$REPO_DIR/vendedoria"
+npm run build 2>&1 | tail -15
+BUILD_RC=${PIPESTATUS[0]}
+setst "build" "$([[ $BUILD_RC -eq 0 ]] && echo ok || echo erro)"
+
+step "PASSO 11 — PM2"
+setst "phase" "pm2"
+cat > "$REPO_DIR/vendedoria/ecosystem.config.js" <<'ECO'
+module.exports = { apps: [{
+  name: 'vendedoria', script: 'node_modules/.bin/next', args: 'start',
+  cwd: '/var/www/nexo-backend/vendedoria', instances: 1, exec_mode: 'fork',
+  env: { NODE_ENV: 'production', PORT: 3000 }, max_memory_restart: '600M',
+  error_file: '/var/log/pm2/vendedoria-error.log',
+  out_file: '/var/log/pm2/vendedoria-out.log',
+  log_date_format: 'YYYY-MM-DD HH:mm:ss' }]}
+ECO
+mkdir -p /var/log/pm2 "$REPO_DIR/vendedoria/scripts"
+cat > "$REPO_DIR/vendedoria/scripts/cron-followup.sh" <<'C1'
+#!/bin/bash
+curl -s http://localhost:3000/api/cron/followup >> /var/log/pm2/cron-followup.log 2>&1
+C1
+cat > "$REPO_DIR/vendedoria/scripts/cron-disparo.sh" <<'C2'
+#!/bin/bash
+curl -s http://localhost:3000/api/cron/disparo-diario >> /var/log/pm2/cron-disparo.log 2>&1
+C2
+chmod +x "$REPO_DIR/vendedoria/scripts/"cron-*.sh
+pm2 delete vendedoria 2>/dev/null
+pm2 start "$REPO_DIR/vendedoria/ecosystem.config.js"
+pm2 save
+PM2ST=$(pm2 startup systemd -u root --hp /root 2>&1 | grep "sudo")
+[[ -n "$PM2ST" ]] && eval "$PM2ST" 2>/dev/null
+pm2 save
+( crontab -l 2>/dev/null; echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-followup.sh";
+  echo "0 9 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh" ) | sort -u | crontab -
+setst "pm2" "ok"
+
+step "PASSO 12 — Nginx"
+setst "phase" "nginx"
+cat > /etc/nginx/sites-available/vendedoria <<NGINX
+server {
+    listen 80;
+    server_name ${DOMAIN} ${SERVER_IP};
+    client_max_body_size 50M;
+    location /_status/ { alias /var/www/status/; autoindex on; default_type text/plain; }
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+    }
+}
+NGINX
+rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/vendedoria /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+setst "nginx" "ok"
+
+step "PASSO 13 — Aguardar app subir"
+setst "phase" "app_wait"
+APP_UP="no"
+for i in $(seq 1 40); do
+  CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://localhost:3000/ 2>/dev/null)
+  echo "tentativa $i: HTTP $CODE"
+  if [[ "$CODE" == "200" || "$CODE" == "307" || "$CODE" == "302" || "$CODE" == "308" ]]; then APP_UP="yes"; break; fi
+  sleep 6
+done
+setst "app_up" "$APP_UP"
+
+step "PASSO 14 — SSL (Let's Encrypt)"
+setst "phase" "ssl"
+certbot --nginx -d "${DOMAIN}" --non-interactive --agree-tos -m "${CERTBOT_EMAIL}" --redirect 2>&1 | tail -15
+if [[ -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ]]; then
+  setst "ssl" "ok"; systemctl reload nginx
+else
+  setst "ssl" "erro"
+fi
+
+step "PASSO 15 — Verificar webhook local (HTTPS)"
+setst "phase" "webhook_verify"
+sleep 3
+WH=$(curl -sk --max-time 15 "https://${DOMAIN}/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=${VERIFY_TOKEN}&hub.challenge=PING123" 2>/dev/null)
+echo "webhook local resp: $WH"
+setst "webhook_local" "$([[ \"$WH\" == \"PING123\" ]] && echo ok || echo \"resp:$WH\")"
+
+step "PASSO 16 — Configurar webhook na Meta"
+setst "phase" "meta"
+CALLBACK="https://${DOMAIN}/api/webhooks/whatsapp"
+APP_TOKEN="${APP_ID}|${APP_SECRET}"
+META_RESP=$(curl -s --max-time 30 -X POST \
+  "https://graph.facebook.com/v20.0/${APP_ID}/subscriptions" \
+  -d "object=whatsapp_business_account" \
+  -d "callback_url=${CALLBACK}" \
+  -d "verify_token=${VERIFY_TOKEN}" \
+  -d "fields=messages,message_template_status_update" \
+  -d "access_token=${APP_TOKEN}" 2>&1)
+echo "Meta subscription resp: $META_RESP"
+echo "$META_RESP" | grep -q '"success":true' && setst "meta_subscription" "ok" || setst "meta_subscription" "resp:$(echo $META_RESP | tr -d '\n' | head -c 200)"
+
+WABA_INFO=$(curl -s --max-time 20 "https://graph.facebook.com/v20.0/${PHONE_ID}?fields=display_phone_number,verified_name,quality_rating&access_token=${META_TOKEN}" 2>&1)
+echo "phone info: $WABA_INFO"
+setst "phone_quality" "$(echo $WABA_INFO | jq -r '.quality_rating // "?"' 2>/dev/null)"
+
+# Inscrever o número no webhook (override por phone) — garante entrega
+curl -s --max-time 20 -X POST \
+  "https://graph.facebook.com/v20.0/${PHONE_ID}/subscribed_apps" \
+  -d "access_token=${META_TOKEN}" 2>&1 | head -c 200
+echo ""
+
+step "PASSO 17 — Teste OpenAI (agente responde)"
+setst "phase" "ai_test"
+OAI=$(curl -s --max-time 25 https://api.openai.com/v1/models \
+  -H "Authorization: Bearer ${OPENAI_API_KEY}" 2>&1 | jq -r '.data[0].id // .error.message // "?"' 2>/dev/null)
+echo "OpenAI: $OAI"
+setst "openai" "$([[ \"$OAI\" != \"?\" && \"$OAI\" != null ]] && echo ok || echo \"erro:$OAI\")"
+
+step "PASSO 18 — Verificação externa final"
+setst "phase" "final"
+sleep 2
+EXT=$(curl -sk -o /dev/null -w "%{http_code}" --max-time 15 "https://${DOMAIN}/" 2>/dev/null)
+setst "https_externo" "$EXT"
+
+cd "$REPO_DIR/vendedoria"
+ORGS=$(sudo -u postgres psql -d vendedoria_db -tAc "SELECT count(*) FROM \"WhatsappBusinessOrganization\";" 2>/dev/null)
+AGENTS=$(sudo -u postgres psql -d vendedoria_db -tAc "SELECT count(*) FROM \"Agent\";" 2>/dev/null)
+PROVS=$(sudo -u postgres psql -d vendedoria_db -tAc "SELECT count(*) FROM \"WhatsappProviderConfig\";" 2>/dev/null)
+setst "db_orgs" "${ORGS:-?}"
+setst "db_agents" "${AGENTS:-?}"
+setst "db_providers" "${PROVS:-?}"
+
+echo "DB_PASS=$DB_PASS" > /root/credentials.txt
+chmod 600 /root/credentials.txt
+
+setst "phase" "done"
+setst "finished_at" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+step "CONCLUÍDO"
+pm2 status
+cat "$REPORT"
