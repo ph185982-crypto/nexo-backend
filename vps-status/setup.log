@@ -438,3 +438,20 @@ Credentials:
   /crm/prospeccao/fila                          → fila de aprovação humana
 
 ═══ 12:06:07 PASSO 10 — Build Next.js ═══
+├ ○ /crm/reports                                       5.19 kB         145 kB
+├ ○ /crm/settings                                      16.8 kB         185 kB
+├ ○ /crm/work-units                                    6.91 kB         186 kB
+└ ○ /login                                             4.56 kB         117 kB
++ First Load JS shared by all                           102 kB
+  ├ chunks/1684-a5b9208df8f0badb.js                    46.7 kB
+  ├ chunks/4bd1b696-523baba5da0f9a68.js                53.2 kB
+  └ other shared chunks (total)                        1.97 kB
+
+
+ƒ Middleware                                            112 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+═══ 12:07:25 PASSO 11 — PM2 ═══
