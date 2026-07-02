@@ -384,3 +384,7 @@ Now using node v24.18.0 (npm v11.16.0)
 [0;32mdefault[0m [0;90m->[0m [0;32mnode[0m ([0;90m->[0m [0;32mv24.18.0[0m)
 
 ═══ 12:03:53 PASSO 3 — PostgreSQL ═══
+DO
+GRANT
+
+═══ 12:03:55 PASSO 4 — Clonar repo ═══
