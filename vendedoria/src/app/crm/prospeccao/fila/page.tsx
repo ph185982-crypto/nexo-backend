@@ -10,6 +10,7 @@ interface ProspectLead {
   id: string;
   nome: string | null;
   telefone: string | null;
+  tipoTelefone: string | null;
   enderecoCompleto: string | null;
   website: string | null;
   ratingGoogle: number | null;
@@ -59,7 +60,7 @@ function Sinal({
   const cor =
     value === true  ? "text-green-600 bg-green-50 border-green-200" :
     value === false ? "text-red-600 bg-red-50 border-red-200" :
-    "text-gray-400 bg-gray-50 border-gray-200";
+    "text-muted-foreground bg-background border-border";
   const icon = value === true ? "✓" : value === false ? "✗" : "—";
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium ${cor}`}>
@@ -121,15 +122,15 @@ export default function FilaProspeccaoPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
+      <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">Fila de Qualificação</h1>
-          <p className="text-sm text-gray-500">Nexos Brasil — Prospecção B2B</p>
+          <h1 className="text-lg font-semibold text-foreground">Fila de Qualificação</h1>
+          <p className="text-sm text-muted-foreground">Nexos Brasil — Prospecção B2B</p>
         </div>
         <button
           onClick={() => void carregar()}
           disabled={loading}
-          className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg border hover:bg-background disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           Atualizar
@@ -137,7 +138,7 @@ export default function FilaProspeccaoPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b bg-white px-6">
+      <div className="flex border-b bg-card px-6">
         {(["ANALISADO", "APROVADO"] as const).map((t) => (
           <button
             key={t}
@@ -145,7 +146,7 @@ export default function FilaProspeccaoPage() {
             className={`px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
               tab === t
                 ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-muted-foreground hover:text-muted-foreground"
             }`}
           >
             {t === "ANALISADO" ? "Aguardando revisão" : "Aprovados (spot-check)"}
@@ -159,14 +160,14 @@ export default function FilaProspeccaoPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-6 py-4 bg-gray-50">
+      <div className="flex-1 overflow-auto px-6 py-4 bg-background">
         {loading && leads.length === 0 ? (
-          <div className="flex items-center justify-center h-40 text-gray-400">
+          <div className="flex items-center justify-center h-40 text-muted-foreground">
             <RefreshCw className="w-5 h-5 animate-spin mr-2" />
             Carregando...
           </div>
         ) : leads.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-gray-400 gap-2">
+          <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-2">
             <CheckCircle className="w-10 h-10 text-green-300" />
             <p className="text-sm">Nenhum lead nesta fila</p>
           </div>
@@ -191,17 +192,17 @@ export default function FilaProspeccaoPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="p-1.5 rounded border hover:bg-white disabled:opacity-40"
+              className="p-1.5 rounded border hover:bg-accent/10 disabled:opacity-40"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               {page} / {totalPages}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="p-1.5 rounded border hover:bg-white disabled:opacity-40"
+              className="p-1.5 rounded border hover:bg-accent/10 disabled:opacity-40"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -229,18 +230,18 @@ function LeadCard({
     lead.analiseIA === "APROVAR_AUTO" ? "text-green-700 bg-green-50" :
     lead.analiseIA === "REVISAR"      ? "text-amber-700 bg-amber-50" :
     lead.analiseIA === "DESCARTAR"    ? "text-red-700 bg-red-50" :
-    "text-gray-500 bg-gray-50";
+    "text-muted-foreground bg-background";
 
   return (
-    <div className="bg-white rounded-xl border shadow-sm p-4 flex flex-col gap-3">
+    <div className="bg-card rounded-xl border shadow-sm p-4 flex flex-col gap-3">
       {/* Linha 1: nome + score + segmento */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium text-gray-900 text-sm leading-tight">
+          <h3 className="font-medium text-foreground text-sm leading-tight">
             {lead.nome ?? "Nome não informado"}
           </h3>
           {lead.segment && (
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Segmento: {lead.segment.nome} · {lead.segment.termoBusca}
             </p>
           )}
@@ -258,10 +259,19 @@ function LeadCard({
       </div>
 
       {/* Linha 2: dados de contato */}
-      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+      <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
         {lead.telefone && (
           <span className="flex items-center gap-1">
             <Phone className="w-3 h-3" /> {lead.telefone}
+            {lead.tipoTelefone && (
+              <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                lead.tipoTelefone === "CELULAR"
+                  ? "bg-green-500/10 text-green-500"
+                  : "bg-amber-500/10 text-amber-500"
+              }`}>
+                {lead.tipoTelefone === "CELULAR" ? "📱 WhatsApp" : "☎ Fixo"}
+              </span>
+            )}
           </span>
         )}
         {lead.enderecoCompleto && (
@@ -283,7 +293,7 @@ function LeadCard({
         <Sinal value={lead.temAnuncioAtivo} label="Anúncio" />
         <Sinal value={lead.instagramAtivo}  label="Instagram" />
         {lead.followersIG !== null && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-gray-200 bg-gray-50 text-xs text-gray-600">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border bg-background text-xs text-muted-foreground">
             <Instagram className="w-3 h-3" />
             {lead.followersIG.toLocaleString("pt-BR")} seguidores
           </span>
@@ -303,7 +313,7 @@ function LeadCard({
 
       {/* Motivo da IA */}
       {lead.motivoAnaliseIA && (
-        <p className="text-xs text-gray-500 italic border-l-2 border-gray-200 pl-2">
+        <p className="text-xs text-muted-foreground italic border-l-2 border-border pl-2">
           IA: {lead.motivoAnaliseIA}
         </p>
       )}

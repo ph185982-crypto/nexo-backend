@@ -5,14 +5,16 @@ import { prisma } from "@/lib/prisma/client";
 // Retorna leads aguardando revisão humana (ou aprovados para spot-check)
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const status   = searchParams.get("status") ?? "ANALISADO";
-  const orgId    = searchParams.get("orgId")  ?? undefined;
+  const status       = searchParams.get("status") ?? "ANALISADO";
+  const orgId        = searchParams.get("orgId")  ?? undefined;
+  const tipoTelefone = searchParams.get("tipoTelefone") ?? undefined; // FIXO | CELULAR
   const page     = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 30;
 
   const where = {
     status,
     ...(orgId ? { organizationId: orgId } : {}),
+    ...(tipoTelefone ? { tipoTelefone } : {}),
   };
 
   const [leads, total] = await Promise.all([

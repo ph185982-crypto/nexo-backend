@@ -68,6 +68,20 @@ function normalizePhone(raw: string | undefined): string | null {
   return raw.trim();
 }
 
+/**
+ * Detecta se um telefone brasileiro é FIXO ou CELULAR.
+ * Celular: 11 dígitos (DDD + 9 + 8 dígitos), com "9" logo após o DDD.
+ * Fixo: 10 dígitos (DDD + 8 dígitos iniciando em 2-5).
+ */
+export function detectarTipoTelefoneBR(raw: string | null): "FIXO" | "CELULAR" | null {
+  if (!raw) return null;
+  let d = raw.replace(/\D/g, "");
+  if (d.startsWith("55") && d.length >= 12) d = d.slice(2);
+  if (d.length === 11 && d[2] === "9") return "CELULAR";
+  if (d.length === 10) return "FIXO";
+  return null;
+}
+
 export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
   inseridos: number;
   ignorados: number;
@@ -108,6 +122,21 @@ export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
           const telefone = normalizePhone(
             place.nationalPhoneNumber ?? place.internationalPhoneNumber,
           );
+          const tipoTelefone = detectarTipoTelefoneBR(telefone);
+
+          // Filtros do segmento
+          if (segment.apenasCelular && tipoTelefone !== "CELULAR") {
+            result.ignorados++;
+            continue;
+          }
+          if (segment.filtroSite === "SEM_SITE" && place.websiteUri) {
+            result.ignorados++;
+            continue;
+          }
+          if (segment.filtroSite === "COM_SITE" && !place.websiteUri) {
+            result.ignorados++;
+            continue;
+          }
 
           await prisma.prospectLead.create({
             data: {
@@ -116,6 +145,7 @@ export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
               placeId:        place.id,
               nome:           place.displayName?.text ?? null,
               telefone,
+              tipoTelefone,
               enderecoCompleto: place.formattedAddress ?? null,
               website:          place.websiteUri       ?? null,
               ratingGoogle:     place.rating           ?? null,

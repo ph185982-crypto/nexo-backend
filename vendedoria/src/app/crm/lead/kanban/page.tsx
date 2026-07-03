@@ -1,10 +1,15 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
-  Search, SlidersHorizontal, Phone, MoreVertical, ChevronDown, Loader2,
+  Search, SlidersHorizontal, Phone, MoreVertical, ChevronDown, Loader2, Plus,
 } from "lucide-react";
+import {
+  DndContext, PointerSensor, TouchSensor, useSensor, useSensors,
+  useDraggable, useDroppable, DragOverlay,
+  type DragStartEvent, type DragEndEvent,
+} from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +18,14 @@ import {
 } from "@/components/ui/select";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn, getInitials, getAvatarColor, formatPhone } from "@/lib/utils";
+import { getInitials, getAvatarColor, formatPhone } from "@/lib/utils";
 import { LeadDetailModal } from "@/components/crm/LeadDetailModal";
 import { Label } from "@/components/ui/label";
 
@@ -42,6 +48,14 @@ const MOVE_LEAD = gql`
   mutation MoveLead($leadId: String!, $columnId: String!) {
     updateLeadKanbanColumn(leadId: $leadId, columnId: $columnId) {
       id kanbanColumnId
+    }
+  }
+`;
+
+const CREATE_LEAD = gql`
+  mutation CreateLeadKanban($input: CreateLeadInput!) {
+    createLead(input: $input) {
+      id
     }
   }
 `;
@@ -77,17 +91,31 @@ interface Column {
 
 function LeadCard({
   lead,
+  columns,
   onClick,
+  onMove,
+  dragging,
 }: {
   lead: Lead;
+  columns: Column[];
   onClick: () => void;
+  onMove: (leadId: string, columnId: string) => void;
+  dragging?: boolean;
 }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: lead.id,
+    data: { lead },
+  });
+
   const initials = getInitials(lead.profileName ?? lead.phoneNumber);
   const avatarColor = getAvatarColor(lead.profileName);
 
   return (
     <div
-      className="kanban-card"
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className={`kanban-card cursor-grab active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${dragging ? "shadow-xl rotate-2" : ""}`}
       onClick={onClick}
     >
       <div className="flex items-start gap-2.5">
@@ -115,14 +143,33 @@ function LeadCard({
               size="icon-sm"
               className="h-6 w-6 flex-shrink-0"
               onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
             >
               <MoreVertical className="w-3.5 h-3.5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
-            <DropdownMenuItem>Mover coluna</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">Encerrar</DropdownMenuItem>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem onClick={onClick}>Ver detalhes</DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Mover para</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {columns.map((col) => (
+                    <DropdownMenuItem
+                      key={col.id}
+                      disabled={col.type === lead.kanbanColumn?.type}
+                      onClick={() => onMove(lead.id, col.id)}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: col.color }}
+                      />
+                      {col.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -148,9 +195,21 @@ function LeadCard({
   );
 }
 
-function KanbanColumn({ column, onLeadClick }: { column: Column; onLeadClick: (lead: Lead) => void }) {
+function KanbanColumn({
+  column,
+  columns,
+  onLeadClick,
+  onMove,
+}: {
+  column: Column;
+  columns: Column[];
+  onLeadClick: (lead: Lead) => void;
+  onMove: (leadId: string, columnId: string) => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: column.id });
+
   return (
-    <div className="kanban-column flex-shrink-0">
+    <div className={`kanban-column flex-shrink-0 ${isOver ? "ring-2 ring-primary/60 rounded-lg" : ""}`}>
       {/* Column Header */}
       <div
         className="flex items-center justify-between px-3 py-2.5 rounded-t-lg text-white"
@@ -164,9 +223,15 @@ function KanbanColumn({ column, onLeadClick }: { column: Column; onLeadClick: (l
 
       {/* Leads */}
       <ScrollArea className="flex-1 max-h-[calc(100vh-280px)]">
-        <div className="p-2 space-y-2">
+        <div ref={setNodeRef} className="p-2 space-y-2 min-h-[120px]">
           {column.leads.map((lead) => (
-            <LeadCard key={lead.id} lead={lead} onClick={() => onLeadClick(lead)} />
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              columns={columns}
+              onClick={() => onLeadClick(lead)}
+              onMove={onMove}
+            />
           ))}
 
           {column.leads.length === 0 && (
@@ -192,26 +257,67 @@ export default function KanbanPage() {
   const [search, setSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [novaOpen, setNovaOpen] = useState(false);
+  const [activeLead, setActiveLead] = useState<Lead | null>(null);
   const [filters, setFilters] = useState<{
     leadStatus?: string;
     leadOrigin?: string;
     periodDays?: number;
   }>({});
 
-  const { data: orgsData } = useQuery(GET_ORGS);
-  const orgs = orgsData?.whatsappBusinessOrganizations ?? [];
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+  );
 
-  const { data, loading } = useQuery(GET_KANBAN, {
+  const { data: orgsData } = useQuery(GET_ORGS);
+  const orgs: Array<{ id: string; name: string; status: string }> =
+    orgsData?.whatsappBusinessOrganizations ?? [];
+
+  // Auto-seleciona a única org ativa (a Nexo)
+  useEffect(() => {
+    if (!selectedOrgId && orgs.length > 0) {
+      const ativa = orgs.find((o) => o.status === "ACTIVE") ?? orgs[0];
+      setSelectedOrgId(ativa.id);
+    }
+  }, [orgs, selectedOrgId]);
+
+  const orgId = selectedOrgId || (orgs.find((o) => o.status === "ACTIVE")?.id ?? orgs[0]?.id ?? "");
+
+  const { data, loading, refetch } = useQuery(GET_KANBAN, {
     variables: {
-      organizationId: selectedOrgId || (orgs[0]?.id ?? ""),
+      organizationId: orgId,
       leadsPerColumn: 20,
       filters: Object.keys(filters).length > 0 ? filters : undefined,
     },
-    skip: !selectedOrgId && orgs.length === 0,
+    skip: !orgId,
     fetchPolicy: "cache-and-network",
   });
 
+  const [moveLead] = useMutation(MOVE_LEAD, {
+    onCompleted: () => void refetch(),
+    onError: (e) => { console.error("[Kanban] moveLead:", e); void refetch(); },
+  });
+
   const columns: Column[] = data?.getKanbanBoard?.columns ?? [];
+
+  const handleMove = (leadId: string, columnId: string) => {
+    void moveLead({ variables: { leadId, columnId } });
+  };
+
+  const onDragStart = (e: DragStartEvent) => {
+    setActiveLead((e.active.data.current as { lead: Lead } | undefined)?.lead ?? null);
+  };
+
+  const onDragEnd = (e: DragEndEvent) => {
+    setActiveLead(null);
+    const leadId = String(e.active.id);
+    const columnId = e.over ? String(e.over.id) : null;
+    if (!columnId) return;
+    const origem = columns.find((c) => c.leads.some((l) => l.id === leadId));
+    if (origem?.id === columnId) return;
+    handleMove(leadId, columnId);
+  };
 
   // Filter by search
   const filteredColumns = columns.map((col) => ({
@@ -229,24 +335,9 @@ export default function KanbanPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 py-4 bg-white border-b border-border">
+      <div className="px-6 py-4 bg-card border-b border-border">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Select
-              value={selectedOrgId}
-              onValueChange={setSelectedOrgId}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Selecionar organização" />
-              </SelectTrigger>
-              <SelectContent>
-                {orgs.map((org: { id: string; name: string }) => (
-                  <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <h1 className="text-xl font-semibold">Kanban de Leads</h1>
-          </div>
+          <h1 className="text-xl font-semibold">CRM — Funil de Vendas</h1>
 
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -262,6 +353,10 @@ export default function KanbanPage() {
               <SlidersHorizontal className="w-4 h-4 mr-1.5" />
               Filtros
             </Button>
+            <Button size="sm" onClick={() => setNovaOpen(true)}>
+              <Plus className="w-4 h-4 mr-1.5" />
+              Nova oportunidade
+            </Button>
           </div>
         </div>
       </div>
@@ -272,22 +367,37 @@ export default function KanbanPage() {
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : (
-        <div className="flex-1 overflow-x-auto overflow-y-hidden">
-          <div className="flex gap-4 p-6 h-full min-w-max">
-            {filteredColumns.map((col) => (
-              <KanbanColumn
-                key={col.id}
-                column={col}
-                onLeadClick={setSelectedLead}
-              />
-            ))}
-            {filteredColumns.length === 0 && (
-              <div className="flex items-center justify-center w-full text-muted-foreground">
-                <p>Selecione uma organização para ver o kanban</p>
-              </div>
-            )}
+        <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+          <div className="flex-1 overflow-x-auto overflow-y-hidden">
+            <div className="flex gap-4 p-6 h-full min-w-max">
+              {filteredColumns.map((col) => (
+                <KanbanColumn
+                  key={col.id}
+                  column={col}
+                  columns={columns}
+                  onLeadClick={setSelectedLead}
+                  onMove={handleMove}
+                />
+              ))}
+              {filteredColumns.length === 0 && (
+                <div className="flex items-center justify-center w-full text-muted-foreground">
+                  <p>Nenhuma coluna — rode o seed da Nexo</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+          <DragOverlay>
+            {activeLead && (
+              <LeadCard
+                lead={activeLead}
+                columns={columns}
+                onClick={() => {}}
+                onMove={() => {}}
+                dragging
+              />
+            )}
+          </DragOverlay>
+        </DndContext>
       )}
 
       {/* Lead Detail Modal */}
@@ -295,6 +405,15 @@ export default function KanbanPage() {
         lead={selectedLead}
         open={!!selectedLead}
         onClose={() => setSelectedLead(null)}
+      />
+
+      {/* Nova Oportunidade */}
+      <NovaOportunidadeDialog
+        open={novaOpen}
+        onClose={() => setNovaOpen(false)}
+        organizationId={orgId}
+        columns={columns}
+        onCreated={() => { setNovaOpen(false); void refetch(); }}
       />
 
       {/* Filter Modal */}
@@ -372,5 +491,97 @@ export default function KanbanPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function NovaOportunidadeDialog({
+  open,
+  onClose,
+  organizationId,
+  columns,
+  onCreated,
+}: {
+  open: boolean;
+  onClose: () => void;
+  organizationId: string;
+  columns: Column[];
+  onCreated: () => void;
+}) {
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [colunaId, setColunaId] = useState("");
+  const [erro, setErro] = useState<string | null>(null);
+
+  const [createLead, { loading }] = useMutation(CREATE_LEAD, {
+    onCompleted: () => {
+      setNome(""); setTelefone(""); setColunaId(""); setErro(null);
+      onCreated();
+    },
+    onError: (e) => setErro(e.message),
+  });
+
+  const salvar = () => {
+    const tel = telefone.replace(/\D/g, "");
+    if (!tel || tel.length < 10) {
+      setErro("Informe um telefone válido com DDD.");
+      return;
+    }
+    const kanbanColumnId = colunaId || columns[0]?.id;
+    if (!kanbanColumnId) {
+      setErro("Nenhuma coluna disponível.");
+      return;
+    }
+    void createLead({
+      variables: {
+        input: {
+          phoneNumber: tel.startsWith("55") ? tel : `55${tel}`,
+          profileName: nome.trim() || undefined,
+          leadOrigin: "OUTBOUND",
+          organizationId,
+          kanbanColumnId,
+        },
+      },
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Nova oportunidade</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Nome / Empresa</Label>
+            <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Loja Exemplo" />
+          </div>
+          <div className="space-y-2">
+            <Label>WhatsApp (com DDD)</Label>
+            <Input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="62 99999-9999" />
+          </div>
+          <div className="space-y-2">
+            <Label>Etapa inicial</Label>
+            <Select value={colunaId || columns[0]?.id} onValueChange={setColunaId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {columns.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {erro && <p className="text-sm text-destructive">{erro}</p>}
+          <div className="flex gap-2 pt-2">
+            <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
+            <Button className="flex-1" onClick={salvar} disabled={loading}>
+              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Criar
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

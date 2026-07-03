@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { createHmac } from "crypto";
+import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 
 function parseFollowUpIntervals(hoursStr: string): number[] {
   const parsed = hoursStr.split(",").map((h) => parseFloat(h.trim())).filter((h) => !isNaN(h) && h > 0);
@@ -177,6 +178,20 @@ export async function GET() {
         await prisma.whatsappMessage.create({
           data: { content: msgs[i], type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId: fu.conversationId },
         });
+      }
+
+      // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato
+      const convInfo = await prisma.whatsappConversation.findUnique({
+        where: { id: fu.conversationId },
+        select: { leadId: true, provider: { select: { organization: { select: { id: true, tipo: true } } } } },
+      }).catch(() => null);
+      if (convInfo?.provider?.organization?.tipo === "PROSPECCAO" && convInfo.leadId) {
+        await moverLeadPorTipo(
+          convInfo.leadId,
+          convInfo.provider.organization.id,
+          fu.step === 1 ? "CONTATO_2" : "CONTATO_3",
+          `Follow-up ${fu.step} enviado`,
+        );
       }
 
       if (fu.step >= maxFollowUps) {

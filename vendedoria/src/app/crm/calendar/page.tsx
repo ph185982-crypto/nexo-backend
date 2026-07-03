@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   ChevronLeft, ChevronRight, Plus, LayoutGrid, List, RefreshCw,
-  Calendar as CalendarIcon, Clock, MapPin, User, Loader2, Phone, MessageCircle,
+  Clock, Loader2, Phone, MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +14,6 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn, formatDateTime } from "@/lib/utils";
@@ -42,18 +39,6 @@ const GET_CALENDAR_KPIS = gql`
 const GET_ORGS = gql`
   query GetOrgsCalendar {
     whatsappBusinessOrganizations { id name status }
-  }
-`;
-
-const LIST_PROFESSIONALS = gql`
-  query ListProfsCalendar($organizationId: String!) {
-    listProfissionais(organizationId: $organizationId) { id name workField }
-  }
-`;
-
-const LIST_WORK_UNITS = gql`
-  query ListUnitsCalendar($organizationId: String!) {
-    listWorkUnits(organizationId: $organizationId) { id name address }
   }
 `;
 
@@ -108,7 +93,6 @@ export default function CalendarPage() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [view, setView] = useState<"grid" | "list">("grid");
   const [newEventOpen, setNewEventOpen] = useState(false);
-  const [selectedOrgId, setSelectedOrgId] = useState("");
 
   // New event form state
   const [formData, setFormData] = useState({
@@ -116,10 +100,8 @@ export default function CalendarPage() {
     description: "",
     startTime: "",
     endTime: "",
-    profissionalId: "",
-    workUnitId: "",
-    saveToGoogle: false,
-    generateMeet: false,
+    saveToGoogle: true,
+    generateMeet: true,
     sendWhatsapp: true,
     attendeeName: "",
     attendeePhone: "",
@@ -127,8 +109,18 @@ export default function CalendarPage() {
   });
 
   const { data: orgsData } = useQuery(GET_ORGS);
-  const orgs = orgsData?.whatsappBusinessOrganizations ?? [];
-  const orgId = selectedOrgId || orgs[0]?.id || "";
+  const orgs: Array<{ id: string; name: string; status: string }> =
+    orgsData?.whatsappBusinessOrganizations ?? [];
+  const orgId = orgs.find((o) => o.status === "ACTIVE")?.id || orgs[0]?.id || "";
+
+  // Status da conexão Google Calendar
+  const [googleStatus, setGoogleStatus] = useState<{ connected: boolean; email: string | null } | null>(null);
+  useEffect(() => {
+    fetch("/api/integrations/google/status")
+      .then((r) => r.json())
+      .then((d) => setGoogleStatus(d as { connected: boolean; email: string | null }))
+      .catch(() => {});
+  }, []);
 
   // WhatsApp follow-ups (scheduled contacts from conversations)
   const [followups, setFollowups] = useState<Array<{
@@ -158,24 +150,12 @@ export default function CalendarPage() {
     skip: !orgId,
   });
 
-  const { data: profsData } = useQuery(LIST_PROFESSIONALS, {
-    variables: { organizationId: orgId },
-    skip: !orgId,
-  });
-
-  const { data: unitsData } = useQuery(LIST_WORK_UNITS, {
-    variables: { organizationId: orgId },
-    skip: !orgId,
-  });
-
   const [createEvent, { loading: creating }] = useMutation(CREATE_EVENT, {
     refetchQueries: [{ query: LIST_EVENTS, variables: { organizationId: orgId, month: currentMonth + 1, year: currentYear } }],
   });
 
   const events: CalendarEvent[] = eventsData?.listCalendarEvents ?? [];
   const kpis = kpisData?.getCalendarKpis;
-  const professionals = profsData?.listProfissionais ?? [];
-  const workUnits = unitsData?.listWorkUnits ?? [];
 
   // Build calendar grid
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -205,8 +185,6 @@ export default function CalendarPage() {
           startTime: formData.startTime,
           endTime: formData.endTime || formData.startTime,
           organizationId: orgId,
-          profissionalId: formData.profissionalId || undefined,
-          workUnitId: formData.workUnitId || undefined,
           saveToGoogle: formData.saveToGoogle,
           generateMeet: formData.generateMeet,
           sendWhatsappNotification: formData.sendWhatsapp,
@@ -236,16 +214,20 @@ export default function CalendarPage() {
           <p className="text-sm text-muted-foreground">Gerencie seus agendamentos</p>
         </div>
         <div className="flex items-center gap-2">
-          <Select value={selectedOrgId} onValueChange={setSelectedOrgId}>
-            <SelectTrigger className="w-44 bg-white">
-              <SelectValue placeholder="Organização" />
-            </SelectTrigger>
-            <SelectContent>
-              {orgs.map((o: { id: string; name: string }) => (
-                <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {googleStatus && (
+            googleStatus.connected ? (
+              <span className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">
+                ● Google conectado{googleStatus.email ? ` — ${googleStatus.email}` : ""}
+              </span>
+            ) : (
+              <a
+                href="/api/integrations/google/connect"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:bg-accent/10 transition-colors"
+              >
+                Conectar Google Calendar
+              </a>
+            )
+          )}
           <Button onClick={() => setNewEventOpen(true)}>
             <Plus className="w-4 h-4 mr-1.5" />
             Novo Agendamento
@@ -476,35 +458,6 @@ export default function CalendarPage() {
                   value={formData.endTime}
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                 />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label>Unidade</Label>
-                <Select value={formData.workUnitId} onValueChange={(v) => setFormData({ ...formData, workUnitId: v })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecionar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {workUnits.map((u: { id: string; name: string }) => (
-                      <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Profissional</Label>
-                <Select value={formData.profissionalId} onValueChange={(v) => setFormData({ ...formData, profissionalId: v })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecionar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {professionals.map((p: { id: string; name: string }) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
 

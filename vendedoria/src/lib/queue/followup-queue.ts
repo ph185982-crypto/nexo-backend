@@ -6,6 +6,7 @@ import { Queue, Worker, Job } from "bullmq";
 import IORedis from "ioredis";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 
 const QUEUE_NAME = "followup";
 
@@ -16,6 +17,30 @@ const STEP_INTERVALS_MS: Record<number, number> = {
   3: 48 * 60 * 60 * 1000,   // step 3 — 48h
   4: 72 * 60 * 60 * 1000,   // step 4 — 72h
 };
+
+// ── Mensagens por step (prospecção B2B — Nexo) ───────────────────────────────
+function buildProspeccaoFollowupMessage(step: number, name: string | null): string[] {
+  switch (step) {
+    case 1: return [
+      "oi! conseguiu ver minha mensagem?",
+      "qualquer dúvida sobre como funciona a assessoria, é só perguntar 😊",
+    ];
+    case 2: return [
+      "lembrei de você aqui",
+      "essa semana ainda tenho horários abertos para o diagnóstico gratuito",
+      "quer que eu veja um horário bom pra você?",
+    ];
+    case 3: return [
+      "vou deixar a agenda aberta até sexta",
+      "se quiser entender como aumentar as vendas nos marketplaces, me chama 👊",
+    ];
+    case 4: return [
+      "tudo bem, não vou mais te incomodar 😄",
+      name ? `se um dia fizer sentido, me chama — abraço, ${name}!` : "se um dia fizer sentido, me chama — abraço!",
+    ];
+    default: return [];
+  }
+}
 
 // ── Mensagens por step ───────────────────────────────────────────────────────
 function buildFollowupMessage(step: number, name: string | null): string[] {
@@ -181,7 +206,7 @@ export function startFollowUpWorker(): void {
       // TASK 2: Verificar status do lead ANTES de enviar — nunca mandar follow-up para BLOCKED/CLOSED
       const conv = await prisma.whatsappConversation.findUnique({
         where: { id: conversationId },
-        include: { lead: true },
+        include: { lead: true, provider: { include: { organization: { select: { id: true, tipo: true } } } } },
       }).catch(() => null);
       if (conv?.lead?.status === "BLOCKED" || conv?.lead?.status === "CLOSED") {
         console.log(`[FollowUpWorker] Lead ${conv.lead.status} — cancelando follow-up ${followUpId} para conv ${conversationId}`);
@@ -197,7 +222,10 @@ export function startFollowUpWorker(): void {
         return;
       }
 
-      const msgs = buildFollowupMessage(step, leadName);
+      const orgTipo = conv?.provider?.organization?.tipo ?? "VENDAS";
+      const msgs = orgTipo === "PROSPECCAO"
+        ? buildProspeccaoFollowupMessage(step, leadName)
+        : buildFollowupMessage(step, leadName);
       if (!msgs.length) return;
 
       const token = accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? undefined;
@@ -207,6 +235,16 @@ export function startFollowUpWorker(): void {
         await prisma.whatsappMessage.create({
           data: { content: msgs[i], type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
         });
+      }
+
+      // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato
+      if (orgTipo === "PROSPECCAO" && conv?.lead && conv.provider?.organization?.id) {
+        await moverLeadPorTipo(
+          conv.lead.id,
+          conv.provider.organization.id,
+          step === 1 ? "CONTATO_2" : "CONTATO_3",
+          `Follow-up ${step} enviado`,
+        );
       }
 
       if (step >= 4) {

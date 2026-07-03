@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
     pesoInstagramParado?: number;
     pesoRatingBaixo?: number;
     limiarScoreQualificado?: number;
+    apenasCelular?: boolean;
+    filtroSite?: string; // TODOS | COM_SITE | SEM_SITE
   };
 
   if (!body.organizationId || !body.nome || !body.termoBusca) {
@@ -43,6 +45,8 @@ export async function POST(req: NextRequest) {
       pesoInstagramParado:   body.pesoInstagramParado   ?? 1,
       pesoRatingBaixo:       body.pesoRatingBaixo       ?? 1,
       limiarScoreQualificado: body.limiarScoreQualificado ?? 4,
+      apenasCelular:         body.apenasCelular ?? false,
+      filtroSite:            ["TODOS", "COM_SITE", "SEM_SITE"].includes(body.filtroSite ?? "") ? body.filtroSite! : "TODOS",
     },
   });
 

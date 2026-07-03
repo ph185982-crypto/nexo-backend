@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Kanban, LayoutDashboard, Bot } from "lucide-react";
+import { MessageSquare, Kanban, Radar, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { href: "/crm/conversations", label: "Conversas", icon: MessageSquare },
-  { href: "/crm/pipeline",      label: "Pipeline",  icon: Kanban },
-  { href: "/crm/dashboard",     label: "Dashboard", icon: LayoutDashboard },
-  { href: "/crm/agent",         label: "Agente",    icon: Bot },
+  { href: "/crm/conversations", label: "Conversas",   icon: MessageSquare },
+  { href: "/crm/lead/kanban",   label: "CRM",         icon: Kanban },
+  { href: "/crm/prospeccao",    label: "Prospecções", icon: Radar },
+  { href: "/crm/configure-agent", label: "Agente",    icon: Bot },
 ];
 
 export function MobileTabBar() {

@@ -285,7 +285,10 @@ function buildCalendarioLayer(
 
   linhas.push(
     ``,
-    `Quando o cliente confirmar data e hora, emita [REUNIAO_AGENDADA] no array JSON.`,
+    `SINAIS DO FUNIL (emita como item do array JSON, nunca visível ao cliente):`,
+    `• [QUALIFICADO] — quando o lead demonstrar interesse E você souber o tipo de negócio e a dor principal.`,
+    `• [REUNIAO_AGENDADA] — quando o cliente confirmar data e hora da reunião.`,
+    `• [OPT_OUT] — quando o contato pedir para não receber mais mensagens.`,
     `--- FIM AGENDA ---`,
   );
 

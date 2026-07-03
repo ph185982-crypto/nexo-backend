@@ -13,13 +13,13 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Nexo Vendas — CRM Inteligente para WhatsApp",
+  title: "Nexo — Prospecção Inteligente para Marketplaces",
   description: "Gerencie seus leads e automatize suas vendas via WhatsApp com IA",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Nexo Vendas",
+    title: "Nexo",
   },
   icons: {
     icon: "/icon-192.png",

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppTemplate, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { verificarSaudeNumero } from "./saude-numero";
+import { garantirLeadDoProspect, moverLeadPorTipo, colunaPorTentativa } from "@/lib/crm/pipeline-mover";
 
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
   const ms = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
@@ -108,15 +109,29 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
     return { ...resultado, motivo: "nenhum template ativo cadastrado" };
   }
 
-  // 7. Buscar leads APROVADOS ordenados por score desc
+  // 7. Buscar leads: APROVADOS (1ª tentativa) + ABORDADOS sem resposta que
+  //    já passaram do intervalo entre tentativas (2ª/3ª tentativa).
+  //    Nunca dispara para telefone FIXO (template WhatsApp só chega em celular).
+  const cutoffRetentativa = new Date(Date.now() - config.diasEntreTentativas * 24 * 60 * 60 * 1000);
   const leads = await prisma.prospectLead.findMany({
-    where: { organizationId, status: "APROVADO" },
-    orderBy: { score: "desc" },
+    where: {
+      organizationId,
+      NOT: { tipoTelefone: "FIXO" },
+      OR: [
+        { status: "APROVADO" },
+        {
+          status: "ABORDADO",
+          dataAbordagem: { lte: cutoffRetentativa },
+          tentativasDisparo: { lt: config.maxTentativasContato },
+        },
+      ],
+    },
+    orderBy: [{ tentativasDisparo: "asc" }, { score: "desc" }],
     take: config.limiteDiarioAtual,
   });
 
   if (leads.length === 0) {
-    return { ...resultado, motivo: "nenhum lead APROVADO disponível" };
+    return { ...resultado, motivo: "nenhum lead APROVADO ou retentativa disponível" };
   }
 
   console.log(`[Disparo] ${leads.length} leads para disparar | template=${template.nomeTemplateMeta} | limite=${config.limiteDiarioAtual}`);
@@ -144,7 +159,7 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
         token,
       );
 
-      await prisma.prospectLead.update({
+      const atualizado = await prisma.prospectLead.update({
         where: { id: lead.id },
         data: {
           status: "ABORDADO",
@@ -154,8 +169,19 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
         },
       });
 
+      // CRM: garante Lead no funil e move para a coluna da tentativa (1º/2º/3º Contato)
+      const crmLeadId = await garantirLeadDoProspect(atualizado);
+      if (crmLeadId) {
+        await moverLeadPorTipo(
+          crmLeadId,
+          organizationId,
+          colunaPorTentativa(atualizado.tentativasDisparo),
+          `Disparo de prospecção — tentativa ${atualizado.tentativasDisparo}`,
+        );
+      }
+
       resultado.disparados++;
-      console.log(`[Disparo] OK | lead=${lead.id} | tel=${telefoneNormalizado}`);
+      console.log(`[Disparo] OK | lead=${lead.id} | tel=${telefoneNormalizado} | tentativa=${atualizado.tentativasDisparo}`);
 
       // Delay aleatório entre disparos: 30–90 segundos
       if (lead !== leads[leads.length - 1]) {

@@ -968,6 +968,8 @@ model ProspectSegment {
   pesoInstagramParado   Int      @default(1)
   pesoRatingBaixo       Int      @default(1)
   limiarScoreQualificado Int     @default(4)
+  apenasCelular         Boolean  @default(false)
+  filtroSite            String   @default("TODOS") // TODOS | COM_SITE | SEM_SITE
   prospects             ProspectLead[]
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -988,6 +990,7 @@ model ProspectLead {
   // Dados do negócio (vindos do sourcing)
   nome                  String?
   telefone              String?
+  tipoTelefone          String?  // FIXO | CELULAR
   enderecoCompleto      String?
   website               String?
   placeId               String?  // Google Places ID — usado para dedupe
@@ -1066,8 +1069,22 @@ model DisparoConfig {
   pausadoManualmente      Boolean   @default(false)
   motivoPausa             String?
   ultimaAtualizacaoLimite DateTime?
+  diasEntreTentativas     Int       @default(3)
+  maxTentativasContato    Int       @default(3)
   createdAt               DateTime  @default(now())
   updatedAt               DateTime  @updatedAt
+}
+
+// ─── IntegrationCredential (OAuth do usuário — ex.: Google Calendar) ──────────
+
+model IntegrationCredential {
+  id           String   @id @default(cuid())
+  provider     String   @unique // "GOOGLE_CALENDAR"
+  email        String?
+  refreshToken String   @db.Text
+  calendarId   String   @default("primary")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model OfertaGerada {

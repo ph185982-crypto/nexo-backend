@@ -10,6 +10,7 @@ import { buscarSessaoNacional, atualizarSessaoNacional } from "@/lib/ai/sessao-n
 import { buscarSessaoProspeccao, atualizarSessaoProspeccao, type SessaoProspeccao } from "@/lib/ai/sessao-prospeccao";
 import { criarEventoReuniao, verificarDisponibilidade, buscarSlotsDisponiveis } from "@/lib/integrations/google-calendar";
 import { config } from "@/lib/config/env";
+import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -593,13 +594,18 @@ export async function processAIResponse(
       return;
     }
 
-    // ── CORREÇÃO 2: Área de entrega ───────────────────────────────────────────
-    if (conversation.foraAreaEntrega) {
+    // ── Tipo de organização — decide qual lógica se aplica (VENDAS × PROSPECCAO) ──
+    const orgTipoEarly: string =
+      (conversation.provider as typeof conversation.provider & { organization?: { tipo?: string } })
+        .organization?.tipo ?? "VENDAS";
+
+    // ── CORREÇÃO 2: Área de entrega (só para VENDAS com entrega local) ─────────
+    if (orgTipoEarly === "VENDAS" && conversation.foraAreaEntrega) {
       console.log(`[AI Agent] foraAreaEntrega=true — ignorando mensagem para conv ${conversationId}`);
       return;
     }
 
-    if (detectForaDeArea(userMessage)) {
+    if (orgTipoEarly === "VENDAS" && detectForaDeArea(userMessage)) {
       console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — marcando DB, IA responde`);
       await prisma.whatsappConversation.update({
         where: { id: conversationId },
@@ -616,7 +622,13 @@ export async function processAIResponse(
     if (detectDesinteresse(userMessage)) {
       console.log(`[AI Agent] Desinteresse detectado para conv ${conversationId} — marcando DB, IA responde`);
       const orgId = conversation.provider.organizationId;
+      // Prospecção usa a coluna DESCARTADO; vendas usa LOST (com fallback)
       const lostColumn = await prisma.kanbanColumn.findFirst({
+        where: {
+          organizationId: orgId,
+          type: orgTipoEarly === "PROSPECCAO" ? "DESCARTADO" : "LOST",
+        },
+      }).catch(() => null) ?? await prisma.kanbanColumn.findFirst({
         where: { organizationId: orgId, type: "LOST" },
       }).catch(() => null);
       await Promise.all([
@@ -647,7 +659,7 @@ export async function processAIResponse(
     // ── Contexto ──────────────────────────────────────────────────────────────
     const lead = conversation.lead;
     const orgId = conversation.provider.organizationId;
-    const orgTipo: string = (conversation.provider as typeof conversation.provider & { organization?: { tipo?: string } }).organization?.tipo ?? "VENDAS";
+    const orgTipo: string = orgTipoEarly;
 
     // Contagem de mensagens trocadas (para detectar etapa da conversa)
     const msgCount = recentMessages.length;
@@ -1123,6 +1135,7 @@ export async function processAIResponse(
         .replace(/\[CHECKOUT\]/gi, "")
         .replace(/\[AGUARDANDO_PAGAMENTO\]/gi, "")
         .replace(/\[REUNIAO_AGENDADA\]/gi, "")
+        .replace(/\[QUALIFICADO\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1147,6 +1160,25 @@ export async function processAIResponse(
         prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "OPT_OUT" } }),
       ]);
       await cancelFollowUpJobs(conversationId).catch(() => {});
+      if (orgTipo === "PROSPECCAO" && conversation.leadId) {
+        await moverLeadPorTipo(conversation.leadId, orgId, "DESCARTADO", "Opt-out solicitado pelo contato", "LOST");
+      }
+    }
+
+    // ── [QUALIFICADO] — lead qualificado pela IA → Proposta e Negociação ──────
+    if (/\[QUALIFICADO\]/i.test(combinedRaw) && orgTipo === "PROSPECCAO" && conversation.leadId) {
+      console.log(`[AI Agent] 🎯 [QUALIFICADO] | conv ${conversationId}`);
+      await moverLeadPorTipo(conversation.leadId, orgId, "PROPOSTA", "Lead qualificado pela IA");
+      const leadComProspect = await prisma.lead.findUnique({
+        where: { id: conversation.leadId },
+        select: { prospectLeadId: true },
+      }).catch(() => null);
+      if (leadComProspect?.prospectLeadId) {
+        await prisma.prospectLead.update({
+          where: { id: leadComProspect.prospectLeadId },
+          data: { status: "QUALIFICADO" },
+        }).catch(() => {});
+      }
     }
 
     // ── [PASSAGEM] ────────────────────────────────────────────────────────────
@@ -1370,10 +1402,31 @@ export async function processAIResponse(
             }
           }
 
-          // Notifica Pedro
+          // Funil: move o lead para "Reunião Agendada" e cria o evento local
+          // (a aba Calendário lê CalendarEvent — sem isso a reunião ficaria invisível)
+          if (lead) {
+            await moverLeadPorTipo(lead.id, orgId, "REUNIAO_AGENDADA", "Reunião agendada pela IA");
+          }
+          await prisma.calendarEvent.create({
+            data: {
+              title: `Diagnóstico Nexo — ${nomeNegocio}`,
+              description: `Reunião agendada pela IA via WhatsApp.\nContato: ${to}` +
+                (sessaoProspeccao.tipoNegocio ? `\nTipo de negócio: ${sessaoProspeccao.tipoNegocio}` : ""),
+              startTime: dataHoraInicio,
+              endTime: new Date(dataHoraInicio.getTime() + 30 * 60 * 1000),
+              provider: "GOOGLE",
+              externalEventId: evento.eventId,
+              googleMeetLink: evento.meetLink ?? null,
+              organizationId: orgId,
+              leadId: lead?.id ?? null,
+              whatsappProviderConfigId: provider.id,
+            },
+          }).catch((e) => console.error("[REUNIAO_AGENDADA] Falha ao criar CalendarEvent local:", e));
+
+          // Notifica o gestor
           const dataLabel = dataHoraInicio.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
           const notifMsg =
-            `📅 *REUNIÃO AGENDADA — NEXOS BRASIL*\n\n` +
+            `📅 *REUNIÃO AGENDADA — NEXO*\n\n` +
             `🏢 Empresa: ${nomeNegocio}\n` +
             `📱 WhatsApp: ${to}\n` +
             `🗓️ Data/hora: ${dataLabel}\n` +
