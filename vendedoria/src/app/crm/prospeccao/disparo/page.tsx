@@ -2,7 +2,7 @@
 
 // Disparo — template de abordagem, cadência anti-ban e execução manual.
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft, Send, Save, Loader2, Pause, Play,
@@ -38,6 +38,7 @@ const inputCls = "w-full rounded-lg border border-border bg-background text-fore
 
 export default function DisparoPage() {
   const [org, setOrg] = useState<Org | null>(null);
+  const [orgChecked, setOrgChecked] = useState(false);
   const [config, setConfig] = useState<DisparoConfig | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [novoTemplate, setNovoTemplate] = useState("");
@@ -46,11 +47,19 @@ export default function DisparoPage() {
   const [disparando, setDisparando] = useState(false);
   const [statusDisparo, setStatusDisparo] = useState<string | null>(null);
   const [aprovados, setAprovados] = useState<number>(0);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   const carregar = useCallback(async () => {
     const orgs = await fetch("/api/prospeccao/orgs").then((r) => r.json()) as Org[];
     const o = orgs[0] ?? null;
     setOrg(o);
+    setOrgChecked(true);
     if (!o) return;
     const [cfg, tpls, fila] = await Promise.all([
       fetch(`/api/prospeccao/disparo-config/${o.id}`).then((r) => r.json()) as Promise<DisparoConfig>,
@@ -113,13 +122,14 @@ export default function DisparoPage() {
         return;
       }
       // Poll do status a cada 15s
-      const poll = setInterval(() => {
+      if (pollRef.current) clearInterval(pollRef.current);
+      pollRef.current = setInterval(() => {
         void (async () => {
           const st = await fetch(`/api/prospeccao/disparo/executar/${org.id}`).then((r) => r.json()) as {
             emAndamento: unknown; ultimoResultado: { resultado: unknown } | null;
           };
           if (!st.emAndamento) {
-            clearInterval(poll);
+            if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
             setDisparando(false);
             setStatusDisparo(`Concluído: ${JSON.stringify(st.ultimoResultado?.resultado ?? {})}`);
             void carregar();
@@ -133,6 +143,18 @@ export default function DisparoPage() {
   };
 
   const templateAtivo = templates.find((t) => t.ativo);
+
+  if (orgChecked && !org) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-3">
+        <Send className="w-10 h-10 opacity-40" />
+        <p className="text-sm font-medium">Nenhuma organização de prospecção configurada</p>
+        <p className="text-xs max-w-sm text-center">
+          Execute o seed na VPS: <code className="px-1 py-0.5 rounded bg-muted text-xs">npx tsx prisma/seed-nexo.ts</code> e recarregue a página.
+        </p>
+      </div>
+    );
+  }
 
   if (!config) {
     return (

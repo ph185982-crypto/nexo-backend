@@ -45,6 +45,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  await prisma.templateProspeccao.delete({ where: { id } }).catch(() => null);
-  return NextResponse.json({ ok: true });
+  try {
+    await prisma.templateProspeccao.delete({ where: { id } });
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json(
+      { error: "Não foi possível excluir — o template é referenciado por leads já abordados." },
+      { status: 409 },
+    );
+  }
 }

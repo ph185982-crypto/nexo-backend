@@ -8,14 +8,27 @@ function randomDelay(minMs: number, maxMs: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+export function getHoraBRT(): { hora: number; diaSemana: number } {
+  const agora = new Date();
+  const brt = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "numeric",
+    hour12: false,
+    weekday: "short",
+  }).formatToParts(agora);
+  const hora = Number(brt.find((p) => p.type === "hour")?.value ?? agora.getHours());
+  const dayMap: Record<string, number> = { dom: 0, seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sáb: 6 };
+  const dayStr = (brt.find((p) => p.type === "weekday")?.value ?? "").toLowerCase().replace(".", "");
+  const diaSemana = dayMap[dayStr] ?? agora.getDay();
+  return { hora, diaSemana };
+}
+
 function dentroJanela(config: {
   janelaInicioHora: number;
   janelaFimHora: number;
   diasSemana: number[];
 }): boolean {
-  const agora = new Date();
-  const hora = agora.getHours();
-  const diaSemana = agora.getDay(); // 0=dom, 1=seg, ..., 6=sab
+  const { hora, diaSemana } = getHoraBRT();
   return (
     config.diasSemana.includes(diaSemana) &&
     hora >= config.janelaInicioHora &&
@@ -124,6 +137,10 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
           dataAbordagem: { lte: cutoffRetentativa },
           tentativasDisparo: { lt: config.maxTentativasContato },
         },
+        {
+          status: "ERRO_ENVIO",
+          tentativasDisparo: { lt: config.maxTentativasContato },
+        },
       ],
     },
     orderBy: [{ tentativasDisparo: "asc" }, { score: "desc" }],
@@ -191,11 +208,14 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error(`[Disparo] Falha | lead=${lead.id} |`, errMsg);
 
+      const tentativas = (lead.tentativasDisparo ?? 0) + 1;
+      const esgotouTentativas = tentativas >= (config.maxTentativasContato ?? 3);
+
       await prisma.prospectLead.update({
         where: { id: lead.id },
         data: {
-          status: "DESCARTADO",
-          motivoAnaliseIA: `Falha no envio: ${errMsg.slice(0, 200)}`,
+          status: esgotouTentativas ? "DESCARTADO" : "ERRO_ENVIO",
+          motivoAnaliseIA: `Falha no envio (tentativa ${tentativas}): ${errMsg.slice(0, 200)}`,
           tentativasDisparo: { increment: 1 },
         },
       });

@@ -49,10 +49,6 @@ export default function DashboardProspeccaoPage() {
   const [loading, setLoading]       = useState(false);
 
   useEffect(() => {
-    fetch("/api/prospeccao/segmentos")
-      .then((r) => r.json())
-      .catch(() => []);
-    // carrega orgs de prospecção
     fetch("/api/prospeccao/orgs")
       .then((r) => r.json())
       .then((data: OrgOption[]) => {
@@ -262,6 +258,16 @@ export default function DashboardProspeccaoPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {!organizationId && orgs.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-3">
+            <TrendingUp className="w-10 h-10 opacity-40" />
+            <p className="text-sm font-medium">Nenhuma organização de prospecção configurada</p>
+            <p className="text-xs max-w-sm text-center">
+              Execute o seed na VPS: <code className="px-1 py-0.5 rounded bg-muted text-xs">npx tsx prisma/seed-nexo.ts</code>
+            </p>
           </div>
         )}
 

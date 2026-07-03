@@ -76,11 +76,20 @@ export default function FilaProspeccaoPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [orgId, setOrgId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/prospeccao/orgs")
+      .then((r) => r.json())
+      .then((orgs: { id: string }[]) => { if (orgs[0]) setOrgId(orgs[0].id); })
+      .catch(() => {});
+  }, []);
 
   const carregar = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/prospeccao/fila?status=${tab}&page=${page}`);
+      const orgParam = orgId ? `&orgId=${orgId}` : "";
+      const res = await fetch(`/api/prospeccao/fila?status=${tab}&page=${page}${orgParam}`);
       const data = await res.json() as FilaResponse;
       setLeads(data.leads ?? []);
       setTotal(data.total ?? 0);
@@ -89,7 +98,7 @@ export default function FilaProspeccaoPage() {
     } finally {
       setLoading(false);
     }
-  }, [tab, page]);
+  }, [tab, page, orgId]);
 
   useEffect(() => {
     setPage(1);

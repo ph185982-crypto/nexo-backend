@@ -232,7 +232,7 @@ export async function sendWhatsAppTemplate(
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       messaging_product: "whatsapp",
-      to,
+      to: normalizeBrazilianNumber(to),
       type: "template",
       template: { name: templateName, language: { code: languageCode }, components },
     }),
