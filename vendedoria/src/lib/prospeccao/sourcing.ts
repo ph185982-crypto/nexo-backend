@@ -1,9 +1,11 @@
-// Sourcing de leads via Google Places Text Search API
-// Env var: GOOGLE_PLACES_API_KEY
+// Sourcing de leads via RapidAPI Local Business Data (primário) ou
+// Google Places Text Search API (fallback).
+// Env vars: RAPIDAPI_KEY | GOOGLE_PLACES_API_KEY
 
 import { prisma } from "@/lib/prisma/client";
 
 const PLACES_API = "https://places.googleapis.com/v1/places:searchText";
+const RAPIDAPI_HOST = "local-business-data.p.rapidapi.com";
 
 interface PlaceResult {
   id: string;
@@ -20,15 +22,77 @@ interface PlacesResponse {
   places?: PlaceResult[];
 }
 
+interface RapidApiBusiness {
+  place_id?: string;
+  business_id?: string;
+  name?: string;
+  full_address?: string;
+  phone_number?: string;
+  website?: string;
+  rating?: number;
+  review_count?: number;
+  business_status?: string; // OPEN | CLOSED_TEMPORARILY | CLOSED_PERMANENTLY
+}
+
+interface RapidApiResponse {
+  status?: string;
+  data?: RapidApiBusiness[];
+}
+
+async function buscarNoRapidAPI(
+  query: string,
+  cidade: string,
+): Promise<PlaceResult[]> {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) return [];
+
+  try {
+    const params = new URLSearchParams({
+      query: `${query} em ${cidade}`,
+      limit: "20",
+      region: "br",
+      language: "pt",
+    });
+    const res = await fetch(`https://${RAPIDAPI_HOST}/search?${params}`, {
+      headers: {
+        "x-rapidapi-host": RAPIDAPI_HOST,
+        "x-rapidapi-key": apiKey,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`[Sourcing] RapidAPI ${res.status}:`, err.substring(0, 200));
+      return [];
+    }
+
+    const data = await res.json() as RapidApiResponse;
+    const businesses = (data.data ?? []).filter(
+      (b) => b.business_status !== "CLOSED_PERMANENTLY",
+    );
+
+    // Mapeia para o mesmo shape do Google Places (place_id é o mesmo formato)
+    return businesses.map((b): PlaceResult => ({
+      id: b.place_id ?? b.business_id ?? "",
+      displayName: b.name ? { text: b.name } : undefined,
+      formattedAddress: b.full_address,
+      internationalPhoneNumber: b.phone_number,
+      websiteUri: b.website,
+      rating: b.rating,
+      userRatingCount: b.review_count,
+    }));
+  } catch (e) {
+    console.error("[Sourcing] Erro RapidAPI:", e);
+    return [];
+  }
+}
+
 async function buscarNoGooglePlaces(
   query: string,
   cidade: string,
 ): Promise<PlaceResult[]> {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-  if (!apiKey) {
-    console.warn("[Sourcing] GOOGLE_PLACES_API_KEY não configurado");
-    return [];
-  }
+  if (!apiKey) return [];
 
   try {
     const res = await fetch(PLACES_API, {
@@ -82,11 +146,34 @@ export function detectarTipoTelefoneBR(raw: string | null): "FIXO" | "CELULAR" |
   return null;
 }
 
+/**
+ * Busca empresas usando a fonte disponível: RapidAPI (primária) ou
+ * Google Places (fallback). Se a primária retornar vazio e a outra
+ * chave existir, tenta a secundária.
+ */
+async function buscarEmpresas(termo: string, cidade: string): Promise<PlaceResult[]> {
+  const temRapid = Boolean(process.env.RAPIDAPI_KEY);
+  const temGoogle = Boolean(process.env.GOOGLE_PLACES_API_KEY);
+
+  if (temRapid) {
+    const places = await buscarNoRapidAPI(termo, cidade);
+    if (places.length > 0 || !temGoogle) return places;
+    return buscarNoGooglePlaces(termo, cidade);
+  }
+  return buscarNoGooglePlaces(termo, cidade);
+}
+
 export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
   inseridos: number;
   ignorados: number;
   erros: number;
 }> {
+  if (!process.env.RAPIDAPI_KEY && !process.env.GOOGLE_PLACES_API_KEY) {
+    throw new Error(
+      "Nenhuma fonte de busca configurada: defina RAPIDAPI_KEY (ou GOOGLE_PLACES_API_KEY) no servidor",
+    );
+  }
+
   const segment = await prisma.prospectSegment.findUnique({
     where: { id: segmentId },
     include: { organization: { select: { id: true } } },
@@ -103,7 +190,7 @@ export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
   for (const termo of termos) {
     for (const cidade of segment.cidades) {
       console.log(`[Sourcing] Buscando "${termo}" em "${cidade}"...`);
-      const places = await buscarNoGooglePlaces(termo, cidade);
+      const places = await buscarEmpresas(termo, cidade);
 
       for (const place of places) {
         if (!place.id) continue;
