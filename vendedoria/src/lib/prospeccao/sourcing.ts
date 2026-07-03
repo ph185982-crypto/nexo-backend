@@ -1,11 +1,14 @@
-// Sourcing de leads via RapidAPI Local Business Data (primário) ou
-// Google Places Text Search API (fallback).
+// Sourcing de leads via:
+//   1. RapidAPI Local Business Data (primário — dados do Google Maps)
+//   2. Receita Federal via RapidAPI lista-de-empresas-por-segmento (escala B2B)
+//   3. Google Places Text Search API (fallback)
 // Env vars: RAPIDAPI_KEY | GOOGLE_PLACES_API_KEY
 
 import { prisma } from "@/lib/prisma/client";
 
 const PLACES_API = "https://places.googleapis.com/v1/places:searchText";
 const RAPIDAPI_HOST = "local-business-data.p.rapidapi.com";
+const RF_API_HOST   = "lista-de-empresas-por-segmento.p.rapidapi.com";
 
 interface PlaceResult {
   id: string;
@@ -37,6 +40,31 @@ interface RapidApiBusiness {
 interface RapidApiResponse {
   status?: string;
   data?: RapidApiBusiness[];
+}
+
+// ── Receita Federal via RapidAPI ──────────────────────────────────────────────
+
+interface RFBusiness {
+  cnpj?: string;
+  razao_social?: string;
+  nome_fantasia?: string;
+  ddd_telefone_1?: string;
+  ddd_telefone_2?: string;
+  email?: string;
+  logradouro?: string;
+  numero?: string;
+  bairro?: string;
+  municipio?: string;
+  uf?: string;
+  cep?: string;
+  situacao_cadastral?: string | number;
+}
+
+interface RFResponse {
+  status?: string;
+  data?: RFBusiness[];
+  empresas?: RFBusiness[];
+  results?: RFBusiness[];
 }
 
 async function buscarNoRapidAPI(
@@ -83,6 +111,78 @@ async function buscarNoRapidAPI(
     }));
   } catch (e) {
     console.error("[Sourcing] Erro RapidAPI:", e);
+    return [];
+  }
+}
+
+async function buscarNoReceitaFederal(
+  _query: string,
+  cidade: string,
+): Promise<PlaceResult[]> {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) return [];
+
+  // Normaliza: remove acentos, uppercase, sem parênteses (ex: "Aparecida de Goiânia" → "APARECIDA DE GOIANIA")
+  const cidadeNorm = cidade
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toUpperCase()
+    .trim();
+
+  try {
+    const params = new URLSearchParams({
+      campo:    "municipio",
+      q:        cidadeNorm,
+      situacao: "Ativa",
+    });
+
+    const res = await fetch(
+      `https://${RF_API_HOST}/buscar-por-segmento.php?${params}`,
+      {
+        headers: {
+          "Content-Type":    "application/json",
+          "x-rapidapi-host": RF_API_HOST,
+          "x-rapidapi-key":  apiKey,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`[Sourcing] ReceitaFederal ${res.status}:`, err.substring(0, 200));
+      return [];
+    }
+
+    const data = await res.json() as RFResponse;
+    // A API pode retornar os dados em campos diferentes dependendo da versão
+    const businesses: RFBusiness[] = data.data ?? data.empresas ?? data.results ?? [];
+    console.log(`[Sourcing] ReceitaFederal "${cidadeNorm}": ${businesses.length} empresas ativas`);
+
+    return businesses
+      .filter((b) => b.cnpj) // descarta entradas sem CNPJ
+      .map((b): PlaceResult => {
+        const ddd = b.ddd_telefone_1 ?? b.ddd_telefone_2;
+        // Monta telefone em E.164 a partir do DDD+número
+        const telDigits = ddd ? `+55${ddd.replace(/\D/g, "")}` : undefined;
+
+        const endParts = [b.logradouro, b.numero, b.bairro, b.municipio, b.uf, b.cep]
+          .filter(Boolean);
+
+        return {
+          // Prefixo "cnpj:" garante que nunca colide com Google place_id
+          id:          `cnpj:${b.cnpj!.replace(/\D/g, "")}`,
+          displayName: (b.nome_fantasia || b.razao_social)
+            ? { text: (b.nome_fantasia || b.razao_social)! }
+            : undefined,
+          formattedAddress:       endParts.length > 0 ? endParts.join(", ") : undefined,
+          internationalPhoneNumber: telDigits,
+          websiteUri:             undefined, // RF não tem website
+          rating:                 undefined,
+          userRatingCount:        undefined,
+        };
+      });
+  } catch (e) {
+    console.error("[Sourcing] Erro ReceitaFederal:", e);
     return [];
   }
 }
@@ -147,19 +247,33 @@ export function detectarTipoTelefoneBR(raw: string | null): "FIXO" | "CELULAR" |
 }
 
 /**
- * Busca empresas usando a fonte disponível: RapidAPI (primária) ou
- * Google Places (fallback). Se a primária retornar vazio e a outra
- * chave existir, tenta a secundária.
+ * Busca empresas combinando todas as fontes disponíveis:
+ *   1. RapidAPI Local Business Data (Google Maps via RapidAPI) — primária
+ *   2. Receita Federal via RapidAPI (escala B2B) — paralela se RAPIDAPI_KEY presente
+ *   3. Google Places Text Search — fallback se nenhuma chave RapidAPI
+ *
+ * Dedupe ocorre no chamador (buscarLeadsPorSegmento) via placeId no banco.
  */
 async function buscarEmpresas(termo: string, cidade: string): Promise<PlaceResult[]> {
-  const temRapid = Boolean(process.env.RAPIDAPI_KEY);
+  const temRapid  = Boolean(process.env.RAPIDAPI_KEY);
   const temGoogle = Boolean(process.env.GOOGLE_PLACES_API_KEY);
 
   if (temRapid) {
-    const places = await buscarNoRapidAPI(termo, cidade);
-    if (places.length > 0 || !temGoogle) return places;
-    return buscarNoGooglePlaces(termo, cidade);
+    // Roda RapidAPI Local Business Data e Receita Federal em paralelo
+    const [rapidResults, rfResults] = await Promise.all([
+      buscarNoRapidAPI(termo, cidade),
+      buscarNoReceitaFederal(termo, cidade),
+    ]);
+
+    const combined = [...rapidResults, ...rfResults];
+
+    if (combined.length > 0) return combined;
+
+    // Se ambas retornaram vazio e tem Google Places, tenta como fallback
+    if (temGoogle) return buscarNoGooglePlaces(termo, cidade);
+    return [];
   }
+
   return buscarNoGooglePlaces(termo, cidade);
 }
 

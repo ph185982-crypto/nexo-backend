@@ -1153,6 +1153,10 @@ export async function processAIResponse(
     const token = provider.accessToken ?? undefined;
     const now = new Date();
 
+    // Captura de Meet link para envio ao cliente após o loop de mensagens
+    let reuniaoMeetLink: string | null = null;
+    let reuniaoDataLabel: string | null = null;
+
     // ── [OPT_OUT] ─────────────────────────────────────────────────────────────
     if (/\[OPT_OUT\]/i.test(combinedRaw)) {
       await Promise.all([
@@ -1423,8 +1427,15 @@ export async function processAIResponse(
             },
           }).catch((e) => console.error("[REUNIAO_AGENDADA] Falha ao criar CalendarEvent local:", e));
 
+          // Captura Meet link para enviar ao cliente após o loop de mensagens
+          if (evento.meetLink) {
+            reuniaoMeetLink = evento.meetLink;
+          }
+
           // Notifica o gestor
           const dataLabel = dataHoraInicio.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
+          reuniaoDataLabel = dataLabel;
+
           const notifMsg =
             `📅 *REUNIÃO AGENDADA — NEXO*\n\n` +
             `🏢 Empresa: ${nomeNegocio}\n` +
@@ -1465,6 +1476,31 @@ export async function processAIResponse(
         data: { content: mensagens[i], type: "TEXT", role: "ASSISTANT", sentAt: msgNow, status: "SENT", conversationId },
       });
       await sendWhatsAppMessage(provider.businessPhoneNumberId, to, mensagens[i], token, i === 0 ? contextMessageId : undefined);
+    }
+
+    // ── Envia Meet link ao cliente após as mensagens de texto da IA ─────────
+    // O Meet link só está disponível após criarEventoReuniao() — não pode ir no array mensagens[]
+    if (reuniaoMeetLink) {
+      await new Promise((r) => setTimeout(r, 1000));
+      await sendTypingIndicator(provider.businessPhoneNumberId, to, 1500, token).catch(() => {});
+      await new Promise((r) => setTimeout(r, 200));
+
+      const meetMsg = `🗓️ Aqui está o link da reunião no Google Meet:\n\n${reuniaoMeetLink}`;
+      await sendWhatsAppMessage(provider.businessPhoneNumberId, to, meetMsg, token).catch((e) => console.error("[REUNIAO_AGENDADA] Falha ao enviar Meet link:", e));
+      await prisma.whatsappMessage.create({
+        data: { content: meetMsg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+      }).catch(() => {});
+
+      if (reuniaoDataLabel) {
+        await new Promise((r) => setTimeout(r, 800));
+        await sendTypingIndicator(provider.businessPhoneNumberId, to, 1200, token).catch(() => {});
+        await new Promise((r) => setTimeout(r, 200));
+        const confirmaMsg = `Confirmado para ${reuniaoDataLabel} 👊 qualquer dúvida é só chamar!`;
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, confirmaMsg, token).catch(() => {});
+        await prisma.whatsappMessage.create({
+          data: { content: confirmaMsg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+        }).catch(() => {});
+      }
     }
 
     // ── [PEDIDO_NACIONAL] — cria pedido e gera Pix/link ──────────────────────
