@@ -1,1 +1,36 @@
-bmFtZTogRGVwbG95IFZQUwpvbjoKICBwdXNoOgogICAgYnJhbmNoZXM6CiAgICAgIC0gY2xhdWRlL3doYXRzYXBwLWFpLWNybS1oWVNWVQogICAgcGF0aHM6CiAgICAgIC0gJ3Zwcy1zdGF0dXMvZGVwbG95LXRyaWdnZXIudHh0JwogIHdvcmtmbG93X2Rpc3BhdGNoOgoKam9iczoKICBkZXBsb3k6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICB0aW1lb3V0LW1pbnV0ZXM6IDYwCiAgICBzdGVwczoKICAgICAgLSBuYW1lOiBJbnN0YWxhciBzc2hwYXNzCiAgICAgICAgcnVuOiBzdWRvIGFwdC1nZXQgaW5zdGFsbCAteSBzc2hwYXNzCgogICAgICAtIG5hbWU6IERpc3BhcmFyIHNldHVwIG5hIFZQUyBlbSBiYWNrZ3JvdW5kCiAgICAgICAgZW52OgogICAgICAgICAgVlBTX1BBU1M6ICJOZXhvMjAyNi1WcHMuU3RyMG5nIgogICAgICAgIHJ1bjogfAogICAgICAgICAgc3NocGFzcyAtcCAiJFZQU19QQVNTIiBzc2ggXAogICAgICAgICAgICAtbyBTdHJpY3RIb3N0S2V5Q2hlY2tpbmc9bm8gXAogICAgICAgICAgICAtbyBDb25uZWN0VGltZW91dD0zMCBcCiAgICAgICAgICAgIHJvb3RAMTg3LjEyNy40My44MiBcCiAgICAgICAgICAgICdub2h1cCBiYXNoIDwoY3VybCAtZnNTTCBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vcGgxODU5ODItY3J5cHRvL25leG8tYmFja2VuZC9jbGF1ZGUvd2hhdHNhcHAtYWktY3JtLWhZU1ZVL3Zwcy1zZXR1cC5zaCkgPiAvcm9vdC9zZXR1cC5sb2cgMj4mMSAmCiAgICAgICAgICAgIGVjaG8gIlNldHVwIGluaWNpYWRvIG5hIFZQUyAtIFBJRCAkISInCg==
+name: Deploy VPS
+on:
+  push:
+    branches:
+      - claude/whatsapp-ai-crm-hYSVU
+    paths:
+      - 'vps-status/deploy-trigger.txt'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Verificar secret VPS_PASS
+        env:
+          VPS_PASS: ${{ secrets.VPS_PASS }}
+        run: |
+          if [ -z "$VPS_PASS" ]; then
+            echo "::error::Secret VPS_PASS não configurado. Adicione em Settings > Secrets and variables > Actions > New repository secret (nome: VPS_PASS)."
+            exit 1
+          fi
+
+      - name: Instalar sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Disparar setup na VPS em background
+        env:
+          VPS_PASS: ${{ secrets.VPS_PASS }}
+        run: |
+          sshpass -p "$VPS_PASS" ssh \
+            -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=30 \
+            root@187.127.43.82 \
+            'nohup bash <(curl -fsSL https://raw.githubusercontent.com/ph185982-crypto/nexo-backend/claude/whatsapp-ai-crm-hYSVU/vps-setup.sh) > /root/setup.log 2>&1 &
+            echo "Setup iniciado na VPS - PID $!"'
