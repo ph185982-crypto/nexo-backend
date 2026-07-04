@@ -10,6 +10,38 @@ const PLACES_API = "https://places.googleapis.com/v1/places:searchText";
 const RAPIDAPI_HOST = "local-business-data.p.rapidapi.com";
 const RF_API_HOST   = "lista-de-empresas-por-segmento.p.rapidapi.com";
 
+// ── Chave RapidAPI: banco (IntegrationCredential provider "RAPIDAPI") → env ──
+// Mesmo padrão do token Meta (WhatsappProviderConfig.accessToken ?? env) e do
+// cache de credenciais do Google Calendar.
+
+let rapidKeyCache: string | null | undefined;
+let rapidKeyCacheAt = 0;
+const RAPID_KEY_CACHE_TTL_MS = 60_000;
+
+export async function getRapidApiKey(): Promise<string | null> {
+  const now = Date.now();
+  if (rapidKeyCache !== undefined && now - rapidKeyCacheAt < RAPID_KEY_CACHE_TTL_MS) {
+    return rapidKeyCache ?? process.env.RAPIDAPI_KEY ?? null;
+  }
+  try {
+    const cred = await prisma.integrationCredential.findUnique({
+      where: { provider: "RAPIDAPI" },
+      select: { refreshToken: true },
+    });
+    rapidKeyCache = cred?.refreshToken ?? null;
+  } catch {
+    rapidKeyCache = null;
+  }
+  rapidKeyCacheAt = now;
+  return rapidKeyCache ?? process.env.RAPIDAPI_KEY ?? null;
+}
+
+/** Invalida o cache (chamar após salvar a chave pela UI/API). */
+export function invalidateRapidApiKeyCache(): void {
+  rapidKeyCache = undefined;
+  rapidKeyCacheAt = 0;
+}
+
 interface PlaceResult {
   id: string;
   displayName?: { text: string };
@@ -71,7 +103,7 @@ async function buscarNoRapidAPI(
   query: string,
   cidade: string,
 ): Promise<PlaceResult[]> {
-  const apiKey = process.env.RAPIDAPI_KEY;
+  const apiKey = await getRapidApiKey();
   if (!apiKey) return [];
 
   try {
@@ -119,7 +151,7 @@ async function buscarNoReceitaFederal(
   _query: string,
   cidade: string,
 ): Promise<PlaceResult[]> {
-  const apiKey = process.env.RAPIDAPI_KEY;
+  const apiKey = await getRapidApiKey();
   if (!apiKey) return [];
 
   // Normaliza: remove acentos, uppercase, sem parênteses (ex: "Aparecida de Goiânia" → "APARECIDA DE GOIANIA")
@@ -255,7 +287,7 @@ export function detectarTipoTelefoneBR(raw: string | null): "FIXO" | "CELULAR" |
  * Dedupe ocorre no chamador (buscarLeadsPorSegmento) via placeId no banco.
  */
 async function buscarEmpresas(termo: string, cidade: string): Promise<PlaceResult[]> {
-  const temRapid  = Boolean(process.env.RAPIDAPI_KEY);
+  const temRapid  = Boolean(await getRapidApiKey());
   const temGoogle = Boolean(process.env.GOOGLE_PLACES_API_KEY);
 
   if (temRapid) {
@@ -282,9 +314,10 @@ export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
   ignorados: number;
   erros: number;
 }> {
-  if (!process.env.RAPIDAPI_KEY && !process.env.GOOGLE_PLACES_API_KEY) {
+  const rapidKey = await getRapidApiKey();
+  if (!rapidKey && !process.env.GOOGLE_PLACES_API_KEY) {
     throw new Error(
-      "Nenhuma fonte de busca configurada: defina RAPIDAPI_KEY (ou GOOGLE_PLACES_API_KEY) no servidor",
+      "Nenhuma fonte de busca configurada: adicione sua chave RapidAPI em Configurações > Integrações",
     );
   }
 

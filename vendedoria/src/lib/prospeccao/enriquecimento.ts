@@ -6,6 +6,7 @@
 // Env var: RAPIDAPI_KEY (para Instagram)
 
 import { prisma } from "@/lib/prisma/client";
+import { getRapidApiKey } from "@/lib/prospeccao/sourcing";
 
 // ── Meta Ad Library — busca pública ───────────────────────────────────────────
 // Endpoint público: https://www.facebook.com/ads/library/api/
@@ -65,9 +66,9 @@ async function buscarInstagram(nomeNegocio: string): Promise<{
   followers: number | null;
   ultimaPostagem: Date | null;
 } | null> {
-  const rapidApiKey = process.env.RAPIDAPI_KEY;
+  const rapidApiKey = await getRapidApiKey();
   if (!rapidApiKey) {
-    console.warn("[Enriquecimento] RAPIDAPI_KEY não configurado — pulando Instagram");
+    console.warn("[Enriquecimento] Chave RapidAPI não configurada — pulando Instagram");
     return null;
   }
 
