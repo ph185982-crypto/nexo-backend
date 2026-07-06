@@ -39,3 +39,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 12:14:17 PASSO 6 — .env ═══
 
 ═══ 12:14:19 PASSO 7 — Prisma ═══
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+═══ 12:14:25 PASSO 8 — Seed VENDAS (agente Pedro) ═══
