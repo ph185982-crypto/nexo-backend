@@ -187,9 +187,12 @@ export default function ProspeccoesPage() {
                       {seg.termosSecundarios.length > 0 && ` +${seg.termosSecundarios.length} termos`}
                     </p>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-primary/10 text-primary shrink-0">
+                  <Link
+                    href={`/crm/prospeccao/leads/${seg.id}`}
+                    className="text-xs font-semibold px-2 py-1 rounded-lg bg-primary/10 text-primary shrink-0 hover:bg-primary/20 transition-colors"
+                  >
                     {seg._count?.prospects ?? 0} empresas
-                  </span>
+                  </Link>
                 </div>
 
                 <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
