@@ -1,4 +1,5 @@
 {
   "started_at": "2026-07-06T12:13:42Z",
-  "phase": "init"
+  "phase": "sistema",
+  "sistema": "ok"
 }
