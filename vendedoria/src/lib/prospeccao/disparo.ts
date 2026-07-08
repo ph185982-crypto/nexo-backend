@@ -45,10 +45,12 @@ function montarComponentesTemplate(
     website?: string | null;
     tipoNegocio?: string | null;
   },
+  extra: { nomeResponsavel?: string } = {},
 ): unknown[] {
   if (variaveis.length === 0) return [];
 
   const valoresMap: Record<string, string> = {
+    nomeResponsavel: extra.nomeResponsavel ?? "",
     nomeNegocio: lead.nome ?? "seu negócio",
     sinalOportunidade: lead.sinalOportunidade ?? "oportunidade identificada",
     telefone: lead.telefone ?? "",
@@ -165,7 +167,7 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
         lead.telefone.replace(/\D/g, ""),
       );
 
-      const components = montarComponentesTemplate(template.variaveis, lead);
+      const components = montarComponentesTemplate(template.variaveis, lead, { nomeResponsavel: providerConfig.accountName });
 
       await sendWhatsAppTemplate(
         providerConfig.businessPhoneNumberId,
