@@ -119,3 +119,6 @@ nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 ═══ 12:19:48 PASSO 13 — Aguardar app subir ═══
+tentativa 1: HTTP 307
+
+═══ 12:19:50 PASSO 14 — SSL (Let's Encrypt) ═══
