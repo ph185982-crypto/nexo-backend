@@ -2,3 +2,10 @@
 ═══ 13:35:48 PASSO 1 — Sistema + firewall ═══
 
 ═══ 13:35:54 PASSO 2 — Dependências ═══
+Installing latest LTS version.
+v24.18.0 is already installed.
+Now using node v24.18.0 (npm v11.16.0)
+Now using node v24.18.0 (npm v11.16.0)
+default -> node (-> v24.18.0 *)
+
+═══ 13:36:04 PASSO 3 — PostgreSQL ═══
