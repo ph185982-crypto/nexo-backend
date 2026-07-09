@@ -1,5 +1,8 @@
 // GET  /api/integrations/openai  — status da chave OpenAI (mascarada)
 // POST /api/integrations/openai  — salva/atualiza chave no banco + invalida cache Max
+//
+// Auth: se não há chave configurada ainda (first-run), aceita sem auth.
+//       Se já há chave, exige Bearer CRON_SECRET para trocar.
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
@@ -28,9 +31,20 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get("authorization");
-  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Check if a key is already configured in the database
+  const existing = await prisma.integrationCredential.findUnique({
+    where: { provider: "OPENAI" },
+    select: { refreshToken: true },
+  }).catch(() => null);
+
+  const alreadyConfigured = Boolean(existing?.refreshToken);
+
+  // If already configured, require CRON_SECRET to change
+  if (alreadyConfigured) {
+    const auth = req.headers.get("authorization");
+    if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json({ error: "Unauthorized — chave já configurada, envie Bearer CRON_SECRET para trocar" }, { status: 401 });
+    }
   }
 
   let key: string | undefined;
