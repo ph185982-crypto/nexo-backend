@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Kanban, Radar, Bot } from "lucide-react";
+import { MessageSquare, Kanban, Radar, Bot, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -10,6 +10,7 @@ const tabs = [
   { href: "/crm/lead/kanban",   label: "CRM",         icon: Kanban },
   { href: "/crm/prospeccao",    label: "Prospecções", icon: Radar },
   { href: "/crm/configure-agent", label: "Agente",    icon: Bot },
+  { href: "/crm/financeiro",    label: "Financeiro",  icon: Wallet },
 ];
 
 export function MobileTabBar() {

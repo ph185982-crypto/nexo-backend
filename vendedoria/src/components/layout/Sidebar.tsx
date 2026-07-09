@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
-  Settings, X, Zap, Radar,
+  Settings, X, Zap, Radar, Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,6 +46,7 @@ const navItems = [
   { href: "/crm/prospeccao",    label: "Prospecções", icon: Radar },
   { href: "/crm/calendar",      label: "Calendário",  icon: Calendar },
   { href: "/crm/configure-agent", label: "Agente",    icon: Bot },
+  { href: "/crm/financeiro",    label: "Financeiro",  icon: Wallet },
 ];
 
 export function Sidebar({
