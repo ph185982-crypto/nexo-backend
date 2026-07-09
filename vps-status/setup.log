@@ -40,3 +40,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 13:30:07 PASSO 6 — .env ═══
 
 ═══ 13:30:09 PASSO 7 — Prisma ═══
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 764ms
+
+
+═══ 13:30:17 PASSO 8 — Seed VENDAS (agente Pedro) ═══
