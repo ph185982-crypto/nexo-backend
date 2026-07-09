@@ -118,3 +118,7 @@ host metrics | cpu: 100% | ram usage: 39.3% | disk: ⇓ 0.652mb/s ⇑ 3.841mb/s 
 [PM2] Successfully saved in /root/.pm2/dump.pm2
 
 ═══ 13:37:39 PASSO 12 — Nginx ═══
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+═══ 13:37:41 PASSO 13 — Aguardar app subir ═══
