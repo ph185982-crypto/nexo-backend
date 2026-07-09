@@ -1,3 +1,24 @@
+import { prisma } from "@/lib/prisma/client";
+
+let _cachedKey: string | null = null;
+let _cachedKeyAt = 0;
+
+async function getOpenAIKey(): Promise<string> {
+  const now = Date.now();
+  if (_cachedKey && now - _cachedKeyAt < 300_000) return _cachedKey;
+  const cred = await prisma.integrationCredential.findUnique({
+    where: { provider: "OPENAI" },
+    select: { refreshToken: true },
+  }).catch(() => null);
+  const key = cred?.refreshToken ?? process.env.OPENAI_API_KEY;
+  if (!key) throw new Error("OPENAI_API_KEY not configured — set via /api/integrations/openai");
+  _cachedKey = key;
+  _cachedKeyAt = now;
+  return key;
+}
+
+export function invalidateOpenAIKeyCache() { _cachedKey = null; }
+
 export async function chatCompletion(opts: {
   model: string;
   messages: Array<{ role: string; content: unknown }>;
@@ -16,8 +37,7 @@ export async function chatCompletion(opts: {
     };
   }>;
 }> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
+  const apiKey = await getOpenAIKey();
 
   const body: Record<string, unknown> = {
     model: opts.model,
@@ -48,8 +68,7 @@ export async function chatCompletion(opts: {
 }
 
 export async function webSearch(query: string): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
+  const apiKey = await getOpenAIKey();
 
   const res = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -83,8 +102,7 @@ export async function webSearch(query: string): Promise<string> {
 }
 
 export async function speechTTS(text: string, voice: string, model: string): Promise<Buffer> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
+  const apiKey = await getOpenAIKey();
 
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST",
