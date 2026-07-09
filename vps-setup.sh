@@ -221,6 +221,10 @@ cat > "$REPO_DIR/vendedoria/scripts/cron-disparo.sh" <<'C2'
 #!/bin/bash
 curl -s http://localhost:3000/api/cron/disparo-diario >> /var/log/pm2/cron-disparo.log 2>&1
 C2
+cat > "$REPO_DIR/vendedoria/scripts/cron-max.sh" <<C3
+#!/bin/bash
+curl -s -H "Authorization: Bearer ${CRON_SECRET}" http://localhost:3000/api/cron/max >> /var/log/pm2/cron-max.log 2>&1
+C3
 chmod +x "$REPO_DIR/vendedoria/scripts/"cron-*.sh
 pm2 delete vendedoria 2>/dev/null
 pm2 start "$REPO_DIR/vendedoria/ecosystem.config.js"
@@ -229,7 +233,8 @@ PM2ST=$(pm2 startup systemd -u root --hp /root 2>&1 | grep "sudo")
 [[ -n "$PM2ST" ]] && eval "$PM2ST" 2>/dev/null
 pm2 save
 ( crontab -l 2>/dev/null; echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-followup.sh";
-  echo "0 9 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh" ) | sort -u | crontab -
+  echo "0 9 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh";
+  echo "* * * * * $REPO_DIR/vendedoria/scripts/cron-max.sh" ) | sort -u | crontab -
 setst "pm2" "ok"
 
 step "PASSO 12 — Nginx"

@@ -1106,3 +1106,162 @@ model OfertaGerada {
 
   @@index([produtoId, criadaEm])
 }
+
+// ─── Max — Assistente Pessoal Financeiro ─────────────────────────────────────
+
+model Transacao {
+  id              String   @id @default(uuid())
+  tipo            String   // receita | despesa
+  valor           Float
+  descricao       String
+  categoria       String
+  tipo_negocio    String   @default("pessoal") // pessoal | vendedoria | lukaizen | geral
+  empresa         String?
+  data_transacao  DateTime @db.Date
+  mes             String   // YYYY-MM
+  confirmado      Boolean  @default(true)
+  criado_em       DateTime @default(now())
+
+  @@map("max_transacoes")
+  @@index([data_transacao])
+  @@index([categoria])
+  @@index([mes])
+}
+
+model ConversaMax {
+  id        String   @id @default(uuid())
+  numero    String
+  role      String   // user | assistant
+  content   String   @db.Text
+  criado_em DateTime @default(now())
+
+  @@map("max_conversas")
+  @@index([numero, criado_em])
+}
+
+model ContextoPedro {
+  id             String   @id @default(uuid())
+  chave          String   @unique
+  valor          String   @db.Text
+  categoria      String?  // financeiro | negocio | pessoal | meta | contato | rotina | outros
+  atualizado_em  DateTime @default(now()) @updatedAt
+
+  @@map("max_contexto_pedro")
+}
+
+model LembreteMax {
+  id         String   @id @default(uuid())
+  descricao  String
+  data_hora  DateTime
+  recorrente Boolean  @default(false)
+  frequencia String?  // diario | semanal | mensal
+  enviado    Boolean  @default(false)
+  criado_em  DateTime @default(now())
+
+  @@map("max_lembretes")
+  @@index([enviado, data_hora])
+}
+
+model DividaMax {
+  id              String   @id @default(uuid())
+  descricao       String
+  valor_total     Float
+  valor_pago      Float    @default(0)
+  parcela_mensal  Float?
+  dia_vencimento  Int?
+  credor          String?
+  status          String   @default("ativa") // ativa | quitada
+  observacao      String?
+  criado_em       DateTime @default(now())
+
+  @@map("max_dividas")
+}
+
+model MetaFinanceiraMax {
+  id          String    @id @default(uuid())
+  descricao   String
+  valor_alvo  Float
+  valor_atual Float     @default(0)
+  tipo        String    @default("mensal")
+  tipo_negocio String?
+  data_inicio DateTime? @db.Date
+  data_fim    DateTime? @db.Date
+  status      String    @default("ativa")
+  criado_em   DateTime  @default(now())
+
+  @@map("max_metas_financeiras")
+}
+
+model ReceitaPrevistaMax {
+  id               String    @id @default(uuid())
+  descricao        String
+  valor            Float
+  data_prevista    DateTime  @db.Date
+  tipo_negocio     String?
+  cliente          String?
+  status           String    @default("pendente") // pendente | atrasada | recebida
+  data_recebimento DateTime?
+  observacao       String?
+  criado_em        DateTime  @default(now())
+
+  @@map("max_receitas_previstas")
+}
+
+model TarefaMax {
+  id                String    @id @default(uuid())
+  descricao         String
+  recorrente        Boolean   @default(false)
+  frequencia        String?   // diario | semanal | mensal
+  proxima_cobranca  DateTime?
+  status            String    @default("ativa") // ativa | concluida | cancelada
+  historico         Json      @default("[]")
+  criado_em         DateTime  @default(now())
+
+  @@map("max_tarefas")
+}
+
+model AlertaEnviadoMax {
+  id         String   @id @default(uuid())
+  chave      String   @unique
+  enviado_em DateTime @default(now())
+
+  @@map("max_alertas_enviados")
+}
+
+model ContaPagarMax {
+  id              String    @id @default(uuid())
+  descricao       String
+  valor           Float
+  data_vencimento DateTime  @db.Date
+  categoria       String    @default("Outros")
+  tipo_negocio    String    @default("pessoal")
+  recorrente      Boolean   @default(false)
+  frequencia      String?   // mensal | semanal | anual
+  status          String    @default("pendente") // pendente | paga | cancelada
+  transacao_id    String?
+  criado_em       DateTime  @default(now())
+
+  @@map("max_contas_pagar")
+  @@index([status, data_vencimento])
+}
+
+model OrcamentoMax {
+  id            String   @id @default(uuid())
+  categoria     String   @unique
+  limite_mensal Float
+  criado_em     DateTime @default(now())
+
+  @@map("max_orcamentos")
+}
+
+model WebhookEventMax {
+  id          String   @id @default(uuid())
+  from_number String?
+  msg_type    String?
+  msg_id      String?
+  payload     Json?
+  criado_em   DateTime @default(now())
+
+  @@map("max_webhook_events")
+  @@index([msg_id])
+}

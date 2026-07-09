@@ -331,3 +331,55 @@ export async function getPhoneNumberInfo(phoneNumberId: string): Promise<{
   if (!response.ok) throw new Error("Failed to get phone info");
   return response.json();
 }
+
+export async function uploadWhatsAppMedia(
+  phoneNumberId: string,
+  buffer: Buffer,
+  mimeType: string,
+  filename: string,
+  accessToken?: string,
+): Promise<{ id: string } | null> {
+  const token = resolveToken(accessToken);
+  const formData = new FormData();
+  formData.append("messaging_product", "whatsapp");
+  formData.append("type", mimeType);
+  formData.append("file", new Blob([new Uint8Array(buffer)], { type: mimeType }), filename);
+
+  const res = await fetch(`${BASE_URL}/${phoneNumberId}/media`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    console.error("[WhatsApp] Media upload failed:", res.status, await res.text());
+    return null;
+  }
+  return res.json();
+}
+
+export async function sendWhatsAppAudioById(
+  phoneNumberId: string,
+  to: string,
+  mediaId: string,
+  accessToken?: string,
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to,
+      type: "audio",
+      audio: { id: mediaId },
+    }),
+  });
+  if (!res.ok) {
+    console.error("[WhatsApp] Audio by ID send failed:", res.status, await res.text());
+  }
+}

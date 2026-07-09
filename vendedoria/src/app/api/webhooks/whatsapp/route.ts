@@ -11,6 +11,8 @@ import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@/lib/manager/handler";
 import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
+import { isMaxOwnerNumber } from "@/lib/max/config";
+import { handleMaxMessage } from "@/lib/max/responder";
 
 // ─── Webhook Verification (GET) ──────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -364,6 +366,25 @@ async function handleIncomingMessage(
     data: { status: "DONE" },
   }).catch(() => {});
   await cancelFollowUpJobs(conversation.id).catch(() => {});
+
+  if (isMaxOwnerNumber(phone)) {
+    console.log(`[Webhook] Max owner message | from=${phone} → Max assistant`);
+    handleMaxMessage(
+      {
+        text: message.text?.body ?? content,
+        isAudio,
+        media: inboundMediaId ? {
+          mediaId: inboundMediaId,
+          mimeType: message.image?.mime_type ?? message.document?.mime_type ?? "application/octet-stream",
+          type: message.type as "image" | "document" | "audio",
+          caption: inboundCaption,
+          filename: message.document?.filename,
+        } : undefined,
+      },
+      providerConfig,
+    ).catch((e) => console.error("[Webhook] Max handler error:", e));
+    return;
+  }
 
   if (isManagerNumber(phone)) {
     console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
