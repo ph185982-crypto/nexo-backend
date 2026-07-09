@@ -6,7 +6,7 @@
   "prisma": "ok",
   "clone": "ok",
   "started_at": "2026-07-09T13:35:48Z",
-  "phase": "meta",
+  "phase": "ai_test",
   "nginx": "ok",
   "sistema": "ok",
   "app_up": "yes",
@@ -17,6 +17,7 @@
   "webhook_local": "ok",
   "build": "ok",
   "npm": "ok",
+  "openai": "ok",
   "node_version": "v24.18.0",
   "commit": "97ae9db",
   "seed_prospeccao": "ok"
