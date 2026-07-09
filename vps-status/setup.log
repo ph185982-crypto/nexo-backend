@@ -13,3 +13,103 @@ DO
 GRANT
 
 ═══ 12:20:43 PASSO 4 — Clonar repo ═══
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+   4d0fa21..fc7de16  claude/whatsapp-ai-crm-hYSVU -> origin/claude/whatsapp-ai-crm-hYSVU
+Already on 'claude/whatsapp-ai-crm-hYSVU'
+M	vendedoria/package-lock.json
+Your branch is behind 'origin/claude/whatsapp-ai-crm-hYSVU' by 44 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+Updating 4d0fa21..fc7de16
+Fast-forward
+ vendedoria/prisma/schema.prisma                    | 159 ++++++
+ vendedoria/src/app/api/cron/max/route.ts           | 115 ++++
+ .../src/app/api/financeiro/contas/[id]/route.ts    | 109 ++++
+ vendedoria/src/app/api/financeiro/contas/route.ts  |  74 +++
+ .../src/app/api/financeiro/dividas/[id]/route.ts   |  82 +++
+ vendedoria/src/app/api/financeiro/dividas/route.ts |  37 ++
+ .../src/app/api/financeiro/orcamentos/route.ts     | 106 ++++
+ .../src/app/api/financeiro/overview/route.ts       | 109 +++-
+ .../src/app/api/financeiro/projecao/route.ts       | 140 +++++
+ .../src/app/api/financeiro/receitas/[id]/route.ts  |  64 +++
+ .../src/app/api/financeiro/receitas/route.ts       |  60 ++
+ .../app/api/financeiro/transacoes/[id]/route.ts    |  84 +++
+ .../src/app/api/financeiro/transacoes/route.ts     |  92 +++
+ vendedoria/src/app/api/max/migrar/route.ts         | 248 +++++++++
+ vendedoria/src/app/api/webhooks/whatsapp/route.ts  |  21 +
+ vendedoria/src/app/crm/financeiro/page.tsx         |  95 ++++
+ vendedoria/src/components/financeiro/ContasTab.tsx | 182 ++++++
+ .../src/components/financeiro/DividasTab.tsx       | 140 +++++
+ .../src/components/financeiro/ExtratoTab.tsx       | 296 ++++++++++
+ .../src/components/financeiro/OrcamentosTab.tsx    | 147 +++++
+ .../src/components/financeiro/OverviewTab.tsx      | 216 ++++++++
+ .../src/components/financeiro/ProjecaoTab.tsx      | 183 ++++++
+ .../src/components/financeiro/ReceitasTab.tsx      | 188 +++++++
+ vendedoria/src/components/layout/MobileTabBar.tsx  |   3 +-
+ vendedoria/src/components/layout/Sidebar.tsx       |   3 +-
+ vendedoria/src/lib/max/config.ts                   |  56 ++
+ vendedoria/src/lib/max/crons/alertas.ts            | 117 ++++
+ vendedoria/src/lib/max/crons/briefing.ts           | 171 ++++++
+ vendedoria/src/lib/max/crons/lembretes.ts          | 105 ++++
+ vendedoria/src/lib/max/loop.ts                     | 100 ++++
+ vendedoria/src/lib/max/media.ts                    |  58 ++
+ vendedoria/src/lib/max/openai.ts                   | 101 ++++
+ vendedoria/src/lib/max/prompt.ts                   | 178 ++++++
+ vendedoria/src/lib/max/responder.ts                | 111 ++++
+ vendedoria/src/lib/max/tools/analise.ts            | 299 ++++++++++
+ vendedoria/src/lib/max/tools/crm.ts                | 114 ++++
+ vendedoria/src/lib/max/tools/definitions.ts        | 599 ++++++++++++++++++++
+ vendedoria/src/lib/max/tools/executors.ts          |  74 +++
+ vendedoria/src/lib/max/tools/gestao.ts             | 614 +++++++++++++++++++++
+ vendedoria/src/lib/max/tools/lembretes.ts          |  79 +++
+ vendedoria/src/lib/max/tools/memoria.ts            |  24 +
+ vendedoria/src/lib/max/tools/transacoes.ts         | 371 +++++++++++++
+ vendedoria/src/lib/max/tools/web.ts                |   7 +
+ vendedoria/src/lib/whatsapp/send.ts                |  52 ++
+ vps-setup.sh                                       |   7 +-
+ vps-status/deploy-trigger.txt                      |   2 +-
+ vps-status/report.json                             |   2 +-
+ vps-status/setup.log                               |   8 +-
+ 48 files changed, 6185 insertions(+), 17 deletions(-)
+ create mode 100644 vendedoria/src/app/api/cron/max/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/contas/[id]/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/contas/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/dividas/[id]/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/dividas/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/orcamentos/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/projecao/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/receitas/[id]/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/receitas/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/transacoes/[id]/route.ts
+ create mode 100644 vendedoria/src/app/api/financeiro/transacoes/route.ts
+ create mode 100644 vendedoria/src/app/api/max/migrar/route.ts
+ create mode 100644 vendedoria/src/app/crm/financeiro/page.tsx
+ create mode 100644 vendedoria/src/components/financeiro/ContasTab.tsx
+ create mode 100644 vendedoria/src/components/financeiro/DividasTab.tsx
+ create mode 100644 vendedoria/src/components/financeiro/ExtratoTab.tsx
+ create mode 100644 vendedoria/src/components/financeiro/OrcamentosTab.tsx
+ create mode 100644 vendedoria/src/components/financeiro/OverviewTab.tsx
+ create mode 100644 vendedoria/src/components/financeiro/ProjecaoTab.tsx
+ create mode 100644 vendedoria/src/components/financeiro/ReceitasTab.tsx
+ create mode 100644 vendedoria/src/lib/max/config.ts
+ create mode 100644 vendedoria/src/lib/max/crons/alertas.ts
+ create mode 100644 vendedoria/src/lib/max/crons/briefing.ts
+ create mode 100644 vendedoria/src/lib/max/crons/lembretes.ts
+ create mode 100644 vendedoria/src/lib/max/loop.ts
+ create mode 100644 vendedoria/src/lib/max/media.ts
+ create mode 100644 vendedoria/src/lib/max/openai.ts
+ create mode 100644 vendedoria/src/lib/max/prompt.ts
+ create mode 100644 vendedoria/src/lib/max/responder.ts
+ create mode 100644 vendedoria/src/lib/max/tools/analise.ts
+ create mode 100644 vendedoria/src/lib/max/tools/crm.ts
+ create mode 100644 vendedoria/src/lib/max/tools/definitions.ts
+ create mode 100644 vendedoria/src/lib/max/tools/executors.ts
+ create mode 100644 vendedoria/src/lib/max/tools/gestao.ts
+ create mode 100644 vendedoria/src/lib/max/tools/lembretes.ts
+ create mode 100644 vendedoria/src/lib/max/tools/memoria.ts
+ create mode 100644 vendedoria/src/lib/max/tools/transacoes.ts
+ create mode 100644 vendedoria/src/lib/max/tools/web.ts
+
+═══ 12:20:46 PASSO 5 — npm install ═══
