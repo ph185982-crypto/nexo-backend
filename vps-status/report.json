@@ -1,10 +1,11 @@
 {
   "env": "ok",
+  "seed_vendas": "ok",
   "deps": "ok",
   "prisma": "ok",
   "clone": "ok",
   "started_at": "2026-07-14T18:39:53Z",
-  "phase": "prisma",
+  "phase": "seed",
   "sistema": "ok",
   "postgres": "ok",
   "npm": "ok",
