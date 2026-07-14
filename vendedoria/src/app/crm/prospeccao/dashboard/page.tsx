@@ -5,6 +5,7 @@ import { RefreshCw, TrendingUp, Users, Calendar, MessageSquare, ChevronDown } fr
 
 interface MetricasResponse {
   porStatus: Record<string, number>;
+  funil?: { abordados: number; responderam: number; qualificados: number; reunioes: number };
   taxaResposta: number;
   taxaQualificacao: number;
   taxaReuniao: number;
@@ -16,14 +17,24 @@ interface MetricasResponse {
     reunioes: number;
     taxaConversaoTotal: number;
   }>;
+  porTemplate?: Array<{
+    templateId: string;
+    nome: string;
+    ativo: boolean;
+    enviados: number;
+    respondidos: number;
+    reunioes: number;
+    taxaResposta: number;
+  }>;
+  enviosPorDia?: Record<string, number>;
 }
 
-const ETAPAS_FUNIL = [
-  { status: "APROVADO",         label: "Aprovados",       cor: "#6366f1" },
-  { status: "ABORDADO",         label: "Abordados",       cor: "#3b82f6" },
-  { status: "RESPONDEU",        label: "Responderam",     cor: "#06b6d4" },
-  { status: "QUALIFICADO",      label: "Qualificados",    cor: "#10b981" },
-  { status: "REUNIAO_AGENDADA", label: "Reunião agendada", cor: "#f59e0b" },
+// Funil cumulativo: cada etapa inclui quem avançou além dela
+const ETAPAS_FUNIL: Array<{ key: "abordados" | "responderam" | "qualificados" | "reunioes"; label: string; cor: string }> = [
+  { key: "abordados",    label: "Abordados",        cor: "#3b82f6" },
+  { key: "responderam",  label: "Responderam",      cor: "#06b6d4" },
+  { key: "qualificados", label: "Qualificados",     cor: "#10b981" },
+  { key: "reunioes",     label: "Reunião agendada", cor: "#f59e0b" },
 ];
 
 function fmt(n: number): string {
@@ -80,8 +91,8 @@ export default function DashboardProspeccaoPage() {
     void carregar();
   }, [carregar]);
 
-  const maxFunil = metricas
-    ? Math.max(1, ...ETAPAS_FUNIL.map((e) => metricas.porStatus[e.status] ?? 0))
+  const maxFunil = metricas?.funil
+    ? Math.max(1, ...ETAPAS_FUNIL.map((e) => metricas.funil?.[e.key] ?? 0))
     : 1;
 
   return (
@@ -185,10 +196,10 @@ export default function DashboardProspeccaoPage() {
           <h2 className="text-sm font-semibold text-muted-foreground mb-4">Funil de Conversão</h2>
           <div className="space-y-2">
             {ETAPAS_FUNIL.map((etapa) => {
-              const count = metricas?.porStatus[etapa.status] ?? 0;
+              const count = metricas?.funil?.[etapa.key] ?? 0;
               const pctWidth = maxFunil > 0 ? (count / maxFunil) * 100 : 0;
               return (
-                <div key={etapa.status} className="flex items-center gap-3">
+                <div key={etapa.key} className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground w-36 text-right shrink-0">
                     {etapa.label}
                   </span>
@@ -211,7 +222,7 @@ export default function DashboardProspeccaoPage() {
           {/* outros status fora do funil */}
           {metricas && (
             <div className="mt-4 pt-4 border-t flex flex-wrap gap-3">
-              {["NOVO", "ENRIQUECIDO", "PONTUADO", "ANALISADO", "DESCARTADO", "PERDIDO"].map((s) => {
+              {["NOVO", "ENRIQUECIDO", "PONTUADO", "ANALISADO", "APROVADO", "DESCARTADO", "PERDIDO", "ERRO_ENVIO"].map((s) => {
                 const c = metricas.porStatus[s] ?? 0;
                 if (c === 0) return null;
                 return (
@@ -251,6 +262,47 @@ export default function DashboardProspeccaoPage() {
                         <td className="text-right py-2.5">
                           <span className={`font-semibold ${seg.taxaConversaoTotal > 0.05 ? "text-green-600" : "text-muted-foreground"}`}>
                             {pct(seg.taxaConversaoTotal)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Por Template (A/B) */}
+        {metricas?.porTemplate && metricas.porTemplate.some((t) => t.enviados > 0) && (
+          <div className="bg-card rounded-xl border p-5">
+            <h2 className="text-sm font-semibold text-muted-foreground mb-4">Desempenho por Template</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-muted-foreground border-b">
+                    <th className="text-left py-2 font-medium">Template</th>
+                    <th className="text-right py-2 font-medium">Enviados</th>
+                    <th className="text-right py-2 font-medium">Responderam</th>
+                    <th className="text-right py-2 font-medium">Reuniões</th>
+                    <th className="text-right py-2 font-medium">Taxa resposta</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {metricas.porTemplate
+                    .filter((t) => t.enviados > 0)
+                    .sort((a, b) => b.taxaResposta - a.taxaResposta)
+                    .map((t) => (
+                      <tr key={t.templateId} className="hover:bg-background">
+                        <td className="py-2.5 font-medium text-foreground">
+                          {t.nome}
+                          {t.ativo && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">ativo</span>}
+                        </td>
+                        <td className="text-right py-2.5 text-muted-foreground">{fmt(t.enviados)}</td>
+                        <td className="text-right py-2.5 text-muted-foreground">{fmt(t.respondidos)}</td>
+                        <td className="text-right py-2.5 text-muted-foreground">{fmt(t.reunioes)}</td>
+                        <td className="text-right py-2.5">
+                          <span className={`font-semibold ${t.taxaResposta > 0.1 ? "text-green-600" : "text-muted-foreground"}`}>
+                            {pct(t.taxaResposta)}
                           </span>
                         </td>
                       </tr>
