@@ -6,7 +6,7 @@
   "prisma": "ok",
   "clone": "ok",
   "started_at": "2026-07-14T18:39:53Z",
-  "phase": "meta",
+  "phase": "ai_test",
   "nginx": "ok",
   "sistema": "ok",
   "app_up": "no",
@@ -17,6 +17,7 @@
   "webhook_local": "resp:<html> <head><title>502 Bad Gateway</title></head> <body> <center><h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.24.0 (Ubuntu)</center> </body> </html>",
   "build": "erro",
   "npm": "ok",
+  "openai": "ok",
   "node_version": "v24.18.0",
   "commit": "55ffd17",
   "seed_prospeccao": "ok"
