@@ -19,6 +19,7 @@ import { salvarInformacao } from "./memoria";
 import { analiseProfunda, projecaoCaixa } from "./analise";
 import { buscarNaWeb } from "./web";
 import { consultarCrm } from "./crm";
+import { gerenciarAgenda } from "./agenda";
 
 export async function executeMaxTool(
   name: string,
@@ -64,6 +65,8 @@ export async function executeMaxTool(
         return await buscarNaWeb(args);
       case "consultar_crm":
         return await consultarCrm(args);
+      case "gerenciar_agenda":
+        return await gerenciarAgenda(args);
       default:
         return `Tool "${name}" nao reconhecida.`;
     }

@@ -580,6 +580,57 @@ export const MAX_TOOLS: Array<{
   {
     type: "function",
     function: {
+      name: "gerenciar_agenda",
+      description:
+        "Gerencia a agenda de Pedro no Google Calendar: criar eventos, listar proximos compromissos, verificar disponibilidade ou cancelar eventos.",
+      parameters: {
+        type: "object",
+        properties: {
+          acao: {
+            type: "string",
+            enum: ["criar_evento", "listar_eventos", "ver_disponibilidade", "cancelar_evento"],
+            description: "Acao a executar na agenda",
+          },
+          titulo: {
+            type: "string",
+            description: "Titulo do evento (para criar_evento)",
+          },
+          data_hora: {
+            type: "string",
+            description: "Data e hora do evento em formato ISO 8601 com horario de Brasilia (ex: 2026-07-15T14:00:00). OBRIGATORIO para criar_evento.",
+          },
+          duracao_minutos: {
+            type: "number",
+            description: "Duracao do evento em minutos (default 30)",
+          },
+          descricao: {
+            type: "string",
+            description: "Descricao ou notas do evento (opcional)",
+          },
+          google_meet: {
+            type: "boolean",
+            description: "Se true, gera um link do Google Meet automaticamente (default false)",
+          },
+          dias: {
+            type: "number",
+            description: "Numero de dias futuros para listar eventos (default 7, para listar_eventos)",
+          },
+          quantidade: {
+            type: "number",
+            description: "Quantidade de slots disponiveis para retornar (default 5, para ver_disponibilidade)",
+          },
+          id: {
+            type: "string",
+            description: "ID do evento (para cancelar_evento)",
+          },
+        },
+        required: ["acao"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "consultar_crm",
       description:
         "Consulta dados do CRM da Vendedoria: vendas, leads, clientes, qualidade dos leads e metricas de negocio.",
