@@ -5,13 +5,14 @@
   "prisma": "ok",
   "clone": "ok",
   "started_at": "2026-07-14T18:39:53Z",
-  "phase": "ssl",
+  "phase": "webhook_verify",
   "nginx": "ok",
   "sistema": "ok",
   "app_up": "no",
   "postgres": "ok",
   "ssl": "ok",
   "pm2": "ok",
+  "webhook_local": "resp:<html> <head><title>502 Bad Gateway</title></head> <body> <center><h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.24.0 (Ubuntu)</center> </body> </html>",
   "build": "erro",
   "npm": "ok",
   "node_version": "v24.18.0",
