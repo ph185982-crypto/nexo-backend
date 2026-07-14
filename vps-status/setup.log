@@ -47,3 +47,10 @@ Fast-forward
  4 files changed, 23 insertions(+), 7 deletions(-)
 
 ═══ 20:30:48 PASSO 5 — npm install ═══
+npm warn allow-scripts   protobufjs@7.5.6 (install: (install scripts present))
+npm warn allow-scripts   puppeteer@24.43.0 (install: (install scripts present))
+npm warn allow-scripts   sharp@0.34.5 (install: (install scripts present))
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+
+═══ 20:30:56 PASSO 6 — .env ═══
