@@ -56,3 +56,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 20:30:56 PASSO 6 — .env ═══
 
 ═══ 20:30:58 PASSO 7 — Prisma ═══
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 769ms
+
+
+═══ 20:31:05 PASSO 8 — Seed VENDAS (agente Pedro) ═══
