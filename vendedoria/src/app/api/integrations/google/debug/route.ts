@@ -1,9 +1,14 @@
 // GET /api/integrations/google/debug — diagnóstico de configuração do Google Calendar
-import { NextResponse } from "next/server";
+// Requer Bearer CRON_SECRET (expõe detalhes de configuração).
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { getGoogleOAuthApp } from "@/lib/integrations/google-oauth-app";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = req.headers.get("authorization");
+  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const app = await getGoogleOAuthApp();
   const nextauthUrl = process.env.NEXTAUTH_URL;
 

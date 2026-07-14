@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import {
   listInstallmentPlans,
   createInstallmentPlan,
@@ -8,6 +9,10 @@ import {
 import { prisma } from "@/lib/prisma/client";
 
 export async function GET(req: NextRequest) {
+  const __session = await auth();
+  if (!__session?.user || (__session.user as { role?: string }).role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const organizationId = new URL(req.url).searchParams.get("organizationId");
   if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
   const plans = await listInstallmentPlans(organizationId);
@@ -15,6 +20,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const __session = await auth();
+  if (!__session?.user || (__session.user as { role?: string }).role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const body = await req.json() as {
     organizationId?: string;
     name?: string;
@@ -77,6 +86,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const __session = await auth();
+  if (!__session?.user || (__session.user as { role?: string }).role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
   await prisma.installmentPlan.update({ where: { id }, data: { isActive: false } });

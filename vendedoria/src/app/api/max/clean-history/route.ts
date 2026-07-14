@@ -1,10 +1,14 @@
 // POST /api/max/clean-history — limpa conversas antigas com conteúdo grande (base64 de imagens)
-// Sem auth necessária pois é operação local/segura (só deleta conversas do Max)
-import { NextResponse } from "next/server";
+// Requer Bearer CRON_SECRET (deleta dados).
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { MAX_OWNER_NUMBER } from "@/lib/max/config";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const auth = req.headers.get("authorization");
+  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   // Conta total antes
   const totalBefore = await prisma.conversaMax.count({ where: { numero: MAX_OWNER_NUMBER } });
 

@@ -138,7 +138,13 @@ function fallbackFollowupMessage(step: number, totalSteps: number, name: string 
   ];
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const auth = req.headers.get("authorization");
+  const secret = new URL(req.url).searchParams.get("secret");
+  if (!process.env.CRON_SECRET || (auth !== `Bearer ${process.env.CRON_SECRET}` && secret !== process.env.CRON_SECRET)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const now = new Date();
   const results = { checked: 0, sent: 0, closed: 0, errors: 0 };
 

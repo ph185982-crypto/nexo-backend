@@ -213,9 +213,9 @@ module.exports = { apps: [{
   log_date_format: 'YYYY-MM-DD HH:mm:ss' }]}
 ECO
 mkdir -p /var/log/pm2 "$REPO_DIR/vendedoria/scripts"
-cat > "$REPO_DIR/vendedoria/scripts/cron-followup.sh" <<'C1'
+cat > "$REPO_DIR/vendedoria/scripts/cron-followup.sh" <<C1
 #!/bin/bash
-curl -s http://localhost:3000/api/cron/followup >> /var/log/pm2/cron-followup.log 2>&1
+curl -s -H "Authorization: Bearer ${CRON_SECRET}" http://localhost:3000/api/cron/followup >> /var/log/pm2/cron-followup.log 2>&1
 C1
 cat > "$REPO_DIR/vendedoria/scripts/cron-disparo.sh" <<C2
 #!/bin/bash
