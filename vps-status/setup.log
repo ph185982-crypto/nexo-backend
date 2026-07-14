@@ -2,3 +2,26 @@
 ═══ 20:30:18 PASSO 1 — Sistema + firewall ═══
 
 ═══ 20:30:28 PASSO 2 — Dependências ═══
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 117797 files and directories currently installed.)
+Preparing to unpack .../wget_1.21.4-1ubuntu4.3_amd64.deb ...
+Unpacking wget (1.21.4-1ubuntu4.3) over (1.21.4-1ubuntu4.1) ...
+Setting up wget (1.21.4-1ubuntu4.3) ...
+Processing triggers for install-info (7.1-3build2) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Installing latest LTS version.
+v24.18.0 is already installed.
+Now using node v24.18.0 (npm v11.16.0)
+Now using node v24.18.0 (npm v11.16.0)
+default -> node (-> v24.18.0 *)
+
+═══ 20:30:42 PASSO 3 — PostgreSQL ═══
