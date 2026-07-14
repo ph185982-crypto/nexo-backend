@@ -225,6 +225,27 @@ cat > "$REPO_DIR/vendedoria/scripts/cron-max.sh" <<C3
 #!/bin/bash
 curl -s -H "Authorization: Bearer ${CRON_SECRET}" http://localhost:3000/api/cron/max >> /var/log/pm2/cron-max.log 2>&1
 C3
+cat > "$REPO_DIR/vendedoria/scripts/cron-backup.sh" <<'C4'
+#!/bin/bash
+# Backup diário do PostgreSQL — retenção 14 dias
+BACKUP_DIR=/root/backups/postgres
+mkdir -p "$BACKUP_DIR"
+STAMP=$(date +%Y%m%d-%H%M%S)
+sudo -u postgres pg_dump vendedoria_db | gzip > "$BACKUP_DIR/vendedoria_db-$STAMP.sql.gz" 2>> /var/log/pm2/cron-backup.log
+find "$BACKUP_DIR" -name "vendedoria_db-*.sql.gz" -mtime +14 -delete
+echo "$(date -u +%FT%TZ) backup ok: vendedoria_db-$STAMP.sql.gz ($(du -h "$BACKUP_DIR/vendedoria_db-$STAMP.sql.gz" | cut -f1))" >> /var/log/pm2/cron-backup.log
+C4
+cat > "$REPO_DIR/vendedoria/scripts/cron-healthcheck.sh" <<C5
+#!/bin/bash
+# Healthcheck: chama a rota interna; se o app não responder, reinicia o PM2 (self-healing)
+HTTP=\$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 -H "Authorization: Bearer ${CRON_SECRET}" http://localhost:3000/api/cron/healthcheck)
+if [[ "\$HTTP" != "200" ]]; then
+  echo "\$(date -u +%FT%TZ) healthcheck HTTP \$HTTP — reiniciando pm2" >> /var/log/pm2/cron-healthcheck.log
+  pm2 restart vendedoria >> /var/log/pm2/cron-healthcheck.log 2>&1
+else
+  echo "\$(date -u +%FT%TZ) ok" >> /var/log/pm2/cron-healthcheck.log
+fi
+C5
 chmod +x "$REPO_DIR/vendedoria/scripts/"cron-*.sh
 pm2 delete vendedoria 2>/dev/null
 pm2 start "$REPO_DIR/vendedoria/ecosystem.config.js"
@@ -234,7 +255,9 @@ PM2ST=$(pm2 startup systemd -u root --hp /root 2>&1 | grep "sudo")
 pm2 save
 ( crontab -l 2>/dev/null; echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-followup.sh";
   echo "0 9 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh";
-  echo "* * * * * $REPO_DIR/vendedoria/scripts/cron-max.sh" ) | sort -u | crontab -
+  echo "* * * * * $REPO_DIR/vendedoria/scripts/cron-max.sh";
+  echo "30 3 * * * $REPO_DIR/vendedoria/scripts/cron-backup.sh";
+  echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-healthcheck.sh" ) | sort -u | crontab -
 setst "pm2" "ok"
 
 step "PASSO 12 — Nginx"

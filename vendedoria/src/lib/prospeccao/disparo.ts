@@ -155,18 +155,75 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
 
   console.log(`[Disparo] ${leads.length} leads para disparar | template=${template.nomeTemplateMeta} | limite=${config.limiteDiarioAtual}`);
 
-  // 8. Disparar
-  for (const lead of leads) {
-    if (!lead.telefone) {
+  // 8. Enfileirar na fila persistente (sobrevive a restart do PM2) — pula leads já na fila
+  const jaNaFila = await prisma.disparoJob.findMany({
+    where: { leadId: { in: leads.map((l) => l.id) }, status: { in: ["QUEUED", "RUNNING"] } },
+    select: { leadId: true },
+  });
+  const jaNaFilaSet = new Set(jaNaFila.map((j) => j.leadId));
+  const novos = leads.filter((l) => !jaNaFilaSet.has(l.id));
+
+  if (novos.length > 0) {
+    await prisma.disparoJob.createMany({
+      data: novos.map((l) => ({ organizationId, leadId: l.id })),
+    });
+  }
+
+  // 9. Processar a fila (novos + qualquer QUEUED pendente de rodadas anteriores)
+  return processarFilaDisparo(organizationId, { config, providerConfig, token, template });
+}
+
+// ── Processador da fila persistente ────────────────────────────────────────────
+
+type ContextoDisparo = {
+  config: NonNullable<Awaited<ReturnType<typeof prisma.disparoConfig.findUnique>>>;
+  providerConfig: NonNullable<Awaited<ReturnType<typeof prisma.whatsappProviderConfig.findFirst>>>;
+  token: string;
+  template: NonNullable<Awaited<ReturnType<typeof prisma.templateProspeccao.findFirst>>>;
+};
+
+async function processarFilaDisparo(
+  organizationId: string,
+  ctx: ContextoDisparo,
+): Promise<{ disparados: number; ignorados: number; erros: number; motivo?: string }> {
+  const { config, providerConfig, token, template } = ctx;
+  const resultado = { disparados: 0, ignorados: 0, erros: 0 };
+
+  for (;;) {
+    // Sai da janela comercial no meio do lote → deixa o resto QUEUED (retomado depois)
+    if (!dentroJanela(config)) {
+      const restantes = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
+      if (restantes > 0) console.log(`[Disparo] Janela fechou — ${restantes} jobs ficam na fila`);
+      break;
+    }
+
+    // Claim atômico do próximo job QUEUED
+    const proximo = await prisma.disparoJob.findFirst({
+      where: { organizationId, status: "QUEUED" },
+      orderBy: { criadoEm: "asc" },
+    });
+    if (!proximo) break;
+
+    const claimed = await prisma.disparoJob.updateMany({
+      where: { id: proximo.id, status: "QUEUED" },
+      data: { status: "RUNNING" },
+    });
+    if (claimed.count === 0) continue; // outro processador pegou
+
+    const lead = await prisma.prospectLead.findUnique({ where: { id: proximo.leadId } });
+
+    // Lead sumiu, mudou de status (ex: respondeu nesse meio-tempo) ou sem telefone → ignora
+    if (!lead || !lead.telefone || !["APROVADO", "ABORDADO", "ERRO_ENVIO"].includes(lead.status)) {
+      await prisma.disparoJob.update({
+        where: { id: proximo.id },
+        data: { status: "DONE", erro: lead ? `pulado (status ${lead.status})` : "lead removido" },
+      });
       resultado.ignorados++;
       continue;
     }
 
     try {
-      const telefoneNormalizado = normalizeBrazilianNumber(
-        lead.telefone.replace(/\D/g, ""),
-      );
-
+      const telefoneNormalizado = normalizeBrazilianNumber(lead.telefone.replace(/\D/g, ""));
       const components = montarComponentesTemplate(template.variaveis, lead, { nomeResponsavel: providerConfig.accountName });
 
       await sendWhatsAppTemplate(
@@ -199,13 +256,13 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
         );
       }
 
+      await prisma.disparoJob.update({ where: { id: proximo.id }, data: { status: "DONE" } });
       resultado.disparados++;
       console.log(`[Disparo] OK | lead=${lead.id} | tel=${telefoneNormalizado} | tentativa=${atualizado.tentativasDisparo}`);
 
-      // Delay aleatório entre disparos: 30–90 segundos
-      if (lead !== leads[leads.length - 1]) {
-        await randomDelay(30_000, 90_000);
-      }
+      // Delay aleatório entre disparos: 30–90 segundos (anti-bloqueio Meta)
+      const haMais = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
+      if (haMais > 0) await randomDelay(30_000, 90_000);
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error(`[Disparo] Falha | lead=${lead.id} |`, errMsg);
@@ -221,12 +278,63 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
           tentativasDisparo: { increment: 1 },
         },
       });
+      await prisma.disparoJob.update({
+        where: { id: proximo.id },
+        data: { status: "FAILED", erro: errMsg.slice(0, 300) },
+      });
 
       resultado.erros++;
     }
   }
 
   return resultado;
+}
+
+// ── Retomada pós-restart — chamada pelo healthcheck a cada 5min ────────────────
+
+let retomadaAtiva = false;
+
+/**
+ * Retoma jobs QUEUED deixados para trás (restart do PM2 no meio do lote ou
+ * janela comercial que fechou). RUNNING órfãos (>15min sem update) voltam a QUEUED.
+ */
+export async function retomarDisparosPendentes(): Promise<void> {
+  if (retomadaAtiva) return;
+  retomadaAtiva = true;
+  try {
+    // Requeue de RUNNING órfãos
+    const staleCutoff = new Date(Date.now() - 15 * 60 * 1000);
+    await prisma.disparoJob.updateMany({
+      where: { status: "RUNNING", atualizadoEm: { lt: staleCutoff } },
+      data: { status: "QUEUED" },
+    });
+
+    const pendentes = await prisma.disparoJob.groupBy({
+      by: ["organizationId"],
+      where: { status: "QUEUED" },
+      _count: true,
+    });
+
+    for (const p of pendentes) {
+      const organizationId = p.organizationId;
+
+      // Reconstrói contexto respeitando os mesmos gates do disparo normal
+      const config = await prisma.disparoConfig.findUnique({ where: { organizationId } });
+      if (!config || config.pausadoManualmente || !dentroJanela(config)) continue;
+
+      const providerConfig = await prisma.whatsappProviderConfig.findFirst({ where: { organizationId } });
+      const token = providerConfig?.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
+      const template = await prisma.templateProspeccao.findFirst({ where: { organizationId, ativo: true } });
+      if (!providerConfig || !token || !template) continue;
+
+      console.log(`[Disparo] Retomando ${p._count} jobs pendentes da org ${organizationId}`);
+      await processarFilaDisparo(organizationId, { config, providerConfig, token, template });
+    }
+  } catch (e) {
+    console.error("[Disparo] Erro na retomada:", e);
+  } finally {
+    retomadaAtiva = false;
+  }
 }
 
 /**

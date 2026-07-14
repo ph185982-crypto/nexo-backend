@@ -1075,6 +1075,21 @@ model DisparoConfig {
   updatedAt               DateTime  @updatedAt
 }
 
+// ─── DisparoJob — fila persistente de disparo (sobrevive a restart do PM2) ────
+
+model DisparoJob {
+  id             String   @id @default(cuid())
+  organizationId String
+  leadId         String
+  status         String   @default("QUEUED") // QUEUED | RUNNING | DONE | FAILED
+  erro           String?
+  criadoEm       DateTime @default(now())
+  atualizadoEm   DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([leadId, status])
+}
+
 // ─── IntegrationCredential (OAuth do usuário — ex.: Google Calendar) ──────────
 
 model IntegrationCredential {
