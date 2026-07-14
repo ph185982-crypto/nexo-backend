@@ -106,6 +106,7 @@ export async function handleMaxMessage(
     }
   } catch (err) {
     console.error("[Max] handleMaxMessage error:", err);
-    await send("⚠️ Ops, tive um problema. Tenta de novo em alguns segundos.").catch(() => {});
+    const errMsg = err instanceof Error ? err.message : String(err);
+    await send(`⚠️ Erro Max: ${errMsg.slice(0, 300)}`).catch(() => {});
   }
 }
