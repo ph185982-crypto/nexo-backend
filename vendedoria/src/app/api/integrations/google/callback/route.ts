@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
   const cookieState = req.cookies.get("google_oauth_state")?.value;
 
   if (!code || !state || !cookieState || state !== cookieState) {
-    return NextResponse.redirect(settingsUrl("erro_state"));
+    console.error(`[GoogleOAuth] State mismatch: code=${!!code} state=${state} cookie=${cookieState}`);
+    return NextResponse.redirect(settingsUrl(`erro_state&detail=code_${!!code}_state_${!!state}_cookie_${!!cookieState}`));
   }
 
   const clientId     = process.env.GOOGLE_CALENDAR_CLIENT_ID;
@@ -40,8 +41,9 @@ export async function GET(req: NextRequest) {
     });
 
     if (!res.ok) {
-      console.error("[GoogleOAuth] Troca de code falhou:", await res.text());
-      return NextResponse.redirect(settingsUrl("erro_token"));
+      const errBody = await res.text();
+      console.error("[GoogleOAuth] Troca de code falhou:", errBody);
+      return NextResponse.redirect(settingsUrl(`erro_token&detail=${encodeURIComponent(errBody.slice(0, 200))}`));
     }
 
     const data = await res.json() as {
