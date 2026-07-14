@@ -35,7 +35,7 @@ export async function runMaxAgent(
   const userText = typeof userContent === "string"
     ? userContent
     : Array.isArray(userContent)
-      ? userContent.filter((p) => (p as { type: string }).type === "text").map((p) => (p as { text: string }).text).join(" ") || "[mídia recebida]"
+      ? userContent.filter((p) => (p as { type: string }).type === "text").map((p) => (p as unknown as { text: string }).text).join(" ") || "[mídia recebida]"
       : "[mídia recebida]";
   await prisma.conversaMax.create({
     data: { numero: MAX_OWNER_NUMBER, role: "user", content: userText },
