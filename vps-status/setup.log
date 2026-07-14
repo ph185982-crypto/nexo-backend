@@ -80,3 +80,20 @@ Credentials:
   /crm/prospeccao/fila                          → fila de aprovação humana
 
 ═══ 18:40:39 PASSO 10 — Build Next.js ═══
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/lib/max/loop.ts:38:88
+Type error: Conversion of type '{ [k: string]: unknown; type: string; }' to type '{ text: string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'text' is missing in type '{ [k: string]: unknown; type: string; }' but required in type '{ text: string; }'.
+
+[0m [90m 36 |[39m     [33m?[39m userContent[0m
+[0m [90m 37 |[39m     [33m:[39m [33mArray[39m[33m.[39misArray(userContent)[0m
+[0m[31m[1m>[22m[39m[90m 38 |[39m       [33m?[39m userContent[33m.[39mfilter((p) [33m=>[39m (p [36mas[39m { type[33m:[39m string })[33m.[39mtype [33m===[39m [32m"text"[39m)[33m.[39mmap((p) [33m=>[39m (p [36mas[39m { text[33m:[39m string })[33m.[39mtext)[33m.[39mjoin([32m" "[39m) [33m||[39m [32m"[mídia recebida]"[39m[0m
+[0m [90m    |[39m                                                                                        [31m[1m^[22m[39m[0m
+[0m [90m 39 |[39m       [33m:[39m [32m"[mídia recebida]"[39m[33m;[39m[0m
+[0m [90m 40 |[39m   [36mawait[39m prisma[33m.[39mconversaMax[33m.[39mcreate({[0m
+[0m [90m 41 |[39m     data[33m:[39m { numero[33m:[39m [33mMAX_OWNER_NUMBER[39m[33m,[39m role[33m:[39m [32m"user"[39m[33m,[39m content[33m:[39m userText }[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+
+═══ 18:41:14 PASSO 11 — PM2 ═══
