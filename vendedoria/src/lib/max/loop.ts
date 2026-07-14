@@ -10,11 +10,11 @@ export async function runMaxAgent(
 ): Promise<string> {
   const systemPrompt = await buildMaxSystemPrompt();
 
-  // Load recent conversation history
+  // Load recent conversation history (8 messages max to stay within token limits)
   const history = await prisma.conversaMax.findMany({
     where: { numero: MAX_OWNER_NUMBER },
     orderBy: { criado_em: "desc" },
-    take: 20,
+    take: 8,
     select: { role: true, content: true },
   });
 
@@ -22,16 +22,21 @@ export async function runMaxAgent(
     { role: "system", content: systemPrompt },
   ];
 
-  // Add history in chronological order
+  // Add history in chronological order, truncating large entries
   for (const h of history.reverse()) {
-    messages.push({ role: h.role, content: h.content });
+    const content = h.content.length > 2000 ? h.content.slice(0, 2000) + "…[truncado]" : h.content;
+    messages.push({ role: h.role, content });
   }
 
   // Add current user message
   messages.push({ role: "user", content: userContent });
 
-  // Persist user message
-  const userText = typeof userContent === "string" ? userContent : JSON.stringify(userContent);
+  // Persist user message — for media, store a text placeholder (not raw base64)
+  const userText = typeof userContent === "string"
+    ? userContent
+    : Array.isArray(userContent)
+      ? userContent.filter((p) => (p as { type: string }).type === "text").map((p) => (p as { text: string }).text).join(" ") || "[mídia recebida]"
+      : "[mídia recebida]";
   await prisma.conversaMax.create({
     data: { numero: MAX_OWNER_NUMBER, role: "user", content: userText },
   });
