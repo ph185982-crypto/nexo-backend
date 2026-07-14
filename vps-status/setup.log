@@ -13,3 +13,38 @@ DO
 GRANT
 
 ═══ 23:04:16 PASSO 4 — Clonar repo ═══
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+   f443817..bd51361  claude/whatsapp-ai-crm-hYSVU -> origin/claude/whatsapp-ai-crm-hYSVU
+Already on 'claude/whatsapp-ai-crm-hYSVU'
+M	vendedoria/package-lock.json
+Your branch is behind 'origin/claude/whatsapp-ai-crm-hYSVU' by 44 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+Updating f443817..bd51361
+Fast-forward
+ vendedoria/prisma/schema.prisma                    |  15 +++
+ vendedoria/src/app/api/cron/followup/route.ts      |   8 +-
+ vendedoria/src/app/api/cron/healthcheck/route.ts   |  91 +++++++++++++++
+ .../src/app/api/financeiro/accounts/route.ts       |   9 ++
+ .../src/app/api/financeiro/categories/route.ts     |   9 ++
+ .../src/app/api/financeiro/installments/route.ts   |  13 +++
+ .../src/app/api/financeiro/profiles/route.ts       |   9 ++
+ .../src/app/api/financeiro/recurring/route.ts      |  13 +++
+ .../src/app/api/financeiro/transactions/route.ts   |  13 +++
+ .../src/app/api/integrations/google/debug/route.ts |   9 +-
+ vendedoria/src/app/api/max/clean-history/route.ts  |  10 +-
+ vendedoria/src/app/api/max/diag/route.ts           |   6 +-
+ .../prospeccao/metricas/[organizationId]/route.ts  |  54 ++++++++-
+ .../src/app/crm/prospeccao/dashboard/page.tsx      |  74 ++++++++++--
+ vendedoria/src/lib/max/responder.ts                |   3 +-
+ vendedoria/src/lib/prospeccao/disparo.ts           | 130 +++++++++++++++++++--
+ vps-setup.sh                                       |  29 ++++-
+ vps-status/deploy-trigger.txt                      |   2 +-
+ vps-status/report.json                             |   2 +-
+ vps-status/setup.log                               |   8 +-
+ 20 files changed, 463 insertions(+), 44 deletions(-)
+ create mode 100644 vendedoria/src/app/api/cron/healthcheck/route.ts
+
+═══ 23:04:19 PASSO 5 — npm install ═══
