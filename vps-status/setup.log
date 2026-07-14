@@ -163,3 +163,16 @@ tentativa 39: HTTP 000
 tentativa 40: HTTP 000
 
 ═══ 18:45:23 PASSO 14 — SSL (Let's Encrypt) ═══
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Certificate not yet due for renewal
+Deploying certificate
+Successfully deployed certificate for srv1797517.hstgr.cloud to /etc/nginx/sites-enabled/vendedoria
+Congratulations! You have successfully enabled HTTPS on https://srv1797517.hstgr.cloud
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+═══ 18:45:29 PASSO 15 — Verificar webhook local (HTTPS) ═══
