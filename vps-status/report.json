@@ -1,5 +1,7 @@
 {
+  "deps": "ok",
   "started_at": "2026-07-14T20:30:18Z",
-  "phase": "sistema",
-  "sistema": "ok"
+  "phase": "deps",
+  "sistema": "ok",
+  "node_version": "v24.18.0"
 }
