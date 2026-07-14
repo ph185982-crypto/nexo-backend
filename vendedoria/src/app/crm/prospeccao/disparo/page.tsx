@@ -115,10 +115,24 @@ export default function DisparoPage() {
     setStatusDisparo("Disparo iniciado — enviando com intervalos de 30-90s entre mensagens (anti-bloqueio)...");
     try {
       const res = await fetch(`/api/prospeccao/disparo/executar/${org.id}`, { method: "POST" });
-      const data = await res.json() as { ok: boolean; error?: string };
+      const data = await res.json() as {
+        ok: boolean; error?: string; status?: string; motivo?: string;
+        disparados?: number; ignorados?: number; erros?: number;
+      };
+      if (res.status === 422 || (!res.ok && data.motivo)) {
+        setStatusDisparo(`⚠️ Disparo bloqueado: ${data.motivo ?? data.error}`);
+        setDisparando(false);
+        return;
+      }
       if (!res.ok || !data.ok) {
         setStatusDisparo(`Não iniciado: ${data.error ?? "erro"}`);
         setDisparando(false);
+        return;
+      }
+      if (data.status === "concluido") {
+        setStatusDisparo(`✅ Concluído: ${data.disparados ?? 0} enviados, ${data.ignorados ?? 0} ignorados, ${data.erros ?? 0} erros`);
+        setDisparando(false);
+        void carregar();
         return;
       }
       // Poll do status a cada 15s

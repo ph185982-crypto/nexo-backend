@@ -5,6 +5,7 @@ import {
   verificarDisponibilidade,
   buscarSlotsDisponiveis,
 } from "@/lib/integrations/google-calendar";
+import { getGoogleOAuthApp } from "@/lib/integrations/google-oauth-app";
 
 function fmtDateTime(d: Date): string {
   return `${d.toLocaleDateString("pt-BR")} ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
@@ -146,8 +147,7 @@ export async function gerenciarAgenda(args: Record<string, unknown>): Promise<st
 }
 
 async function getGoogleAccessToken(): Promise<string | null> {
-  const clientId = process.env.GOOGLE_CALENDAR_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CALENDAR_CLIENT_SECRET;
+  const app = await getGoogleOAuthApp();
 
   const cred = await prisma.integrationCredential.findUnique({
     where: { provider: "GOOGLE_CALENDAR" },
@@ -155,14 +155,14 @@ async function getGoogleAccessToken(): Promise<string | null> {
   }).catch(() => null);
 
   const refreshToken = cred?.refreshToken ?? process.env.GOOGLE_CALENDAR_REFRESH_TOKEN;
-  if (!clientId || !clientSecret || !refreshToken) return null;
+  if (!app || !refreshToken) return null;
 
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
+      client_id: app.clientId,
+      client_secret: app.clientSecret,
       refresh_token: refreshToken,
       grant_type: "refresh_token",
     }),

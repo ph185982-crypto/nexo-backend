@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
+import { getGoogleOAuthApp } from "@/lib/integrations/google-oauth-app";
 
 const GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth";
 
 // GET /api/integrations/google/connect — inicia o fluxo OAuth do Google Calendar
 export async function GET(req: NextRequest) {
-  const clientId = process.env.GOOGLE_CALENDAR_CLIENT_ID;
-  if (!clientId) {
+  const app = await getGoogleOAuthApp();
+  if (!app) {
     return NextResponse.json(
-      { error: "GOOGLE_CALENDAR_CLIENT_ID não configurado no servidor" },
+      { error: "Credenciais do app Google não configuradas (banco ou GOOGLE_CALENDAR_CLIENT_ID/SECRET)" },
       { status: 500 },
     );
   }
+  const clientId = app.clientId;
 
   const origin = process.env.NEXTAUTH_URL ?? req.nextUrl.origin;
   const redirectUri = `${origin.replace(/\/$/, "")}/api/integrations/google/callback`;

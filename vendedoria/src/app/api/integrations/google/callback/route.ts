@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { invalidateGoogleCredentialCache } from "@/lib/integrations/google-calendar";
+import { getGoogleOAuthApp } from "@/lib/integrations/google-oauth-app";
 
 const GOOGLE_TOKEN = "https://oauth2.googleapis.com/token";
 
@@ -19,11 +20,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(settingsUrl(`erro_state&detail=code_${!!code}_state_${!!state}_cookie_${!!cookieState}`));
   }
 
-  const clientId     = process.env.GOOGLE_CALENDAR_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CALENDAR_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
+  const app = await getGoogleOAuthApp();
+  if (!app) {
     return NextResponse.redirect(settingsUrl("erro_config"));
   }
+  const clientId     = app.clientId;
+  const clientSecret = app.clientSecret;
 
   const redirectUri = `${origin.replace(/\/$/, "")}/api/integrations/google/callback`;
 

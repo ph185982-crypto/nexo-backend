@@ -5,6 +5,7 @@
 // Client ID/Secret sempre vêm de GOOGLE_CALENDAR_CLIENT_ID/CLIENT_SECRET.
 
 import { prisma } from "@/lib/prisma/client";
+import { getGoogleOAuthApp } from "./google-oauth-app";
 
 const GOOGLE_AUTH_URL = "https://oauth2.googleapis.com/token";
 const CALENDAR_API = "https://www.googleapis.com/calendar/v3";
@@ -53,15 +54,15 @@ export function invalidateGoogleCredentialCache(): void {
 }
 
 async function getAccessToken(): Promise<string | null> {
-  const clientId     = process.env.GOOGLE_CALENDAR_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CALENDAR_CLIENT_SECRET;
+  const app          = await getGoogleOAuthApp();
   const stored       = await getStoredCredential();
   const refreshToken = stored?.refreshToken ?? process.env.GOOGLE_CALENDAR_REFRESH_TOKEN;
 
-  if (!clientId || !clientSecret || !refreshToken) {
+  if (!app || !refreshToken) {
     console.warn("[GoogleCalendar] Credenciais não configuradas (conecte em Configurações > Integrações)");
     return null;
   }
+  const { clientId, clientSecret } = app;
 
   try {
     const res = await fetch(GOOGLE_AUTH_URL, {

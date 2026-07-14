@@ -23,19 +23,33 @@ export async function POST(
 
   emAndamento.set(organizationId, { iniciadoEm: new Date().toISOString() });
 
-  void executarDisparoDiario(organizationId)
+  const execucao = executarDisparoDiario(organizationId)
     .then((resultado) => {
       ultimoResultado.set(organizationId, { finalizadoEm: new Date().toISOString(), resultado });
       console.log(`[Disparo] Rodada manual concluída para ${organizationId}:`, resultado);
+      return resultado;
     })
     .catch((e) => {
-      ultimoResultado.set(organizationId, {
-        finalizadoEm: new Date().toISOString(),
-        resultado: { erro: String(e) },
-      });
+      const resultado = { disparados: 0, ignorados: 0, erros: 1, motivo: `erro interno: ${String(e).slice(0, 200)}` };
+      ultimoResultado.set(organizationId, { finalizadoEm: new Date().toISOString(), resultado });
       console.error(`[Disparo] Rodada manual falhou para ${organizationId}:`, e);
+      return resultado;
     })
     .finally(() => emAndamento.delete(organizationId));
+
+  // Se um gate bloquear (pausa, janela, template, leads…), executarDisparoDiario
+  // retorna em <5s com `motivo` — devolve isso ao usuário na hora em vez de 202 mudo.
+  // Se realmente começou a disparar (delays de 30-90s/lead), responde 202 e segue em background.
+  const timeout = new Promise<null>((r) => setTimeout(() => r(null), 5_000));
+  const rapido = await Promise.race([execucao, timeout]);
+
+  if (rapido) {
+    const bloqueado = rapido.disparados === 0 && rapido.motivo;
+    return NextResponse.json(
+      { ok: !bloqueado, status: "concluido", ...rapido },
+      { status: bloqueado ? 422 : 200 },
+    );
+  }
 
   return NextResponse.json({ ok: true, status: "iniciado" }, { status: 202 });
 }
