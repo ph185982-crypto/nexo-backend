@@ -185,3 +185,8 @@ webhook local resp: <html>
 </html>
 
 ═══ 18:45:34 PASSO 16 — Configurar webhook na Meta ═══
+Meta subscription resp: {"error":{"message":"(#2200) Callback verification failed with the following errors: HTTP Status Code = 502; HTTP Message = Bad Gateway","type":"OAuthException","code":2200,"fbtrace_id":"A3DEaq4tBpMTO63T4uGW0BL"}}
+phone info: {"display_phone_number":"+55 62 9325-0802","verified_name":"pedro","quality_rating":"GREEN","id":"1009631782242056"}
+{"error":{"message":"Unsupported post request. Object with ID '1009631782242056' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph 
+
+═══ 18:45:39 PASSO 17 — Teste OpenAI (agente responde) ═══
