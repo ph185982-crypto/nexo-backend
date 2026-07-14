@@ -139,3 +139,8 @@ If you like Certbot, please consider supporting our work by:
 webhook local resp: PING123
 
 ═══ 18:34:55 PASSO 16 — Configurar webhook na Meta ═══
+Meta subscription resp: {"success":true}
+phone info: {"display_phone_number":"+55 62 9325-0802","verified_name":"pedro","quality_rating":"GREEN","id":"1009631782242056"}
+{"error":{"message":"Unsupported post request. Object with ID '1009631782242056' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph 
+
+═══ 18:35:15 PASSO 17 — Teste OpenAI (agente responde) ═══
