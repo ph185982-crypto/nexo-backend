@@ -48,3 +48,10 @@ Fast-forward
  create mode 100644 vendedoria/src/app/api/cron/healthcheck/route.ts
 
 ═══ 23:04:19 PASSO 5 — npm install ═══
+npm warn allow-scripts   protobufjs@7.5.6 (install: (install scripts present))
+npm warn allow-scripts   puppeteer@24.43.0 (install: (install scripts present))
+npm warn allow-scripts   sharp@0.34.5 (install: (install scripts present))
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+
+═══ 23:04:27 PASSO 6 — .env ═══
