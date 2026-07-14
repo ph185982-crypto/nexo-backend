@@ -115,11 +115,12 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
     return { ...resultado, motivo: "sem access token" };
   }
 
-  // 6. Buscar template ativo
-  const template = await prisma.templateProspeccao.findFirst({
+  // 6. Buscar templates ativos (2+ = rotação A/B automática entre eles)
+  const templates = await prisma.templateProspeccao.findMany({
     where: { organizationId, ativo: true },
+    orderBy: { createdAt: "asc" },
   });
-  if (!template) {
+  if (templates.length === 0) {
     console.warn(`[Disparo] Nenhum TemplateProspeccao ativo para org ${organizationId} — disparo abortado`);
     return { ...resultado, motivo: "nenhum template ativo cadastrado" };
   }
@@ -153,7 +154,7 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
     return { ...resultado, motivo: "nenhum lead APROVADO ou retentativa disponível" };
   }
 
-  console.log(`[Disparo] ${leads.length} leads para disparar | template=${template.nomeTemplateMeta} | limite=${config.limiteDiarioAtual}`);
+  console.log(`[Disparo] ${leads.length} leads para disparar | templates=${templates.map((t) => t.nomeTemplateMeta).join(",")} | limite=${config.limiteDiarioAtual}`);
 
   // 8. Enfileirar na fila persistente (sobrevive a restart do PM2) — pula leads já na fila
   const jaNaFila = await prisma.disparoJob.findMany({
@@ -170,7 +171,7 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
   }
 
   // 9. Processar a fila (novos + qualquer QUEUED pendente de rodadas anteriores)
-  return processarFilaDisparo(organizationId, { config, providerConfig, token, template });
+  return processarFilaDisparo(organizationId, { config, providerConfig, token, templates });
 }
 
 // ── Processador da fila persistente ────────────────────────────────────────────
@@ -179,15 +180,16 @@ type ContextoDisparo = {
   config: NonNullable<Awaited<ReturnType<typeof prisma.disparoConfig.findUnique>>>;
   providerConfig: NonNullable<Awaited<ReturnType<typeof prisma.whatsappProviderConfig.findFirst>>>;
   token: string;
-  template: NonNullable<Awaited<ReturnType<typeof prisma.templateProspeccao.findFirst>>>;
+  templates: Array<NonNullable<Awaited<ReturnType<typeof prisma.templateProspeccao.findFirst>>>>;
 };
 
 async function processarFilaDisparo(
   organizationId: string,
   ctx: ContextoDisparo,
 ): Promise<{ disparados: number; ignorados: number; erros: number; motivo?: string }> {
-  const { config, providerConfig, token, template } = ctx;
+  const { config, providerConfig, token, templates } = ctx;
   const resultado = { disparados: 0, ignorados: 0, erros: 0 };
+  let rodada = 0; // rotação A/B: alterna template a cada envio
 
   for (;;) {
     // Sai da janela comercial no meio do lote → deixa o resto QUEUED (retomado depois)
@@ -221,6 +223,9 @@ async function processarFilaDisparo(
       resultado.ignorados++;
       continue;
     }
+
+    const template = templates[rodada % templates.length];
+    rodada++;
 
     try {
       const telefoneNormalizado = normalizeBrazilianNumber(lead.telefone.replace(/\D/g, ""));
@@ -324,11 +329,14 @@ export async function retomarDisparosPendentes(): Promise<void> {
 
       const providerConfig = await prisma.whatsappProviderConfig.findFirst({ where: { organizationId } });
       const token = providerConfig?.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
-      const template = await prisma.templateProspeccao.findFirst({ where: { organizationId, ativo: true } });
-      if (!providerConfig || !token || !template) continue;
+      const templates = await prisma.templateProspeccao.findMany({
+        where: { organizationId, ativo: true },
+        orderBy: { createdAt: "asc" },
+      });
+      if (!providerConfig || !token || templates.length === 0) continue;
 
       console.log(`[Disparo] Retomando ${p._count} jobs pendentes da org ${organizationId}`);
-      await processarFilaDisparo(organizationId, { config, providerConfig, token, template });
+      await processarFilaDisparo(organizationId, { config, providerConfig, token, templates });
     }
   } catch (e) {
     console.error("[Disparo] Erro na retomada:", e);

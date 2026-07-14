@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBrasiliaHour } from "@/lib/max/config";
 import { dispatchLembretes, cobrarTarefas } from "@/lib/max/crons/lembretes";
 import { dispatchAlertas } from "@/lib/max/crons/alertas";
+import { lembrarReunioes } from "@/lib/max/crons/reunioes";
+import { resumirDia } from "@/lib/max/crons/memoria";
 import {
   enviarBriefingMatinal,
   enviarFechamentoDia,
@@ -55,6 +57,14 @@ export async function GET(req: NextRequest) {
     errors.push(`cobrancas: ${e instanceof Error ? e.message : String(e)}`);
   }
 
+  // Per-minute: lembrete pré-reunião pro lead (1h antes, dedup por evento)
+  try {
+    const reun = await lembrarReunioes();
+    if (reun > 0) ran.push(`pre-reuniao:${reun}`);
+  } catch (e) {
+    errors.push(`pre-reuniao: ${e instanceof Error ? e.message : String(e)}`);
+  }
+
   // Hourly gated jobs (only run within the target hour)
   if (hora === 8) {
     // Daily briefing
@@ -98,6 +108,16 @@ export async function GET(req: NextRequest) {
       ran.push("fechamento");
     } catch (e) {
       errors.push(`fechamento: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+
+  // Memória longa: resumo do dia às 21h (mantém últimos 7 dias em ContextoPedro)
+  if (hora === 21 && await tryDedup(`resumo-dia-${hojeStr}`)) {
+    try {
+      const ok = await resumirDia(hojeStr);
+      if (ok) ran.push("resumo-dia");
+    } catch (e) {
+      errors.push(`resumo-dia: ${e instanceof Error ? e.message : String(e)}`);
     }
   }
 

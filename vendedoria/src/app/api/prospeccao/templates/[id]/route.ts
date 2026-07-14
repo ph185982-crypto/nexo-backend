@@ -19,13 +19,8 @@ export async function PATCH(
     return NextResponse.json({ error: "Template não encontrado" }, { status: 404 });
   }
 
-  if (body.ativo === true) {
-    await prisma.templateProspeccao.updateMany({
-      where: { organizationId: existing.organizationId, ativo: true, NOT: { id } },
-      data: { ativo: false },
-    });
-  }
-
+  // Vários templates podem ficar ativos ao mesmo tempo — o disparo alterna
+  // entre eles (rotação A/B) e o dashboard compara a taxa de resposta.
   const template = await prisma.templateProspeccao.update({
     where: { id },
     data: {

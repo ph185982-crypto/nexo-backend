@@ -156,7 +156,8 @@ export default function DisparoPage() {
     }
   };
 
-  const templateAtivo = templates.find((t) => t.ativo);
+  const templatesAtivos = templates.filter((t) => t.ativo);
+  const templateAtivo = templatesAtivos[0];
 
   if (orgChecked && !org) {
     return (
@@ -246,12 +247,21 @@ export default function DisparoPage() {
             Crie o template no Gerenciador da Meta e cadastre o nome exato aqui.
           </p>
 
-          {templateAtivo ? (
-            <div className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3">
-              <p className="text-sm font-medium text-foreground">✓ Ativo: {templateAtivo.nomeTemplateMeta}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Idioma: {templateAtivo.idioma} · Variáveis: {templateAtivo.variaveis.join(", ") || "nenhuma"}
-              </p>
+          {templatesAtivos.length > 0 ? (
+            <div className="space-y-2">
+              {templatesAtivos.map((t) => (
+                <div key={t.id} className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3">
+                  <p className="text-sm font-medium text-foreground">✓ Ativo: {t.nomeTemplateMeta}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Idioma: {t.idioma} · Variáveis: {t.variaveis.join(", ") || "nenhuma"}
+                  </p>
+                </div>
+              ))}
+              {templatesAtivos.length > 1 && (
+                <p className="text-xs text-muted-foreground">
+                  🔀 {templatesAtivos.length} templates ativos — o disparo alterna entre eles (teste A/B). Compare a taxa de resposta no Dashboard.
+                </p>
+              )}
             </div>
           ) : (
             <p className="text-sm text-amber-500">Nenhum template ativo — cadastre abaixo para liberar o disparo.</p>

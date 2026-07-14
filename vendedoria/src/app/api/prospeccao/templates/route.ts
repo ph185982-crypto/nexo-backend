@@ -29,14 +29,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Só um template ativo por vez — desativa os demais se este nasce ativo
+  // Vários templates ativos são permitidos — o disparo alterna entre eles
+  // (rotação A/B) e o dashboard compara a taxa de resposta por template.
   const ativo = body.ativo ?? true;
-  if (ativo) {
-    await prisma.templateProspeccao.updateMany({
-      where: { organizationId: body.organizationId, ativo: true },
-      data: { ativo: false },
-    });
-  }
 
   const template = await prisma.templateProspeccao.create({
     data: {
