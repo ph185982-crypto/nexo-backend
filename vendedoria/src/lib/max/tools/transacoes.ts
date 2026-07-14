@@ -58,6 +58,7 @@ export async function registrarTransacao(args: Record<string, unknown>): Promise
   return [
     `Transacao registrada (ID: ${tx.id}):`,
     `  ${tx.tipo === "receita" ? "+" : "-"} ${BRL.format(tx.valor)} — ${tx.descricao} [${tx.categoria}]`,
+    `  Data: ${fmtDate(dataTransacao)}`,
     ``,
     `Resumo de hoje (${fmtDate(now)}):`,
     `  Receitas: ${BRL.format(totalReceitas)}`,
