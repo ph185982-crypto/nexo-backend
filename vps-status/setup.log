@@ -13,3 +13,35 @@ DO
 GRANT
 
 ═══ 22:02:48 PASSO 4 — Clonar repo ═══
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+   3aeb430..f443817  claude/whatsapp-ai-crm-hYSVU -> origin/claude/whatsapp-ai-crm-hYSVU
+Already on 'claude/whatsapp-ai-crm-hYSVU'
+M	vendedoria/package-lock.json
+Your branch is behind 'origin/claude/whatsapp-ai-crm-hYSVU' by 42 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+Updating 3aeb430..f443817
+Fast-forward
+ .../integrations/google/app-credentials/route.ts   |  77 +++++++++++++
+ .../app/api/integrations/google/callback/route.ts  |   8 +-
+ .../app/api/integrations/google/connect/route.ts   |   8 +-
+ .../src/app/api/integrations/google/debug/route.ts |  17 ++-
+ .../disparo/diagnostico/[organizationId]/route.ts  | 128 +++++++++++++++++++++
+ .../disparo/executar/[organizationId]/route.ts     |  24 +++-
+ vendedoria/src/app/crm/prospeccao/disparo/page.tsx |  16 ++-
+ vendedoria/src/lib/ai/prompt-compiler.ts           |  19 +++
+ vendedoria/src/lib/integrations/google-calendar.ts |   7 +-
+ .../src/lib/integrations/google-oauth-app.ts       |  44 +++++++
+ vendedoria/src/lib/max/tools/agenda.ts             |  10 +-
+ vps-setup.sh                                       |   4 +-
+ vps-status/deploy-trigger.txt                      |   2 +-
+ vps-status/report.json                             |   2 +-
+ vps-status/setup.log                               |   8 +-
+ 15 files changed, 340 insertions(+), 34 deletions(-)
+ create mode 100644 vendedoria/src/app/api/integrations/google/app-credentials/route.ts
+ create mode 100644 vendedoria/src/app/api/prospeccao/disparo/diagnostico/[organizationId]/route.ts
+ create mode 100644 vendedoria/src/lib/integrations/google-oauth-app.ts
+
+═══ 22:02:51 PASSO 5 — npm install ═══
