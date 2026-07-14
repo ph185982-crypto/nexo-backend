@@ -1,9 +1,10 @@
 {
   "env": "ok",
   "deps": "ok",
+  "prisma": "ok",
   "clone": "ok",
   "started_at": "2026-07-14T21:00:12Z",
-  "phase": "env",
+  "phase": "prisma",
   "sistema": "ok",
   "postgres": "ok",
   "npm": "ok",
