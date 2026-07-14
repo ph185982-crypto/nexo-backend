@@ -121,3 +121,45 @@ nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 ═══ 18:41:21 PASSO 13 — Aguardar app subir ═══
+tentativa 1: HTTP 000
+tentativa 2: HTTP 000
+tentativa 3: HTTP 000
+tentativa 4: HTTP 000
+tentativa 5: HTTP 000
+tentativa 6: HTTP 000
+tentativa 7: HTTP 000
+tentativa 8: HTTP 000
+tentativa 9: HTTP 000
+tentativa 10: HTTP 000
+tentativa 11: HTTP 000
+tentativa 12: HTTP 000
+tentativa 13: HTTP 000
+tentativa 14: HTTP 000
+tentativa 15: HTTP 000
+tentativa 16: HTTP 000
+tentativa 17: HTTP 000
+tentativa 18: HTTP 000
+tentativa 19: HTTP 000
+tentativa 20: HTTP 000
+tentativa 21: HTTP 000
+tentativa 22: HTTP 000
+tentativa 23: HTTP 000
+tentativa 24: HTTP 000
+tentativa 25: HTTP 000
+tentativa 26: HTTP 000
+tentativa 27: HTTP 000
+tentativa 28: HTTP 000
+tentativa 29: HTTP 000
+tentativa 30: HTTP 000
+tentativa 31: HTTP 000
+tentativa 32: HTTP 000
+tentativa 33: HTTP 000
+tentativa 34: HTTP 000
+tentativa 35: HTTP 000
+tentativa 36: HTTP 000
+tentativa 37: HTTP 000
+tentativa 38: HTTP 000
+tentativa 39: HTTP 000
+tentativa 40: HTTP 000
+
+═══ 18:45:23 PASSO 14 — SSL (Let's Encrypt) ═══
