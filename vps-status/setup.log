@@ -195,3 +195,38 @@ OpenAI: Incorrect API key provided: sk-proj-************************************
 ═══ 18:45:42 PASSO 18 — Verificação externa final ═══
 
 ═══ 18:45:47 CONCLUÍDO ═══
+┌────┬───────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name          │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ vendedoria    │ default     │ 0.1.0   │ fork    │ 0        │ 0      │ 16   │ errored   │ 0%       │ 0b       │ root     │ disabled │
+└────┴───────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 3.7% | ram usage: 14.4% | eth0: ⇓ 0.003mb/s ⇑ 0.002mb/s | disk: ⇓ 0.219mb/s ⇑ 0.018mb/s |
+{
+  "db_agents": "2",
+  "env": "ok",
+  "seed_vendas": "ok",
+  "phone_quality": "GREEN",
+  "deps": "ok",
+  "prisma": "ok",
+  "finished_at": "2026-07-14T18:45:47Z",
+  "clone": "ok",
+  "started_at": "2026-07-14T18:39:53Z",
+  "phase": "done",
+  "nginx": "ok",
+  "sistema": "ok",
+  "app_up": "no",
+  "postgres": "ok",
+  "db_orgs": "3",
+  "ssl": "ok",
+  "meta_subscription": "resp:{error:{message:(#2200) Callback verification failed with the following errors: HTTP Status Code = 502; HTTP Message = Bad Gateway,type:OAuthException,code:2200,fbtrace_id:A3DEaq4tBpMTO",
+  "pm2": "ok",
+  "webhook_local": "resp:<html> <head><title>502 Bad Gateway</title></head> <body> <center><h1>502 Bad Gateway</h1></center> <hr><center>nginx/1.24.0 (Ubuntu)</center> </body> </html>",
+  "build": "erro",
+  "npm": "ok",
+  "openai": "ok",
+  "https_externo": "502",
+  "db_providers": "2",
+  "node_version": "v24.18.0",
+  "commit": "55ffd17",
+  "seed_prospeccao": "ok"
+}
