@@ -97,3 +97,23 @@ Type error: Conversion of type '{ [k: string]: unknown; type: string; }' to type
 Next.js build worker exited with code: 1 and signal: null
 
 ═══ 18:41:14 PASSO 11 — PM2 ═══
+[PM2] Applying action deleteProcessId on app [vendedoria](ids: [ 0 ])
+[PM2] [vendedoria](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 80.7% | ram usage: 60.6% | lo: ⇓ 0.006mb/s ⇑ 0.006mb/s | eth0: ⇓ 0.005mb/s ⇑ 0.005mb/s | disk: ⇓ 7.52mb/s ⇑ 5.084mb/s |
+[PM2][WARN] Applications vendedoria not running, starting...
+[PM2] App [vendedoria] launched (1 instances)
+┌────┬───────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name          │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ vendedoria    │ default     │ 0.1.0   │ fork    │ 79036    │ 0s     │ 0    │ online    │ 0%       │ 10.9mb   │ root     │ disabled │
+└────┴───────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 80.7% | ram usage: 60.6% | lo: ⇓ 0.006mb/s ⇑ 0.006mb/s | eth0: ⇓ 0.005mb/s ⇑ 0.005mb/s | disk: ⇓ 7.52mb/s ⇑ 5.084mb/s |
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+
+═══ 18:41:18 PASSO 12 — Nginx ═══
