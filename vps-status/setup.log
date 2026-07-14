@@ -42,3 +42,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 21:21:39 PASSO 6 — .env ═══
 
 ═══ 21:21:41 PASSO 7 — Prisma ═══
+Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 773ms
+
+
+═══ 21:21:48 PASSO 8 — Seed VENDAS (agente Pedro) ═══
