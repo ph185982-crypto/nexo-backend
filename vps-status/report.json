@@ -1,8 +1,9 @@
 {
+  "env": "ok",
   "deps": "ok",
   "clone": "ok",
   "started_at": "2026-07-14T23:03:51Z",
-  "phase": "npm",
+  "phase": "env",
   "sistema": "ok",
   "postgres": "ok",
   "npm": "ok",
