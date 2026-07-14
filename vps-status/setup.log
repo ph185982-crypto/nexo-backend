@@ -150,3 +150,38 @@ OpenAI: Incorrect API key provided: sk-proj-************************************
 ═══ 20:57:16 PASSO 18 — Verificação externa final ═══
 
 ═══ 20:57:20 CONCLUÍDO ═══
+┌────┬───────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name          │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ vendedoria    │ default     │ 0.1.0   │ fork    │ 87602    │ 28s    │ 0    │ online    │ 0%       │ 248.2mb  │ root     │ disabled │
+└────┴───────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 62.9% | ram usage: 19.1% | lo: ⇓ 0.007mb/s ⇑ 0.007mb/s | eth0: ⇓ 0.007mb/s ⇑ 0.006mb/s | disk: ⇓ 2.059mb/s ⇑ 4.091mb/s |
+{
+  "db_agents": "2",
+  "env": "ok",
+  "seed_vendas": "ok",
+  "phone_quality": "GREEN",
+  "deps": "ok",
+  "prisma": "ok",
+  "finished_at": "2026-07-14T20:57:20Z",
+  "clone": "ok",
+  "started_at": "2026-07-14T20:55:00Z",
+  "phase": "done",
+  "nginx": "ok",
+  "sistema": "ok",
+  "app_up": "yes",
+  "postgres": "ok",
+  "db_orgs": "3",
+  "ssl": "ok",
+  "meta_subscription": "ok",
+  "pm2": "ok",
+  "webhook_local": "ok",
+  "build": "ok",
+  "npm": "ok",
+  "openai": "ok",
+  "https_externo": "307",
+  "db_providers": "2",
+  "node_version": "v24.18.0",
+  "commit": "20f0a7c",
+  "seed_prospeccao": "ok"
+}
