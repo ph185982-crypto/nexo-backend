@@ -104,31 +104,47 @@ export async function criarEventoReuniao(params: {
   dataHoraInicio: Date;
   duracaoMinutos?: number;
   descricao?: string;
+  generateMeet?: boolean;
+  attendeeEmail?: string;
+  timezone?: string;
 }): Promise<EventoReuniao | null> {
   const token = await getAccessToken();
   if (!token) return null;
 
-  const { nomeNegocio, telefone, dataHoraInicio, duracaoMinutos = 30, descricao } = params;
+  const {
+    nomeNegocio, telefone, dataHoraInicio, duracaoMinutos = 30,
+    descricao, generateMeet = true, attendeeEmail, timezone = "America/Sao_Paulo",
+  } = params;
   const calendarId = await getCalendarId();
 
   const fim = new Date(dataHoraInicio.getTime() + duracaoMinutos * 60_000);
 
-  const body = {
+  const body: Record<string, unknown> = {
     summary: `Reunião — ${nomeNegocio}`,
     description: descricao ?? `Reunião de apresentação via WhatsApp.\nContato: ${telefone}`,
-    start: { dateTime: dataHoraInicio.toISOString(), timeZone: "America/Sao_Paulo" },
-    end:   { dateTime: fim.toISOString(),             timeZone: "America/Sao_Paulo" },
-    conferenceData: {
+    start: { dateTime: dataHoraInicio.toISOString(), timeZone: timezone },
+    end:   { dateTime: fim.toISOString(),             timeZone: timezone },
+  };
+
+  if (generateMeet) {
+    body.conferenceData = {
       createRequest: {
         requestId:             `nexos-${Date.now()}`,
         conferenceSolutionKey: { type: "hangoutsMeet" },
       },
-    },
-  };
+    };
+  }
+
+  if (attendeeEmail) {
+    body.attendees = [{ email: attendeeEmail }];
+  }
+
+  const confParam = generateMeet ? "conferenceDataVersion=1" : "";
+  const sendParam = attendeeEmail ? "sendUpdates=all" : "sendUpdates=none";
 
   try {
     const res = await fetch(
-      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events?conferenceDataVersion=1&sendUpdates=none`,
+      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events?${[confParam, sendParam].filter(Boolean).join("&")}`,
       {
         method:  "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },

@@ -45,7 +45,8 @@ const GET_ORGS = gql`
 const CREATE_EVENT = gql`
   mutation CreateCalendarEvent($input: CreateCalendarEventInput!) {
     createCalendarEvent(input: $input) {
-      id title startTime endTime status
+      id title startTime endTime status provider googleMeetLink
+      attendees { id name email }
     }
   }
 `;
@@ -188,11 +189,17 @@ export default function CalendarPage() {
           saveToGoogle: formData.saveToGoogle,
           generateMeet: formData.generateMeet,
           sendWhatsappNotification: formData.sendWhatsapp,
+          attendeeName: formData.attendeeName || undefined,
+          attendeeEmail: formData.attendeeEmail || undefined,
+          attendeePhone: formData.attendeePhone || undefined,
         },
       },
     });
     setNewEventOpen(false);
-    setFormData({ ...formData, title: "", description: "", startTime: "", endTime: "" });
+    setFormData({
+      ...formData, title: "", description: "", startTime: "", endTime: "",
+      attendeeName: "", attendeeEmail: "", attendeePhone: "",
+    });
   };
 
   const prevMonth = () => {

@@ -414,6 +414,9 @@ export const typeDefs = `#graphql
     saveToGoogle: Boolean
     generateMeet: Boolean
     sendWhatsappNotification: Boolean
+    attendeeName: String
+    attendeeEmail: String
+    attendeePhone: String
   }
 
   input CreateProfissionalInput {
