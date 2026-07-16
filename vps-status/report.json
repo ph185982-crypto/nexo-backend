@@ -1,7 +1,8 @@
 {
   "deps": "ok",
   "started_at": "2026-07-16T18:16:29Z",
-  "phase": "deps",
+  "phase": "postgres",
   "sistema": "ok",
+  "postgres": "ok",
   "node_version": "v24.18.0"
 }
