@@ -30,33 +30,52 @@ export async function GET(
     return NextResponse.json({ error: "sem access token" }, { status: 400 });
   }
 
-  // Resolve o WABA real. O campo pode estar vazio/placeholder (DEMO_WABA_ID) —
-  // nesse caso pergunta à Meta a qual WABA o phone number pertence e grava.
-  let wabaId = provider.wabaId;
-  if (!wabaId || wabaId === "DEMO_WABA_ID") {
+  const gget = async (path: string): Promise<Record<string, unknown>> => {
     try {
-      const r = await fetch(
-        `${GRAPH}/${provider.businessPhoneNumberId}?fields=whatsapp_business_account`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      if (r.ok) {
-        const j = await r.json() as { whatsapp_business_account?: { id?: string } };
-        const resolved = j.whatsapp_business_account?.id;
-        if (resolved) {
-          wabaId = resolved;
-          await prisma.whatsappProviderConfig.update({
-            where: { id: provider.id },
-            data: { wabaId: resolved },
-          }).catch(() => {});
-        }
+      const r = await fetch(`${GRAPH}/${path}${path.includes("?") ? "&" : "?"}access_token=${token}`);
+      return await r.json() as Record<string, unknown>;
+    } catch (e) { return { error: String(e) }; }
+  };
+
+  // Resolve o WABA real percorrendo os negócios do token e achando o WABA que
+  // contém o phone number desta org. Grava de volta no provider.
+  const debug: Record<string, unknown> = {};
+  let wabaId = provider.wabaId && provider.wabaId !== "DEMO_WABA_ID" ? provider.wabaId : null;
+
+  if (!wabaId) {
+    const candidatos = new Set<string>();
+    const bizs = await gget("me/businesses?fields=id,name&limit=50");
+    debug.businesses = bizs;
+    for (const b of (bizs.data as Array<{ id: string }> | undefined) ?? []) {
+      for (const edge of ["owned_whatsapp_business_accounts", "client_whatsapp_business_accounts"]) {
+        const w = await gget(`${b.id}/${edge}?fields=id,name&limit=50`);
+        for (const wa of (w.data as Array<{ id: string }> | undefined) ?? []) candidatos.add(wa.id);
       }
-    } catch { /* segue com o que tiver */ }
+    }
+    debug.wabaCandidatos = [...candidatos];
+
+    // Acha o WABA que tem o nosso phone number
+    for (const cand of candidatos) {
+      const phones = await gget(`${cand}/phone_numbers?fields=id&limit=50`);
+      const temNosso = ((phones.data as Array<{ id: string }> | undefined) ?? [])
+        .some((p) => p.id === provider.businessPhoneNumberId);
+      if (temNosso) { wabaId = cand; break; }
+    }
+    // Se não casou pelo phone, mas só há 1 candidato, usa ele
+    if (!wabaId && candidatos.size === 1) wabaId = [...candidatos][0];
+
+    if (wabaId) {
+      await prisma.whatsappProviderConfig.update({
+        where: { id: provider.id }, data: { wabaId },
+      }).catch(() => {});
+    }
   }
 
-  if (!wabaId || wabaId === "DEMO_WABA_ID") {
+  if (!wabaId) {
     return NextResponse.json({
-      error: "não consegui resolver o WABA ID a partir do phone number — verifique o token/permissões",
+      error: "não consegui achar o WABA que contém este número — veja os candidatos no debug",
       phoneNumberId: provider.businessPhoneNumberId,
+      debug,
     }, { status: 400 });
   }
 
