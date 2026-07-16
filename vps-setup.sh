@@ -254,7 +254,7 @@ PM2ST=$(pm2 startup systemd -u root --hp /root 2>&1 | grep "sudo")
 [[ -n "$PM2ST" ]] && eval "$PM2ST" 2>/dev/null
 pm2 save
 ( crontab -l 2>/dev/null; echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-followup.sh";
-  echo "0 9 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh";
+  echo "0 12-20 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh";
   echo "* * * * * $REPO_DIR/vendedoria/scripts/cron-max.sh";
   echo "30 3 * * * $REPO_DIR/vendedoria/scripts/cron-backup.sh";
   echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-healthcheck.sh" ) | sort -u | crontab -
