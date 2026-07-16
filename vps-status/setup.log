@@ -122,3 +122,6 @@ nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 ═══ 21:22:17 PASSO 13 — Aguardar app subir ═══
+tentativa 1: HTTP 307
+
+═══ 21:22:19 PASSO 13b — Verificar auth dos crons + migração Supabase ═══
