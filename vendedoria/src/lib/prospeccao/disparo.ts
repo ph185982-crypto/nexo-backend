@@ -109,6 +109,60 @@ async function enviarTemplateAdaptativo(
 }
 
 /**
+ * Registra a abordagem na aba Conversas: cria (ou reutiliza) a WhatsappConversation
+ * do lead e grava a mensagem de saída (template). Assim o contato aparece em
+ * Conversas imediatamente, sem depender de o lead responder primeiro.
+ */
+async function registrarConversaDisparo(params: {
+  crmLeadId: string;
+  providerConfigId: string;
+  telefone: string;
+  profileName?: string | null;
+  templateNome: string;
+  tentativa: number;
+}): Promise<void> {
+  const { crmLeadId, providerConfigId, telefone, profileName, templateNome, tentativa } = params;
+
+  let conversa = await prisma.whatsappConversation.findFirst({
+    where: { leadId: crmLeadId, whatsappProviderConfigId: providerConfigId },
+    select: { id: true },
+  });
+
+  const agora = new Date();
+
+  if (!conversa) {
+    conversa = await prisma.whatsappConversation.create({
+      data: {
+        customerWhatsappBusinessId: telefone,
+        profileName: profileName ?? null,
+        leadOrigin: "OUTBOUND",
+        leadId: crmLeadId,
+        whatsappProviderConfigId: providerConfigId,
+        etapa: "NOVO",
+        lastMessageAt: agora,
+      },
+      select: { id: true },
+    });
+  }
+
+  await prisma.whatsappMessage.create({
+    data: {
+      content: `📤 Abordagem enviada (template "${templateNome}") — tentativa ${tentativa}`,
+      type: "TEXT",
+      role: "ASSISTANT",
+      sentAt: agora,
+      status: "SENT",
+      conversationId: conversa.id,
+    },
+  });
+
+  await prisma.whatsappConversation.update({
+    where: { id: conversa.id },
+    data: { lastMessageAt: agora, isActive: true },
+  });
+}
+
+/**
  * Executa uma rodada de disparos diários para a organização.
  * Respeita limite, janela de horário, pausa manual e saúde do número.
  */
@@ -313,6 +367,16 @@ async function processarFilaDisparo(
           colunaPorTentativa(atualizado.tentativasDisparo),
           `Disparo de prospecção — tentativa ${atualizado.tentativasDisparo}`,
         );
+
+        // Registra a abordagem na aba Conversas (conversa + mensagem de saída)
+        await registrarConversaDisparo({
+          crmLeadId,
+          providerConfigId: providerConfig.id,
+          telefone: telefoneNormalizado,
+          profileName: atualizado.nome,
+          templateNome: template.nomeTemplateMeta,
+          tentativa: atualizado.tentativasDisparo,
+        }).catch((e) => console.error(`[Disparo] Falha ao registrar conversa | lead=${lead.id}:`, e));
       }
 
       await prisma.disparoJob.update({ where: { id: proximo.id }, data: { status: "DONE" } });
