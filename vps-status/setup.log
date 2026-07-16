@@ -125,3 +125,9 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 tentativa 1: HTTP 307
 
 ═══ 19:20:36 PASSO 13b — Verificar auth dos crons + migração Supabase ═══
+healthcheck autenticado: HTTP 200
+Token Supabase configurado — rodando migração...
+Resultado da migração salvo em /var/www/status/migracao.json:
+{"mode":"migrate","summary":{"transacoes":{"source_count":742,"inserted":0,"skipped":742,"db_count":790,"checksum":160166.11,"dropped_columns":["comprovante_url"]},"conversas":{"source_count":338,"inserted":0,"skipped":338,"db_count":393,"dropped_columns":["metadata"]},"contexto_pedro":{"source_count":32,"inserted":0,"skipped":32,"db_count":32},"lembretes":{"source_count":7,"inserted":0,"skipped":7,"db_count":7},"dividas":{"source_count":9,"inserted":0,"skipped":9,"db_count":9,"checksum":92369.98},"metas_financeiras":{"source_count":2,"inserted":0,"skipped":2,"db_count":2,"checksum":57142.54},"receitas_previstas":{"source_count":1,"inserted":0,"skipped":1,"db_count":5,"checksum":500},"tarefas":{"source_count":1,"inserted":0,"skipped":1,"db_count":1},"alertas_enviados":{"source_count":3,"in
+
+═══ 19:20:47 PASSO 14 — SSL (Let's Encrypt) ═══
