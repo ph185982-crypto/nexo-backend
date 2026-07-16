@@ -52,3 +52,20 @@ Running generate... (Use --skip-generate to skip the generators)
 
 
 ═══ 21:20:58 PASSO 8 — Seed VENDAS (agente Pedro) ═══
+✓ Agent: Pedro — Nexo Brasil
+✓ Kanban columns created
+✓ Tags created
+✓ Sample leads created
+✓ Work unit: Unidade Centro
+✓ Professional: Dr. Rafael Mendes
+✓ AI Config: default (emoji=true, reticencias=true, nivel=medio)
+
+✅ Seed completed!
+
+Credentials:
+  Email: admin@vendedoria.com
+  Password: admin123
+
+🌱  The seed command has been executed.
+
+═══ 21:21:01 PASSO 9 — Seed PROSPECÇÃO (Fase 2) ═══
