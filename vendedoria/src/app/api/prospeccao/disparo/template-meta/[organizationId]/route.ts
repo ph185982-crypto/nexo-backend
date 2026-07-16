@@ -73,13 +73,20 @@ export async function GET(
       }
     }
 
-    // 2. via páginas do token (Página FB conectada a uma WABA)
-    const pages = await gget("me/accounts?fields=id,name&limit=50");
+    // 2. via páginas do token — usa o TOKEN DA PÁGINA (mais permissivo) p/ ler a WABA
+    const pages = await gget("me/accounts?fields=id,name,access_token&limit=50");
     debug.pages = (pages.data as Array<{ id: string; name: string }> | undefined)?.map((p) => p.name) ?? pages;
-    for (const p of (pages.data as Array<{ id: string }> | undefined) ?? []) {
-      const wa = await gget(`${p.id}?fields=whatsapp_business_account{id,name}`);
-      const id = (wa.whatsapp_business_account as { id?: string } | undefined)?.id;
-      if (id) candidatos.add(id);
+    for (const p of (pages.data as Array<{ id: string; access_token?: string }> | undefined) ?? []) {
+      const pageToken = p.access_token ?? token;
+      for (const field of ["whatsapp_business_account", "owned_whatsapp_business_accounts", "client_whatsapp_business_accounts"]) {
+        try {
+          const r = await fetch(`${GRAPH}/${p.id}?fields=${field}{id,name}&access_token=${pageToken}`);
+          const wa = await r.json() as Record<string, unknown>;
+          const direct = (wa[field] as { id?: string } | undefined)?.id;
+          if (direct) candidatos.add(direct);
+          for (const x of (wa[field] as { data?: Array<{ id: string }> } | undefined)?.data ?? []) candidatos.add(x.id);
+        } catch { /* ignora */ }
+      }
     }
 
     debug.wabaCandidatos = [...candidatos];

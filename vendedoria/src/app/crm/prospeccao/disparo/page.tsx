@@ -17,6 +17,7 @@ interface Template {
   idioma: string;
   variaveis: string[];
   ativo: boolean;
+  corpoTexto?: string | null;
 }
 
 interface DisparoConfig {
@@ -437,11 +438,32 @@ export default function DisparoPage() {
           {templatesAtivos.length > 0 ? (
             <div className="space-y-2">
               {templatesAtivos.map((t) => (
-                <div key={t.id} className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3">
+                <div key={t.id} className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 space-y-2">
                   <p className="text-sm font-medium text-foreground">✓ Ativo: {t.nomeTemplateMeta}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground">
                     Idioma: {t.idioma} · Variáveis: {t.variaveis.join(", ") || "nenhuma"}
                   </p>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Texto da mensagem (o que o lead recebe — igual ao aprovado na Meta)
+                    </label>
+                    <textarea
+                      defaultValue={t.corpoTexto ?? ""}
+                      placeholder="Cole aqui o texto exato do template aprovado na Meta. Aparece na aba Conversas."
+                      rows={3}
+                      className={`${inputCls} mt-1 resize-y`}
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        if (val !== (t.corpoTexto ?? "")) {
+                          void fetch(`/api/prospeccao/templates/${t.id}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ corpoTexto: val }),
+                          }).then(() => carregar());
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               ))}
               {templatesAtivos.length > 1 && (

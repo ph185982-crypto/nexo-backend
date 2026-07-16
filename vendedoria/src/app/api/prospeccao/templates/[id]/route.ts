@@ -12,6 +12,7 @@ export async function PATCH(
     idioma?: string;
     variaveis?: string[];
     ativo?: boolean;
+    corpoTexto?: string;
   };
 
   const existing = await prisma.templateProspeccao.findUnique({ where: { id } });
@@ -28,6 +29,7 @@ export async function PATCH(
       ...(body.idioma !== undefined ? { idioma: body.idioma } : {}),
       ...(body.variaveis !== undefined ? { variaveis: body.variaveis } : {}),
       ...(body.ativo !== undefined ? { ativo: body.ativo } : {}),
+      ...(body.corpoTexto !== undefined ? { corpoTexto: body.corpoTexto } : {}),
     },
   });
 
