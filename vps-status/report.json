@@ -1,13 +1,15 @@
 {
   "env": "ok",
+  "seed_vendas": "ok",
   "deps": "ok",
   "prisma": "ok",
   "clone": "ok",
   "started_at": "2026-07-16T19:18:26Z",
-  "phase": "prisma",
+  "phase": "seed",
   "sistema": "ok",
   "postgres": "ok",
   "npm": "ok",
   "node_version": "v24.18.0",
-  "commit": "8867c9b"
+  "commit": "8867c9b",
+  "seed_prospeccao": "ok"
 }
