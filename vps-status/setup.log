@@ -95,3 +95,23 @@ Credentials:
 
 
 ═══ 20:23:58 PASSO 11 — PM2 ═══
+[PM2] Applying action deleteProcessId on app [vendedoria](ids: [ 0 ])
+[PM2] [vendedoria](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 100% | ram usage: 39.5% | lo: ⇓ 0.001mb/s ⇑ 0.001mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.001mb/s | disk: ⇓ 0.606mb/s ⇑ 2.19mb/s |
+[PM2][WARN] Applications vendedoria not running, starting...
+[PM2] App [vendedoria] launched (1 instances)
+┌────┬───────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name          │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ vendedoria    │ default     │ 0.1.0   │ fork    │ 172804   │ 0s     │ 0    │ online    │ 0%       │ 17.9mb   │ root     │ disabled │
+└────┴───────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 100% | ram usage: 39.5% | lo: ⇓ 0.001mb/s ⇑ 0.001mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.001mb/s | disk: ⇓ 0.606mb/s ⇑ 2.19mb/s |
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+
+═══ 20:24:03 PASSO 12 — Nginx ═══
