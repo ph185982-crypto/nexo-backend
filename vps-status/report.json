@@ -1,8 +1,10 @@
 {
   "deps": "ok",
+  "clone": "ok",
   "started_at": "2026-07-16T19:04:55Z",
-  "phase": "postgres",
+  "phase": "clone",
   "sistema": "ok",
   "postgres": "ok",
-  "node_version": "v24.18.0"
+  "node_version": "v24.18.0",
+  "commit": "72c4645"
 }
