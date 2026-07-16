@@ -261,7 +261,8 @@ pm2 save
 PM2ST=$(pm2 startup systemd -u root --hp /root 2>&1 | grep "sudo")
 [[ -n "$PM2ST" ]] && eval "$PM2ST" 2>/dev/null
 pm2 save
-( crontab -l 2>/dev/null; echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-followup.sh";
+# Remove entradas antigas do disparo (horário errado) antes de adicionar as novas
+( crontab -l 2>/dev/null | grep -v "cron-disparo.sh"; echo "*/5 * * * * $REPO_DIR/vendedoria/scripts/cron-followup.sh";
   echo "0 12-20 * * 1-5 $REPO_DIR/vendedoria/scripts/cron-disparo.sh";
   echo "* * * * * $REPO_DIR/vendedoria/scripts/cron-max.sh";
   echo "30 3 * * * $REPO_DIR/vendedoria/scripts/cron-backup.sh";
@@ -306,6 +307,31 @@ for i in $(seq 1 40); do
   sleep 6
 done
 setst "app_up" "$APP_UP"
+
+step "PASSO 13b — Verificar auth dos crons + migração Supabase"
+setst "phase" "cron_auth"
+HCODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 -H "Authorization: Bearer ${CRON_SECRET}" http://localhost:3000/api/cron/healthcheck 2>/dev/null)
+echo "healthcheck autenticado: HTTP $HCODE"
+setst "cron_auth" "$([[ \"$HCODE\" == \"200\" ]] && echo ok || echo \"http:$HCODE\")"
+
+# Migração Supabase: roda se o token estiver configurado no banco
+# (injetado em runtime via /api/integrations/supabase/token — nunca no repo).
+# Idempotente: createMany com skipDuplicates.
+MIG_CONF=$(curl -s --max-time 10 http://localhost:3000/api/integrations/supabase/token 2>/dev/null | grep -o '"configured":true' || true)
+if [[ -n "$MIG_CONF" ]]; then
+  echo "Token Supabase configurado — rodando migração..."
+  curl -s --max-time 280 -X POST http://localhost:3000/api/max/migrar \
+    -H "Authorization: Bearer ${CRON_SECRET}" \
+    -H "Content-Type: application/json" \
+    -d '{"mode":"migrate"}' > "$STATUS_DIR/migracao.json" 2>&1
+  chmod 644 "$STATUS_DIR/migracao.json"
+  echo "Resultado da migração salvo em $STATUS_DIR/migracao.json:"
+  head -c 800 "$STATUS_DIR/migracao.json"; echo ""
+  grep -q '"summary"' "$STATUS_DIR/migracao.json" && setst "migracao" "ok" || setst "migracao" "erro"
+else
+  echo "Token Supabase não configurado — migração pulada"
+  setst "migracao" "sem-token"
+fi
 
 step "PASSO 14 — SSL (Let's Encrypt)"
 setst "phase" "ssl"
