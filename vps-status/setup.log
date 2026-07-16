@@ -149,3 +149,6 @@ phone info: {"display_phone_number":"+55 62 9325-0802","verified_name":"pedro","
 {"error":{"message":"Unsupported post request. Object with ID '1009631782242056' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph 
 
 ═══ 19:58:36 PASSO 17 — Teste OpenAI (agente responde) ═══
+OpenAI: Incorrect API key provided: sk-proj-********************************************************************************************************************************************************HGEA. You can find your API key at https://platform.openai.com/account/api-keys.
+
+═══ 19:58:39 PASSO 18 — Verificação externa final ═══
