@@ -1047,6 +1047,7 @@ model TemplateProspeccao {
   idioma           String   @default("pt_BR")
   variaveis        String[]
   ativo            Boolean  @default(true)
+  corpoTexto       String?  @db.Text  // corpo real do template puxado da Meta (com {{n}})
   prospects        ProspectLead[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

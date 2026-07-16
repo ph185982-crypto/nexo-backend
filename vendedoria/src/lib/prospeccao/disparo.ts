@@ -113,6 +113,29 @@ async function enviarTemplateAdaptativo(
  * do lead e grava a mensagem de saída (template). Assim o contato aparece em
  * Conversas imediatamente, sem depender de o lead responder primeiro.
  */
+/** Renderiza o corpo do template ({{1}},{{2}}…) com os valores do lead. */
+function renderarCorpoTemplate(
+  corpoTexto: string | null | undefined,
+  variaveis: string[],
+  lead: Parameters<typeof montarComponentesTemplate>[1],
+  nomeResponsavel?: string | null,
+): string | null {
+  if (!corpoTexto) return null;
+  const valoresMap: Record<string, string> = {
+    nomeResponsavel: nomeResponsavel ?? "",
+    nomeNegocio: lead.nome ?? "seu negócio",
+    sinalOportunidade: lead.sinalOportunidade ?? "oportunidade identificada",
+    telefone: lead.telefone ?? "",
+    website: lead.website ?? "",
+    tipoNegocio: lead.tipoNegocio ?? "",
+  };
+  return corpoTexto.replace(/\{\{\s*(\d+)\s*\}\}/g, (_m, n) => {
+    const idx = Number(n) - 1;
+    const chave = variaveis[idx];
+    return chave ? (valoresMap[chave] ?? _m) : _m;
+  });
+}
+
 async function registrarConversaDisparo(params: {
   crmLeadId: string;
   providerConfigId: string;
@@ -120,8 +143,9 @@ async function registrarConversaDisparo(params: {
   profileName?: string | null;
   templateNome: string;
   tentativa: number;
+  mensagemTexto?: string | null;
 }): Promise<void> {
-  const { crmLeadId, providerConfigId, telefone, profileName, templateNome, tentativa } = params;
+  const { crmLeadId, providerConfigId, telefone, profileName, templateNome, tentativa, mensagemTexto } = params;
 
   let conversa = await prisma.whatsappConversation.findFirst({
     where: { leadId: crmLeadId, whatsappProviderConfigId: providerConfigId },
@@ -145,9 +169,14 @@ async function registrarConversaDisparo(params: {
     });
   }
 
+  // Usa o corpo real do template (renderizado); se ainda não sincronizado, mostra um aviso curto
+  const conteudo = mensagemTexto?.trim()
+    ? mensagemTexto.trim()
+    : `📤 Abordagem enviada (template "${templateNome}", tentativa ${tentativa})`;
+
   await prisma.whatsappMessage.create({
     data: {
-      content: `📤 Abordagem enviada (template "${templateNome}") — tentativa ${tentativa}`,
+      content: conteudo,
       type: "TEXT",
       role: "ASSISTANT",
       sentAt: agora,
@@ -369,6 +398,10 @@ async function processarFilaDisparo(
         );
 
         // Registra a abordagem na aba Conversas (conversa + mensagem de saída)
+        const mensagemTexto = renderarCorpoTemplate(
+          (template as { corpoTexto?: string | null }).corpoTexto,
+          template.variaveis, lead, providerConfig.accountName,
+        );
         await registrarConversaDisparo({
           crmLeadId,
           providerConfigId: providerConfig.id,
@@ -376,6 +409,7 @@ async function processarFilaDisparo(
           profileName: atualizado.nome,
           templateNome: template.nomeTemplateMeta,
           tentativa: atualizado.tentativasDisparo,
+          mensagemTexto,
         }).catch((e) => console.error(`[Disparo] Falha ao registrar conversa | lead=${lead.id}:`, e));
       }
 

@@ -48,6 +48,21 @@ export async function GET(
     // 0. env explícita
     if (process.env.META_WHATSAPP_WABA_ID) candidatos.add(process.env.META_WHATSAPP_WABA_ID);
 
+    // 0b. MÉTODO CANÔNICO: debug_token revela os WABAs nos granular_scopes do token.
+    //     Usa o app token ({app_id}|{app_secret}) para inspecionar o token do usuário.
+    const appId = process.env.META_WHATSAPP_APP_ID;
+    const appSecret = process.env.META_WHATSAPP_APP_SECRET;
+    if (appId && appSecret) {
+      const dbg = await gget(`debug_token?input_token=${token}&access_token=${appId}|${appSecret}`);
+      const scopes = ((dbg.data as { granular_scopes?: Array<{ scope: string; target_ids?: string[] }> } | undefined)?.granular_scopes) ?? [];
+      debug.granularScopes = scopes.map((s) => s.scope);
+      for (const s of scopes) {
+        if (s.scope.includes("whatsapp_business")) {
+          for (const id of s.target_ids ?? []) candidatos.add(id);
+        }
+      }
+    }
+
     // 1. via negócios do token
     const bizs = await gget("me/businesses?fields=id,name&limit=50");
     debug.businesses = bizs;
@@ -96,18 +111,18 @@ export async function GET(
 
   const templatesBanco = await prisma.templateProspeccao.findMany({
     where: { organizationId },
-    select: { nomeTemplateMeta: true, idioma: true, variaveis: true, ativo: true },
+    select: { id: true, nomeTemplateMeta: true, idioma: true, variaveis: true, ativo: true },
   });
 
-  // Busca todos os templates da WABA na Meta
+  // Busca todos os templates da WABA resolvida na Meta
   let metaTemplates: Array<{ name: string; language: string; status: string; components: MetaComponent[] }> = [];
   try {
     const res = await fetch(
-      `${GRAPH}/${provider.wabaId}/message_templates?fields=name,language,status,components&limit=200`,
+      `${GRAPH}/${wabaId}/message_templates?fields=name,language,status,components&limit=200`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
     if (!res.ok) {
-      return NextResponse.json({ error: `Meta API ${res.status}`, detalhe: await res.text() }, { status: 502 });
+      return NextResponse.json({ error: `Meta API ${res.status}`, detalhe: await res.text(), wabaId, debug }, { status: 502 });
     }
     const data = await res.json() as { data?: typeof metaTemplates };
     metaTemplates = data.data ?? [];
@@ -115,44 +130,47 @@ export async function GET(
     return NextResponse.json({ error: "falha ao consultar Meta", detalhe: String(e) }, { status: 502 });
   }
 
-  // Cruza cada template do banco com a definição real na Meta
-  const analise = templatesBanco.map((tb) => {
+  // Cruza cada template do banco com a definição real na Meta e GRAVA o corpo real
+  const analise = [];
+  for (const tb of templatesBanco) {
     const meta = metaTemplates.find((m) => m.name === tb.nomeTemplateMeta);
     if (!meta) {
-      return {
+      analise.push({
         nome: tb.nomeTemplateMeta,
         ativo: tb.ativo,
         problema: "NÃO EXISTE na Meta com esse nome (ou não aprovado nesta WABA)",
         variaveisBanco: tb.variaveis,
-      };
+      });
+      continue;
     }
     const body = meta.components.find((c) => c.type === "BODY");
-    // Conta placeholders {{n}} no corpo real do template
-    const placeholders = body?.text ? (body.text.match(/\{\{\s*\d+\s*\}\}/g) ?? []).length : 0;
+    const corpo = body?.text ?? null;
+    const placeholders = corpo ? (corpo.match(/\{\{\s*\d+\s*\}\}/g) ?? []).length : 0;
     const esperadoMeta = body?.example?.body_text?.[0]?.length ?? placeholders;
-    const enviadoBanco = tb.variaveis.length;
 
-    return {
+    // Grava o corpo real (e ajusta a contagem de variáveis) no template
+    await prisma.templateProspeccao.update({
+      where: { id: tb.id },
+      data: {
+        corpoTexto: corpo,
+        ...(esperadoMeta !== tb.variaveis.length ? { variaveis: tb.variaveis.slice(0, esperadoMeta) } : {}),
+      },
+    }).catch(() => {});
+
+    analise.push({
       nome: tb.nomeTemplateMeta,
       idioma: `${tb.idioma} (Meta: ${meta.language})`,
       status: meta.status,
       ativo: tb.ativo,
-      corpoTemplate: body?.text ?? "(sem corpo)",
+      corpoTemplate: corpo ?? "(sem corpo)",
       parametrosEsperadosPelaMeta: esperadoMeta,
-      parametrosEnviadosPeloBanco: enviadoBanco,
-      variaveisBanco: tb.variaveis,
-      bate: esperadoMeta === enviadoBanco,
-      problema: esperadoMeta === enviadoBanco
-        ? null
-        : `MISMATCH: Meta espera ${esperadoMeta} parâmetro(s), banco envia ${enviadoBanco}. ` +
-          (esperadoMeta === 0
-            ? "O template não tem variáveis — remova todas as variáveis no cadastro."
-            : `Ajuste as variáveis no banco para exatamente ${esperadoMeta} item(ns).`),
-    };
-  });
+      parametrosEnviadosPeloBanco: tb.variaveis.length,
+      corpoGravado: Boolean(corpo),
+    });
+  }
 
   return NextResponse.json({
-    wabaId: provider.wabaId,
+    wabaId,
     totalTemplatesMeta: metaTemplates.length,
     nomesNaMeta: metaTemplates.map((m) => `${m.name} [${m.status}]`),
     analise,
