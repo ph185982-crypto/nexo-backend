@@ -47,3 +47,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 18:17:12 PASSO 6 — .env ═══
 
 ═══ 18:17:14 PASSO 7 — Prisma ═══
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+═══ 18:17:22 PASSO 8 — Seed VENDAS (agente Pedro) ═══
