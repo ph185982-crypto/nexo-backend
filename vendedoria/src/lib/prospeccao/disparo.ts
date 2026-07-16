@@ -167,6 +167,26 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
     return { ...resultado, motivo: "nenhum template ativo cadastrado" };
   }
 
+  // 6b. Auto-recuperação: leads queimados ESPECIFICAMENTE pelo erro de contagem
+  //     de parâmetros (#132000) voltam para APROVADO. Como o envio agora se
+  //     autocorrige, eles não queimam de novo. Não mexe em falhas de número
+  //     inválido ou outros motivos.
+  const recuperados = await prisma.prospectLead.updateMany({
+    where: {
+      organizationId,
+      status: { in: ["ERRO_ENVIO", "DESCARTADO"] },
+      OR: [
+        { motivoAnaliseIA: { contains: "132000" } },
+        { motivoAnaliseIA: { contains: "number of parameters" } },
+        { motivoAnaliseIA: { contains: "expected number of params" } },
+      ],
+    },
+    data: { status: "APROVADO", tentativasDisparo: 0, dataAbordagem: null, motivoAnaliseIA: null },
+  });
+  if (recuperados.count > 0) {
+    console.log(`[Disparo] Auto-recuperados ${recuperados.count} leads queimados pelo erro #132000`);
+  }
+
   // 7. Buscar leads: APROVADOS (1ª tentativa) + ABORDADOS sem resposta que
   //    já passaram do intervalo entre tentativas (2ª/3ª tentativa).
   //    Nunca dispara para telefone FIXO (template WhatsApp só chega em celular).
