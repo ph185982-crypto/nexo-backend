@@ -146,3 +146,6 @@ If you like Certbot, please consider supporting our work by:
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ═══ 18:19:39 PASSO 15 — Verificar webhook local (HTTPS) ═══
+webhook local resp: PING123
+
+═══ 18:19:44 PASSO 16 — Configurar webhook na Meta ═══
