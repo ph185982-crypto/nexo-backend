@@ -26,11 +26,37 @@ export async function GET(
   }
 
   const token = provider.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
-  if (!provider.wabaId || !token) {
+  if (!token) {
+    return NextResponse.json({ error: "sem access token" }, { status: 400 });
+  }
+
+  // Resolve o WABA real. O campo pode estar vazio/placeholder (DEMO_WABA_ID) —
+  // nesse caso pergunta à Meta a qual WABA o phone number pertence e grava.
+  let wabaId = provider.wabaId;
+  if (!wabaId || wabaId === "DEMO_WABA_ID") {
+    try {
+      const r = await fetch(
+        `${GRAPH}/${provider.businessPhoneNumberId}?fields=whatsapp_business_account`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (r.ok) {
+        const j = await r.json() as { whatsapp_business_account?: { id?: string } };
+        const resolved = j.whatsapp_business_account?.id;
+        if (resolved) {
+          wabaId = resolved;
+          await prisma.whatsappProviderConfig.update({
+            where: { id: provider.id },
+            data: { wabaId: resolved },
+          }).catch(() => {});
+        }
+      }
+    } catch { /* segue com o que tiver */ }
+  }
+
+  if (!wabaId || wabaId === "DEMO_WABA_ID") {
     return NextResponse.json({
-      error: "sem wabaId ou access token — não dá pra consultar a Meta",
-      temWabaId: Boolean(provider.wabaId),
-      temToken: Boolean(token),
+      error: "não consegui resolver o WABA ID a partir do phone number — verifique o token/permissões",
+      phoneNumberId: provider.businessPhoneNumberId,
     }, { status: 400 });
   }
 
