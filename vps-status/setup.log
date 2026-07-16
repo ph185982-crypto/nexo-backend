@@ -13,3 +13,28 @@ DO
 GRANT
 
 ═══ 18:16:54 PASSO 4 — Clonar repo ═══
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+   8cc1ca8..ca81de1  claude/whatsapp-ai-crm-hYSVU -> origin/claude/whatsapp-ai-crm-hYSVU
+Already on 'claude/whatsapp-ai-crm-hYSVU'
+M	vendedoria/package-lock.json
+Your branch is behind 'origin/claude/whatsapp-ai-crm-hYSVU' by 45 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+From https://github.com/ph185982-crypto/nexo-backend
+ * branch            claude/whatsapp-ai-crm-hYSVU -> FETCH_HEAD
+Updating 8cc1ca8..ca81de1
+Fast-forward
+ .../app/api/integrations/supabase/token/route.ts   | 59 ++++++++++++++++++++++
+ vendedoria/src/app/api/max/migrar/route.ts         | 27 ++++++----
+ vendedoria/src/app/crm/calendar/page.tsx           | 11 +++-
+ vendedoria/src/graphql/resolvers/index.ts          | 57 +++++++++++++++++++--
+ vendedoria/src/graphql/schema/typeDefs.ts          |  3 ++
+ vendedoria/src/lib/integrations/google-calendar.ts | 32 +++++++++---
+ vps-setup.sh                                       | 38 +++++++++++++-
+ vps-status/deploy-trigger.txt                      |  2 +-
+ vps-status/report.json                             |  2 +-
+ vps-status/setup.log                               |  8 +--
+ 10 files changed, 207 insertions(+), 32 deletions(-)
+ create mode 100644 vendedoria/src/app/api/integrations/supabase/token/route.ts
+
+═══ 18:16:58 PASSO 5 — npm install ═══
