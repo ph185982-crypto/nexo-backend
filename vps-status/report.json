@@ -10,5 +10,6 @@
   "postgres": "ok",
   "npm": "ok",
   "node_version": "v24.18.0",
-  "commit": "78aafcd"
+  "commit": "78aafcd",
+  "seed_prospeccao": "ok"
 }
