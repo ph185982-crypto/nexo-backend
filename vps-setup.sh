@@ -15,6 +15,13 @@ set -a
 source /root/secrets.env
 set +a
 
+# CRON_SECRET é obrigatório para os endpoints de cron — gera se não existir
+if [[ -z "${CRON_SECRET:-}" ]]; then
+  CRON_SECRET=$(openssl rand -hex 24)
+  echo "CRON_SECRET=${CRON_SECRET}" >> /root/secrets.env
+  echo "CRON_SECRET gerado e salvo em /root/secrets.env"
+fi
+
 STATUS_DIR="/var/www/status"
 mkdir -p "$STATUS_DIR"
 LOG="$STATUS_DIR/setup.log"

@@ -122,16 +122,25 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = await req.json();
-    const { supabaseToken, mode, tables } = body as {
-      supabaseToken: string;
-      mode: "introspect" | "migrate";
-      tables?: string[];
-    };
+    let body: Record<string, unknown> = {};
+    try { body = await req.json() as Record<string, unknown>; } catch { /* sem body */ }
+    const mode = (body.mode as "introspect" | "migrate" | undefined) ?? "migrate";
+    const tables = body.tables as string[] | undefined;
 
-    if (!supabaseToken || !mode) {
+    // Token: do body OU do banco (IntegrationCredential "SUPABASE", injetado
+    // via /api/integrations/supabase/token — nunca commitado no repo)
+    let supabaseToken = (body.supabaseToken as string | undefined)?.trim();
+    if (!supabaseToken) {
+      const cred = await prisma.integrationCredential.findUnique({
+        where: { provider: "SUPABASE" },
+        select: { refreshToken: true },
+      }).catch(() => null);
+      supabaseToken = cred?.refreshToken;
+    }
+
+    if (!supabaseToken) {
       return NextResponse.json(
-        { error: "supabaseToken and mode are required" },
+        { error: "supabaseToken ausente (envie no body ou configure via /api/integrations/supabase/token)" },
         { status: 400 }
       );
     }
