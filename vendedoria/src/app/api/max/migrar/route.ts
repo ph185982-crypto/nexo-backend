@@ -177,7 +177,10 @@ export async function POST(req: NextRequest) {
         source_count: number;
         inserted: number;
         skipped: number;
+        db_count?: number;
         checksum?: number;
+        dropped_columns?: string[];
+        error?: string;
       }
     > = {};
 
@@ -194,6 +197,8 @@ export async function POST(req: NextRequest) {
       let totalInserted = 0;
       let totalSkipped = 0;
       let checksum = 0;
+      let lastError: string | undefined;
+      const droppedColumns = new Set<string>();
       const PAGE_SIZE = 200;
 
       for (let offset = 0; offset < sourceCount; offset += PAGE_SIZE) {
@@ -204,9 +209,13 @@ export async function POST(req: NextRequest) {
 
         if (!Array.isArray(rows) || rows.length === 0) break;
 
-        const normalizedRows = rows.map((row: Record<string, unknown>) =>
+        let normalizedRows = rows.map((row: Record<string, unknown>) =>
           normalizeRow(row, config)
         );
+        // Colunas já identificadas como inexistentes no modelo Prisma
+        for (const col of droppedColumns) {
+          normalizedRows = normalizedRows.map((r) => { delete r[col]; return r; });
+        }
 
         // Accumulate checksum for money tables
         if (config.floatFields) {
@@ -219,27 +228,54 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const result = await (prisma as any)[config.model].createMany({
-            data: normalizedRows,
-            skipDuplicates: true,
-          });
-          totalInserted += result.count;
-          totalSkipped += normalizedRows.length - result.count;
-        } catch (err) {
-          console.error(`[migrar] Error inserting into ${config.model}:`, err);
-          totalSkipped += normalizedRows.length;
+        // Autocorreção: se o Prisma rejeitar uma coluna desconhecida
+        // ("Unknown argument `x`"), remove a coluna e tenta de novo.
+        let inserted = false;
+        for (let tentativa = 0; tentativa < 10 && !inserted; tentativa++) {
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = await (prisma as any)[config.model].createMany({
+              data: normalizedRows,
+              skipDuplicates: true,
+            });
+            totalInserted += result.count;
+            totalSkipped += normalizedRows.length - result.count;
+            inserted = true;
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            const unknownArg = msg.match(/Unknown argument `(\w+)`/);
+            if (unknownArg) {
+              const col = unknownArg[1];
+              droppedColumns.add(col);
+              normalizedRows = normalizedRows.map((r) => { delete r[col]; return r; });
+              console.warn(`[migrar] ${table}: coluna desconhecida "${col}" removida — retry`);
+              continue;
+            }
+            lastError = msg.replace(/\n/g, " ").slice(0, 300);
+            console.error(`[migrar] Error inserting into ${config.model}:`, msg.slice(0, 500));
+            totalSkipped += normalizedRows.length;
+            break;
+          }
         }
       }
+
+      // Contagem real no banco de destino — prova definitiva da migração
+      let dbCount: number | undefined;
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dbCount = await (prisma as any)[config.model].count();
+      } catch { /* ignore */ }
 
       summary[table] = {
         source_count: sourceCount,
         inserted: totalInserted,
         skipped: totalSkipped,
+        ...(dbCount !== undefined ? { db_count: dbCount } : {}),
         ...(config.floatFields
           ? { checksum: Math.round(checksum * 100) / 100 }
           : {}),
+        ...(droppedColumns.size > 0 ? { dropped_columns: [...droppedColumns] } : {}),
+        ...(lastError ? { error: lastError } : {}),
       };
     }
 

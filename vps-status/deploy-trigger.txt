@@ -1,1 +1,1 @@
-migracao-supabase-20260716T1845Z
+migracao-v2-selfheal-20260716T1920Z
