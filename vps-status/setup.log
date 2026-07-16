@@ -129,3 +129,7 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 tentativa 1: HTTP 307
 
 ═══ 18:19:30 PASSO 13b — Verificar auth dos crons + migração Supabase ═══
+healthcheck autenticado: HTTP 200
+Token Supabase não configurado — migração pulada
+
+═══ 18:19:33 PASSO 14 — SSL (Let's Encrypt) ═══
