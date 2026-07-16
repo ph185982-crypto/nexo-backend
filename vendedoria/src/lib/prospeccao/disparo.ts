@@ -67,6 +67,48 @@ function montarComponentesTemplate(
 }
 
 /**
+ * Envia o template de forma adaptativa: começa com o número de variáveis
+ * configurado e, se a Meta rejeitar por contagem de parâmetros (#132000),
+ * reduz um a um até funcionar (ou até 0). Quando um número menor funciona,
+ * grava esse ajuste no template para os próximos disparos usarem direto.
+ * Erros que NÃO são de contagem (número inválido, template não aprovado) são
+ * propagados normalmente.
+ */
+async function enviarTemplateAdaptativo(
+  providerConfig: { businessPhoneNumberId: string; accountName?: string | null },
+  telefone: string,
+  template: { id: string; nomeTemplateMeta: string; idioma: string; variaveis: string[] },
+  lead: Parameters<typeof montarComponentesTemplate>[1],
+  token: string,
+): Promise<number> {
+  const full = template.variaveis;
+  for (let n = full.length; n >= 0; n--) {
+    const vars = full.slice(0, n);
+    const components = montarComponentesTemplate(vars, lead, { nomeResponsavel: providerConfig.accountName ?? undefined });
+    try {
+      await sendWhatsAppTemplate(
+        providerConfig.businessPhoneNumberId, telefone,
+        template.nomeTemplateMeta, template.idioma, components, token,
+      );
+      if (n < full.length) {
+        // Ajuste aprendido — persiste para os próximos disparos não errarem
+        await prisma.templateProspeccao.update({
+          where: { id: template.id }, data: { variaveis: vars },
+        }).catch(() => {});
+        console.log(`[Disparo] Template ${template.nomeTemplateMeta}: contagem ajustada de ${full.length} → ${n} parâmetro(s)`);
+      }
+      return n;
+    } catch (e) {
+      const msg = (e instanceof Error ? e.message : String(e)).toLowerCase();
+      const contagem = msg.includes("132000") || msg.includes("number of parameters") || msg.includes("expected number of params");
+      if (contagem && n > 0) continue; // tenta com menos parâmetros
+      throw e; // erro real (ou já chegou em 0)
+    }
+  }
+  throw new Error("Template rejeitado em todas as contagens de parâmetro — verifique o template aprovado na Meta");
+}
+
+/**
  * Executa uma rodada de disparos diários para a organização.
  * Respeita limite, janela de horário, pausa manual e saúde do número.
  */
@@ -229,16 +271,8 @@ async function processarFilaDisparo(
 
     try {
       const telefoneNormalizado = normalizeBrazilianNumber(lead.telefone.replace(/\D/g, ""));
-      const components = montarComponentesTemplate(template.variaveis, lead, { nomeResponsavel: providerConfig.accountName });
 
-      await sendWhatsAppTemplate(
-        providerConfig.businessPhoneNumberId,
-        telefoneNormalizado,
-        template.nomeTemplateMeta,
-        template.idioma,
-        components,
-        token,
-      );
+      await enviarTemplateAdaptativo(providerConfig, telefoneNormalizado, template, lead, token);
 
       const atualizado = await prisma.prospectLead.update({
         where: { id: lead.id },

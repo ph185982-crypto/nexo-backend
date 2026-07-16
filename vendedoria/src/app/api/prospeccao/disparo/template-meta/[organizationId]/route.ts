@@ -44,6 +44,11 @@ export async function GET(
 
   if (!wabaId) {
     const candidatos = new Set<string>();
+
+    // 0. env explícita
+    if (process.env.META_WHATSAPP_WABA_ID) candidatos.add(process.env.META_WHATSAPP_WABA_ID);
+
+    // 1. via negócios do token
     const bizs = await gget("me/businesses?fields=id,name&limit=50");
     debug.businesses = bizs;
     for (const b of (bizs.data as Array<{ id: string }> | undefined) ?? []) {
@@ -52,6 +57,16 @@ export async function GET(
         for (const wa of (w.data as Array<{ id: string }> | undefined) ?? []) candidatos.add(wa.id);
       }
     }
+
+    // 2. via páginas do token (Página FB conectada a uma WABA)
+    const pages = await gget("me/accounts?fields=id,name&limit=50");
+    debug.pages = (pages.data as Array<{ id: string; name: string }> | undefined)?.map((p) => p.name) ?? pages;
+    for (const p of (pages.data as Array<{ id: string }> | undefined) ?? []) {
+      const wa = await gget(`${p.id}?fields=whatsapp_business_account{id,name}`);
+      const id = (wa.whatsapp_business_account as { id?: string } | undefined)?.id;
+      if (id) candidatos.add(id);
+    }
+
     debug.wabaCandidatos = [...candidatos];
 
     // Acha o WABA que tem o nosso phone number
