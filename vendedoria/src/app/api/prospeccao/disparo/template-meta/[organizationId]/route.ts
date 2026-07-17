@@ -164,6 +164,20 @@ export async function GET(
       },
     }).catch(() => {});
 
+    // Backfill: corrige mensagens antigas que ficaram com o placeholder
+    // (conversas criadas antes de termos o corpo real). Template estático → texto direto.
+    let mensagensCorrigidas = 0;
+    if (corpo && esperadoMeta === 0) {
+      const upd = await prisma.whatsappMessage.updateMany({
+        where: {
+          content: { startsWith: `📤 Abordagem enviada (template "${tb.nomeTemplateMeta}"` },
+          conversation: { whatsappProviderConfigId: provider.id },
+        },
+        data: { content: corpo },
+      }).catch(() => ({ count: 0 }));
+      mensagensCorrigidas = upd.count;
+    }
+
     analise.push({
       nome: tb.nomeTemplateMeta,
       idioma: `${tb.idioma} (Meta: ${meta.language})`,
@@ -173,6 +187,7 @@ export async function GET(
       parametrosEsperadosPelaMeta: esperadoMeta,
       parametrosEnviadosPeloBanco: tb.variaveis.length,
       corpoGravado: Boolean(corpo),
+      mensagensAntigasCorrigidas: mensagensCorrigidas,
     });
   }
 
