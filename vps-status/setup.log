@@ -40,3 +40,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 10:38:50 PASSO 6 — .env ═══
 
 ═══ 10:38:52 PASSO 7 — Prisma ═══
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+═══ 10:39:00 PASSO 8 — Seed VENDAS (agente Pedro) ═══
