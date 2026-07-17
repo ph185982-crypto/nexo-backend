@@ -9,3 +9,7 @@ Now using node v24.18.0 (npm v11.16.0)
 default -> node (-> v24.18.0 *)
 
 ═══ 10:38:32 PASSO 3 — PostgreSQL ═══
+DO
+GRANT
+
+═══ 10:38:35 PASSO 4 — Clonar repo ═══
