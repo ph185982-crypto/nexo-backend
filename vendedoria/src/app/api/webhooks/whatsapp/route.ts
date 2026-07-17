@@ -73,6 +73,17 @@ export async function POST(req: NextRequest) {
 
         console.log("[WhatsApp Webhook] ProviderConfig encontrado:", providerConfig.id, "| Agente:", providerConfig.agent?.kind, providerConfig.agent?.status);
 
+        // Captura o WABA ID real (entry.id) quando ainda não temos um válido —
+        // permite puxar o corpo dos templates da Meta depois.
+        const wabaIdWebhook = (entry as { id?: string }).id;
+        if (wabaIdWebhook && (!providerConfig.wabaId || providerConfig.wabaId === "DEMO_WABA_ID")) {
+          await prisma.whatsappProviderConfig.update({
+            where: { id: providerConfig.id },
+            data: { wabaId: wabaIdWebhook },
+          }).catch(() => {});
+          console.log("[WhatsApp Webhook] WABA ID capturado do webhook:", wabaIdWebhook);
+        }
+
         // Process messages
         for (const message of value.messages ?? []) {
           await handleIncomingMessage(message, value.contacts?.[0], providerConfig);
