@@ -38,3 +38,5 @@ npm warn allow-scripts
 npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
 
 ═══ 10:38:50 PASSO 6 — .env ═══
+
+═══ 10:38:52 PASSO 7 — Prisma ═══
