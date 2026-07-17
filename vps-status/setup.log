@@ -66,3 +66,15 @@ Credentials:
 🌱  The seed command has been executed.
 
 ═══ 10:39:03 PASSO 9 — Seed PROSPECÇÃO (Fase 2) ═══
+     GOOGLE_CALENDAR_CLIENT_ID= GOOGLE_CALENDAR_CLIENT_SECRET= GOOGLE_CALENDAR_REFRESH_TOKEN= GOOGLE_CALENDAR_ID= (agenda)
+     RAPIDAPI_KEY= (Instagram enrichment — opcional)
+     META_AD_LIBRARY_TOKEN= (Meta Ad Library — opcional)
+  4. Desativar sandboxMode quando pronto para produção
+
+  Pipeline de uso:
+  POST /api/prospeccao/sourcing/:segmentId     → busca leads no Google Places
+  POST /api/prospeccao/enriquecimento/lote/:id → enriquece + pontua
+  POST /api/prospeccao/analise/lote/:id        → classifica com IA
+  /crm/prospeccao/fila                          → fila de aprovação humana
+
+═══ 10:39:06 PASSO 10 — Build Next.js ═══
