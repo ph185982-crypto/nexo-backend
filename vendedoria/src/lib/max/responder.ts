@@ -106,6 +106,13 @@ export async function handleMaxMessage(
     }
   } catch (err) {
     console.error("[Max] handleMaxMessage error:", err);
+    // Guarda o erro real no banco para diagnóstico (visível em /api/max/health)
+    const detalhe = err instanceof Error ? `${err.message}` : String(err);
+    await prisma.contextoPedro.upsert({
+      where:  { chave: "max-ultimo-erro" },
+      update: { valor: detalhe.slice(0, 900), categoria: "debug" },
+      create: { chave: "max-ultimo-erro", valor: detalhe.slice(0, 900), categoria: "debug" },
+    }).catch(() => {});
     await send("⚠️ Ops, tive um problema. Tenta de novo em alguns segundos.").catch(() => {});
   }
 }
