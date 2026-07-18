@@ -42,3 +42,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 16:41:58 PASSO 6 — .env ═══
 
 ═══ 16:41:59 PASSO 7 — Prisma ═══
+Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+═══ 16:42:07 PASSO 8 — Seed VENDAS (agente Pedro) ═══
