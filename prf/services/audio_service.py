@@ -1,0 +1,139 @@
+"""
+Audio/Commute Mode Service — generates audio content for study during commute.
+
+Responsibilities:
+  - Generate audio lesson scripts from study material
+  - Create interactive audio quizzes
+  - Manage commute mode content delivery
+  - Track audio-based study progress
+"""
+from __future__ import annotations
+import os
+import logging
+from typing import Optional
+from uuid import UUID
+
+logger = logging.getLogger(__name__)
+
+
+async def generate_audio_script(
+    topic: str,
+    content: str,
+    style: str = "summary",
+) -> dict:
+    """
+    Generate an audio lesson script from study content.
+    Styles: summary, quiz, deep_dive, review
+    """
+    api_key = os.getenv("GOOGLE_API_KEY", "")
+    if not api_key:
+        return _fallback_script(topic, content, style)
+
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-2.5-flash")
+
+        prompt = _build_script_prompt(topic, content, style)
+        response = model.generate_content(prompt)
+        script = response.text.strip()
+
+        return {
+            "script": script,
+            "style": style,
+            "topic": topic,
+            "estimated_duration_secs": len(script.split()) * 0.5,
+        }
+    except Exception as e:
+        logger.error(f"Audio script generation error: {e}")
+        return _fallback_script(topic, content, style)
+
+
+def _build_script_prompt(topic: str, content: str, style: str) -> str:
+    base = f"""Crie um roteiro de áudio para estudo no deslocamento sobre: {topic}
+
+Conteúdo base:
+{content}
+
+REGRAS:
+- Linguagem clara e objetiva
+- Frases curtas (máximo 15 palavras)
+- Tom profissional mas acessível
+- Sem referências visuais ("veja", "observe")
+- Adequado para ouvir no trânsito
+- Inclua pausas naturais entre seções
+"""
+
+    if style == "quiz":
+        base += """
+FORMATO: Quiz interativo
+- Apresente o tema em 2-3 frases
+- Faça 5 perguntas de múltipla escolha
+- Após cada pergunta, diga "Pense na resposta... [pausa de 5 segundos]"
+- Revele a resposta correta com explicação breve
+"""
+    elif style == "summary":
+        base += """
+FORMATO: Resumo narrado
+- Introdução de 2 frases
+- 5-7 pontos principais
+- Cada ponto em 2-3 frases
+- Conclusão com os 3 destaques mais importantes
+"""
+    elif style == "review":
+        base += """
+FORMATO: Revisão rápida
+- Vá direto aos pontos-chave
+- Máximo 3 minutos de conteúdo
+- Foque nos itens mais cobrados
+- Termine com uma pergunta para reflexão
+"""
+
+    return base
+
+
+def _fallback_script(topic: str, content: str, style: str) -> dict:
+    script = f"Tema de hoje: {topic}. {content[:500]}"
+    return {
+        "script": script,
+        "style": style,
+        "topic": topic,
+        "estimated_duration_secs": len(script.split()) * 0.5,
+    }
+
+
+def build_commute_playlist(
+    lessons: list[dict],
+    available_minutes: int = 45,
+    include_quiz: bool = True,
+) -> list[dict]:
+    """
+    Build an ordered playlist of audio content for a commute session.
+    Fits within the available time window.
+    """
+    playlist = []
+    remaining_secs = available_minutes * 60
+
+    review_lessons = [l for l in lessons if l.get("lesson_type") == "review"]
+    summary_lessons = [l for l in lessons if l.get("lesson_type") == "summary"]
+    quiz_lessons = [l for l in lessons if l.get("lesson_type") == "quiz"]
+    other_lessons = [l for l in lessons if l.get("lesson_type") not in ("review", "summary", "quiz")]
+
+    ordered = review_lessons + summary_lessons
+    if include_quiz:
+        ordered += quiz_lessons
+    ordered += other_lessons
+
+    for lesson in ordered:
+        duration = lesson.get("duration_secs", 300)
+        if duration <= remaining_secs:
+            playlist.append({
+                "id": lesson["id"],
+                "title": lesson["title"],
+                "duration_secs": duration,
+                "lesson_type": lesson.get("lesson_type", "summary"),
+                "subject": lesson.get("subject_name"),
+            })
+            remaining_secs -= duration
+
+    return playlist

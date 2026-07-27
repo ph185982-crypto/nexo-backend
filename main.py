@@ -1,5 +1,5 @@
 """
-NEXO — Product Intelligence Platform
+NEXO — Product Intelligence Platform + PRF Adaptive Study Platform
 Backend API v4.3 — AliExpress True API, /import endpoint, image proxy
 """
 from fastapi import FastAPI
@@ -39,21 +39,39 @@ db        = Database()
 scheduler = MiningScheduler()
 
 
+_prf_pool = None
+
+
 @app.on_event("startup")
 async def startup():
+    global _prf_pool
     await db.connect()
     await scheduler.start()
     from services.seeder import seed_if_empty
     seeded = await seed_if_empty(db)
     if seeded:
         logger.info(f"Seed inicial: {seeded} produtos inseridos")
+
+    # PRF Adaptive Study Platform
+    try:
+        from prf.app import register_prf_routers, init_prf_database
+        from config import DATABASE_URL
+        register_prf_routers(app)
+        _prf_pool = await init_prf_database(DATABASE_URL)
+        logger.info("[OK] PRF Adaptive Study Platform initialized")
+    except Exception as e:
+        logger.warning(f"[PRF] Init skipped: {e}")
+
     logger.info("[OK] NEXO Mining v7.0 iniciado — 24/7 Zero Cost")
 
 
 @app.on_event("shutdown")
 async def shutdown():
+    global _prf_pool
     await db.disconnect()
     await scheduler.stop()
+    if _prf_pool:
+        await _prf_pool.close()
 
 
 # Routers
@@ -78,6 +96,6 @@ app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"]
 
 @app.get("/health")
 async def health():
-    return {"status": "online", "version": "7.0.0", "mining": "24/7 active"}
+    return {"status": "online", "version": "7.0.0", "mining": "24/7 active", "prf": "active"}
 
 
