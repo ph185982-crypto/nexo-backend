@@ -1,0 +1,920 @@
+[
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil é o quinto maior país do mundo em extensão territorial, com mais de 8,5 milhões de km².",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Brasil possui 8.515.767 km², sendo o 5º maior país do mundo.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil faz fronteira com todos os países da América do Sul, sem exceção.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Brasil não faz fronteira com Chile e Equador.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A formação territorial do Brasil foi marcada pelo Tratado de Tordesilhas (1494), que dividia as terras entre Portugal e Espanha.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Tratado de Madri (1750), baseado no princípio do uti possidetis, contribuiu para a definição das fronteiras do Brasil.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil possui mais de 23 mil quilômetros de fronteiras terrestres com dez países sul-americanos.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Brasil tem cerca de 16.886 km de fronteiras terrestres, não 23 mil.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A Amazônia Legal abrange nove estados brasileiros e corresponde a aproximadamente 59% do território nacional.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil é banhado pelo Oceano Atlântico e pelo Oceano Pacífico.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Brasil é banhado apenas pelo Oceano Atlântico.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "formacao-territorial",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A faixa de fronteira brasileira, estabelecida pela Lei nº 6.634/1979, tem largura de 150 km ao longo das fronteiras terrestres.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Lei 6.634/79, Art. 1°",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Programa VIGIA é uma operação da PRF que visa ao combate de crimes transfronteiriços em rodovias federais próximas às fronteiras.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O SISBIN (Sistema Brasileiro de Inteligência) tem como órgão central a ABIN (Agência Brasileira de Inteligência).",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A Tríplice Fronteira entre Brasil, Argentina e Paraguai está localizada na região de Foz do Iguaçu.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A Polícia Rodoviária Federal não possui atribuição para atuar em operações de fronteira.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF atua em operações de fronteira, especialmente nas rodovias federais que dão acesso a áreas fronteiriças.",
+    "legal_basis": "CF/88, Art. 144, §2°",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil compartilha fronteira terrestre com a Bolívia, sendo uma das mais extensas do país.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A fronteira Brasil-Bolívia tem cerca de 3.423 km.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A faixa de fronteira é área considerada fundamental para a defesa do território nacional.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Lei 6.634/79",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O contrabando e o descaminho são crimes que ocorrem com frequência nas regiões de fronteira do Brasil.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "CP Arts. 318 e 334.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "geopolitica-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil possui fronteira marítima com o Uruguai e com a Guiana Francesa.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Fronteiras marítimas não se aplicam dessa forma; o Brasil possui fronteiras terrestres com ambos.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "integracao-regional",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O MERCOSUL foi criado pelo Tratado de Assunção em 1991 e tem como membros fundadores Brasil, Argentina, Paraguai e Uruguai.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "integracao-regional",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A UNASUL (União de Nações Sul-Americanas) foi criada para promover a integração política e econômica da América do Sul.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "integracao-regional",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil é membro permanente do Conselho de Segurança das Nações Unidas.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Brasil não é membro permanente do CSNU; ocupa assentos rotativos.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "integracao-regional",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A IIRSA (Iniciativa para a Integração da Infraestrutura Regional Sul-Americana) promove projetos de integração de transporte, energia e telecomunicações.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "integracao-regional",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O BRICS é um agrupamento que reúne Brasil, Rússia, Índia, China e África do Sul, com foco em cooperação econômica e política.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "integracao-regional",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Acordo de Schengen, que permite a livre circulação de pessoas, aplica-se aos países do MERCOSUL.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Acordo de Schengen é europeu, não se aplica ao MERCOSUL.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "conflitos-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O tráfico internacional de drogas é um dos principais desafios de segurança nas fronteiras brasileiras.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "conflitos-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Programa de Proteção Integrada de Fronteiras (PPIF) é coordenado pelo Ministério da Justiça e Segurança Pública.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "conflitos-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O garimpo ilegal em terras indígenas na Amazônia não configura crime ambiental segundo a legislação brasileira.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O garimpo ilegal em terras indígenas configura crime ambiental (Lei 9.605/98) e violação de direitos indígenas.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "conflitos-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A imigração irregular nas fronteiras brasileiras pode envolver tanto questões humanitárias quanto de segurança pública.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "conflitos-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Brasil é rota de tráfico de armas provenientes principalmente do Paraguai, segundo relatórios de segurança.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "conflitos-fronteiras",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A ENAFRON (Estratégia Nacional de Segurança Pública nas Fronteiras) foi criada para fortalecer a presença do Estado nas regiões fronteiriças.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "politicas-publicas",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O Plano Nacional de Segurança Pública e Defesa Social (PNSP) estabelece metas e estratégias para a redução da criminalidade no Brasil.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "politicas-publicas",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A Lei nº 13.675/2018 instituiu o Sistema Único de Segurança Pública (SUSP), que integra os órgãos de segurança pública.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Lei 13.675/2018",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "politicas-publicas",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O PRONASCI (Programa Nacional de Segurança Pública com Cidadania) foca exclusivamente em ações repressivas.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O PRONASCI combina ações repressivas com ações preventivas e de cidadania.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "politicas-publicas",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O desenvolvimento da faixa de fronteira é objeto de políticas públicas específicas, como o PDFF (Programa de Desenvolvimento da Faixa de Fronteira).",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "politicas-publicas",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "A Política Nacional de Inteligência de Segurança Pública visa a produção de conhecimento para subsidiar decisões de segurança.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "geopolitica-brasileira",
+    "topic_slug": "politicas-publicas",
+    "question_type": "certo_errado",
+    "context_text": "Acerca da geopolítica brasileira e de aspectos territoriais do Brasil, julgue o item a seguir.",
+    "text": "O federalismo brasileiro impede a cooperação entre polícias estaduais e federais em operações de fronteira.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O federalismo brasileiro permite e incentiva a cooperação entre diferentes esferas policiais.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  }
+]

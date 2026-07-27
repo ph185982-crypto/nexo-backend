@@ -2,7 +2,9 @@
   {
     "subject_slug": "informatica",
     "topic_slug": "sistemas-operacionais",
-    "text": "Acerca dos sistemas operacionais Windows e Linux, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o Linux é um sistema operacional de código aberto, cujo código-fonte pode ser livremente estudado e modificado.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -11,41 +13,79 @@
     "legal_basis": "Conceito de Informática - Sistemas Operacionais",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "o Windows é um sistema operacional de código aberto (open source).",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "o Linux é um sistema operacional de código aberto, cujo código-fonte pode ser livremente estudado e modificado.",
-        "is_correct": true,
-        "explanation": "Correta: O Linux é um sistema operacional de código aberto (open source), que pode ser livremente estudado, modificado e distribuído, diferentemente do Windows, que é um software proprietário da Microsoft."
-      },
-      {
         "letter": "C",
-        "text": "ambos os sistemas exigem obrigatoriamente licença paga para uso pessoal.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "o Linux não permite a criação de contas de usuários com diferentes permissões.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "o Windows não possui nenhuma versão compatível com computadores pessoais.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "sistemas-operacionais",
-    "text": "No sistema operacional Windows, a combinação de teclas utilizada para abrir o Gerenciador de Tarefas, ferramenta que permite visualizar e encerrar processos em execução, é",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o Windows é um sistema operacional de código aberto (open source).",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o Windows não possui nenhuma versão compatível com computadores pessoais.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "Ctrl+Shift+Esc.",
     "difficulty": "easy",
     "source": "CESPE/2017",
     "year": 2017,
@@ -54,41 +94,79 @@
     "legal_basis": "Conceito de Informática - Sistemas Operacionais (Windows)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Ctrl+C.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "Alt+F4.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "Ctrl+Shift+Esc.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: A combinação Ctrl+Shift+Esc abre diretamente o Gerenciador de Tarefas do Windows. A combinação Ctrl+Alt+Del abre uma tela intermediária de opções, a partir da qual também é possível acessá-lo."
-      },
-      {
-        "letter": "D",
-        "text": "Ctrl+P.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "Alt+Tab apenas.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "sistemas-operacionais",
-    "text": "Em sistemas operacionais Linux, o comando chmod é utilizado para",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "Alt+Tab apenas.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais (Windows)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "Alt+F4.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais (Windows)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "alterar as permissões de leitura, escrita e execução de arquivos e diretórios.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -97,41 +175,79 @@
     "legal_basis": "Conceito de Informática - Sistemas Operacionais (Linux)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "listar os arquivos de um diretório.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "alterar as permissões de leitura, escrita e execução de arquivos e diretórios.",
-        "is_correct": true,
-        "explanation": "Correta: O comando chmod (change mode) altera as permissões de leitura (r), escrita (w) e execução (x) de arquivos e diretórios, para o proprietário, o grupo e os demais usuários."
-      },
-      {
         "letter": "C",
-        "text": "compactar arquivos em formato .zip.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "exibir o conteúdo de um arquivo de texto na tela.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "reiniciar o sistema operacional imediatamente.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "sistemas-operacionais",
-    "text": "Em relação aos processos em execução em um sistema operacional multitarefa, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "listar os arquivos de um diretório.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais (Linux)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "exibir o conteúdo de um arquivo de texto na tela.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais (Linux)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o sistema operacional gerencia e alterna o uso do processador entre os processos, permitindo multitarefa mesmo em um único núcleo.",
     "difficulty": "medium",
     "source": "CESPE/2019",
     "year": 2019,
@@ -140,41 +256,79 @@
     "legal_basis": "Conceito de Informática - Sistemas Operacionais (multitarefa)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "um computador com apenas um núcleo de processamento não pode executar mais de um processo, ainda que aparentemente.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "o sistema operacional gerencia e alterna o uso do processador entre os processos, permitindo multitarefa mesmo em um único núcleo.",
-        "is_correct": true,
-        "explanation": "Correta: Um sistema operacional multitarefa permite a execução aparentemente simultânea de diversos processos, por meio do gerenciamento e alternância do uso do processador entre eles (escalonamento de processos), mesmo em computadores com um único núcleo de processamento."
-      },
-      {
         "letter": "C",
-        "text": "cada processo em execução exige um processador físico exclusivo e dedicado.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "processos em segundo plano (background) não consomem recursos do sistema.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "o encerramento de um processo trava obrigatoriamente todo o sistema operacional.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o encerramento de um processo trava obrigatoriamente todo o sistema operacional.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais (multitarefa)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "cada processo em execução exige um processador físico exclusivo e dedicado.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Sistemas Operacionais (multitarefa)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "redes-internet",
-    "text": "No modelo de referência TCP/IP utilizado na Internet, o protocolo responsável por realizar a tradução de nomes de domínio (como www.gov.br) em endereços IP correspondentes é o",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "DNS.",
     "difficulty": "medium",
     "source": "CESPE/2016",
     "year": 2016,
@@ -183,41 +337,79 @@
     "legal_basis": "Conceito de Informática - Redes de Computadores (DNS)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "FTP.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "SMTP.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "DNS.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: O DNS (Domain Name System) é o serviço/protocolo responsável por traduzir nomes de domínio, mais fáceis de memorizar, em endereços IP numéricos, utilizados efetivamente pelos computadores na rede."
-      },
-      {
-        "letter": "D",
-        "text": "ARP.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "DHCP.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "redes-internet",
-    "text": "Considerando os protocolos utilizados na navegação na Internet, o protocolo HTTPS diferencia-se do protocolo HTTP essencialmente por",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "FTP.",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes de Computadores (DNS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "SMTP.",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes de Computadores (DNS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "adicionar uma camada de criptografia à comunicação entre navegador e servidor.",
     "difficulty": "easy",
     "source": "CESPE/2017",
     "year": 2017,
@@ -226,41 +418,79 @@
     "legal_basis": "Conceito de Informática - Redes e Internet (HTTP/HTTPS)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "utilizar exclusivamente redes sem fio (Wi-Fi).",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "adicionar uma camada de criptografia à comunicação entre navegador e servidor.",
-        "is_correct": true,
-        "explanation": "Correta: O HTTPS (HTTP Secure) utiliza uma camada adicional de criptografia (por meio de TLS/SSL) para proteger a comunicação entre o navegador e o servidor, garantindo confidencialidade e integridade dos dados transmitidos, o que não ocorre no HTTP simples."
-      },
-      {
         "letter": "C",
-        "text": "não permitir o envio de formulários pela Internet.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "ser utilizado apenas em redes internas (intranets).",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "eliminar a necessidade de um servidor web.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "redes-internet",
-    "text": "Acerca dos endereços IP utilizados na Internet, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "ser utilizado apenas em redes internas (intranets).",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes e Internet (HTTP/HTTPS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "não permitir o envio de formulários pela Internet.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes e Internet (HTTP/HTTPS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o IPv6 foi criado para substituir o IPv4 em razão do esgotamento de endereços disponíveis neste último.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -269,41 +499,79 @@
     "legal_basis": "Conceito de Informática - Redes de Computadores (IPv4 e IPv6)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "o IPv6 foi criado para substituir o IPv4 em razão do esgotamento de endereços disponíveis neste último.",
-        "is_correct": true,
-        "explanation": "Correta: O IPv4 utiliza endereços de 32 bits, o que limita o número total de endereços disponíveis; diante do esgotamento desses endereços, foi criado o IPv6, que utiliza endereços de 128 bits, ampliando exponencialmente a quantidade de endereços disponíveis."
-      },
-      {
-        "letter": "B",
-        "text": "o IPv4 utiliza endereços de 128 bits, e o IPv6, de 32 bits.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "o IPv6 é incompatível com o funcionamento da Internet e não é utilizado atualmente.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "o número de endereços IPv4 disponíveis é ilimitado.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "IPv4 e IPv6 são sinônimos de um mesmo protocolo, apenas com nomes distintos.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "redes-internet",
-    "text": "Um firewall de rede tem, entre suas principais funções, a de",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "IPv4 e IPv6 são sinônimos de um mesmo protocolo, apenas com nomes distintos.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes de Computadores (IPv4 e IPv6)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o número de endereços IPv4 disponíveis é ilimitado.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes de Computadores (IPv4 e IPv6)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "controlar e filtrar o tráfego de dados entre redes, conforme regras de segurança definidas.",
     "difficulty": "easy",
     "source": "CESPE/2019",
     "year": 2019,
@@ -312,41 +580,79 @@
     "legal_basis": "Conceito de Informática - Redes e Segurança (firewall)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "aumentar a velocidade de conexão da rede sem qualquer análise de tráfego.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "traduzir nomes de domínio em endereços IP.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "controlar e filtrar o tráfego de dados entre redes, conforme regras de segurança definidas.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: O firewall é um mecanismo (de hardware, software, ou ambos) que controla e filtra o tráfego de dados entre redes (por exemplo, entre uma rede interna e a Internet), permitindo ou bloqueando conexões conforme regras de segurança previamente definidas."
-      },
-      {
-        "letter": "D",
-        "text": "compactar arquivos transmitidos pela rede.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "eliminar definitivamente a necessidade de senhas de acesso.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "traduzir nomes de domínio em endereços IP.",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes e Segurança (firewall)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-internet",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "eliminar definitivamente a necessidade de senhas de acesso.",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Redes e Segurança (firewall)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "seguranca-info",
-    "text": "Phishing é uma técnica de fraude eletrônica que consiste em",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "induzir a vítima a fornecer dados pessoais ou bancários por meio de mensagens ou sites falsos que simulam instituições legítimas.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -355,41 +661,79 @@
     "legal_basis": "Conceito de Informática - Segurança da Informação (phishing)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "induzir a vítima a fornecer dados pessoais ou bancários por meio de mensagens ou sites falsos que simulam instituições legítimas.",
-        "is_correct": true,
-        "explanation": "Correta: Phishing é uma técnica de engenharia social em que o golpista tenta induzir a vítima, por meio de mensagens ou páginas falsas que se passam por instituições legítimas, a fornecer dados pessoais, senhas ou informações bancárias."
-      },
-      {
-        "letter": "B",
-        "text": "criptografar arquivos do usuário e exigir resgate para liberá-los.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "instalar fisicamente um dispositivo de captura de teclado no computador da vítima.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "interceptar exclusivamente ligações telefônicas realizadas pela vítima.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "explorar falhas de hardware para danificar permanentemente o computador.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "seguranca-info",
-    "text": "Um software malicioso que criptografa os arquivos de um computador infectado e exige o pagamento de resgate para restaurar o acesso a esses dados é denominado",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "instalar fisicamente um dispositivo de captura de teclado no computador da vítima.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (phishing)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "explorar falhas de hardware para danificar permanentemente o computador.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (phishing)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "ransomware.",
     "difficulty": "medium",
     "source": "CESPE/2017",
     "year": 2017,
@@ -398,41 +742,79 @@
     "legal_basis": "Conceito de Informática - Segurança da Informação (malware)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "spyware.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "ransomware.",
-        "is_correct": true,
-        "explanation": "Correta: O ransomware é o tipo de malware que sequestra dados, criptografando-os, e exige pagamento (resgate) da vítima para o fornecimento da chave de descriptografia."
-      },
-      {
         "letter": "C",
-        "text": "adware.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "keylogger.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "worm apenas de propagação.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "seguranca-info",
-    "text": "Na criptografia assimétrica, diferentemente da criptografia simétrica,",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "worm apenas de propagação.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (malware)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "adware.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (malware)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "utiliza-se um par de chaves distintas, uma pública e outra privada.",
     "difficulty": "hard",
     "source": "CESPE/2018",
     "year": 2018,
@@ -441,41 +823,79 @@
     "legal_basis": "Conceito de Informática - Segurança da Informação (criptografia)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "utiliza-se a mesma chave tanto para cifrar quanto para decifrar a informação.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "não é possível garantir a confidencialidade dos dados transmitidos.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "utiliza-se um par de chaves distintas, uma pública e outra privada.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Na criptografia assimétrica, utiliza-se um par de chaves distintas (uma pública e uma privada): o que é cifrado com uma chave só pode ser decifrado com a outra. Na criptografia simétrica, uma única chave é usada tanto para cifrar quanto para decifrar."
-      },
-      {
-        "letter": "D",
-        "text": "a chave utilizada deve ser obrigatoriamente compartilhada por e-mail sem proteção.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "não há qualquer aplicação em assinaturas digitais.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "seguranca-info",
-    "text": "Com relação aos tipos de becape (backup) de dados, o becape que copia apenas os arquivos criados ou alterados desde o último becape completo ou incremental, marcando-os como copiados, é classificado como becape",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "utiliza-se a mesma chave tanto para cifrar quanto para decifrar a informação.",
+    "difficulty": "hard",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (criptografia)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "não é possível garantir a confidencialidade dos dados transmitidos.",
+    "difficulty": "hard",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (criptografia)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "incremental.",
     "difficulty": "medium",
     "source": "CESPE/2019",
     "year": 2019,
@@ -484,41 +904,79 @@
     "legal_basis": "Conceito de Informática - Segurança da Informação (tipos de becape)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "completo.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "incremental.",
-        "is_correct": true,
-        "explanation": "Correta: O becape incremental copia somente os arquivos alterados desde o último becape (completo ou incremental) e atualiza o marcador de becape; já o becape diferencial copia os arquivos alterados desde o último becape completo, sem atualizar tal marcador."
-      },
-      {
         "letter": "C",
-        "text": "espelhado.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "diferencial total.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "de imagem física.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "seguranca-info",
-    "text": "Um antivírus é um software cuja principal função é",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "diferencial total.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (tipos de becape)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "de imagem física.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (tipos de becape)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "detectar, prevenir e remover softwares maliciosos do sistema.",
     "difficulty": "easy",
     "source": "CESPE/2020",
     "year": 2020,
@@ -527,41 +985,79 @@
     "legal_basis": "Conceito de Informática - Segurança da Informação (antivírus)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "detectar, prevenir e remover softwares maliciosos do sistema.",
-        "is_correct": true,
-        "explanation": "Correta: O antivírus é projetado para detectar, prevenir e remover softwares maliciosos (vírus, worms, trojans, entre outros) de um sistema computacional, geralmente por meio de assinaturas conhecidas e análise heurística de comportamento."
-      },
-      {
-        "letter": "B",
-        "text": "aumentar a velocidade de processamento do computador.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "traduzir endereços IP em nomes de domínio.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "realizar becapes automáticos na nuvem.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "gerenciar exclusivamente as permissões de usuários do sistema operacional.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "gerenciar exclusivamente as permissões de usuários do sistema operacional.",
+    "difficulty": "easy",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (antivírus)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "seguranca-info",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "realizar becapes automáticos na nuvem.",
+    "difficulty": "easy",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Segurança da Informação (antivírus)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "office",
-    "text": "Em uma planilha eletrônica (como o LibreOffice Calc ou o Microsoft Excel), a fórmula =SOMA(A1:A5) tem como resultado",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o somatório dos valores das células A1 até A5.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -570,41 +1066,79 @@
     "legal_basis": "Conceito de Informática - Office (planilhas eletrônicas)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "a média aritmética dos valores das células A1 até A5.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "o somatório dos valores das células A1 até A5.",
-        "is_correct": true,
-        "explanation": "Correta: A função SOMA (ou SUM) retorna o somatório dos valores contidos no intervalo de células especificado, no caso, das células A1 até A5."
-      },
-      {
         "letter": "C",
-        "text": "o maior valor entre as células A1 até A5.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "a quantidade de células preenchidas entre A1 e A5.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "o produto dos valores das células A1 até A5.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "office",
-    "text": "Em um editor de texto como o Microsoft Word ou o LibreOffice Writer, o recurso denominado 'mala direta' (mail merge) permite",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o maior valor entre as células A1 até A5.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (planilhas eletrônicas)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o produto dos valores das células A1 até A5.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (planilhas eletrônicas)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "gerar diversos documentos personalizados a partir de um modelo e de uma base de dados de destinatários.",
     "difficulty": "medium",
     "source": "CESPE/2017",
     "year": 2017,
@@ -613,41 +1147,79 @@
     "legal_basis": "Conceito de Informática - Office (editores de texto)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "corrigir automaticamente a ortografia do documento.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "gerar diversos documentos personalizados a partir de um modelo e de uma base de dados de destinatários.",
-        "is_correct": true,
-        "explanation": "Correta: A mala direta permite gerar múltiplos documentos personalizados (como cartas, etiquetas ou e-mails) a partir de um modelo único combinado com uma base de dados (por exemplo, uma planilha ou lista de contatos), inserindo automaticamente os dados de cada destinatário."
-      },
-      {
         "letter": "C",
-        "text": "converter o documento diretamente para o formato PDF.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "inserir automaticamente um sumário com base nos títulos do documento.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "proteger o documento com senha de leitura.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "office",
-    "text": "Em uma planilha eletrônica, ao se utilizar uma referência absoluta como $A$1 em uma fórmula, e essa fórmula for copiada para outras células, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "converter o documento diretamente para o formato PDF.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (editores de texto)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "inserir automaticamente um sumário com base nos títulos do documento.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (editores de texto)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "a referência à célula A1 permanecerá fixa, não se ajustando às novas células.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -656,41 +1228,79 @@
     "legal_basis": "Conceito de Informática - Office (referências em planilhas)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "a referência à célula A1 se ajustará automaticamente para cada nova célula.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "a referência à célula A1 permanecerá fixa, não se ajustando às novas células.",
-        "is_correct": true,
-        "explanation": "Correta: O uso do símbolo $ antes da letra da coluna e do número da linha (referência absoluta) faz com que essa referência não seja alterada quando a fórmula é copiada para outras células, ao contrário da referência relativa, que se ajusta automaticamente."
-      },
-      {
         "letter": "C",
-        "text": "a fórmula deixará de funcionar e retornará erro.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "apenas a linha da referência será ajustada, mantendo fixa a coluna.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "o símbolo $ é utilizado exclusivamente para formatação monetária, sem efeito na referência.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "office",
-    "text": "No LibreOffice Writer e no Microsoft Word, o recurso de formatação de parágrafo que permite definir o espaçamento entre linhas, o recuo e o alinhamento (justificado, à esquerda, à direita ou centralizado) do texto é acessado, tipicamente, por meio",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "a referência à célula A1 se ajustará automaticamente para cada nova célula.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (referências em planilhas)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "a fórmula deixará de funcionar e retornará erro.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (referências em planilhas)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "da caixa de diálogo ou painel de 'Parágrafo'.",
     "difficulty": "easy",
     "source": "CESPE/2019",
     "year": 2019,
@@ -699,41 +1309,79 @@
     "legal_basis": "Conceito de Informática - Office (formatação de parágrafo)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "da caixa de diálogo ou painel de 'Parágrafo'.",
-        "is_correct": true,
-        "explanation": "Correta: As opções de espaçamento entre linhas, recuo e alinhamento de parágrafo são configuradas na caixa de diálogo/menu 'Parágrafo', disponível na guia/menu de formatação do editor de texto."
-      },
-      {
-        "letter": "B",
-        "text": "exclusivamente do menu 'Arquivo'.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "exclusivamente da tecla de atalho Ctrl+Z.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "do gerenciador de tarefas do sistema operacional.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "de um complemento externo não incluído no editor.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "exclusivamente do menu 'Arquivo'.",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (formatação de parágrafo)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "de um complemento externo não incluído no editor.",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Office (formatação de parágrafo)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "cloud",
-    "text": "Na computação em nuvem, o modelo de serviço em que o provedor disponibiliza ao usuário toda a infraestrutura de hardware virtualizada (servidores, armazenamento e redes), cabendo ao cliente instalar e gerenciar o sistema operacional e as aplicações, é denominado",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "IaaS.",
     "difficulty": "medium",
     "source": "CESPE/2017",
     "year": 2017,
@@ -742,41 +1390,79 @@
     "legal_basis": "Conceito de Informática - Computação em Nuvem (IaaS, PaaS, SaaS)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "SaaS.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "PaaS.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "IaaS.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: No modelo IaaS (Infrastructure as a Service), o provedor fornece a infraestrutura de TI virtualizada (processamento, armazenamento, rede), enquanto o cliente é responsável por instalar e gerenciar sistemas operacionais, middlewares e aplicações."
-      },
-      {
-        "letter": "D",
-        "text": "DaaS.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "FaaS.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "cloud",
-    "text": "No modelo de nuvem denominado SaaS (Software as a Service), é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "FaaS.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (IaaS, PaaS, SaaS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "SaaS.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (IaaS, PaaS, SaaS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o usuário acessa uma aplicação completa e pronta para uso, sem gerenciar a infraestrutura subjacente.",
     "difficulty": "easy",
     "source": "CESPE/2018",
     "year": 2018,
@@ -785,41 +1471,79 @@
     "legal_basis": "Conceito de Informática - Computação em Nuvem (SaaS)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "o usuário deve instalar e configurar o sistema operacional utilizado pela aplicação.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "o usuário acessa uma aplicação completa e pronta para uso, sem gerenciar a infraestrutura subjacente.",
-        "is_correct": true,
-        "explanation": "Correta: No SaaS, o provedor disponibiliza uma aplicação completa, pronta para uso, acessada geralmente via navegador, sem que o usuário precise instalar, configurar ou manter a infraestrutura ou o software subjacente (exemplos: webmail, editores de texto on-line)."
-      },
-      {
         "letter": "C",
-        "text": "cabe ao usuário desenvolver a aplicação do zero utilizando apenas a infraestrutura fornecida.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "esse modelo não pode ser acessado por meio de navegadores de Internet.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "esse modelo exige obrigatoriamente hardware próprio do usuário.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "cloud",
-    "text": "Quanto aos modelos de implantação da computação em nuvem, uma nuvem que é provisionada para uso exclusivo de uma única organização, podendo ser gerenciada por ela própria ou por terceiros, e hospedada interna ou externamente, é classificada como nuvem",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "esse modelo exige obrigatoriamente hardware próprio do usuário.",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (SaaS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "o usuário deve instalar e configurar o sistema operacional utilizado pela aplicação.",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (SaaS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "privada.",
     "difficulty": "medium",
     "source": "CESPE/2019",
     "year": 2019,
@@ -828,41 +1552,79 @@
     "legal_basis": "Conceito de Informática - Computação em Nuvem (modelos de implantação)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "pública.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "privada.",
-        "is_correct": true,
-        "explanation": "Correta: A nuvem privada é destinada ao uso exclusivo de uma única organização, em oposição à nuvem pública (aberta ao público em geral) e à nuvem híbrida (composição de duas ou mais infraestruturas de nuvem distintas)."
-      },
-      {
         "letter": "C",
-        "text": "híbrida.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "comunitária de acesso irrestrito.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "distribuída anônima.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "cloud",
-    "text": "Entre as principais vantagens atribuídas à adoção da computação em nuvem por organizações, destaca-se",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "pública.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (modelos de implantação)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "híbrida.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (modelos de implantação)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "a escalabilidade de recursos sob demanda, sem necessidade de infraestrutura física própria.",
     "difficulty": "easy",
     "source": "CESPE/2020",
     "year": 2020,
@@ -871,41 +1633,79 @@
     "legal_basis": "Conceito de Informática - Computação em Nuvem (vantagens)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "a exigência de investimento obrigatório em servidores físicos próprios.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "a escalabilidade de recursos sob demanda, sem necessidade de infraestrutura física própria.",
-        "is_correct": true,
-        "explanation": "Correta: Uma das principais vantagens da computação em nuvem é a elasticidade/escalabilidade sob demanda, que permite aumentar ou reduzir os recursos computacionais utilizados conforme a necessidade, sem a exigência de investimento prévio em infraestrutura física própria."
-      },
-      {
         "letter": "C",
-        "text": "a impossibilidade de acesso remoto aos dados armazenados.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "a eliminação total de qualquer risco de segurança da informação.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "a obrigatoriedade de utilização exclusiva por grandes corporações.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "a obrigatoriedade de utilização exclusiva por grandes corporações.",
+    "difficulty": "easy",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (vantagens)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "cloud",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "a impossibilidade de acesso remoto aos dados armazenados.",
+    "difficulty": "easy",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Computação em Nuvem (vantagens)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "banco-dados",
-    "text": "Em um banco de dados relacional, o comando da linguagem SQL utilizado para consultar e recuperar dados armazenados em uma ou mais tabelas é o",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "SELECT.",
     "difficulty": "easy",
     "source": "CESPE/2017",
     "year": 2017,
@@ -914,41 +1714,79 @@
     "legal_basis": "Conceito de Informática - Banco de Dados (SQL)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "INSERT.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "UPDATE.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "SELECT.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: O comando SELECT é utilizado na linguagem SQL para realizar consultas e recuperar dados de uma ou mais tabelas de um banco de dados relacional."
-      },
-      {
-        "letter": "D",
-        "text": "DELETE.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "DROP.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "banco-dados",
-    "text": "Em um banco de dados relacional, a chave primária (primary key) de uma tabela tem como característica",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "UPDATE.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (SQL)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "DROP.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (SQL)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "identificar de forma única cada registro da tabela, sem admitir duplicidade ou nulidade.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -957,41 +1795,79 @@
     "legal_basis": "Conceito de Informática - Banco de Dados (modelo relacional)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "permitir valores duplicados entre os registros da tabela.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "admitir valores nulos em parte de seus registros.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "identificar de forma única cada registro da tabela, sem admitir duplicidade ou nulidade.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: A chave primária identifica de forma única cada registro (linha) de uma tabela, não podendo conter valores nulos nem duplicados, diferentemente da chave estrangeira, que referencia a chave primária de outra tabela para estabelecer relacionamentos."
-      },
-      {
-        "letter": "D",
-        "text": "ser obrigatoriamente composta apenas por campos do tipo texto.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "referenciar exclusivamente tabelas de outros bancos de dados externos.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "banco-dados",
-    "text": "O processo de organização dos dados em um banco de dados relacional com o objetivo de reduzir redundâncias e evitar anomalias de inserção, atualização e exclusão é denominado",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "ser obrigatoriamente composta apenas por campos do tipo texto.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (modelo relacional)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "admitir valores nulos em parte de seus registros.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (modelo relacional)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "normalização.",
     "difficulty": "hard",
     "source": "CESPE/2019",
     "year": 2019,
@@ -1000,41 +1876,79 @@
     "legal_basis": "Conceito de Informática - Banco de Dados (normalização)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "indexação.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "normalização.",
-        "is_correct": true,
-        "explanation": "Correta: A normalização é o processo de estruturação das tabelas de um banco de dados relacional, por meio da aplicação de formas normais sucessivas, com o objetivo de reduzir a redundância de dados e evitar anomalias de manipulação."
-      },
-      {
         "letter": "C",
-        "text": "replicação.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "particionamento.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "becape incremental.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "informatica",
     "topic_slug": "banco-dados",
-    "text": "Acerca de becape (backup) de bancos de dados, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "becape incremental.",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (normalização)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "replicação.",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (normalização)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "deve ser realizado periodicamente e, preferencialmente, armazenado em local distinto do servidor de produção.",
     "difficulty": "medium",
     "source": "CESPE/2020",
     "year": 2020,
@@ -1043,34 +1957,70 @@
     "legal_basis": "Conceito de Informática - Banco de Dados (becape)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "deve ser realizado apenas uma única vez, no momento da criação do banco de dados.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "deve ser realizado periodicamente e, preferencialmente, armazenado em local distinto do servidor de produção.",
-        "is_correct": true,
-        "explanation": "Correta: O becape de bancos de dados é uma prática essencial de segurança da informação, que deve ser realizado periodicamente e armazenado, preferencialmente, em local distinto do servidor de produção, garantindo a recuperação dos dados em caso de falhas, incidentes de segurança ou desastres."
-      },
-      {
         "letter": "C",
-        "text": "torna desnecessária qualquer outra medida de segurança da informação.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "não pode ser automatizado por rotinas ou agendamentos do sistema.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "deve ser armazenado exclusivamente no mesmo disco físico do banco de dados original.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "deve ser armazenado exclusivamente no mesmo disco físico do banco de dados original.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (becape)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "banco-dados",
+    "question_type": "certo_errado",
+    "context_text": "Acerca de noções de informática, julgue o item que se segue.",
+    "text": "torna desnecessária qualquer outra medida de segurança da informação.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Informática - Banco de Dados (becape)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   }

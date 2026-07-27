@@ -14,10 +14,17 @@ class DifficultyLevel(str, Enum):
     EXPERT = "expert"
 
 
+class QuestionType(str, Enum):
+    CERTO_ERRADO = "certo_errado"
+    MULTIPLA_ESCOLHA = "multipla_escolha"
+
+
 class QuestionOut(BaseModel):
     id: UUID
     subject_id: UUID
     topic_id: Optional[UUID] = None
+    question_type: QuestionType = QuestionType.CERTO_ERRADO
+    context_text: Optional[str] = None
     text: str
     difficulty: DifficultyLevel
     source: Optional[str] = None
@@ -70,6 +77,7 @@ class QuestionAttemptOut(BaseModel):
 class QuestionFilter(BaseModel):
     subject_id: Optional[UUID] = None
     topic_id: Optional[UUID] = None
+    question_type: Optional[QuestionType] = None
     difficulty: Optional[DifficultyLevel] = None
     examiner: Optional[str] = None
     year_min: Optional[int] = None

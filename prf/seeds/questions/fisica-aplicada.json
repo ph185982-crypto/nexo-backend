@@ -2,7 +2,9 @@
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "cinematica",
-    "text": "Um veículo da PRF percorre, em movimento retilíneo uniforme (MRU), uma distância de 180 km em um intervalo de tempo de 2 horas. Nessas condições, a velocidade escalar média desenvolvida pelo veículo, em km/h, foi de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "90 km/h.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -11,41 +13,79 @@
     "legal_basis": "Conceito de Física - Cinemática (MRU)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "60 km/h.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "75 km/h.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "90 km/h.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: No MRU, a velocidade média é dada por v = ΔS/Δt = 180 km / 2 h = 90 km/h."
-      },
-      {
-        "letter": "D",
-        "text": "100 km/h.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "120 km/h.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "cinematica",
-    "text": "Considerando que um automóvel trafegue a uma velocidade constante de 72 km/h, é correto afirmar que essa velocidade, expressa no Sistema Internacional de Unidades (SI), corresponde a",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "75 km/h.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRU)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "100 km/h.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRU)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "20 m/s.",
     "difficulty": "easy",
     "source": "CESPE/2017",
     "year": 2017,
@@ -54,41 +94,79 @@
     "legal_basis": "Conceito de Física - Cinemática (conversão de unidades)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "15 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "18 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "20 m/s.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Para converter km/h em m/s, divide-se por 3,6: 72 / 3,6 = 20 m/s."
-      },
-      {
-        "letter": "D",
-        "text": "22 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "25 m/s.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "cinematica",
-    "text": "Um veículo parte do repouso e, em movimento retilíneo uniformemente variado (MRUV), atinge a velocidade de 20 m/s após 5 segundos de aceleração constante. Nessa situação, a aceleração do veículo, em m/s², foi de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "25 m/s.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (conversão de unidades)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "15 m/s.",
+    "difficulty": "easy",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (conversão de unidades)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "4 m/s².",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -97,41 +175,79 @@
     "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da velocidade)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "2 m/s².",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "3 m/s².",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "4 m/s².",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Como v0 = 0, aplica-se a = (v - v0)/t = (20 - 0)/5 = 4 m/s²."
-      },
-      {
-        "letter": "D",
-        "text": "5 m/s².",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "8 m/s².",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "cinematica",
-    "text": "Um veículo trafega inicialmente a 10 m/s e é submetido a uma aceleração constante de 2 m/s² durante 6 segundos, em MRUV. Ao final desse intervalo, a velocidade do veículo, em m/s, será de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "3 m/s².",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da velocidade)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "2 m/s².",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da velocidade)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "22 m/s.",
     "difficulty": "medium",
     "source": "CESPE/2019",
     "year": 2019,
@@ -140,41 +256,79 @@
     "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da velocidade)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "12 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "16 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "18 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "20 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "22 m/s.",
-        "is_correct": true,
-        "explanation": "Correta: Pela função horária da velocidade, v = v0 + at = 10 + 2×6 = 22 m/s."
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "cinematica",
-    "text": "Um veículo parte do repouso com aceleração constante de 5 m/s², em MRUV. A distância percorrida por esse veículo, em metros, ao final de 4 segundos, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "20 m/s.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da velocidade)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "12 m/s.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da velocidade)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "40 m.",
     "difficulty": "hard",
     "source": "CESPE/2020",
     "year": 2020,
@@ -183,41 +337,79 @@
     "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da posição)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "20 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "25 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "32 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "40 m.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Pela função horária da posição, com v0 = 0: ΔS = v0·t + a·t²/2 = 0 + 5×16/2 = 40 m."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "50 m.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "50 m.",
+    "difficulty": "hard",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da posição)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "cinematica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "32 m.",
+    "difficulty": "hard",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Cinemática (MRUV, função horária da posição)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "dinamica-veicular",
-    "text": "Um veículo de massa igual a 1.000 kg sofre uma desaceleração constante de 5 m/s² ao frear. De acordo com a segunda lei de Newton, a intensidade da força resultante que atua sobre o veículo, em newtons, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "5.000 N.",
     "difficulty": "medium",
     "source": "CESPE/2016",
     "year": 2016,
@@ -226,41 +418,79 @@
     "legal_basis": "Conceito de Física - Dinâmica (2ª Lei de Newton)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "1.000 N.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "2.000 N.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "5.000 N.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Pela segunda lei de Newton, F = m·a = 1.000 × 5 = 5.000 N."
-      },
-      {
-        "letter": "D",
-        "text": "10.000 N.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "50.000 N.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "dinamica-veicular",
-    "text": "Acerca da força centrípeta que atua sobre um veículo ao realizar uma curva, é correto afirmar que ela",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "10.000 N.",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica (2ª Lei de Newton)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "2.000 N.",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica (2ª Lei de Newton)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "é dirigida para o centro da trajetória curvilínea e cresce com o quadrado da velocidade.",
     "difficulty": "medium",
     "source": "CESPE/2017",
     "year": 2017,
@@ -269,41 +499,79 @@
     "legal_basis": "Conceito de Física - Dinâmica (movimento circular)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "é dirigida para fora da curva, no mesmo sentido do movimento.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "tem intensidade inversamente proporcional ao quadrado da velocidade do veículo.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "independe do raio de curvatura da pista.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "é dirigida para o centro da trajetória curvilínea e cresce com o quadrado da velocidade.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: A força centrípeta é a resultante das forças (essencialmente o atrito entre pneu e pista) que aponta para o centro da curvatura, sendo responsável por manter o veículo na trajetória curva; sua intensidade é Fc = m·v²/r, crescendo com o quadrado da velocidade."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "é nula quando o veículo mantém velocidade constante em qualquer trajetória.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "dinamica-veicular",
-    "text": "Um motorista trafega a 72 km/h (20 m/s) e, ao perceber um obstáculo, leva 1 segundo para reagir e acionar o freio (tempo de percepção e reação). Durante esse intervalo, mantendo a velocidade constante, o veículo percorre uma distância de reação, em metros, igual a",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "é nula quando o veículo mantém velocidade constante em qualquer trajetória.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica (movimento circular)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "independe do raio de curvatura da pista.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica (movimento circular)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "20 m.",
     "difficulty": "easy",
     "source": "CESPE/2018",
     "year": 2018,
@@ -312,41 +580,79 @@
     "legal_basis": "Conceito de Física - Dinâmica veicular (tempo e distância de reação)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "10 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "15 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "20 m.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Durante o tempo de reação, o veículo mantém velocidade constante: d = v·t = 20 × 1 = 20 m."
-      },
-      {
-        "letter": "D",
-        "text": "25 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "30 m.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "dinamica-veicular",
-    "text": "Em uma colisão frontal entre um automóvel de pequeno porte e um caminhão, com base na terceira lei de Newton (ação e reação), é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "30 m.",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica veicular (tempo e distância de reação)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "10 m.",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica veicular (tempo e distância de reação)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "as forças trocadas entre os veículos têm a mesma intensidade, mas o automóvel de menor massa sofre maior aceleração.",
     "difficulty": "hard",
     "source": "CESPE/2019",
     "year": 2019,
@@ -355,41 +661,79 @@
     "legal_basis": "Conceito de Física - Dinâmica (3ª Lei de Newton)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "apenas o automóvel de menor massa exerce força sobre o caminhão, e não o contrário.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "as forças trocadas entre os veículos têm a mesma intensidade, mas o automóvel de menor massa sofre maior aceleração.",
-        "is_correct": true,
-        "explanation": "Correta: Pela terceira lei de Newton, as forças trocadas entre os dois veículos têm mesma intensidade e sentidos opostos; entretanto, como a aceleração é inversamente proporcional à massa (a=F/m), o veículo de menor massa sofre maior aceleração e, consequentemente, maiores danos."
-      },
-      {
         "letter": "C",
-        "text": "o caminhão, por ser maior, exerce força de maior intensidade do que a recebida do automóvel.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "as forças trocadas são de intensidades diferentes, proporcionais ao peso de cada veículo.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "não há troca de forças, pois a colisão é um fenômeno de natureza puramente energética.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "dinamica-veicular",
-    "text": "Durante uma frenagem brusca, ocorre o fenômeno conhecido como transferência de carga (ou transferência de peso) no veículo. Esse fenômeno consiste em",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "não há troca de forças, pois a colisão é um fenômeno de natureza puramente energética.",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica (3ª Lei de Newton)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "o caminhão, por ser maior, exerce força de maior intensidade do que a recebida do automóvel.",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica (3ª Lei de Newton)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "transferência de parte do peso do veículo para o eixo dianteiro, devido à inércia da massa.",
     "difficulty": "medium",
     "source": "CESPE/2020",
     "year": 2020,
@@ -398,41 +742,79 @@
     "legal_basis": "Conceito de Física - Dinâmica veicular (transferência de carga)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "aumento uniforme de peso em todos os pneus simultaneamente.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "transferência de parte do peso do veículo para o eixo dianteiro, devido à inércia da massa.",
-        "is_correct": true,
-        "explanation": "Correta: Durante a frenagem, a inércia da massa do veículo faz com que parte do peso que estava distribuído entre os eixos se transfira para o eixo dianteiro, aumentando a carga sobre os pneus dianteiros e reduzindo sobre os traseiros."
-      },
-      {
         "letter": "C",
-        "text": "transferência de parte do peso do veículo para o eixo traseiro, devido à ação da gravidade.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "redução total do peso aparente do veículo durante a frenagem.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "anulação da força de atrito entre os pneus e o solo.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "redução total do peso aparente do veículo durante a frenagem.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica veicular (transferência de carga)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "dinamica-veicular",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "aumento uniforme de peso em todos os pneus simultaneamente.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Dinâmica veicular (transferência de carga)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "energia-colisoes",
-    "text": "Um veículo de massa 800 kg trafega a uma velocidade de 20 m/s. A energia cinética desse veículo, em joules, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "160.000 J.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -441,41 +823,79 @@
     "legal_basis": "Conceito de Física - Energia cinética (Ec = mv²/2)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "80.000 J.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "120.000 J.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "160.000 J.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Ec = m·v²/2 = 800 × 20² / 2 = 800 × 400 / 2 = 160.000 J."
-      },
-      {
-        "letter": "D",
-        "text": "200.000 J.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "320.000 J.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "energia-colisoes",
-    "text": "Um veículo teve sua velocidade dobrada, passando de 40 km/h para 80 km/h, mantendo-se a mesma massa. Em relação à energia cinética inicial, a nova energia cinética do veículo é",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "200.000 J.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Energia cinética (Ec = mv²/2)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "320.000 J.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Energia cinética (Ec = mv²/2)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "quatro vezes maior que a inicial.",
     "difficulty": "medium",
     "source": "CESPE/2017",
     "year": 2017,
@@ -484,41 +904,79 @@
     "legal_basis": "Conceito de Física - Energia cinética (proporcionalidade com v²)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "duas vezes maior que a inicial.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "três vezes maior que a inicial.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "quatro vezes maior que a inicial.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Como Ec é proporcional ao quadrado da velocidade (Ec = mv²/2), ao dobrar v, a energia cinética é multiplicada por 2² = 4."
-      },
-      {
-        "letter": "D",
-        "text": "a mesma da inicial.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "metade da inicial.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "energia-colisoes",
-    "text": "Dois veículos de mesma massa, igual a 1.000 kg, colidem de forma perfeitamente inelástica (permanecendo unidos após o choque): um trafegava a 20 m/s e o outro estava parado. Considerando a conservação da quantidade de movimento, a velocidade do conjunto imediatamente após a colisão, em m/s, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "metade da inicial.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Energia cinética (proporcionalidade com v²)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "a mesma da inicial.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Energia cinética (proporcionalidade com v²)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "10 m/s.",
     "difficulty": "hard",
     "source": "CESPE/2018",
     "year": 2018,
@@ -527,41 +985,79 @@
     "legal_basis": "Conceito de Física - Conservação da quantidade de movimento (colisão inelástica)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "5 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "8 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "10 m/s.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Pela conservação da quantidade de movimento: m1·v1 + m2·v2 = (m1+m2)·v', logo 1000×20 + 1000×0 = 2000×v', o que resulta em v' = 10 m/s."
-      },
-      {
-        "letter": "D",
-        "text": "15 m/s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "20 m/s.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "energia-colisoes",
-    "text": "Ao frear, um veículo dissipa toda a sua energia cinética de 200.000 J por meio do trabalho realizado pela força de atrito de frenagem, cuja intensidade é constante e igual a 10.000 N. Pelo teorema do trabalho-energia, a distância percorrida pelo veículo até parar, em metros, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "8 m/s.",
+    "difficulty": "hard",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Conservação da quantidade de movimento (colisão inelástica)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "20 m/s.",
+    "difficulty": "hard",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Conservação da quantidade de movimento (colisão inelástica)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "20 m.",
     "difficulty": "medium",
     "source": "CESPE/2019",
     "year": 2019,
@@ -570,41 +1066,79 @@
     "legal_basis": "Conceito de Física - Teorema trabalho-energia",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "10 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "15 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "20 m.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Pelo teorema trabalho-energia, W = ΔEc, logo F·d = Ec, e d = Ec/F = 200.000/10.000 = 20 m."
-      },
-      {
-        "letter": "D",
-        "text": "25 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "40 m.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "energia-colisoes",
-    "text": "Um veículo de massa 1.200 kg reduz sua velocidade de 15 m/s até parar completamente em um intervalo de tempo de 3 segundos, em decorrência da força de frenagem aplicada. Pelo teorema do impulso, a intensidade média dessa força de frenagem, em newtons, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "40 m.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Teorema trabalho-energia",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "10 m.",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Teorema trabalho-energia",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "6.000 N.",
     "difficulty": "hard",
     "source": "CESPE/2020",
     "year": 2020,
@@ -613,41 +1147,79 @@
     "legal_basis": "Conceito de Física - Impulso e quantidade de movimento",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "2.000 N.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "3.000 N.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "4.500 N.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "6.000 N.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Pelo teorema do impulso, I = F·Δt = Δp = m·Δv, logo F = m·Δv/Δt = 1.200×15/3 = 6.000 N."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "9.000 N.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "4.500 N.",
+    "difficulty": "hard",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Impulso e quantidade de movimento",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "energia-colisoes",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "2.000 N.",
+    "difficulty": "hard",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Impulso e quantidade de movimento",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "balistica",
-    "text": "Um projétil é lançado obliquamente com velocidade inicial de 20 m/s e ângulo de 45° em relação à horizontal, desprezando-se a resistência do ar e considerando g = 10 m/s². O alcance horizontal máximo desse projétil, em metros, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "40 m.",
     "difficulty": "hard",
     "source": "CESPE/2017",
     "year": 2017,
@@ -656,41 +1228,79 @@
     "legal_basis": "Conceito de Física - Balística (lançamento oblíquo)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "10 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "20 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "30 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "40 m.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: O alcance de um lançamento oblíquo é dado por R = v²·sen(2θ)/g. Para θ = 45°, sen(90°) = 1, logo R = 20²×1/10 = 40 m."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "80 m.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "balistica",
-    "text": "Um projétil é disparado horizontalmente a partir de uma altura de 20 m em relação ao solo, com g = 10 m/s², desprezando-se a resistência do ar. O tempo de voo do projétil até atingir o solo, em segundos, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "30 m.",
+    "difficulty": "hard",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (lançamento oblíquo)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "20 m.",
+    "difficulty": "hard",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (lançamento oblíquo)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "2 s.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -699,41 +1309,79 @@
     "legal_basis": "Conceito de Física - Balística (lançamento horizontal, queda livre)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "1 s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "1,5 s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "2 s.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: No lançamento horizontal, o movimento vertical é uma queda livre: h = g·t²/2, logo t = √(2h/g) = √(2×20/10) = √4 = 2 s. Esse tempo independe da velocidade horizontal de disparo."
-      },
-      {
-        "letter": "D",
-        "text": "3 s.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "4 s.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "balistica",
-    "text": "Com relação à trajetória de um projétil disparado por arma de fogo, desprezada a resistência do ar, é correto afirmar que essa trajetória descreve, sob ação exclusiva da gravidade, uma curva do tipo",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "3 s.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (lançamento horizontal, queda livre)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "4 s.",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (lançamento horizontal, queda livre)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "parabólica.",
     "difficulty": "easy",
     "source": "CESPE/2019",
     "year": 2019,
@@ -742,41 +1390,79 @@
     "legal_basis": "Conceito de Física - Balística (trajetória parabólica)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "retilínea.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "circular.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "parabólica.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Sob ação exclusiva da gravidade (e desprezada a resistência do ar), a composição do movimento horizontal uniforme com o movimento vertical uniformemente variado resulta em uma trajetória parabólica."
-      },
-      {
-        "letter": "D",
-        "text": "hiperbólica.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "elíptica.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "balistica",
-    "text": "A balística é a ciência que estuda o movimento dos projéteis, sendo tradicionalmente dividida em ramos de acordo com a fase do movimento estudada. O ramo da balística que estuda o comportamento do projétil durante seu deslocamento no ar, do momento em que deixa a arma até atingir o alvo, denomina-se balística",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "retilínea.",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (trajetória parabólica)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "elíptica.",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (trajetória parabólica)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "externa.",
     "difficulty": "medium",
     "source": "CESPE/2020",
     "year": 2020,
@@ -785,41 +1471,79 @@
     "legal_basis": "Conceito de Física - Balística (classificação: interna, externa e terminal)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "interna.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "externa.",
-        "is_correct": true,
-        "explanation": "Correta: A balística externa (ou balística de trajetória) estuda o movimento do projétil no ar, desde a saída do cano da arma até o impacto no alvo; a balística interna estuda os fenômenos internos ao cano, e a balística terminal (ou de efeitos) estuda os efeitos do projétil no alvo."
-      },
-      {
         "letter": "C",
-        "text": "terminal.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "residual.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "estática.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "balistica",
-    "text": "Dois projéteis são lançados horizontalmente, a partir de uma mesma altura, com velocidades horizontais diferentes, sendo desprezada a resistência do ar. Em relação ao tempo de queda até o solo, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "terminal.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (classificação: interna, externa e terminal)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "interna.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (classificação: interna, externa e terminal)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "ambos os projéteis atingem o solo no mesmo instante.",
     "difficulty": "medium",
     "source": "CESPE/2016",
     "year": 2016,
@@ -828,41 +1552,79 @@
     "legal_basis": "Conceito de Física - Balística (independência entre movimentos horizontal e vertical)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "o projétil com maior velocidade horizontal atinge o solo primeiro.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "o projétil com menor velocidade horizontal atinge o solo primeiro.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "ambos os projéteis atingem o solo no mesmo instante.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: O tempo de queda em um lançamento horizontal depende exclusivamente da altura e da aceleração da gravidade (t = √(2h/g)), sendo independente da velocidade horizontal; logo, ambos os projéteis atingem o solo simultaneamente."
-      },
-      {
-        "letter": "D",
-        "text": "o tempo de queda depende proporcionalmente da velocidade horizontal de cada projétil.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "não é possível determinar o tempo de queda sem conhecer a massa dos projéteis.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "não é possível determinar o tempo de queda sem conhecer a massa dos projéteis.",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (independência entre movimentos horizontal e vertical)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "balistica",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "o tempo de queda depende proporcionalmente da velocidade horizontal de cada projétil.",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Balística (independência entre movimentos horizontal e vertical)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "frenagem-atrito",
-    "text": "Um veículo trafega a 20 m/s em uma pista com coeficiente de atrito cinético entre pneus e pista igual a 0,5, considerando g = 10 m/s². A distância mínima de frenagem, em metros, necessária para que o veículo pare completamente, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "40 m.",
     "difficulty": "medium",
     "source": "CESPE/2017",
     "year": 2017,
@@ -871,41 +1633,79 @@
     "legal_basis": "Conceito de Física - Frenagem e atrito (d = v²/2μg)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "20 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "30 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "40 m.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: A distância de frenagem é dada por d = v²/(2·μ·g) = 20²/(2×0,5×10) = 400/10 = 40 m."
-      },
-      {
-        "letter": "D",
-        "text": "50 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "60 m.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "frenagem-atrito",
-    "text": "Em relação à influência do estado da pista sobre a frenagem de um veículo, é correto afirmar que uma pista molhada, em comparação a uma pista seca, apresenta",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "30 m.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (d = v²/2μg)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "50 m.",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (d = v²/2μg)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "coeficiente de atrito menor, aumentando a distância de frenagem.",
     "difficulty": "easy",
     "source": "CESPE/2018",
     "year": 2018,
@@ -914,41 +1714,79 @@
     "legal_basis": "Conceito de Física - Frenagem e atrito (influência das condições da pista)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "coeficiente de atrito maior, reduzindo a distância de frenagem.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "coeficiente de atrito menor, aumentando a distância de frenagem.",
-        "is_correct": true,
-        "explanation": "Correta: Uma pista molhada reduz o coeficiente de atrito entre pneus e pavimento, o que aumenta a distância necessária para a frenagem completa do veículo, para uma mesma velocidade inicial."
-      },
-      {
         "letter": "C",
-        "text": "coeficiente de atrito igual ao da pista seca, sem alteração na frenagem.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "nenhuma influência sobre a distância de frenagem do veículo.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "aumento da força de frenagem disponível, independentemente do atrito.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "frenagem-atrito",
-    "text": "Um motorista trafega a 72 km/h (20 m/s) e leva 1 segundo para reagir a um imprevisto (distância de reação). A partir do acionamento do freio, o veículo desacelera em uma pista com coeficiente de atrito de 0,4 (g = 10 m/s²). A distância total percorrida pelo veículo, somando-se a distância de reação e a distância de frenagem, até a parada completa, em metros, é de",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "coeficiente de atrito igual ao da pista seca, sem alteração na frenagem.",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (influência das condições da pista)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "coeficiente de atrito maior, reduzindo a distância de frenagem.",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (influência das condições da pista)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "70 m.",
     "difficulty": "hard",
     "source": "CESPE/2019",
     "year": 2019,
@@ -957,41 +1795,79 @@
     "legal_basis": "Conceito de Física - Frenagem e atrito (distância total de parada)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "50 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "60 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "65 m.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "70 m.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: Distância de reação: d1 = v·t = 20×1 = 20 m. Distância de frenagem: d2 = v²/(2μg) = 400/(2×0,4×10) = 400/8 = 50 m. Distância total: d1 + d2 = 20 + 50 = 70 m."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "90 m.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "frenagem-atrito",
-    "text": "Acerca da diferença entre atrito estático e atrito cinético (dinâmico) aplicada à frenagem veicular, é correto afirmar que",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "90 m.",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (distância total de parada)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "60 m.",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (distância total de parada)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "o atrito estático é, em geral, maior que o cinético, de modo que a roda travada (deslizando) oferece menor força de frenagem.",
     "difficulty": "medium",
     "source": "CESPE/2020",
     "year": 2020,
@@ -1000,41 +1876,79 @@
     "legal_basis": "Conceito de Física - Frenagem e atrito (atrito estático x cinético)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "o atrito cinético é sempre maior que o atrito estático, tornando a frenagem com roda travada mais eficiente.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "o atrito estático é, em geral, maior que o cinético, de modo que a roda travada (deslizando) oferece menor força de frenagem.",
-        "is_correct": true,
-        "explanation": "Correta: O coeficiente de atrito estático é, em geral, maior que o coeficiente de atrito cinético; por isso, quando a roda trava e desliza sobre o pavimento (atrito cinético), a força de frenagem disponível é menor do que quando a roda gira sem deslizar (atrito estático), reduzindo a eficiência da frenagem."
-      },
-      {
         "letter": "C",
-        "text": "não há diferença relevante entre atrito estático e cinético na frenagem veicular.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "D",
-        "text": "o atrito estático só existe quando o veículo está em movimento retilíneo uniforme.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "o atrito cinético não depende da natureza das superfícies em contato.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       }
     ]
   },
   {
     "subject_slug": "fisica-aplicada",
     "topic_slug": "frenagem-atrito",
-    "text": "O sistema de freios ABS (Antilock Braking System) tem como principal finalidade",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "o atrito estático só existe quando o veículo está em movimento retilíneo uniforme.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (atrito estático x cinético)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "o atrito cinético não depende da natureza das superfícies em contato.",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (atrito estático x cinético)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "evitar o travamento das rodas, mantendo a capacidade de direcionamento e otimizando o atrito.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -1043,34 +1957,70 @@
     "legal_basis": "Conceito de Física - Frenagem e atrito (sistema ABS)",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "aumentar a velocidade máxima do veículo.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
-        "letter": "B",
-        "text": "reduzir o consumo de combustível do veículo.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
-      },
-      {
         "letter": "C",
-        "text": "evitar o travamento das rodas, mantendo a capacidade de direcionamento e otimizando o atrito.",
+        "text": "Certo",
         "is_correct": true,
-        "explanation": "Correta: O ABS evita o travamento das rodas durante frenagens bruscas, mantendo o atrito predominantemente estático (e não cinético/deslizante), o que preserva a capacidade de direcionamento do veículo e, em geral, otimiza a distância de frenagem."
-      },
-      {
-        "letter": "D",
-        "text": "eliminar completamente a necessidade de distância de frenagem.",
-        "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
       },
       {
         "letter": "E",
-        "text": "aumentar o peso do veículo sobre o eixo traseiro.",
+        "text": "Errado",
         "is_correct": false,
-        "explanation": "Incorreta em relação ao gabarito."
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "aumentar o peso do veículo sobre o eixo traseiro.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (sistema ABS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "fisica-aplicada",
+    "topic_slug": "frenagem-atrito",
+    "question_type": "certo_errado",
+    "context_text": "A respeito de conceitos de física aplicada ao trânsito, julgue o item subsequente.",
+    "text": "reduzir o consumo de combustível do veículo.",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Incorreta em relação ao gabarito.",
+    "legal_basis": "Conceito de Física - Frenagem e atrito (sistema ABS)",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
       }
     ]
   }

@@ -1,0 +1,812 @@
+[
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "En español, la palabra 'todavía' es sinónimo de 'aún', e indica que una acción continúa en el presente.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "'Sin embargo' = 'no entanto/porém' em português.",
+    "text": "La expresión 'sin embargo' en español equivale a 'sem embargo' en portugués y tiene el mismo significado.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "El conector 'aunque' introduce una oración concesiva y equivale a 'embora' o 'ainda que' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "La palabra 'mientras' en español significa 'enquanto' en portugués e introduce oraciones temporales.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "En español, 'por lo tanto' es un conector causal que equivale a 'portanto' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "'Lograr' = 'conseguir/alcançar' em português, é um falso cognato.",
+    "text": "El verbo 'lograr' en español tiene el mismo significado que 'lugar' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "La conjunción 'sino' en español se usa para expresar una contraposición después de una negación, equivalente a 'mas sim' ou 'senão' em português.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "La expresión 'a pesar de' en español introduce una idea de concessão, semelhante a 'apesar de' em português.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "El adverbio 'incluso' en español significa 'inclusive/até mesmo' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "En un texto argumentativo en español, el marcador 'en primer lugar' indica la introducción del primer argumento.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "interpretacao-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "La expresión 'no obstante' tiene valor adversativo y equivale a 'não obstante' ou 'contudo' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "'Embarazada' = 'grávida'. 'Envergonhada' = 'avergonzada'.",
+    "text": "La palabra española 'embarazada' significa 'envergonhada' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "En español, 'exquisito' significa 'delicioso, refinado', e não 'esquisito' (estranho) como em português.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "La palabra 'oficina' en español se refiere a un 'escritório', no a una 'oficina mecânica' como en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "'Polvo' en español significa 'polvo/pó', y no 'polvo' (animal marinho) como en portugués. El animal se llama 'pulpo'.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Em espanhol, 'vaso' = copo/vaso (ambos os significados existem).",
+    "text": "El sustantivo 'vaso' en español se refiere a un 'vaso' para beber, con el mismo significado que en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "'Largo' em espanhol = 'longo' em português. 'Largo' em português = 'ancho' em espanhol.",
+    "text": "La palabra 'largo' en español significa 'largo' en portugués, indicando grande extensão.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "'Zurdo' en español significa 'canhoto' en portugués y se refiere a quien usa predominantemente la mano izquierda.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "'Apellido' = 'sobrenome'. 'Apelido' = 'apodo/sobrenombre'.",
+    "text": "En español, 'apellido' significa 'apelido' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "La palabra 'jubilación' en español equivale a 'aposentadoria' en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "vocabulario-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "'Todavía' en español puede confundirse con 'toda via' (de todas as formas), mas seu significado real é 'ainda'.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Acerca del vocabulario y de los falsos cognatos entre el español y el portugués, juzgue el ítem a seguir.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "En español, los artículos definidos son 'el', 'la', 'los' y 'las', de forma semelhante ao português.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "El artículo neutro 'lo' en español se usa antes de adjetivos para sustantivarlos, como en 'lo importante'.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Não muda o gênero da palavra; é apenas uma questão fonética.",
+    "text": "En español, se usa el artículo 'el' antes de sustantivos femeninos que comienzan con 'a' tónica, como 'el agua', 'el águila'.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Há diferenças significativas no uso de preposições entre espanhol e português.",
+    "text": "Las preposiciones 'a' y 'en' en español tienen exactamente los mismos usos que en portugués.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "En español, el pretérito perfecto compuesto (he cantado) indica una ação passada com relação com o presente.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "'Usted' é formal. 'Tú' é informal.",
+    "text": "La forma 'usted' en español es informal y se usa entre amigos.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Con relación al texto presentado, juzgue el ítem siguiente.",
+    "text": "El verbo 'haber' en español se usa como auxiliar en tiempos compuestos, así como en la expresión impersonal 'hay' (existe/há).",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "Em espanhol, os pronomes átonos precedem o verbo conjugado na maioria dos casos.",
+    "text": "Los pronombres de complemento directo en español (me, te, lo, la, nos, os, los, las) se colocan antes del verbo conjugado.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-espanhola",
+    "topic_slug": "gramatica-espanhol",
+    "question_type": "certo_errado",
+    "context_text": "A dupla negação é correta e obrigatória em espanhol quando o pronome negativo vem depois do verbo.",
+    "text": "En español, la doble negación ('no... nada', 'no... nadie') es gramaticalmente incorrecta.",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Con relación a aspectos gramaticales de la lengua española, juzgue el ítem siguiente.",
+    "legal_basis": "",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  }
+]

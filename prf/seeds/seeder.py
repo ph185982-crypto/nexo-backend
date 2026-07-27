@@ -10,7 +10,7 @@ from uuid import UUID
 import asyncpg
 
 from prf.seeds.seed_data import (
-    SUBJECTS, TOPICS, LEGAL_DOCUMENTS, ACHIEVEMENTS,
+    SUBJECTS, TOPICS, LEGAL_DOCUMENTS, ACHIEVEMENTS, ESSAY_THEMES,
 )
 from prf.seeds.loader import load_questions, load_articles
 
@@ -27,6 +27,7 @@ async def seed_prf_database(pool: asyncpg.Pool):
     await _seed_legal_articles_from_json(pool, doc_map, subject_map, topic_map)
     await _seed_questions_from_json(pool, subject_map, topic_map)
     await _seed_achievements(pool)
+    await _seed_essay_themes(pool)
 
     logger.info("[PRF] Seed complete.")
     return True
@@ -165,11 +166,15 @@ async def _seed_questions_from_json(
 
                     row = await conn.fetchrow(
                         """INSERT INTO questions
-                           (subject_id, topic_id, text, difficulty, source, year,
+                           (subject_id, topic_id, question_type, context_text,
+                            text, difficulty, source, year,
                             examiner, explanation, legal_basis)
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                            RETURNING id""",
-                        subject_id, topic_id, q["text"],
+                        subject_id, topic_id,
+                        q.get("question_type", "certo_errado"),
+                        q.get("context_text"),
+                        q["text"],
                         q.get("difficulty", "medium"),
                         q.get("source"), q.get("year"), q.get("examiner"),
                         q.get("explanation"), q.get("legal_basis"),
@@ -204,3 +209,22 @@ async def _seed_achievements(pool: asyncpg.Pool):
             )
             count += 1
     logger.info(f"[PRF] Seeded {count} achievements")
+
+
+async def _seed_essay_themes(pool: asyncpg.Pool):
+    count = 0
+    async with pool.acquire() as conn:
+        for t in ESSAY_THEMES:
+            existing = await conn.fetchval(
+                "SELECT id FROM essay_themes WHERE title = $1", t["title"],
+            )
+            if existing:
+                continue
+            await conn.execute(
+                """INSERT INTO essay_themes (title, description, context_text, subject_area, source, year)
+                   VALUES ($1, $2, $3, $4, $5, $6)""",
+                t["title"], t.get("description"), t["context_text"],
+                t.get("subject_area"), t.get("source"), t.get("year"),
+            )
+            count += 1
+    logger.info(f"[PRF] Seeded {count} essay themes")

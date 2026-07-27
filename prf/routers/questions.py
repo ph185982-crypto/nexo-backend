@@ -42,6 +42,8 @@ async def list_questions(
             "subject_id": q["subject_id"],
             "subject_name": q.get("subject_name"),
             "topic_id": q.get("topic_id"),
+            "question_type": q.get("question_type", "certo_errado"),
+            "context_text": q.get("context_text"),
             "text": q["text"],
             "difficulty": q["difficulty"],
             "source": q.get("source"),
@@ -70,6 +72,8 @@ async def get_question(
 
     return {
         "id": q["id"],
+        "question_type": q.get("question_type", "certo_errado"),
+        "context_text": q.get("context_text"),
         "text": q["text"],
         "difficulty": q["difficulty"],
         "subject_name": q.get("subject_name"),

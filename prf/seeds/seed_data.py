@@ -119,13 +119,82 @@ SUBJECTS = [
     {
         "name": "Policiamento e Fiscalização",
         "slug": "policiamento-fiscalizacao",
-        "description": "Atribuições da PRF, fiscalização de veículos e cargas",
-        "weight_prf": 2.5,
+        "description": "Atribuições da PRF, fiscalização de veículos e cargas (conteúdo remanejado para Legislação de Trânsito e Dir. Administrativo)",
+        "weight_prf": 0.0,
         "color": "#1D4ED8",
         "icon": "badge",
+        "display_order": 99,
+        "is_active": False,
+    },
+    {
+        "name": "Geopolítica Brasileira",
+        "slug": "geopolitica-brasileira",
+        "description": "Formação territorial, aspectos geopolíticos, fronteiras e integração",
+        "weight_prf": 1.0,
+        "color": "#16A34A",
+        "icon": "globe",
         "display_order": 13,
+        "block": 1,
+    },
+    {
+        "name": "Língua Espanhola",
+        "slug": "lingua-espanhola",
+        "description": "Interpretação de textos em espanhol (língua estrangeira do edital)",
+        "weight_prf": 1.0,
+        "color": "#E11D48",
+        "icon": "languages",
+        "display_order": 14,
+        "block": 1,
     },
 ]
+
+# ═══════════════════════════════════════════════════════════════════
+# BLOCOS DA PROVA PRF (edital 2021 CEBRASPE)
+# ═══════════════════════════════════════════════════════════════════
+
+EXAM_BLOCKS = {
+    1: {
+        "name": "Bloco I — Conhecimentos Gerais",
+        "total_items": 55,
+        "subjects": [
+            "lingua-portuguesa", "raciocinio-logico", "informatica",
+            "fisica-aplicada", "etica-servico-publico",
+            "geopolitica-brasileira", "lingua-espanhola",
+        ],
+    },
+    2: {
+        "name": "Bloco II — Legislação de Trânsito",
+        "total_items": 30,
+        "subjects": ["legislacao-transito"],
+    },
+    3: {
+        "name": "Bloco III — Conhecimentos Específicos",
+        "total_items": 35,
+        "subjects": [
+            "direito-administrativo", "direito-constitucional",
+            "direito-penal", "direito-processual-penal",
+            "legislacao-especial", "direitos-humanos",
+        ],
+    },
+}
+
+# Distribuição aproximada de itens por matéria no simulado (total 120)
+ITEMS_PER_SUBJECT_SIMULADO = {
+    "lingua-portuguesa": 12,
+    "raciocinio-logico": 8,
+    "informatica": 8,
+    "fisica-aplicada": 8,
+    "etica-servico-publico": 7,
+    "geopolitica-brasileira": 6,
+    "lingua-espanhola": 6,
+    "legislacao-transito": 30,
+    "direito-administrativo": 6,
+    "direito-constitucional": 6,
+    "direito-penal": 6,
+    "direito-processual-penal": 6,
+    "legislacao-especial": 6,
+    "direitos-humanos": 5,
+}
 
 # ═══════════════════════════════════════════════════════════════════
 # TOPICS — main topics per subject
@@ -246,7 +315,68 @@ TOPICS = {
         {"name": "Uso progressivo da força", "slug": "uso-forca", "weight": 2.5},
         {"name": "Policiamento rodoviário ostensivo", "slug": "policiamento-ostensivo", "weight": 2.0},
     ],
+    "geopolitica-brasileira": [
+        {"name": "Formação territorial do Brasil", "slug": "formacao-territorial", "weight": 2.0},
+        {"name": "Aspectos geopolíticos e fronteiras", "slug": "geopolitica-fronteiras", "weight": 2.5},
+        {"name": "Integração e blocos regionais", "slug": "integracao-regional", "weight": 2.0},
+        {"name": "Conflitos e segurança nas fronteiras", "slug": "conflitos-fronteiras", "weight": 2.5},
+        {"name": "Políticas públicas e desenvolvimento", "slug": "politicas-publicas", "weight": 2.0},
+    ],
+    "lingua-espanhola": [
+        {"name": "Interpretação de textos em espanhol", "slug": "interpretacao-espanhol", "weight": 3.0},
+        {"name": "Vocabulário e falsos cognatos", "slug": "vocabulario-espanhol", "weight": 2.0},
+        {"name": "Gramática aplicada", "slug": "gramatica-espanhol", "weight": 2.0},
+    ],
 }
+
+# ═══════════════════════════════════════════════════════════════════
+# ESSAY THEMES — temas prováveis para prova discursiva PRF
+# ═══════════════════════════════════════════════════════════════════
+
+ESSAY_THEMES = [
+    {
+        "title": "Segurança viária e redução de acidentes",
+        "description": "Políticas públicas para redução de mortes no trânsito brasileiro",
+        "context_text": "O Brasil está entre os países com maior número de mortes no trânsito no mundo. Considerando que a PRF é responsável pelo patrulhamento ostensivo das rodovias federais, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "seguranca-viaria",
+        "source": "Tema provável PRF",
+    },
+    {
+        "title": "Uso da tecnologia no policiamento rodoviário",
+        "description": "Impacto da tecnologia na fiscalização e segurança das rodovias",
+        "context_text": "A tecnologia tem sido aliada fundamental na modernização do policiamento rodoviário, com uso de câmeras, drones, inteligência artificial e sistemas integrados de monitoramento. Considerando esse contexto, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "tecnologia-policiamento",
+        "source": "Tema provável PRF",
+    },
+    {
+        "title": "Combate ao tráfico de drogas nas rodovias federais",
+        "description": "Papel da PRF no enfrentamento ao narcotráfico",
+        "context_text": "As rodovias federais são uma das principais rotas utilizadas pelo tráfico de drogas no Brasil. A PRF desempenha papel estratégico no combate a essa criminalidade. Considerando esse cenário, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "combate-trafico",
+        "source": "Tema provável PRF",
+    },
+    {
+        "title": "Direitos humanos na atividade policial",
+        "description": "Equilíbrio entre eficiência policial e respeito aos direitos humanos",
+        "context_text": "A atuação policial deve conciliar a efetividade no combate ao crime com o respeito integral aos direitos humanos e à dignidade da pessoa humana. Redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "direitos-humanos",
+        "source": "Tema provável PRF/PF",
+    },
+    {
+        "title": "Educação para o trânsito como política pública",
+        "description": "Importância da educação na formação de condutores conscientes",
+        "context_text": "A educação para o trânsito é um dos pilares do Código de Trânsito Brasileiro e da Política Nacional de Trânsito. Considerando a importância dessa temática para a atuação da PRF, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "educacao-transito",
+        "source": "Tema provável PRF",
+    },
+    {
+        "title": "Segurança nas fronteiras e criminalidade transnacional",
+        "description": "Desafios do controle de fronteiras e crimes transfronteiriços",
+        "context_text": "O Brasil possui mais de 16 mil quilômetros de fronteiras terrestres com dez países. A criminalidade transnacional, incluindo tráfico de armas, drogas e contrabando, representa um desafio crescente. Redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "seguranca-fronteiras",
+        "source": "Tema provável PRF/PF",
+    },
+]
 
 # ═══════════════════════════════════════════════════════════════════
 # LEGAL DOCUMENTS

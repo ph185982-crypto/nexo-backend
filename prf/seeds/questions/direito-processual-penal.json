@@ -2,7 +2,9 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "O inquérito policial é um procedimento administrativo de natureza:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Administrativo inquisitório, presidido pelo delegado de polícia.",
     "difficulty": "easy",
     "source": "CESPE/2022",
     "year": 2022,
@@ -11,32 +13,14 @@
     "legal_basis": "Art. 4°-23, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Judicial, presidido pelo juiz de direito",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Administrativo inquisitório, presidido pelo delegado de polícia",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Judicial investigatório, com participação do Ministério Público",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Extrajudicial com caráter contraditório desde o início",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Misto, com fases administrativa e judicial simultâneas",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -45,7 +29,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "O prazo para conclusão do inquérito policial, quando o indiciado estiver preso, é de:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Judicial investigatório, com participação do Ministério Público.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O IP é procedimento administrativo inquisitório, presidido pelo delegado de polícia, que busca apurar a autoria e a materialidade de infrações penais para embasar futura ação penal.",
+    "legal_basis": "Art. 4°-23, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Misto, com fases administrativa e judicial simultâneas.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O IP é procedimento administrativo inquisitório, presidido pelo delegado de polícia, que busca apurar a autoria e a materialidade de infrações penais para embasar futura ação penal.",
+    "legal_basis": "Art. 4°-23, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "10 dias.",
     "difficulty": "easy",
     "source": "CESPE/2021",
     "year": 2021,
@@ -54,32 +94,14 @@
     "legal_basis": "Art. 10, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "5 dias",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "10 dias",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "15 dias",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "30 dias",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "60 dias",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -88,7 +110,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "A autoridade policial pode, de ofício, instaurar inquérito policial quando:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "30 dias.",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 10 do CPP prevê prazo de 10 dias para conclusão do IP quando o indiciado estiver preso. Se solto, o prazo é de 30 dias.",
+    "legal_basis": "Art. 10, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "60 dias.",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 10 do CPP prevê prazo de 10 dias para conclusão do IP quando o indiciado estiver preso. Se solto, o prazo é de 30 dias.",
+    "legal_basis": "Art. 10, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A autoridade policial tiver conhecimento, por qualquer modo, da prática de infração penal.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -97,32 +175,14 @@
     "legal_basis": "Art. 5°, I, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "A vítima solicitar formalmente a abertura do IP",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Houver qualquer denúncia anônima sobre a prática de crime",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "A autoridade policial tiver conhecimento, por qualquer modo, da prática de infração penal",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "O Ministério Público requisitar a abertura do inquérito",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Houver flagrante delito e a vítima autorizar a investigação",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -131,7 +191,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "As características do inquérito policial incluem:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Houver qualquer denúncia anônima sobre a prática de crime.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, I, do CPP prevê que o IP é instaurado de ofício quando a autoridade policial tiver conhecimento da prática de infração penal.",
+    "legal_basis": "Art. 5°, I, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O Ministério Público requisitar a abertura do inquérito.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, I, do CPP prevê que o IP é instaurado de ofício quando a autoridade policial tiver conhecimento da prática de infração penal.",
+    "legal_basis": "Art. 5°, I, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Inquisitoriedade, escrito, sigiloso, oficioso, indisponível e dispensável.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -140,32 +256,14 @@
     "legal_basis": "Art. 4°-23, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Contraditório, ampla defesa e publicidade plena",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Inquisitoriedade, escrito, sigiloso, oficioso, indisponível e dispensável",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Oral, público e contraditório",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Judicial, com participação obrigatória de defensor",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Imprescindível para o ajuizamento de qualquer ação penal",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -174,7 +272,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "O indiciado no inquérito policial:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Judicial, com participação obrigatória de defensor.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O IP é caracterizado por: inquisitoriedade (não há contraditório pleno), escrito, sigiloso, oficioso, indisponível e dispensável para ajuizamento da ação penal.",
+    "legal_basis": "Art. 4°-23, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Contraditório, ampla defesa e publicidade plena.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O IP é caracterizado por: inquisitoriedade (não há contraditório pleno), escrito, sigiloso, oficioso, indisponível e dispensável para ajuizamento da ação penal.",
+    "legal_basis": "Art. 4°-23, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Tem fundados indícios de autoria, mas não é réu, e o ato não implica condenação.",
     "difficulty": "medium",
     "source": "CESPE/2024",
     "year": 2024,
@@ -183,32 +337,14 @@
     "legal_basis": "Art. 6°, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Tem direito ao contraditório e à ampla defesa desde o indiciamento",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Não pode ser indiciado sem autorização judicial",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "É formalmente acusado e tem todos os direitos do réu",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Tem fundados indícios de autoria, mas não é réu, e o ato não implica condenação",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
         "letter": "E",
-        "text": "Perde automaticamente o direito de responder ao processo em liberdade",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -217,7 +353,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "A busca e apreensão domiciliar exige, em regra:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "É formalmente acusado e tem todos os direitos do réu.",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O indiciado é aquele contra quem o delegado aponta fundados indícios de autoria. O ato de indiciamento não tem efeitos de condenação, e o indiciado não é réu.",
+    "legal_basis": "Art. 6°, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Perde automaticamente o direito de responder ao processo em liberdade.",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O indiciado é aquele contra quem o delegado aponta fundados indícios de autoria. O ato de indiciamento não tem efeitos de condenação, e o indiciado não é réu.",
+    "legal_basis": "Art. 6°, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Mandado judicial, exceto em flagrante delito, desastre ou socorro.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -226,32 +418,14 @@
     "legal_basis": "Art. 240 e 241, CPP; Art. 5°, XI, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas ordem verbal do delegado de polícia",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Autorização do chefe do Ministério Público",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Mandado judicial, exceto em flagrante delito, desastre ou socorro",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Autorização do Procurador-Geral da República",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Ordem de qualquer servidor público com poder de polícia",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -260,7 +434,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "O habeas corpus pode ser impetrado no curso do inquérito policial:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Ordem de qualquer servidor público com poder de polícia.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A busca domiciliar exige mandado judicial, exceto em caso de flagrante delito, desastre ou prestação de socorro, conforme o art. 5°, XI, da CF/88 e art. 241 do CPP.",
+    "legal_basis": "Art. 240 e 241, CPP; Art. 5°, XI, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Autorização do chefe do Ministério Público.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A busca domiciliar exige mandado judicial, exceto em caso de flagrante delito, desastre ou prestação de socorro, conforme o art. 5°, XI, da CF/88 e art. 241 do CPP.",
+    "legal_basis": "Art. 240 e 241, CPP; Art. 5°, XI, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Sim, para proteger a liberdade de locomoção contra ilegalidade ou abuso de poder.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -269,32 +499,14 @@
     "legal_basis": "Art. 5°, LXVIII, CF/88; Art. 647, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Não, pois o IP ainda não é processo e não há réu",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Somente após o indiciamento formal do suspeito",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Sim, para proteger a liberdade de locomoção contra ilegalidade ou abuso de poder",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Somente pelo Ministério Público em favor do preso",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Somente após a conclusão do inquérito e envio ao MP",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -303,7 +515,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "inquerito-policial",
-    "text": "O investigado no inquérito policial tem direito de:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Não, pois o IP ainda não é processo e não há réu.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O habeas corpus pode ser impetrado em qualquer fase, inclusive no inquérito, para proteger a liberdade de locomoção contra ilegalidade ou abuso de poder.",
+    "legal_basis": "Art. 5°, LXVIII, CF/88; Art. 647, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Somente após a conclusão do inquérito e envio ao MP.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O habeas corpus pode ser impetrado em qualquer fase, inclusive no inquérito, para proteger a liberdade de locomoção contra ilegalidade ou abuso de poder.",
+    "legal_basis": "Art. 5°, LXVIII, CF/88; Art. 647, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Ter advogado presente em suas oitivas e exercer o direito ao silêncio.",
     "difficulty": "hard",
     "source": "CESPE/2024",
     "year": 2024,
@@ -312,32 +580,14 @@
     "legal_basis": "Art. 7°, XXI, Lei 8.906/94; Lei 13.245/2016",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Nenhum direito processual, pois o IP é inquisitorial",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Apresentar contraprova e arrolar testemunhas no IP",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Ter advogado presente em suas oitivas e exercer o direito ao silêncio",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Acompanhar todas as diligências investigatórias do IP",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Solicitar a extinção do IP após 60 dias de investigação",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -345,8 +595,64 @@
   },
   {
     "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Solicitar a extinção do IP após 60 dias de investigação.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O STF e a Lei 13.245/2016 garantem ao investigado o direito de ter advogado presente nas oitivas prestadas à autoridade policial, podendo exercer o direito ao silêncio.",
+    "legal_basis": "Art. 7°, XXI, Lei 8.906/94; Lei 13.245/2016",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apresentar contraprova e arrolar testemunhas no IP.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O STF e a Lei 13.245/2016 garantem ao investigado o direito de ter advogado presente nas oitivas prestadas à autoridade policial, podendo exercer o direito ao silêncio.",
+    "legal_basis": "Art. 7°, XXI, Lei 8.906/94; Lei 13.245/2016",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
-    "text": "A ação penal pública incondicionada é aquela:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Proposta exclusivamente pelo MP, independentemente de qualquer condição.",
     "difficulty": "easy",
     "source": "CESPE/2022",
     "year": 2022,
@@ -355,32 +661,14 @@
     "legal_basis": "Art. 100, CP; Art. 24, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Que pode ser proposta por qualquer cidadão",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Que depende de representação da vítima para ser iniciada",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Proposta exclusivamente pelo MP, independentemente de qualquer condição",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Que exige prévia autorização do juiz para ser ajuizada",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Que pode ser proposta pelo MP ou pela vítima indistintamente",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -389,7 +677,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
-    "text": "A ação penal privada subsidiária da pública (art. 29, CPP) é cabível quando:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Que pode ser proposta por qualquer cidadão.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A ação penal pública incondicionada é proposta exclusivamente pelo Ministério Público, de ofício, sem necessidade de representação da vítima ou requisição do Ministro da Justiça.",
+    "legal_basis": "Art. 100, CP; Art. 24, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Que pode ser proposta pelo MP ou pela vítima indistintamente.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A ação penal pública incondicionada é proposta exclusivamente pelo Ministério Público, de ofício, sem necessidade de representação da vítima ou requisição do Ministro da Justiça.",
+    "legal_basis": "Art. 100, CP; Art. 24, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O MP não oferece denúncia no prazo legal, podendo o ofendido propor a ação.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -398,32 +742,14 @@
     "legal_basis": "Art. 29, CPP; Art. 5°, LIX, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "O crime é de natureza patrimonial privada",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "O Ministério Público arquiva o inquérito policial",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "O MP não oferece denúncia no prazo legal, podendo o ofendido propor a ação",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "A vítima prefere ação privada à pública em qualquer crime",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "O MP pede diligências e a vítima discorda da investigação",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -432,7 +758,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
-    "text": "A denúncia oferecida pelo Ministério Público deve conter:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A vítima prefere ação privada à pública em qualquer crime.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A ação penal privada subsidiária é admitida quando o Ministério Público não oferece denúncia no prazo legal. É um instrumento constitucional de controle da atuação do MP.",
+    "legal_basis": "Art. 29, CPP; Art. 5°, LIX, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O crime é de natureza patrimonial privada.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A ação penal privada subsidiária é admitida quando o Ministério Público não oferece denúncia no prazo legal. É um instrumento constitucional de controle da atuação do MP.",
+    "legal_basis": "Art. 29, CPP; Art. 5°, LIX, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Exposição do fato, qualificação do acusado, classificação do crime e rol de testemunhas.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -441,32 +823,14 @@
     "legal_basis": "Art. 41, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas o nome do acusado e o artigo de lei violado",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Exposição do fato, qualificação do acusado, classificação do crime e rol de testemunhas",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "O laudo pericial completo e o depoimento de todas as testemunhas",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "A confissão do acusado como elemento essencial",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Apenas o relatório do inquérito policial e a solicitação de condenação",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -475,7 +839,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
-    "text": "O princípio da indivisibilidade da ação penal privada estabelece que:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A confissão do acusado como elemento essencial.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A denúncia deve conter: exposição do fato criminoso com todas as suas circunstâncias, qualificação do acusado, classificação do crime e, quando necessário, o rol de testemunhas.",
+    "legal_basis": "Art. 41, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas o nome do acusado e o artigo de lei violado.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A denúncia deve conter: exposição do fato criminoso com todas as suas circunstâncias, qualificação do acusado, classificação do crime e, quando necessário, o rol de testemunhas.",
+    "legal_basis": "Art. 41, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O querelante não pode propor ação apenas contra alguns dos autores, devendo incluir todos.",
     "difficulty": "hard",
     "source": "CESPE/2024",
     "year": 2024,
@@ -484,32 +904,14 @@
     "legal_basis": "Art. 48, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "O crime não pode ser dividido em condutas separadas para fins de punição",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "O querelante não pode propor ação apenas contra alguns dos autores, devendo incluir todos",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "A ação penal privada não pode ser fracionada em pedidos distintos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "O juiz deve apreciar a ação privada antes da pública",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "A indivisibilidade não se aplica à ação penal pública",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -518,7 +920,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
-    "text": "A perempção é causa de extinção da punibilidade na ação penal:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A indivisibilidade não se aplica à ação penal pública.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Na ação penal privada, o querelante não pode escolher denunciar apenas alguns dos autores do crime, devendo ajuizar a ação contra todos. A desistência em relação a um aproveita a todos.",
+    "legal_basis": "Art. 48, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O juiz deve apreciar a ação privada antes da pública.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Na ação penal privada, o querelante não pode escolher denunciar apenas alguns dos autores do crime, devendo ajuizar a ação contra todos. A desistência em relação a um aproveita a todos.",
+    "legal_basis": "Art. 48, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Exclusivamente privada, quando o querelante abandona o processo ou não pratica atos essenciais.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -527,32 +985,14 @@
     "legal_basis": "Art. 60, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Pública, quando o MP não impulsiona o processo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Privada subsidiária, quando o MP retoma a ação",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Exclusivamente privada, quando o querelante abandona o processo ou não pratica atos essenciais",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Pública incondicionada, quando há acordo entre as partes",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Qualquer tipo de ação penal, após 2 anos de inércia",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -561,7 +1001,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
-    "text": "A queixa-crime, peça inicial da ação penal privada, tem prazo decadencial de:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Qualquer tipo de ação penal, após 2 anos de inércia.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A perempção extingue a punibilidade na ação penal exclusivamente privada, quando o querelante abandona o processo, não pratica atos necessários ou deixa de pagar custas.",
+    "legal_basis": "Art. 60, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Pública incondicionada, quando há acordo entre as partes.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A perempção extingue a punibilidade na ação penal exclusivamente privada, quando o querelante abandona o processo, não pratica atos necessários ou deixa de pagar custas.",
+    "legal_basis": "Art. 60, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "6 meses.",
     "difficulty": "easy",
     "source": "CESPE/2022",
     "year": 2022,
@@ -570,32 +1066,14 @@
     "legal_basis": "Art. 103, CP; Art. 38, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "30 dias",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "3 meses",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "6 meses",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "1 ano",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "2 anos",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -603,8 +1081,64 @@
   },
   {
     "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "30 dias.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 103 do CP prevê que o prazo decadencial para oferecimento de queixa-crime é de 6 meses, contados do dia em que o ofendido veio a saber quem é o autor do crime.",
+    "legal_basis": "Art. 103, CP; Art. 38, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "2 anos.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 103 do CP prevê que o prazo decadencial para oferecimento de queixa-crime é de 6 meses, contados do dia em que o ofendido veio a saber quem é o autor do crime.",
+    "legal_basis": "Art. 103, CP; Art. 38, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
     "topic_slug": "competencia-cpp",
-    "text": "A competência para processar e julgar crimes praticados por membros do Congresso Nacional é do:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Supremo Tribunal Federal.",
     "difficulty": "easy",
     "source": "CESPE/2022",
     "year": 2022,
@@ -613,32 +1147,14 @@
     "legal_basis": "Art. 102, I, b, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Superior Tribunal de Justiça",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Tribunal Regional Federal",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Supremo Tribunal Federal",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Tribunal do Júri",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Vara Criminal Federal da capital",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -647,7 +1163,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "competencia-cpp",
-    "text": "A competência do Tribunal do Júri é prevista constitucionalmente para julgamento de:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Superior Tribunal de Justiça.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 53, §1°, da CF/88 e o art. 102, I, b, preveem que o STF tem competência originária para processar e julgar membros do Congresso Nacional por infrações penais comuns.",
+    "legal_basis": "Art. 102, I, b, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Tribunal do Júri.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 53, §1°, da CF/88 e o art. 102, I, b, preveem que o STF tem competência originária para processar e julgar membros do Congresso Nacional por infrações penais comuns.",
+    "legal_basis": "Art. 102, I, b, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Crimes dolosos contra a vida.",
     "difficulty": "easy",
     "source": "CESPE/2021",
     "year": 2021,
@@ -656,32 +1228,14 @@
     "legal_basis": "Art. 5°, XXXVIII, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Todos os crimes com pena superior a 8 anos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Crimes hediondos e equiparados",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Crimes dolosos contra a vida",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Crimes contra a administração pública",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Crimes militares praticados em tempo de paz",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -690,7 +1244,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "competencia-cpp",
-    "text": "A competência da Justiça Federal para processo e julgamento de crimes está prevista no art. 109 da CF/88. Inclui:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Crimes hediondos e equiparados.",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, XXXVIII, da CF/88 garante a instituição do júri para julgamento dos crimes dolosos contra a vida, com plenitude de defesa, sigilo das votações, soberania dos veredictos e competência para julgamento.",
+    "legal_basis": "Art. 5°, XXXVIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Crimes contra a administração pública.",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, XXXVIII, da CF/88 garante a instituição do júri para julgamento dos crimes dolosos contra a vida, com plenitude de defesa, sigilo das votações, soberania dos veredictos e competência para julgamento.",
+    "legal_basis": "Art. 5°, XXXVIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Crimes cometidos em detrimento de bens, serviços ou interesses da União e crimes com caráter internacional.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -699,32 +1309,14 @@
     "legal_basis": "Art. 109, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Todos os crimes praticados por servidores públicos federais",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Crimes cometidos em detrimento de bens, serviços ou interesses da União e crimes com caráter internacional",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Qualquer crime praticado em dois ou mais estados da Federação",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Apenas os crimes previstos em legislação federal especial",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Todos os crimes contra a Administração Pública",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -733,7 +1325,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "competencia-cpp",
-    "text": "A conexão intersubjetiva no processo penal pode determinar a reunião de processos. Ocorre quando:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Todos os crimes praticados por servidores públicos federais.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 109 da CF/88 estabelece a competência da Justiça Federal para: crimes cometidos em detrimento de bens, serviços ou interesses da União, crimes previstos em tratados internacionais, tráfico de drogas transnacional, entre outros.",
+    "legal_basis": "Art. 109, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Qualquer crime praticado em dois ou mais estados da Federação.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 109 da CF/88 estabelece a competência da Justiça Federal para: crimes cometidos em detrimento de bens, serviços ou interesses da União, crimes previstos em tratados internacionais, tráfico de drogas transnacional, entre outros.",
+    "legal_basis": "Art. 109, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Dois ou mais crimes são praticados por várias pessoas reunidas ou em concerto.",
     "difficulty": "hard",
     "source": "CESPE/2024",
     "year": 2024,
@@ -742,32 +1390,14 @@
     "legal_basis": "Art. 76, I, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "O mesmo réu pratica vários crimes em locais diferentes",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Dois ou mais crimes são praticados por várias pessoas reunidas ou em concerto",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Há conexão probatória entre dois crimes diferentes",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "O mesmo juiz tem competência para dois crimes distintos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Duas ações penais tramitam simultaneamente no mesmo juízo",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -776,7 +1406,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "competencia-cpp",
-    "text": "A competência territorial no processo penal é fixada, em regra, pelo:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Há conexão probatória entre dois crimes diferentes.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A conexão intersubjetiva (art. 76, I, CPP) ocorre quando duas ou mais infrações são praticadas ao mesmo tempo por várias pessoas reunidas, separadas mas em concerto, ou com influência uma sobre a outra.",
+    "legal_basis": "Art. 76, I, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Duas ações penais tramitam simultaneamente no mesmo juízo.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A conexão intersubjetiva (art. 76, I, CPP) ocorre quando duas ou mais infrações são praticadas ao mesmo tempo por várias pessoas reunidas, separadas mas em concerto, ou com influência uma sobre a outra.",
+    "legal_basis": "Art. 76, I, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Local em que se consumar a infração (lugar do resultado).",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -785,32 +1471,14 @@
     "legal_basis": "Art. 70, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Domicílio do réu",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Local onde foi praticado o primeiro ato executório",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Local em que se consumar a infração (lugar do resultado)",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Domicílio da vítima",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Local onde foi preso o acusado",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -818,8 +1486,64 @@
   },
   {
     "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Local onde foi praticado o primeiro ato executório.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 70 do CPP estabelece que a competência territorial é determinada pelo lugar em que se consumar a infração (teoria do resultado), ou, nos casos de tentativa, pelo lugar em que foi praticado o último ato de execução.",
+    "legal_basis": "Art. 70, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Domicílio do réu.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 70 do CPP estabelece que a competência territorial é determinada pelo lugar em que se consumar a infração (teoria do resultado), ou, nos casos de tentativa, pelo lugar em que foi praticado o último ato de execução.",
+    "legal_basis": "Art. 70, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
     "topic_slug": "prisao-liberdade",
-    "text": "A prisão preventiva pode ser decretada quando presentes os seguintes requisitos:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Prova da existência do crime e indício suficiente de autoria, mais fundamento legal: garantia da ordem pública, econômica, instrução ou aplicação da lei.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -828,32 +1552,14 @@
     "legal_basis": "Art. 312, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas quando o crime tiver pena superior a 8 anos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Prova da existência do crime e indício suficiente de autoria, mais fundamento legal: garantia da ordem pública, econômica, instrução ou aplicação da lei",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Qualquer crime doloso praticado por réu reincidente",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Quando a vítima solicitar formalmente ao Ministério Público",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Em qualquer crime hediondo, independentemente de outros requisitos",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -862,7 +1568,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "prisao-liberdade",
-    "text": "A prisão em flagrante delito está prevista no CPP. Considera-se em flagrante delito:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Quando a vítima solicitar formalmente ao Ministério Público.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A prisão preventiva (art. 312 CPP) exige: prova da existência do crime e indício suficiente de autoria, mais um dos fundamentos: garantia da ordem pública, econômica, conveniência da instrução ou para assegurar a aplicação da lei penal.",
+    "legal_basis": "Art. 312, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Qualquer crime doloso praticado por réu reincidente.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A prisão preventiva (art. 312 CPP) exige: prova da existência do crime e indício suficiente de autoria, mais um dos fundamentos: garantia da ordem pública, econômica, conveniência da instrução ou para assegurar a aplicação da lei penal.",
+    "legal_basis": "Art. 312, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Quem está cometendo a infração, quem acaba de cometê-la, quem é perseguido logo após, ou encontrado logo depois com instrumentos do crime.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -871,32 +1633,14 @@
     "legal_basis": "Art. 302, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas quem está cometendo a infração no momento da prisão",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Quem está cometendo a infração, quem acaba de cometê-la, quem é perseguido logo após, ou encontrado logo depois com instrumentos do crime",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Qualquer pessoa presa no local de um crime dentro de 24 horas",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Quem é identificado por câmeras de segurança cometendo o crime",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Quem está em posse de objeto com registro de propriedade de vítima",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -905,7 +1649,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "prisao-liberdade",
-    "text": "A audiência de custódia, prevista no art. 310 do CPP, deve ser realizada:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas quem está cometendo a infração no momento da prisão.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 302 do CPP define flagrante: quem está cometendo a infração, quem acaba de cometê-la, quem é perseguido logo após (quase-flagrante) e quem é encontrado logo depois com instrumentos ou prova (flagrante presumido).",
+    "legal_basis": "Art. 302, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Qualquer pessoa presa no local de um crime dentro de 24 horas.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 302 do CPP define flagrante: quem está cometendo a infração, quem acaba de cometê-la, quem é perseguido logo após (quase-flagrante) e quem é encontrado logo depois com instrumentos ou prova (flagrante presumido).",
+    "legal_basis": "Art. 302, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "No prazo de 24 horas após o flagrante.",
     "difficulty": "medium",
     "source": "CESPE/2024",
     "year": 2024,
@@ -914,32 +1714,14 @@
     "legal_basis": "Art. 310, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Em até 48 horas após a prisão em flagrante",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "No prazo de 24 horas após o flagrante",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Apenas quando o preso solicitar a presença de advogado",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Somente nas capitais dos Estados e municípios com mais de 500 mil habitantes",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Em até 72 horas, conforme a disponibilidade do juiz plantonista",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -948,7 +1730,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "prisao-liberdade",
-    "text": "As medidas cautelares diversas da prisão, inseridas pela Lei 12.403/2011, incluem:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas quando o preso solicitar a presença de advogado.",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A audiência de custódia deve ocorrer no prazo máximo de 24 horas após o flagrante, para que o juiz verifique a legalidade da prisão, analise a necessidade de manutenção e avalie eventuais maus-tratos.",
+    "legal_basis": "Art. 310, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Somente nas capitais dos Estados e municípios com mais de 500 mil habitantes.",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A audiência de custódia deve ocorrer no prazo máximo de 24 horas após o flagrante, para que o juiz verifique a legalidade da prisão, analise a necessidade de manutenção e avalie eventuais maus-tratos.",
+    "legal_basis": "Art. 310, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Comparecimento periódico em juízo, proibição de acesso a lugares, recolhimento domiciliar, monitoração eletrônica e fiança.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -957,32 +1795,14 @@
     "legal_basis": "Art. 319, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas fiança e liberdade provisória",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Comparecimento periódico em juízo, proibição de acesso a lugares, recolhimento domiciliar, monitoração eletrônica e fiança",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Suspensão da pena e regime aberto domiciliar",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Apenas medidas restritivas de direitos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Confinamento em estabelecimento hospitalar como alternativa",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -991,7 +1811,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "prisao-liberdade",
-    "text": "A liberdade provisória com fiança pode ser concedida:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Suspensão da pena e regime aberto domiciliar.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 319 do CPP prevê medidas alternativas à prisão: comparecimento periódico em juízo, proibição de acesso a lugares, recolhimento domiciliar, monitoração eletrônica, fiança, entre outras.",
+    "legal_basis": "Art. 319, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas medidas restritivas de direitos.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 319 do CPP prevê medidas alternativas à prisão: comparecimento periódico em juízo, proibição de acesso a lugares, recolhimento domiciliar, monitoração eletrônica, fiança, entre outras.",
+    "legal_basis": "Art. 319, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Em crimes afiançáveis, vedada nos crimes hediondos, tráfico e terrorismo.",
     "difficulty": "hard",
     "source": "CESPE/2022",
     "year": 2022,
@@ -1000,32 +1876,14 @@
     "legal_basis": "Art. 322-350, CPP; Art. 5°, XLIII, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Em qualquer crime, cabendo ao juiz fixar o valor da fiança",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Em crimes afiançáveis, vedada nos crimes hediondos, tráfico e terrorismo",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Apenas em contravenções penais e crimes com pena até 4 anos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Apenas pelo juiz, nunca pelo delegado",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Somente quando o réu é primário e possui bons antecedentes",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1034,7 +1892,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "prisao-liberdade",
-    "text": "A prisão temporária (Lei 7.960/1989) distingue-se da preventiva porque:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Em qualquer crime, cabendo ao juiz fixar o valor da fiança.",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A liberdade provisória com fiança é concedida pelo juiz ou delegado (para infrações de menor potencial ofensivo), vedada nos crimes inafiançáveis previstos na CF/88.",
+    "legal_basis": "Art. 322-350, CPP; Art. 5°, XLIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas em contravenções penais e crimes com pena até 4 anos.",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A liberdade provisória com fiança é concedida pelo juiz ou delegado (para infrações de menor potencial ofensivo), vedada nos crimes inafiançáveis previstos na CF/88.",
+    "legal_basis": "Art. 322-350, CPP; Art. 5°, XLIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A temporária é para investigação com prazo determinado; a preventiva é sem prazo determinado.",
     "difficulty": "hard",
     "source": "CESPE/2024",
     "year": 2024,
@@ -1043,32 +1957,14 @@
     "legal_basis": "Lei 7.960/1989",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "A preventiva tem prazo e a temporária é por tempo indeterminado",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "A temporária é para investigação com prazo determinado; a preventiva é sem prazo determinado",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "A temporária é decretada pelo delegado e a preventiva pelo juiz",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "A preventiva só cabe em crimes hediondos; a temporária em qualquer crime",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "A temporária dispensa flagrante ou mandado judicial",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1076,8 +1972,64 @@
   },
   {
     "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A temporária dispensa flagrante ou mandado judicial.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A prisão temporária é para investigação, tem prazo determinado (5 dias, prorrogável por igual período, ou 30+30 nos hediondos), e só pode ser decretada na fase de inquérito policial.",
+    "legal_basis": "Lei 7.960/1989",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A preventiva só cabe em crimes hediondos; a temporária em qualquer crime.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A prisão temporária é para investigação, tem prazo determinado (5 dias, prorrogável por igual período, ou 30+30 nos hediondos), e só pode ser decretada na fase de inquérito policial.",
+    "legal_basis": "Lei 7.960/1989",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
     "topic_slug": "provas",
-    "text": "O princípio da inadmissibilidade das provas obtidas por meios ilícitos está previsto:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Na CF/88 e no CPP, sendo vedadas as provas ilícitas e suas derivadas.",
     "difficulty": "easy",
     "source": "CESPE/2022",
     "year": 2022,
@@ -1086,32 +2038,14 @@
     "legal_basis": "Art. 5°, LVI, CF/88; Art. 157, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas na legislação infraconstitucional, podendo ser flexibilizado",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Na CF/88 e no CPP, sendo vedadas as provas ilícitas e suas derivadas",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Apenas quando a prova ilícita prejudicar o réu",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "No CPP, mas pode ser excetuado por decisão fundamentada do juiz",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Apenas no Código Civil, não se aplicando ao processo penal",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1120,7 +2054,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "provas",
-    "text": "A interceptação telefônica, como meio de prova no processo penal, é admitida:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas quando a prova ilícita prejudicar o réu.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LVI, da CF/88 veda as provas obtidas por meios ilícitos. A teoria dos frutos da árvore envenenada (fruit of the poisonous tree) também invalida as provas derivadas da prova ilícita.",
+    "legal_basis": "Art. 5°, LVI, CF/88; Art. 157, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas na legislação infraconstitucional, podendo ser flexibilizado.",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LVI, da CF/88 veda as provas obtidas por meios ilícitos. A teoria dos frutos da árvore envenenada (fruit of the poisonous tree) também invalida as provas derivadas da prova ilícita.",
+    "legal_basis": "Art. 5°, LVI, CF/88; Art. 157, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Para infrações punidas com reclusão, com autorização judicial, quando houver indícios de autoria.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -1129,32 +2119,14 @@
     "legal_basis": "Art. 5°, XII, CF/88; Lei 9.296/1996",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Sempre que o Ministério Público requisitar ao juiz",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Para investigação de qualquer crime, com autorização judicial",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Para infrações punidas com reclusão, com autorização judicial, quando houver indícios de autoria",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Apenas em crimes hediondos cometidos por organizações criminosas",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Sem necessidade de autorização judicial em casos de urgência",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1163,7 +2135,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "provas",
-    "text": "A confissão no processo penal:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Para investigação de qualquer crime, com autorização judicial.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 9.296/1996 regula a interceptação telefônica, admitindo-a para investigação criminal ou instrução processual penal, com autorização judicial, quando houver indícios razoáveis de autoria ou participação em infração penal punível com reclusão.",
+    "legal_basis": "Art. 5°, XII, CF/88; Lei 9.296/1996",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Sempre que o Ministério Público requisitar ao juiz.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 9.296/1996 regula a interceptação telefônica, admitindo-a para investigação criminal ou instrução processual penal, com autorização judicial, quando houver indícios razoáveis de autoria ou participação em infração penal punível com reclusão.",
+    "legal_basis": "Art. 5°, XII, CF/88; Lei 9.296/1996",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "É prova plena, sendo suficiente para a condenação independente de outras provas.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -1172,32 +2200,14 @@
     "legal_basis": "Art. 197, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "É prova plena, sendo suficiente para a condenação independente de outras provas",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "B",
-        "text": "É prova relativa, devendo ser confrontada com os demais elementos de prova",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "C",
-        "text": "Tem o mesmo valor de qualquer outro depoimento de testemunha",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "É inadmissível no processo penal por violar o direito ao silêncio",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Só tem valor se feita perante o juiz, sendo nulas as confissões extrajudiciais",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1206,7 +2216,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "provas",
-    "text": "O exame de corpo de delito é:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Só tem valor se feita perante o juiz, sendo nulas as confissões extrajudiciais.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 197 do CPP estabelece que o valor da confissão é relativo e deve ser confrontado com os demais elementos de prova. A confissão não é suficiente, por si só, para embasar a condenação.",
+    "legal_basis": "Art. 197, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "É prova relativa, devendo ser confrontada com os demais elementos de prova.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 197 do CPP estabelece que o valor da confissão é relativo e deve ser confrontado com os demais elementos de prova. A confissão não é suficiente, por si só, para embasar a condenação.",
+    "legal_basis": "Art. 197, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Indispensável quando a infração deixar vestígios, não podendo ser substituído pela confissão.",
     "difficulty": "medium",
     "source": "CESPE/2024",
     "year": 2024,
@@ -1215,32 +2281,14 @@
     "legal_basis": "Art. 158, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Facultativo, podendo ser substituído por depoimentos de testemunhas",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Indispensável quando a infração deixar vestígios, não podendo ser substituído pela confissão",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Obrigatório apenas em crimes hediondos",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Realizado exclusivamente por médico legista",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Desnecessário quando há câmeras de segurança registrando o crime",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1249,7 +2297,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "provas",
-    "text": "O direito ao silêncio do acusado, no processo penal, implica que:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Obrigatório apenas em crimes hediondos.",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 158 do CPP prevê que quando a infração deixar vestígios, é indispensável o exame de corpo de delito, não podendo a confissão do acusado supri-lo.",
+    "legal_basis": "Art. 158, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Realizado exclusivamente por médico legista.",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 158 do CPP prevê que quando a infração deixar vestígios, é indispensável o exame de corpo de delito, não podendo a confissão do acusado supri-lo.",
+    "legal_basis": "Art. 158, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O acusado pode se recusar a responder, sem que isso lhe cause prejuízo processual.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -1258,32 +2362,14 @@
     "legal_basis": "Art. 5°, LXIII, CF/88; Art. 186, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "O silêncio é interpretado como confissão tácita",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "O acusado pode se recusar a responder, sem que isso lhe cause prejuízo processual",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "O acusado perde o direito ao silêncio quando há provas contra ele",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Apenas o preso pode exercer o direito ao silêncio, não o réu solto",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "O silêncio gera presunção de culpa nos crimes dolosos",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1291,8 +2377,64 @@
   },
   {
     "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas o preso pode exercer o direito ao silêncio, não o réu solto.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LXIII, da CF/88 assegura ao preso o direito ao silêncio. O silêncio não pode ser interpretado em prejuízo do réu, e não acarreta confissão ficta.",
+    "legal_basis": "Art. 5°, LXIII, CF/88; Art. 186, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O acusado perde o direito ao silêncio quando há provas contra ele.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LXIII, da CF/88 assegura ao preso o direito ao silêncio. O silêncio não pode ser interpretado em prejuízo do réu, e não acarreta confissão ficta.",
+    "legal_basis": "Art. 5°, LXIII, CF/88; Art. 186, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
     "topic_slug": "recursos-cpp",
-    "text": "O recurso em sentido estrito (RESE), previsto no CPP, é cabível para impugnar:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Decisões taxativamente previstas no art. 581 do CPP, como extinção da punibilidade e pronúncia.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -1301,32 +2443,14 @@
     "legal_basis": "Art. 581, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Qualquer decisão interlocutória do juiz criminal",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Decisões taxativamente previstas no art. 581 do CPP, como extinção da punibilidade e pronúncia",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Apenas sentenças definitivas de condenação",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Decisões dos Tribunais de Apelação",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Acórdãos dos Tribunais Superiores em matéria criminal",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1335,7 +2459,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "recursos-cpp",
-    "text": "O recurso de apelação no processo penal é cabível:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas sentenças definitivas de condenação.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 581 do CPP prevê o RESE como recurso cabível em hipóteses taxativas, como decisões que decretam a extinção da punibilidade, que concluem pela incompetência, que pronunciam o réu, entre outras.",
+    "legal_basis": "Art. 581, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Acórdãos dos Tribunais Superiores em matéria criminal.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 581 do CPP prevê o RESE como recurso cabível em hipóteses taxativas, como decisões que decretam a extinção da punibilidade, que concluem pela incompetência, que pronunciam o réu, entre outras.",
+    "legal_basis": "Art. 581, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Contra sentença definitiva de condenação ou absolvição, e contra decisões com força de definitiva.",
     "difficulty": "medium",
     "source": "CESPE/2023",
     "year": 2023,
@@ -1344,32 +2524,14 @@
     "legal_basis": "Art. 593, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Apenas contra sentença condenatória definitiva",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Contra sentença definitiva de condenação ou absolvição, e contra decisões com força de definitiva",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "Apenas para redução de pena fixada em sentença",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "Exclusivamente pelo Ministério Público",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Apenas pelo réu, nunca pelo MP",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1378,7 +2540,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "recursos-cpp",
-    "text": "O princípio da non reformatio in pejus no processo penal estabelece que:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas para redução de pena fixada em sentença.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 593 do CPP prevê apelação contra: sentença definitiva de condenação ou absolvição, decisões com força de definitiva não previstas no RESE, e decisões do Tribunal do Júri.",
+    "legal_basis": "Art. 593, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Exclusivamente pelo Ministério Público.",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 593 do CPP prevê apelação contra: sentença definitiva de condenação ou absolvição, decisões com força de definitiva não previstas no RESE, e decisões do Tribunal do Júri.",
+    "legal_basis": "Art. 593, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O tribunal não pode agravar a situação do réu quando o recurso for exclusivamente da defesa.",
     "difficulty": "hard",
     "source": "CESPE/2024",
     "year": 2024,
@@ -1387,32 +2605,14 @@
     "legal_basis": "Art. 617, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "O MP não pode recorrer de sentença absolutória",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "O tribunal não pode agravar a situação do réu quando o recurso for exclusivamente da defesa",
+        "letter": "C",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "C",
-        "text": "O juiz não pode condenar acima do pedido do MP",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "D",
-        "text": "A pena fixada na apelação não pode ser menor que a de primeira instância",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "O réu não pode recorrer de decisão absolutória por tempo",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1421,7 +2621,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "recursos-cpp",
-    "text": "O recurso especial ao STJ, em matéria penal, é cabível quando:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O MP não pode recorrer de sentença absolutória.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 617 do CPP veda que o tribunal, ao julgar recurso exclusivo do réu, agrave sua situação. Proíbe a reformatio in pejus direta (pelo tribunal) e indireta (em novo julgamento após anulação).",
+    "legal_basis": "Art. 617, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "O juiz não pode condenar acima do pedido do MP.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 617 do CPP veda que o tribunal, ao julgar recurso exclusivo do réu, agrave sua situação. Proíbe a reformatio in pejus direta (pelo tribunal) e indireta (em novo julgamento após anulação).",
+    "legal_basis": "Art. 617, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Há ofensa à lei federal infraconstitucional ou divergência entre tribunais na interpretação.",
     "difficulty": "hard",
     "source": "CESPE/2023",
     "year": 2023,
@@ -1430,32 +2686,14 @@
     "legal_basis": "Art. 105, III, CF/88",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Qualquer decisão penal de tribunal estadual ou federal",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "A decisão contraria disposição expressa da CF/88",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Há ofensa à lei federal infraconstitucional ou divergência entre tribunais na interpretação",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "O réu é sentenciado por crime federal em qualquer instância",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "A pena aplicada é superior ao mínimo legal previsto no CP",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1464,7 +2702,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "recursos-cpp",
-    "text": "A revisão criminal, prevista nos arts. 621 a 631 do CPP, pode ser proposta:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Qualquer decisão penal de tribunal estadual ou federal.",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O STJ conhece de recurso especial quando há violação de lei federal (infração ou negativa de vigência) ou quando há divergência entre tribunais na interpretação da lei federal.",
+    "legal_basis": "Art. 105, III, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "A decisão contraria disposição expressa da CF/88.",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O STJ conhece de recurso especial quando há violação de lei federal (infração ou negativa de vigência) ou quando há divergência entre tribunais na interpretação da lei federal.",
+    "legal_basis": "Art. 105, III, CF/88",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Pelo réu ou seu procurador, após o trânsito em julgado, para desconstituir condenação injusta.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -1473,32 +2767,14 @@
     "legal_basis": "Art. 621-631, CPP",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Pelo Ministério Público para agravar pena insuficiente",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Apenas pelo réu, antes do trânsito em julgado",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Pelo réu ou seu procurador, após o trânsito em julgado, para desconstituir condenação injusta",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Por qualquer cidadão com interesse na reversão da sentença",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "E",
-        "text": "Pelo advogado independentemente de mandato específico do réu",
+        "text": "Errado",
         "is_correct": false,
         "explanation": ""
       }
@@ -1507,7 +2783,63 @@
   {
     "subject_slug": "direito-processual-penal",
     "topic_slug": "recursos-cpp",
-    "text": "A súmula 444 do STJ veda a utilização de inquéritos policiais ou ações penais sem trânsito em julgado como:",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Apenas pelo réu, antes do trânsito em julgado.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A revisão criminal é ação autônoma de impugnação, cabível após o trânsito em julgado da condenação, proposta pelo próprio réu ou por seu procurador, para desconstituir condenação injusta.",
+    "legal_basis": "Art. 621-631, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Pelo Ministério Público para agravar pena insuficiente.",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A revisão criminal é ação autônoma de impugnação, cabível após o trânsito em julgado da condenação, proposta pelo próprio réu ou por seu procurador, para desconstituir condenação injusta.",
+    "legal_basis": "Art. 621-631, CPP",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Maus antecedentes para fins de fixação da pena-base.",
     "difficulty": "hard",
     "source": "CESPE/2024",
     "year": 2024,
@@ -1516,33 +2848,69 @@
     "legal_basis": "Súmula 444, STJ",
     "alternatives": [
       {
-        "letter": "A",
-        "text": "Prova de materialidade do crime",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "B",
-        "text": "Fundamento para decretação de prisão preventiva",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
         "letter": "C",
-        "text": "Maus antecedentes para fins de fixação da pena-base",
+        "text": "Certo",
         "is_correct": true,
         "explanation": ""
       },
       {
-        "letter": "D",
-        "text": "Elemento para configuração de reincidência",
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Causa de agravamento da pena em sede de recurso.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Súmula 444 do STJ veda que inquéritos policiais e ações penais em curso sejam utilizados como fundamento para exasperação da pena-base (maus antecedentes).",
+    "legal_basis": "Súmula 444, STJ",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
         "is_correct": false,
         "explanation": ""
       },
       {
         "letter": "E",
-        "text": "Causa de agravamento da pena em sede de recurso",
+        "text": "Errado",
+        "is_correct": true,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "question_type": "certo_errado",
+    "context_text": "Em relação ao processo penal brasileiro, julgue o item a seguir.",
+    "text": "Fundamento para decretação de prisão preventiva.",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Súmula 444 do STJ veda que inquéritos policiais e ações penais em curso sejam utilizados como fundamento para exasperação da pena-base (maus antecedentes).",
+    "legal_basis": "Súmula 444, STJ",
+    "alternatives": [
+      {
+        "letter": "C",
+        "text": "Certo",
         "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Errado",
+        "is_correct": true,
         "explanation": ""
       }
     ]

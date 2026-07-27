@@ -137,9 +137,11 @@ CREATE TABLE questions (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     subject_id      UUID NOT NULL REFERENCES subjects(id),
     topic_id        UUID REFERENCES topics(id),
+    question_type   TEXT NOT NULL DEFAULT 'certo_errado', -- 'certo_errado' | 'multipla_escolha'
+    context_text    TEXT,               -- texto motivador (CEBRASPE: "Acerca de..., julgue o item")
     text            TEXT NOT NULL,
     difficulty      difficulty_level DEFAULT 'medium',
-    source          TEXT,               -- banca, ano
+    source          TEXT,               -- ex: "CEBRASPE/PRF/2021 item 47"
     year            INT,
     examiner        TEXT,               -- CESPE, FGV, etc.
     explanation     TEXT,
@@ -156,7 +158,7 @@ CREATE TABLE questions (
 CREATE TABLE question_alternatives (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     question_id     UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
-    letter          CHAR(1) NOT NULL,   -- A, B, C, D, E
+    letter          CHAR(1) NOT NULL,   -- C/E: C=Certo,E=Errado; A-E para múltipla escolha
     text            TEXT NOT NULL,
     is_correct      BOOLEAN DEFAULT FALSE,
     explanation     TEXT,               -- por que está certa/errada
@@ -582,12 +584,53 @@ CREATE TABLE simulated_exams (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id         UUID NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
     title           TEXT NOT NULL,
+    exam_type       TEXT NOT NULL DEFAULT 'simulado_prf', -- 'simulado_prf' | 'bloco' | 'custom'
     total_questions INT NOT NULL,
-    time_limit_mins INT,
+    time_limit_mins INT DEFAULT 270,    -- 4h30 padrão PRF
     started_at      TIMESTAMPTZ DEFAULT NOW(),
     ended_at        TIMESTAMPTZ,
-    score           REAL,
+    score           REAL,               -- nota líquida CEBRASPE (certas - erradas)
+    score_raw       REAL,               -- certas absolutas
     questions       JSONB NOT NULL,     -- ordered list of question IDs
-    answers         JSONB DEFAULT '{}', -- {question_id: selected_alt_id}
+    answers         JSONB DEFAULT '{}', -- {question_id: {selected: "C"|"E", correct: bool}}
+    block_scores    JSONB DEFAULT '{}', -- {"bloco_1": {total:55,certas:X,erradas:Y,branco:Z,score:W}, ...}
+    eliminated      BOOLEAN DEFAULT FALSE, -- TRUE se nota < mínimo em algum bloco
     is_completed    BOOLEAN DEFAULT FALSE
 );
+
+-- ═══════════════════════════════════════════════════════════════════
+-- ESSAYS (Prova Discursiva CEBRASPE)
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE essay_themes (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title           TEXT NOT NULL,
+    description     TEXT,
+    context_text    TEXT NOT NULL,       -- texto motivador (como no edital)
+    subject_area    TEXT,                -- área temática (segurança viária, etc.)
+    source          TEXT,               -- "CEBRASPE/PRF/2021" ou "elaborado"
+    year            INT,
+    is_active       BOOLEAN DEFAULT TRUE,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE essays (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id         UUID NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
+    theme_id        UUID REFERENCES essay_themes(id),
+    theme_title     TEXT NOT NULL,
+    input_type      TEXT NOT NULL DEFAULT 'text', -- 'text' | 'image'
+    original_text   TEXT,               -- texto digitado ou transcrito via OCR
+    image_path      TEXT,               -- caminho da foto (se enviou imagem)
+    total_lines     INT,
+    nc_score        REAL,               -- nota conteúdo (macroestrutural, 0-20)
+    ne_count        INT DEFAULT 0,      -- número de erros microestruturais
+    penalty         REAL DEFAULT 0,     -- k * (NE / TL)
+    final_score     REAL,               -- NC - penalty
+    diagnosis       JSONB DEFAULT '{}', -- {macro: {...}, micro: {erros: [...]}, weak_points: [...], plan: [...]}
+    feedback_text   TEXT,               -- diagnóstico em texto livre
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_essays_user ON essays(user_id);
+CREATE INDEX idx_essays_theme ON essays(theme_id);
