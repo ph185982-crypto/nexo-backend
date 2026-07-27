@@ -970,6 +970,7 @@ model ProspectSegment {
   limiarScoreQualificado Int     @default(4)
   apenasCelular         Boolean  @default(false)
   filtroSite            String   @default("TODOS") // TODOS | COM_SITE | SEM_SITE
+  metaEmpresas          Int      @default(200)     // alvo de empresas por busca
   prospects             ProspectLead[]
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

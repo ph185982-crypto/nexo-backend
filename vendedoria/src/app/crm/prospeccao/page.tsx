@@ -19,8 +19,27 @@ interface Segmento {
   cidades: string[];
   apenasCelular?: boolean;
   filtroSite?: string;
+  metaEmpresas?: number;
   _count?: { prospects: number };
 }
+
+// Segmentos comuns para seleção por clique (o usuário pode adicionar outros)
+const SEGMENTOS_SUGERIDOS = [
+  "Loja de roupa", "Moda feminina", "Calçados", "Loja de cosméticos", "Perfumaria",
+  "Salão de beleza", "Barbearia", "Clínica de estética", "Academia", "Studio de pilates",
+  "Restaurante", "Lanchonete", "Pizzaria", "Cafeteria", "Padaria",
+  "Petshop", "Clínica veterinária", "Loja de móveis", "Loja de decoração", "Material de construção",
+  "Clínica odontológica", "Clínica médica", "Farmácia", "Ótica", "Loja de celular",
+  "Auto peças", "Oficina mecânica", "Lava jato", "Imobiliária", "Escritório de contabilidade",
+  "Escola de idiomas", "Curso profissionalizante", "Advocacia", "Corretora de seguros", "Gráfica",
+];
+
+// Cidades sugeridas (GO + capitais próximas) — o usuário pode adicionar outras
+const CIDADES_SUGERIDAS = [
+  "Goiânia", "Aparecida de Goiânia", "Anápolis", "Rio Verde", "Trindade",
+  "Senador Canedo", "Catalão", "Itumbiara", "Jataí", "Luziânia",
+  "Brasília", "Uberlândia", "Uberaba",
+];
 
 interface Metricas {
   porStatus: Record<string, number>;
@@ -81,9 +100,32 @@ export default function ProspeccoesPage() {
         `/api/prospeccao/analise/lote/${segId}`;
       const res = await fetch(url, { method: "POST" });
       const data = await res.json() as Record<string, unknown>;
-      if (!res.ok) throw new Error(String(data.error ?? res.status));
+      if (!res.ok && res.status !== 202) throw new Error(String(data.error ?? res.status));
+
+      // Sourcing grande roda em background (202) — acompanha até terminar
+      if (acao === "sourcing" && data.status === "iniciado") {
+        setFeedback("Busca iniciada… pode levar alguns minutos para metas grandes. Vou atualizando a contagem.");
+        await new Promise<void>((resolve) => {
+          const iv = setInterval(async () => {
+            try {
+              const st = await fetch(`/api/prospeccao/sourcing/${segId}`).then((r) => r.json()) as {
+                emAndamento: unknown; ultimoResultado: { resultado: Record<string, unknown> } | null;
+              };
+              await carregar();
+              if (!st.emAndamento) {
+                clearInterval(iv);
+                const r = st.ultimoResultado?.resultado ?? {};
+                setFeedback(`Busca concluída: ${r.inseridos ?? 0} novas empresas, ${r.ignorados ?? 0} já existentes.`);
+                resolve();
+              }
+            } catch { /* segue tentando */ }
+          }, 8_000);
+        });
+        return;
+      }
+
       setFeedback(
-        acao === "sourcing"   ? `Busca concluída: ${JSON.stringify(data.resultado ?? data)}` :
+        acao === "sourcing"   ? `Busca concluída: ${(data as { inseridos?: number }).inseridos ?? 0} novas empresas, ${(data as { ignorados?: number }).ignorados ?? 0} já existentes.` :
         acao === "enriquecer" ? `Enriquecimento concluído: ${JSON.stringify(data.resultado ?? data)}` :
         `Análise IA concluída: ${JSON.stringify(data.resultado ?? data)}`,
       );
@@ -199,6 +241,11 @@ export default function ProspeccoesPage() {
                   <span className="flex items-center gap-1">
                     <MapPin className="w-3 h-3" /> {seg.cidades.join(", ")}
                   </span>
+                  {seg.metaEmpresas ? (
+                    <span className="flex items-center gap-1">
+                      <Search className="w-3 h-3" /> meta {seg.metaEmpresas.toLocaleString("pt-BR")}
+                    </span>
+                  ) : null}
                   {seg.apenasCelular && (
                     <span className="flex items-center gap-1 text-primary">
                       <Smartphone className="w-3 h-3" /> só celular
@@ -277,31 +324,42 @@ function ModalNovaBusca({ orgId, onClose, onCreated }: {
   onCreated: () => void;
 }) {
   const [nome, setNome] = useState("");
-  const [termo, setTermo] = useState("");
-  const [termosSec, setTermosSec] = useState("");
-  const [cidades, setCidades] = useState("");
+  const [segmentosSel, setSegmentosSel] = useState<string[]>([]);
+  const [cidadesSel, setCidadesSel] = useState<string[]>(["Goiânia"]);
+  const [customSeg, setCustomSeg] = useState("");
+  const [customCidade, setCustomCidade] = useState("");
+  const [meta, setMeta] = useState(1000);
   const [apenasCelular, setApenasCelular] = useState(true);
   const [filtroSite, setFiltroSite] = useState("TODOS");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
+  const opcoesSeg = Array.from(new Set([...SEGMENTOS_SUGERIDOS, ...segmentosSel]));
+  const opcoesCidade = Array.from(new Set([...CIDADES_SUGERIDAS, ...cidadesSel]));
+
+  const toggle = (arr: string[], set: (v: string[]) => void, val: string) => {
+    set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
+  };
+
   const salvar = async () => {
-    if (!nome.trim() || !termo.trim() || !cidades.trim()) {
-      setErro("Preencha nome, termo de busca e ao menos uma cidade.");
+    if (segmentosSel.length === 0 || cidadesSel.length === 0) {
+      setErro("Selecione ao menos 1 segmento e 1 cidade.");
       return;
     }
     setSalvando(true);
     setErro(null);
     try {
+      const nomeFinal = nome.trim() || `${segmentosSel[0]}${segmentosSel.length > 1 ? ` +${segmentosSel.length - 1}` : ""} — ${cidadesSel[0]}${cidadesSel.length > 1 ? ` +${cidadesSel.length - 1}` : ""}`;
       const res = await fetch("/api/prospeccao/segmentos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           organizationId: orgId,
-          nome: nome.trim(),
-          termoBusca: termo.trim(),
-          termosSecundarios: termosSec.split(",").map((s) => s.trim()).filter(Boolean),
-          cidades: cidades.split(",").map((s) => s.trim()).filter(Boolean),
+          nome: nomeFinal,
+          termoBusca: segmentosSel[0],
+          termosSecundarios: segmentosSel.slice(1),
+          cidades: cidadesSel,
+          metaEmpresas: meta,
           apenasCelular,
           filtroSite,
         }),
@@ -318,10 +376,18 @@ function ModalNovaBusca({ orgId, onClose, onCreated }: {
     }
   };
 
+  const chipCls = (ativo: boolean) =>
+    `px-3 py-1.5 rounded-full border text-xs font-medium transition-colors ${
+      ativo ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-accent/10"
+    }`;
+
+  // Estimativa: ~min(meta, segmentos×cidades×~40)
+  const potencial = segmentosSel.length * cidadesSel.length * 40;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div
-        className="w-full max-w-lg rounded-xl border border-border bg-card p-6 space-y-4"
+        className="w-full max-w-2xl max-h-[90vh] overflow-auto rounded-xl border border-border bg-card p-6 space-y-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -331,43 +397,72 @@ function ModalNovaBusca({ orgId, onClose, onCreated }: {
           </button>
         </div>
 
-        <Campo label="Nome da busca">
-          <input
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            placeholder="Ex.: Lojas de moda — Goiânia"
-            className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-        </Campo>
+        {/* Segmentos por clique */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-medium text-muted-foreground">
+              Segmentos ({segmentosSel.length} selecionados) — clique para escolher
+            </label>
+            {segmentosSel.length > 0 && (
+              <button onClick={() => setSegmentosSel([])} className="text-xs text-muted-foreground hover:text-foreground">limpar</button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-auto p-1">
+            {opcoesSeg.map((s) => (
+              <button key={s} type="button" onClick={() => toggle(segmentosSel, setSegmentosSel, s)} className={chipCls(segmentosSel.includes(s))}>
+                {s}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-2">
+            <input
+              value={customSeg}
+              onChange={(e) => setCustomSeg(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && customSeg.trim()) { toggle(segmentosSel, setSegmentosSel, customSeg.trim()); setCustomSeg(""); } }}
+              placeholder="Adicionar outro segmento e Enter"
+              className="flex-1 rounded-lg border border-border bg-background text-foreground px-3 py-1.5 text-xs outline-none focus:border-primary"
+            />
+          </div>
+        </div>
 
-        <Campo label="Segmento (termo de busca)">
-          <input
-            value={termo}
-            onChange={(e) => setTermo(e.target.value)}
-            placeholder="Ex.: loja de roupa"
-            className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-        </Campo>
+        {/* Cidades por clique */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-medium text-muted-foreground">
+              Cidades ({cidadesSel.length}) — clique para escolher
+            </label>
+            {cidadesSel.length > 0 && (
+              <button onClick={() => setCidadesSel([])} className="text-xs text-muted-foreground hover:text-foreground">limpar</button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2 max-h-32 overflow-auto p-1">
+            {opcoesCidade.map((c) => (
+              <button key={c} type="button" onClick={() => toggle(cidadesSel, setCidadesSel, c)} className={chipCls(cidadesSel.includes(c))}>
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-2">
+            <input
+              value={customCidade}
+              onChange={(e) => setCustomCidade(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && customCidade.trim()) { toggle(cidadesSel, setCidadesSel, customCidade.trim()); setCustomCidade(""); } }}
+              placeholder="Adicionar outra cidade e Enter"
+              className="flex-1 rounded-lg border border-border bg-background text-foreground px-3 py-1.5 text-xs outline-none focus:border-primary"
+            />
+          </div>
+        </div>
 
-        <Campo label="Termos extras (separados por vírgula)">
-          <input
-            value={termosSec}
-            onChange={(e) => setTermosSec(e.target.value)}
-            placeholder="boutique, moda feminina"
-            className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-        </Campo>
-
-        <Campo label="Cidades (separadas por vírgula)">
-          <input
-            value={cidades}
-            onChange={(e) => setCidades(e.target.value)}
-            placeholder="Goiânia, Aparecida de Goiânia"
-            className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-        </Campo>
-
-        <div className="grid grid-cols-2 gap-4">
+        {/* Meta + filtros */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Campo label="Meta de empresas">
+            <input
+              type="number" min={20} max={5000} step={100}
+              value={meta}
+              onChange={(e) => setMeta(Number(e.target.value))}
+              className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </Campo>
           <Campo label="Telefone">
             <select
               value={apenasCelular ? "CELULAR" : "TODOS"}
@@ -391,6 +486,22 @@ function ModalNovaBusca({ orgId, onClose, onCreated }: {
           </Campo>
         </div>
 
+        <Campo label="Nome da busca (opcional)">
+          <input
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Deixe vazio para gerar automaticamente"
+            className="w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm outline-none focus:border-primary"
+          />
+        </Campo>
+
+        {segmentosSel.length > 0 && cidadesSel.length > 0 && (
+          <p className="text-xs text-muted-foreground border-l-2 border-primary/40 pl-3">
+            {segmentosSel.length} segmento(s) × {cidadesSel.length} cidade(s). Meta: {meta.toLocaleString("pt-BR")} empresas.
+            {potencial < meta && ` Dica: para chegar a ${meta.toLocaleString("pt-BR")}, adicione mais segmentos ou cidades (potencial atual ~${potencial.toLocaleString("pt-BR")}).`}
+          </p>
+        )}
+
         {erro && <p className="text-sm text-red-500">{erro}</p>}
 
         <div className="flex justify-end gap-2 pt-2">
@@ -410,7 +521,6 @@ function ModalNovaBusca({ orgId, onClose, onCreated }: {
           </button>
         </div>
       </div>
-
     </div>
   );
 }

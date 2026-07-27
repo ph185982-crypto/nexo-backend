@@ -102,6 +102,7 @@ interface RFResponse {
 async function buscarNoRapidAPI(
   query: string,
   cidade: string,
+  limite = 20,
 ): Promise<PlaceResult[]> {
   const apiKey = await getRapidApiKey();
   if (!apiKey) return [];
@@ -109,7 +110,7 @@ async function buscarNoRapidAPI(
   try {
     const params = new URLSearchParams({
       query: `${query} em ${cidade}`,
-      limit: "20",
+      limit: String(Math.min(Math.max(limite, 1), 100)),
       region: "br",
       language: "pt",
     });
@@ -222,6 +223,7 @@ async function buscarNoReceitaFederal(
 async function buscarNoGooglePlaces(
   query: string,
   cidade: string,
+  limite = 20,
 ): Promise<PlaceResult[]> {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) return [];
@@ -238,7 +240,7 @@ async function buscarNoGooglePlaces(
         textQuery:       `${query} em ${cidade}`,
         languageCode:    "pt-BR",
         regionCode:      "BR",
-        maxResultCount:  20,
+        maxResultCount:  Math.min(Math.max(limite, 1), 20),
       }),
     });
 
@@ -286,14 +288,14 @@ export function detectarTipoTelefoneBR(raw: string | null): "FIXO" | "CELULAR" |
  *
  * Dedupe ocorre no chamador (buscarLeadsPorSegmento) via placeId no banco.
  */
-async function buscarEmpresas(termo: string, cidade: string): Promise<PlaceResult[]> {
+async function buscarEmpresas(termo: string, cidade: string, limite = 20): Promise<PlaceResult[]> {
   const temRapid  = Boolean(await getRapidApiKey());
   const temGoogle = Boolean(process.env.GOOGLE_PLACES_API_KEY);
 
   if (temRapid) {
     // Roda RapidAPI Local Business Data e Receita Federal em paralelo
     const [rapidResults, rfResults] = await Promise.all([
-      buscarNoRapidAPI(termo, cidade),
+      buscarNoRapidAPI(termo, cidade, limite),
       buscarNoReceitaFederal(termo, cidade),
     ]);
 
@@ -302,11 +304,11 @@ async function buscarEmpresas(termo: string, cidade: string): Promise<PlaceResul
     if (combined.length > 0) return combined;
 
     // Se ambas retornaram vazio e tem Google Places, tenta como fallback
-    if (temGoogle) return buscarNoGooglePlaces(termo, cidade);
+    if (temGoogle) return buscarNoGooglePlaces(termo, cidade, limite);
     return [];
   }
 
-  return buscarNoGooglePlaces(termo, cidade);
+  return buscarNoGooglePlaces(termo, cidade, limite);
 }
 
 export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
@@ -333,13 +335,20 @@ export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
   const termos = [segment.termoBusca, ...segment.termosSecundarios];
   const result = { inseridos: 0, ignorados: 0, erros: 0 };
 
-  // Para cada combinação termo × cidade
+  // Meta de empresas: para quando atingir (evita buscas desnecessárias).
+  const meta = (segment as { metaEmpresas?: number }).metaEmpresas ?? 200;
+  const limitePorBusca = Math.min(Math.max(meta, 20), 100);
+
+  // Para cada combinação termo × cidade (para assim que atingir a meta)
+  outer:
   for (const termo of termos) {
     for (const cidade of segment.cidades) {
-      console.log(`[Sourcing] Buscando "${termo}" em "${cidade}"...`);
-      const places = await buscarEmpresas(termo, cidade);
+      if (result.inseridos >= meta) break outer;
+      console.log(`[Sourcing] Buscando "${termo}" em "${cidade}"... (${result.inseridos}/${meta})`);
+      const places = await buscarEmpresas(termo, cidade, limitePorBusca);
 
       for (const place of places) {
+        if (result.inseridos >= meta) break;
         if (!place.id) continue;
 
         // Dedupe por placeId

@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
     limiarScoreQualificado?: number;
     apenasCelular?: boolean;
     filtroSite?: string; // TODOS | COM_SITE | SEM_SITE
+    metaEmpresas?: number;
   };
 
   if (!body.organizationId || !body.nome || !body.termoBusca) {
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
       limiarScoreQualificado: body.limiarScoreQualificado ?? 4,
       apenasCelular:         body.apenasCelular ?? false,
       filtroSite:            ["TODOS", "COM_SITE", "SEM_SITE"].includes(body.filtroSite ?? "") ? body.filtroSite! : "TODOS",
+      metaEmpresas:          Math.min(Math.max(body.metaEmpresas ?? 200, 20), 5000),
     },
   });
 
