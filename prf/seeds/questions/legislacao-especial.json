@@ -1,0 +1,1120 @@
+[
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "text": "A Lei 11.343/2006 (Lei de Drogas) tem como um de seus objetivos:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei de Drogas instituiu o Sistema Nacional de Políticas Públicas sobre Drogas (SISNAD), prescrevendo medidas para prevenção do uso indevido, atenção e reinserção social de usuários e dependentes, e normas para repressão à produção não autorizada e ao tráfico ilícito.",
+    "legal_basis": "Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas a repressão penal ao tráfico e uso de drogas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Instituir o SISNAD, com medidas de prevenção, atenção ao usuário e repressão ao tráfico",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Descriminalizar o uso e porte de drogas para consumo pessoal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Equiparar a pena do usuário à do traficante",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Legalizar determinadas drogas leves para controle estatal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "text": "O art. 33 da Lei 11.343/2006 tipifica o tráfico de drogas. As condutas nucleares desse crime incluem:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 33 é extenso em suas condutas: importar, exportar, preparar, produzir, fabricar, adquirir, vender, oferecer, ter em depósito, transportar, trazer consigo, guardar, prescrever, ministrar, entregar — entre outras — drogas sem autorização.",
+    "legal_basis": "Art. 33, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas venda e transporte de drogas ilícitas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "As dezoito condutas previstas no art. 33, incluindo importar, exportar, adquirir, vender, transportar, guardar, entre outras",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas produção e importação de entorpecentes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Condutas relacionadas exclusivamente ao tráfico internacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente a venda e a oferta de drogas ao usuário final",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "text": "O tráfico privilegiado, previsto no art. 33, §4°, da Lei 11.343/2006, permite redução de pena quando o agente:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O tráfico privilegiado aplica redução de 1/6 a 2/3 quando o agente é primário, tem bons antecedentes, não se dedica à atividade criminosa nem integra organização criminosa.",
+    "legal_basis": "Art. 33, §4°, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "For condenado pela primeira vez por qualquer crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "For primário, tiver bons antecedentes, não se dedicar à atividade criminosa e não integrar organização criminosa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Confessar o crime espontaneamente antes do flagrante",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "For usuário dependente comprovado de entorpecentes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "For menor de 21 anos no momento do crime",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "text": "A 'mula' no tráfico de drogas (quem transporta a droga a pedido de terceiros) é punida pelo:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A 'mula' pratica o crime de tráfico de drogas (art. 33 da Lei 11.343/2006) por transportar a droga. O STF e STJ analisam se pode ser aplicada a causa de diminuição do tráfico privilegiado conforme o caso concreto.",
+    "legal_basis": "Art. 33, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Art. 34 (maquinário), pois é ato preparatório",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Art. 33 da Lei de Drogas como traficante, podendo ter a causa de diminuição do §4° analisada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas art. 35 (associação), por agir em conjunto com traficantes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Código Penal como cúmplice, com pena reduzida",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Art. 28 como usuário, pois apenas transporta para terceiros",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "text": "O crime de associação para o tráfico, previsto no art. 35 da Lei 11.343/2006, exige:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 35 pune a associação de duas ou mais pessoas para praticar crimes do art. 33 ou 34. Diferente da organização criminosa (mínimo 4 pessoas), a associação para o tráfico exige apenas 2 pessoas e é permanente.",
+    "legal_basis": "Art. 35, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "No mínimo 4 pessoas estruturadas hierarquicamente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Associação de 2 ou mais pessoas com finalidade de praticar tráfico, de forma permanente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Efetiva prática de ato de tráfico de drogas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Acordo expresso e documentado entre os associados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Atuação em dois ou mais Estados da Federação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "text": "O financiamento ou custeio do tráfico de drogas, previsto no art. 36 da Lei 11.343/2006:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 36 pune quem financia o tráfico com pena de 8 a 20 anos. É crime mais grave que o próprio tráfico (art. 33: 5 a 15 anos), pois o financiador é o mentor econômico do crime.",
+    "legal_basis": "Art. 36, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Tem pena igual à do tráfico de drogas (art. 33)",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É punido com pena de 8 a 20 anos, superior à do tráfico",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Não é crime autônomo, sendo coautoria no tráfico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Só é punível quando o financiador também participar da venda",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É crime menos grave por não envolver diretamente a droga",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "text": "O Estatuto do Desarmamento (Lei 10.826/2003) prevê o registro de armas de fogo como:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 3° da Lei 10.826/2003 estabelece que o registro de armas de fogo é obrigatório em todo o território nacional junto ao Sistema Nacional de Armas (SINARM) ou SIGMA.",
+    "legal_basis": "Lei 10.826/2003",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Facultativo, cabendo ao proprietário decidir registrar ou não",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Obrigatório em todo o território nacional junto ao SINARM",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exigido apenas para armas de uso restrito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Necessário apenas para comércio de armas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Obrigatório apenas para policiais civis e militares",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "text": "O porte ilegal de arma de fogo de uso permitido, art. 14 do Estatuto do Desarmamento, é crime punível com:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 14 da Lei 10.826/2003 prevê pena de reclusão de 2 a 4 anos e multa para o porte ilegal de arma de uso permitido.",
+    "legal_basis": "Art. 14, Lei 10.826/2003",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Multa e detenção de 6 meses a 1 ano",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reclusão de 1 a 3 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Reclusão de 2 a 4 anos e multa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão de 3 a 6 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Detenção de 6 meses a 2 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "text": "O porte de arma de fogo de uso restrito é crime previsto no art. 16 do Estatuto, com pena de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O porte de arma de uso restrito (art. 16, Lei 10.826/2003) é punido com reclusão de 3 a 6 anos e multa. É crime mais grave que o porte de uso permitido.",
+    "legal_basis": "Art. 16, Lei 10.826/2003",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Reclusão de 2 a 4 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reclusão de 3 a 6 anos e multa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Reclusão de 4 a 8 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Detenção de 1 a 3 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Reclusão de 1 a 4 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "text": "O comércio ilegal de armas de fogo (art. 17, Lei 10.826/2003) e o tráfico internacional de armas (art. 18) são crimes:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os crimes dos arts. 17 e 18 da Lei 10.826/2003 são equiparados a hediondos pela Lei 8.072/1990, após alteração promovida.",
+    "legal_basis": "Lei 10.826/2003; Lei 8.072/1990",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "De menor potencial ofensivo, julgados nos JECrim",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Graves, mas não hediondos nem equiparados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Equiparados a hediondos, inafiançáveis e insuscetíveis de graça",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Hediondos apenas quando praticados por organização criminosa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Punidos apenas com multa quando praticados por primários",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "text": "A pessoa com porte de arma vencido (autorização expirada) incide em:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O porte com autorização vencida é infração administrativa, não crime de porte ilegal. O crime exige que a pessoa não tenha autorização ou porte.",
+    "legal_basis": "Art. 14, Lei 10.826/2003; Jurisprudência",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Crime de porte ilegal de arma de fogo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Infração administrativa, sem caráter criminal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Crime de contrabando de armas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Contravenção penal de porte irregular",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Crime apenas se a arma for de uso restrito",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "maria-penha",
+    "text": "A Lei Maria da Penha (Lei 11.340/2006) tem como objetivo central:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 11.340/2006 visa criar mecanismos para coibir e prevenir a violência doméstica e familiar contra a mulher, estabelecendo medidas protetivas e penalizando mais gravemente tais condutas.",
+    "legal_basis": "Lei 11.340/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Punir exclusivamente o feminicídio com pena de morte",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Coibir e prevenir a violência doméstica e familiar contra a mulher, criando mecanismos de proteção",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Regulamentar o divórcio em casos de violência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Criar delegacias especializadas para atendimento de mulheres",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Igualar as penas de crimes contra mulheres às dos crimes contra homens",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "maria-penha",
+    "text": "As medidas protetivas de urgência previstas na Lei Maria da Penha podem ser concedidas pelo juiz:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 19 da Lei 11.340/2006 prevê que as medidas protetivas de urgência podem ser concedidas de ofício, a requerimento do MP ou a pedido da ofendida, independentemente de audiência das partes.",
+    "legal_basis": "Art. 19, Lei 11.340/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas após audiência de conciliação entre as partes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas quando há lesão corporal grave comprovada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "De ofício, a requerimento do MP ou a pedido da ofendida, sem necessidade de audiência prévia",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Somente com base em laudo médico atestando as lesões",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas quando a ofendida estiver representada por advogado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "maria-penha",
+    "text": "A Lei Maria da Penha afastou a aplicação da Lei 9.099/1995 (Lei dos JECrim) aos crimes de violência doméstica. Isso significa que:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 41 da Lei 11.340/2006 veda a aplicação da Lei 9.099/95 aos crimes praticados com violência doméstica e familiar contra a mulher. Não cabe transação penal, suspensão condicional do processo ou outras medidas despenalizadoras.",
+    "legal_basis": "Art. 41, Lei 11.340/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Os crimes são julgados pelo Tribunal do Júri",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Não cabe transação penal, suspensão condicional do processo ou penas alternativas da Lei 9.099",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "As penas são sempre dobradas nos crimes de violência doméstica",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O processo penal não pode ter advogado de defesa nesses casos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A fiança é vedada em qualquer hipótese de violência doméstica",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "maria-penha",
+    "text": "O descumprimento de medida protetiva de urgência pelo agressor, conforme a Lei Maria da Penha:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O descumprimento de medida protetiva pode levar à decretação de prisão preventiva do agressor (art. 20, Lei 11.340/2006). Também constitui crime previsto no art. 24-A, com pena de detenção de 3 meses a 2 anos.",
+    "legal_basis": "Art. 20 e 24-A, Lei 11.340/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Gera apenas aumento da multa pecuniária prevista na medida protetiva",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Permite ao juiz decretar a prisão preventiva do agressor",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É infração administrativa punida com suspensão do porte de arma",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "É tratado como desacato à autoridade judicial, com pena de multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Obriga o juiz a aumentar o prazo da medida protetiva em 60 dias",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "maria-penha",
+    "text": "Sobre a ação penal nos crimes de lesão corporal leve praticados no âmbito da violência doméstica:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Após decisão do STF (ADI 4424), a ação penal nos crimes de lesão corporal leve em violência doméstica passou a ser de natureza pública incondicionada, dispensando representação da vítima.",
+    "legal_basis": "ADI 4424, STF; Lei 11.340/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É de ação penal privada, pois envolve relação familiar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pública condicionada à representação da vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pública incondicionada, dispensando representação da vítima",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Privada subsidiária, quando o MP não atua em 30 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Semipública, exigindo representação apenas no primeiro crime",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "text": "A Lei 13.869/2019 (Lei de Abuso de Autoridade) prevê que seus crimes são:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os crimes de abuso de autoridade da Lei 13.869/2019 exigem dolo específico: a intenção de prejudicar alguém ou beneficiar outrem, ou de um fim de interesse pessoal. O dolo genérico não é suficiente.",
+    "legal_basis": "Lei 13.869/2019",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Punidos objetivamente, sem necessidade de dolo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Cometidos com dolo de prejudicar alguém, beneficiar outrem ou satisfazer interesse pessoal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente culposos, pois a culpa é presumida no cargo público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Punidos independentemente de resultado lesivo ao bem jurídico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Aplicáveis apenas aos membros do Poder Executivo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "text": "O agente público que, sem justa causa, deixar de concluir inquérito policial ou processo administrativo no prazo legal:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 15 da Lei 13.869/2019 pune o agente público que, dolosamente, deixar de comunicar prisão em flagrante ou deixar de observar o prazo de 24 horas. O art. 19 pune quem deixa de executar mandado judicial.",
+    "legal_basis": "Art. 15 e 19, Lei 13.869/2019",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não comete crime, pois a demora processual não está prevista na lei",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pode cometer crime de abuso de autoridade se agir dolosamente para prejudicar o investigado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Comete crime culposo de prevaricação do Código Penal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Comete apenas falta disciplinar administrativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Só responde quando há dano material comprovado ao investigado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "text": "Constitui abuso de autoridade, nos termos da Lei 13.869/2019, a conduta do agente público que:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 9° da Lei 13.869/2019 pune o agente que decreta a condução coercitiva de pessoa para depor sobre fatos referentes à investigação criminal, sem que esteja em situação de investigado ou tenha sido intimada.",
+    "legal_basis": "Art. 9°, Lei 13.869/2019",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Prende em flagrante delito sem autorização judicial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Decreta condução coercitiva de pessoa que, não sendo investigada, foi devidamente intimada mas não compareceu",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Solicita dados bancários de investigado com autorização judicial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Realiza busca domiciliar com mandado judicial válido",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Cumpre mandado de prisão preventiva devidamente fundamentado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "text": "Os crimes da Lei 13.869/2019 são de ação penal:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os crimes da Lei 13.869/2019 são de ação penal pública incondicionada, pois o bem jurídico protegido é de natureza pública e o MP deve atuar de ofício.",
+    "legal_basis": "Lei 13.869/2019",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Privada, pois protegem interesse individual do ofendido",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pública condicionada à representação da vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pública incondicionada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Privada subsidiária da pública",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Semipública, com representação apenas para crimes leves",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "text": "A Lei 13.869/2019 se aplica a agentes públicos, incluindo:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 2° da Lei 13.869/2019 define que agente público é todo aquele que exerce cargo, emprego ou função pública de natureza civil ou militar, seja da administração direta ou indireta, dos Poderes Executivo, Legislativo e Judiciário.",
+    "legal_basis": "Art. 2°, Lei 13.869/2019",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas servidores efetivos da administração direta federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Agentes de todos os Poderes e entes federativos, civis e militares",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente policiais civis e militares estaduais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas membros do Ministério Público e magistrados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente gestores com poder de decisão em cargos de confiança",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "text": "O CTB prevê crime para o condutor que abandona vítima de acidente por ele causado (art. 304). Esse crime é conhecido como:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 304 do CTB pune com detenção de 6 meses a 1 ano quem deixa de prestar socorro à vítima de acidente de trânsito por ele causado.",
+    "legal_basis": "Art. 304, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Omissão de socorro qualificada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Fuga do local do acidente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Homicídio culposo por omissão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Lesão corporal culposa agravada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Abandono de incapaz em rodovia",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "text": "O crime de lesão corporal culposa na direção de veículo é agravado quando:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 303, §1°, do CTB agrava a pena quando o agente está sob efeito de álcool ou substância psicoativa, ou quando a lesão é grave ou gravíssima.",
+    "legal_basis": "Art. 303, §1°, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A vítima é menor de 18 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O agente está sob influência de álcool ou substância psicoativa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O acidente ocorre em rodovia federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A vítima é um servidor público em serviço",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O veículo é de transporte coletivo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "text": "O crime de participação em 'racha' (art. 308 do CTB) admite modalidade:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A participação em competição não autorizada (racha) no CTB pune tanto quem participa quanto o organizador, com pena de detenção de 6 meses a 3 anos.",
+    "legal_basis": "Art. 308, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas dolosa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Dolosa e culposa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas culposa, pois a imprudência é sempre involuntária",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Somente quando há vítima fatal no racha",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas quando praticada em rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "text": "Dirigir veículo automotor sem a devida Carteira Nacional de Habilitação (CNH) é:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 309 do CTB pune com detenção de 6 meses a 1 ano quem dirige sem habilitação quando essa conduta gera perigo de dano. A ausência simples de CNH sem risco é apenas infração administrativa.",
+    "legal_basis": "Art. 309, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Sempre crime, com reclusão de 1 a 3 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Crime quando gera perigo de dano, com detenção de 6 meses a 1 ano",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas infração administrativa gravíssima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Crime apenas se praticado em rodovia federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Contravenção penal julgada no JECrim",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "text": "A embriaguez ao volante, art. 306 do CTB, é crime que se consuma:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 306 é crime de perigo abstrato: consuma-se com a condução do veículo com concentração de álcool superior ao limite legal ou sob efeito de substância psicoativa, independentemente de acidente ou resultado.",
+    "legal_basis": "Art. 306, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas quando o condutor causa acidente de trânsito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Com qualquer concentração de álcool no sangue, mesmo mínima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Com a condução do veículo com concentração de álcool acima do limite legal, independentemente de acidente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Somente quando há vítima de lesão ou morte",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Quando o condutor é flagrado em teste bafômetro nas primeiras 2 horas após ingestão",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

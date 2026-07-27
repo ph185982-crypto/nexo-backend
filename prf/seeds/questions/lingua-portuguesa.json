@@ -1,0 +1,1507 @@
+[
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "A inferência, no processo de compreensão textual, é:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A inferência é a capacidade de deduzir informações implícitas usando conhecimento prévio e pistas contextuais.",
+    "legal_basis": "Linguística Textual",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Reprodução fiel das informações explícitas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Capacidade de deduzir informações implícitas usando conhecimento prévio e pistas contextuais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Identificação de palavras desconhecidas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Análise gramatical das orações",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Comparação entre textos de mesmo tema",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "A coerência textual relaciona-se com:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A coerência é a propriedade que torna o texto semanticamente lógico, garantindo unidade de sentido.",
+    "legal_basis": "Linguística Textual",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O uso correto dos conectivos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Unidade de sentido e lógica interna do texto",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ausência de erros ortográficos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Extensão adequada ao gênero",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Uso de vocabulário sofisticado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "A coesão textual é garantida por mecanismos como:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Coesão: pronomes, conjunções, elipses, sinônimos e outros recursos de referência e sequenciação.",
+    "legal_basis": "Linguística Textual",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas pontuação adequada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pronomes, conjunções, elipses, sinônimos e outros recursos de referência",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Uso de palavras eruditas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Paragrafação bem estruturada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Períodos de tamanho similar",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "A intertextualidade ocorre quando:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Um texto estabelece relação com outro por citação explícita, paráfrase, paródia ou referência implícita.",
+    "legal_basis": "Linguística Textual",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Um texto é traduzido de outro idioma",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Um texto faz referência explícita ou implícita a outro preexistente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dois textos tratam do mesmo assunto independentemente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Um texto é mais longo que outro do mesmo gênero",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O leitor não compreende o texto",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "No texto dissertativo-argumentativo, a tese é:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A tese é a proposição central que o autor defende e que será sustentada pelos argumentos.",
+    "legal_basis": "Redação; Produção Textual",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O conjunto de todos os argumentos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A proposição central que o autor defende e que será sustentada pelos argumentos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A conclusão ao final do texto",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O tema geral abordado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O exemplo que ilustra o argumento principal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "A ambiguidade textual ocorre quando:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Uma palavra, expressão ou construção admite mais de uma interpretação válida.",
+    "legal_basis": "Semântica; Linguística",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O texto usa palavras técnicas difíceis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Uma palavra, expressão ou construção admite mais de uma interpretação válida",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O texto mistura diferentes gêneros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O autor usa linguagem figurada inadequadamente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O texto contém informações contraditórias entre parágrafos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "O texto literário distingue-se do não-literário principalmente porque:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O literário usa a linguagem de forma estética, com conotações e plurissignificação; o não-literário privilegia a denotação.",
+    "legal_basis": "Teoria Literária; Estilística",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O literário é mais longo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O literário usa linguagem estética e plurissignificativa; o não-literário privilegia a denotação e clareza",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O literário tem mais personagens",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O literário usa mais figuras de linguagem",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O literário é escrito por escritores e não por jornalistas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textos",
+    "text": "O contexto discursivo refere-se:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "À situação comunicativa que envolve o texto: participantes, propósito, tempo e lugar.",
+    "legal_basis": "Análise do Discurso; Pragmática",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas ao significado das palavras isoladas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "À situação comunicativa: participantes, propósito, tempo e lugar",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ao contexto histórico geral da época",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas ao gênero textual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "À complexidade gramatical das estruturas usadas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia",
+    "text": "Quando o verbo 'fazer' indica tempo decorrido, deve ser conjugado:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O verbo 'fazer' indicando tempo é impessoal e fica no singular: 'Faz dois anos', nunca 'Fazem'.",
+    "legal_basis": "Gramática; Concordância Verbal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "No plural: 'Fazem dois anos'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "No singular pois é impessoal: 'Faz dois anos'",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Qualquer forma é aceita",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "No imperfeito: 'Faziam'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Na primeira pessoa: 'Fiz'",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia",
+    "text": "A alternativa com concordância verbal correta é:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Todos nós assistimos' — sujeito composto incluindo 'nós', verbo na 1ª pessoa do plural.",
+    "legal_basis": "Gramática; Concordância Verbal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A maioria dos alunos chegaram atrasados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Todos nós assistimos ao filme",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Qualquer que seja os problemas, resolveremos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Cada um dos candidatos devem apresentar seus documentos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Mais de mil pessoas assistiu ao show",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia",
+    "text": "Na concordância nominal, o adjetivo predicativo referido a vários substantivos de gêneros diferentes:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Vai para o masculino plural ou concorda com o mais próximo.",
+    "legal_basis": "Gramática; Concordância Nominal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Sempre fica no feminino plural",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Concorda com o masculino no singular",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Vai para o masculino plural ou concorda com o mais próximo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Concorda com o mais distante",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Fica invariável",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia",
+    "text": "O verbo 'haver' no sentido de 'existir' deve ser conjugado:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "É verbo impessoal quando indica existência, ficando invariavelmente no singular.",
+    "legal_basis": "Gramática; Verbo Impessoal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "No plural, concordando com o substantivo seguinte",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "No singular por ser impessoal quando indica existência",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "No plural quando o substantivo for plural",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Conforme concordância com o sujeito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "No plural, por se referir a pessoas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia",
+    "text": "'Anexo seguem os documentos solicitados.' Nessa frase, 'anexo' está:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Anexo' como adjetivo deve concordar com o substantivo; 'documentos' no plural exige 'anexos'.",
+    "legal_basis": "Gramática; Concordância Nominal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Correto pois 'anexo' é invariável",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Incorreto: deve ser 'Anexos seguem os documentos'",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Correto pois funciona como advérbio",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Incorreto: deve ser 'Em Anexo'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Correto pois concordância é facultativa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia",
+    "text": "A frase com concordância nominal correta é:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Obrigado/a concorda com o gênero de quem fala. Homem diz 'obrigado', mulher diz 'obrigada'.",
+    "legal_basis": "Gramática; Concordância Nominal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Muito obrigado, disse a professora ao receber o presente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "As alunas ficaram meia confusas com a explicação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ela ficou bastante satisfeito com o resultado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Os produtos estavam meio avariado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Ele estava muito cansada após a corrida",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia",
+    "text": "O verbo 'assistir' no sentido de 'ver, presenciar' é regido pela preposição:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Assistir' no sentido de 'ver' é transitivo indireto, regendo 'a': 'assistir ao jogo'.",
+    "legal_basis": "Gramática; Regência Verbal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Preposição 'de'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Preposição 'em'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Preposição 'a': assistir ao jogo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Nenhuma preposição",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Preposição 'para'",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia",
+    "text": "Os verbos 'obedecer' e 'desobedecer' regem:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "São transitivos indiretos: 'obedecer às leis', 'desobedecer ao regulamento'.",
+    "legal_basis": "Gramática; Regência Verbal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Objeto direto sem preposição",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Objeto indireto com preposição 'a'",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Objeto direto em locuções",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Objeto indireto com preposição 'para'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Objeto direto ou indireto facultativamente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia",
+    "text": "A regência correta do verbo 'preferir' é:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Preferir' rege objeto direto e indireto com 'a': 'Prefiro café a chá'. Não usa 'mais' nem 'do que'.",
+    "legal_basis": "Gramática; Regência Verbal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Prefiro café mais do que chá",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Prefiro café a chá",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Prefiro mais café que chá",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Prefiro café em vez de chá",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Prefiro pelo café ao invés do chá",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia",
+    "text": "A regência nominal do substantivo 'respeito' exige:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Respeito' rege 'a', 'com', 'de' ou 'por' conforme o contexto.",
+    "legal_basis": "Gramática; Regência Nominal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "'Em': respeito em todos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "'Para': respeito para os idosos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "'Com', 'a', 'de' ou 'por', conforme o contexto",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "'Contra': respeito contra as normas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "'Sobre': respeito sobre as regras",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia",
+    "text": "O verbo 'visar' no sentido de 'ter por objetivo' rege:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Visar' no sentido de 'ter por objetivo' é transitivo indireto: 'visa a melhoria'. Sem preposição: 'visar alguém' (mirar).",
+    "legal_basis": "Gramática; Regência Verbal",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Objeto direto: 'visa a melhoria'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Objeto indireto com 'a': 'visa à melhoria'",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Objeto indireto com 'para': 'visa para melhoria'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Objeto direto ou indireto facultativamente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Objeto indireto com 'em': 'visa na melhoria'",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "text": "O uso da vírgula para separar adjunto adverbial antecipado é:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Quando o adjunto adverbial é deslocado para o início, a vírgula é recomendada e obrigatória quando longo.",
+    "legal_basis": "Gramática; Pontuação",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Proibido em todas as situações",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Obrigatório apenas quando o adjunto é longo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Facultativo quando curto, recomendado quando longo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Sempre errado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Obrigatório apenas em textos formais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "text": "O ponto e vírgula é adequado para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Separa orações relacionadas semanticamente com certa independência, ou itens de enumeração com vírgulas internas.",
+    "legal_basis": "Gramática; Pontuação",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Separar sujeito do predicado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Isolar apostos e vocativos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Separar orações relacionadas com certa independência ou itens de enumeração complexa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Indicar tom interrogativo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Substituir o ponto final",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "text": "O uso das aspas inclui:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Citações diretas, palavras em sentido especial ou irônico, neologismos, estrangeirismos e títulos.",
+    "legal_basis": "Gramática; Pontuação",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Destacar todas as palavras estrangeiras mesmo já incorporadas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Citações diretas, palavras em sentido especial, ironia e títulos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Substituir a vírgula antes de subordinadas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Marcar todas as palavras técnicas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Indicar linguagem informal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "text": "O dois-pontos é usado de forma inadequada em:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O dois-pontos é inadequado antes de objeto direto simples sem destaque especial.",
+    "legal_basis": "Gramática; Pontuação",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "'O policial declarou: — O suspeito fugiu.'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "'As causas foram: excesso de velocidade e pista molhada.'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "'Comprei: pão, leite e ovos.' (objeto direto simples sem necessidade de destaque)",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "'Existe uma saída: aceitar o acordo.'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "'Há dois tipos: os que votam e os que não.'",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "text": "A vírgula é obrigatória para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A vírgula deve separar vocativos, apostos explicativos e orações subordinadas adverbiais intercaladas.",
+    "legal_basis": "Gramática; Pontuação",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Separar sujeito do predicado em qualquer oração",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Isolar orações subordinadas subjetivas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Separar o aposto explicativo do restante da frase",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Antes de qualquer conjunção coordenativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Após qualquer advérbio que inicia a frase",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "redacao-oficial",
+    "text": "O Manual de Redação da PR estabelece que comunicações oficiais devem obedecer a:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Manual determina: impessoalidade, clareza, concisão, formalidade e uniformidade.",
+    "legal_basis": "Manual de Redação da PR",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pessoalidade e expressividade do remetente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Impessoalidade, clareza, concisão e formalidade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Informalidade quando o destinatário é pessoa física",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Originalidade estilística de cada órgão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Liberdade de forma, desde que o conteúdo seja correto",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "redacao-oficial",
+    "text": "O ofício é documento oficial para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Comunicação entre órgãos públicos e entre órgãos e particulares (externo).",
+    "legal_basis": "Manual de Redação da PR",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Comunicação interna entre setores do mesmo órgão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Comunicação entre órgãos e também entre órgãos e particulares",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Publicação de atos normativos no Diário Oficial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Registro de reuniões",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Formalização de contratos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "redacao-oficial",
+    "text": "Quanto ao fecho das comunicações oficiais, o Manual prevê:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Respeitosamente' para superiores hierárquicos; 'Atenciosamente' para os demais.",
+    "legal_basis": "Manual de Redação da PR",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer expressão cortês",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "'Respeitosamente' para superiores e 'Atenciosamente' para os demais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "'Cordialmente' e 'Sinceramente' são os padrões",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O fecho é facultativo em documentos eletrônicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "'Saudações' é o único fecho permitido",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "redacao-oficial",
+    "text": "O memorando, conforme a 3ª edição do Manual de Redação da PR:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Foi substituído pelo padrão ofício na 3ª edição.",
+    "legal_basis": "Manual de Redação da PR (3ª ed.)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Substitui todos os outros documentos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Foi substituído pelo padrão ofício na 3ª edição",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É utilizado apenas pelo Poder Judiciário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Difere do ofício apenas na assinatura",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pode ser informal entre servidores do mesmo setor",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "redacao-oficial",
+    "text": "O padrão culto da língua nas comunicações oficiais implica:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Clareza, objetividade, formalidade adequada e gramática correta, sem ser rebuscado.",
+    "legal_basis": "Manual de Redação da PR",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Uso de linguagem rebuscada e palavras difíceis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Clareza, objetividade, formalidade adequada e gramática correta, sem ser rebuscado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Evitar qualquer palavra de origem estrangeira",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Usar apenas termos técnicos e jurídicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Reproduzir fielmente modelos do século XIX",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-palavras",
+    "text": "Na frase 'Que dia bonito!', o 'que' é:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Em exclamativa 'Que dia bonito!', o 'que' é pronome indefinido com valor exclamativo.",
+    "legal_basis": "Gramática; Classes de Palavras",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Conjunção subordinativa integrante",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pronome relativo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pronome indefinido com valor exclamativo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Interjeição de surpresa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Preposição",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-palavras",
+    "text": "Na frase 'Ambos os candidatos foram aprovados', 'ambos' é:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Ambos' é pronome indefinido que indica a totalidade dos dois elementos referidos.",
+    "legal_basis": "Gramática; Pronomes Indefinidos",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Artigo definido",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pronome indefinido indicando totalidade de dois elementos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Numeral ordinal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Pronome demonstrativo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Adjetivo invariável",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-palavras",
+    "text": "As conjunções coordenativas adversativas expressam:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Adversativas: mas, porém, contudo, todavia, entretanto — estabelecem oposição ou contraste.",
+    "legal_basis": "Gramática; Conjunções",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Adição de ideias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Conclusão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Oposição ou contraste entre ideias",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Alternância",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Explicação ou causa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-palavras",
+    "text": "O numeral 'primeiro' em 'O primeiro patrulheiro a chegar recebeu elogios' é:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Primeiro' é numeral ordinal que indica posição na sequência.",
+    "legal_basis": "Gramática; Numerais",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Numeral cardinal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Numeral ordinal (indica posição na sequência)",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Numeral multiplicativo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Numeral fracionário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Adjetivo com valor temporal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-palavras",
+    "text": "A palavra 'mesmo' em 'Ele mesmo fez o relatório' é:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Mesmo' com valor enfático é pronome reflexivo-intensivo que ressalta o sujeito.",
+    "legal_basis": "Gramática; Pronomes",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Adjetivo que indica igualdade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pronome reflexivo-intensivo que ressalta o sujeito",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Advérbio de modo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Conjunção adversativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Artigo indefinido",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-palavras",
+    "text": "O advérbio de modo em 'O policial agiu rapidamente na ocorrência' é:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "'Rapidamente' é advérbio de modo que modifica o verbo 'agiu'.",
+    "legal_basis": "Gramática; Classes de Palavras",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "'O policial'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "'agiu'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "'rapidamente'",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "'na ocorrência'",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "'policial'",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

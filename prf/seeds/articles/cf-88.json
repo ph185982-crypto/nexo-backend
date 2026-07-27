@@ -1,0 +1,760 @@
+[
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "article_number": "Art. 1°",
+    "chapter": "Dos Princípios Fundamentais",
+    "official_text": "A República Federativa do Brasil, formada pela união indissolúvel dos Estados e Municípios e do Distrito Federal, constitui-se em Estado Democrático de Direito e tem como fundamentos: I - a soberania; II - a cidadania; III - a dignidade da pessoa humana; IV - os valores sociais do trabalho e da livre iniciativa; V - o pluralismo político.",
+    "simple_text": "O Brasil é um Estado Democrático de Direito formado pela união dos Estados, Municípios e DF. Seus fundamentos são: soberania, cidadania, dignidade da pessoa humana, valores sociais do trabalho e livre iniciativa, e pluralismo político.",
+    "highlights": [
+      "Estado Democrático de Direito",
+      "fundamentos da República",
+      "SO-CI-DI-VA-PLU"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "article_number": "Art. 2°",
+    "chapter": "Dos Princípios Fundamentais",
+    "official_text": "São Poderes da União, independentes e harmônicos entre si, o Legislativo, o Executivo e o Judiciário.",
+    "simple_text": "Os três poderes (Legislativo, Executivo e Judiciário) são independentes entre si mas devem atuar de forma harmônica.",
+    "highlights": [
+      "independentes e harmônicos",
+      "três poderes",
+      "separação de poderes"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "article_number": "Art. 3°",
+    "chapter": "Dos Princípios Fundamentais",
+    "official_text": "Constituem objetivos fundamentais da República Federativa do Brasil: I - construir uma sociedade livre, justa e solidária; II - garantir o desenvolvimento nacional; III - erradicar a pobreza e a marginalização e reduzir as desigualdades sociais e regionais; IV - promover o bem de todos, sem preconceitos de origem, raça, sexo, cor, idade e quaisquer outras formas de discriminação.",
+    "simple_text": "Os objetivos fundamentais do Brasil são: sociedade livre/justa/solidária, desenvolvimento nacional, erradicar pobreza e reduzir desigualdades, e promover o bem de todos sem discriminação.",
+    "highlights": [
+      "objetivos fundamentais",
+      "CON-GA-ER-PRO",
+      "sem preconceitos"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "article_number": "Art. 4°",
+    "chapter": "Dos Princípios Fundamentais",
+    "official_text": "A República Federativa do Brasil rege-se nas suas relações internacionais pelos seguintes princípios: I - independência nacional; II - prevalência dos direitos humanos; III - autodeterminação dos povos; IV - não-intervenção; V - igualdade entre os Estados; VI - defesa da paz; VII - solução pacífica dos conflitos; VIII - repúdio ao terrorismo e ao racismo; IX - cooperação entre os povos para o progresso da humanidade; X - concessão de asilo político.",
+    "simple_text": "Nas relações internacionais, o Brasil segue princípios como independência, prevalência dos direitos humanos, não-intervenção, defesa da paz, repúdio ao terrorismo e racismo, e concessão de asilo político.",
+    "highlights": [
+      "relações internacionais",
+      "prevalência dos direitos humanos",
+      "repúdio ao terrorismo e racismo"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, caput",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se aos brasileiros e aos estrangeiros residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade.",
+    "simple_text": "Brasileiros e estrangeiros residentes são iguais perante a lei. Todos têm direito à vida, liberdade, igualdade, segurança e propriedade.",
+    "highlights": [
+      "iguais perante a lei",
+      "brasileiros e estrangeiros residentes",
+      "vida, liberdade, igualdade, segurança, propriedade"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, I",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Homens e mulheres são iguais em direitos e obrigações, nos termos desta Constituição.",
+    "simple_text": "Igualdade entre homens e mulheres em direitos e obrigações, conforme a Constituição.",
+    "highlights": [
+      "igualdade de gênero",
+      "direitos e obrigações"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, II",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Ninguém será obrigado a fazer ou deixar de fazer alguma coisa senão em virtude de lei.",
+    "simple_text": "Princípio da legalidade: só a lei pode obrigar alguém a fazer ou não fazer algo.",
+    "highlights": [
+      "princípio da legalidade",
+      "em virtude de lei"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, III",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Ninguém será submetido a tortura nem a tratamento desumano ou degradante.",
+    "simple_text": "Proibição absoluta de tortura e tratamento desumano ou degradante.",
+    "highlights": [
+      "vedação à tortura",
+      "tratamento desumano ou degradante"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, X",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "São invioláveis a intimidade, a vida privada, a honra e a imagem das pessoas, assegurado o direito a indenização pelo dano material ou moral decorrente de sua violação.",
+    "simple_text": "Intimidade, vida privada, honra e imagem são invioláveis. Quem violar deve indenizar por danos materiais e morais.",
+    "highlights": [
+      "intimidade e vida privada",
+      "indenização por dano moral e material"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XI",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial.",
+    "simple_text": "A casa é inviolável. Pode-se entrar sem consentimento: flagrante delito, desastre, socorro (dia ou noite), ou por ordem judicial (apenas durante o dia).",
+    "highlights": [
+      "inviolabilidade domiciliar",
+      "flagrante/desastre/socorro = dia ou noite",
+      "ordem judicial = só de dia"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "É inviolável o sigilo da correspondência e das comunicações telegráficas, de dados e das comunicações telefônicas, salvo, no último caso, por ordem judicial, nas hipóteses e na forma que a lei estabelecer para fins de investigação criminal ou instrução processual penal.",
+    "simple_text": "Correspondência, telegramas e dados são sigilosos. Comunicações telefônicas podem ser interceptadas por ordem judicial para investigação criminal ou instrução processual penal.",
+    "highlights": [
+      "sigilo de correspondência",
+      "interceptação telefônica = ordem judicial",
+      "apenas para investigação criminal"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XXXV",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A lei não excluirá da apreciação do Poder Judiciário lesão ou ameaça a direito.",
+    "simple_text": "Princípio da inafastabilidade da jurisdição: o Judiciário não pode ser impedido de apreciar qualquer lesão ou ameaça a direito.",
+    "highlights": [
+      "inafastabilidade da jurisdição",
+      "lesão ou ameaça a direito"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XXXIX",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.",
+    "simple_text": "Princípio da legalidade penal (nullum crimen sine lege): só é crime o que a lei previamente define, e só se aplica a pena que a lei previamente estabelece.",
+    "highlights": [
+      "legalidade penal",
+      "anterioridade da lei penal",
+      "nullum crimen sine lege"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XL",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A lei penal não retroagirá, salvo para beneficiar o réu.",
+    "simple_text": "A lei penal só retroage quando beneficia o réu (princípio da retroatividade benéfica).",
+    "highlights": [
+      "irretroatividade da lei penal",
+      "retroage para beneficiar o réu"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LIV",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Ninguém será privado da liberdade ou de seus bens sem o devido processo legal.",
+    "simple_text": "Devido processo legal: ninguém perde liberdade ou bens sem o processo previsto em lei.",
+    "highlights": [
+      "devido processo legal",
+      "privação de liberdade ou bens"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LV",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Aos litigantes, em processo judicial ou administrativo, e aos acusados em geral são assegurados o contraditório e a ampla defesa, com os meios e recursos a ela inerentes.",
+    "simple_text": "Todo litigante ou acusado tem direito ao contraditório e à ampla defesa, tanto em processos judiciais quanto administrativos.",
+    "highlights": [
+      "contraditório e ampla defesa",
+      "processo judicial ou administrativo"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LVI",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "São inadmissíveis, no processo, as provas obtidas por meios ilícitos.",
+    "simple_text": "Provas obtidas de forma ilícita não podem ser usadas no processo.",
+    "highlights": [
+      "provas ilícitas inadmissíveis",
+      "fruto da árvore envenenada"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LVII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Ninguém será considerado culpado até o trânsito em julgado de sentença penal condenatória.",
+    "simple_text": "Presunção de inocência: ninguém é culpado até que a sentença condenatória transite em julgado (não caiba mais recurso).",
+    "highlights": [
+      "presunção de inocência",
+      "trânsito em julgado"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LXI",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Ninguém será preso senão em flagrante delito ou por ordem escrita e fundamentada de autoridade judiciária competente, salvo nos casos de transgressão militar ou crime propriamente militar, definidos em lei.",
+    "simple_text": "Prisão só em flagrante ou por ordem judicial escrita e fundamentada. Exceção: transgressão militar ou crime militar.",
+    "highlights": [
+      "prisão: flagrante ou ordem judicial",
+      "ordem escrita e fundamentada",
+      "exceção militar"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LXII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A prisão de qualquer pessoa e o local onde se encontre serão comunicados imediatamente ao juiz competente e à família do preso ou à pessoa por ele indicada.",
+    "simple_text": "Toda prisão deve ser comunicada imediatamente ao juiz e à família do preso ou pessoa indicada.",
+    "highlights": [
+      "comunicação imediata ao juiz",
+      "comunicação à família"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LXIII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "O preso será informado de seus direitos, entre os quais o de permanecer calado, sendo-lhe assegurada a assistência da família e de advogado.",
+    "simple_text": "O preso tem direito a ser informado de seus direitos, ficar calado, e ter assistência da família e advogado.",
+    "highlights": [
+      "direito ao silêncio",
+      "assistência de advogado",
+      "informação dos direitos"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, LXIV",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "O preso tem direito à identificação dos responsáveis por sua prisão ou por seu interrogatório policial.",
+    "simple_text": "O preso pode exigir saber quem o prendeu e quem o interroga.",
+    "highlights": [
+      "identificação dos responsáveis pela prisão"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "article_number": "Art. 5°, LXVIII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Conceder-se-á habeas corpus sempre que alguém sofrer ou se achar ameaçado de sofrer violência ou coação em sua liberdade de locomoção, por ilegalidade ou abuso de poder.",
+    "simple_text": "Habeas corpus protege a liberdade de ir e vir contra ilegalidade ou abuso de poder. Pode ser preventivo (ameaça) ou repressivo (coação atual).",
+    "highlights": [
+      "habeas corpus",
+      "liberdade de locomoção",
+      "ilegalidade ou abuso de poder"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "article_number": "Art. 5°, LXIX",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Conceder-se-á mandado de segurança para proteger direito líquido e certo, não amparado por habeas corpus ou habeas data, quando o responsável pela ilegalidade ou abuso de poder for autoridade pública ou agente de pessoa jurídica no exercício de atribuições do Poder Público.",
+    "simple_text": "Mandado de segurança protege direito líquido e certo contra ilegalidade de autoridade pública, quando não couber HC ou HD.",
+    "highlights": [
+      "mandado de segurança",
+      "direito líquido e certo",
+      "autoridade pública"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "article_number": "Art. 5°, LXXI",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Conceder-se-á mandado de injunção sempre que a falta de norma regulamentadora torne inviável o exercício dos direitos e liberdades constitucionais e das prerrogativas inerentes à nacionalidade, à soberania e à cidadania.",
+    "simple_text": "Mandado de injunção é usado quando falta lei regulamentadora que impeça o exercício de direito constitucional.",
+    "highlights": [
+      "mandado de injunção",
+      "falta de norma regulamentadora",
+      "omissão legislativa"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "article_number": "Art. 5°, LXXII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Conceder-se-á habeas data: a) para assegurar o conhecimento de informações relativas à pessoa do impetrante, constantes de registros ou bancos de dados de entidades governamentais ou de caráter público; b) para a retificação de dados, quando não se prefira fazê-lo por processo sigiloso, judicial ou administrativo.",
+    "simple_text": "Habeas data serve para: a) conhecer informações pessoais em bancos de dados públicos; b) retificar dados incorretos.",
+    "highlights": [
+      "habeas data",
+      "informações pessoais",
+      "retificação de dados"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "article_number": "Art. 5°, LXXIII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Qualquer cidadão é parte legítima para propor ação popular que vise a anular ato lesivo ao patrimônio público ou de entidade de que o Estado participe, à moralidade administrativa, ao meio ambiente e ao patrimônio histórico e cultural, ficando o autor, salvo comprovada má-fé, isento de custas judiciais e do ônus da sucumbência.",
+    "simple_text": "Qualquer cidadão pode propor ação popular contra ato lesivo ao patrimônio público, moralidade administrativa, meio ambiente ou patrimônio histórico/cultural. Autor isento de custas salvo má-fé.",
+    "highlights": [
+      "ação popular",
+      "qualquer cidadão",
+      "patrimônio público, moralidade, meio ambiente"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, §1°",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "As normas definidoras dos direitos e garantias fundamentais têm aplicação imediata.",
+    "simple_text": "Direitos e garantias fundamentais têm aplicação imediata — não dependem de regulamentação.",
+    "highlights": [
+      "aplicação imediata",
+      "eficácia plena dos direitos fundamentais"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, §2°",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Os direitos e garantias expressos nesta Constituição não excluem outros decorrentes do regime e dos princípios por ela adotados, ou dos tratados internacionais em que a República Federativa do Brasil seja parte.",
+    "simple_text": "O rol de direitos da CF não é taxativo — outros direitos podem vir do regime constitucional ou de tratados internacionais.",
+    "highlights": [
+      "rol exemplificativo",
+      "tratados internacionais",
+      "cláusula de abertura"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, §3°",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Os tratados e convenções internacionais sobre direitos humanos que forem aprovados, em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, serão equivalentes às emendas constitucionais.",
+    "simple_text": "Tratados de direitos humanos aprovados com quórum de 3/5 em dois turnos nas duas Casas do Congresso têm status de emenda constitucional.",
+    "highlights": [
+      "tratados de direitos humanos",
+      "3/5 em dois turnos",
+      "equivalentes a emendas constitucionais"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "article_number": "Art. 37, caput",
+    "chapter": "Da Administração Pública",
+    "official_text": "A administração pública direta e indireta de qualquer dos Poderes da União, dos Estados, do Distrito Federal e dos Municípios obedecerá aos princípios de legalidade, impessoalidade, moralidade, publicidade e eficiência.",
+    "simple_text": "A administração pública (direta e indireta) deve obedecer aos princípios LIMPE: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência.",
+    "highlights": [
+      "LIMPE",
+      "princípios da administração pública",
+      "direta e indireta"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "article_number": "Art. 37, §6°",
+    "chapter": "Da Administração Pública",
+    "official_text": "As pessoas jurídicas de direito público e as de direito privado prestadoras de serviços públicos responderão pelos danos que seus agentes, nessa qualidade, causarem a terceiros, assegurado o direito de regresso contra o responsável nos casos de dolo ou culpa.",
+    "simple_text": "O Estado responde objetivamente pelos danos causados por seus agentes a terceiros. O Estado pode cobrar do agente (regresso) se houve dolo ou culpa.",
+    "highlights": [
+      "responsabilidade objetiva do Estado",
+      "direito de regresso",
+      "dolo ou culpa do agente"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "article_number": "Art. 41",
+    "chapter": "Da Administração Pública",
+    "official_text": "São estáveis após três anos de efetivo exercício os servidores nomeados para cargo de provimento efetivo em virtude de concurso público.",
+    "simple_text": "Servidor público concursado adquire estabilidade após 3 anos de efetivo exercício em cargo efetivo.",
+    "highlights": [
+      "estabilidade",
+      "3 anos",
+      "cargo efetivo por concurso"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 142",
+    "chapter": "Das Forças Armadas",
+    "official_text": "As Forças Armadas, constituídas pela Marinha, pelo Exército e pela Aeronáutica, são instituições nacionais permanentes e regulares, organizadas com base na hierarquia e na disciplina, sob a autoridade suprema do Presidente da República, e destinam-se à defesa da Pátria, à garantia dos poderes constitucionais e, por iniciativa de qualquer destes, da lei e da ordem.",
+    "simple_text": "As Forças Armadas (Marinha, Exército, Aeronáutica) são permanentes, baseadas em hierarquia e disciplina, sob autoridade do Presidente. Destinam-se à defesa da Pátria e garantia dos poderes constitucionais.",
+    "highlights": [
+      "Forças Armadas",
+      "hierarquia e disciplina",
+      "defesa da Pátria"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144",
+    "chapter": "Da Segurança Pública",
+    "official_text": "A segurança pública, dever do Estado, direito e responsabilidade de todos, é exercida para a preservação da ordem pública e da incolumidade das pessoas e do patrimônio, através dos seguintes órgãos: I - polícia federal; II - polícia rodoviária federal; III - polícia ferroviária federal; IV - polícias civis; V - polícias militares e corpos de bombeiros militares; VI - polícias penais federal, estaduais e distrital.",
+    "simple_text": "Segurança pública é dever do Estado e responsabilidade de todos. É exercida pela PF, PRF, PFF, polícias civis, PMs/bombeiros e polícias penais.",
+    "highlights": [
+      "dever do Estado",
+      "responsabilidade de todos",
+      "PRF é órgão de segurança pública"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §1°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "A polícia federal, instituída por lei como órgão permanente, organizado e mantido pela União e estruturado em carreira, destina-se a: I - apurar infrações penais contra a ordem política e social ou em detrimento de bens, serviços e interesses da União ou de suas entidades autárquicas e empresas públicas, assim como outras infrações cuja prática tenha repercussão interestadual ou internacional e exija repressão uniforme, segundo se dispuser em lei; II - prevenir e reprimir o tráfico ilícito de entorpecentes e drogas afins, o contrabando e o descaminho, sem prejuízo da ação fazendária e de outros órgãos públicos nas respectivas áreas de competência; III - exercer as funções de polícia marítima, aeroportuária e de fronteiras; IV - exercer, com exclusividade, as funções de polícia judiciária da União.",
+    "simple_text": "A PF apura infrações contra a União, previne tráfico/contrabando, exerce polícia de fronteiras e é a polícia judiciária exclusiva da União.",
+    "highlights": [
+      "polícia judiciária da União com exclusividade",
+      "tráfico e contrabando",
+      "polícia de fronteiras"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §2°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "A polícia rodoviária federal, órgão permanente, organizado e mantido pela União e estruturado em carreira, destina-se, na forma da lei, ao patrulhamento ostensivo das rodovias federais.",
+    "simple_text": "A PRF é órgão permanente da União, estruturado em carreira, destinado ao patrulhamento ostensivo das rodovias federais.",
+    "highlights": [
+      "PRF",
+      "órgão permanente",
+      "patrulhamento ostensivo",
+      "rodovias federais"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §3°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "A polícia ferroviária federal, órgão permanente, organizado e mantido pela União e estruturado em carreira, destina-se, na forma da lei, ao patrulhamento ostensivo das ferrovias federais.",
+    "simple_text": "A Polícia Ferroviária Federal patrulha ostensivamente as ferrovias federais.",
+    "highlights": [
+      "polícia ferroviária federal",
+      "ferrovias federais"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §4°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "Às polícias civis, dirigidas por delegados de polícia de carreira, incumbem, ressalvada a competência da União, as funções de polícia judiciária e a apuração de infrações penais, exceto as militares.",
+    "simple_text": "Polícias civis são chefiadas por delegados de carreira e exercem a função de polícia judiciária estadual, apurando crimes, exceto os militares.",
+    "highlights": [
+      "polícia civil",
+      "polícia judiciária estadual",
+      "delegados de carreira"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §5°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "Às polícias militares cabem a polícia ostensiva e a preservação da ordem pública; aos corpos de bombeiros militares, além das atribuições definidas em lei, incumbe a execução de atividades de defesa civil.",
+    "simple_text": "PMs fazem policiamento ostensivo e preservam a ordem pública. Bombeiros militares executam defesa civil além de suas funções típicas.",
+    "highlights": [
+      "PM = polícia ostensiva",
+      "preservação da ordem pública",
+      "bombeiros = defesa civil"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §7°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "A lei disciplinará a organização e o funcionamento dos órgãos responsáveis pela segurança pública, de maneira a garantir a eficiência de suas atividades.",
+    "simple_text": "Lei própria regulará a organização dos órgãos de segurança pública, visando garantir eficiência.",
+    "highlights": [
+      "organização por lei",
+      "eficiência"
+    ],
+    "frequency_score": 5.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §8°",
+    "chapter": "Da Segurança Pública",
+    "official_text": "Os Municípios poderão constituir guardas municipais destinadas à proteção de seus bens, serviços e instalações, conforme dispuser a lei.",
+    "simple_text": "Municípios podem criar guardas municipais para proteger bens, serviços e instalações municipais.",
+    "highlights": [
+      "guardas municipais",
+      "proteção de bens municipais",
+      "faculdade dos municípios"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "article_number": "Art. 144, §10",
+    "chapter": "Da Segurança Pública",
+    "official_text": "A segurança viária, exercida para a preservação da ordem pública e da incolumidade das pessoas e do seu patrimônio nas vias públicas, compreende a educação, engenharia e fiscalização de trânsito, além de outras atividades previstas em lei, que assegurem ao cidadão o direito à mobilidade urbana eficiente.",
+    "simple_text": "Segurança viária inclui educação, engenharia e fiscalização de trânsito, garantindo mobilidade urbana eficiente.",
+    "highlights": [
+      "segurança viária",
+      "educação, engenharia, fiscalização",
+      "mobilidade urbana"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XLVI",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A lei regulará a individualização da pena e adotará, entre outras, as seguintes: a) privação ou restrição da liberdade; b) perda de bens; c) multa; d) prestação social alternativa; e) suspensão ou interdição de direitos.",
+    "simple_text": "A pena deve ser individualizada. Tipos: privação/restrição de liberdade, perda de bens, multa, prestação social alternativa, suspensão de direitos.",
+    "highlights": [
+      "individualização da pena",
+      "tipos de pena admitidos"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XLVII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Não haverá penas: a) de morte, salvo em caso de guerra declarada, nos termos do art. 84, XIX; b) de caráter perpétuo; c) de trabalhos forçados; d) de banimento; e) cruéis.",
+    "simple_text": "São proibidas as penas de: morte (exceto guerra declarada), caráter perpétuo, trabalhos forçados, banimento e cruéis.",
+    "highlights": [
+      "penas proibidas",
+      "morte só em guerra declarada",
+      "vedação a pena perpétua"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "article_number": "Art. 18",
+    "chapter": "Da Organização Político-Administrativa",
+    "official_text": "A organização político-administrativa da República Federativa do Brasil compreende a União, os Estados, o Distrito Federal e os Municípios, todos autônomos, nos termos desta Constituição.",
+    "simple_text": "O Brasil é organizado em União, Estados, DF e Municípios, todos autônomos entre si.",
+    "highlights": [
+      "entes federativos",
+      "autonomia",
+      "União, Estados, DF, Municípios"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "article_number": "Art. 21, XXII",
+    "chapter": "Da União",
+    "official_text": "Compete à União executar os serviços de polícia marítima, aeroportuária e de fronteiras.",
+    "simple_text": "A polícia de fronteiras, marítima e aeroportuária é competência da União.",
+    "highlights": [
+      "competência da União",
+      "polícia de fronteiras"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "article_number": "Art. 22, XXII",
+    "chapter": "Da União",
+    "official_text": "Compete privativamente à União legislar sobre competência da polícia federal e das polícias rodoviária e ferroviária federais.",
+    "simple_text": "Só a União pode legislar sobre a competência da PF, PRF e PFF.",
+    "highlights": [
+      "competência privativa da União",
+      "legislar sobre PRF"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XLIII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A lei considerará crimes inafiançáveis e insuscetíveis de graça ou anistia a prática da tortura, o tráfico ilícito de entorpecentes e drogas afins, o terrorismo e os definidos como crimes hediondos, por eles respondendo os mandantes, os executores e os que, podendo evitá-los, se omitirem.",
+    "simple_text": "Tortura, tráfico de drogas, terrorismo e crimes hediondos são inafiançáveis e insuscetíveis de graça ou anistia (3TH). Todos que participam respondem, inclusive omissos.",
+    "highlights": [
+      "3TH: tortura, tráfico, terrorismo, hediondos",
+      "inafiançáveis",
+      "insuscetíveis de graça ou anistia"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XLIV",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "Constitui crime inafiançável e imprescritível a ação de grupos armados, civis ou militares, contra a ordem constitucional e o Estado Democrático.",
+    "simple_text": "Ação de grupos armados contra a ordem constitucional é crime inafiançável e imprescritível.",
+    "highlights": [
+      "inafiançável e imprescritível",
+      "grupos armados contra ordem constitucional"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XLVIII",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "A pena será cumprida em estabelecimentos distintos, de acordo com a natureza do delito, a idade e o sexo do apenado.",
+    "simple_text": "A pena deve ser cumprida em estabelecimentos separados conforme o tipo de crime, idade e sexo do condenado.",
+    "highlights": [
+      "separação de presos",
+      "natureza do delito, idade, sexo"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "cf-88",
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "article_number": "Art. 5°, XLIX",
+    "chapter": "Dos Direitos e Garantias Fundamentais",
+    "official_text": "É assegurado aos presos o respeito à integridade física e moral.",
+    "simple_text": "Presos têm direito ao respeito à integridade física e moral.",
+    "highlights": [
+      "integridade física e moral do preso"
+    ],
+    "frequency_score": 7.0
+  }
+]

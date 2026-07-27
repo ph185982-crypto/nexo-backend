@@ -1,0 +1,315 @@
+[
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "principios-penal",
+    "article_number": "Art. 1°",
+    "chapter": "Da Aplicação da Lei Penal",
+    "official_text": "Não há crime sem lei anterior que o defina. Não há pena sem prévia cominação legal.",
+    "simple_text": "Princípio da legalidade: ninguém pode ser punido sem lei que preveja o crime e a pena antes do fato.",
+    "highlights": [
+      "legalidade",
+      "anterioridade",
+      "crime",
+      "pena"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "principios-penal",
+    "article_number": "Art. 2°",
+    "chapter": "Da Aplicação da Lei Penal",
+    "official_text": "Ninguém pode ser punido por fato que lei posterior deixa de considerar crime, cessando em virtude dela a execução e os efeitos penais da sentença condenatória.",
+    "simple_text": "Lei penal mais benéfica retroage para beneficiar o réu; lei mais severa não retroage.",
+    "highlights": [
+      "retroatividade",
+      "abolitio criminis",
+      "lex mitior"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "principios-penal",
+    "article_number": "Art. 5°",
+    "chapter": "Da Aplicação da Lei Penal",
+    "official_text": "Aplica-se a lei brasileira, sem prejuízo de convenções, tratados e regras de direito internacional, ao crime cometido no território nacional.",
+    "simple_text": "Princípio da territorialidade: aplica-se a lei brasileira aos crimes cometidos no Brasil.",
+    "highlights": [
+      "territorialidade",
+      "território nacional"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "article_number": "Art. 13",
+    "chapter": "Da Relação de Causalidade",
+    "official_text": "O resultado, de que depende a existência do crime, somente é imputável a quem lhe deu causa. Considera-se causa a ação ou omissão sem a qual o resultado não teria ocorrido.",
+    "simple_text": "Nexo causal: só responde pelo resultado quem o causou. Teoria da equivalência das condições (conditio sine qua non).",
+    "highlights": [
+      "nexo causal",
+      "relação de causalidade",
+      "conditio sine qua non"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "article_number": "Art. 14",
+    "chapter": "Do Crime Consumado e Tentado",
+    "official_text": "Diz-se o crime: I – consumado, quando nele se reúnem todos os elementos de sua definição legal; II – tentado, quando, iniciada a execução, não se consuma por circunstâncias alheias à vontade do agente.",
+    "simple_text": "Crime consumado: todos os elementos presentes. Tentativa: execução iniciada mas interrompida por fatores externos.",
+    "highlights": [
+      "consumado",
+      "tentado",
+      "tentativa",
+      "execução"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "article_number": "Art. 15",
+    "chapter": "Da Desistência Voluntária e Arrependimento Eficaz",
+    "official_text": "O agente que, voluntariamente, desiste de prosseguir na execução ou impede que o resultado se produza, só responde pelos atos já praticados.",
+    "simple_text": "Ponte de ouro: quem desiste voluntariamente ou impede o resultado responde apenas pelos atos já praticados, não pela tentativa.",
+    "highlights": [
+      "desistência voluntária",
+      "arrependimento eficaz",
+      "ponte de ouro"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "article_number": "Art. 18",
+    "chapter": "Do Crime Doloso e Culposo",
+    "official_text": "Diz-se o crime: I – doloso, quando o agente quis o resultado ou assumiu o risco de produzi-lo; II – culposo, quando o agente deu causa ao resultado por imprudência, negligência ou imperícia.",
+    "simple_text": "Dolo: querer o resultado ou assumir o risco. Culpa: imprudência, negligência ou imperícia.",
+    "highlights": [
+      "dolo",
+      "culpa",
+      "imprudência",
+      "negligência",
+      "imperícia"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "article_number": "Art. 20",
+    "chapter": "Do Erro de Tipo",
+    "official_text": "O erro sobre elemento constitutivo do tipo legal de crime exclui o dolo, mas permite a punição por crime culposo, se previsto em lei.",
+    "simple_text": "Erro de tipo: agente desconhece circunstância do fato típico. Se escusável, exclui dolo e culpa; se inescusável, exclui dolo mas permite culpa.",
+    "highlights": [
+      "erro de tipo",
+      "dolo",
+      "culpa",
+      "escusável"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "article_number": "Art. 21",
+    "chapter": "Do Erro sobre a Ilicitude do Fato",
+    "official_text": "O desconhecimento da lei é inescusável. O erro sobre a ilicitude do fato, se inevitável, isenta de pena; se evitável, poderá diminuí-la.",
+    "simple_text": "Erro de proibição: agente não sabia que o fato era ilícito. Se inevitável, isenta de pena; se evitável, reduz a pena.",
+    "highlights": [
+      "erro de proibição",
+      "desconhecimento da lei",
+      "ilicitude"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "excludentes-ilicitude",
+    "article_number": "Art. 23",
+    "chapter": "Das Causas de Exclusão da Ilicitude",
+    "official_text": "Não há crime quando o agente pratica o fato: I – em estado de necessidade; II – em legítima defesa; III – em estrito cumprimento de dever legal ou no exercício regular de direito.",
+    "simple_text": "Excludentes de ilicitude: estado de necessidade, legítima defesa, cumprimento de dever legal, exercício regular de direito.",
+    "highlights": [
+      "excludentes",
+      "ilicitude",
+      "estado de necessidade",
+      "legítima defesa"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "excludentes-ilicitude",
+    "article_number": "Art. 24",
+    "chapter": "Do Estado de Necessidade",
+    "official_text": "Considera-se em estado de necessidade quem pratica o fato para salvar de perigo atual, que não provocou por sua vontade, nem podia de outro modo evitar, direito próprio ou alheio, cujo sacrifício, nas circunstâncias, não era razoável exigir-se.",
+    "simple_text": "Estado de necessidade: perigo atual, não provocado, inevitável, bem jurídico sacrificado menor ou igual ao salvo.",
+    "highlights": [
+      "estado de necessidade",
+      "perigo atual",
+      "sacrifício",
+      "razoável"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "excludentes-ilicitude",
+    "article_number": "Art. 25",
+    "chapter": "Da Legítima Defesa",
+    "official_text": "Entende-se em legítima defesa quem, usando moderadamente dos meios necessários, repele injusta agressão, atual ou iminente, a direito seu ou de outrem.",
+    "simple_text": "Legítima defesa: repelir agressão injusta, atual ou iminente, com meios necessários e de forma moderada.",
+    "highlights": [
+      "legítima defesa",
+      "agressão injusta",
+      "moderação",
+      "meios necessários"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "article_number": "Art. 29",
+    "chapter": "Do Concurso de Pessoas",
+    "official_text": "Quem, de qualquer modo, concorre para o crime incide nas penas a este cominadas, na medida de sua culpabilidade.",
+    "simple_text": "Todos que contribuem para o crime respondem por ele, mas cada um conforme sua culpabilidade.",
+    "highlights": [
+      "concurso de pessoas",
+      "coautoria",
+      "participação",
+      "culpabilidade"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "article_number": "Art. 121",
+    "chapter": "Do Homicídio Simples",
+    "official_text": "Matar alguém: Pena – reclusão, de seis a vinte anos.",
+    "simple_text": "Homicídio simples: matar alguém. Qualificadoras aumentam a pena.",
+    "highlights": [
+      "homicídio",
+      "matar",
+      "reclusão"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "article_number": "Art. 129",
+    "chapter": "Das Lesões Corporais",
+    "official_text": "Ofender a integridade corporal ou a saúde de outrem: Pena – detenção, de três meses a um ano.",
+    "simple_text": "Lesão corporal: ofensa à integridade física ou saúde. Formas: leve, grave, gravíssima, seguida de morte.",
+    "highlights": [
+      "lesão corporal",
+      "integridade",
+      "saúde",
+      "detenção"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "article_number": "Art. 155",
+    "chapter": "Do Furto",
+    "official_text": "Subtrair, para si ou para outrem, coisa alheia móvel: Pena – reclusão, de um a quatro anos, e multa.",
+    "simple_text": "Furto: subtração de coisa alheia móvel. Furto qualificado tem pena maior. Furto privilegiado: pena reduzida.",
+    "highlights": [
+      "furto",
+      "subtração",
+      "coisa alheia",
+      "móvel"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "article_number": "Art. 157",
+    "chapter": "Do Roubo",
+    "official_text": "Subtrair coisa móvel alheia, para si ou para outrem, mediante grave ameaça ou violência a pessoa, ou depois de havê-la, por qualquer meio, reduzido à impossibilidade de resistência: Pena – reclusão, de quatro a dez anos, e multa.",
+    "simple_text": "Roubo: furto + violência ou grave ameaça. Latrocínio: roubo seguido de morte.",
+    "highlights": [
+      "roubo",
+      "violência",
+      "grave ameaça",
+      "latrocínio"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "article_number": "Art. 312",
+    "chapter": "Do Peculato",
+    "official_text": "Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo, ou desviá-lo, em proveito próprio ou alheio: Pena – reclusão, de dois a doze anos, e multa.",
+    "simple_text": "Peculato: funcionário público que se apropria ou desvia bens que possui em razão do cargo.",
+    "highlights": [
+      "peculato",
+      "funcionário público",
+      "apropriação",
+      "desvio"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "article_number": "Art. 317",
+    "chapter": "Da Corrupção Passiva",
+    "official_text": "Solicitar ou receber, para si ou para outrem, direta ou indiretamente, ainda que fora da função ou antes de assumi-la, mas em razão dela, vantagem indevida, ou aceitar promessa de tal vantagem: Pena – reclusão, de dois a doze anos, e multa.",
+    "simple_text": "Corrupção passiva: funcionário público que solicita, recebe ou aceita vantagem indevida em razão do cargo.",
+    "highlights": [
+      "corrupção passiva",
+      "vantagem indevida",
+      "funcionário público",
+      "solicitar"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cp",
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "article_number": "Art. 319",
+    "chapter": "Da Prevaricação",
+    "official_text": "Retardar ou deixar de praticar, indevidamente, ato de ofício, ou praticá-lo contra disposição expressa de lei, para satisfazer interesse ou sentimento pessoal: Pena – detenção, de três meses a um ano, e multa.",
+    "simple_text": "Prevaricação: funcionário que retarda, omite ou pratica ato ilegal por interesse pessoal.",
+    "highlights": [
+      "prevaricação",
+      "ato de ofício",
+      "interesse pessoal"
+    ],
+    "frequency_score": 8.5
+  }
+]

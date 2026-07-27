@@ -1,0 +1,1765 @@
+[
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "À Polícia Rodoviária Federal compete, nos termos do art. 144, §2°, da CF/88:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CF/88 atribui à PRF o patrulhamento ostensivo das rodovias federais. A Lei 9.654/1998 e o Decreto 1.655/1995 detalham as atribuições da PRF.",
+    "legal_basis": "Art. 144, §2°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Investigar crimes praticados em rodovias federais e estaduais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O patrulhamento ostensivo das rodovias federais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Fiscalizar o trânsito em todas as vias públicas do país",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Realizar o policiamento de fronteiras terrestres",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apurar infrações de trânsito em vias municipais de acesso a rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "A PRF pode realizar a fiscalização de veículos e condutores em:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF tem competência nas rodovias federais, incluindo acessos e áreas adjacentes. Também pode atuar em delegação em outras vias por convênio.",
+    "legal_basis": "Lei 9.503/97, Art. 280; Decreto 1.655/1995",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer via pública do território nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas nas rodovias federais asfaltadas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Rodovias federais, podendo atuar em outras vias em casos de perseguição ou delegação",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas nas rodovias federais interestadual de alta velocidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exclusivamente nos trechos urbanos de rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "A PRF tem competência para lavrar auto de infração de trânsito (AIT) nas rodovias federais. Sobre essa competência, é correto afirmar:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF é órgão executivo de trânsito com competência para fiscalizar e autuar nas rodovias federais. Os AITs lavrados pela PRF têm validade e geram pontuação na CNH.",
+    "legal_basis": "Art. 21 e 22, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas delegados de polícia federal podem lavrar AITs",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Agentes e inspetores da PRF têm competência para lavrar AITs nas rodovias federais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O AIT lavrado pela PRF precisa ser ratificado pela PM estadual para ter validade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A PRF pode lavrar AITs em qualquer via pública do Brasil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Os AITs da PRF não geram pontuação na CNH por se referirem à infração federal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "O policiamento ostensivo realizado pela PRF visa prioritariamente:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O policiamento ostensivo da PRF tem como objetivos principais: a segurança viária, a prevenção de acidentes, a fiscalização do cumprimento da legislação de trânsito e a repressão de crimes nas rodovias federais.",
+    "legal_basis": "Lei 9.654/1998; Decreto 1.655/1995",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A arrecadação de multas de trânsito como fonte de renda para o Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Garantir a segurança viária, prevenir acidentes e fiscalizar o cumprimento da lei nas rodovias",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O policiamento preventivo de crimes contra o patrimônio nas cidades cortadas por rodovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Substituir a Polícia Militar no policiamento das cidades por onde passam rodovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Controlar a entrada de mercadorias no país nas fronteiras terrestres",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "Qual é a natureza jurídica da Polícia Rodoviária Federal (PRF)?",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF é órgão permanente, organizado e mantido pela União (art. 144, §2°, CF), com carreira estruturada. É órgão federal de segurança pública e órgão executivo de trânsito da União.",
+    "legal_basis": "Art. 144, §2°, CF/88; CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Autarquia federal com personalidade jurídica própria",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Empresa pública federal prestadora de serviços de segurança",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Órgão permanente da União, com carreira estruturada, de segurança pública e executivo de trânsito",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Secretaria nacional vinculada ao Ministério da Justiça e Segurança Pública",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Corpo de policiais militares federais subordinados ao Ministério da Defesa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "A PRF tem competência para autuar infrações de trânsito cometidas por condutores de:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF fiscaliza todos os veículos e condutores que transitam pelas rodovias federais, independentemente do tipo de veículo ou origem do condutor.",
+    "legal_basis": "CTB; Decreto 1.655/1995",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas veículos de transporte de carga pesada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas veículos de transporte coletivo de passageiros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Todos os veículos que transitam nas rodovias federais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas veículos com placa de outro Estado que transitam em rodovia federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas veículos que cometem infrações gravíssimas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "A PRF pode realizar operações de combate ao crime nas rodovias federais. Nessas operações, pode:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF tem atribuições de segurança pública nas rodovias federais, podendo realizar abordagens, prisões em flagrante, busca e apreensão de veículos e mercadorias ilícitas.",
+    "legal_basis": "CF/88, Art. 144, §2°; CPP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas autuar infrações administrativas de trânsito, sem poder prender",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Realizar prisões em flagrante, apreensões de drogas, armas e mercadorias ilícitas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Investigar crimes e instaurar inquérito policial de forma autônoma",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Prender suspeitos sem flagrante quando houver fortes indícios de crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Realizar buscas domiciliares próximas às rodovias sem mandado judicial",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "atribuicoes-prf",
+    "text": "A PRF pode realizar a fiscalização de cargas transportadas nas rodovias federais. Essa fiscalização inclui:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A fiscalização de cargas pela PRF inclui verificação do peso, dimensões, documentação do veículo e carga, transporte de produtos perigosos, e verificação de carga proibida ou ilícita.",
+    "legal_basis": "CTB; Lei 9.503/97",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas a verificação do peso e dimensão dos veículos de carga",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Verificação de peso, dimensões, documentação da carga e do veículo, e inspeção do conteúdo transportado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas a conferência das notas fiscais das mercadorias transportadas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Fiscalização exclusiva dos produtos perigosos conforme a legislação federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Controle alfandegário de mercadorias importadas em todo o território nacional",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "O Certificado de Registro e Licenciamento de Veículo (CRLV) é documento obrigatório que deve estar:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O CRLV é documento obrigatório que comprova o registro e o licenciamento anual do veículo, devendo estar no veículo durante a circulação. Pode ser apresentado no formato digital.",
+    "legal_basis": "Art. 133, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Guardado com segurança em local de fácil acesso, mas não necessariamente no veículo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "No veículo durante a circulação, podendo ser apresentado em formato digital",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas apresentado quando solicitado pelo DETRAN do Estado de registro",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Registrado eletronicamente, dispensando o porte físico em qualquer situação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apresentado pelo proprietário em até 24 horas após a solicitação da autoridade",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "A fiscalização de veículos quanto ao ruído excessivo e à emissão de poluentes compete:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A fiscalização de ruído e emissões nas rodovias federais compete à PRF. O CONTRAN estabelece os padrões técnicos que devem ser observados pelos veículos.",
+    "legal_basis": "Art. 21, CTB; Resolução CONTRAN",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Exclusivamente ao IBAMA, por se tratar de questão ambiental",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Ao DETRAN do Estado onde ocorre a infração",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "À PRF nas rodovias federais, conforme as normas do CONTRAN",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas às Secretarias Municipais de Meio Ambiente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Ao Ministério do Meio Ambiente por meio de seus fiscais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "O condutor flagrado dirigindo sob influência de álcool (acima do limite legal) deve ser submetido a:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 277 do CTB prevê que todo condutor de veículo automotor envolvido em acidente ou que for alvo de fiscalização de trânsito poderá ser submetido a testes de alcoolemia ou toxicológicos.",
+    "legal_basis": "Art. 277, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas apreensão do veículo e recolhimento da CNH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Teste de alcoolemia e, se positivo, autuação por infração administrativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Teste de alcoolemia, podendo ser preso em flagrante se acima de 6 dg/L e enquadrado no art. 306 do CTB",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Internação compulsória para tratamento até o fim da influência do álcool",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pagamento de multa no local para liberação imediata do veículo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "Sobre a vistoria veicular realizada pela PRF, é correto afirmar:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A PRF pode realizar vistoria nos veículos para verificar condições técnicas de segurança, documentação e conformidade com a legislação de trânsito. Veículos com irregularidades podem ser retidos.",
+    "legal_basis": "Art. 230 e 231, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Somente o INMETRO tem competência para realizar vistoria técnica de veículos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A PRF pode vistoriar apenas veículos envolvidos em acidentes de trânsito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A PRF pode realizar vistoria para verificar condições de segurança e conformidade com a legislação",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A vistoria realizada pela PRF substitui a vistoria anual do DETRAN",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A PRF pode realizar vistoria apenas em veículos de transporte coletivo de passageiros",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "A balança de pesagem de veículos de carga nas rodovias federais é operada pela:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "As balanças de pesagem nas rodovias federais são operadas pela PRF ou por concessionárias de rodovias sob supervisão da ANTT, para controle do excesso de peso dos veículos de carga.",
+    "legal_basis": "CTB; Lei 9.503/97; ANTT",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "ANTT, exclusivamente, sem participação da PRF",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "PRF ou por concessionárias de rodovias sob supervisão da ANTT",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Secretaria de Transportes dos Estados em que está localizada a balança",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "DNIT nas rodovias federais administradas diretamente pela União",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Receita Federal quando há mercadorias sujeitas a tributação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "A retenção do veículo pela PRF por descumprimento das normas de circulação e conduta é medida administrativa que:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A retenção é medida administrativa que impede a circulação do veículo até a regularização das irregularidades. Não é punição, mas sim condição para regularização.",
+    "legal_basis": "Art. 269 e 270, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Implica a apreensão definitiva do veículo pelo Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Impede a circulação até a regularização, sendo medida de caráter administrativo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Gera o cancelamento imediato do licenciamento do veículo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Implica a suspensão da CNH do condutor por 12 meses",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exige decisão judicial para ser implementada",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "A fiscalização da velocidade nas rodovias federais pode ser realizada por:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A fiscalização de velocidade nas rodovias é feita por radares fixos, radares móveis e outros equipamentos medidores de velocidade aprovados pelo INMETRO e homologados pelo CONTRAN.",
+    "legal_basis": "Art. 280, CTB; Resolução CONTRAN",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas por equipamentos fixos devidamente sinalizados com placas de aviso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Radares fixos, radares móveis e outros equipamentos homologados pelo CONTRAN",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas por agentes da PRF por estimativa visual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Somente por equipamentos instalados e operados pelas concessionárias de rodovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Por qualquer câmera de segurança instalada nas margens da rodovia",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-veiculos",
+    "text": "O condutor que se recusar a realizar o teste de etilômetro (bafômetro) durante fiscalização da PRF:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 277, §3°, do CTB prevê que a recusa do motorista em ser submetido ao teste de alcoolemia implica, além das penalidades administrativas previstas, o enquadramento como crime de embriaguez ao volante, mediante assinatura de testemunhas.",
+    "legal_basis": "Art. 277, §3°, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não pode ser punido, pois tem direito constitucional de não se autoincriminar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Será submetido obrigatoriamente a exame de sangue no hospital mais próximo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Sofrerá as penalidades administrativas previstas no CTB, e a recusa é considerada como prova da embriaguez por testemunhas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Terá o veículo apreendido mas não poderá ser preso por falta de prova do crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Será liberado após assinar termo de responsabilidade comprometendo-se a não dirigir",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-cargas",
+    "text": "O Peso Bruto Total (PBT) do veículo é:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O PBT é o peso total do veículo carregado, incluindo o veículo, a carga, os passageiros e acessórios. Não pode exceder os limites estabelecidos pelo CTB e resoluções do CONTRAN.",
+    "legal_basis": "CTB; Resolução CONTRAN 210/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O peso do veículo vazio sem qualquer carga ou acessório",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O peso máximo que o veículo pode transportar de carga",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O peso total do veículo incluindo carga, passageiros e todos os acessórios",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O peso da carga dividido pelo número de eixos do veículo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O peso da suspensão e do chassi do veículo sem carroçaria",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-cargas",
+    "text": "O transporte de produtos perigosos nas rodovias federais exige:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O transporte de produtos perigosos exige documentação específica (ficha de emergência, envelope para transporte), sinalização adequada no veículo, e o motorista deve ter curso específico para transporte de produtos perigosos.",
+    "legal_basis": "Decreto 96.044/1988; Res. ANTT 420/2004",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas a identificação visual do veículo com placa de aviso genérico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Documentação específica (ficha de emergência), sinalização adequada e motorista com curso específico",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas autorização prévia do IBAMA para cada transporte realizado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Escolta policial obrigatória em todo o trajeto",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Autorização federal e estadual renovada mensalmente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-cargas",
+    "text": "O excesso de peso nos veículos de carga causa danos à infraestrutura das rodovias. A infração por excesso de peso é classificada como:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O excesso de peso é infração gravíssima no CTB, pois causa danos à pista, coloca em risco a segurança e sobrecarrega a estrutura das rodovias e pontes.",
+    "legal_basis": "Art. 231, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Infração leve, com multa reduzida",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Infração média, com perda de 4 pontos na CNH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Infração gravíssima, com multa elevada e retenção do veículo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Infração grave, com suspensão temporária do documento de porte de carga",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Contravenção penal, sujeita à detenção do motorista",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-cargas",
+    "text": "A Autorização Especial de Trânsito (AET) é necessária para o transporte de:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A AET é exigida para veículos ou cargas com dimensões ou pesos que excedam os limites regulamentares. É emitida pelo DNIT para rodovias federais.",
+    "legal_basis": "Resolução CONTRAN; DNIT",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer carga com mais de 2 toneladas de peso bruto",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Produtos perigosos de qualquer natureza nas rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Cargas ou veículos com dimensões ou pesos que excedam os limites regulamentares",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Mercadorias importadas em trânsito pelo território nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Animais vivos transportados em caminhões especiais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-cargas",
+    "text": "A verificação do manifesto de carga durante a fiscalização na rodovia serve para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O manifesto de carga é documento que identifica a mercadoria transportada, o remetente, o destinatário e as características do veículo, permitindo à PRF verificar a regularidade do transporte.",
+    "legal_basis": "CTB; Código Tributário",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas verificar se o motorista está habilitado para o tipo de carga",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Identificar a mercadoria, o remetente, o destinatário e verificar a regularidade do transporte",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Calcular o imposto devido pelo transporte da carga",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Verificar se o veículo passou por inspeção técnica recente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Confirmar o seguro obrigatório DPVAT para o veículo comercial",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "fisc-cargas",
+    "text": "O transporte de carga viva (animais) nas rodovias federais exige:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O transporte de animais exige condições mínimas de bem-estar animal (espaço, ventilação, água e alimentação), além de guia de trânsito animal (GTA) emitida pelo serviço veterinário oficial.",
+    "legal_basis": "Lei 9.605/1998; Instrução Normativa MAPA",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas autorização do IBAMA para o transporte de qualquer animal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Guia de Trânsito Animal (GTA) e condições mínimas de bem-estar durante o transporte",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Escolta obrigatória da PRF para animais silvestres em extinção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Veículo especial com ar-condicionado para qualquer tipo de animal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exame veterinário realizado a cada 100 km de percurso",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "abordagem-policial",
+    "text": "A abordagem policial é uma técnica de segurança que deve ser realizada:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A abordagem deve seguir técnicas de segurança que preservem a integridade do policial e do abordado. Deve ser precedida de planejamento, posicionamento correto e comunicação clara.",
+    "legal_basis": "Doutrina de segurança pública; Portaria PRF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "De forma surpresa, sem qualquer comunicação prévia para evitar resistência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Com posicionamento seguro, comunicação clara e respeito à dignidade da pessoa abordada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas quando houver flagrante delito consumado ou quase consumado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Com uso preventivo de algemas em todas as abordagens",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas após ordem judicial que autorize a ação policial",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "abordagem-policial",
+    "text": "Durante a abordagem de veículo suspeito, o policial rodoviário federal deve:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Durante a abordagem, o policial deve manter posição de segurança, observar a lei e os direitos do abordado, utilizar comunicação clara, e registrar a ocorrência conforme os procedimentos da corporação.",
+    "legal_basis": "Portaria PRF; Doutrina de segurança",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Assumir posição frontal ao veículo para visualizar melhor o interior",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Manter posição de segurança, identificar-se claramente e comunicar o motivo da abordagem",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Utilizar as algemas preventivamente em todos os ocupantes do veículo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Encerrar a abordagem em no máximo 5 minutos para não prejudicar o trânsito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Realizar a abordagem sempre acompanhado de pelo menos 3 policiais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "abordagem-policial",
+    "text": "A busca pessoal (busca em pessoa) durante abordagem policial é permitida:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A busca pessoal é autorizada pelo CPP quando há fundada suspeita de que a pessoa oculte consigo arma proibida ou objeto relacionado com crime. Não exige mandado judicial.",
+    "legal_basis": "Art. 244, CPP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas com ordem judicial expressa autorizando a busca",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Quando houver fundada suspeita de que a pessoa oculta arma proibida ou objeto relacionado a crime",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Em qualquer abordagem de rotina, independentemente de suspeitas concretas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas para pessoas previamente fichadas nos sistemas policiais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Quando o policial sentir que a pessoa está nervosa ou evasiva",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "abordagem-policial",
+    "text": "A abordagem de suspeito que oferece resistência passiva deve ser tratada:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A resistência passiva (não cooperação sem agressão) deve ser tratada com técnicas de comunicação, negociação e uso proporcional de força, respeitando os direitos do suspeito.",
+    "legal_basis": "Portaria PRF; Doutrina de uso da força",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Com uso imediato de força física para neutralizar a resistência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Com técnicas progressivas de comunicação e, se necessário, uso proporcional de força",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Com algemamento preventivo e transporte imediato à delegacia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Com ameaças verbais para induzir a cooperação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Com uso de spray de pimenta como medida preventiva",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "abordagem-policial",
+    "text": "O uso de algemas durante a abordagem policial é regulamentado pela Súmula Vinculante n° 11 do STF, que prevê:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A SV 11 do STF determina que o uso de algemas é admitido apenas quando necessário para impedir a fuga ou evitar agressão do preso a si mesmo ou a terceiros, devendo sempre ser justificado por escrito.",
+    "legal_basis": "Súmula Vinculante n° 11, STF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O uso de algemas é proibido em qualquer circunstância",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "As algemas podem ser usadas preventivamente em qualquer abordagem policial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O uso de algemas é admitido apenas quando necessário para impedir fuga ou evitar agressão, com justificativa escrita",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A decisão do policial sobre uso de algemas é discricionária e não pode ser questionada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O uso de algemas é obrigatório para todos os presos em flagrante",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "abordagem-policial",
+    "text": "Ao abordar um veículo com placa clonada suspeita, o policial deve:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A constatação de irregularidade grave como placa clonada deve levar à retenção do veículo, comunicação ao sistema, identificação do proprietário real e lavratura do boletim de ocorrência.",
+    "legal_basis": "CTB; CPP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Liberar o veículo após advertência verbal ao condutor",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reter o veículo, consultar os sistemas, identificar o real proprietário e registrar boletim de ocorrência",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apreender o veículo definitivamente sem qualquer comunicação ao proprietário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Encaminhar o condutor ao DETRAN para esclarecimentos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas multar administrativamente por irregularidade de documentação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "uso-forca",
+    "text": "O uso progressivo da força pela polícia estabelece que a resposta deve ser:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O uso progressivo da força obedece à proporcionalidade: a força empregada deve ser compatível com o nível de resistência ou agressividade do abordado, escalando de forma progressiva conforme necessário.",
+    "legal_basis": "Portaria Interministerial n° 4.226/2010; Doutrina de uso da força",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Sempre máxima para garantir a eficácia da ação policial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Proporcional ao nível de resistência, escalando progressivamente apenas quando necessário",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Mínima em todas as situações, mesmo com risco à vida do policial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Definida pelo supervisor da operação antes do início da ação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Baseada exclusivamente no tipo de crime praticado pelo suspeito",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "uso-forca",
+    "text": "O uso da força letal (arma de fogo para matar) pela polícia é justificado quando:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O uso da força letal é justificado apenas como último recurso, quando há risco iminente e real à vida do policial ou de terceiros, e quando outras medidas foram insuficientes ou impossíveis.",
+    "legal_basis": "Portaria Interministerial n° 4.226/2010; Código de Conduta da ONU",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O suspeito é procurado por crime hediondo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O suspeito foge da abordagem e não para mesmo após ordem verbal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Há risco iminente e real à vida do policial ou de terceiros e outros meios são insuficientes",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O suspeito está armado, independentemente de usar a arma",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O policial sente-se ameaçado de forma subjetiva",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "uso-forca",
+    "text": "Os meios de menor potencial ofensivo (MMPO) usados na atividade policial incluem:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os MMPO incluem: spray de pimenta (OC), bastão, técnicas de imobilização, armas de efeito moral (AEM), taser, entre outros. São usados para controlar situações sem necessidade de força letal.",
+    "legal_basis": "Portaria Interministerial n° 4.226/2010",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pistola com munição de borracha calibre .40 apenas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Spray de pimenta, bastão, técnicas de imobilização e armas de efeito moral",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Qualquer arma de fogo não-letal disponível no arsenal policial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas a força física corporal sem qualquer equipamento",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Avisos sonoros e luminosos dos veículos policiais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "uso-forca",
+    "text": "A doutrina de uso progressivo da força prevê as seguintes fases, em ordem crescente:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "As fases do uso progressivo da força: presença policial, verbalização, controle de distância, técnicas de imobilização, técnicas de submissão com dor, armas de menor potencial ofensivo, força letal.",
+    "legal_basis": "Portaria Interministerial n° 4.226/2010",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Verbalização, presença, imobilização, força letal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Presença policial, verbalização, controle físico progressivo, e força letal como último recurso",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Advertência, multa, detenção e prisão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Observação, negociação, rendição e prontidão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Vigilância, aproximação, contenção e neutralização",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "uso-forca",
+    "text": "O disparo de advertência (para o alto ou para o solo) durante operação policial:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os disparos de advertência são desaconselhados pelas doutrinas de uso da força porque representam uso de força letal não justificada. A bala pode causar danos ao ricochete ou a terceiros.",
+    "legal_basis": "Portaria Interministerial n° 4.226/2010; Doutrina policial",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É procedimento padrão para alertar suspeitos em fuga",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É obrigatório antes de qualquer disparo contra pessoa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É desaconselhado pois representa uso de força letal não justificada com risco de dano a terceiros",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Está previsto em lei como medida obrigatória antes da força letal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É permitido apenas em áreas rurais onde não há risco a terceiros",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "uso-forca",
+    "text": "O excesso no uso da força policial pode configurar crime de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O excesso no uso da força pode configurar, conforme o caso: abuso de autoridade (Lei 13.869/2019), lesão corporal dolosa, ou homicídio doloso, além de responsabilidade disciplinar e civil.",
+    "legal_basis": "Lei 13.869/2019; CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas infração disciplinar interna, sem repercussão criminal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Abuso de autoridade, lesão corporal ou homicídio, conforme o caso",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas violação de protocolo administrativo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Contravenção penal de menor potencial ofensivo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas crime culposo, nunca doloso",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "O policiamento ostensivo realizado pela PRF tem como principal objetivo:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O policiamento ostensivo visa a visibilidade da presença policial para inibir a prática de infrações e crimes, além de garantir a segurança viária nas rodovias federais.",
+    "legal_basis": "Doutrina de segurança pública; CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A arrecadação máxima de multas de trânsito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A presença visível para inibir infrações, garantir a segurança viária e auxiliar os usuários das rodovias",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O controle total de todas as pessoas que transitam pelas rodovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A investigação de todos os crimes ocorridos nas margens das rodovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A substituição da Polícia Militar nos municípios cortados por rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "O patrulhamento nas rodovias federais pela PRF é realizado com:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O patrulhamento da PRF é realizado com viaturas caracterizadas e motos, eventualmente com viaturas descaracterizadas. Inclui postos de fiscalização fixos e patrulhamento móvel.",
+    "legal_basis": "Regulamento PRF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas motos policiais nos trechos mais perigosos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Viaturas caracterizadas e motos, incluindo postos fixos e patrulhamento móvel",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente postos de fiscalização fixos a cada 50 km",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Viaturas aéreas (helicópteros) e terrestres em conjunto",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas viaturas descaracterizadas para não alertar infratores",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "O policial rodoviário federal que presenciar acidente de trânsito com vítimas deve:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Ao presenciar acidente com vítimas, o PRF deve: acionar o SAMU e bombeiros, preservar o local, prestar socorro imediato possível, controlar o tráfego e registrar a ocorrência.",
+    "legal_basis": "CTB; Regulamento PRF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas registrar o boletim de ocorrência e aguardar a chegada da perícia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Acionar o socorro (SAMU/bombeiros), preservar o local, prestar socorro imediato e controlar o tráfego",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Fotografar o acidente e encaminhar os motoristas à delegacia mais próxima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Aguardar a chegada da Polícia Civil antes de qualquer intervenção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Liberar imediatamente a pista para evitar novos acidentes por congestionamento",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "A PRF pode realizar o bloqueio de rodovia federal para:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O bloqueio de rodovia pode ser realizado para: fiscalização de trânsito, perseguição de fugitivos, atendimento de acidente grave, ou operações policiais específicas autorizadas.",
+    "legal_basis": "CTB; Regulamento PRF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer finalidade decidida pelo servidor no local",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Fiscalização de trânsito, perseguição de fugitivos, atendimento de acidentes graves ou operações autorizadas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas para obras de recuperação de pista da PRF",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Manifestações e protestos, para garantir a segurança dos manifestantes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exclusivamente por ordem do Ministro da Justiça e Segurança Pública",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "O Boletim de Acidente de Trânsito (BAT) elaborado pela PRF deve conter:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O BAT deve conter: identificação dos envolvidos, descrição do acidente, circunstâncias, danos, testemunhos e outras informações relevantes para a análise técnica e estatística do acidente.",
+    "legal_basis": "CTB; Regulamento PRF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas a identificação dos veículos envolvidos e a gravidade do acidente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Identificação dos envolvidos, descrição circunstanciada do acidente, danos e informações para análise",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O laudo pericial completo assinado por engenheiro de tráfego",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas a versão dos motoristas envolvidos sobre como ocorreu o acidente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O valor estimado dos danos materiais causados pelo acidente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "Em operações de grande porte nas rodovias federais, a PRF pode solicitar apoio de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Em operações especiais, a PRF pode pedir apoio de outras forças de segurança pública como PF, Polícia Civil, Polícia Militar, IBAMA, Receita Federal, conforme o objeto da operação.",
+    "legal_basis": "CF/88; Regulamento PRF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas das Forças Armadas, por serem força nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Polícia Civil, Polícia Militar, PF, IBAMA, Receita Federal e outras forças conforme a necessidade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente da Polícia Federal, por ser órgão federal superior",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas de outros países em casos de perseguição transnacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "De qualquer cidadão que tenha interesse em colaborar",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "policiamento-fiscalizacao",
+    "topic_slug": "policiamento-ostensivo",
+    "text": "A Operação Lei Seca realizada pela PRF nas rodovias federais visa:",
+    "difficulty": "easy",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Operação Lei Seca tem como objetivo a fiscalização do consumo de álcool por condutores, buscando reduzir acidentes causados pela embriaguez ao volante nas rodovias federais.",
+    "legal_basis": "Art. 277 e 306, CTB; Lei Seca",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Fiscalizar apenas o consumo de drogas ilícitas por condutores",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reduzir acidentes causados pela embriaguez ao volante, fiscalizando o consumo de álcool",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas arrecadar multas por infrações administrativas de trânsito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Controlar o peso e dimensão dos veículos de carga nas rodovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Verificar a documentação de todos os veículos que circulam nas rodovias",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

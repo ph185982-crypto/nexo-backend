@@ -1,0 +1,1335 @@
+[
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "A Declaração Universal dos Direitos Humanos foi adotada pela ONU em:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A DUDH foi proclamada pela Assembleia Geral da ONU em 10 de dezembro de 1948, em resposta às atrocidades da Segunda Guerra Mundial.",
+    "legal_basis": "DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "26 de junho de 1945",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "10 de dezembro de 1948",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "4 de novembro de 1969",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "22 de novembro de 1969",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "10 de dezembro de 1966",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "A DUDH tem natureza jurídica de:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A DUDH é resolução da Assembleia Geral da ONU (Res. 217/A), sem caráter vinculante formal, mas com forte valor moral e político.",
+    "legal_basis": "DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Tratado internacional vinculante para todos os membros da ONU",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Resolução da Assembleia Geral, sem caráter vinculante formal, mas com forte valor moral",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Convenção internacional vinculante após ratificação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Emenda à Carta da ONU",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Protocolo adicional à Carta da ONU de 1945",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "A DUDH reuniu em um único texto direitos civis e políticos e direitos econômicos, sociais e culturais, afirmando:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A DUDH foi o primeiro documento a afirmar a indivisibilidade dos direitos humanos, reunindo as duas categorias.",
+    "legal_basis": "DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Que os direitos sociais são menos importantes que os civis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A indivisibilidade e interdependência dos direitos humanos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Que cada país deve escolher qual categoria de direitos proteger",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Que os direitos econômicos são programáticos e não imediatos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Que os direitos civis são absolutos e inderrogáveis",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "O art. 1° da DUDH consagra os princípios de:",
+    "difficulty": "easy",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 1° afirma que todos nascem livres e iguais em dignidade e direitos, devendo agir com fraternidade.",
+    "legal_basis": "Art. 1°, DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Soberania, integridade territorial e não-intervenção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Liberdade, igualdade, dignidade e fraternidade como fundamentos universais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Legalidade, impessoalidade, moralidade e publicidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Soberania popular, democracia e república",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Autodeterminação dos povos e direito ao desenvolvimento",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "A proibição de tortura prevista na DUDH (art. 5°) é considerada:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A proibição de tortura é norma jus cogens do direito internacional: imperativa e inderrogável.",
+    "legal_basis": "Art. 5°, DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Recomendação não obrigatória",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Norma jus cogens: imperativa e inderrogável para todos os Estados",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Aplicável apenas em tempos de guerra",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Norma programática dependente de regulamentação interna",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Direito garantido apenas a presos políticos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "O direito de asilo previsto na DUDH (art. 14):",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 14 DUDH garante o direito de procurar e gozar asilo, exceto quando se é processado por crimes comuns.",
+    "legal_basis": "Art. 14, DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não existe na DUDH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Garante asilo a toda pessoa vítima de perseguição, exceto processada por crimes comuns",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É garantido apenas a refugiados de guerra",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Está condicionado à aprovação discricionária do país receptor",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Só se aplica a crimes políticos em países democráticos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dudh",
+    "text": "Segundo a DUDH, toda pessoa tem direito a:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 9° DUDH: ninguém poderá ser arbitrariamente preso, detido ou exilado.",
+    "legal_basis": "Art. 9°, DUDH/1948",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Ser preso somente mediante sentença judicial transitada em julgado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Não ser arbitrariamente preso, detido ou exilado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Escolher o juiz que irá julgá-la",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Ser representada pelo Estado em qualquer processo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Recorrer de qualquer decisão judicial a um tribunal internacional",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "text": "A Convenção Americana sobre Direitos Humanos (Pacto de São José) foi adotada em:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Pacto de São José foi adotado em 22 de novembro de 1969 e entrou em vigor em 1978. Brasil ratificou em 1992.",
+    "legal_basis": "CADH/1969",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "10 de dezembro de 1948",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "25 de junho de 1978",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "22 de novembro de 1969",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "16 de dezembro de 1966",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "4 de fevereiro de 1965",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "text": "No Brasil, o Pacto de São José da Costa Rica tem status de:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O STF fixou no RE 466.343 que tratados de DH aprovados antes da EC 45/2004 têm status supralegal (acima das leis ordinárias, abaixo da CF).",
+    "legal_basis": "RE 466.343, STF; CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Emenda constitucional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Norma supralegal: superior às leis, mas abaixo da CF/88",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Lei ordinária federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Norma constitucional automática",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Tratado programático sem eficácia imediata",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "text": "O Pacto de São José veda a prisão civil por dívida, exceto para:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 7°, §7°, CADH excepciona o devedor de alimentos. O STF editou a SV 25 proibindo a prisão do depositário infiel.",
+    "legal_basis": "Art. 7°, §7°, CADH; SV 25, STF",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não há exceções",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Devedor de alimentos; STF aboliu a prisão do depositário infiel",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas o depositário infiel",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Qualquer devedor que não prove insolvência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O devedor que fraudou o credor",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "text": "A Corte Interamericana de Direitos Humanos tem competência para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Corte IDH tem competência contenciosa (julgar Estados) e consultiva (emitir opiniões).",
+    "legal_basis": "CADH; Estatuto Corte IDH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Julgar indivíduos por violações de DH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Julgar Estados por violações da CADH e emitir opiniões consultivas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Impor sanções econômicas a países",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Expulsar países da OEA",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Rever diretamente decisões do STF",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "text": "O direito à vida previsto no art. 4° da CADH estabelece que:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 4° protege a vida desde a concepção em geral e limita a pena de morte, proibindo-a para crimes políticos.",
+    "legal_basis": "Art. 4°, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A pena de morte é absolutamente proibida",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É admitida para qualquer crime grave segundo o Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Nos países que a admitem, só se aplica para crimes graves, sendo proibida para crimes políticos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A vida é protegida apenas após o nascimento",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É permitida para terrorismo e tráfico",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "text": "O art. 8° da CADH (garantias judiciais) garante, entre outros, o direito a:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 8° prevê: tribunal competente, presunção de inocência, comunicação em língua compreensível, tempo adequado, contraditório e outros.",
+    "legal_basis": "Art. 8°, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas ter advogado e apelar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Tribunal competente, presunção de inocência, prazo para defesa e contraditório",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas silêncio e não-autoincriminação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Julgamento por júri popular em qualquer crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Absolvição automática em caso de dúvida",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "text": "O sistema interamericano de DH é composto principalmente por:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O sistema interamericano é formado pela Comissão Interamericana (CIDH) e pela Corte IDH.",
+    "legal_basis": "CADH; Estatuto CIDH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Comissão da ONU e Tribunal de Haia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "CIDH e Corte Interamericana de Direitos Humanos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Secretaria de DH da OEA e Corte IDH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Comitê da OEA e Tribunal Interamericano",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Conselho da OEA e Assembleia Geral",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "text": "A CIDH tem como funções:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CIDH promove os DH, analisa petições individuais, elabora relatórios sobre países e pode submeter casos à Corte IDH.",
+    "legal_basis": "Estatuto CIDH; CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas julgar casos individuais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Promoção dos DH, petições individuais, relatórios e submissão de casos à Corte",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Impor sanções econômicas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Exclusivamente emitir opiniões consultivas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Supervisionar o cumprimento das decisões da Corte",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "text": "Para admissibilidade de caso no sistema interamericano, exige-se:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Devem ser esgotados os recursos internos, apresentar petição em 6 meses após decisão final e não haver pendência em outro processo.",
+    "legal_basis": "Art. 46, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Demonstrar que o Estado violou a Constituição nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Esgotar recursos internos (salvo exceções) e apresentar petição em 6 meses",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apoio de pelo menos 10 países membros da OEA",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Provar que a violação foi do governo central",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apresentar testemunhas internacionais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "text": "As decisões da Corte IDH geram para o Brasil a obrigação de:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "As decisões são vinculantes: o Brasil deve cumprir reparações, indenizações e medidas de não repetição.",
+    "legal_basis": "CADH; Art. 68",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas reconhecer publicamente a violação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Cumprir as reparações, incluindo indenizações e medidas de não repetição",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Sair da OEA",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas reformar leis nacionais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apresentar relatório anual ao sistema interamericano",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "minorias-vulneraveis",
+    "text": "No DIDH, o princípio da igualdade admite:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O DIDH distingue igualdade formal e material, admitindo ações afirmativas para grupos historicamente discriminados.",
+    "legal_basis": "DUDH; CADH; Tratados de DH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Uniformidade absoluta de tratamento",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Igualdade formal apenas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Igualdade formal e material, com ações afirmativas para combater discriminação histórica",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Preferência dos direitos das minorias sobre a maioria",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Proibição de distinção entre nacionais e estrangeiros",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "minorias-vulneraveis",
+    "text": "No DIDH, minorias referem-se a:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Minorias são grupos em situação de vulnerabilidade identificados por características étnicas, linguísticas, religiosas ou outras, em desvantagem social.",
+    "legal_basis": "Declaração ONU sobre Minorias (1992)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas grupos numericamente inferiores",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Grupos em situação de vulnerabilidade identificados por características étnicas, linguísticas ou religiosas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente grupos étnicos colonizados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Populações rurais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Grupos sem representação no governo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "minorias-vulneraveis",
+    "text": "O principal instrumento internacional de proteção de povos indígenas é:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Convenção 169 da OIT (1989) é o principal tratado internacional para povos indígenas e tribais.",
+    "legal_basis": "Convenção 169, OIT; UNDRIP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "DUDH/1948",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Convenção 169 da OIT e a Declaração da ONU (UNDRIP)",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "CADH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Protocolo de Kyoto",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Carta da ONU de 1945",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "minorias-vulneraveis",
+    "text": "O direito à diversidade cultural e à identidade cultural de grupos minoritários é reconhecido:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Diversos instrumentos internacionais reconhecem o direito à identidade cultural, incluindo a Convenção sobre Diversidade Cultural (UNESCO) e o PIDCP.",
+    "legal_basis": "Convenção UNESCO; PIDCP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas para nações soberanas, não para grupos étnicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Por instrumentos internacionais como a Convenção da UNESCO e o PIDCP",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Somente para grupos com mais de 1 milhão de membros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas quando o grupo tem território próprio reconhecido",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exclusivamente nos países da América Latina",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "tortura-degradante",
+    "text": "A Convenção da ONU contra a Tortura define tortura como:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Ato intencional de agente público causando sofrimento intenso com finalidade específica (obter informação, punir, intimidar).",
+    "legal_basis": "Convenção ONU contra Tortura, Art. 1°",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer violência física por agente do Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Ato intencional de agente público causando sofrimento intenso com finalidade específica",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas violência que cause lesão permanente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Qualquer privação de liberdade sem julgamento",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Uso de instrumentos de tortura medieval",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "tortura-degradante",
+    "text": "A proibição da tortura no direito internacional é:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "É norma jus cogens: imperativa, inderrogável, válida para todos os Estados, inclusive em estados de emergência.",
+    "legal_basis": "Convenção ONU; CADH; Jus cogens",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Norma programática dependente de regulamentação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Obrigatória só para países que ratificaram a Convenção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Norma jus cogens: imperativa e inderrogável, mesmo em emergências",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Suspensível em casos de terrorismo grave",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Relativa, podendo ser flexibilizada soberanamente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "tortura-degradante",
+    "text": "O crime de tortura no Brasil foi tipificado pela:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 9.455/1997 tipificou a tortura como crime hediondo equiparado, inafiançável e insuscetível de graça ou anistia.",
+    "legal_basis": "Lei 9.455/1997",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Lei 7.210/1984",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Art. 312 do CP",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Lei 9.455/1997 como crime hediondo equiparado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Lei 8.072/1990",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Art. 129 do CP como lesão qualificada",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "tortura-degradante",
+    "text": "A Convenção da ONU contra a Tortura estabelece para os Estados a obrigação de:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os Estados devem criminalizar a tortura, extraditar ou julgar os responsáveis (aut dedere aut judicare) e não expulsar pessoas para países onde possam ser torturadas.",
+    "legal_basis": "Convenção ONU contra Tortura",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas condenar a tortura em documentos oficiais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Criminalizar a tortura, extraditar ou julgar responsáveis e não expulsar pessoas para países que torturam",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Criar tribunais especiais para crimes de tortura",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Publicar relatório anual sobre uso de técnicas de interrogatório",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente indenizar vítimas de tortura por seus agentes",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "garantias-processuais-dh",
+    "text": "O direito a julgamento justo (art. 8° CADH) inclui:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 8° CADH prevê: tribunal competente, presunção de inocência, comunicação adequada, tempo para defesa, contraditório e outros.",
+    "legal_basis": "Art. 8°, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas ter advogado e apelar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Tribunal competente, presunção de inocência, prazo adequado e contraditório",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas silêncio e não-autoincriminação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Julgamento por júri em qualquer crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Absolvição automática na dúvida",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "garantias-processuais-dh",
+    "text": "O princípio non bis in idem na CADH (art. 8°, §4°) proíbe:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Proíbe novo julgamento pelo mesmo fato após trânsito em julgado de absolvição.",
+    "legal_basis": "Art. 8°, §4°, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer novo processo após arquivamento",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Novo julgamento pelo mesmo fato após trânsito em julgado de absolvição",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dupla punição mas não dupla acusação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas para crimes mais graves",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente para condenados, não para absolvidos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "garantias-processuais-dh",
+    "text": "O art. 25 da CADH (proteção judicial efetiva) garante:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Garante direito a recurso efetivo perante tribunal competente contra atos que violem direitos fundamentais.",
+    "legal_basis": "Art. 25, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas celeridade dos tribunais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Recurso efetivo perante tribunal competente contra atos que violem direitos fundamentais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Financiamento internacional dos sistemas de DH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Tribunais especializados em DH",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Que o acusado escolha o tribunal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "garantias-processuais-dh",
+    "text": "As garantias do art. 8° da CADH aplicam-se a:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Aplicam-se a qualquer procedimento onde se determinem direitos e obrigações, incluindo processos administrativos.",
+    "legal_basis": "Art. 8°, CADH; Jurisprudência Corte IDH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Exclusivamente ao processo penal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas a processos judiciais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Qualquer procedimento onde se determinem direitos e obrigações",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Somente a casos entre particulares",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas a tribunais superiores",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "garantias-processuais-dh",
+    "text": "A CADH veda a prisão por dívidas, exceto para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 7°, §7°, CADH excepciona o devedor de alimentos.",
+    "legal_basis": "Art. 7°, §7°, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Devedor fiscal que fraudou o Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Depositário infiel",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Devedor de alimentos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Fiador em contrato de locação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Devedor que deliberadamente não paga",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "garantias-processuais-dh",
+    "text": "A presunção de inocência prevista na CADH (art. 8°, §2°) significa que:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Toda pessoa acusada tem direito a ser presumida inocente enquanto não for estabelecida legalmente sua culpabilidade.",
+    "legal_basis": "Art. 8°, §2°, CADH",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O acusado não precisa produzir qualquer prova",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Toda pessoa é presumida inocente até prova em contrário estabelecida legalmente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A prisão preventiva é sempre inconstitucional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O MP deve provar a culpa com provas confesionais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O acusado é automaticamente absolvido quando há dúvida do juiz",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

@@ -1,0 +1,242 @@
+[
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "article_number": "Art. 4°",
+    "chapter": "Da Polícia Judiciária",
+    "official_text": "A polícia judiciária será exercida pelas autoridades policiais no território de suas respectivas circunscrições e terá por fim a apuração das infrações penais e da sua autoria.",
+    "simple_text": "Polícia judiciária apura infrações penais e sua autoria, no limite de sua circunscrição.",
+    "highlights": [
+      "polícia judiciária",
+      "apuração",
+      "infração penal",
+      "autoria"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "article_number": "Art. 5°",
+    "chapter": "Do Inquérito Policial",
+    "official_text": "Nos crimes de ação pública o inquérito policial será iniciado: I – de ofício; II – mediante requisição da autoridade judiciária ou do Ministério Público; III – a requerimento do ofendido.",
+    "simple_text": "Inquérito policial: iniciado de ofício, por requisição judicial/MP ou por requerimento da vítima.",
+    "highlights": [
+      "inquérito policial",
+      "ação pública",
+      "de ofício",
+      "requisição"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "article_number": "Art. 6°",
+    "chapter": "Das Diligências do Inquérito",
+    "official_text": "Logo que tiver conhecimento da prática da infração penal, a autoridade policial deverá: I – dirigir-se ao local; II – apreender os objetos; III – colher todas as provas; IV – ouvir o ofendido; V – ouvir o indiciado.",
+    "simple_text": "Ao tomar conhecimento de crime, a autoridade policial deve ir ao local, apreender objetos, colher provas, ouvir vítima e indiciado.",
+    "highlights": [
+      "autoridade policial",
+      "diligências",
+      "inquérito",
+      "apreensão"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "article_number": "Art. 10°",
+    "chapter": "Do Prazo do Inquérito",
+    "official_text": "O inquérito deverá terminar no prazo de 10 dias, se o indiciado tiver sido preso em flagrante, ou estiver preso preventivamente, contado o prazo, nesta hipótese, a partir do dia em que se executar a ordem de prisão; ou no prazo de 30 dias, quando estiver solto.",
+    "simple_text": "Prazo do inquérito: 10 dias se preso, 30 dias se solto. Preso em flagrante conta do dia da prisão.",
+    "highlights": [
+      "prazo",
+      "inquérito policial",
+      "preso",
+      "flagrante"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "article_number": "Art. 155",
+    "chapter": "Da Livre Apreciação das Provas",
+    "official_text": "O juiz formará sua convicção pela livre apreciação da prova produzida em contraditório judicial, não podendo fundamentar sua decisão exclusivamente nos elementos informativos colhidos na investigação.",
+    "simple_text": "Livre convicção motivada: o juiz aprecia as provas livremente, mas deve fundamentar. Provas da investigação sozinhas não bastam.",
+    "highlights": [
+      "livre apreciação",
+      "contraditório",
+      "prova",
+      "convicção"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "article_number": "Art. 157",
+    "chapter": "Das Provas Ilícitas",
+    "official_text": "São inadmissíveis, devendo ser desentranhadas do processo, as provas ilícitas, assim entendidas as obtidas em violação a normas constitucionais ou legais.",
+    "simple_text": "Provas ilícitas são inadmissíveis e devem ser retiradas do processo. Teoria dos frutos da árvore envenenada.",
+    "highlights": [
+      "provas ilícitas",
+      "inadmissíveis",
+      "desentranhamento",
+      "frutos da árvore envenenada"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "article_number": "Art. 158",
+    "chapter": "Do Exame de Corpo de Delito",
+    "official_text": "Quando a infração deixar vestígios, será indispensável o exame de corpo de delito, direto ou indireto, não podendo supri-lo a confissão do acusado.",
+    "simple_text": "Crimes que deixam vestígios exigem exame de corpo de delito. Confissão não substitui o exame.",
+    "highlights": [
+      "exame",
+      "corpo de delito",
+      "vestígios",
+      "confissão"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas",
+    "article_number": "Art. 186",
+    "chapter": "Do Direito ao Silêncio",
+    "official_text": "Depois de devidamente qualificado e cientificado do inteiro teor da acusação, o acusado será informado pelo juiz, antes de iniciar o interrogatório, do seu direito de permanecer calado e de não responder perguntas que lhe forem formuladas.",
+    "simple_text": "Direito ao silêncio: acusado pode ficar calado sem que isso implique confissão.",
+    "highlights": [
+      "silêncio",
+      "interrogatório",
+      "direito ao silêncio",
+      "não autoincriminação"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "article_number": "Art. 302",
+    "chapter": "Do Flagrante Delito",
+    "official_text": "Considera-se em flagrante delito quem: I – está cometendo a infração penal; II – acaba de cometê-la; III – é perseguido, logo após, pela autoridade, pelo ofendido ou por qualquer pessoa, em situação que faça presumir ser autor da infração; IV – é encontrado, logo depois, com instrumentos, armas, objetos ou papéis que façam presumir ser ele autor da infração.",
+    "simple_text": "Flagrante próprio, impróprio e presumido. Qualquer pessoa pode prender em flagrante.",
+    "highlights": [
+      "flagrante delito",
+      "prisão em flagrante",
+      "perseguição",
+      "logo após"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "article_number": "Art. 310",
+    "chapter": "Da Audiência de Custódia",
+    "official_text": "Após receber o auto de prisão em flagrante, no prazo máximo de até 24 horas após a realização da prisão, o juiz deverá promover audiência de custódia com a presença do acusado, seu advogado ou defensor público e o membro do Ministério Público.",
+    "simple_text": "Audiência de custódia: deve ocorrer em até 24h após a prisão em flagrante, com presença do preso, advogado e MP.",
+    "highlights": [
+      "audiência de custódia",
+      "24 horas",
+      "flagrante",
+      "juiz"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "article_number": "Art. 312",
+    "chapter": "Da Prisão Preventiva",
+    "official_text": "A prisão preventiva poderá ser decretada como garantia da ordem pública, da ordem econômica, por conveniência da instrução criminal, ou para assegurar a aplicação da lei penal, quando houver prova da existência do crime e indício suficiente de autoria e de perigo gerado pelo estado de liberdade do imputado.",
+    "simple_text": "Prisão preventiva: decretada para garantir ordem pública, instrução criminal ou aplicação da lei penal.",
+    "highlights": [
+      "prisão preventiva",
+      "ordem pública",
+      "instrução criminal",
+      "aplicação da lei penal"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-liberdade",
+    "article_number": "Art. 319",
+    "chapter": "Das Medidas Cautelares",
+    "official_text": "São medidas cautelares diversas da prisão: I – comparecimento periódico; II – proibição de acesso a lugares; III – proibição de contato; IV – proibição de ausentar-se do País; V – recolhimento domiciliar; VI – suspensão do exercício de função pública; VII – monitoração eletrônica.",
+    "simple_text": "Medidas cautelares alternativas à prisão: comparecimento periódico, restrições de acesso, monitoração eletrônica, entre outras.",
+    "highlights": [
+      "medidas cautelares",
+      "alternativas à prisão",
+      "monitoração eletrônica",
+      "recolhimento domiciliar"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-cpp",
+    "article_number": "Art. 70°",
+    "chapter": "Da Competência pelo Local do Crime",
+    "official_text": "A competência será, de regra, determinada pelo lugar em que se consumar a infração, ou, no caso de tentativa, pelo lugar em que for praticado o último ato de execução.",
+    "simple_text": "Competência: lugar da consumação do crime. Na tentativa, onde ocorreu o último ato de execução.",
+    "highlights": [
+      "competência",
+      "lugar do crime",
+      "consumação",
+      "tentativa"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "article_number": "Art. 593°",
+    "chapter": "Da Apelação",
+    "official_text": "Caberá apelação no prazo de 5 (cinco) dias: I – das sentenças definitivas de condenação ou absolvição; II – das decisões definitivas, ou com força de definitivas, proferidas por juízes singulares em outros casos.",
+    "simple_text": "Apelação: recurso cabível contra sentença definitiva condenatória ou absolutória, no prazo de 5 dias.",
+    "highlights": [
+      "apelação",
+      "recurso",
+      "sentença",
+      "5 dias"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "cpp",
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "recursos-cpp",
+    "article_number": "Art. 617°",
+    "chapter": "Do Efeito do Recurso",
+    "official_text": "O tribunal, câmara ou turma atenderá nas suas decisões ao disposto nos arts. 383, 386 e 387, no que for aplicável, não podendo, porém, ser agravada a pena, quando somente o réu houver apelado da sentença.",
+    "simple_text": "Reformatio in pejus: quando só o réu apela, o tribunal não pode agravar a pena.",
+    "highlights": [
+      "reformatio in pejus",
+      "apelação",
+      "pena",
+      "réu"
+    ],
+    "frequency_score": 8.5
+  }
+]

@@ -1,0 +1,3829 @@
+[
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "Nos termos da Constituição Federal de 1988, são fundamentos da República Federativa do Brasil, EXCETO:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os fundamentos da República estão no art. 1° da CF/88: soberania, cidadania, dignidade da pessoa humana, valores sociais do trabalho e da livre iniciativa, e pluralismo político. A segurança pública é um direito social (art. 6°), não um fundamento.",
+    "legal_basis": "Art. 1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Soberania",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Cidadania",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dignidade da pessoa humana",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Segurança pública",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pluralismo político",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "A República Federativa do Brasil constitui-se em Estado Democrático de Direito e tem como um de seus fundamentos os valores sociais do trabalho e da livre iniciativa. Sobre esse fundamento, é correto afirmar que ele:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O valor social do trabalho e da livre iniciativa (art. 1°, IV, CF) harmoniza o capitalismo com a proteção trabalhista, exigindo que a atividade econômica respeite a dignidade humana e a função social.",
+    "legal_basis": "Art. 1°, IV, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Impede qualquer restrição estatal à atividade econômica privada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Confere proteção equivalente ao trabalho formal e informal em todas as situações",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Harmoniza a proteção do trabalhador com o desenvolvimento econômico",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Proíbe a intervenção do Estado no domínio econômico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Garante emprego formal a todos os cidadãos brasileiros",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "Quanto aos objetivos fundamentais da República Federativa do Brasil previstos no art. 3° da CF/88, assinale a alternativa correta:",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 3° elenca os objetivos: construir sociedade livre, justa e solidária; garantir o desenvolvimento nacional; erradicar a pobreza e a marginalização; promover o bem de todos sem preconceitos. Defender a pátria é função das Forças Armadas (art. 142), não um objetivo fundamental.",
+    "legal_basis": "Art. 3°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Promover a industrialização e o crescimento do PIB nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Erradicar a pobreza e a marginalização e reduzir as desigualdades sociais e regionais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Defender a pátria e garantir os poderes constitucionais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Assegurar a reeleição dos governantes democraticamente eleitos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Estabelecer a supremacia do interesse coletivo sobre o individual em todas as situações",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "O princípio da prevalência dos direitos humanos nas relações internacionais do Brasil está previsto na Constituição Federal de 1988 em qual artigo?",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 4° da CF/88 elenca os princípios que regem as relações internacionais do Brasil, incluindo a prevalência dos direitos humanos (inciso II).",
+    "legal_basis": "Art. 4°, II, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Art. 1°",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Art. 2°",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Art. 3°",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Art. 4°",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Art. 5°",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "O princípio da separação dos poderes previsto na CF/88 é classificado como cláusula pétrea. Isso significa que:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "As cláusulas pétreas (art. 60, §4°) não podem ser abolidas por emenda constitucional. A separação dos poderes é uma delas, mas pode ser regulamentada e flexibilizada sem ser abolida.",
+    "legal_basis": "Art. 60, §4°, III, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Nenhuma lei ordinária pode disciplinar as atribuições dos Poderes da República",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A separação dos poderes é absoluta e não admite qualquer interferência entre os Poderes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Não pode ser suprimida por emenda constitucional, mas pode ser regulamentada e flexibilizada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O Legislativo não pode delegar funções ao Executivo em nenhuma hipótese",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Os três Poderes possuem exatamente as mesmas atribuições e prerrogativas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "Todo o poder emana do povo, que o exerce por meio de representantes eleitos ou diretamente, nos termos da Constituição. Essa previsão está no:",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O parágrafo único do art. 1° da CF/88 consagra o princípio da soberania popular e a democracia representativa e participativa.",
+    "legal_basis": "Art. 1°, parágrafo único, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Art. 1°, caput",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Art. 1°, parágrafo único",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Art. 2°, caput",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Art. 3°, inciso I",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Art. 5°, caput",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "A República Federativa do Brasil repudia o terrorismo e o racismo nas relações internacionais. Essa disposição está prevista no art. 4° da CF/88. É correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 4° traz princípios como autodeterminação dos povos, não-intervenção, igualdade entre Estados, repúdio ao terrorismo e ao racismo, entre outros.",
+    "legal_basis": "Art. 4°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O Brasil pode intervir militarmente em outro Estado para erradicar o terrorismo, independentemente de autorização da ONU",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O princípio da não-intervenção é absoluto e não comporta exceções",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O repúdio ao terrorismo é um dos princípios que rege as relações internacionais do Brasil",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O Brasil não reconhece o direito de asilo a estrangeiros perseguidos por crimes políticos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A soberania dos Estados estrangeiros prevalece sobre os direitos humanos nas relações internacionais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "A Constituição Federal estabelece que o Brasil é uma República. Sobre a forma republicana de governo, é correto afirmar que ela implica:",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A forma republicana pressupõe a responsabilidade dos governantes, a temporalidade dos mandatos e a representação popular. Distingue-se da monarquia pela eletividade e temporalidade do chefe de Estado.",
+    "legal_basis": "Art. 1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A soberania absoluta do Estado sobre os direitos individuais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A responsabilidade dos governantes, a eletividade e a temporalidade dos mandatos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A indissolubilidade do vínculo federativo e a soberania nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A supremacia do Poder Executivo sobre os demais Poderes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A impossibilidade de reeleição para qualquer cargo público",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "A Constituição Federal de 1988 consagra o princípio do pluralismo político como um dos fundamentos da República. Esse princípio tem como consequência direta:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O pluralismo político garante a liberdade de organização partidária e a diversidade de ideias na arena política. Não significa que todos os partidos têm acesso a tempo de rádio e televisão em igual proporção.",
+    "legal_basis": "Art. 1°, V, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A obrigatoriedade de coligações partidárias em todas as eleições",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A garantia de acesso igualitário de todos os partidos ao rádio e à televisão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A liberdade de criação e organização de partidos políticos dentro dos limites constitucionais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A proibição de partidos com ideologias que se oponham aos fundamentos republicanos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A limitação do número de partidos políticos para garantir a governabilidade",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "Sobre o princípio da dignidade da pessoa humana, fundamento da República Federativa do Brasil, assinale a alternativa correta:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A dignidade da pessoa humana (art. 1°, III, CF) é fundamento do Estado e norte de interpretação de todo o ordenamento jurídico. Não é direito absoluto e pode ser ponderada com outros valores constitucionais.",
+    "legal_basis": "Art. 1°, III, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É um direito absoluto que prevalece sobre todos os demais em qualquer situação de conflito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Aplica-se apenas aos cidadãos brasileiros natos, excluindo os estrangeiros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Constitui o fundamento de todo o ordenamento jurídico e norte para a interpretação dos direitos fundamentais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Proíbe qualquer pena privativa de liberdade por ser atentatória à dignidade humana",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Equivale à igualdade formal prevista no caput do art. 5° da CF/88",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "A integração econômica, política, social e cultural dos povos da América Latina é um objetivo previsto na CF/88. Em qual artigo está essa disposição?",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 4°, parágrafo único, da CF/88 estabelece que a República Federativa do Brasil buscará a integração econômica, política, social e cultural dos povos da América Latina.",
+    "legal_basis": "Art. 4°, parágrafo único, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Art. 1°, parágrafo único",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Art. 3°, inciso IV",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Art. 4°, parágrafo único",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Art. 5°, §3°",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Art. 20, inciso I",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "A Constituição Federal de 1988 é classificada quanto à origem como:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CF/88 é classificada como promulgada (democrática), pois foi elaborada por uma Assembleia Nacional Constituinte eleita pelo povo, e não imposta por um grupo ou governante.",
+    "legal_basis": "Art. 1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Outorgada, pois foi imposta pelo regime militar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Promulgada, pois emanou da vontade popular por meio de Assembleia Constituinte",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Histórica, pois foi construída ao longo de séculos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Cesarista, pois foi ratificada por plebiscito popular",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pactuada, pois resultou de acordo entre a elite e o povo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "O Estado Democrático de Direito, como qualificação do Estado brasileiro, implica:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Estado Democrático de Direito combina: submissão ao ordenamento jurídico, garantia de direitos fundamentais, participação popular e legitimidade democrática. É mais que um Estado de Direito clássico.",
+    "legal_basis": "Art. 1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A supremacia absoluta da lei sobre qualquer direito fundamental",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A submissão do Estado ao ordenamento jurídico e a garantia de participação democrática",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A separação absoluta entre Estado e religião em todos os âmbitos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A proibição de qualquer forma de controle de constitucionalidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A limitação do exercício dos direitos fundamentais ao interesse público",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "text": "Segundo a CF/88, qual é a capital federal do Brasil?",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 18, §1°, da CF/88 estabelece que Brasília é a capital federal do Brasil.",
+    "legal_basis": "Art. 18, §1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "São Paulo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Rio de Janeiro",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Brasília",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Belo Horizonte",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Salvador",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "A Constituição Federal garante que ninguém será obrigado a fazer ou deixar de fazer alguma coisa senão em virtude de lei. Esse princípio é conhecido como:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O princípio da legalidade, previsto no art. 5°, II, da CF/88, estabelece que a obrigação de fazer ou deixar de fazer algo só pode ser imposta por lei.",
+    "legal_basis": "Art. 5°, II, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Princípio da isonomia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Princípio da legalidade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Princípio da moralidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Princípio da razoabilidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Princípio da proporcionalidade",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "Sobre o habeas corpus, previsto no art. 5°, LXVIII, da CF/88, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O habeas corpus protege a liberdade de locomoção contra ilegalidade ou abuso de poder. Pode ser impetrado por qualquer pessoa, inclusive em favor de terceiro, e é gratuito.",
+    "legal_basis": "Art. 5°, LXVIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Somente o próprio paciente pode impetrar habeas corpus",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Protege apenas a liberdade de locomoção, não outros direitos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É cabível quando alguém sofrer ou se achar ameaçado de sofrer violência ou coação em sua liberdade de locomoção",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Exige representação por advogado para ser impetrado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Só pode ser impetrado preventivamente, nunca de forma repressiva",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "A inviolabilidade do domicílio está prevista no art. 5°, XI, da CF/88. Em quais situações é permitida a entrada na casa sem consentimento do morador?",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CF/88 permite a entrada na casa sem consentimento do morador em casos de: flagrante delito, desastre, prestação de socorro, e por determinação judicial durante o dia.",
+    "legal_basis": "Art. 5°, XI, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas durante o dia, com ou sem mandado judicial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Em qualquer horário, desde que haja mandado judicial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Em caso de flagrante delito, desastre, socorro ou com mandado judicial durante o dia",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Em caso de fundada suspeita de crime, a qualquer hora",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas com autorização prévia do Ministério Público",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O princípio da igualdade previsto no caput do art. 5° da CF/88 deve ser entendido como:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A igualdade constitucional não é apenas formal (todos iguais perante a lei), mas também material (tratar os desiguais desigualmente na medida de suas desigualdades). Permite ações afirmativas.",
+    "legal_basis": "Art. 5°, caput, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Igualdade absoluta, vedando qualquer distinção entre pessoas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Igualdade formal apenas, sem considerar as diferenças fáticas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Igualdade formal e material, permitindo tratamento diferenciado para equilibrar desigualdades",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Igualdade apenas entre brasileiros natos, excluindo naturalizados e estrangeiros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Igualdade perante a lei, proibindo ações afirmativas por serem discriminatórias",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "A liberdade de manifestação do pensamento é garantida pela CF/88, mas veda-se:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, IV, garante a liberdade de manifestação do pensamento, mas veda o anonimato. A liberdade de expressão não é absoluta e encontra limites em outros direitos fundamentais.",
+    "legal_basis": "Art. 5°, IV, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A manifestação contrária ao governo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O anonimato",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A divulgação de informações falsas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A crítica a autoridades públicas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A manifestação em locais públicos sem autorização prévia",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "Sobre a prisão em flagrante delito, a CF/88 determina que:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LXII, exige comunicação imediata da prisão ao juiz competente, ao Ministério Público e à família do preso. O art. 5°, LXI, prevê que a prisão só ocorre em flagrante ou por ordem judicial.",
+    "legal_basis": "Art. 5°, LXI, LXII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer cidadão pode efetuar prisão em flagrante e deve comunicar ao juiz em até 24 horas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O preso em flagrante deve ser imediatamente apresentado ao juiz para audiência de custódia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A prisão em flagrante pode ser mantida indefinidamente enquanto houver investigação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A comunicação ao juiz deve ser feita em até 48 horas da efetivação da prisão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente policiais militares têm competência para efetuar prisão em flagrante",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O mandado de injunção é o remédio constitucional adequado quando:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O mandado de injunção (art. 5°, LXXI) cabe quando a falta de norma regulamentadora tornar inviável o exercício de direitos e liberdades constitucionais e das prerrogativas inerentes à nacionalidade, soberania e cidadania.",
+    "legal_basis": "Art. 5°, LXXI, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Alguém sofrer coação em sua liberdade de locomoção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A autoridade pública negar informações ao cidadão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A falta de norma regulamentadora tornar inviável o exercício de direito constitucional",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Ocorrer lesão ou ameaça a direito por ato de autoridade pública",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Dados incorretos em registros públicos causarem prejuízo ao cidadão",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "Sobre os direitos sociais previstos no art. 6° da CF/88, assinale a alternativa correta:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 6° enumera os direitos sociais: educação, saúde, alimentação, trabalho, moradia, transporte, lazer, segurança, previdência social, proteção à maternidade e à infância, e assistência aos desamparados. São direitos fundamentais de segunda geração.",
+    "legal_basis": "Art. 6°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A segurança mencionada no art. 6° refere-se exclusivamente à segurança pública exercida pelas polícias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Os direitos sociais são autoaplicáveis e não precisam de lei regulamentadora",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Alimentação e moradia foram incluídos como direitos sociais por emenda constitucional posterior à CF de 1988",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Os direitos sociais são apenas programáticos e não geram pretensão individual exigível",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O rol de direitos sociais do art. 6° é taxativo e não pode ser ampliado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O princípio da presunção de inocência (não culpabilidade) previsto no art. 5°, LVII, da CF/88 estabelece que:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Ninguém será considerado culpado até o trânsito em julgado de sentença penal condenatória (art. 5°, LVII). Isso tem impacto no ônus da prova e na execução provisória da pena.",
+    "legal_basis": "Art. 5°, LVII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A prisão provisória é incompatível com a presunção de inocência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Ninguém pode ser preso antes do trânsito em julgado da condenação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ninguém será considerado culpado até o trânsito em julgado de sentença penal condenatória",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O acusado não precisa produzir qualquer prova em seu favor",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A presunção de inocência impede a decretação de prisão preventiva em qualquer hipótese",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "A vedação ao trabalho noturno, perigoso ou insalubre a menores de dezoito anos está prevista na CF/88 como:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 7°, XXXIII, da CF/88 proíbe trabalho noturno, perigoso ou insalubre a menores de 18 anos e qualquer trabalho a menores de 16 anos, salvo na condição de aprendiz a partir de 14 anos.",
+    "legal_basis": "Art. 7°, XXXIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Direito fundamental individual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Direito dos trabalhadores urbanos e rurais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Princípio da organização da seguridade social",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Objetivo fundamental da República",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Garantia de ordem econômica",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O inciso LXXVII do art. 5° da CF/88 prevê que são gratuitas as ações de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LXXVII estabelece que são gratuitas as ações de habeas corpus e habeas data, e na forma da lei, os atos necessários ao exercício da cidadania.",
+    "legal_basis": "Art. 5°, LXXVII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Habeas corpus, mandado de segurança e ação popular",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Habeas corpus e habeas data",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Mandado de segurança e mandado de injunção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Habeas corpus, habeas data e mandado de injunção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Todos os remédios constitucionais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "Sobre o direito de greve, previsto na CF/88, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 9° garante o direito de greve aos trabalhadores. A lei definirá os serviços essenciais nos quais há limitações. O art. 37, VII prevê o direito de greve para servidores públicos, regulado em lei específica.",
+    "legal_basis": "Art. 9°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É vedado aos servidores públicos em qualquer hipótese",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pode ser exercido sem qualquer limitação em serviços essenciais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Cabe aos trabalhadores decidir sobre a oportunidade de exercê-lo, ficando a lei responsável por definir os serviços essenciais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A greve de servidores públicos tem o mesmo regime jurídico da greve dos trabalhadores privados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É proibido nos setores de segurança pública e serviços essenciais à vida",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O art. 5°, §1°, da CF/88 determina que as normas definidoras dos direitos e garantias fundamentais têm:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O §1° do art. 5° estabelece que as normas de direitos fundamentais têm aplicação imediata, sem necessidade de lei regulamentadora para sua eficácia mínima.",
+    "legal_basis": "Art. 5°, §1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Eficácia limitada, dependendo de regulamentação infraconstitucional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Aplicação imediata",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Aplicação progressiva, conforme os recursos do Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Eficácia apenas simbólica, servindo de diretriz ao legislador",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Aplicabilidade restrita ao território nacional",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O habeas data garante ao cidadão o direito de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O habeas data (art. 5°, LXXII) assegura o conhecimento de informações relativas ao impetrante em registros de entidades governamentais ou de caráter público, e a retificação de dados inexatos.",
+    "legal_basis": "Art. 5°, LXXII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Acesso a qualquer informação de interesse público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Conhecer informações sobre terceiros em bancos de dados públicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Conhecer e retificar informações a seu respeito em registros de entidades governamentais ou públicas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Impedir que qualquer pessoa acesse seus dados pessoais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exigir do Estado a proteção de seus dados bancários",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-garantias",
+    "text": "O direito à indenização pelo dano moral ou à imagem está previsto na CF/88 em qual inciso do art. 5°?",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, V, estabelece o direito de resposta proporcional ao agravo, além de indenização por dano material, moral ou à imagem.",
+    "legal_basis": "Art. 5°, V, X, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Inciso I",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Inciso III",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Inciso V",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Inciso VIII",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Inciso XIII",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "A República Federativa do Brasil é formada pela união indissolúvel dos seguintes entes federativos:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 1° da CF/88 estabelece que o Brasil é formado pela união indissolúvel dos Estados, Municípios e Distrito Federal. Não há previsão de dissolução ou separação de entes.",
+    "legal_basis": "Art. 1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "União, Estados e Municípios",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "União, Estados, Municípios e Distrito Federal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "União e Estados-membros apenas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Estados, Municípios e Distrito Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "União, Estados, Municípios, Distrito Federal e Territórios Federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "Sobre os Territórios Federais, a CF/88 prevê que:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CF/88 prevê a possibilidade de criação de Territórios Federais (art. 18, §2°), mas eles não são entes federativos. Atualmente não há Territórios Federais no Brasil.",
+    "legal_basis": "Art. 18, §2°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "São o quarto ente da federação, com autonomia semelhante aos Estados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Existem atualmente como partes integrantes da União, sem personalidade federativa própria",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "São extintos pela CF/88, que não prevê mais sua criação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A lei complementar pode criar Territórios Federais, que integram a União",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "São administrados diretamente pelos Estados em cujo território se situam",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "A criação de novos Estados-membros, no Brasil, depende de aprovação:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CF/88 (art. 18, §3°) exige: consulta prévia às populações diretamente interessadas (plebiscito), ouvida por lei complementar, e aprovação pelo Congresso Nacional por lei complementar.",
+    "legal_basis": "Art. 18, §3°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "De lei ordinária federal, aprovada por maioria simples",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "De emenda constitucional aprovada por 3/5 do Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "De plebiscito das populações interessadas e lei complementar do Congresso",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "De decreto presidencial ratificado pelo Senado Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "De deliberação do STF e aprovação pelo Congresso",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "O Distrito Federal possui organização político-administrativa regida pela CF/88. Sobre o DF, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 32 da CF/88 veda a divisão do DF em Municípios. O DF tem competências acumuladas de Estado e Município (art. 32, §1°). Suas leis são chamadas de leis distritais.",
+    "legal_basis": "Art. 32, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O DF pode ser dividido em municípios para melhor organização administrativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O DF é governado pelo Presidente da República, que nomeia o Governador",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O DF acumula competências legislativas reservadas aos Estados e Municípios",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O DF tem organização idêntica à dos Estados da Federação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O DF não pode ter Câmara Legislativa própria",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "Os bens da União incluem, nos termos da CF/88:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 20 da CF/88 lista os bens da União, incluindo os rios que banharem mais de um Estado ou que sirvam de fronteira, os recursos naturais da plataforma continental, as terras devolutas indispensáveis à defesa e outros.",
+    "legal_basis": "Art. 20, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas os imóveis do patrimônio histórico e artístico nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "As terras devolutas situadas em qualquer parte do território nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Os lagos, rios e quaisquer correntes de água em terrenos de seu domínio ou que banhem mais de um Estado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Os parques estaduais e reservas ecológicas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "As minas e recursos minerais independentemente de sua localização",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "A intervenção federal nos Estados é medida excepcional prevista na CF/88. Um dos pressupostos para sua decretação é:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 34 da CF/88 prevê hipóteses de intervenção federal, incluindo: manter a integridade nacional, repelir invasão estrangeira ou de uma unidade na outra, pôr termo a grave comprometimento da ordem pública, garantir o livre exercício dos Poderes, reorganizar as finanças do Estado, entre outros.",
+    "legal_basis": "Art. 34, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Divergência política entre o Governador e o Presidente da República",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Greve de servidores estaduais que paralise serviços essenciais por mais de 30 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pôr termo a grave comprometimento da ordem pública no Estado",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Inadimplência do Estado perante seus servidores por mais de 60 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Qualquer descumprimento de lei federal pelo Estado-membro",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "Sobre a competência comum dos entes federativos, prevista no art. 23 da CF/88, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A competência comum é administrativa/material e pertence simultaneamente à União, Estados, Municípios e DF, sem que um exclua o outro. Cada ente deve exercê-la na sua esfera.",
+    "legal_basis": "Art. 23, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Cada ente exerce suas atribuições de forma exclusiva, sem sobreposição",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É uma competência exclusiva da União, delegável aos demais entes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Refere-se à competência de todos os entes para legislar sobre determinadas matérias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Pertence simultaneamente a todos os entes para execução de atividades administrativas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente a União e os Estados têm competência comum, excluindo os Municípios",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "A competência privativa para legislar sobre direito civil, comercial, penal, processual, eleitoral, aeronáutico, espacial e marítimo pertence:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 22 da CF/88 lista as matérias de competência privativa da União para legislar. Os Estados podem legislar sobre questões de interesse local (art. 25) e competências remanescentes.",
+    "legal_basis": "Art. 22, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Aos Estados-membros, no exercício de sua autonomia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Ao Distrito Federal, por acumular competências estaduais e municipais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "À União Federal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Aos Municípios, nas matérias de interesse local",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Concorrentemente à União e aos Estados",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "A CF/88 prevê competência legislativa concorrente entre União, Estados e Distrito Federal. Nessa competência, a União:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "No âmbito da competência legislativa concorrente (art. 24), a União estabelece normas gerais e os Estados suplementam. Inexistindo lei federal, os Estados exercem competência plena.",
+    "legal_basis": "Art. 24, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Legisla sobre todos os aspectos da matéria, cabendo aos Estados apenas regulamentação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Limita-se a estabelecer normas gerais, podendo os Estados suplementá-las",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Não pode legislar, deixando a matéria inteiramente para os Estados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Estabelece normas mínimas, que os Estados podem reduzir conforme suas necessidades",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas orienta os Estados, sem force normativa própria",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado",
+    "text": "Os Municípios têm competência para legislar sobre:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 30 da CF/88 atribui aos Municípios competência para legislar sobre assuntos de interesse local e suplementar a legislação federal e estadual no que couber.",
+    "legal_basis": "Art. 30, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Direito civil e processual civil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Direito penal e processual penal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Assuntos de interesse local e suplementar a legislação federal e estadual",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Direito do trabalho e previdência social",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Qualquer matéria não expressamente reservada à União",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "A segurança pública é dever do Estado, direito e responsabilidade de todos. Quais são os órgãos de segurança pública previstos no art. 144 da CF/88?",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 144 da CF/88 prevê como órgãos de segurança pública: Polícia Federal, Polícia Rodoviária Federal, Polícia Ferroviária Federal, Polícias Civis, Polícias Militares, Corpos de Bombeiros Militares, e Polícias Penais Federal, Estaduais e Distrital (EC 104/2019).",
+    "legal_basis": "Art. 144, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Polícia Federal, ABIN, COAF, Polícia Civil, Polícia Militar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Polícia Federal, Polícia Rodoviária Federal, Polícias Civis, Polícias Militares e Corpos de Bombeiros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Polícia Federal, Polícia Rodoviária Federal, Polícia Ferroviária Federal, Polícias Civis, Polícias Militares e Guardas Municipais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Polícia Federal, Polícia Rodoviária Federal, Polícia Ferroviária Federal, Polícias Civis, Polícias Militares, Corpos de Bombeiros e Polícias Penais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Forças Armadas, Polícia Federal, Polícias Civis e Polícias Militares",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "À Polícia Rodoviária Federal, de acordo com o art. 144, §2°, da CF/88, incumbe:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O §2° do art. 144 da CF/88 atribui à PRF o patrulhamento ostensivo das rodovias federais.",
+    "legal_basis": "Art. 144, §2°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apurar infrações penais praticadas em rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O patrulhamento ostensivo das rodovias federais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Fiscalizar o trânsito nas rodovias estaduais e federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Realizar a policia judiciária da União",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Expedir carteiras de habilitação em rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "A Polícia Federal é um órgão permanente, estruturado em carreira, de acordo com a CF/88. Dentre suas atribuições, destaca-se:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 144, §1°, da CF/88 atribui à PF: apurar infrações penais contra a ordem política e social ou em detrimento de bens, serviços e interesses da União, exercer funções de polícia marítima, aeroportuária e de fronteiras, exercer funções de polícia judiciária da União.",
+    "legal_basis": "Art. 144, §1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Fiscalização do trânsito nas rodovias federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Policiamento ostensivo nos Estados-membros em caráter suplementar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exercer as funções de polícia judiciária da União",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Guarnecer os palácios governamentais federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Combater o crime organizado nos Estados, independentemente de requisição",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "As Polícias Militares são responsáveis pelo policiamento ostensivo e pela preservação da ordem pública. Estão subordinadas aos:",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 144, §6°, da CF/88 prevê que as Polícias Militares e Corpos de Bombeiros são forças auxiliares e reserva do Exército, subordinadas, juntamente com as Polícias Civis e Polícias Penais Estaduais e Distrital, aos Governadores dos respectivos Estados, DF e Territórios.",
+    "legal_basis": "Art. 144, §6°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Ministros da Justiça de cada Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Governadores dos respectivos Estados, DF e Territórios",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Presidente da República, por meio do Ministério da Defesa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Prefeituras dos municípios em que atuam",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Secretarias de Segurança Pública da União",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "As Guardas Municipais, de acordo com a CF/88, podem ser criadas para:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 144, §8°, da CF/88 autoriza os Municípios a criarem guardas municipais destinadas à proteção dos bens, serviços e instalações municipais, conforme dispuser a lei.",
+    "legal_basis": "Art. 144, §8°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Exercer policiamento ostensivo em substituição à Polícia Militar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Realizar investigações criminais no âmbito municipal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Proteção dos bens, serviços e instalações municipais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Fiscalizar o trânsito nas vias municipais com poder de autuação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exercer todas as funções de segurança pública no âmbito do município",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "Sobre a Polícia Civil estadual, prevista no art. 144, §4°, da CF/88, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Polícia Civil exerce as funções de polícia judiciária e apuração de infrações penais, exceto as militares, sendo dirigida por delegados de polícia de carreira.",
+    "legal_basis": "Art. 144, §4°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Tem como função o policiamento ostensivo nas vias públicas estaduais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É dirigida por qualquer integrante da cúpula da corporação, eleito pelos pares",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exerce funções de polícia judiciária e apura infrações penais, exceto as militares",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Está subordinada diretamente ao Poder Judiciário estadual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É uma força auxiliar e reserva do Exército Brasileiro",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "A Polícia Ferroviária Federal, prevista no art. 144, §3°, da CF/88, tem como atribuição:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O §3° do art. 144 prevê que à Polícia Ferroviária Federal incumbe o patrulhamento ostensivo das ferrovias federais.",
+    "legal_basis": "Art. 144, §3°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Fiscalizar o transporte ferroviário estadual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O patrulhamento ostensivo das ferrovias federais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apurar crimes praticados em ferrovias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Controlar a arrecadação tributária do transporte ferroviário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Vistoriar vagões e locomotivas para fins de segurança",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "O Corpo de Bombeiros Militar, conforme a CF/88, além da prevenção e combate a incêndios, realiza:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 144, §5°, da CF/88 prevê que às Polícias Militares cabem o policiamento ostensivo e preservação da ordem pública; aos Corpos de Bombeiros Militares, além das atribuições definidas em lei, incumbe a execução de atividades de defesa civil.",
+    "legal_basis": "Art. 144, §5°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas o combate a incêndios e salvamentos em altura",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Policiamento ostensivo em eventos de grande porte",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Execução de atividades de defesa civil",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Investigação de crimes de incêndio criminoso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Fiscalização de edificações e concessão de alvarás",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "A EC 104/2019 acrescentou ao art. 144 da CF/88 as Polícias Penais. Qual é sua principal atribuição?",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A EC 104/2019 criou a carreira de Policial Penal, responsável pela segurança dos estabelecimentos penais (art. 144, §5°-A, CF).",
+    "legal_basis": "Art. 144, §5°-A, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Policiamento ostensivo nas áreas próximas a presídios",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Investigação de crimes praticados dentro dos presídios",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Segurança dos estabelecimentos penais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Custódia e transporte de detentos condenados em regime fechado apenas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Ressocialização dos detentos por meio de programas de trabalho",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica",
+    "text": "Nos termos do art. 144 da CF/88, a segurança pública é exercida para:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 144, caput, estabelece que a segurança pública é dever do Estado, direito e responsabilidade de todos, exercida para a preservação da ordem pública e da incolumidade das pessoas e do patrimônio.",
+    "legal_basis": "Art. 144, caput, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas repressão ao crime organizado e proteção do patrimônio público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Preservação da ordem pública e da incolumidade das pessoas e do patrimônio",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente prevenção e repressão a crimes de natureza federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Proteção das fronteiras nacionais e dos poderes constituídos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Fiscalização e controle do cumprimento das leis federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "O Congresso Nacional é composto por:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 44 da CF/88 estabelece que o Poder Legislativo é exercido pelo Congresso Nacional, composto pelo Senado Federal e pela Câmara dos Deputados.",
+    "legal_basis": "Art. 44, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Câmara dos Deputados, Senado Federal e Câmara Municipal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Câmara dos Deputados e Senado Federal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Assembleia Nacional, Câmara dos Deputados e Senado Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Câmara dos Deputados, Senado Federal e Supremo Tribunal Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Senado Federal, Câmara dos Deputados e Tribunal de Contas da União",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "Quantos Senadores compõem o Senado Federal e qual é o mandato de cada um?",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 46 da CF/88 estabelece que o Senado Federal compõe-se de representantes dos Estados e do Distrito Federal, eleitos pelo princípio majoritário. Cada Estado e o DF elegem três Senadores com mandato de 8 anos.",
+    "legal_basis": "Art. 46, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "81 Senadores com mandato de 4 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "81 Senadores com mandato de 8 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "54 Senadores com mandato de 8 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "27 Senadores com mandato de 4 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "81 Senadores com mandato de 6 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "As leis delegadas são elaboradas pelo Presidente da República, mediante delegação do Congresso Nacional. Sobre elas, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 68 da CF/88 prevê que as leis delegadas são elaboradas pelo Presidente, que deve solicitar a delegação ao Congresso, e não podem versar sobre atos de competência exclusiva do Congresso, matéria reservada à lei complementar, legislação eleitoral, penal, tributária, etc.",
+    "legal_basis": "Art. 68, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Podem versar sobre qualquer matéria, desde que autorizado pelo Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O Congresso pode revogar a delegação a qualquer momento, mas não pode alterar a lei delegada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O Congresso pode, na resolução delegatória, reservar-se o direito de apreciar o projeto",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Não podem ser objeto de controle de constitucionalidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A delegação é irrevogável após publicada a resolução do Congresso",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "Sobre as comissões parlamentares de inquérito (CPIs), a CF/88 determina que elas:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 58, §3°, da CF/88 estabelece que as CPIs têm poderes de investigação próprios das autoridades judiciais, criadas por 1/3 dos membros da Casa, por prazo certo, para apuração de fato determinado.",
+    "legal_basis": "Art. 58, §3°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Podem decretar prisões preventivas de investigados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Têm poderes de investigação próprios das autoridades judiciais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exigem aprovação de maioria absoluta para sua criação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Podem condenar criminalmente os investigados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Substituem a investigação policial em todos os crimes federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "O processo legislativo previsto na CF/88 inclui a elaboração de emendas constitucionais. Para aprovação de uma emenda constitucional, é necessário:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 60, §2°, da CF/88 exige que a proposta de emenda seja discutida e votada em cada Casa do Congresso Nacional, em dois turnos, considerando-se aprovada se obtiver, em ambos, três quintos dos votos dos respectivos membros.",
+    "legal_basis": "Art. 60, §2°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Aprovação por maioria simples em sessão conjunta do Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Aprovação por 2/3 dos votos em dois turnos em cada Casa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Aprovação por 3/5 dos votos dos membros em dois turnos em cada Casa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Aprovação por maioria absoluta em sessão conjunta e referendo popular",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Aprovação por unanimidade em cada Casa do Congresso",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "A imunidade parlamentar material (ou inviolabilidade) prevista no art. 53 da CF/88 protege os parlamentares:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 53 da CF/88 estabelece que os Deputados e Senadores são invioláveis, civil e penalmente, por quaisquer de suas opiniões, palavras e votos. Essa imunidade é absoluta quando exercida no exercício do mandato.",
+    "legal_basis": "Art. 53, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas em relação a crimes praticados dentro do Congresso Nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Por quaisquer de suas opiniões, palavras e votos no exercício do mandato",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Contra qualquer processo judicial ou investigação, enquanto no mandato",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas em relação a crimes dolosos praticados fora da sessão legislativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Por opiniões expressas em qualquer lugar, mesmo sem relação com o mandato",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "Os Deputados Federais são eleitos por qual sistema eleitoral?",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os Deputados Federais são eleitos pelo sistema proporcional (art. 45 da CF/88), enquanto os Senadores são eleitos pelo sistema majoritário (art. 46).",
+    "legal_basis": "Art. 45, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Sistema majoritário simples",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Sistema majoritário de dois turnos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Sistema proporcional",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Sistema misto proporcional-majoritário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Sistema distrital puro",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "A Mesa do Congresso Nacional é presidida pelo:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 57, §5°, da CF/88 estabelece que a Mesa do Congresso Nacional é presidida pelo Presidente do Senado Federal, e os demais cargos serão exercidos, alternadamente, pelos ocupantes de cargos equivalentes na Câmara dos Deputados e no Senado Federal.",
+    "legal_basis": "Art. 57, §5°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Presidente da Câmara dos Deputados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Presidente do Senado Federal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Membro mais antigo do Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Presidente da República, que pode convocar reuniões",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Alternadamente pelo Presidente da Câmara e do Senado a cada dois anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-legislativo",
+    "text": "Sobre as medidas provisórias, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 62 da CF/88 prevê que em caso de relevância e urgência, o Presidente pode editar MPs, com força de lei. Têm validade de 60 dias, prorrogável por igual período. Se não convertidas em lei, perdem efeitos.",
+    "legal_basis": "Art. 62, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Podem ser editadas pelo Presidente para tratar de qualquer matéria de sua competência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Têm validade de 30 dias, improrrogável",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Têm força de lei e vigem por 60 dias, prorrogáveis automaticamente por mais 60",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "São editadas pelo Presidente e imediatamente convertidas em lei pelo Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O Congresso pode emendar medidas provisórias livremente, sem restrições",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "O Presidente da República é eleito por:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 77 da CF/88 prevê que a eleição do Presidente e Vice é realizada simultaneamente, 90 dias antes de vencido o mandato. Considera-se eleito o candidato que obtiver maioria absoluta dos votos, não sendo compurada a abstenção ou votos nulos. Se nenhum alcançar maioria absoluta no primeiro turno, faz-se novo turno entre os dois mais votados.",
+    "legal_basis": "Art. 77, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Voto indireto pelo Congresso Nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Maioria simples dos votos válidos em único turno",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Maioria absoluta dos votos, podendo haver segundo turno",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Maioria qualificada de 3/5 do eleitorado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Voto dos Governadores e representantes estaduais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "Sobre as atribuições privativas do Presidente da República, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 84 da CF/88 lista as competências privativas do Presidente, entre as quais: nomear e exonerar Ministros de Estado, exercer o comando supremo das Forças Armadas, celebrar tratados internacionais, decretar estado de sítio, entre outras.",
+    "legal_basis": "Art. 84, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pode delegar a qualquer autoridade pública federal a sanção de leis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A competência para nomear Ministros de Estado é delegável ao Ministro-Chefe da Casa Civil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A competência para decretar o estado de defesa é delegável ao Vice-Presidente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Pode delegar aos Ministros de Estado e ao AGU a atribuição de conceder indulto",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pode delegar aos Ministros e ao PGR a atribuição de expedir decretos e regulamentos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "Qual é o mandato do Presidente da República e é admitida a reeleição?",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 82 da CF/88 estabelece mandato de 4 anos, e o art. 14, §5°, permite uma reeleição para o período subsequente.",
+    "legal_basis": "Art. 82, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "5 anos, sem reeleição",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "4 anos, com uma reeleição para período subsequente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "4 anos, com reeleições ilimitadas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "6 anos, sem reeleição",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "5 anos, com uma reeleição para período não-consecutivo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "O impedimento e a vacância dos cargos de Presidente e Vice-Presidente seguem a seguinte ordem de substituição:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 80 da CF/88 prevê que, em caso de impedimento do Presidente e do Vice-Presidente, assumirão o cargo, pela ordem, o Presidente da Câmara dos Deputados, o Presidente do Senado Federal e o Presidente do STF.",
+    "legal_basis": "Art. 80, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Presidente do Senado, Presidente da Câmara, Presidente do STF",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Presidente da Câmara dos Deputados, Presidente do Senado Federal, Presidente do STF",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ministro da Justiça, Presidente da Câmara, Presidente do Senado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Presidente do STF, Presidente do Senado, Presidente da Câmara",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Presidente do STJ, Presidente do Senado, Presidente da Câmara",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "O Presidente da República pode ser processado e julgado por crimes comuns e de responsabilidade. O julgamento de crimes comuns é feito pelo:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 86 da CF/88 estabelece que o Presidente é julgado pelo STF por crimes comuns e pelo Senado Federal por crimes de responsabilidade.",
+    "legal_basis": "Art. 86, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Tribunal Superior Eleitoral",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Superior Tribunal de Justiça",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Senado Federal, em qualquer caso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Supremo Tribunal Federal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Câmara dos Deputados",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "O estado de defesa, previsto na CF/88, pode ser decretado pelo Presidente para preservar ou restabelecer a ordem pública em locais determinados. Sua duração máxima é de:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 136, §2°, da CF/88 estabelece que o estado de defesa não será superior a 30 dias, podendo ser prorrogado uma vez por igual período, se persistirem as razões que justificaram sua decretação.",
+    "legal_basis": "Art. 136, §2°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "15 dias, prorrogável uma vez por igual período",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "30 dias, prorrogável uma vez por igual período",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "60 dias, improrrogável",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "90 dias, prorrogável por períodos de 30 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "30 dias, prorrogável indefinidamente enquanto houver risco",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "text": "Sobre os Ministros de Estado, a CF/88 determina que:",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 87 da CF/88 prevê que os Ministros de Estado são auxiliares do Presidente, devendo ser brasileiros e maiores de 21 anos. Respondem pelos atos que pratiquem e referenciam.",
+    "legal_basis": "Art. 87, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Devem ser escolhidos exclusivamente dentre membros do Congresso Nacional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "São escolhidos pelo Presidente, devendo ser brasileiros, maiores de 21 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Têm mandato coincidente com o do Presidente que os nomeou",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Dependem de aprovação do Senado Federal para serem empossados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "São vitalícios em seus cargos após dois anos de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "O Supremo Tribunal Federal, guardião da Constituição, é composto por quantos Ministros?",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 101 da CF/88 estabelece que o STF compõe-se de 11 Ministros, escolhidos dentre cidadãos com mais de 35 e menos de 65 anos de notável saber jurídico e reputação ilibada.",
+    "legal_basis": "Art. 101, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "9 Ministros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "11 Ministros",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "13 Ministros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "15 Ministros",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "17 Ministros",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "Sobre a competência originária do STF, é correto afirmar que ele processa e julga originariamente:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 102, I, da CF/88 lista a competência originária do STF, incluindo a ação direta de inconstitucionalidade, ação declaratória de constitucionalidade, ADO, ADPF, e o julgamento nas infrações penais comuns do Presidente, Vice-Presidente, membros do Congresso, Ministros de Estado, Ministros do próprio STF, entre outros.",
+    "legal_basis": "Art. 102, I, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas ações de inconstitucionalidade de leis federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Conflitos de competência entre qualquer órgão do Poder Judiciário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A ação direta de inconstitucionalidade e a ação declaratória de constitucionalidade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Todos os crimes praticados por servidores públicos federais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Recursos de decisões dos Tribunais de Justiça Estaduais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "O Superior Tribunal de Justiça (STJ) tem como principal função:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O STJ, previsto no art. 105 da CF/88, é o guardião da lei federal infraconstitucional, uniformizando sua interpretação em todo o território nacional.",
+    "legal_basis": "Art. 105, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Guardar a Constituição Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Uniformizar a interpretação da legislação federal infraconstitucional",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Julgar conflitos entre Estados estrangeiros e a União",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Controlar a constitucionalidade das leis estaduais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Processar e julgar o Presidente da República por crimes de responsabilidade",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "Os membros da magistratura adquirem vitaliciedade:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 95, I, da CF/88 prevê que a vitaliciedade é adquirida em primeiro grau após 2 anos de exercício, dependendo, antes disso, de deliberação do tribunal. Em segundo grau, é adquirida com a posse.",
+    "legal_basis": "Art. 95, I, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Imediatamente ao tomar posse no cargo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Após 2 anos de exercício no primeiro grau, e imediatamente no segundo grau",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Após 5 anos de exercício efetivo na magistratura",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Com a aprovação no concurso público e nomeação pelo chefe do executivo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Após aprovação em estágio probatório de 3 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "O Conselho Nacional de Justiça (CNJ) foi criado pela EC 45/2004 e tem como função:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O CNJ (art. 103-B da CF/88) é órgão de controle da atuação administrativa e financeira do Poder Judiciário e do cumprimento dos deveres funcionais dos juízes, sem função jurisdicional.",
+    "legal_basis": "Art. 103-B, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Julgar recursos de decisões dos tribunais superiores",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Controlar a atuação administrativa e financeira do Poder Judiciário",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Nomear os Ministros do STF e STJ",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Exercer o controle de constitucionalidade concentrado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Coordenar as eleições para os tribunais estaduais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "Sobre as garantias constitucionais da magistratura, a irredutibilidade de subsídio significa que:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 95, III, da CF/88 garante a irredutibilidade dos subsídios dos magistrados, vedando redução. Isso não significa que o subsídio não pode ser tributado ou congelado no contexto geral de remuneração do serviço público.",
+    "legal_basis": "Art. 95, III, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O subsídio dos juízes não pode ser tributado por imposto de renda",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Os juízes têm direito ao maior subsídio do serviço público em seu âmbito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O subsídio não pode ser reduzido, ressalvadas as hipóteses constitucionais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Os magistrados recebem por subsídio e também por vantagens pessoais cumulativas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O subsídio é reajustado automaticamente pela inflação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "A Justiça Federal de primeira instância é composta por:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os Juízes Federais exercem a jurisdição de primeira instância na Justiça Federal, sendo competentes para processar e julgar as causas em que a União, entidades autárquicas e empresas públicas federais forem parte, entre outras hipóteses (art. 109 da CF/88).",
+    "legal_basis": "Art. 109, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Tribunais Regionais Federais e Câmaras Cíveis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Juízes Federais, com sede nas capitais dos Estados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Varas Federais distribuídas em todo o território nacional",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Seções judiciárias que compõem os TRFs",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Juízes Federais com jurisdição em cada Município",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-judiciario",
+    "text": "A função de súmula vinculante foi criada pela EC 45/2004 e pode ser editada pelo STF. Para que tenha efeito vinculante, a súmula deve ser aprovada por:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 103-A da CF/88 exige que a súmula vinculante seja aprovada por 2/3 dos membros do STF (ou seja, 8 dos 11 Ministros).",
+    "legal_basis": "Art. 103-A, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Maioria simples (6 Ministros)",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Maioria absoluta (6 Ministros)",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dois terços dos membros do STF (8 Ministros)",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Unanimidade dos Ministros (11 Ministros)",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Três quintos dos Ministros (7 Ministros)",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "Os princípios constitucionais da Administração Pública previstos no art. 37 da CF/88 são:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37 da CF/88 prevê que a administração pública direta e indireta de qualquer dos Poderes obedecerá aos princípios de legalidade, impessoalidade, moralidade, publicidade e eficiência (LIMPE).",
+    "legal_basis": "Art. 37, caput, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Legalidade, impessoalidade, moralidade, publicidade e proporcionalidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Legalidade, isonomia, moralidade, publicidade e eficiência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Legalidade, impessoalidade, moralidade, publicidade e eficiência",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Legalidade, impessoalidade, moralidade, razoabilidade e eficiência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Legalidade, impessoalidade, motivação, publicidade e eficiência",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "Os cargos, empregos e funções públicas são acessíveis aos brasileiros que preencham os requisitos estabelecidos em lei, assim como aos estrangeiros, na forma da lei. Qual princípio está diretamente relacionado com essa previsão?",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A acessibilidade a cargos públicos (art. 37, I, CF) está relacionada ao princípio da impessoalidade e da isonomia, que impedem favorecimentos pessoais nos concursos e acessos ao serviço público.",
+    "legal_basis": "Art. 37, I, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Princípio da eficiência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Princípio da moralidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Princípio da publicidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Princípio da impessoalidade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Princípio da legalidade",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "O servidor público estável só perderá o cargo em razão de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 41, §1°, da CF/88 prevê que o servidor estável perde o cargo apenas mediante: sentença judicial transitada em julgado, processo administrativo disciplinar com ampla defesa, e avaliação periódica de desempenho insatisfatória.",
+    "legal_basis": "Art. 41, §1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Sentença judicial ou decisão do chefe do Executivo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Sentença judicial transitada em julgado, PAD com ampla defesa ou avaliação periódica de desempenho",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Decisão do tribunal de contas competente ou do ministério público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Avaliação de desempenho negativa ou decisão do superior hierárquico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Sentença judicial ou decisão administrativa do Ministro responsável",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "A licitação pública tem como finalidade, segundo a CF/88:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37, XXI, da CF/88 prevê que obras, serviços, compras e alienações serão contratados mediante licitação pública, visando garantir igualdade de condições a todos os concorrentes.",
+    "legal_basis": "Art. 37, XXI, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas a economicidade para a administração pública",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A garantia de igualdade de condições a todos os concorrentes e a seleção da proposta mais vantajosa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O controle dos gastos públicos pela contratação mais barata possível",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Exclusivamente a moralidade e a transparência dos contratos administrativos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A preferência a empresas nacionais em todas as contratações públicas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "A acumulação remunerada de cargos públicos é vedada pela CF/88, exceto:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37, XVI, da CF/88 permite acumulação: de dois cargos de professor, de um cargo de professor com outro técnico ou científico, e de dois cargos ou empregos privativos de profissionais de saúde com profissões regulamentadas.",
+    "legal_basis": "Art. 37, XVI, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Dois cargos de chefia ou direção na administração direta",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Qualquer combinação de cargos, desde que as cargas horárias sejam compatíveis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dois cargos de professor, um de professor com um técnico/científico, ou dois de saúde",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Cargos em entes federativos diferentes, como União e Estado-membro",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Cargo público com mandato eletivo, desde que haja compatibilidade de horários",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "Sobre a improbidade administrativa, a CF/88 prevê que os atos que a configuram implicarão:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37, §4°, da CF/88 prevê que os atos de improbidade administrativa importarão a suspensão dos direitos políticos, a perda da função pública, a indisponibilidade dos bens e o ressarcimento ao erário, sem prejuízo da ação penal cabível.",
+    "legal_basis": "Art. 37, §4°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas sanção administrativa interna ao órgão ou entidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Prisão imediata do agente público, independentemente de processo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Suspensão dos direitos políticos, perda da função pública, indisponibilidade dos bens e ressarcimento ao erário",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Perda do cargo e inabilitação para cargos públicos por 10 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas multa e restituição do valor desviado ao erário público",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "O prazo para aquisição de estabilidade no serviço público, após a EC 19/1998, é de:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 41, caput, da CF/88, após a EC 19/1998, estabelece que os servidores nomeados para cargo de provimento efetivo em virtude de concurso público adquirem estabilidade após 3 anos de efetivo exercício.",
+    "legal_basis": "Art. 41, caput, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "1 ano de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "2 anos de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "3 anos de efetivo exercício",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "5 anos de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Aprovação em avaliação especial de desempenho, sem prazo mínimo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "adm-publica-cf",
+    "text": "O controle externo da Administração Pública federal é exercido pelo Congresso Nacional, com o auxílio do:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 71 da CF/88 estabelece que o controle externo, a cargo do Congresso Nacional, será exercido com o auxílio do Tribunal de Contas da União.",
+    "legal_basis": "Art. 71, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Ministério Público Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Controladoria-Geral da União",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Tribunal de Contas da União",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Tribunal de Contas dos Estados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Supremo Tribunal Federal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "O mandado de segurança é cabível para proteger direito líquido e certo não amparado por habeas corpus ou habeas data. Quem pode impetrar mandado de segurança?",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O mandado de segurança (art. 5°, LXIX) pode ser impetrado por qualquer pessoa física ou jurídica que tenha direito líquido e certo violado ou ameaçado por ato ou omissão de autoridade pública ou agente de pessoa jurídica no exercício de atribuições do Poder Público.",
+    "legal_basis": "Art. 5°, LXIX, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas pessoas físicas brasileiras",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Qualquer pessoa física ou jurídica com direito líquido e certo violado por autoridade pública",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas advogados constituídos com procuração específica",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas entidades de classe com legitimidade coletiva",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas o Ministério Público, em casos de direitos individuais indisponíveis",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "A ação popular, prevista no art. 5°, LXXIII, da CF/88, pode ser proposta por:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A ação popular pode ser proposta por qualquer cidadão (eleitor) para anular ato lesivo ao patrimônio público, à moralidade administrativa, ao meio ambiente e ao patrimônio histórico e cultural.",
+    "legal_basis": "Art. 5°, LXXIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer pessoa física ou jurídica residente no Brasil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas o Ministério Público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Qualquer cidadão (eleitor) para anular ato lesivo ao patrimônio público",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas partidos políticos com representação no Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O advogado-geral da União em nome da sociedade",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "O mandado de segurança coletivo pode ser impetrado por:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 5°, LXX, da CF/88 prevê que o mandado de segurança coletivo pode ser impetrado por partido político com representação no Congresso Nacional e por organização sindical, entidade de classe ou associação legalmente constituída e em funcionamento há pelo menos um ano.",
+    "legal_basis": "Art. 5°, LXX, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer grupo de 20 ou mais pessoas com interesse comum",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas o Ministério Público Federal ou Estadual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Partido político com representação no Congresso e organização sindical ou associação legalmente constituída",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas entidades de classe com mais de 1.000 associados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Qualquer cidadão em nome de um grupo determinado de pessoas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "O habeas data se distingue do mandado de segurança, pois:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O habeas data (art. 5°, LXXII) visa especificamente assegurar o conhecimento de informações relativas ao próprio impetrante em registros de entidades governamentais, e a retificação de dados inexatos. O mandado de segurança tem cabimento mais amplo.",
+    "legal_basis": "Art. 5°, LXXII, LXIX, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O habeas data não exige representação por advogado, enquanto o mandado de segurança exige",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O habeas data protege a liberdade de locomoção, enquanto o mandado protege direito líquido e certo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O habeas data é cabível para acesso e retificação de informações sobre o próprio impetrante em registros governamentais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O habeas data tem prazo decadencial de 120 dias, enquanto o mandado não tem prazo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O habeas data pode ser impetrado por qualquer pessoa, enquanto o mandado exige ser brasileiro",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "A ação direta de inconstitucionalidade (ADI) e a ação declaratória de constitucionalidade (ADC) são instrumentos de controle concentrado de constitucionalidade. Quem tem legitimidade para propô-las?",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 103 da CF/88 lista os legitimados: Presidente da República, Mesa do Senado e da Câmara, Mesa de Assembleia Legislativa ou CLDF, Governadores, PGR, Conselho Federal da OAB, partido político com representação no Congresso, e confederação sindical ou entidade de classe de âmbito nacional.",
+    "legal_basis": "Art. 103, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer cidadão que demonstre interesse jurídico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas o Procurador-Geral da República",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O rol taxativo do art. 103 da CF/88, incluindo o Presidente da República e o PGR",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas os partidos políticos com representação no Congresso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O rol do art. 103 da CF/88 mais os Defensores Públicos Estaduais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "A arguição de descumprimento de preceito fundamental (ADPF) é cabível quando:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A ADPF (art. 102, §1°, CF/88) é cabível para evitar ou reparar lesão a preceito fundamental resultante de ato do Poder Público e tem caráter subsidiário: só cabe quando não houver outro meio eficaz de sanar a lesão.",
+    "legal_basis": "Art. 102, §1°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A lei federal for inconstitucional e houver recurso pendente no STJ",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Qualquer ato do Poder Público violar a CF, mesmo havendo outros meios de impugnação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Não houver outro meio eficaz de sanar a lesão a preceito fundamental resultante de ato do Poder Público",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O STF entender que a questão é de repercussão geral",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Houver conflito entre lei federal e lei estadual sobre matéria de competência concorrente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "O prazo decadencial para impetração de mandado de segurança, conforme a legislação que regulamenta o remédio constitucional, é de:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei n° 12.016/2009 estabelece que o mandado de segurança deve ser impetrado no prazo decadencial de 120 dias, contado do ato ilegal ou abusivo que o motivou.",
+    "legal_basis": "Art. 5°, LXIX, CF/88 c/c Lei 12.016/2009",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "30 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "60 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "90 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "120 dias",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "180 dias",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "remedios-constitucionais",
+    "text": "Sobre o habeas corpus, a CF/88 prevê que conceder-se-á habeas corpus sempre que alguém sofrer ou se achar ameaçado de sofrer violência ou coação em sua liberdade de locomoção por ilegalidade ou abuso de poder. O habeas corpus é:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O habeas corpus é cabível tanto preventivamente (salvo-conduto), quando há ameaça à liberdade, quanto repressivamente (liberatório), quando a liberdade já foi violada.",
+    "legal_basis": "Art. 5°, LXVIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Exclusivamente repressivo, para liberar quem já está preso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas preventivo, antes que ocorra a prisão ilegal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Repressivo ou preventivo, conforme a situação de violação ou ameaça à liberdade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas cabível contra atos de autoridade policial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Instrumento exclusivo do Ministério Público para proteger a liberdade do cidadão",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

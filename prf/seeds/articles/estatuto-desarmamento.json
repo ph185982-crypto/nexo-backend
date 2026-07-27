@@ -1,0 +1,115 @@
+[
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 1°",
+    "chapter": "Das Disposições Gerais",
+    "official_text": "O Sistema Nacional de Armas – Sinarm, instituído no Ministério da Justiça, no âmbito da Polícia Federal, tem circunscrição em todo o território nacional.",
+    "simple_text": "SINARM: Sistema Nacional de Armas, vinculado à Polícia Federal, com abrangência nacional.",
+    "highlights": [
+      "SINARM",
+      "Polícia Federal",
+      "armas",
+      "sistema nacional"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 3°",
+    "chapter": "Do Registro de Arma de Fogo",
+    "official_text": "É obrigatório o registro de arma de fogo no órgão competente. O certificado de registro – CR será expedido pela Polícia Federal.",
+    "simple_text": "Registro de arma de fogo: obrigatório. Certificado emitido pela Polícia Federal.",
+    "highlights": [
+      "registro",
+      "arma de fogo",
+      "Polícia Federal",
+      "certificado"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 6°",
+    "chapter": "Das Pessoas Vedadas ao Porte",
+    "official_text": "É proibido o porte de arma de fogo em todo o território nacional, salvo para os casos previstos em legislação própria e para: I – os integrantes das Forças Armadas; II – os integrantes das polícias federais e estaduais e do Corpo de Bombeiros Militares; III – os integrantes das guardas municipais das capitais dos Estados.",
+    "simple_text": "Porte de arma: proibido em geral, permitido para forças de segurança, militares e algumas categorias específicas.",
+    "highlights": [
+      "porte de arma",
+      "proibição",
+      "Forças Armadas",
+      "policiais"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 14°",
+    "chapter": "Do Porte Ilegal de Arma de Fogo",
+    "official_text": "Portar, deter, adquirir, fornecer, receber, ter em depósito, transportar, ceder, ainda que gratuitamente, emprestar, remeter, empregar, manter sob guarda ou ocultar arma de fogo, acessório ou munição, de uso permitido, sem autorização e em desacordo com determinação legal ou regulamentar: Pena – reclusão, de 2 a 4 anos, e multa.",
+    "simple_text": "Porte ilegal de arma de uso permitido: 2 a 4 anos. Inclui portar, guardar, transportar e emprestar sem autorização.",
+    "highlights": [
+      "porte ilegal",
+      "arma de fogo",
+      "uso permitido",
+      "2 a 4 anos"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 16°",
+    "chapter": "Do Porte Ilegal de Arma de Uso Restrito",
+    "official_text": "Possuir, deter, portar, adquirir, fornecer, receber, ter em depósito, transportar, ceder, ainda que gratuitamente, emprestar, remeter, empregar, manter sob guarda ou ocultar arma de fogo, acessório ou munição de uso proibido ou restrito, sem autorização e em desacordo com determinação legal: Pena – reclusão, de 3 a 6 anos, e multa.",
+    "simple_text": "Porte de arma de uso restrito ou proibido: 3 a 6 anos. Pena maior por ser arma mais perigosa.",
+    "highlights": [
+      "porte ilegal",
+      "uso restrito",
+      "uso proibido",
+      "3 a 6 anos"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 17°",
+    "chapter": "Do Comércio Ilegal de Armas",
+    "official_text": "Adquirir, alugar, receber, transportar, conduzir, ocultar, ter em depósito, desmontar, montar, remontar, adulterar, vender, expor à venda, ou de qualquer forma utilizar, em proveito próprio ou alheio, no exercício de atividade comercial ou industrial, arma de fogo, acessório ou munição, sem autorização ou em desacordo com determinação legal ou regulamentar: Pena – reclusão, de 4 a 8 anos, e multa.",
+    "simple_text": "Comércio ilegal de armas: 4 a 8 anos. Envolve atividade comercial ou industrial irregular.",
+    "highlights": [
+      "comércio ilegal",
+      "armas",
+      "4 a 8 anos",
+      "atividade comercial"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "estatuto-desarmamento",
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "article_number": "Art. 18°",
+    "chapter": "Do Tráfico Internacional de Armas",
+    "official_text": "Importar, exportar, favorecer a entrada ou a saída do território nacional, a qualquer título, de arma de fogo, acessório ou munição, sem autorização da autoridade competente: Pena – reclusão, de 8 a 16 anos, e multa.",
+    "simple_text": "Tráfico internacional de armas: 8 a 16 anos. Importar ou exportar armas sem autorização.",
+    "highlights": [
+      "tráfico internacional",
+      "armas",
+      "8 a 16 anos",
+      "importar",
+      "exportar"
+    ],
+    "frequency_score": 9.0
+  }
+]

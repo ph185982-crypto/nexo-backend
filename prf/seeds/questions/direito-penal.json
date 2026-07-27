@@ -1,0 +1,2109 @@
+[
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O princípio da legalidade penal (nullum crimen, nulla poena sine lege) está expresso no Código Penal no art. 1° e na CF/88 no art. 5°, XXXIX. Esse princípio estabelece que:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal. É uma garantia fundamental que limita o poder punitivo estatal.",
+    "legal_basis": "Art. 1°, CP; Art. 5°, XXXIX, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O Estado pode punir qualquer conduta moralmente reprovável",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O juiz pode criar tipos penais por analogia para punir condutas perigosas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A pena pode ser fixada pelo juiz sem previsão legal específica",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O costume pode servir de fonte do direito penal incriminador",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O crime doloso ocorre quando o agente:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 18, I, do CP define crime doloso como aquele em que o agente quis o resultado (dolo direto) ou assumiu o risco de produzi-lo (dolo eventual).",
+    "legal_basis": "Art. 18, I, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Age com negligência, imprudência ou imperícia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Quis o resultado ou assumiu o risco de produzi-lo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Não prevê o resultado que devia e podia prever",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Prevê o resultado mas age confiando que não irá ocorrer",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Causa o resultado por força maior",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "Sobre a culpabilidade no direito penal brasileiro, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A culpabilidade é o juízo de reprovação pessoal que recai sobre o agente imputável que podia e devia agir de outro modo. Seus elementos são: imputabilidade, potencial consciência da ilicitude e exigibilidade de conduta diversa.",
+    "legal_basis": "Art. 21-28, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É sinônimo de dolo ou culpa na teoria finalista",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Seus elementos são: tipicidade, ilicitude e punibilidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Compreende a imputabilidade, a potencial consciência da ilicitude e a exigibilidade de conduta diversa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "É desnecessária nos crimes de responsabilidade objetiva no direito penal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pode ser excluída apenas por doença mental ou desenvolvimento mental incompleto",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O iter criminis (caminho do crime) é composto pelas seguintes fases:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O iter criminis compreende as fases: cogitação, preparação, execução e consumação. A tentativa ocorre na fase de execução. Apenas a partir da execução há relevância penal em regra.",
+    "legal_basis": "Teoria geral do crime, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Cogitação, preparação, execução e consumação",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Suspeita, investigação, denúncia e condenação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Tentativa, frustração, arrependimento e consumação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Planejamento, preparação, consumação e exaurimento",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Intenção, ato, resultado e nexo causal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "A tentativa (conatus) é punível quando:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 14, II, do CP define tentativa quando, iniciada a execução, o crime não se consuma por circunstâncias alheias à vontade do agente. A pena é reduzida de 1 a 2/3.",
+    "legal_basis": "Art. 14, II, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O agente planeja o crime mas não chega a praticá-lo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Iniciada a execução, o crime não se consuma por circunstâncias alheias à vontade do agente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O agente realiza todos os atos necessários mas o resultado não ocorre por caso fortuito",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O agente desiste voluntariamente de prosseguir na execução",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O agente comete ato preparatório que causa risco concreto à vítima",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O crime culposo ocorre quando o agente dá causa ao resultado por:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 18, II, do CP define crime culposo: o agente causa o resultado por imprudência, negligência ou imperícia. A culpa não é presumida e o crime culposo só é punível quando expressamente previsto em lei.",
+    "legal_basis": "Art. 18, II, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Dolo direto ou dolo eventual",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Imprudência, negligência ou imperícia",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Omissão dolosa de socorro",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Dolo alternativo ou dolo de ímpeto",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Negligência ou omissão de resultado esperado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O erro de tipo essencial inevitável, segundo o Código Penal brasileiro:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 20 do CP prevê que o erro sobre elemento constitutivo do tipo exclui o dolo. Se o erro era evitável, permite-se a punição por culpa (se houver previsão). Se inevitável, exclui o dolo e a culpa.",
+    "legal_basis": "Art. 20, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Exclui a ilicitude da conduta",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Exclui apenas a culpabilidade do agente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclui o dolo, podendo haver punição por culpa se evitável, e exclui dolo e culpa se inevitável",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Não tem relevância jurídica no direito penal moderno",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Reduz a pena à metade, mantendo a condenação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "As excludentes de ilicitude (causas de justificação) previstas no Código Penal são:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 23 do CP prevê: estado de necessidade, legítima defesa, estrito cumprimento do dever legal e exercício regular de direito. Excluem a ilicitude da conduta.",
+    "legal_basis": "Art. 23, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Legítima defesa, estado de necessidade, inimputabilidade e erro de tipo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Estado de necessidade, legítima defesa, estrito cumprimento do dever legal e exercício regular de direito",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Coação moral irresistível, obediência hierárquica, estado de necessidade e legítima defesa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Legítima defesa, erro de proibição, estado de necessidade e coação moral",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Inimputabilidade, embriaguez, estado de necessidade e legítima defesa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "A legítima defesa, para ser reconhecida, exige os seguintes requisitos:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 25 do CP exige para a legítima defesa: agressão atual ou iminente, injusta, a direito próprio ou alheio, por meios necessários usados moderadamente.",
+    "legal_basis": "Art. 25, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Agressão passada, injusta, usando qualquer meio disponível",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Agressão atual ou iminente, injusta, a direito próprio ou alheio, usando meios necessários com moderação",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Agressão atual, a direito próprio apenas, com meios proporcionais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Agressão física real, injusta, usando força equivalente à do agressor",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Agressão atual ou iminente a direito próprio, sem excesso de qualquer natureza",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "A prescrição extingue a punibilidade. O prazo prescricional é regulado pela:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A prescrição tem prazos previstos no art. 109 do CP, calculados com base na pena máxima cominada (prescrição em abstrato) ou na pena fixada na sentença (prescrição em concreto).",
+    "legal_basis": "Art. 107, IV; Art. 109, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pena mínima cominada em abstrato ao crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pena máxima cominada em abstrato (prescrição da pretensão punitiva) ou pena fixada na sentença",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Duração do inquérito policial e do processo penal somados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Gravidade concreta do crime e periculosidade do agente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Tempo de cumprimento da pena já executada",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O concurso de pessoas (coautoria e participação) no crime exige:",
+    "difficulty": "hard",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Para o concurso de pessoas é necessário: pluralidade de agentes, relevância causal de cada contribuição, liame subjetivo entre os agentes e identidade de infração penal.",
+    "legal_basis": "Art. 29, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Que todos os agentes pratiquem exatamente os mesmos atos executórios",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pluralidade de agentes, relevância causal de cada conduta, liame subjetivo e identidade de infração",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Que haja contrato ou acordo expresso entre os participantes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Que todos sejam autores principais, sem distinção entre autores e partícipes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Prévio planejamento documentado e execução conjunta simultânea",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O crime continuado, previsto no art. 71 do Código Penal, ocorre quando o agente:",
+    "difficulty": "medium",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "No crime continuado, o agente pratica, mediante mais de uma ação ou omissão, dois ou mais crimes da mesma espécie, em condições de tempo, lugar, maneira de execução e outras semelhantes. A pena do crime mais grave é aplicada com aumento de 1/6 a 2/3.",
+    "legal_basis": "Art. 71, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pratica um único crime com múltiplas vítimas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Mediante mais de uma ação, pratica dois ou mais crimes da mesma espécie em condições similares de tempo, lugar e execução",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pratica crimes diferentes de forma contínua e sistemática",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Tem mais de uma condenação anterior transitada em julgado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pratica crime habitual que exige reiteração para consumação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "O arrependimento posterior, previsto no art. 16 do CP, é causa de:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O arrependimento posterior (art. 16 CP) é causa de diminuição de pena, aplicável nos crimes cometidos sem violência ou grave ameaça à pessoa, quando o agente repara o dano antes do recebimento da denúncia.",
+    "legal_basis": "Art. 16, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Exclusão da punibilidade por extinção do dolo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Diminuição de pena de 1/3 a 2/3 nos crimes sem violência ou grave ameaça, se o dano é reparado antes da denúncia",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Extinção da punibilidade em crimes patrimoniais sem violência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Atenuante genérica aplicável a qualquer crime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Causa extintiva da punibilidade nos crimes contra o patrimônio",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime",
+    "text": "As penas previstas no Código Penal para as pessoas físicas são:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 32 do CP prevê três espécies de penas: privativas de liberdade (reclusão, detenção, prisão simples), restritivas de direitos e multa.",
+    "legal_basis": "Art. 32, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Reclusão, detenção e suspensão de direitos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Privativas de liberdade, restritivas de direitos e multa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Penas corporais, pecuniárias e restritivas de direitos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão, serviço comunitário e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Prisão, fiança e liberdade vigiada",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O homicídio simples é punido com reclusão de 6 a 20 anos. O homicídio qualificado prevê pena de:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O homicídio qualificado (art. 121, §2°, CP) é punido com reclusão de 12 a 30 anos. As qualificadoras incluem: motivo torpe, fútil, meio cruel, surpresa, feminicídio, entre outras.",
+    "legal_basis": "Art. 121, §2°, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Reclusão de 6 a 20 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reclusão de 8 a 25 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Reclusão de 12 a 30 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão de 15 a 40 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Reclusão de 20 a 30 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O homicídio culposo praticado na direção de veículo automotor está previsto:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 302 do Código de Trânsito Brasileiro (Lei 9.503/97) é a norma especial que trata do homicídio culposo na direção de veículo automotor, com pena de detenção de 2 a 4 anos.",
+    "legal_basis": "Art. 302, CTB (Lei 9.503/97)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "No art. 121, §3°, do Código Penal como crime especial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "No Código de Trânsito Brasileiro como crime de trânsito, art. 302",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "No art. 18, II, do CP como forma de culpa especial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "No Código Nacional de Trânsito como infração administrativa gravíssima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Na Lei 9.503/97 como contravenção penal",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de lesão corporal grave, previsto no art. 129, §1°, do CP, caracteriza-se quando da ofensa resulta:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A lesão corporal grave (art. 129, §1°, CP) inclui: incapacidade para as ocupações habituais por mais de 30 dias, perigo de vida, debilidade permanente de membro, sentido ou função, e aceleração de parto.",
+    "legal_basis": "Art. 129, §1°, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer afastamento do trabalho da vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Incapacidade para ocupações habituais por mais de 30 dias, perigo de vida ou debilidade permanente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Despesas médicas superiores a 10 salários mínimos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Qualquer fratura óssea, independente da gravidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Internação hospitalar por mais de 72 horas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "A violência doméstica e familiar contra a mulher, quando resulta em lesão corporal leve, é julgada por:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei Maria da Penha (11.340/2006) afastou a aplicação da Lei 9.099/95 nos crimes de violência doméstica contra a mulher. Esses crimes são julgados pelos Juizados de Violência Doméstica e Familiar, com pena de detenção de 3 meses a 3 anos.",
+    "legal_basis": "Art. 129, §9°, CP; Lei 11.340/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Juizados Especiais Criminais, com possibilidade de transação penal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Vara Criminal comum, com pena de reclusão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Juizado de Violência Doméstica e Familiar, com pena de detenção de 3 meses a 3 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Tribunal do Júri, por ser crime contra a pessoa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Delegacia da Mulher, que pode aplicar medidas protetivas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O feminicídio foi inserido no Código Penal como qualificadora do homicídio. Ocorre quando o crime é praticado:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 13.104/2015 incluiu o feminicídio como qualificadora do homicídio (art. 121, §2°, VI, CP): contra a mulher por razões da condição de sexo feminino - violência doméstica/familiar ou menosprezo/discriminação à condição de mulher.",
+    "legal_basis": "Art. 121, §2°, VI, CP; Lei 13.104/2015",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Contra qualquer mulher em qualquer circunstância",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Contra a mulher por razões da condição de sexo feminino, no âmbito doméstico ou por menosprezo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas no âmbito doméstico e familiar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Contra mulher por motivo fútil ou torpe",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Contra mulher grávida ou com filho de até 1 ano",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de estupro, após as alterações legislativas, pode ser praticado:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Após a Lei 12.015/2009, o art. 213 do CP prevê estupro como constranger alguém, mediante violência ou grave ameaça, a ter conjunção carnal ou a praticar ou permitir que com ele se pratique outro ato libidinoso. O crime pode ser praticado por qualquer pessoa contra qualquer pessoa.",
+    "legal_basis": "Art. 213, CP; Lei 12.015/2009",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas por homem contra mulher",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Por qualquer pessoa contra outra do sexo feminino",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Por qualquer pessoa contra qualquer pessoa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas na forma de conjunção carnal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Por homem ou mulher, apenas no âmbito doméstico e familiar",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de sequestro e cárcere privado, art. 148 do CP, se distingue do crime de extorsão mediante sequestro, art. 159 do CP, porque:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O sequestro (art. 148 CP) é privar alguém de sua liberdade. A extorsão mediante sequestro (art. 159 CP) tem finalidade patrimonial (resgate). Diferença essencial: a presença ou não do objetivo de obter vantagem econômica.",
+    "legal_basis": "Art. 148 e 159, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O sequestro simples é crime contra a liberdade, enquanto o extorsão mediante sequestro é crime hediondo com finalidade patrimonial",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O sequestro é crime formal e a extorsão é material",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O sequestro só pode ser praticado contra adultos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A extorsão mediante sequestro exige duas ou mais vítimas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O sequestro simples tem pena maior que a extorsão mediante sequestro",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de injúria racial, após a Lei 14.532/2023, passou a ser equiparado a:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 14.532/2023 qualificou a injúria racial, tornando-a crime inafiançável e imprescritível ao equipará-la ao crime de racismo, com pena de reclusão de 2 a 5 anos.",
+    "legal_basis": "Art. 2°-A, Lei 7.716/1989; Lei 14.532/2023",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Contravenção penal de menor potencial ofensivo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Crime de ameaça qualificada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Crime de racismo, sendo inafiançável e imprescritível",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Crime hediondo com pena mínima de 6 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Crime de discriminação religiosa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "text": "O crime de furto, art. 155 do CP, distingue-se do crime de roubo, art. 157 do CP, porque:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O furto (art. 155 CP) é a subtração de coisa alheia móvel sem violência ou grave ameaça. O roubo (art. 157 CP) usa violência própria ou imprópria, ou grave ameaça, para subtrair a coisa.",
+    "legal_basis": "Art. 155 e 157, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O furto só ocorre em residências enquanto o roubo ocorre em vias públicas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O furto ocorre sem violência ou grave ameaça, enquanto o roubo usa violência, grave ameaça ou redução da resistência",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O furto é crime menos grave e não admite qualificadoras",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O roubo exige que a vítima seja lesionada fisicamente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O furto é crime de menor potencial ofensivo enquanto o roubo é crime hediondo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "text": "O latrocínio, previsto no art. 157, §3°, II, do CP, ocorre quando:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O latrocínio é o roubo seguido de morte. É crime hediondo, de competência do Tribunal do Júri. Consuma-se com a morte da vítima, independentemente da consumação do roubo.",
+    "legal_basis": "Art. 157, §3°, II, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O roubo é praticado com arma de fogo por mais de uma pessoa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O roubo resulta em lesão corporal grave na vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O roubo resulta em morte da vítima",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O roubo é praticado em transporte público coletivo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O roubador mata o cúmplice durante a execução do crime",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "text": "O crime de estelionato, art. 171 do CP, caracteriza-se pelo emprego de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O estelionato é obter vantagem ilícita em prejuízo alheio, induzindo ou mantendo alguém em erro mediante artifício, ardil ou qualquer outro meio fraudulento.",
+    "legal_basis": "Art. 171, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Violência ou grave ameaça para obter vantagem ilícita",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Fraude, ardil ou artifício para induzir ou manter alguém em erro, obtendo vantagem ilícita",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ameaça velada sem comunicação direta com a vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Invasão de sistema informático para desviar recursos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Abuso de confiança em relações comerciais formalizadas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "text": "O crime de receptação, art. 180 do CP, pune quem:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A receptação é adquirir, receber, transportar, conduzir ou ocultar, em proveito próprio ou alheio, coisa que sabe ser produto de crime.",
+    "legal_basis": "Art. 180, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pratica furto para receptador previamente acordado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Adquire, recebe ou oculta coisa que sabe ser produto de crime",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Vende mercadoria roubada para terceiro de boa-fé",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Transporta qualquer produto sem nota fiscal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Recebe mercadoria furtada por engano e não a devolve",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "text": "O crime de extorsão (art. 158 CP) difere da concussão (art. 316 CP) porque:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A extorsão é crime comum (qualquer pessoa pode praticar) que consiste em constranger alguém mediante violência ou grave ameaça. A concussão é crime próprio de funcionário público que exige vantagem indevida.",
+    "legal_basis": "Art. 158 e 316, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A extorsão exige violência física, enquanto a concussão não",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A extorsão é crime comum praticável por qualquer pessoa, a concussão é crime próprio de funcionário público",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A concussão é forma qualificada da extorsão no CP",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A extorsão é crime instantâneo e a concussão é crime permanente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A concussão tem pena mais baixa que a extorsão",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-patrimonio",
+    "text": "O crime de dano, art. 163 do CP, é crime:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O dano (art. 163 CP) é crime que se consuma com a destruição, inutilização ou deterioração de coisa alheia. É crime doloso e, em regra, de ação penal privada.",
+    "legal_basis": "Art. 163, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Culposo e de ação penal pública incondicionada",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Doloso e de ação penal privada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Doloso ou culposo, conforme a circunstância",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Culposo apenas quando praticado por funcionário público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "De ação penal pública condicionada à representação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "text": "O peculato, art. 312 do Código Penal, é crime que só pode ser cometido por:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O peculato é crime próprio de funcionário público. Consiste em apropriar-se de dinheiro, valor ou qualquer outro bem móvel, público ou privado, de que tem a posse em razão do cargo, ou desviá-lo.",
+    "legal_basis": "Art. 312, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Qualquer pessoa que se apodere de bem público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Funcionário público que se apropria de bem de que tem posse em razão do cargo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Servidor público que recebe propina de particulares",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Qualquer agente que fraude licitação pública",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Assessores e chefes de gabinete de autoridades públicas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "text": "A corrupção passiva, art. 317 do CP, ocorre quando o funcionário público:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A corrupção passiva é solicitar ou receber vantagem indevida, ou aceitar promessa de tal vantagem, para si ou para outrem, em razão da função que exerce.",
+    "legal_basis": "Art. 317, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Paga propina a particular para obter vantagem ilícita",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Solicita ou recebe vantagem indevida em razão de sua função",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Usa o cargo para facilitar fraude em licitação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Usa informação privilegiada para benefício próprio",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pratica ato de ofício em troca de presente de valor cultural",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "text": "O crime de prevaricação, art. 319 do CP, consiste em:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A prevaricação é retardar ou deixar de praticar, indevidamente, ato de ofício, ou praticá-lo contra disposição expressa de lei, para satisfazer interesse ou sentimento pessoal.",
+    "legal_basis": "Art. 319, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Receber vantagem indevida para praticar ato de ofício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Retardar ou omitir ato de ofício para satisfazer interesse pessoal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Praticar ato ilegal mediante pagamento de propina",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Divulgar segredo de que tem ciência em razão do cargo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Abusar de poder para perseguir adversário político",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "text": "O crime de abuso de autoridade, após a Lei 13.869/2019, pode ser praticado por:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 13.869/2019 define que abuso de autoridade é o ato praticado por agente público, servidor ou não, da administração direta, indireta, Poder Legislativo, Judiciário, Ministério Público e Defensoria Pública.",
+    "legal_basis": "Lei 13.869/2019",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas servidores públicos efetivos da administração direta",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Agentes públicos em geral, incluindo servidores e não servidores de qualquer Poder",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Exclusivamente policiais e militares no exercício de suas funções",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas delegados de polícia e agentes do Ministério Público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Somente aqueles que exercem poder de polícia administrativa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "text": "O concussão, art. 316 do CP, distingue-se da corrupção passiva porque:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Na concussão o funcionário exige a vantagem (ato ativo de cobrança). Na corrupção passiva, o funcionário solicita, recebe ou aceita a promessa. A concussão pressupõe intimidação; a corrupção passiva, acordo.",
+    "legal_basis": "Art. 316 e 317, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Na concussão há violência física, enquanto na corrupção passiva há apenas ameaça verbal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Na concussão o funcionário exige a vantagem de forma intimidatória, enquanto na corrupção passiva há solicitude ou aceitação",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A concussão é crime mais grave e tem pena maior que a corrupção passiva",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A concussão é praticada apenas por policiais, enquanto a corrupção passiva é crime de qualquer servidor",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Na concussão a iniciativa é do particular, enquanto na corrupção passiva é do servidor",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-adm-publica",
+    "text": "O crime de fraude em licitação (art. 337-F, CP, incluído pela Lei 14.133/2021) é cometido por quem:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 14.133/2021 (Nova Lei de Licitações) deslocou para o Código Penal os crimes de licitação. O art. 337-F pune quem, de modo fraudulento, frustra ou frauda o caráter competitivo de licitação pública.",
+    "legal_basis": "Art. 337-F, CP; Lei 14.133/2021",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Oferece proposta acima do valor de mercado em licitação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Frustra ou frauda, de modo fraudulento, o caráter competitivo de processo licitatório",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Celebra contrato administrativo sem a devida aprovação do TCU",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Não cumpre as especificações técnicas do contrato administrativo firmado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Participa de licitação como empresa criada há menos de 2 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de homicídio culposo na direção de veículo automotor, art. 302 do CTB, prevê pena de:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 302 do CTB prevê pena de detenção de 2 a 4 anos para homicídio culposo na direção de veículo automotor. As causas de aumento do §1° elevam a pena de 1/3 a 1/2.",
+    "legal_basis": "Art. 302, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Detenção de 6 meses a 2 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Detenção de 1 a 3 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Detenção de 2 a 4 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão de 2 a 4 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Reclusão de 4 a 8 anos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "A embriaguez ao volante é crime previsto no art. 306 do CTB. Para sua configuração, exige-se que o condutor esteja com concentração de álcool no sangue:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 306 do CTB pune conduzir veículo sob influência de álcool ou substância psicoativa que cause dependência. A concentração igual ou superior a 6 decigramas de álcool por litro de sangue (ou 0,3 mg/L no ar alveolar) caracteriza o crime.",
+    "legal_basis": "Art. 306, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Igual ou superior a 2 decigramas de álcool por litro de sangue",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Igual ou superior a 4 decigramas de álcool por litro de sangue",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Igual ou superior a 6 decigramas de álcool por litro de sangue",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Igual ou superior a 8 decigramas de álcool por litro de sangue",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Qualquer nível detectável de álcool no sangue",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de racha (participação em competição não autorizada, art. 308 do CTB) é punível com:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 308 do CTB pune a participação em competição automobilística não autorizada com detenção de 6 meses a 3 anos, suspensão ou proibição de se obter permissão ou habilitação para dirigir e multa.",
+    "legal_basis": "Art. 308, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Multa administrativa apenas, sem pena privativa de liberdade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Detenção de 6 meses a 3 anos, suspensão da habilitação e multa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Reclusão de 1 a 3 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Detenção de 1 a 2 anos e apreensão do veículo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Infração gravíssima com cassação imediata da CNH",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "Sobre o crime de fuga do local do acidente (art. 305, CTB), é correto afirmar:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 305 do CTB prevê pena de detenção de 6 meses a 1 ano para quem afastar-se do local do acidente para fugir à responsabilidade penal ou civil. O STJ entendeu que esse artigo é constitucional e não viola o direito à não-autoincriminação.",
+    "legal_basis": "Art. 305, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É inconstitucional pois viola o princípio de não se autoincriminar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Aplica-se apenas quando há vítimas fatais no acidente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pune quem afasta-se do local para fugir à responsabilidade penal ou civil com detenção de 6 meses a 1 ano",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "É crime formal que se consuma independentemente do resultado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exige que o condutor seja o culpado pelo acidente para sua configuração",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "A lesão corporal culposa na direção de veículo automotor (art. 303, CTB) tem pena de:",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 303 do CTB prevê pena de detenção de 6 meses a 2 anos, sem prejuízo das outras sanções. Se a lesão for de natureza grave ou gravíssima, aplica-se a causa de aumento do §1°.",
+    "legal_basis": "Art. 303, CTB",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Detenção de 3 meses a 1 ano",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Detenção de 6 meses a 2 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Detenção de 1 a 3 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão de 1 a 3 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Multa e suspensão da habilitação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O crime de tráfico de drogas, art. 33 da Lei 11.343/2006, prevê pena de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 33 da Lei de Drogas prevê pena de reclusão de 5 a 15 anos e pagamento de 500 a 1.500 dias-multa para o tráfico. O §4° (tráfico privilegiado) permite redução de 1/6 a 2/3 para réu primário sem envolvimento com organização criminosa.",
+    "legal_basis": "Art. 33, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Reclusão de 2 a 8 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reclusão de 3 a 10 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Reclusão de 5 a 15 anos e 500 a 1.500 dias-multa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão de 8 a 15 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Reclusão de 6 a 20 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O usuário de drogas (art. 28 da Lei 11.343/2006) responde com as seguintes penas:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 28 da Lei de Drogas não prevê pena privativa de liberdade para o usuário. As penas são: advertência, prestação de serviços à comunidade e medida educativa.",
+    "legal_basis": "Art. 28, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Detenção de 3 meses a 1 ano",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Reclusão de 1 a 3 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Advertência, prestação de serviços à comunidade e medida educativa (sem prisão)",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Internação compulsória para tratamento de dependência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Multa e fiança arbitrada pelo delegado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "O tráfico de drogas é classificado como crime:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A CF/88 e o STF classificam o tráfico de entorpecentes como crime equiparado a hediondo (art. 5°, XLIII, CF). A Lei 8.072/90 o inclui expressamente no rol.",
+    "legal_basis": "Art. 5°, XLIII, CF/88; Lei 8.072/90",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Inafiançável e imprescritível",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Hediondo ou equiparado a hediondo, inafiançável e insuscetível de graça e anistia",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Grave mas passível de fiança em casos de tráfico privilegiado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Político e passível de extradição em condições especiais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas grave com penas maiores que crimes comuns",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-pessoa",
+    "text": "Para distinguir tráfico de drogas (art. 33) do porte para uso pessoal (art. 28), o juiz deverá considerar:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 28, §2°, da Lei 11.343/2006 estabelece que o juiz considerará: a natureza e a quantidade da substância, o local e as condições em que se desenvolveu a ação, as circunstâncias sociais e pessoais, e a conduta e antecedentes do agente.",
+    "legal_basis": "Art. 28, §2°, Lei 11.343/2006",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas a quantidade de droga apreendida com o agente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A confissão do agente sobre sua intenção com a substância",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A natureza e quantidade da droga, o local, as circunstâncias sociais e pessoais, e os antecedentes do agente",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas os antecedentes criminais do agente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O depoimento das testemunhas sobre o comportamento do agente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "text": "O crime de organização criminosa é definido pela Lei 12.850/2013 como a associação de:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 12.850/2013 define organização criminosa como a associação de 4 ou mais pessoas estruturalmente ordenada, com divisão de tarefas, para obtenção de vantagem ilícita.",
+    "legal_basis": "Art. 1°, §1°, Lei 12.850/2013",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "2 ou mais pessoas para praticar crimes com uso de armas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "3 ou mais pessoas de forma permanente para praticar crimes graves",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "4 ou mais pessoas estruturalmente ordenadas com divisão de tarefas para obtenção de vantagem ilícita",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "5 ou mais pessoas com organização hierárquica formal para praticar crimes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Qualquer grupo criminoso com atuação em mais de um Estado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "text": "O crime de lavagem de dinheiro (Lei 9.613/1998) se caracteriza pela:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A lavagem de dinheiro consiste em ocultar ou dissimular a natureza, origem, localização, disposição, movimentação ou propriedade de bens, direitos ou valores provenientes de infração penal.",
+    "legal_basis": "Lei 9.613/1998",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Evasão de divisas para contas no exterior sem autorização do Banco Central",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Ocultação ou dissimulação da origem ilícita de bens ou valores provenientes de infração penal",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Importação ilegal de mercadorias sem pagamento de impostos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Financiamento de campanhas eleitorais com recursos não declarados",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Sonegação fiscal em montante superior a R$ 2,5 milhões",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "text": "A interceptação telefônica sem autorização judicial configura:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 10 da Lei 9.296/1996 tipifica a interceptação telefônica sem autorização judicial ou com outros fins que não os autorizados em lei como crime punível com reclusão de 2 a 4 anos.",
+    "legal_basis": "Art. 10, Lei 9.296/1996",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Infração disciplinar punível administrativamente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Crime punível com reclusão de 2 a 4 anos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas ilegalidade civil que gera nulidade da prova obtida",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Crime punível com detenção de 6 meses a 2 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Contravenção penal de menor potencial ofensivo",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "text": "Os crimes hediondos previstos na Lei 8.072/1990 são insuscetíveis de:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 8.072/90, com fundamento no art. 5°, XLIII, da CF/88, estabelece que os crimes hediondos e equiparados são inafiançáveis e insuscetíveis de graça ou anistia.",
+    "legal_basis": "Lei 8.072/1990; Art. 5°, XLIII, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Prescrição, graça e anistia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Fiança, graça ou anistia",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Fiança, graça ou anistia e progressão de regime",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Habeas corpus e revisão criminal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apelação e recurso especial",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "text": "O Estatuto do Desarmamento (Lei 10.826/2003) prevê como crime o porte ilegal de arma de fogo de uso permitido com pena de:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 14 da Lei 10.826/2003 prevê pena de reclusão de 2 a 4 anos e multa para o porte ilegal de arma de fogo de uso permitido.",
+    "legal_basis": "Art. 14, Lei 10.826/2003",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Detenção de 1 a 2 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Detenção de 6 meses a 2 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Reclusão de 2 a 4 anos e multa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Reclusão de 3 a 6 anos e multa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Multa apenas, se for a primeira infração",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-pessoas",
+    "text": "O crime de estupro de vulnerável, art. 217-A do CP, tem como elemento essencial:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O estupro de vulnerável (art. 217-A CP) protege menor de 14 anos, enfermo ou deficiente mental. O crime é formal: não exige violência real, bastando a conjunção carnal ou ato libidinoso com a pessoa vulnerável.",
+    "legal_basis": "Art. 217-A, CP",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A violência real contra a vítima menor de 14 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A conjunção carnal ou ato libidinoso com menor de 14 anos ou vulnerável, independentemente de violência ou ameaça",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O emprego de fraude ou meio ardiloso para enganar a vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A relação de autoridade entre o agente e a vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "A presença de testemunhas ou materialidade documental do ato",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

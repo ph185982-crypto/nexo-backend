@@ -210,6 +210,7 @@ CREATE TABLE user_legal_bookmarks (
 
 CREATE INDEX idx_legal_articles_document ON legal_articles(document_id);
 CREATE INDEX idx_legal_articles_subject ON legal_articles(subject_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_legal_articles_doc_number ON legal_articles(document_id, article_number);
 
 -- ═══════════════════════════════════════════════════════════════════
 -- FLASHCARDS

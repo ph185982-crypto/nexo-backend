@@ -92,6 +92,31 @@ FORMATO: Revisão rápida
     return base
 
 
+async def generate_audio_lesson(
+    topic: str,
+    content: str,
+    style: str = "summary",
+    synthesize: bool = True,
+    voice: Optional[str] = None,
+) -> dict:
+    """Generate script via Gemini then synthesize to MP3 via edge-tts."""
+    script_data = await generate_audio_script(topic, content, style)
+
+    if synthesize:
+        try:
+            from prf.services.tts_service import TTSService
+            tts = TTSService(voice=voice)
+            audio_bytes = await tts.synthesize(script_data["script"])
+            script_data["audio_bytes"] = audio_bytes
+            script_data["audio_format"] = "mp3"
+            script_data["has_audio"] = len(audio_bytes) > 0
+        except Exception as e:
+            logger.warning(f"TTS synthesis failed: {e}")
+            script_data["has_audio"] = False
+
+    return script_data
+
+
 def _fallback_script(topic: str, content: str, style: str) -> dict:
     script = f"Tema de hoje: {topic}. {content[:500]}"
     return {

@@ -173,6 +173,7 @@ TOPICS = {
         {"name": "Prisão e liberdade provisória", "slug": "prisao-liberdade", "weight": 3.0},
         {"name": "Provas", "slug": "provas", "weight": 2.5},
         {"name": "Competência", "slug": "competencia-cpp", "weight": 1.5},
+        {"name": "Recursos no processo penal", "slug": "recursos-cpp", "weight": 2.0},
     ],
     "legislacao-especial": [
         {"name": "Lei de Drogas (11.343/06)", "slug": "lei-drogas", "weight": 3.0},
@@ -182,6 +183,68 @@ TOPICS = {
         {"name": "ECA (8.069/90)", "slug": "eca", "weight": 1.5},
         {"name": "Lei de Crimes Ambientais (9.605/98)", "slug": "crimes-ambientais", "weight": 1.5},
         {"name": "Crimes Hediondos (8.072/90)", "slug": "crimes-hediondos", "weight": 2.0},
+    ],
+    "direito-administrativo": [
+        {"name": "Atos administrativos", "slug": "atos-administrativos", "weight": 2.5},
+        {"name": "Poderes administrativos", "slug": "poderes-administrativos", "weight": 2.5},
+        {"name": "Licitações e contratos", "slug": "licitacoes-contratos", "weight": 2.0},
+        {"name": "Servidores públicos", "slug": "servidores-publicos", "weight": 2.0},
+        {"name": "Processo administrativo disciplinar", "slug": "pad", "weight": 2.0},
+        {"name": "Controle da Administração Pública", "slug": "controle-adm", "weight": 1.5},
+        {"name": "Responsabilidade civil do Estado", "slug": "responsabilidade-estado", "weight": 2.0},
+        {"name": "Bens públicos", "slug": "bens-publicos", "weight": 1.0},
+    ],
+    "lingua-portuguesa": [
+        {"name": "Interpretação de textos", "slug": "interpretacao-textos", "weight": 3.0},
+        {"name": "Concordância verbal e nominal", "slug": "concordancia", "weight": 2.5},
+        {"name": "Regência verbal e nominal", "slug": "regencia", "weight": 2.0},
+        {"name": "Pontuação", "slug": "pontuacao", "weight": 2.0},
+        {"name": "Redação oficial", "slug": "redacao-oficial", "weight": 1.5},
+        {"name": "Classes de palavras", "slug": "classes-palavras", "weight": 2.0},
+    ],
+    "direitos-humanos": [
+        {"name": "Declaração Universal dos Direitos Humanos", "slug": "dudh", "weight": 2.5},
+        {"name": "Pacto de San José da Costa Rica", "slug": "pacto-san-jose", "weight": 2.5},
+        {"name": "Sistema interamericano de proteção", "slug": "sistema-interamericano", "weight": 2.0},
+        {"name": "Direitos das minorias e grupos vulneráveis", "slug": "minorias-vulneraveis", "weight": 1.5},
+        {"name": "Proibição da tortura e tratamento degradante", "slug": "tortura-degradante", "weight": 2.0},
+        {"name": "Garantias processuais e devido processo legal", "slug": "garantias-processuais-dh", "weight": 2.0},
+    ],
+    "fisica-aplicada": [
+        {"name": "Cinemática aplicada ao trânsito", "slug": "cinematica", "weight": 2.5},
+        {"name": "Dinâmica veicular", "slug": "dinamica-veicular", "weight": 2.5},
+        {"name": "Energia e colisões", "slug": "energia-colisoes", "weight": 2.0},
+        {"name": "Balística", "slug": "balistica", "weight": 1.5},
+        {"name": "Frenagem e atrito", "slug": "frenagem-atrito", "weight": 2.0},
+    ],
+    "informatica": [
+        {"name": "Sistemas operacionais", "slug": "sistemas-operacionais", "weight": 2.0},
+        {"name": "Redes de computadores e internet", "slug": "redes-internet", "weight": 2.0},
+        {"name": "Segurança da informação", "slug": "seguranca-info", "weight": 2.5},
+        {"name": "Editores de texto e planilhas", "slug": "office", "weight": 1.5},
+        {"name": "Computação em nuvem", "slug": "cloud", "weight": 1.5},
+        {"name": "Banco de dados", "slug": "banco-dados", "weight": 1.0},
+    ],
+    "raciocinio-logico": [
+        {"name": "Proposições e conectivos lógicos", "slug": "proposicoes-conectivos", "weight": 3.0},
+        {"name": "Tabelas-verdade", "slug": "tabelas-verdade", "weight": 2.5},
+        {"name": "Equivalências e negações", "slug": "equivalencias", "weight": 2.5},
+        {"name": "Raciocínio quantitativo", "slug": "raciocinio-quantitativo", "weight": 2.0},
+        {"name": "Sequências e padrões", "slug": "sequencias-padroes", "weight": 1.5},
+    ],
+    "etica-servico-publico": [
+        {"name": "Código de Ética (Decreto 1.171/94)", "slug": "codigo-etica", "weight": 3.0},
+        {"name": "Regime disciplinar do servidor", "slug": "regime-disciplinar", "weight": 2.0},
+        {"name": "Lei de Improbidade Administrativa", "slug": "improbidade", "weight": 2.5},
+        {"name": "Conflito de interesses", "slug": "conflito-interesses", "weight": 1.5},
+    ],
+    "policiamento-fiscalizacao": [
+        {"name": "Atribuições da PRF", "slug": "atribuicoes-prf", "weight": 3.0},
+        {"name": "Fiscalização de veículos", "slug": "fisc-veiculos", "weight": 2.5},
+        {"name": "Fiscalização de cargas", "slug": "fisc-cargas", "weight": 2.0},
+        {"name": "Abordagem policial", "slug": "abordagem-policial", "weight": 2.5},
+        {"name": "Uso progressivo da força", "slug": "uso-forca", "weight": 2.5},
+        {"name": "Policiamento rodoviário ostensivo", "slug": "policiamento-ostensivo", "weight": 2.0},
     ],
 }
 
@@ -201,163 +264,9 @@ LEGAL_DOCUMENTS = [
 ]
 
 # ═══════════════════════════════════════════════════════════════════
-# SAMPLE LEGAL ARTICLES (CF Art. 144 — Segurança Pública)
+# LEGACY — questions and legal articles now live in JSON files
+# under prf/seeds/questions/ and prf/seeds/articles/
 # ═══════════════════════════════════════════════════════════════════
-
-SAMPLE_LEGAL_ARTICLES = [
-    {
-        "document_slug": "cf-88",
-        "subject_slug": "direito-constitucional",
-        "article_number": "Art. 144",
-        "chapter": "Da Segurança Pública",
-        "official_text": "A segurança pública, dever do Estado, direito e responsabilidade de todos, é exercida para a preservação da ordem pública e da incolumidade das pessoas e do patrimônio, através dos seguintes órgãos: I - polícia federal; II - polícia rodoviária federal; III - polícia ferroviária federal; IV - polícias civis; V - polícias militares e corpos de bombeiros militares; VI - polícias penais federal, estaduais e distrital.",
-        "simple_text": "A segurança pública é dever do Estado mas também responsabilidade de todos. É exercida por órgãos específicos para preservar a ordem pública e proteger pessoas e patrimônio. A PRF é um desses órgãos.",
-        "highlights": ["dever do Estado", "direito e responsabilidade de todos", "polícia rodoviária federal"],
-        "frequency_score": 10.0,
-    },
-    {
-        "document_slug": "cf-88",
-        "subject_slug": "direito-constitucional",
-        "article_number": "Art. 144, §2°",
-        "chapter": "Da Segurança Pública",
-        "official_text": "A polícia rodoviária federal, órgão permanente, organizado e mantido pela União e estruturado em carreira, destina-se, na forma da lei, ao patrulhamento ostensivo das rodovias federais.",
-        "simple_text": "A PRF é um órgão permanente da União, com carreira estruturada, cuja função principal é o patrulhamento ostensivo das rodovias federais.",
-        "highlights": ["órgão permanente", "mantido pela União", "patrulhamento ostensivo", "rodovias federais"],
-        "frequency_score": 10.0,
-    },
-    {
-        "document_slug": "cf-88",
-        "subject_slug": "direito-constitucional",
-        "article_number": "Art. 5°, caput",
-        "chapter": "Dos Direitos e Garantias Fundamentais",
-        "official_text": "Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se aos brasileiros e aos estrangeiros residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade.",
-        "simple_text": "Todos são iguais perante a lei. Brasileiros e estrangeiros residentes têm garantidos os direitos à vida, liberdade, igualdade, segurança e propriedade.",
-        "highlights": ["iguais perante a lei", "inviolabilidade", "vida, liberdade, igualdade, segurança, propriedade"],
-        "frequency_score": 9.0,
-    },
-    {
-        "document_slug": "ctb",
-        "subject_slug": "legislacao-transito",
-        "article_number": "Art. 1°",
-        "chapter": "Disposições Preliminares",
-        "official_text": "O trânsito de qualquer natureza nas vias terrestres do território nacional, abertas à circulação, rege-se por este Código.",
-        "simple_text": "O CTB regula todo tipo de trânsito nas vias terrestres abertas à circulação em território nacional.",
-        "highlights": ["qualquer natureza", "vias terrestres", "território nacional", "abertas à circulação"],
-        "frequency_score": 7.0,
-    },
-    {
-        "document_slug": "ctb",
-        "subject_slug": "legislacao-transito",
-        "article_number": "Art. 165",
-        "chapter": "Das Infrações",
-        "official_text": "Dirigir sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência: Infração - gravíssima; Penalidade - multa (dez vezes) e suspensão do direito de dirigir por 12 (doze) meses.",
-        "simple_text": "Dirigir alcoolizado ou sob efeito de drogas é infração gravíssima com multa 10x e suspensão da habilitação por 12 meses.",
-        "highlights": ["gravíssima", "multa dez vezes", "suspensão 12 meses", "álcool ou substância psicoativa"],
-        "frequency_score": 9.5,
-    },
-    {
-        "document_slug": "ctb",
-        "subject_slug": "legislacao-transito",
-        "article_number": "Art. 302",
-        "chapter": "Dos Crimes de Trânsito",
-        "official_text": "Praticar homicídio culposo na direção de veículo automotor: Penas - detenção, de dois a quatro anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.",
-        "simple_text": "Matar alguém culposamente (sem intenção) ao dirigir: detenção de 2 a 4 anos e suspensão/proibição de habilitação.",
-        "highlights": ["homicídio culposo", "detenção 2 a 4 anos", "suspensão da habilitação"],
-        "frequency_score": 9.0,
-    },
-]
-
-# ═══════════════════════════════════════════════════════════════════
-# SAMPLE QUESTIONS
-# ═══════════════════════════════════════════════════════════════════
-
-SAMPLE_QUESTIONS = [
-    {
-        "subject_slug": "direito-constitucional",
-        "text": "De acordo com a Constituição Federal, a polícia rodoviária federal destina-se:",
-        "difficulty": "medium",
-        "source": "CESPE/2021",
-        "year": 2021,
-        "examiner": "CESPE",
-        "explanation": "Conforme o Art. 144, §2° da CF, a PRF destina-se ao patrulhamento ostensivo das rodovias federais.",
-        "legal_basis": "Art. 144, §2°, CF/88",
-        "alternatives": [
-            {"letter": "A", "text": "ao patrulhamento ostensivo das rodovias federais", "is_correct": True, "explanation": "Correto. É a literalidade do Art. 144, §2° da CF."},
-            {"letter": "B", "text": "à apuração de infrações penais contra a ordem política e social", "is_correct": False, "explanation": "Essa é atribuição da Polícia Federal (Art. 144, §1°, I)."},
-            {"letter": "C", "text": "à preservação da ordem pública e da incolumidade das pessoas", "is_correct": False, "explanation": "Essa é uma função geral da segurança pública, não específica da PRF."},
-            {"letter": "D", "text": "às funções de polícia judiciária da União", "is_correct": False, "explanation": "Essa é atribuição da Polícia Federal (Art. 144, §1°, IV)."},
-            {"letter": "E", "text": "à polícia ostensiva e à preservação da ordem pública", "is_correct": False, "explanation": "Essa é atribuição das Polícias Militares (Art. 144, §5°)."},
-        ],
-    },
-    {
-        "subject_slug": "legislacao-transito",
-        "text": "Segundo o CTB, dirigir sob a influência de álcool constitui infração:",
-        "difficulty": "easy",
-        "source": "CESPE/2019",
-        "year": 2019,
-        "examiner": "CESPE",
-        "explanation": "Art. 165 do CTB classifica dirigir sob influência de álcool como infração gravíssima.",
-        "legal_basis": "Art. 165, CTB",
-        "alternatives": [
-            {"letter": "A", "text": "leve", "is_correct": False, "explanation": "Incorreto. A infração é gravíssima, não leve."},
-            {"letter": "B", "text": "média", "is_correct": False, "explanation": "Incorreto. A infração é gravíssima, não média."},
-            {"letter": "C", "text": "grave", "is_correct": False, "explanation": "Incorreto. A infração é gravíssima, não apenas grave."},
-            {"letter": "D", "text": "gravíssima", "is_correct": True, "explanation": "Correto. Art. 165 do CTB: infração gravíssima, multa (dez vezes) e suspensão por 12 meses."},
-            {"letter": "E", "text": "gravíssima agravada", "is_correct": False, "explanation": "Não existe essa classificação no CTB."},
-        ],
-    },
-    {
-        "subject_slug": "direito-penal",
-        "text": "São causas excludentes de ilicitude previstas no Código Penal:",
-        "difficulty": "medium",
-        "source": "CESPE/2020",
-        "year": 2020,
-        "examiner": "CESPE",
-        "explanation": "Art. 23 do CP prevê as excludentes de ilicitude: estado de necessidade, legítima defesa, estrito cumprimento de dever legal e exercício regular de direito.",
-        "legal_basis": "Art. 23, CP",
-        "alternatives": [
-            {"letter": "A", "text": "estado de necessidade, legítima defesa, estrito cumprimento de dever legal e exercício regular de direito", "is_correct": True, "explanation": "Correto. São as quatro excludentes previstas no Art. 23 do CP."},
-            {"letter": "B", "text": "coação irresistível, obediência hierárquica e embriaguez fortuita", "is_correct": False, "explanation": "Essas são causas de exclusão de culpabilidade, não de ilicitude."},
-            {"letter": "C", "text": "estado de necessidade, legítima defesa e coação moral irresistível", "is_correct": False, "explanation": "Coação moral irresistível é causa de exclusão de culpabilidade."},
-            {"letter": "D", "text": "legítima defesa, exercício regular de direito e erro de tipo", "is_correct": False, "explanation": "Erro de tipo exclui o dolo, não a ilicitude."},
-            {"letter": "E", "text": "estado de necessidade, legítima defesa e prescrição", "is_correct": False, "explanation": "Prescrição é causa de extinção da punibilidade, não de ilicitude."},
-        ],
-    },
-    {
-        "subject_slug": "legislacao-transito",
-        "text": "O homicídio culposo na direção de veículo automotor é punido com:",
-        "difficulty": "medium",
-        "source": "CESPE/2021",
-        "year": 2021,
-        "examiner": "CESPE",
-        "explanation": "Art. 302 do CTB: detenção de 2 a 4 anos e suspensão ou proibição de habilitação.",
-        "legal_basis": "Art. 302, CTB",
-        "alternatives": [
-            {"letter": "A", "text": "detenção de 6 meses a 2 anos", "is_correct": False, "explanation": "Essa é a pena do homicídio culposo do CP (Art. 121, §3°), não do CTB."},
-            {"letter": "B", "text": "detenção de 2 a 4 anos e suspensão da habilitação", "is_correct": True, "explanation": "Correto. Art. 302 do CTB."},
-            {"letter": "C", "text": "reclusão de 2 a 4 anos", "is_correct": False, "explanation": "A pena é de detenção, não reclusão."},
-            {"letter": "D", "text": "detenção de 1 a 3 anos", "is_correct": False, "explanation": "A pena prevista é de 2 a 4 anos, não 1 a 3."},
-            {"letter": "E", "text": "reclusão de 6 a 20 anos", "is_correct": False, "explanation": "Essa é a pena do homicídio doloso simples (Art. 121, CP)."},
-        ],
-    },
-    {
-        "subject_slug": "direito-constitucional",
-        "text": "A segurança pública, conforme a Constituição Federal, é:",
-        "difficulty": "easy",
-        "source": "CESPE/2018",
-        "year": 2018,
-        "examiner": "CESPE",
-        "explanation": "Art. 144, caput da CF: 'A segurança pública, dever do Estado, direito e responsabilidade de todos'.",
-        "legal_basis": "Art. 144, caput, CF/88",
-        "alternatives": [
-            {"letter": "A", "text": "dever exclusivo do Estado", "is_correct": False, "explanation": "Não é exclusivo. A CF diz que é 'direito e responsabilidade de todos'."},
-            {"letter": "B", "text": "dever do Estado, direito e responsabilidade de todos", "is_correct": True, "explanation": "Correto. Literalidade do Art. 144, caput, CF."},
-            {"letter": "C", "text": "responsabilidade exclusiva dos órgãos policiais", "is_correct": False, "explanation": "A CF atribui a responsabilidade a todos, não apenas aos órgãos policiais."},
-            {"letter": "D", "text": "competência privativa da União", "is_correct": False, "explanation": "A segurança pública envolve estados e municípios também."},
-            {"letter": "E", "text": "atribuição das Forças Armadas", "is_correct": False, "explanation": "As Forças Armadas são tratadas no Art. 142 e têm função diferente."},
-        ],
-    },
-]
 
 # ═══════════════════════════════════════════════════════════════════
 # ACHIEVEMENTS

@@ -1,0 +1,1575 @@
+[
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 1",
+    "chapter": "Disposições Preliminares",
+    "official_text": "O trânsito de qualquer natureza nas vias terrestres do território nacional, abertas à circulação, rege-se por este Código.",
+    "simple_text": "O CTB regula todo tipo de trânsito nas vias terrestres abertas à circulação em todo o Brasil.",
+    "highlights": [
+      "vias terrestres",
+      "território nacional",
+      "abertas à circulação"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 1, §1º",
+    "chapter": "Disposições Preliminares",
+    "official_text": "Considera-se trânsito a utilização das vias por pessoas, veículos e animais, isolados ou em grupos, conduzidos ou não, para fins de circulação, parada, estacionamento e operação de carga ou descarga.",
+    "simple_text": "Trânsito é qualquer uso das vias por pessoas, veículos ou animais, seja para circular, parar, estacionar ou carregar/descarregar mercadorias.",
+    "highlights": [
+      "circulação",
+      "parada",
+      "estacionamento",
+      "operação de carga"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 1, §2º",
+    "chapter": "Disposições Preliminares",
+    "official_text": "O trânsito, em condições seguras, é um direito de todos e dever dos órgãos e entidades componentes do Sistema Nacional de Trânsito, a estes cabendo, no âmbito das respectivas competências, adotar as medidas destinadas a assegurar esse direito.",
+    "simple_text": "Trânsito seguro é direito de todos. Os órgãos do Sistema Nacional de Trânsito devem garantir esse direito dentro de suas competências.",
+    "highlights": [
+      "direito de todos",
+      "condições seguras",
+      "Sistema Nacional de Trânsito"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 2",
+    "chapter": "Disposições Preliminares",
+    "official_text": "São vias terrestres urbanas e rurais as ruas, avenidas, logradouros, caminhos, passagens, estradas e rodovias, que terão seu uso regulamentado pelo órgão ou entidade com circunscrição sobre elas, de acordo com as peculiaridades locais e as circunstâncias especiais.",
+    "simple_text": "As vias terrestres incluem ruas, avenidas, estradas e rodovias, tanto urbanas quanto rurais. Cada órgão competente regulamenta o uso conforme as peculiaridades locais.",
+    "highlights": [
+      "vias terrestres",
+      "urbanas e rurais",
+      "peculiaridades locais"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 3",
+    "chapter": "Disposições Preliminares",
+    "official_text": "As disposições deste Código são aplicáveis a qualquer veículo, bem como aos proprietários, condutores dos veículos nacionais ou estrangeiros e às pessoas nele expressamente mencionadas.",
+    "simple_text": "O CTB se aplica a todos os veículos (nacionais ou estrangeiros) e a todas as pessoas mencionadas no Código.",
+    "highlights": [
+      "qualquer veículo",
+      "nacionais ou estrangeiros"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 4",
+    "chapter": "Disposições Preliminares",
+    "official_text": "Os conceitos e definições estabelecidos para os efeitos deste Código são os constantes do Anexo I que dele faz parte.",
+    "simple_text": "As definições e conceitos usados no CTB estão no Anexo I do Código.",
+    "highlights": [
+      "Anexo I",
+      "conceitos e definições"
+    ],
+    "frequency_score": 5.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 5",
+    "chapter": "Do Sistema Nacional de Trânsito",
+    "official_text": "O Sistema Nacional de Trânsito é o conjunto de órgãos e entidades da União, dos Estados, do Distrito Federal e dos Municípios que tem por finalidade o exercício das atividades de planejamento, administração, normatização, pesquisa, registro e licenciamento de veículos, formação, habilitação e reciclagem de condutores, educação, engenharia, operação do sistema viário, policiamento, fiscalização, julgamento de infrações e de recursos e aplicação de penalidades.",
+    "simple_text": "O SNT reúne órgãos de todas as esferas (União, estados, DF e municípios) para planejar, administrar, fiscalizar e julgar questões de trânsito.",
+    "highlights": [
+      "Sistema Nacional de Trânsito",
+      "planejamento",
+      "fiscalização",
+      "policiamento"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "snt",
+    "article_number": "Art. 6",
+    "chapter": "Do Sistema Nacional de Trânsito",
+    "official_text": "São objetivos básicos do Sistema Nacional de Trânsito: I - estabelecer diretrizes da Política Nacional de Trânsito, com vistas à segurança, à fluidez, ao conforto, à defesa ambiental e à educação para o trânsito, e fiscalizar seu cumprimento; II - fixar, mediante normas e procedimentos, a padronização de critérios técnicos, financeiros e administrativos para a execução das atividades de trânsito; III - estabelecer a sistemática de fluxos permanentes de informações entre os seus diversos órgãos e entidades.",
+    "simple_text": "Os objetivos do SNT são: definir a política de trânsito (segurança, fluidez, conforto, meio ambiente), padronizar critérios e manter fluxo de informações entre órgãos.",
+    "highlights": [
+      "segurança",
+      "fluidez",
+      "defesa ambiental",
+      "padronização"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 26",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Os usuários das vias terrestres devem: I - abster-se de todo ato que possa constituir perigo ou obstáculo para o trânsito de veículos, de pessoas ou de animais, ou ainda causar danos a propriedades públicas ou privadas; II - abster-se de obstruir o trânsito ou torná-lo perigoso, atirando, depositando ou abandonando na via objetos ou substâncias, ou nela criando qualquer outro obstáculo.",
+    "simple_text": "Todos os usuários das vias devem evitar atos que causem perigo, obstáculo ou dano, e não podem jogar objetos ou criar obstáculos nas vias.",
+    "highlights": [
+      "perigo",
+      "obstáculo",
+      "danos a propriedades"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 27",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Antes de colocar o veículo em circulação nas vias públicas, o condutor deverá verificar a existência e as boas condições de funcionamento dos equipamentos de uso obrigatório, bem como assegurar-se da existência de combustível suficiente para chegar ao local de destino.",
+    "simple_text": "Antes de dirigir, o condutor deve verificar se os equipamentos obrigatórios funcionam e se há combustível suficiente.",
+    "highlights": [
+      "equipamentos obrigatórios",
+      "boas condições",
+      "combustível"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 28",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "O condutor deverá, a todo momento, ter domínio de seu veículo, dirigindo-o com atenção e cuidados indispensáveis à segurança do trânsito.",
+    "simple_text": "O condutor deve manter total controle do veículo, dirigindo com atenção e cuidado para garantir a segurança no trânsito.",
+    "highlights": [
+      "domínio do veículo",
+      "atenção",
+      "segurança"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 29",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "O trânsito de veículos nas vias terrestres abertas à circulação obedecerá às seguintes normas: I - a circulação far-se-á pelo lado direito da via, admitindo-se as exceções devidamente sinalizadas; II - o condutor deverá guardar distância de segurança lateral e frontal entre o seu e os demais veículos, bem como em relação ao bordo da pista, considerando-se, no momento, a velocidade e as condições do local, da circulação, do veículo e as condições climáticas.",
+    "simple_text": "Deve-se circular pelo lado direito da via e manter distância segura lateral e frontal dos outros veículos, considerando velocidade e condições do local.",
+    "highlights": [
+      "lado direito",
+      "distância de segurança",
+      "lateral e frontal"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 30",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Todo condutor, ao perceber que outro que o segue tem o propósito de ultrapassá-lo, deverá: I - se estiver circulando pela faixa da esquerda, deslocar-se para a faixa da direita, sem acelerar a marcha; II - se estiver circulando pelas demais faixas, manter-se naquela na qual está circulando, sem acelerar a marcha.",
+    "simple_text": "Quando perceber que outro veículo quer ultrapassá-lo, o condutor deve facilitar a ultrapassagem sem acelerar: se está na esquerda, vai para a direita.",
+    "highlights": [
+      "ultrapassagem",
+      "faixa da esquerda",
+      "sem acelerar"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 33",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Nas interseções e suas proximidades, o condutor não poderá efetuar ultrapassagem.",
+    "simple_text": "É proibido ultrapassar em cruzamentos e nas proximidades deles.",
+    "highlights": [
+      "interseções",
+      "ultrapassagem proibida"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 34",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "O condutor que queira executar uma manobra deverá certificar-se de que pode executá-la sem perigo para os demais usuários da via que o seguem, precedem ou vão cruzar com ele, considerando sua posição, sua direção e sua velocidade.",
+    "simple_text": "Antes de fazer qualquer manobra, o condutor deve se certificar de que pode realizá-la sem colocar outros usuários em perigo.",
+    "highlights": [
+      "manobra",
+      "sem perigo",
+      "demais usuários"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 35",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Antes de iniciar qualquer manobra que implique um deslocamento lateral, o condutor deverá indicar seu propósito de forma clara, mediante o uso de luz indicadora de direção ou de gesto convencional de braço.",
+    "simple_text": "Antes de mudar de faixa ou fazer conversão, o condutor deve sinalizar com a seta ou gesto de braço.",
+    "highlights": [
+      "deslocamento lateral",
+      "luz indicadora de direção",
+      "gesto de braço"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 37",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Nas vias providas de acostamento, a conversão à esquerda e a operação de retorno deverão ser feitas nos locais apropriados e, onde estes não existirem, o condutor deverá aguardar no acostamento, à direita, para cruzar a pista com segurança.",
+    "simple_text": "Em vias com acostamento, a conversão à esquerda ou retorno devem ser feitos em locais apropriados. Se não houver, aguardar no acostamento à direita.",
+    "highlights": [
+      "acostamento",
+      "conversão à esquerda",
+      "retorno"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 38",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Antes de entrar à direita ou à esquerda, em outra via ou em lotes lindeiros, o condutor deverá: I - ao sair da via pelo lado direito, aproximar-se o máximo possível do bordo direito da pista e executar sua manobra no menor espaço possível; II - ao sair da via pelo lado esquerdo, aproximar-se o máximo possível de seu eixo ou da linha divisória da pista.",
+    "simple_text": "Para entrar em outra via, o condutor deve se aproximar do lado correspondente: direita para virar à direita, eixo da pista para virar à esquerda.",
+    "highlights": [
+      "bordo direito",
+      "eixo da pista",
+      "conversão"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 40",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "O uso de luzes em veículo obedecerá às seguintes determinações: I - o condutor manterá acesos os faróis do veículo, utilizando luz baixa, durante a noite e durante o dia nos túneis providos de iluminação pública e nas rodovias.",
+    "simple_text": "É obrigatório usar farol baixo à noite, em túneis com iluminação pública e nas rodovias (mesmo de dia).",
+    "highlights": [
+      "farol baixo",
+      "rodovias",
+      "túneis",
+      "luz baixa"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 41",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "O condutor de veículo só poderá fazer uso de buzina, desde que em toque breve, nas seguintes situações: I - para fazer advertências necessárias a fim de evitar acidentes; II - fora das áreas urbanas, quando for conveniente advertir a um condutor que se tem o propósito de ultrapassá-lo.",
+    "simple_text": "A buzina só pode ser usada em toques breves para evitar acidentes e, fora da área urbana, para avisar que vai ultrapassar.",
+    "highlights": [
+      "buzina",
+      "toque breve",
+      "evitar acidentes"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 42",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Nenhum condutor deverá frear bruscamente seu veículo, salvo por razões de segurança.",
+    "simple_text": "É proibido frear bruscamente, exceto quando necessário por segurança.",
+    "highlights": [
+      "frear bruscamente",
+      "razões de segurança"
+    ],
+    "frequency_score": 5.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 43",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Ao regular a velocidade, o condutor deverá observar constantemente as condições físicas da via, do veículo e da carga, as condições meteorológicas e a intensidade do trânsito, obedecendo aos limites máximos de velocidade estabelecidos para a via.",
+    "simple_text": "O condutor deve adequar a velocidade às condições da via, do veículo, do clima e da intensidade do trânsito, respeitando os limites máximos.",
+    "highlights": [
+      "velocidade",
+      "condições da via",
+      "limites máximos"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 44",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Ao aproximar-se de qualquer tipo de cruzamento, o condutor do veículo deve demonstrar prudência especial, transitando em velocidade moderada, de forma que possa deter seu veículo com segurança para dar passagem a pedestre e a veículos que tenham o direito de preferência.",
+    "simple_text": "Ao se aproximar de cruzamentos, o condutor deve reduzir a velocidade e estar pronto para dar preferência a pedestres e veículos prioritários.",
+    "highlights": [
+      "cruzamento",
+      "prudência especial",
+      "velocidade moderada",
+      "preferência"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 45",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Mesmo que a indicação luminosa do semáforo lhe seja favorável, nenhum condutor pode entrar em uma interseção se houver possibilidade de ser obrigado a imobilizar o veículo na área do cruzamento, obstruindo ou impedindo a passagem do trânsito transversal.",
+    "simple_text": "Mesmo com sinal verde, o condutor não pode entrar no cruzamento se houver risco de ficar parado nele, bloqueando o trânsito.",
+    "highlights": [
+      "semáforo favorável",
+      "interseção",
+      "obstruir trânsito"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "normas-circulacao",
+    "article_number": "Art. 46",
+    "chapter": "Das Normas Gerais de Circulação e Conduta",
+    "official_text": "Sempre que possível, a operação de carga ou descarga será executada em vias secundárias ou locais apropriados, obedecendo às condições de segurança, horário e regulamentação.",
+    "simple_text": "Carga e descarga devem, sempre que possível, ser feitas em vias secundárias ou locais apropriados, respeitando regras de segurança e horário.",
+    "highlights": [
+      "carga ou descarga",
+      "vias secundárias",
+      "segurança"
+    ],
+    "frequency_score": 5.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "pedestres",
+    "article_number": "Art. 68",
+    "chapter": "Dos Pedestres e Condutores de Veículos não Motorizados",
+    "official_text": "É assegurada ao pedestre a utilização dos passeios ou passagens próprias das vias urbanas e dos acostamentos das vias rurais para circulação, podendo a autoridade competente permitir a utilização de parte da calçada para outros fins, desde que não seja prejudicial ao fluxo de pedestres.",
+    "simple_text": "Pedestres têm direito de usar calçadas nas vias urbanas e acostamentos nas vias rurais. A autoridade pode permitir outros usos da calçada, desde que não prejudique os pedestres.",
+    "highlights": [
+      "pedestre",
+      "passeios",
+      "acostamentos",
+      "calçada"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "pedestres",
+    "article_number": "Art. 69",
+    "chapter": "Dos Pedestres e Condutores de Veículos não Motorizados",
+    "official_text": "Para cruzar a pista de rolamento o pedestre tomará precauções de segurança, levando em conta, principalmente, a visibilidade, a distância e a velocidade dos veículos, utilizando sempre as faixas ou passagens a ele destinadas.",
+    "simple_text": "Ao atravessar a rua, o pedestre deve tomar precauções de segurança e usar as faixas de travessia destinadas a ele.",
+    "highlights": [
+      "cruzar a pista",
+      "faixa de pedestres",
+      "precauções de segurança"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "pedestres",
+    "article_number": "Art. 70",
+    "chapter": "Dos Pedestres e Condutores de Veículos não Motorizados",
+    "official_text": "Os pedestres que estiverem atravessando a via sobre as faixas delimitadas para esse fim terão prioridade de passagem, exceto nos locais com sinalização semafórica, onde deverão ser respeitadas as disposições deste Código.",
+    "simple_text": "Pedestres na faixa de travessia têm prioridade, exceto onde há semáforo, caso em que devem respeitar a sinalização.",
+    "highlights": [
+      "prioridade de passagem",
+      "faixa de pedestres",
+      "sinalização semafórica"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "pedestres",
+    "article_number": "Art. 71",
+    "chapter": "Dos Pedestres e Condutores de Veículos não Motorizados",
+    "official_text": "O órgão ou entidade com circunscrição sobre a via manterá, obrigatoriamente, as faixas e passagens de pedestres em boas condições de visibilidade, higiene, segurança e sinalização.",
+    "simple_text": "O órgão responsável pela via deve manter as faixas de pedestres em boas condições de visibilidade, higiene e sinalização.",
+    "highlights": [
+      "faixas de pedestres",
+      "boas condições",
+      "sinalização"
+    ],
+    "frequency_score": 5.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 80",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "Sempre que necessário, será colocada ao longo da via, sinalização prevista neste Código e em legislação complementar, destinada a condutores e pedestres, vedada a utilização de qualquer outra.",
+    "simple_text": "A sinalização nas vias deve seguir o CTB e a legislação complementar, sendo proibido usar qualquer sinalização não prevista.",
+    "highlights": [
+      "sinalização",
+      "legislação complementar",
+      "condutores e pedestres"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 82",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "É proibido afixar sobre a sinalização de trânsito e respectivos suportes, ou junto a ambos, qualquer tipo de publicidade, inscrições, legendas e símbolos que não se relacionem com a mensagem da sinalização.",
+    "simple_text": "É proibido colocar publicidade ou qualquer material estranho sobre a sinalização de trânsito.",
+    "highlights": [
+      "publicidade proibida",
+      "sinalização",
+      "inscrições"
+    ],
+    "frequency_score": 5.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 84",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "Quando, em situação de emergência, a sinalização for insuficiente ou contrariada por agente de trânsito, responderá este, na esfera administrativa, pelos danos que causar.",
+    "simple_text": "Se um agente de trânsito contraria a sinalização em emergência, ele responde administrativamente pelos danos causados.",
+    "highlights": [
+      "agente de trânsito",
+      "emergência",
+      "responsabilidade administrativa"
+    ],
+    "frequency_score": 5.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 86",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "Os sinais de trânsito classificam-se em: I - verticais; II - horizontais; III - dispositivos de sinalização auxiliar; IV - luminosos; V - sonoros; VI - gestos de agentes de trânsito e condutores.",
+    "simple_text": "Os sinais de trânsito se classificam em: verticais, horizontais, auxiliares, luminosos, sonoros e gestos de agentes/condutores.",
+    "highlights": [
+      "verticais",
+      "horizontais",
+      "luminosos",
+      "gestos"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 87",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "Os sinais de trânsito classificam-se em: I - de regulamentação: os que têm por finalidade informar aos usuários as condições, proibições, obrigações ou restrições no uso das vias; II - de advertência: os que têm por finalidade alertar os usuários da via para condições potencialmente perigosas; III - de indicação.",
+    "simple_text": "Os sinais se dividem em: regulamentação (proibições e obrigações), advertência (alertas de perigo) e indicação (informações úteis).",
+    "highlights": [
+      "regulamentação",
+      "advertência",
+      "indicação"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 88",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "Nenhuma via pavimentada poderá ser entregue após sua construção, ou reaberta ao trânsito após a realização de obras ou de manutenção, enquanto não estiver devidamente sinalizada.",
+    "simple_text": "Nenhuma via pavimentada pode ser aberta ao trânsito sem estar devidamente sinalizada, seja nova ou após obras.",
+    "highlights": [
+      "via pavimentada",
+      "sinalização obrigatória",
+      "obras"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 89",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "A sinalização terá a seguinte ordem de prevalência: I - as ordens do agente de trânsito sobre as normas de circulação e outros sinais; II - as indicações do semáforo sobre os demais sinais; III - as indicações dos sinais sobre as demais normas de trânsito.",
+    "simple_text": "A ordem de prevalência é: agente de trânsito > semáforo > sinais > normas gerais de trânsito.",
+    "highlights": [
+      "ordem de prevalência",
+      "agente de trânsito",
+      "semáforo"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "sinalizacao",
+    "article_number": "Art. 90",
+    "chapter": "Da Sinalização de Trânsito",
+    "official_text": "Não serão aplicadas as sanções previstas neste Código por inobservância à sinalização quando esta for insuficiente ou incorreta.",
+    "simple_text": "Se a sinalização estiver insuficiente ou incorreta, não se pode punir o condutor por desobedecê-la.",
+    "highlights": [
+      "sinalização insuficiente",
+      "incorreta",
+      "sanções não aplicáveis"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "veiculos",
+    "article_number": "Art. 96",
+    "chapter": "Dos Veículos",
+    "official_text": "Os veículos classificam-se em: I - quanto à tração: a) automotor; b) elétrico; c) de propulsão humana; d) de tração animal; e) reboque ou semirreboque; II - quanto à espécie: a) de passageiros; b) de carga; c) misto; d) de competição; e) de tração; f) especial; g) de coleção.",
+    "simple_text": "Os veículos se classificam quanto à tração (automotor, elétrico, humana, animal, reboque) e quanto à espécie (passageiros, carga, misto, etc.).",
+    "highlights": [
+      "tração",
+      "espécie",
+      "automotor",
+      "passageiros",
+      "carga"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "veiculos",
+    "article_number": "Art. 97",
+    "chapter": "Dos Veículos",
+    "official_text": "As características dos veículos, suas especificações básicas, configuração e condições essenciais para registro, licenciamento e circulação serão estabelecidas pelo CONTRAN, em função de suas aplicações.",
+    "simple_text": "O CONTRAN define as características, especificações e condições para registro e circulação dos veículos.",
+    "highlights": [
+      "CONTRAN",
+      "características",
+      "registro",
+      "circulação"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "veiculos",
+    "article_number": "Art. 99",
+    "chapter": "Dos Veículos",
+    "official_text": "Somente poderá transitar pelas vias terrestres o veículo cujo peso e dimensões atenderem aos limites estabelecidos pelo CONTRAN.",
+    "simple_text": "Só pode circular nas vias o veículo cujo peso e dimensões respeitem os limites do CONTRAN.",
+    "highlights": [
+      "peso",
+      "dimensões",
+      "limites",
+      "CONTRAN"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "veiculos",
+    "article_number": "Art. 100",
+    "chapter": "Dos Veículos",
+    "official_text": "Nenhum veículo, nenhuma espécie de construção ou equipamento a ele acoplado poderá ser fabricado, montado, encarroçado, pintado, exposto à venda, modificado ou remodificado sem autorização do CONTRAN, mantidas as características originais do veículo.",
+    "simple_text": "Nenhum veículo pode ser fabricado, modificado ou vendido sem autorização do CONTRAN, devendo manter as características originais.",
+    "highlights": [
+      "fabricação",
+      "modificação",
+      "CONTRAN",
+      "características originais"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "veiculos",
+    "article_number": "Art. 103",
+    "chapter": "Dos Veículos",
+    "official_text": "O veículo só poderá transitar pela via quando atendidos os requisitos e condições de segurança estabelecidos neste Código e em normas do CONTRAN.",
+    "simple_text": "O veículo só pode circular quando atender aos requisitos de segurança do CTB e das normas do CONTRAN.",
+    "highlights": [
+      "requisitos de segurança",
+      "CONTRAN",
+      "transitar"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "veiculos",
+    "article_number": "Art. 105",
+    "chapter": "Dos Veículos",
+    "official_text": "São equipamentos obrigatórios dos veículos, entre outros a serem estabelecidos pelo CONTRAN: I - cinto de segurança, conforme regulamentação específica do CONTRAN, com exceção dos veículos destinados ao transporte de passageiros em percursos em que seja permitido viajar em pé; II - para os veículos de transporte e de condução escolar, os de transporte de passageiros com mais de dez lugares e os de carga com peso bruto total superior a quatro mil, quinhentos e trinta e seis quilogramas, equipamento registrador instantâneo inalterável de velocidade e tempo.",
+    "simple_text": "Cinto de segurança é obrigatório em todos os veículos (exceto transporte urbano em pé). Veículos grandes e escolares devem ter tacógrafo.",
+    "highlights": [
+      "cinto de segurança",
+      "equipamentos obrigatórios",
+      "tacógrafo"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 120",
+    "chapter": "Do Registro de Veículos",
+    "official_text": "Todo veículo automotor, elétrico, articulado, reboque ou semirreboque, deve ser registrado perante o órgão executivo de trânsito do Estado ou do Distrito Federal, no Município de domicílio ou residência de seu proprietário, na forma da lei.",
+    "simple_text": "Todo veículo deve ser registrado no DETRAN do Estado/DF onde mora o proprietário.",
+    "highlights": [
+      "registro",
+      "órgão executivo de trânsito",
+      "domicílio do proprietário"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 121",
+    "chapter": "Do Registro de Veículos",
+    "official_text": "Registrado o veículo, expedir-se-á o Certificado de Registro de Veículo - CRV, de acordo com os modelos e especificações estabelecidos pelo CONTRAN.",
+    "simple_text": "Após o registro, é emitido o CRV (Certificado de Registro de Veículo) conforme modelos do CONTRAN.",
+    "highlights": [
+      "CRV",
+      "Certificado de Registro",
+      "CONTRAN"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 123",
+    "chapter": "Do Registro de Veículos",
+    "official_text": "Será obrigatória a expedição de novo Certificado de Registro de Veículo quando: I - for transferida a propriedade; II - o proprietário mudar o Município de domicílio ou residência; III - for alterada qualquer característica do veículo; IV - houver mudança de categoria.",
+    "simple_text": "É obrigatório novo CRV quando: houver transferência de propriedade, mudança de município, alteração de características ou mudança de categoria do veículo.",
+    "highlights": [
+      "novo CRV",
+      "transferência",
+      "mudança de município",
+      "alteração"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 124",
+    "chapter": "Do Registro de Veículos",
+    "official_text": "Para a expedição do novo Certificado de Registro de Veículo serão exigidos os seguintes documentos: I - Certificado de Registro de Veículo anterior; II - Certificado de Licenciamento Anual; III - comprovante de transferência de propriedade, quando for o caso, conforme modelo e normas estabelecidos pelo CONTRAN.",
+    "simple_text": "Para obter novo CRV, são necessários: CRV anterior, CRLV e comprovante de transferência (quando aplicável).",
+    "highlights": [
+      "documentos exigidos",
+      "CRV anterior",
+      "CRLV"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 130",
+    "chapter": "Do Licenciamento",
+    "official_text": "Todo veículo automotor, elétrico, articulado, reboque ou semirreboque, para transitar na via, deverá ser licenciado anualmente pelo órgão executivo de trânsito do Estado, ou do Distrito Federal, onde estiver registrado o veículo.",
+    "simple_text": "Todo veículo precisa de licenciamento anual emitido pelo DETRAN do Estado onde está registrado.",
+    "highlights": [
+      "licenciamento anual",
+      "DETRAN",
+      "obrigatório"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 131",
+    "chapter": "Do Licenciamento",
+    "official_text": "O Certificado de Licenciamento Anual será expedido ao veículo licenciado, vinculado ao Certificado de Registro, no modelo e especificações estabelecidos pelo CONTRAN.",
+    "simple_text": "O CRLV é emitido junto com o licenciamento anual, vinculado ao registro do veículo, conforme normas do CONTRAN.",
+    "highlights": [
+      "CRLV",
+      "licenciamento anual",
+      "vinculado ao CRV"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 133",
+    "chapter": "Do Licenciamento",
+    "official_text": "É obrigatório o uso de placas de identificação nos veículos, com as inscrições do registro, na forma e condições de fixação estabelecidas pelo CONTRAN.",
+    "simple_text": "É obrigatório usar placas de identificação nos veículos, com as inscrições do registro, conforme regras do CONTRAN.",
+    "highlights": [
+      "placas de identificação",
+      "obrigatório",
+      "CONTRAN"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 136",
+    "chapter": "Do Licenciamento",
+    "official_text": "Os veículos especialmente destinados à reprodução de sons, com fins publicitários, somente poderão circular com autorização do órgão ou entidade de trânsito com circunscrição sobre a via.",
+    "simple_text": "Veículos de som para publicidade só podem circular com autorização do órgão de trânsito competente.",
+    "highlights": [
+      "veículo de som",
+      "publicidade",
+      "autorização"
+    ],
+    "frequency_score": 4.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "registro-licenciamento",
+    "article_number": "Art. 139",
+    "chapter": "Da Inspeção de Segurança Veicular",
+    "official_text": "A inspeção de segurança veicular, a cargo do órgão executivo de trânsito dos Estados e do Distrito Federal, será realizada conforme normas do CONTRAN.",
+    "simple_text": "A inspeção de segurança veicular é feita pelo DETRAN de cada Estado/DF, conforme normas do CONTRAN.",
+    "highlights": [
+      "inspeção de segurança",
+      "DETRAN",
+      "CONTRAN"
+    ],
+    "frequency_score": 5.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 140",
+    "chapter": "Da Habilitação",
+    "official_text": "A habilitação para conduzir veículo automotor e elétrico será apurada por meio de exames que deverão ser realizados junto ao órgão ou entidade executivos do Estado ou do Distrito Federal, do domicílio ou residência do candidato, ou na sede estadual ou distrital do próprio órgão, devendo o sinistrado submeter-se a novos exames.",
+    "simple_text": "A habilitação é obtida por exames realizados no DETRAN do domicílio do candidato.",
+    "highlights": [
+      "habilitação",
+      "exames",
+      "DETRAN",
+      "domicílio"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 141",
+    "chapter": "Da Habilitação",
+    "official_text": "O processo de habilitação, as normas relativas à aprendizagem para conduzir veículos automotores e elétricos e à autorização para conduzir ciclomotores serão regulamentados pelo CONTRAN.",
+    "simple_text": "O CONTRAN regulamenta o processo de habilitação, aprendizagem de direção e autorização para ciclomotores.",
+    "highlights": [
+      "processo de habilitação",
+      "CONTRAN",
+      "ciclomotores"
+    ],
+    "frequency_score": 5.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 143",
+    "chapter": "Da Habilitação",
+    "official_text": "Os candidatos poderão habilitar-se nas categorias de A a E, obedecida a seguinte gradação: I - Categoria A - condutor de veículo motorizado de duas ou três rodas, com ou sem carro lateral; II - Categoria B - condutor de veículo motorizado, não abrangido pela categoria A, cujo peso bruto total não exceda a três mil e quinhentos quilogramas e cuja lotação não exceda a oito lugares, excluído o do motorista; III - Categoria C - condutor de veículo motorizado utilizado em transporte de carga, cujo peso bruto total exceda a três mil e quinhentos quilogramas; IV - Categoria D - condutor de veículo motorizado utilizado no transporte de passageiros, cuja lotação exceda a oito lugares, excluído o do motorista; V - Categoria E - condutor de combinação de veículos em que a unidade tratora se enquadre nas categorias B, C ou D e cuja unidade acoplada, reboque, semirreboque, trailer ou articulada tenha 6.000 kg ou mais de peso bruto total, ou cuja lotação exceda a 8 lugares.",
+    "simple_text": "As categorias de habilitação vão de A a E: A (motos), B (carros até 3.500kg/8 lugares), C (carga acima 3.500kg), D (transporte de passageiros acima de 8 lugares), E (veículos articulados/combinados).",
+    "highlights": [
+      "categorias A a E",
+      "gradação",
+      "peso bruto total",
+      "lotação"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 147",
+    "chapter": "Da Habilitação",
+    "official_text": "O candidato à habilitação deverá preencher os seguintes requisitos: I - ser penalmente imputável; II - saber ler e escrever; III - possuir Carteira de Identidade ou equivalente.",
+    "simple_text": "Para se habilitar, o candidato deve ser imputável penalmente, saber ler e escrever, e ter documento de identidade.",
+    "highlights": [
+      "requisitos",
+      "imputável",
+      "ler e escrever",
+      "identidade"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 148",
+    "chapter": "Da Habilitação",
+    "official_text": "Os exames de habilitação, realizados junto ao órgão ou entidade executivos de trânsito, na forma estabelecida pelo CONTRAN, constarão de: I - exame de aptidão física e mental; II - exame escrito, sobre legislação de trânsito; III - exame de noções de primeiros socorros, conforme regulamentação do CONTRAN; IV - exame de direção veicular, realizado em via pública, em veículo da categoria para a qual estiver habilitando-se.",
+    "simple_text": "Os exames de habilitação incluem: aptidão física/mental, prova escrita de legislação, noções de primeiros socorros e prova prática de direção.",
+    "highlights": [
+      "exames",
+      "aptidão física e mental",
+      "prova escrita",
+      "direção veicular"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 150",
+    "chapter": "Da Habilitação",
+    "official_text": "Ao renovar os exames previstos no artigo anterior, o condutor que não tenha curso de direção defensiva e de primeiros socorros deverá a eles se submeter, conforme normatização do CONTRAN.",
+    "simple_text": "Na renovação da CNH, o condutor que não fez cursos de direção defensiva e primeiros socorros deverá fazê-los.",
+    "highlights": [
+      "renovação",
+      "direção defensiva",
+      "primeiros socorros"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 152",
+    "chapter": "Da Habilitação",
+    "official_text": "O candidato aprovado em todos os exames de habilitação receberá a Permissão para Dirigir, com validade de um ano.",
+    "simple_text": "Após aprovação em todos os exames, o candidato recebe a Permissão para Dirigir (PPD), válida por um ano.",
+    "highlights": [
+      "Permissão para Dirigir",
+      "um ano",
+      "candidato aprovado"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 159",
+    "chapter": "Da Habilitação",
+    "official_text": "A Carteira Nacional de Habilitação, expedida em modelo único e de acordo com as especificações do CONTRAN, atendidos os pré-requisitos estabelecidos neste Código, conterá fotografia, identificação e CPF do condutor.",
+    "simple_text": "A CNH é expedida em modelo único pelo CONTRAN, contendo foto, identificação e CPF do condutor.",
+    "highlights": [
+      "CNH",
+      "modelo único",
+      "CONTRAN",
+      "CPF"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "habilitacao",
+    "article_number": "Art. 160",
+    "chapter": "Da Habilitação",
+    "official_text": "O condutor condenado por delito de trânsito deverá ser submetido a novos exames para que possa voltar a dirigir, de acordo com as normas estabelecidas pelo CONTRAN, independentemente do reconhecimento da prescrição, em face da pena concretizada na sentença.",
+    "simple_text": "Condutor condenado por crime de trânsito deve fazer novos exames para voltar a dirigir, mesmo que a pena esteja prescrita.",
+    "highlights": [
+      "condenado",
+      "crime de trânsito",
+      "novos exames",
+      "prescrição"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 161",
+    "chapter": "Das Infrações",
+    "official_text": "Constitui infração de trânsito a inobservância de qualquer preceito deste Código, da legislação complementar ou das resoluções do CONTRAN, sendo o infrator sujeito às penalidades e medidas administrativas indicadas em cada artigo, além das punições previstas no Capítulo XIX.",
+    "simple_text": "Descumprir qualquer regra do CTB, legislação complementar ou resoluções do CONTRAN é infração de trânsito, sujeita a penalidades e medidas administrativas.",
+    "highlights": [
+      "infração de trânsito",
+      "inobservância",
+      "penalidades",
+      "medidas administrativas"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 162",
+    "chapter": "Das Infrações",
+    "official_text": "Dirigir veículo: I - sem possuir Carteira Nacional de Habilitação, Permissão para Dirigir ou Autorização para Conduzir Ciclomotor: Infração - gravíssima; Penalidade - multa (três vezes); Medida administrativa - retenção do veículo até a apresentação de condutor habilitado.",
+    "simple_text": "Dirigir sem CNH, PPD ou ACC é infração gravíssima com multa triplicada e retenção do veículo.",
+    "highlights": [
+      "sem habilitação",
+      "gravíssima",
+      "multa três vezes",
+      "retenção"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 163",
+    "chapter": "Das Infrações",
+    "official_text": "Entregar a direção do veículo a pessoa nas condições previstas no artigo anterior: Infração - as mesmas previstas para cada alínea do inciso I do art. 162; Penalidade - as mesmas previstas para cada alínea do inciso I do art. 162.",
+    "simple_text": "Entregar a direção a pessoa sem habilitação ou com habilitação irregular tem a mesma penalidade que dirigir nessas condições.",
+    "highlights": [
+      "entregar direção",
+      "mesmas penalidades",
+      "responsabilidade do proprietário"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 165",
+    "chapter": "Das Infrações",
+    "official_text": "Dirigir sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência: Infração - gravíssima; Penalidade - multa (dez vezes) e suspensão do direito de dirigir por 12 (doze) meses; Medida administrativa - recolhimento do documento de habilitação e retenção do veículo.",
+    "simple_text": "Dirigir sob influência de álcool ou drogas é infração gravíssima com multa 10x, suspensão do direito de dirigir por 12 meses e retenção do veículo.",
+    "highlights": [
+      "álcool",
+      "substância psicoativa",
+      "multa dez vezes",
+      "suspensão 12 meses"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 165-A",
+    "chapter": "Das Infrações",
+    "official_text": "Recusar-se a ser submetido a teste, exame clínico, perícia ou outro procedimento que permita certificar influência de álcool ou outra substância psicoativa, na forma estabelecida pelo art. 277: Infração - gravíssima; Penalidade - multa (dez vezes) e suspensão do direito de dirigir por 12 (doze) meses; Medida administrativa - recolhimento do documento de habilitação e retenção do veículo.",
+    "simple_text": "Recusar o teste do bafômetro ou exame de alcoolemia tem a mesma penalidade de dirigir embriagado: multa 10x e suspensão por 12 meses.",
+    "highlights": [
+      "recusa ao teste",
+      "bafômetro",
+      "mesma penalidade",
+      "gravíssima"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 166",
+    "chapter": "Das Infrações",
+    "official_text": "Confiar ou entregar a direção de veículo a pessoa que, mesmo habilitada, por seu estado físico ou psíquico, não estiver em condições de dirigi-lo com segurança: Infração - gravíssima; Penalidade - multa.",
+    "simple_text": "Entregar a direção a pessoa habilitada mas sem condições físicas ou psíquicas para dirigir é infração gravíssima.",
+    "highlights": [
+      "entregar direção",
+      "estado físico ou psíquico",
+      "gravíssima"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 167",
+    "chapter": "Das Infrações",
+    "official_text": "Deixar o condutor ou passageiro de usar o cinto de segurança, conforme previsto no art. 65: Infração - grave; Penalidade - multa; Medida administrativa - retenção do veículo até colocação do cinto pelo infrator.",
+    "simple_text": "Não usar cinto de segurança é infração grave com multa e retenção do veículo até o cinto ser colocado.",
+    "highlights": [
+      "cinto de segurança",
+      "infração grave",
+      "retenção"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 168",
+    "chapter": "Das Infrações",
+    "official_text": "Transportar crianças em veículo automotor sem observância das normas de segurança especiais estabelecidas neste Código: Infração - gravíssima; Penalidade - multa; Medida administrativa - retenção do veículo até que a irregularidade seja sanada.",
+    "simple_text": "Transportar crianças sem cadeirinha ou dispositivo de segurança adequado é infração gravíssima com retenção do veículo.",
+    "highlights": [
+      "transporte de crianças",
+      "cadeirinha",
+      "gravíssima",
+      "retenção"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 170",
+    "chapter": "Das Infrações",
+    "official_text": "Dirigir ameaçando os pedestres que estejam atravessando a via pública, ou os demais veículos: Infração - gravíssima; Penalidade - multa e suspensão do direito de dirigir.",
+    "simple_text": "Dirigir ameaçando pedestres ou outros veículos é infração gravíssima com multa e suspensão da habilitação.",
+    "highlights": [
+      "ameaçar pedestres",
+      "gravíssima",
+      "suspensão"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 173",
+    "chapter": "Das Infrações",
+    "official_text": "Disputar corrida, por espírito de emulação ou exibição, em via pública, gerando situação de risco à segurança: Infração - gravíssima; Penalidade - multa (dez vezes), suspensão do direito de dirigir e apreensão do veículo.",
+    "simple_text": "Disputar racha em via pública é infração gravíssima com multa 10x, suspensão da habilitação e apreensão do veículo.",
+    "highlights": [
+      "racha",
+      "corrida",
+      "gravíssima",
+      "apreensão do veículo"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 174",
+    "chapter": "Das Infrações",
+    "official_text": "Promover, na direção de veículo, exibição ou demonstração de perícia em manobra de veículo na via pública, gerando situação de risco à segurança: Infração - gravíssima; Penalidade - multa (dez vezes), suspensão do direito de dirigir e apreensão do veículo.",
+    "simple_text": "Fazer manobras arriscadas para exibição em via pública é infração gravíssima com multa 10x e apreensão do veículo.",
+    "highlights": [
+      "exibição",
+      "manobra perigosa",
+      "gravíssima",
+      "apreensão"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 175",
+    "chapter": "Das Infrações",
+    "official_text": "Utilizar-se de veículo para demonstrar ou exibir manobra perigosa, mediante arrancada brusca, derrapagem ou frenagem com deslizamento ou arrastamento de pneus: Infração - gravíssima; Penalidade - multa (dez vezes), suspensão do direito de dirigir e apreensão do veículo.",
+    "simple_text": "Fazer arrancadas bruscas, derrapagens ou frenagens com deslizamento de pneus é infração gravíssima com multa 10x.",
+    "highlights": [
+      "arrancada brusca",
+      "derrapagem",
+      "frenagem",
+      "gravíssima"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 176",
+    "chapter": "Das Infrações",
+    "official_text": "Deixar o condutor envolvido em acidente com vítima: I - de prestar ou providenciar socorro à vítima, podendo fazê-lo; II - de adotar providências, sobre pena de ser responsabilizado pela omissão, para evitar perigo para o trânsito no local: Infração - gravíssima; Penalidade - multa (cinco vezes) e suspensão do direito de dirigir.",
+    "simple_text": "Deixar de socorrer vítima de acidente ou não sinalizar o local é infração gravíssima com multa 5x e suspensão da habilitação.",
+    "highlights": [
+      "socorro à vítima",
+      "acidente",
+      "omissão de socorro",
+      "gravíssima"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 178",
+    "chapter": "Das Infrações",
+    "official_text": "Deixar o condutor de veículo, envolvido em acidente sem vítima, de adotar providências para remover o veículo do local, quando necessária tal medida para assegurar a segurança e a fluidez do trânsito: Infração - média; Penalidade - multa.",
+    "simple_text": "Em acidente sem vítima, não remover o veículo do local quando necessário para desobstruir o trânsito é infração média.",
+    "highlights": [
+      "acidente sem vítima",
+      "remover veículo",
+      "infração média"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "infracoes",
+    "article_number": "Art. 180",
+    "chapter": "Das Infrações",
+    "official_text": "Ter seu veículo imobilizado na via por falta de combustível: Infração - média; Penalidade - multa; Medida administrativa - remoção do veículo.",
+    "simple_text": "Parar na via por falta de combustível é infração média com multa e remoção do veículo.",
+    "highlights": [
+      "falta de combustível",
+      "infração média",
+      "remoção"
+    ],
+    "frequency_score": 6.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 256",
+    "chapter": "Das Penalidades",
+    "official_text": "A autoridade de trânsito, na esfera das competências estabelecidas neste Código e dentro de sua circunscrição, deverá aplicar, às infrações nele previstas, as seguintes penalidades: I - advertência por escrito; II - multa; III - suspensão do direito de dirigir; IV - apreensão do veículo; V - cassação da Carteira Nacional de Habilitação; VI - imposição de frequência obrigatória em curso de reciclagem.",
+    "simple_text": "As penalidades de trânsito são: advertência, multa, suspensão da CNH, apreensão do veículo, cassação da CNH e curso de reciclagem obrigatório.",
+    "highlights": [
+      "penalidades",
+      "advertência",
+      "multa",
+      "suspensão",
+      "cassação"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 257",
+    "chapter": "Das Penalidades",
+    "official_text": "As penalidades serão impostas ao condutor, ao proprietário do veículo, ao embarcador e ao transportador, salvo os casos de descumprimento de obrigações e deveres impostos a pessoas físicas ou jurídicas expressamente mencionados neste Código.",
+    "simple_text": "As penalidades podem recair sobre o condutor, o proprietário, o embarcador ou o transportador, dependendo do caso.",
+    "highlights": [
+      "condutor",
+      "proprietário",
+      "embarcador",
+      "transportador"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 258",
+    "chapter": "Das Penalidades",
+    "official_text": "As infrações punidas com multa classificam-se, de acordo com sua gravidade, em quatro categorias: I - infração de natureza gravíssima, punida com multa no valor de R$ 293,47; II - infração de natureza grave, punida com multa no valor de R$ 195,23; III - infração de natureza média, punida com multa no valor de R$ 130,16; IV - infração de natureza leve, punida com multa no valor de R$ 88,38.",
+    "simple_text": "As infrações se classificam em quatro níveis de gravidade, cada um com valor de multa correspondente: gravíssima, grave, média e leve.",
+    "highlights": [
+      "gravíssima",
+      "grave",
+      "média",
+      "leve",
+      "valor da multa"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 259",
+    "chapter": "Das Penalidades",
+    "official_text": "A cada infração cometida são computados os seguintes números de pontos: I - gravíssima - sete pontos; II - grave - cinco pontos; III - média - quatro pontos; IV - leve - três pontos.",
+    "simple_text": "A pontuação por infração é: gravíssima (7 pontos), grave (5 pontos), média (4 pontos) e leve (3 pontos).",
+    "highlights": [
+      "pontuação",
+      "7 pontos",
+      "5 pontos",
+      "4 pontos",
+      "3 pontos"
+    ],
+    "frequency_score": 9.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 261",
+    "chapter": "Das Penalidades",
+    "official_text": "A penalidade de suspensão do direito de dirigir será aplicada, nos casos previstos neste Código, pelo prazo mínimo de 2 (dois) meses até o máximo de 12 (doze) meses, e, no caso de reincidência, no período de 12 (doze) meses, pelo prazo mínimo de 8 (oito) meses até o máximo de 24 (vinte e quatro) meses, segundo critérios estabelecidos pelo CONTRAN.",
+    "simple_text": "A suspensão da CNH varia de 2 a 12 meses. Em caso de reincidência em 12 meses, vai de 8 a 24 meses.",
+    "highlights": [
+      "suspensão",
+      "2 a 12 meses",
+      "reincidência",
+      "8 a 24 meses"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 261, §1º",
+    "chapter": "Das Penalidades",
+    "official_text": "Além dos casos previstos em outros dispositivos deste Código e excetuados aqueles especificados no art. 263, a suspensão do direito de dirigir será aplicada quando o infrator atingir a contagem de 40 (quarenta) pontos, no período de 12 (doze) meses.",
+    "simple_text": "A CNH será suspensa quando o condutor acumular 40 pontos em 12 meses, salvo os que exercem atividade remunerada (que têm limite diferenciado).",
+    "highlights": [
+      "40 pontos",
+      "12 meses",
+      "suspensão automática"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 263",
+    "chapter": "Das Penalidades",
+    "official_text": "A cassação do documento de habilitação dar-se-á: I - quando, suspenso o direito de dirigir, o infrator conduzir qualquer veículo; II - no caso de reincidência, no prazo de doze meses, das infrações previstas no inciso III do art. 162 e nos arts. 163, 164, 165, 173, 174 e 175; III - quando condenado judicialmente por delito de trânsito, observado o disposto no art. 160.",
+    "simple_text": "A cassação da CNH ocorre quando: o condutor dirige durante suspensão, reincide em infrações gravíssimas específicas em 12 meses, ou é condenado por crime de trânsito.",
+    "highlights": [
+      "cassação",
+      "dirigir suspenso",
+      "reincidência",
+      "condenação criminal"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 265",
+    "chapter": "Das Penalidades",
+    "official_text": "As penalidades de suspensão do direito de dirigir e de cassação do documento de habilitação serão aplicadas por decisão fundamentada da autoridade de trânsito, em processo administrativo, assegurado ao infrator amplo direito de defesa.",
+    "simple_text": "A suspensão e a cassação da CNH devem ser aplicadas em processo administrativo com decisão fundamentada e direito de defesa garantido.",
+    "highlights": [
+      "processo administrativo",
+      "ampla defesa",
+      "decisão fundamentada"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 267",
+    "chapter": "Das Penalidades",
+    "official_text": "Poderá ser imposta a penalidade de advertência por escrito à infração de natureza leve ou média, passível de ser punida com multa, não sendo reincidente o infrator, na mesma infração, nos últimos doze meses, quando a autoridade, considerando o prontuário do infrator, entender esta providência como mais educativa.",
+    "simple_text": "Infrações leves ou médias podem ser convertidas em advertência por escrito se o infrator não for reincidente na mesma infração nos últimos 12 meses.",
+    "highlights": [
+      "advertência por escrito",
+      "leve ou média",
+      "não reincidente",
+      "12 meses"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "penalidades",
+    "article_number": "Art. 268",
+    "chapter": "Das Medidas Administrativas",
+    "official_text": "O agente da autoridade de trânsito competente para lavrar o auto de infração poderá ser servidor civil, estatutário ou celetista ou, ainda, policial militar designado pela autoridade de trânsito com jurisdição sobre a via.",
+    "simple_text": "O agente de trânsito que lavra o auto de infração pode ser servidor civil ou policial militar designado pela autoridade de trânsito.",
+    "highlights": [
+      "agente de trânsito",
+      "auto de infração",
+      "policial militar",
+      "servidor civil"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 291",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Aos crimes cometidos na direção de veículos automotores, previstos neste Código, aplicam-se as normas gerais do Código Penal e do Código de Processo Penal, se este Capítulo não dispuser de modo diverso, bem como a Lei nº 9.099, de 26 de setembro de 1995, no que couber.",
+    "simple_text": "Aos crimes de trânsito aplicam-se o Código Penal, o CPP e a Lei dos Juizados Especiais (Lei 9.099/95), salvo disposição diferente no CTB.",
+    "highlights": [
+      "crimes de trânsito",
+      "Código Penal",
+      "Lei 9.099/95",
+      "Juizados Especiais"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 292",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "A suspensão ou a proibição de se obter a permissão ou a habilitação para dirigir veículo automotor pode ser imposta isolada ou cumulativamente com outras penalidades e será comunicada ao CONTRAN.",
+    "simple_text": "A suspensão ou proibição de dirigir pode ser aplicada junto com outras penas e será comunicada ao CONTRAN.",
+    "highlights": [
+      "suspensão",
+      "proibição de habilitação",
+      "cumulativa",
+      "CONTRAN"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 293",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "A penalidade de suspensão ou de proibição de se obter a permissão ou a habilitação, para dirigir veículo automotor, tem a duração de dois meses a cinco anos.",
+    "simple_text": "A pena de suspensão ou proibição de dirigir nos crimes de trânsito dura de 2 meses a 5 anos.",
+    "highlights": [
+      "2 meses a 5 anos",
+      "suspensão penal",
+      "proibição"
+    ],
+    "frequency_score": 7.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 294",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Em qualquer fase da investigação ou da ação penal, havendo necessidade para a garantia da ordem pública, poderá o juiz, como medida cautelar, de ofício, ou a requerimento do Ministério Público ou ainda mediante representação da autoridade policial, decretar, em decisão motivada, a suspensão da permissão ou da habilitação para dirigir veículo automotor, ou a proibição de sua obtenção.",
+    "simple_text": "O juiz pode suspender cautelarmente a CNH em qualquer fase do processo, de ofício ou a pedido do MP/polícia, se necessário para a ordem pública.",
+    "highlights": [
+      "medida cautelar",
+      "suspensão da CNH",
+      "ordem pública",
+      "decisão motivada"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 296",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Se o réu for reincidente na prática de crime previsto neste Código, o juiz aplicará a penalidade de suspensão da permissão ou habilitação para dirigir veículo automotor, sem prejuízo das demais sanções penais cabíveis.",
+    "simple_text": "Se o réu for reincidente em crime de trânsito, o juiz aplicará obrigatoriamente a suspensão da CNH, além das demais penas.",
+    "highlights": [
+      "reincidência",
+      "suspensão obrigatória",
+      "crime de trânsito"
+    ],
+    "frequency_score": 6.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 302",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Praticar homicídio culposo na direção de veículo automotor: Penas - detenção, de dois a quatro anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.",
+    "simple_text": "Matar alguém em acidente de trânsito (homicídio culposo) dá pena de 2 a 4 anos de detenção e suspensão da CNH.",
+    "highlights": [
+      "homicídio culposo",
+      "detenção 2 a 4 anos",
+      "suspensão CNH"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 302, §3º",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Se o agente conduz veículo automotor sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência: Penas - reclusão, de cinco a oito anos, e suspensão ou proibição do direito de se obter a permissão ou a habilitação para dirigir veículo automotor.",
+    "simple_text": "Homicídio no trânsito sob efeito de álcool ou drogas é qualificado: pena de reclusão de 5 a 8 anos.",
+    "highlights": [
+      "homicídio qualificado",
+      "álcool",
+      "reclusão 5 a 8 anos"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 303",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Praticar lesão corporal culposa na direção de veículo automotor: Penas - detenção, de seis meses a dois anos e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.",
+    "simple_text": "Causar lesão corporal culposa no trânsito dá pena de detenção de 6 meses a 2 anos e suspensão da CNH.",
+    "highlights": [
+      "lesão corporal culposa",
+      "detenção 6 meses a 2 anos",
+      "suspensão"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 304",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Deixar o condutor do veículo, na ocasião do acidente, de prestar imediato socorro à vítima, ou, não podendo fazê-lo diretamente, por justa causa, deixar de solicitar auxílio da autoridade pública: Penas - detenção, de seis meses a um ano, ou multa, se o fato não constituir elemento de crime mais grave.",
+    "simple_text": "Não socorrer vítima de acidente de trânsito é crime com pena de detenção de 6 meses a 1 ano, se não houver crime mais grave.",
+    "highlights": [
+      "omissão de socorro",
+      "detenção 6 meses a 1 ano",
+      "acidente"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 305",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Afastar-se o condutor do veículo do local do acidente, para fugir à responsabilidade penal ou civil que lhe possa ser atribuída: Penas - detenção, de seis meses a um ano, ou multa.",
+    "simple_text": "Fugir do local do acidente para evitar responsabilidade é crime com pena de detenção de 6 meses a 1 ano ou multa.",
+    "highlights": [
+      "fuga do local",
+      "responsabilidade penal ou civil",
+      "detenção"
+    ],
+    "frequency_score": 8.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 306",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Conduzir veículo automotor com capacidade psicomotora alterada em razão da influência de álcool ou de outra substância psicoativa que determine dependência: Penas - detenção, de seis meses a três anos, multa e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.",
+    "simple_text": "Dirigir embriagado é crime com pena de detenção de 6 meses a 3 anos, multa e suspensão da CNH.",
+    "highlights": [
+      "embriaguez ao volante",
+      "detenção 6 meses a 3 anos",
+      "álcool",
+      "substância psicoativa"
+    ],
+    "frequency_score": 10.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 308",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Participar, na direção de veículo automotor, em via pública, de corrida, disputa ou competição automobilística ou ainda de exibição ou demonstração de perícia em manobra de veículo automotor, não autorizada pela autoridade competente, gerando situação de risco à incolumidade pública ou privada: Penas - detenção, de seis meses a três anos, multa e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.",
+    "simple_text": "Participar de racha ou exibição de manobras perigosas não autorizadas é crime com pena de 6 meses a 3 anos de detenção.",
+    "highlights": [
+      "racha",
+      "competição não autorizada",
+      "detenção 6 meses a 3 anos"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 309",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Dirigir veículo automotor, em via pública, sem a devida Permissão para Dirigir ou Habilitação ou, ainda, se cassado o direito de dirigir, gerando perigo de dano: Penas - detenção, de seis meses a um ano, ou multa.",
+    "simple_text": "Dirigir sem habilitação ou com CNH cassada, gerando perigo, é crime com pena de detenção de 6 meses a 1 ano.",
+    "highlights": [
+      "sem habilitação",
+      "CNH cassada",
+      "perigo de dano",
+      "detenção"
+    ],
+    "frequency_score": 9.0
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 310",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Permitir, confiar ou entregar a direção de veículo automotor a pessoa não habilitada, com habilitação cassada ou com o direito de dirigir suspenso, ou, ainda, a quem, por seu estado de saúde, física ou mental, ou por embriaguez, não esteja em condições de conduzi-lo com segurança: Penas - detenção, de seis meses a um ano, ou multa.",
+    "simple_text": "Entregar a direção a pessoa sem habilitação, com CNH cassada/suspensa, ou sem condições de dirigir, é crime com pena de detenção de 6 meses a 1 ano.",
+    "highlights": [
+      "entregar direção",
+      "não habilitada",
+      "CNH cassada",
+      "embriaguez"
+    ],
+    "frequency_score": 8.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 311",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Trafegar em velocidade incompatível com a segurança nas proximidades de escolas, hospitais, estações de embarque e desembarque de passageiros, logradouros estreitos, ou onde haja grande movimentação ou concentração de pessoas, gerando perigo de dano: Penas - detenção, de seis meses a um ano, ou multa.",
+    "simple_text": "Trafegar em velocidade perigosa perto de escolas, hospitais ou locais com grande concentração de pessoas é crime: detenção de 6 meses a 1 ano.",
+    "highlights": [
+      "velocidade incompatível",
+      "escolas",
+      "hospitais",
+      "perigo de dano"
+    ],
+    "frequency_score": 7.5
+  },
+  {
+    "document_slug": "ctb",
+    "subject_slug": "legislacao-transito",
+    "topic_slug": "crimes-transito",
+    "article_number": "Art. 312",
+    "chapter": "Dos Crimes de Trânsito",
+    "official_text": "Inovar artificiosamente, em caso de acidente automobilístico com vítima, na pendência do respectivo procedimento policial preparatório, inquérito policial ou processo penal, o estado de lugar, de coisa ou de pessoa, a fim de induzir a erro o agente policial, o perito, ou juiz: Penas - detenção, de seis meses a um ano, ou multa.",
+    "simple_text": "Alterar a cena de acidente com vítima para enganar autoridades é crime com pena de detenção de 6 meses a 1 ano.",
+    "highlights": [
+      "fraude processual",
+      "alterar cena",
+      "acidente com vítima",
+      "induzir a erro"
+    ],
+    "frequency_score": 7.0
+  }
+]

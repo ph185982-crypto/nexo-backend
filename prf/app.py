@@ -72,4 +72,14 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     deps.set_repo(repo)
     logger.info("[PRF] Repository initialized")
 
+    # Wire up cache
+    try:
+        from config import REDIS_URL
+        from prf.services.cache_service import PRFCacheService
+        cache = PRFCacheService(redis_url=REDIS_URL)
+        deps.set_cache(cache)
+        logger.info("[PRF] Cache service initialized")
+    except Exception as e:
+        logger.warning(f"[PRF] Cache init note: {e}")
+
     return pool

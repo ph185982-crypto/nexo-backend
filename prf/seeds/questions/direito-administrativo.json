@@ -1,0 +1,1421 @@
+[
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "Os atributos (características) dos atos administrativos são:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os atributos dos atos administrativos são: presunção de legitimidade e veracidade, imperatividade, autoexecutoriedade e tipicidade. Nem todos os atos possuem todos os atributos.",
+    "legal_basis": "Direito Administrativo - doutrina",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Legalidade, moralidade, eficiência e publicidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Presunção de legitimidade, imperatividade, autoexecutoriedade e tipicidade",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Validade, eficácia, perfeição e exequibilidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Vinculação, discricionariedade, autotutela e revisibilidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Motivação, finalidade, forma e objeto",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "O ato administrativo vinculado é aquele em que:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "No ato vinculado, a Administração não tem margem de escolha: deve praticar o ato exatamente como a lei determina, sem espaço para juízo de oportunidade e conveniência.",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A autoridade tem plena liberdade para decidir conforme sua conveniência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A lei estabelece exatamente como o ato deve ser praticado, sem margem de escolha para o administrador",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A discricionariedade é exercida dentro dos limites estabelecidos em lei",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O ato depende de aprovação de instância superior antes de produzir efeitos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O ato é praticado unilateralmente e não pode ser questionado pelo particular",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "A revogação de ato administrativo:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A revogação retira o ato do mundo jurídico por razões de oportunidade e conveniência, com efeitos ex nunc (para o futuro). Só pode ser feita pela própria Administração, não pelo judiciário.",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Pode ser feita pelo Poder Judiciário por razões de oportunidade",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Ocorre por motivo de ilegalidade, com efeitos retroativos (ex tunc)",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É feita pela Administração por razões de oportunidade e conveniência, com efeitos ex nunc",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Pode atingir direitos adquiridos do administrado em qualquer situação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Produz efeitos retroativos (ex tunc) para todos os atos administrativos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "A anulação do ato administrativo ilegal é:",
+    "difficulty": "medium",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A anulação decorre da ilegalidade do ato, com efeitos ex tunc (retroativos). Pode ser declarada pela própria Administração (autotutela) ou pelo Poder Judiciário.",
+    "legal_basis": "Súmula 473, STF; Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Facultativa para a Administração e vedada ao Judiciário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Um dever da Administração e pode ser pronunciada pelo Judiciário, com efeitos ex tunc",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Cabível apenas para atos discricionários ilegais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Realizada com efeitos ex nunc, preservando atos praticados anteriormente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "De competência exclusiva do Tribunal de Contas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "O elemento forma dos atos administrativos:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A forma é o revestimento exterior do ato. Em regra, os atos administrativos devem ser escritos. A inobservância da forma prescrita em lei pode acarretar a nulidade do ato.",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É sempre a forma escrita, sem qualquer exceção",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pode ser qualquer forma, pois a Administração tem plena liberdade formal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É o revestimento exterior do ato, devendo observar a forma prescrita em lei",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "É irrelevante, sendo o conteúdo o único elemento essencial do ato",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exige sempre a publicação no Diário Oficial para ter eficácia",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "A motivação dos atos administrativos discricionários:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Segundo a doutrina majoritária e o STJ, os atos discricionários também devem ser motivados, especialmente quando interferirem em direitos dos administrados. A falta de motivação pode acarretar nulidade.",
+    "legal_basis": "Direito Administrativo; STJ",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É dispensável, pois a discricionariedade afasta o dever de motivar",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É exigida apenas quando o ato causar prejuízo ao particular",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É exigível, pois a Administração deve justificar suas escolhas dentro do campo discricionário",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "É substituída pelo mérito administrativo do agente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É obrigatória apenas nos atos de demissão de servidores efetivos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "text": "O silêncio administrativo (omissão da autoridade) produz efeitos jurídicos:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O silêncio administrativo em si não é ato administrativo, mas pode produzir efeitos jurídicos quando a lei expressamente lhe atribui consequências (aprovação ou indeferimento ficto).",
+    "legal_basis": "Lei 14.210/2021; Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Nunca, pois quem cala não afirma nada no direito público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apenas quando a lei expressamente lhe atribui consequências jurídicas",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Sempre, gerando aprovação tácita de qualquer pedido após 30 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas no âmbito do direito tributário e fiscal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Como rejeição tácita de qualquer pedido, em qualquer hipótese",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "text": "O poder de polícia administrativo tem como característica:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O poder de polícia é a faculdade da Administração de limitar e condicionar o exercício de direitos e atividades individuais em benefício do interesse público. É autoexecutório, coercitivo e irrenunciável.",
+    "legal_basis": "CF/88; Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Destinar-se exclusivamente à repressão de crimes e contravenções",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Limitar direitos individuais em benefício do interesse coletivo, sendo autoexecutório e coercitivo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Ser exercido apenas pela polícia judiciária do Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Ser discricionário em todos os seus aspectos, sem qualquer vinculação legal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Depender de autorização judicial para sua execução coercitiva",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "text": "O poder disciplinar da Administração Pública é:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O poder disciplinar é o poder de punir internamente os servidores por infrações funcionais e os contratados pelo descumprimento de suas obrigações, sendo correlato ao poder hierárquico.",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O poder de fiscalizar e punir particulares que descumprem obrigações",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O poder de apurar e punir internamente servidores por infrações funcionais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O poder de criar normas gerais sobre o regime funcional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O poder de controlar a legalidade dos atos de outros Poderes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Discricionário em relação ao an e ao quantum da sanção",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "text": "O poder normativo da Administração Pública:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O poder normativo permite à Administração editar atos normativos gerais e abstratos para complementar a lei (decretos, instruções normativas, portarias, resoluções). Não pode criar obrigações além das previstas em lei.",
+    "legal_basis": "CF/88, Art. 84, IV; Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Permite à Administração criar direitos e obrigações sem base legal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Limita-se à edição de atos concretos e individuais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Permite editar normas gerais que complementam a lei, sem criar obrigações além do previsto",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "É exclusivo do Presidente da República, não sendo delegável",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Não existe como poder autônomo, sendo derivado do poder disciplinar",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "text": "O abuso de poder pode configurar-se por excesso de poder ou por desvio de poder (finalidade). O desvio de poder ocorre quando:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O desvio de poder (ou desvio de finalidade) ocorre quando o agente age dentro de sua competência, mas com finalidade diversa da prevista em lei ou do interesse público.",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O agente age fora de sua competência funcional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O agente usa a competência para finalidade diversa da prevista em lei",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "O agente pratica ato sem qualquer motivação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "O agente usa força excessiva no exercício de suas funções",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O agente contraria a lei por negligência ou imprudência",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "text": "A autotutela administrativa é o poder da Administração de:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O princípio da autotutela (Súmula 473, STF) permite à Administração rever seus próprios atos por razões de legalidade (anulação) ou conveniência (revogação), independentemente de provocação do interessado ou intervenção judicial.",
+    "legal_basis": "Súmula 473, STF; Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Executar suas decisões sem necessidade de ordem judicial",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Anular seus atos ilegais e revogar os inconvenientes, independentemente do judiciário",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Controlar os atos dos Poderes Legislativo e Judiciário",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Investigar crimes praticados por servidores públicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Criar obrigações para os administrados independentemente de lei",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacoes-contratos",
+    "text": "A Lei 14.133/2021 (Nova Lei de Licitações) prevê as seguintes modalidades de licitação:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 14.133/2021 instituiu as modalidades: pregão, concorrência, concurso, leilão e diálogo competitivo. Extinguiu a tomada de preços e o convite da Lei 8.666/93.",
+    "legal_basis": "Lei 14.133/2021",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Concorrência, tomada de preços, convite, leilão e concurso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pregão, concorrência, concurso, leilão e diálogo competitivo",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Pregão, concorrência, cotação eletrônica, leilão e concurso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Dispensa, inexigibilidade, pregão e concorrência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Convite, tomada de preços, concorrência e pregão",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacoes-contratos",
+    "text": "A dispensa de licitação é medida excepcional e está sujeita:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A dispensa de licitação é uma das hipóteses em que a Administração pode contratar sem o processo licitatório, mas em situações expressamente previstas em lei. Não é discricionária.",
+    "legal_basis": "Art. 74-75, Lei 14.133/2021",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "À discricionariedade do administrador",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A hipóteses taxativas previstas em lei",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas a aprovação do TCU",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A autorização do Ministério Público antes de cada contratação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "À conveniência e oportunidade do administrador",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacoes-contratos",
+    "text": "Na licitação, o princípio da vinculação ao instrumento convocatório estabelece que:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A vinculação ao edital é princípio fundamental da licitação: a Administração e os licitantes devem seguir rigorosamente as regras estabelecidas no edital, que é a lei interna da licitação.",
+    "legal_basis": "Art. 5°, Lei 14.133/2021",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O edital pode ser alterado durante a licitação por conveniência da Administração",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O licitante não precisa cumprir todos os requisitos do edital se demonstrar capacidade técnica",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A Administração e os licitantes estão obrigados a observar as regras do edital durante todo o procedimento",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Apenas as cláusulas essenciais do edital são vinculantes para a Administração",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O edital é apenas orientativo, prevalecendo a decisão da comissão de licitação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacoes-contratos",
+    "text": "A inexigibilidade de licitação se diferencia da dispensa porque na inexigibilidade:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A inexigibilidade ocorre quando é inviável a competição, como em casos de fornecedor exclusivo, profissional notório renomado ou objetos singulares. Na dispensa, a competição é possível mas a lei autoriza contratar sem ela.",
+    "legal_basis": "Art. 74, Lei 14.133/2021",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A lei enumera taxativamente os casos em que pode ocorrer",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O valor do contrato é sempre inferior ao limite estabelecido",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A competição é inviável pela natureza do objeto ou singularidade do fornecedor",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "A Administração escolhe não licitar por razões de conveniência",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "O TCU deve aprovar previamente cada contratação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacoes-contratos",
+    "text": "O pregão eletrônico é a modalidade de licitação obrigatória para:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O pregão é modalidade obrigatória para contratação de bens e serviços comuns, independentemente do valor. No pregão, a disputa se dá por lances e o critério de julgamento é o menor preço.",
+    "legal_basis": "Art. 29, Lei 14.133/2021",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Obras e serviços de engenharia acima de R$ 1,5 milhão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Aquisição de bens e serviços comuns, independentemente do valor",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Qualquer contratação acima de R$ 100 mil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Contratos de tecnologia da informação acima de R$ 500 mil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Serviços técnicos especializados de natureza singular",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "text": "O servidor público estável adquire essa condição após:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 41 da CF/88, após a EC 19/1998, estabelece que o servidor nomeado para cargo efetivo adquire estabilidade após 3 anos de efetivo exercício, incluindo avaliação especial de desempenho.",
+    "legal_basis": "Art. 41, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "1 ano de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "2 anos de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "3 anos de efetivo exercício",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "5 anos de efetivo exercício",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Aprovação em concurso público",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "text": "A Lei 8.112/1990 regula o regime jurídico dos servidores públicos civis federais. Sobre as licenças previstas nessa lei, é correto afirmar:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 8.112/90 prevê diversas licenças, como licença para tratar de interesse particular (sem remuneração, após 3 anos), licença para capacitação, licença por acidente em serviço (com remuneração), entre outras.",
+    "legal_basis": "Lei 8.112/1990",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Todas as licenças são remuneradas conforme o cargo do servidor",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "A licença para tratar de interesse particular é remunerada e pode ser solicitada a qualquer tempo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Há licenças remuneradas e não remuneradas conforme a finalidade da licença",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Nenhuma licença pode exceder 30 dias consecutivos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "As licenças são concedidas pelo Presidente da República em todos os casos",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "text": "A acumulação de cargos públicos é vedada pela CF/88, ressalvadas as hipóteses de:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37, XVI, CF/88 permite: dois cargos de professor, um de professor com um técnico/científico, e dois de profissionais de saúde com profissões regulamentadas, desde que haja compatibilidade de horários.",
+    "legal_basis": "Art. 37, XVI, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Dois cargos de direção ou chefia no âmbito da mesma autarquia",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Dois cargos em entes federativos diferentes, com cargas horárias compatíveis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dois cargos de professor; um de professor com um técnico/científico; dois de saúde com compatibilidade de horários",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Qualquer acumulação autorizada por lei ordinária federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Cargos de médico e delegado de polícia, por serem profissões regulamentadas",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "text": "O processo administrativo disciplinar (PAD) tem como finalidade:",
+    "difficulty": "easy",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O PAD é o instrumento para apuração de infrações funcionais de servidores públicos, garantindo contraditório e ampla defesa. Pode resultar em demissão, suspensão ou outras penalidades.",
+    "legal_basis": "Art. 143-182, Lei 8.112/1990",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Investigar crimes praticados por servidores em detrimento da União",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Apurar a responsabilidade do servidor por infração praticada no exercício de suas atribuições",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Controlar a produtividade e o desempenho funcional dos servidores",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Elaborar pareceres sobre a conduta ética dos agentes públicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Revisão periódica da adequação do cargo ao perfil do servidor",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "text": "O servidor público federal tem direito à:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A Lei 8.112/90 garante ao servidor diversas férias: férias anuais (30 dias), licenças, aposentadoria por invalidez, por tempo de contribuição e compulsória, entre outros benefícios.",
+    "legal_basis": "Lei 8.112/1990",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Férias anuais de 20 dias úteis",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Férias anuais de 30 dias corridos",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Férias anuais de 20 dias úteis e abono pecuniário de 10 dias",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Férias anuais de 15 dias corridos por semestre",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas 20 dias de férias, podendo ser acrescido de 10 dias por interesse da Administração",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "controle-adm",
+    "text": "O Tribunal de Contas da União (TCU) realiza o controle:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O TCU realiza o controle externo da Administração Federal, auxiliando o Congresso Nacional. Aprecia as contas do Presidente, fiscaliza a aplicação de recursos públicos e aplica sanções.",
+    "legal_basis": "Art. 71, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Interno da Administração Federal, como órgão de auditoria interna",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Externo da Administração Federal, auxiliando o Congresso Nacional",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Judicial dos atos administrativos ilegais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Político dos atos do Poder Executivo Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Prévio de todos os contratos administrativos federais",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "controle-adm",
+    "text": "O controle interno da Administração Pública federal é exercido por:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O controle interno é exercido pelo Sistema de Controle Interno do Poder Executivo, coordenado pela Controladoria-Geral da União (CGU), que fiscaliza a gestão e o patrimônio públicos.",
+    "legal_basis": "Art. 74, CF/88; Lei 10.180/2001",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas pelo TCU, como órgão de controle de todos os Poderes",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "O Poder Legislativo por meio das CPIs",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "A CGU e os órgãos de controle interno de cada Poder, de forma integrada",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Exclusivamente pelo Ministério Público Federal",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Pela Advocacia-Geral da União em conjunto com o CADE",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "controle-adm",
+    "text": "O controle de legalidade exercido pelo Poder Judiciário sobre os atos administrativos:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O Judiciário controla apenas a legalidade dos atos administrativos, não o mérito (oportunidade e conveniência). Não pode substituir o juízo discricionário do administrador, mas pode anular atos ilegais.",
+    "legal_basis": "CF/88; Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Abrange o mérito e a legalidade dos atos discricionários",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Limita-se à legalidade, não podendo o judiciário revisar o mérito dos atos discricionários",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Cabe apenas quando o particular provoca a jurisdição por lesão a direito subjetivo",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Não é admitido na esfera federal, reservada ao TCU",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Permite ao juiz substituir o ato ilegal por outro ato mais conveniente",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-estado",
+    "text": "A responsabilidade civil do Estado por danos causados a particulares é, em regra:",
+    "difficulty": "medium",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37, §6°, da CF/88 consagra a responsabilidade civil objetiva do Estado: basta a existência do dano, do nexo causal e da ação/omissão da Administração, sem necessidade de comprovar culpa.",
+    "legal_basis": "Art. 37, §6°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Subjetiva, exigindo a prova de culpa do agente público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Objetiva, com base no risco administrativo, dispensando a comprovação de culpa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Baseada na teoria do risco integral, sem qualquer excludente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Limitada ao patrimônio do servidor causador do dano",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exclusiva do agente público, sem responsabilidade do Estado",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-estado",
+    "text": "O Estado responde civilmente pelos danos causados por seus agentes. O Estado pode:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 37, §6°, da CF/88 prevê que o Estado responde perante a vítima e pode, depois, acionar regressivamente o agente culposo ou doloso.",
+    "legal_basis": "Art. 37, §6°, CF/88",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas cobrar o servidor responsável sem pagar a vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Pagar a indenização à vítima e acionar regressivamente o agente que agiu com dolo ou culpa",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Dividir a responsabilidade com o agente causador do dano perante a vítima",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Obrigar o servidor a pagar a vítima diretamente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Transferir toda a responsabilidade ao servidor público causador do dano",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-estado",
+    "text": "A responsabilidade do Estado por omissão (quando falha em agir para prevenir o dano):",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A responsabilidade por omissão do Estado é subjetiva, exigindo comprovação de culpa ou falta do serviço (faute du service), pois o Estado não é segurador universal de todos os danos.",
+    "legal_basis": "Teoria da faute du service; STJ",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É objetiva, igual à responsabilidade por ação",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É subjetiva, exigindo prova de culpa ou falta do serviço",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "É excluída, pois o Estado só responde por seus atos positivos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Aplica-se apenas quando há omissão dolosa do agente público",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Exige que a vítima prove a intenção de causar dano",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-estado",
+    "text": "O prazo prescricional para a vítima ajuizar ação de indenização contra o Estado por danos causados por seus agentes é de:",
+    "difficulty": "hard",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A jurisprudência do STJ e STF estabeleceu que o prazo é de 5 anos para ações indenizatórias contra a Fazenda Pública, conforme o Decreto 20.910/1932.",
+    "legal_basis": "Decreto 20.910/1932; STJ",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "2 anos, conforme o Código Civil",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "3 anos, conforme a regra geral do CC/2002",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "5 anos, conforme o Decreto 20.910/1932",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "10 anos, por se tratar de direito constitucional",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "1 ano, por ser obrigação de natureza pública",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "bens-publicos",
+    "text": "Os bens públicos, segundo o Código Civil, são classificados em:",
+    "difficulty": "easy",
+    "source": "CESPE/2022",
+    "year": 2022,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O art. 99 do CC/2002 classifica os bens públicos em: de uso comum do povo (praças, ruas, mares), de uso especial (repartições públicas) e dominicais (patrimônio disponível do Estado).",
+    "legal_basis": "Art. 98-103, CC/2002",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Bens federais, estaduais e municipais",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Bens de uso comum do povo, de uso especial e dominicais",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Bens imóveis, móveis e semoventes de propriedade pública",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Bens públicos e bens quasi-públicos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Bens naturais, culturais e históricos da nação",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "bens-publicos",
+    "text": "Os bens públicos são, em regra:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Os bens públicos são inalienáveis (em uso), impenhoráveis, imprescritíveis (não adquiridos por usucapião) e não oneráveis (não sujeitos a hipoteca).",
+    "legal_basis": "Art. 100-102, CC/2002",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Alienáveis quando houver interesse público justificado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Inalienáveis, impenhoráveis, imprescritíveis e não sujeitos a hipoteca",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Apenas impenhoráveis, podendo ser alienados com autorização legislativa",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Sujeitos a usucapião quando particulares os possuem por mais de 10 anos",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Alienáveis por decisão administrativa, sem necessidade de lei",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "bens-publicos",
+    "text": "A afetação de bem público:",
+    "difficulty": "hard",
+    "source": "CESPE/2024",
+    "year": 2024,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A afetação é o ato pelo qual o bem público passa a ser destinado ao uso comum do povo ou ao uso especial. A desafetação é o processo inverso, liberando o bem para alienação se for dominical.",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "É a transferência de propriedade do bem para um particular por concessão",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "É a destinação do bem ao uso comum ou especial, tornando-o inalienável",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Permite a alienação imediata do bem para financiar obras públicas",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Equivale ao tombamento de bem de interesse histórico",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "É a inscrição do bem no registro do patrimônio público",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "bens-publicos",
+    "text": "O uso privativo de bem público por particular exige:",
+    "difficulty": "medium",
+    "source": "CESPE/2023",
+    "year": 2023,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O uso privativo de bem público por particular requer instrumento jurídico: autorização (precária), permissão (precária mas com condições) ou concessão de uso (mais estável, com prazo e condições).",
+    "legal_basis": "Direito Administrativo",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas o pagamento de taxa ao Estado",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "B",
+        "text": "Instrumento jurídico específico: autorização, permissão ou concessão de uso",
+        "is_correct": true,
+        "explanation": ""
+      },
+      {
+        "letter": "C",
+        "text": "Decisão judicial autorizando o uso",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "D",
+        "text": "Aprovação do Tribunal de Contas competente",
+        "is_correct": false,
+        "explanation": ""
+      },
+      {
+        "letter": "E",
+        "text": "Apenas o registro em cartório de imóveis",
+        "is_correct": false,
+        "explanation": ""
+      }
+    ]
+  }
+]

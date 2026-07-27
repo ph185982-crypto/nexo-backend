@@ -8,16 +8,23 @@ from fastapi import Depends, HTTPException, Header
 from prf.services.auth_service import get_user_id_from_token
 from prf.database.repository import PRFRepository
 from prf.services.study_service import StudyService
+from prf.services.cache_service import PRFCacheService
 
 
 _repo: Optional[PRFRepository] = None
 _study_service: Optional[StudyService] = None
+_cache: Optional[PRFCacheService] = None
 
 
 def set_repo(repo: PRFRepository):
     global _repo, _study_service
     _repo = repo
     _study_service = StudyService(repo)
+
+
+def set_cache(cache: PRFCacheService):
+    global _cache
+    _cache = cache
 
 
 def get_repo() -> PRFRepository:
@@ -30,6 +37,12 @@ def get_study_service() -> StudyService:
     if _study_service is None:
         raise HTTPException(500, "Study service not initialized")
     return _study_service
+
+
+def get_cache() -> PRFCacheService:
+    if _cache is None:
+        raise HTTPException(500, "Cache not initialized")
+    return _cache
 
 
 async def get_current_user_id(

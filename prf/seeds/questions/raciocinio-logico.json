@@ -1,0 +1,1077 @@
+[
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-conectivos",
+    "text": "Considere a sentença: 'Pedro é policial rodoviário federal.' Do ponto de vista da lógica proposicional, essa sentença é classificada como uma proposição",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Trata-se de uma proposição simples (ou atômica), pois não contém nenhum conectivo lógico e expressa uma única ideia, podendo ser julgada como verdadeira ou falsa.",
+    "legal_basis": "Conceito de Lógica Proposicional",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "composta, por conter dois conectivos.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "simples, por não conter conectivo lógico.",
+        "is_correct": true,
+        "explanation": "Correta: Trata-se de uma proposição simples (ou atômica), pois não contém nenhum conectivo lógico e expressa uma única ideia, podendo ser julgada como verdadeira ou falsa."
+      },
+      {
+        "letter": "C",
+        "text": "aberta, por depender de uma variável.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "sem valor lógico definido.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "composta, por admitir mais de um valor lógico simultaneamente.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-conectivos",
+    "text": "Considere a proposição composta: 'Carlos é policial e Ana é advogada.' A negação lógica dessa proposição é corretamente expressa por",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Pela negação da conjunção (De Morgan), ~(p ∧ q) equivale a ~p ∨ ~q. Logo, a negação correta é 'Carlos não é policial ou Ana não é advogada.'",
+    "legal_basis": "Conceito de Lógica Proposicional - Conectivos (conjunção e negação)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Carlos não é policial e Ana não é advogada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Carlos é policial ou Ana é advogada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "Carlos não é policial ou Ana não é advogada.",
+        "is_correct": true,
+        "explanation": "Correta: Pela negação da conjunção (De Morgan), ~(p ∧ q) equivale a ~p ∨ ~q. Logo, a negação correta é 'Carlos não é policial ou Ana não é advogada.'"
+      },
+      {
+        "letter": "D",
+        "text": "Se Carlos é policial, então Ana é advogada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Carlos é policial se, e somente se, Ana é advogada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-conectivos",
+    "text": "A proposição composta pelo conectivo de disjunção inclusiva 'p ∨ q' é falsa unicamente quando",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A disjunção inclusiva (∨) só é falsa quando ambas as proposições simples que a compõem são falsas; em qualquer outro caso (uma ou ambas verdadeiras), o resultado é verdadeiro.",
+    "legal_basis": "Conceito de Lógica Proposicional - Conectivos (disjunção inclusiva)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "p é verdadeira e q é falsa.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "p é falsa e q é verdadeira.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "ambas, p e q, são verdadeiras.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "ambas, p e q, são falsas.",
+        "is_correct": true,
+        "explanation": "Correta: A disjunção inclusiva (∨) só é falsa quando ambas as proposições simples que a compõem são falsas; em qualquer outro caso (uma ou ambas verdadeiras), o resultado é verdadeiro."
+      },
+      {
+        "letter": "E",
+        "text": "p e q têm o mesmo valor lógico.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-conectivos",
+    "text": "A proposição condicional 'Se Marcelo é aprovado no concurso, então ele será nomeado policial rodoviário federal' (p → q) é falsa exclusivamente na situação em que",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O condicional (→) só é falso quando o antecedente (p) é verdadeiro e o consequente (q) é falso; em todos os demais casos, o condicional é verdadeiro.",
+    "legal_basis": "Conceito de Lógica Proposicional - Conectivos (condicional)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Marcelo não é aprovado e não é nomeado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Marcelo é aprovado e é nomeado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "Marcelo é aprovado e não é nomeado.",
+        "is_correct": true,
+        "explanation": "Correta: O condicional (→) só é falso quando o antecedente (p) é verdadeiro e o consequente (q) é falso; em todos os demais casos, o condicional é verdadeiro."
+      },
+      {
+        "letter": "D",
+        "text": "Marcelo não é aprovado e é nomeado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Marcelo é aprovado ou é nomeado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-conectivos",
+    "text": "A proposição bicondicional 'p ↔ q' (p se, e somente se, q) é verdadeira quando",
+    "difficulty": "easy",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O bicondicional (↔) é verdadeiro quando as duas proposições simples possuem o mesmo valor lógico, ou seja, ambas verdadeiras ou ambas falsas.",
+    "legal_basis": "Conceito de Lógica Proposicional - Conectivos (bicondicional)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "p e q têm valores lógicos distintos.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "apenas p é verdadeira.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "apenas q é verdadeira.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "p e q possuem o mesmo valor lógico (ambas verdadeiras ou ambas falsas).",
+        "is_correct": true,
+        "explanation": "Correta: O bicondicional (↔) é verdadeiro quando as duas proposições simples possuem o mesmo valor lógico, ou seja, ambas verdadeiras ou ambas falsas."
+      },
+      {
+        "letter": "E",
+        "text": "ao menos uma delas é falsa.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-conectivos",
+    "text": "Considere a proposição: 'Todos os policiais rodoviários federais realizaram o curso de formação profissional.' A negação lógica correta dessa proposição universal é",
+    "difficulty": "hard",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A negação de uma proposição universal ('todos são') é uma proposição existencial que afirma a exceção: 'existe pelo menos um que não é/faz', e não a proposição universal com o predicado negado para todos.",
+    "legal_basis": "Conceito de Lógica Proposicional - Quantificadores (negação do quantificador universal)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Nenhum policial rodoviário federal realizou o curso de formação profissional.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Existe pelo menos um policial rodoviário federal que não realizou o curso de formação profissional.",
+        "is_correct": true,
+        "explanation": "Correta: A negação de uma proposição universal ('todos são') é uma proposição existencial que afirma a exceção: 'existe pelo menos um que não é/faz', e não a proposição universal com o predicado negado para todos."
+      },
+      {
+        "letter": "C",
+        "text": "Todos os policiais rodoviários federais não realizaram o curso de formação profissional.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "Alguns policiais rodoviários federais realizaram o curso de formação profissional.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Todo policial que realizou o curso é rodoviário federal.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "tabelas-verdade",
+    "text": "Na tabela-verdade da proposição composta 'p ∧ ~q', considerando as quatro combinações possíveis de valores lógicos de p e q, o número de linhas em que essa proposição composta resulta verdadeira é",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A proposição p ∧ ~q é verdadeira somente quando p é verdadeira e q é falsa, o que ocorre em apenas uma das quatro linhas da tabela-verdade (V,F).",
+    "legal_basis": "Conceito de Lógica Proposicional - Tabelas-verdade",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "0.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "1.",
+        "is_correct": true,
+        "explanation": "Correta: A proposição p ∧ ~q é verdadeira somente quando p é verdadeira e q é falsa, o que ocorre em apenas uma das quatro linhas da tabela-verdade (V,F)."
+      },
+      {
+        "letter": "C",
+        "text": "2.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "3.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "4.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "tabelas-verdade",
+    "text": "Sabendo-se que a proposição simples p é verdadeira (V) e a proposição simples q é falsa (F), o valor lógico da proposição composta '(p ∨ q) → q' é",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Como p=V e q=F, calcula-se primeiro (p ∨ q) = V ∨ F = V. Em seguida, avalia-se V → F, que é falso, pois o condicional só é verdadeiro quando o antecedente é falso ou o consequente é verdadeiro.",
+    "legal_basis": "Conceito de Lógica Proposicional - Tabelas-verdade (avaliação de proposição composta)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Verdadeiro (V).",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Falso (F).",
+        "is_correct": true,
+        "explanation": "Correta: Como p=V e q=F, calcula-se primeiro (p ∨ q) = V ∨ F = V. Em seguida, avalia-se V → F, que é falso, pois o condicional só é verdadeiro quando o antecedente é falso ou o consequente é verdadeiro."
+      },
+      {
+        "letter": "C",
+        "text": "Indeterminado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "Depende do valor de uma terceira proposição.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Sempre verdadeiro, independentemente de p e q.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "tabelas-verdade",
+    "text": "Uma proposição composta que é sempre verdadeira, independentemente dos valores lógicos das proposições simples que a compõem, é denominada",
+    "difficulty": "easy",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Uma proposição composta que resulta sempre verdadeira, para qualquer combinação de valores lógicos das proposições simples, é chamada de tautologia. O oposto (sempre falsa) é a contradição.",
+    "legal_basis": "Conceito de Lógica Proposicional - Tautologia e contradição",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "contingência.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "tautologia.",
+        "is_correct": true,
+        "explanation": "Correta: Uma proposição composta que resulta sempre verdadeira, para qualquer combinação de valores lógicos das proposições simples, é chamada de tautologia. O oposto (sempre falsa) é a contradição."
+      },
+      {
+        "letter": "C",
+        "text": "contradição.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "proposição aberta.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "sentença indeterminada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "tabelas-verdade",
+    "text": "A proposição composta 'p ∧ ~p' é classificada, do ponto de vista lógico, como uma",
+    "difficulty": "easy",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A proposição p ∧ ~p é sempre falsa, independentemente do valor lógico de p, sendo, portanto, uma contradição.",
+    "legal_basis": "Conceito de Lógica Proposicional - Tautologia e contradição",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "tautologia.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "contradição.",
+        "is_correct": true,
+        "explanation": "Correta: A proposição p ∧ ~p é sempre falsa, independentemente do valor lógico de p, sendo, portanto, uma contradição."
+      },
+      {
+        "letter": "C",
+        "text": "contingência.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "equivalência lógica.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "proposição indefinida.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "tabelas-verdade",
+    "text": "Uma tabela-verdade construída para uma proposição composta por 4 proposições simples distintas apresentará um número total de linhas igual a",
+    "difficulty": "medium",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O número de linhas de uma tabela-verdade é dado por 2 elevado ao número de proposições simples envolvidas: 2⁴ = 16.",
+    "legal_basis": "Conceito de Lógica Proposicional - Tabelas-verdade (número de linhas)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "4.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "8.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "12.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "16.",
+        "is_correct": true,
+        "explanation": "Correta: O número de linhas de uma tabela-verdade é dado por 2 elevado ao número de proposições simples envolvidas: 2⁴ = 16."
+      },
+      {
+        "letter": "E",
+        "text": "32.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "equivalencias",
+    "text": "A proposição 'Se choveu, então a pista ficou escorregadia' é logicamente equivalente, pela regra da contrapositiva, à proposição",
+    "difficulty": "medium",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A contrapositiva de p → q é ~q → ~p, sendo logicamente equivalente à proposição original. Logo, a contrapositiva correta é: 'Se a pista não ficou escorregadia, então não choveu.'",
+    "legal_basis": "Conceito de Lógica Proposicional - Equivalências (contrapositiva)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Se a pista ficou escorregadia, então choveu.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Se não choveu, então a pista não ficou escorregadia.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "Se a pista não ficou escorregadia, então não choveu.",
+        "is_correct": true,
+        "explanation": "Correta: A contrapositiva de p → q é ~q → ~p, sendo logicamente equivalente à proposição original. Logo, a contrapositiva correta é: 'Se a pista não ficou escorregadia, então não choveu.'"
+      },
+      {
+        "letter": "D",
+        "text": "Choveu e a pista não ficou escorregadia.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Choveu se, e somente se, a pista ficou escorregadia.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "equivalencias",
+    "text": "A negação lógica correta da proposição condicional 'Se o motorista estiver embriagado, então será autuado' é",
+    "difficulty": "hard",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "A negação de p → q é logicamente equivalente a p ∧ ~q (o antecedente é verdadeiro e o consequente é falso). Logo, a negação correta é: 'O motorista está embriagado e não será autuado.'",
+    "legal_basis": "Conceito de Lógica Proposicional - Equivalências (negação do condicional)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O motorista não está embriagado e não será autuado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "O motorista está embriagado e não será autuado.",
+        "is_correct": true,
+        "explanation": "Correta: A negação de p → q é logicamente equivalente a p ∧ ~q (o antecedente é verdadeiro e o consequente é falso). Logo, a negação correta é: 'O motorista está embriagado e não será autuado.'"
+      },
+      {
+        "letter": "C",
+        "text": "Se o motorista não estiver embriagado, não será autuado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "O motorista não está embriagado ou será autuado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "O motorista está embriagado ou será autuado.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "equivalencias",
+    "text": "Pela primeira lei de De Morgan, a negação da proposição composta 'Ricardo é policial e Fábio é bombeiro' é logicamente equivalente a",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Pela primeira lei de De Morgan, ~(p ∧ q) ≡ ~p ∨ ~q. Assim, a negação correta é: 'Ricardo não é policial ou Fábio não é bombeiro.'",
+    "legal_basis": "Conceito de Lógica Proposicional - Equivalências (Lei de De Morgan)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Ricardo não é policial e Fábio não é bombeiro.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Ricardo não é policial ou Fábio não é bombeiro.",
+        "is_correct": true,
+        "explanation": "Correta: Pela primeira lei de De Morgan, ~(p ∧ q) ≡ ~p ∨ ~q. Assim, a negação correta é: 'Ricardo não é policial ou Fábio não é bombeiro.'"
+      },
+      {
+        "letter": "C",
+        "text": "Ricardo é policial ou Fábio é bombeiro.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "Ricardo não é policial e Fábio é bombeiro.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Ricardo é policial e Fábio não é bombeiro.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "equivalencias",
+    "text": "Pela segunda lei de De Morgan, a negação da proposição composta 'Está chovendo ou a pista está molhada' é logicamente equivalente a",
+    "difficulty": "medium",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Pela segunda lei de De Morgan, ~(p ∨ q) ≡ ~p ∧ ~q. Assim, a negação correta é: 'Não está chovendo e a pista não está molhada.'",
+    "legal_basis": "Conceito de Lógica Proposicional - Equivalências (Lei de De Morgan)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não está chovendo ou a pista não está molhada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "Está chovendo e a pista está molhada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "Não está chovendo e a pista não está molhada.",
+        "is_correct": true,
+        "explanation": "Correta: Pela segunda lei de De Morgan, ~(p ∨ q) ≡ ~p ∧ ~q. Assim, a negação correta é: 'Não está chovendo e a pista não está molhada.'"
+      },
+      {
+        "letter": "D",
+        "text": "Não está chovendo e a pista está molhada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "Está chovendo ou a pista não está molhada.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "equivalencias",
+    "text": "A proposição condicional 'p → q' é logicamente equivalente a",
+    "difficulty": "hard",
+    "source": "CESPE/2020",
+    "year": 2020,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "O condicional p → q é logicamente equivalente à disjunção ~p ∨ q, o que pode ser verificado comparando-se as tabelas-verdade de ambas as expressões, que apresentam os mesmos valores lógicos em todas as linhas.",
+    "legal_basis": "Conceito de Lógica Proposicional - Equivalências (condicional e disjunção)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "p ∧ q.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "~p ∨ q.",
+        "is_correct": true,
+        "explanation": "Correta: O condicional p → q é logicamente equivalente à disjunção ~p ∨ q, o que pode ser verificado comparando-se as tabelas-verdade de ambas as expressões, que apresentam os mesmos valores lógicos em todas as linhas."
+      },
+      {
+        "letter": "C",
+        "text": "p ∨ ~q.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "~p ∧ ~q.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "q ∧ ~p.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "equivalencias",
+    "text": "Considerando as regras da lógica proposicional, a dupla negação de uma proposição simples p, representada por ~(~p), é logicamente equivalente a",
+    "difficulty": "easy",
+    "source": "CESPE/2021",
+    "year": 2021,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Pela regra da dupla negação, negar duas vezes uma proposição resulta na própria proposição original: ~(~p) ≡ p.",
+    "legal_basis": "Conceito de Lógica Proposicional - Equivalências (dupla negação)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "~p.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "p.",
+        "is_correct": true,
+        "explanation": "Correta: Pela regra da dupla negação, negar duas vezes uma proposição resulta na própria proposição original: ~(~p) ≡ p."
+      },
+      {
+        "letter": "C",
+        "text": "uma tautologia, independentemente de p.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "uma contradição, independentemente de p.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "p ∧ ~p.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-quantitativo",
+    "text": "Em um lote de 200 veículos fiscalizados em uma operação da PRF, 30% apresentaram alguma irregularidade documental. O número de veículos que apresentaram irregularidade documental foi de",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Calcula-se 30% de 200: 0,30 × 200 = 60 veículos.",
+    "legal_basis": "Conceito de Raciocínio Quantitativo - Porcentagem",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "40.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "50.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "60.",
+        "is_correct": true,
+        "explanation": "Correta: Calcula-se 30% de 200: 0,30 × 200 = 60 veículos."
+      },
+      {
+        "letter": "D",
+        "text": "70.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "80.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-quantitativo",
+    "text": "Uma equipe de 4 policiais consegue fiscalizar 60 veículos em um período de 2 horas, mantendo-se o mesmo ritmo de trabalho. Nas mesmas condições, uma equipe de 6 policiais fiscalizaria, em 2 horas, um número de veículos igual a",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Trata-se de grandezas diretamente proporcionais (mais policiais, mais veículos fiscalizados no mesmo tempo). Por regra de três simples: 4 policiais ---- 60 veículos; 6 policiais ---- x. x = (6×60)/4 = 90 veículos.",
+    "legal_basis": "Conceito de Raciocínio Quantitativo - Regra de três simples",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "75.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "80.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "85.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "90.",
+        "is_correct": true,
+        "explanation": "Correta: Trata-se de grandezas diretamente proporcionais (mais policiais, mais veículos fiscalizados no mesmo tempo). Por regra de três simples: 4 policiais ---- 60 veículos; 6 policiais ---- x. x = (6×60)/4 = 90 veículos."
+      },
+      {
+        "letter": "E",
+        "text": "100.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-quantitativo",
+    "text": "A idade de Marcos é o dobro da idade de sua irmã Julia. Sabendo-se que a soma das idades dos dois é igual a 42 anos, a idade de Julia, em anos, é",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Sendo J a idade de Julia e M = 2J a idade de Marcos, tem-se J + 2J = 42, logo 3J = 42, e J = 14 anos.",
+    "legal_basis": "Conceito de Raciocínio Quantitativo - Problemas de idade (equações)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "10.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "12.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "14.",
+        "is_correct": true,
+        "explanation": "Correta: Sendo J a idade de Julia e M = 2J a idade de Marcos, tem-se J + 2J = 42, logo 3J = 42, e J = 14 anos."
+      },
+      {
+        "letter": "D",
+        "text": "16.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "18.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-quantitativo",
+    "text": "Em uma unidade da PRF, trabalham 50 policiais, dos quais 20 atuam no policiamento ostensivo e 15 atuam na fiscalização de cargas; 5 policiais atuam simultaneamente nas duas atividades. O número de policiais que não atuam em nenhuma dessas duas atividades é",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Pelo princípio da inclusão-exclusão, o número de policiais que atuam em pelo menos uma das atividades é 20 + 15 − 5 = 30. Logo, os que não atuam em nenhuma das duas são 50 − 30 = 20.",
+    "legal_basis": "Conceito de Raciocínio Quantitativo - Conjuntos (inclusão-exclusão)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "15.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "18.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "20.",
+        "is_correct": true,
+        "explanation": "Correta: Pelo princípio da inclusão-exclusão, o número de policiais que atuam em pelo menos uma das atividades é 20 + 15 − 5 = 30. Logo, os que não atuam em nenhuma das duas são 50 − 30 = 20."
+      },
+      {
+        "letter": "D",
+        "text": "25.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "30.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-padroes",
+    "text": "Considere a sequência numérica: 3, 7, 11, 15, 19, ... O próximo termo dessa sequência é",
+    "difficulty": "easy",
+    "source": "CESPE/2016",
+    "year": 2016,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Trata-se de uma progressão aritmética de razão 4 (cada termo é obtido somando-se 4 ao anterior). O próximo termo é 19 + 4 = 23.",
+    "legal_basis": "Conceito de Raciocínio Lógico - Sequências e padrões (progressão aritmética)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "21.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "22.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "23.",
+        "is_correct": true,
+        "explanation": "Correta: Trata-se de uma progressão aritmética de razão 4 (cada termo é obtido somando-se 4 ao anterior). O próximo termo é 19 + 4 = 23."
+      },
+      {
+        "letter": "D",
+        "text": "24.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "25.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-padroes",
+    "text": "Considere a sequência numérica: 2, 6, 18, 54, ... O próximo termo dessa sequência é",
+    "difficulty": "medium",
+    "source": "CESPE/2017",
+    "year": 2017,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Trata-se de uma progressão geométrica de razão 3 (cada termo é obtido multiplicando-se o anterior por 3). O próximo termo é 54 × 3 = 162.",
+    "legal_basis": "Conceito de Raciocínio Lógico - Sequências e padrões (progressão geométrica)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "108.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "144.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "162.",
+        "is_correct": true,
+        "explanation": "Correta: Trata-se de uma progressão geométrica de razão 3 (cada termo é obtido multiplicando-se o anterior por 3). O próximo termo é 54 × 3 = 162."
+      },
+      {
+        "letter": "D",
+        "text": "180.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "216.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-padroes",
+    "text": "Considere a sequência numérica: 1, 1, 2, 3, 5, 8, 13, ... Essa sequência segue o padrão em que",
+    "difficulty": "medium",
+    "source": "CESPE/2018",
+    "year": 2018,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "Trata-se da sequência de Fibonacci, na qual, a partir do terceiro termo, cada termo é igual à soma dos dois termos imediatamente anteriores (por exemplo, 5+8=13).",
+    "legal_basis": "Conceito de Raciocínio Lógico - Sequências e padrões (sequência de Fibonacci)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "cada termo é o dobro do anterior.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "cada termo é a soma dos dois termos imediatamente anteriores.",
+        "is_correct": true,
+        "explanation": "Correta: Trata-se da sequência de Fibonacci, na qual, a partir do terceiro termo, cada termo é igual à soma dos dois termos imediatamente anteriores (por exemplo, 5+8=13)."
+      },
+      {
+        "letter": "C",
+        "text": "cada termo é o quadrado do termo anterior.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "a razão entre termos consecutivos é sempre constante e igual a 2.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "E",
+        "text": "a sequência representa uma progressão aritmética de razão 1.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-padroes",
+    "text": "Considere a sequência: A2, C4, E6, G8, ... Mantido o padrão de alternância entre letras (avançando duas posições no alfabeto) e números (avançando duas unidades), o próximo elemento dessa sequência é",
+    "difficulty": "hard",
+    "source": "CESPE/2019",
+    "year": 2019,
+    "examiner": "CESPE/CEBRASPE",
+    "explanation": "As letras avançam de duas em duas posições no alfabeto (A, C, E, G, I...) e os números avançam de duas em duas unidades (2, 4, 6, 8, 10...). Logo, o próximo elemento é I10.",
+    "legal_basis": "Conceito de Raciocínio Lógico - Sequências e padrões (padrões alfanuméricos)",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "H9.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "B",
+        "text": "H10.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "C",
+        "text": "I9.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      },
+      {
+        "letter": "D",
+        "text": "I10.",
+        "is_correct": true,
+        "explanation": "Correta: As letras avançam de duas em duas posições no alfabeto (A, C, E, G, I...) e os números avançam de duas em duas unidades (2, 4, 6, 8, 10...). Logo, o próximo elemento é I10."
+      },
+      {
+        "letter": "E",
+        "text": "J10.",
+        "is_correct": false,
+        "explanation": "Incorreta em relação ao gabarito."
+      }
+    ]
+  }
+]
