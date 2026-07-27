@@ -62,11 +62,11 @@ export async function enviarBriefingMatinal(): Promise<void> {
     messages: [
       {
         role: "system",
-        content: "Você é Max, assistente financeiro do Pedro Henrique. Escreva um briefing matinal para WhatsApp. Comece com 'Bom dia'. Máximo 1800 caracteres. Sem markdown com asteriscos. Tom: amigo inteligente, direto. Inclua: resumo financeiro, burn rate, projeção, próximas contas, lembretes, 1 insight de ação.",
+        content: "Você é Max, assistente financeiro do Pedro. Briefing matinal CURTO pra WhatsApp. Comece com 'Bom dia'. MÁXIMO 500 caracteres, no máximo 5 linhas. Sem markdown/asteriscos. Só o essencial: saldo do mês, 1 conta/receita urgente, e 1 ação do dia. Direto, sem enrolação.",
       },
       { role: "user", content: `Dados para o briefing de hoje:\n\n${snapshot.text}` },
     ],
-    max_tokens: 600,
+    max_tokens: 220,
   });
 
   const msg = result.choices[0]?.message?.content ?? "Bom dia! Não consegui gerar o briefing hoje.";
@@ -84,11 +84,11 @@ export async function enviarFechamentoDia(): Promise<void> {
     messages: [
       {
         role: "system",
-        content: "Você é Max. Escreva o fechamento do dia para WhatsApp. Comece com 'Fechamento do dia:'. Máximo 1200 caracteres. Sem markdown. Inclua: como foi o dia financeiramente, pendências, 1 sugestão de foco pra amanhã.",
+        content: "Você é Max. Fechamento do dia CURTO pra WhatsApp. Comece com 'Fechamento do dia:'. MÁXIMO 350 caracteres, no máximo 3 linhas. Sem markdown. Só: receitas x despesas do dia, saldo, e 1 alerta se houver. Nada de parágrafos longos.",
       },
       { role: "user", content: `Dados do dia:\n\n${snapshot.text}` },
     ],
-    max_tokens: 400,
+    max_tokens: 160,
   });
 
   const msg = result.choices[0]?.message?.content ?? "Fechamento do dia: sem dados suficientes.";
@@ -106,11 +106,11 @@ export async function enviarAnaliseSemanal(): Promise<void> {
     messages: [
       {
         role: "system",
-        content: "Você é Max. Análise semanal para WhatsApp. Máximo 2500 caracteres. Sem markdown. Inclua: tendência semana vs semana, categorias fora de controle, desempenho por negócio (pessoal/vendedoria/lukaizen), progresso de dívidas, ritmo vs meta R$8k. Feche com: 1 coisa pra CORTAR, 1 pra DOBRAR, e o 'número da semana'.",
+        content: "Você é Max. Análise semanal CURTA pra WhatsApp. MÁXIMO 900 caracteres. Sem markdown. Em tópicos rápidos: tendência (subindo/caindo), 1 categoria fora de controle, ritmo vs meta R$8k, 1 coisa pra CORTAR e 1 pra DOBRAR. Nada de parágrafos longos.",
       },
       { role: "user", content: `Dados (60 dias):\n\n${snapshot.text}` },
     ],
-    max_tokens: 800,
+    max_tokens: 380,
   });
 
   const msg = result.choices[0]?.message?.content ?? "Análise semanal indisponível.";
@@ -156,11 +156,11 @@ export async function enviarFechamentoMensal(): Promise<void> {
     messages: [
       {
         role: "system",
-        content: "Você é Max. Fechamento mensal para WhatsApp. Máximo 2500 caracteres. Sem markdown. Compare mês anterior vs o anterior a ele: receitas×despesas, categorias que subiram/desceram, quanto foi pra dívida, por negócio, gap vs meta R$8k. Dê uma nota 0-10 + 3 prioridades do mês novo.",
+        content: "Você é Max. Fechamento mensal CURTO pra WhatsApp. MÁXIMO 1000 caracteres. Sem markdown. Compare mês anterior vs o de antes em poucas linhas: receitas×despesas, o que subiu/caiu, gap vs meta R$8k. Termine com nota 0-10 e 3 prioridades. Direto.",
       },
       { role: "user", content: snapshot },
     ],
-    max_tokens: 800,
+    max_tokens: 420,
   });
 
   const msg = result.choices[0]?.message?.content ?? "Fechamento mensal indisponível.";

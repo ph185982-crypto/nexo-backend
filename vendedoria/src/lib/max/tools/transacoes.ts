@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { getBrasiliaNow, formatMes } from "../config";
+import { getBrasiliaNow, getBrasiliaDateOnly, formatMesUTC } from "../config";
 
 const BRL = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -7,39 +7,55 @@ const BRL = new Intl.NumberFormat("pt-BR", {
 });
 
 function fmtDate(d: Date): string {
-  return d.toLocaleDateString("pt-BR");
+  return d.toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
+// Meia-noite UTC do dia informado — seguro para coluna @db.Date (sem virar dia anterior).
 function parseDate(s: string): Date {
   const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, m - 1, d);
+  return new Date(Date.UTC(y, m - 1, d));
 }
 
 // ---------------------------------------------------------------------------
 // registrar_transacao
 // ---------------------------------------------------------------------------
 export async function registrarTransacao(args: Record<string, unknown>): Promise<string> {
-  const now = getBrasiliaNow();
   const dataStr = (args.data as string) ?? null;
-  const dataTransacao = dataStr ? parseDate(dataStr) : now;
+  const dataTransacao = dataStr ? parseDate(dataStr) : getBrasiliaDateOnly();
   const valor = Math.round((args.valor as number) * 100) / 100;
+  const descricao = args.descricao as string;
+
+  // Guarda anti-duplicata: mesma descrição+valor+dia registrada nos últimos 3 min
+  // (mensagens em sequência às vezes fazem o modelo reprocessar o item anterior).
+  const tresMinAtras = new Date(Date.now() - 3 * 60_000);
+  const dup = await prisma.transacao.findFirst({
+    where: {
+      valor, descricao, tipo: args.tipo as string,
+      data_transacao: dataTransacao,
+      criado_em: { gte: tresMinAtras },
+    },
+    select: { id: true },
+  });
+  if (dup) {
+    return `Já registrei "${descricao}" de ${BRL.format(valor)} agora há pouco — não vou duplicar.`;
+  }
 
   const tx = await prisma.transacao.create({
     data: {
       tipo: args.tipo as string,
       valor,
-      descricao: args.descricao as string,
+      descricao,
       categoria: args.categoria as string,
       tipo_negocio: args.tipo_negocio as string,
       empresa: (args.empresa as string) ?? null,
       data_transacao: dataTransacao,
-      mes: formatMes(dataTransacao),
+      mes: formatMesUTC(dataTransacao),
       confirmado: true,
     },
   });
 
-  // Mini-extrato do dia
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // Mini-extrato do dia (mesmo referencial UTC das transações @db.Date)
+  const startOfDay = getBrasiliaDateOnly();
   const endOfDay = new Date(startOfDay.getTime() + 86_400_000);
 
   const todayTxs = await prisma.transacao.findMany({
@@ -60,7 +76,7 @@ export async function registrarTransacao(args: Record<string, unknown>): Promise
     `  ${tx.tipo === "receita" ? "+" : "-"} ${BRL.format(tx.valor)} — ${tx.descricao} [${tx.categoria}]`,
     `  Data: ${fmtDate(dataTransacao)}`,
     ``,
-    `Resumo de hoje (${fmtDate(now)}):`,
+    `Resumo de hoje (${fmtDate(getBrasiliaDateOnly())}):`,
     `  Receitas: ${BRL.format(totalReceitas)}`,
     `  Despesas: ${BRL.format(totalDespesas)}`,
     `  Saldo do dia: ${BRL.format(totalReceitas - totalDespesas)}`,
@@ -159,7 +175,7 @@ export async function editarTransacao(args: Record<string, unknown>): Promise<st
   if (args.data_transacao !== undefined) {
     const newDate = parseDate(args.data_transacao as string);
     data.data_transacao = newDate;
-    data.mes = formatMes(newDate);
+    data.mes = formatMesUTC(newDate);
   }
 
   if (Object.keys(data).length === 0) return "Nenhum campo para atualizar informado.";

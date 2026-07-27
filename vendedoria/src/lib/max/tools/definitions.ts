@@ -56,7 +56,7 @@ export const MAX_TOOLS: Array<{
           data: {
             type: "string",
             description:
-              "Data em que a transacao ocorreu, formato YYYY-MM-DD. OBRIGATORIO: sempre infira a data da mensagem do usuario (hoje, ontem, segunda, etc). Use a data de hoje se nao houver indicacao.",
+              "Data da transacao, formato YYYY-MM-DD. NAO preencha se o usuario nao mencionar data — o sistema usa hoje automaticamente. So preencha quando o usuario indicar explicitamente (ontem, dia 20, 01/07, semana passada). NUNCA copie a data de mensagens anteriores.",
           },
           empresa: {
             type: "string",

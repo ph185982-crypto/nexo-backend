@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
-import { getBrasiliaNow, formatMes } from "../config";
+import { getBrasiliaNow, getBrasiliaDateOnly, formatMesUTC } from "../config";
 
 const BRL = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -7,12 +7,13 @@ const BRL = new Intl.NumberFormat("pt-BR", {
 });
 
 function fmtDate(d: Date): string {
-  return d.toLocaleDateString("pt-BR");
+  return d.toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
+// Meia-noite UTC — seguro para colunas @db.Date (não vira dia anterior).
 function parseDate(s: string): Date {
   const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, m - 1, d);
+  return new Date(Date.UTC(y, m - 1, d));
 }
 
 // ===========================================================================
@@ -85,8 +86,8 @@ export async function gerenciarDivida(args: Record<string, unknown>): Promise<st
           descricao: `Parcela: ${divida.descricao}`,
           categoria: "Dívidas/Parcelas",
           tipo_negocio: "pessoal",
-          data_transacao: now,
-          mes: formatMes(now),
+          data_transacao: getBrasiliaDateOnly(),
+          mes: formatMesUTC(getBrasiliaDateOnly()),
           confirmado: true,
         },
       });
@@ -202,8 +203,8 @@ export async function gerenciarReceitaPrevista(args: Record<string, unknown>): P
           categoria: "Renda Variável",
           tipo_negocio: receita.tipo_negocio ?? "geral",
           empresa: receita.cliente,
-          data_transacao: now,
-          mes: formatMes(now),
+          data_transacao: getBrasiliaDateOnly(),
+          mes: formatMesUTC(getBrasiliaDateOnly()),
           confirmado: true,
         },
       });
@@ -307,8 +308,8 @@ export async function gerenciarContaPagar(args: Record<string, unknown>): Promis
           descricao: conta.descricao,
           categoria: conta.categoria,
           tipo_negocio: conta.tipo_negocio,
-          data_transacao: now,
-          mes: formatMes(now),
+          data_transacao: getBrasiliaDateOnly(),
+          mes: formatMesUTC(getBrasiliaDateOnly()),
           confirmado: true,
         },
       });
@@ -413,8 +414,7 @@ export async function gerenciarOrcamento(args: Record<string, unknown>): Promise
 
       if (orcamentos.length === 0) return "Nenhum orcamento definido.";
 
-      const now = getBrasiliaNow();
-      const mesAtual = formatMes(now);
+      const mesAtual = formatMesUTC(getBrasiliaDateOnly());
 
       // Buscar gastos do mes atual por categoria
       const despesasMes = await prisma.transacao.groupBy({

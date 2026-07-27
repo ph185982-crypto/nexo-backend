@@ -29,8 +29,31 @@ export function getBrasiliaHour(): number {
   return getBrasiliaNow().getHours();
 }
 
+/** Partes Y/M/D do dia atual em Brasília (à prova de timezone do servidor). */
+export function getBrasiliaDateParts(): { y: number; m: number; d: number } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(new Date());
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  return { y: get("year"), m: get("month"), d: get("day") };
+}
+
+/**
+ * Data de hoje em Brasília como MEIA-NOITE UTC — segura para colunas @db.Date
+ * (que truncam pelo componente UTC). Evita o bug de registrar no dia anterior.
+ */
+export function getBrasiliaDateOnly(): Date {
+  const { y, m, d } = getBrasiliaDateParts();
+  return new Date(Date.UTC(y, m - 1, d));
+}
+
 export function formatMes(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Mês (YYYY-MM) a partir dos componentes UTC — para datas @db.Date. */
+export function formatMesUTC(d: Date): string {
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 let _ownerProvider: { businessPhoneNumberId: string; organizationId: string; accessToken: string | null } | null = null;

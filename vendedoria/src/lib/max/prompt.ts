@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma/client";
 import { getBrasiliaNow, formatMes } from "./config";
 
+// Mesma lista EXATA do enum da tool registrar_transacao (com acentos) —
+// se divergir, o modelo erra a categoria e cai em "Outros".
 const CATEGORIAS = [
-  "Moradia", "Transporte", "Alimentacao", "Saude", "Lazer", "Vestuario",
-  "Assinaturas", "Negocios", "Dividas/Parcelas", "Fornecedor", "Marketing",
-  "Salario", "Renda Variavel", "Outros",
+  "Moradia", "Transporte", "Alimentação", "Saúde", "Lazer", "Vestuário",
+  "Assinaturas", "Negócios", "Dívidas/Parcelas", "Fornecedor", "Marketing",
+  "Salário", "Renda Variável", "Outros",
 ] as const;
 
 function brl(v: number): string {
@@ -119,11 +121,11 @@ export async function buildMaxSystemPrompt(): Promise<string> {
     : "Nenhuma";
 
   const contasStr = contasVencer.length > 0
-    ? contasVencer.map((c) => `- ${c.descricao}: ${brl(c.valor)} vence ${c.data_vencimento.toLocaleDateString("pt-BR")}`).join("\n")
+    ? contasVencer.map((c) => `- [id:${c.id}] ${c.descricao}: ${brl(c.valor)} vence ${c.data_vencimento.toLocaleDateString("pt-BR", { timeZone: "UTC" })}`).join("\n")
     : "Nenhuma";
 
   const receitasStr = receitasPendentes.length > 0
-    ? receitasPendentes.map((r) => `- ${r.descricao}: ${brl(r.valor)} prev ${r.data_prevista.toLocaleDateString("pt-BR")}${r.cliente ? ` (${r.cliente})` : ""}`).join("\n")
+    ? receitasPendentes.map((r) => `- [id:${r.id}] ${r.descricao}: ${brl(r.valor)} prev ${r.data_prevista.toLocaleDateString("pt-BR", { timeZone: "UTC" })}${r.cliente ? ` (${r.cliente})` : ""}`).join("\n")
     : "Nenhuma";
 
   const memoriaStr = contextos.length > 0
@@ -165,17 +167,36 @@ ${receitasStr}
 
 ${memoriaStr ? `MEMORIA:\n${memoriaStr}\n` : ""}CATEGORIAS VALIDAS: ${CATEGORIAS.join(", ")}
 
-REGRAS DE CLASSIFICACAO: salario vai em pessoal/Salario, freelance em pessoal/Renda Variavel, vendas Vendedoria em vendedoria/Renda Variavel, aluguel em pessoal/Moradia, uber/combustivel em pessoal/Transporte, mercado/restaurante em pessoal/Alimentacao.
+REGRAS DE CLASSIFICACAO (use SEMPRE uma categoria da lista, nunca invente; use "Outros" so em ultimo caso):
+- Alimentação: mercado, supermercado, feira, padaria, restaurante, lanche, sorvete, água, café, ifood, açougue, hortifruti
+- Transporte: uber, 99, combustivel, gasolina, estacionamento, pedagio, lava jato, tapete/acessorio de carro, mecanico, oficina
+- Moradia: aluguel, condominio, luz/energia, agua (conta), gas, IPTU, reforma, moveis
+- Saúde: farmacia, remedio, medico, dentista, plano de saude, exame, academia
+- Assinaturas: netflix, spotify, streaming, software mensal, apps
+- Vestuário: roupa, calçado, moda, acessorio pessoal
+- Dívidas/Parcelas: parcela de algo, emprestimo, financiamento, cartao (fatura)
+- Negócios/Fornecedor/Marketing: gastos das empresas (Vendedoria/LuKaizen), fornecedor, anuncios/trafego
+- Salário / Renda Variável: entradas (salario fixo = Salário; vendas/freelance/recebimentos = Renda Variável)
+- Pet (ração, veterinario): use Outros (nao ha categoria pet)
+- Na duvida entre 2, escolha a mais especifica. Itens do dia a dia quase nunca sao "Outros".
+
+RECEITAS PREVISTAS E CONTAS (dar baixa, NAO duplicar):
+- Se o usuario disser que uma RECEITA PREVISTA pendente entrou (ex: "o Rodrigo pagou", "a Effata pagou os 1000", "caiu o pagamento da Lumiere"), use gerenciar_receita_prevista acao:confirmar com o [id] da lista RECEITAS PREVISTAS PENDENTES. NAO registre uma transacao nova — o confirmar ja lanca a receita e da baixa.
+- Se o usuario disser que pagou uma CONTA A VENCER da lista, use gerenciar_conta_pagar acao:pagar com o [id]. Nao registre despesa manual duplicada.
+- Só registre transacao nova (registrar_transacao) quando NAO existir receita prevista/conta correspondente na lista.
+
+DESPESAS/RECEITAS RECORRENTES:
+- Se o usuario disser que algo se repete todo mes/semana (ex: "todo mes pago 450 de condominio", "assinatura de 39 por mes"), crie com gerenciar_conta_pagar recorrente:true e a frequencia certa — nao registre so uma vez.
 
 REGRAS DE COMPORTAMENTO:
 - Assistente completo: financas, agenda, lembretes, pesquisa, conversas
-- Extratos completos: NUNCA resuma, liste TODAS as transacoes
-- VAI ALEM: apos responder, adicione 1 frase de insight ou sugestao
+- SEJA CONCISO por padrao: respostas curtas e diretas, no maximo 2-3 linhas. Nada de relatorios longos a menos que o usuario peça "extrato" ou "relatorio completo".
+- Extrato/relatorio completo (so quando pedido): liste TODAS as transacoes, sem resumir.
 - Tom WhatsApp: sem asteriscos markdown, sem listas desnecessarias, direto e humano
-- PROIBIDO frases genericas de fechamento tipo "qualquer coisa estou aqui"
-- Template registro: (checkmark) [desc] -- R$ [valor] (DD/MM)
+- PROIBIDO frases genericas de fechamento tipo "qualquer coisa estou aqui" ou "se precisar de mais alguma coisa"
+- Template registro (curto): (checkmark) [desc] — R$ [valor] [Categoria] (DD/MM)
 - Numeros sempre formato BR: R$ com virgula
-- DATAS EM TRANSACOES: SEMPRE preencha o campo "data" ao registrar transacao. Infira a data do contexto da mensagem (hoje, ontem, segunda, semana passada, etc). Se nao houver indicacao, use a data de hoje. NUNCA omita o campo data.
-- Na resposta de confirmacao de registro, SEMPRE inclua a data: ex: "Registrado em 14/07"`;
+- DATAS: NAO preencha o campo "data" se o usuario nao mencionar uma data — o sistema usa a data de hoje automaticamente. So preencha "data" quando o usuario disser explicitamente (ontem, dia 20, 01/07, semana passada). NUNCA copie a data de mensagens anteriores.
+- Confirmacao de registro SEMPRE mostra a data usada: ex: "Registrado em 26/07".`;
 
 }
