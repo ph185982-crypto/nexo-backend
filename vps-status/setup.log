@@ -45,3 +45,12 @@ npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to revi
 ═══ 02:31:19 PASSO 6 — .env ═══
 
 ═══ 02:31:21 PASSO 7 — Prisma ═══
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+═══ 02:31:29 PASSO 8 — Seed VENDAS (agente Pedro) ═══
