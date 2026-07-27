@@ -50,7 +50,12 @@ def register_prf_routers(app: FastAPI):
 
 async def init_prf_database(database_url: str) -> asyncpg.Pool:
     """Create connection pool, run schema, seed data, wire up the repository."""
-    pool = await asyncpg.create_pool(database_url, min_size=2, max_size=10)
+    pool = await asyncpg.create_pool(
+        database_url,
+        min_size=1,
+        max_size=5,
+        statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
+    )
 
     # Run schema
     import os
