@@ -797,7 +797,7 @@ class PRFRepository:
     async def create_tutor_conversation(self, user_id: UUID, data: dict) -> dict:
         return await self._fetchrow(
             """INSERT INTO tutor_conversations (user_id, question_id, article_id, context)
-               VALUES ($1, $2, $3, $4) RETURNING *""",
+               VALUES ($1, $2::uuid, $3::uuid, $4) RETURNING *""",
             user_id, data.get("question_id"), data.get("article_id"), data.get("context"),
         )
 
