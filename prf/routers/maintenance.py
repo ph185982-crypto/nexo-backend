@@ -10,6 +10,8 @@ from __future__ import annotations
 import logging
 import os
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, Header, Query
 
 from prf.routers.deps import get_repo
@@ -44,27 +46,65 @@ ITEM {i}
         )
 
     return f"""Cada ITEM abaixo veio de uma questão de múltipla escolha cujo enunciado se
-perdeu — sobrou apenas o texto de uma alternativa. Reescreva cada um como um item de
-julgamento no padrão CEBRASPE.
+perdeu — sobrou apenas o texto de uma alternativa. Sua tarefa é RESTAURAR O ENUNCIADO em
+volta do fragmento, transformando-o num item de julgamento no padrão CEBRASPE.
 
-REGRAS:
-1. O item reescrito precisa ser uma AFIRMAÇÃO completa e autossuficiente, compreensível
-   sem o enunciado original. Nada de frases nominais soltas ("Verde.", "10 pontos.").
-2. Use a explicação e a base legal para recuperar o assunto de que o fragmento trata e
-   reconstruir a afirmação em torno dele.
-3. PRESERVE O GABARITO. Se o gabarito é CERTO, a afirmação reescrita tem de ser
-   verdadeira. Se é ERRADO, ela tem de ser falsa — mantendo o mesmo erro que o
-   fragmento original carregava.
-4. Escreva de 2 a 4 linhas, em linguagem técnica e formal, sem pronomes sem referente.
-5. Escreva também um texto-base curto ("context") no padrão
+A REGRA MAIS IMPORTANTE — não altere o que o fragmento afirma:
+- Você está apenas devolvendo ao fragmento o sujeito e o contexto que ele perdeu.
+- NÃO acrescente e NÃO remova negações ("não", "nunca", "é vedado", "salvo").
+- NÃO corrija o conteúdo do fragmento, mesmo que ele esteja juridicamente errado — se o
+  gabarito é ERRADO, o item reescrito PRECISA continuar falso, carregando exatamente o
+  mesmo erro. Corrigir o fragmento inverteria o gabarito e estragaria a questão.
+- Se o gabarito é CERTO, o item reescrito precisa continuar verdadeiro.
+Antes de responder, releia sua frase e confirme que ela tem o mesmo valor de verdade
+indicado no campo "gabarito".
+
+DEMAIS REGRAS:
+1. O item reescrito é uma AFIRMAÇÃO completa e autossuficiente, compreensível sem o
+   enunciado original. Nada de frases nominais soltas ("Verde.", "10 pontos.").
+2. Use a explicação e a base legal apenas para descobrir DE QUE o fragmento fala — o
+   sujeito da afirmação —, nunca para consertar o que ele afirma.
+3. Escreva de 2 a 4 linhas, em linguagem técnica e formal, sem pronomes sem referente.
+4. Escreva também um texto-base curto ("context") no padrão
    "Acerca de <assunto específico>, julgue o item a seguir." — específico do assunto do
    item, não genérico da disciplina.
-6. Não revele o gabarito dentro do texto do item.
+5. Não revele o gabarito dentro do texto do item.
+
+EXEMPLO (gabarito ERRADO):
+  fragmento: "Legalidade, moralidade, eficiência e publicidade."
+  explicação: "Os atributos dos atos administrativos são presunção de legitimidade,
+               imperatividade, autoexecutoriedade e tipicidade."
+  correto  : "Os atributos do ato administrativo são legalidade, moralidade, eficiência
+              e publicidade."  (continua falso — mantém o erro)
+  ERRADO   : "Os atributos do ato administrativo são presunção de legitimidade,
+              imperatividade, autoexecutoriedade e tipicidade."  (virou verdadeiro —
+              inverteu o gabarito)
 
 ITENS:{''.join(lines)}
 
 Responda com este JSON, um objeto por item, na mesma ordem:
 {{"items": [{{"index": 0, "context": "...", "statement": "..."}}]}}"""
+
+
+NEGATIONS = (
+    "não ", "nao ", "nunca", "jamais", "nenhum", "nenhuma", "vedado", "vedada",
+    "proibido", "proibida", "salvo", "exceto", "inexiste", "sem que",
+)
+
+
+def _negation_count(text: str) -> int:
+    low = text.lower()
+    return sum(low.count(n) for n in NEGATIONS)
+
+
+def _polarity_flipped(old: str, new: str) -> bool:
+    """Flag rewrites that added or dropped a negation the fragment did not have.
+
+    Restoring the stem should never change what the fragment asserts. A change in
+    negation count is the cheap signal that the model 'corrected' the item and
+    silently inverted its answer key.
+    """
+    return _negation_count(new) != _negation_count(old)
 
 
 def _require_admin(token: str | None):
@@ -98,29 +138,44 @@ async def count_fragments(
 @router.post("/fragments/rewrite")
 async def rewrite_fragments(
     limit: int = Query(12, ge=1, le=24),
+    ids: str | None = Query(None, description="Comma-separated question ids to redo"),
     x_maintenance_token: str | None = Header(default=None),
     repo: PRFRepository = Depends(get_repo),
 ):
     """Rewrite a batch of fragment items into self-contained CEBRASPE items.
 
     Returns the old and new text of every row it touched so the seed JSON can be
-    brought in line with the database.
+    brought in line with the database. Pass `ids` to redo specific rows that a
+    previous pass rewrote badly.
     """
     _require_admin(x_maintenance_token)
 
-    rows = await repo._fetch(
-        """SELECT q.id, q.text, q.context_text, q.explanation, q.legal_basis,
-                  s.name AS subject_name, s.slug AS subject_slug,
-                  (SELECT a.is_correct
-                     FROM question_alternatives a
-                    WHERE a.question_id = q.id AND a.letter = 'C') AS is_certo
-             FROM questions q
-             JOIN subjects s ON s.id = q.subject_id
-            WHERE q.is_active AND length(q.text) < $1
-            ORDER BY q.created_at
-            LIMIT $2""",
-        FRAGMENT_MAX_CHARS, limit,
-    )
+    select_cols = """q.id, q.text, q.context_text, q.explanation, q.legal_basis,
+                     s.name AS subject_name, s.slug AS subject_slug,
+                     (SELECT a.is_correct
+                        FROM question_alternatives a
+                       WHERE a.question_id = q.id AND a.letter = 'C') AS is_certo"""
+
+    if ids:
+        try:
+            id_list = [UUID(x.strip()) for x in ids.split(",") if x.strip()]
+        except ValueError:
+            raise HTTPException(400, "Lista de ids inválida")
+        rows = await repo._fetch(
+            f"""SELECT {select_cols}
+                  FROM questions q JOIN subjects s ON s.id = q.subject_id
+                 WHERE q.id = ANY($1::uuid[])""",
+            id_list,
+        )
+    else:
+        rows = await repo._fetch(
+            f"""SELECT {select_cols}
+                  FROM questions q JOIN subjects s ON s.id = q.subject_id
+                 WHERE q.is_active AND length(q.text) < $1
+                 ORDER BY q.created_at
+                 LIMIT $2""",
+            FRAGMENT_MAX_CHARS, limit,
+        )
     if not rows:
         return {"rewritten": 0, "remaining": 0, "items": []}
 
@@ -148,14 +203,21 @@ async def rewrite_fragments(
             continue
 
     touched = []
+    rejected = []
     for i, it in enumerate(items):
         entry = by_index.get(i)
         if not entry:
             continue
         statement = (entry.get("statement") or "").strip()
         context = (entry.get("context") or "").strip()
+
         if len(statement) < FRAGMENT_MAX_CHARS:
-            logger.warning("[maintenance] rewrite too short for %s", it["id"])
+            rejected.append({"id": str(it["id"]), "reason": "too_short"})
+            continue
+        if _polarity_flipped(it["text"], statement):
+            # The model "fixed" the fragment instead of restoring its stem, which
+            # would leave a true statement sitting behind an ERRADO answer key.
+            rejected.append({"id": str(it["id"]), "reason": "polarity_flipped"})
             continue
 
         await repo._execute(
@@ -165,6 +227,7 @@ async def rewrite_fragments(
         touched.append({
             "id": str(it["id"]),
             "subject_slug": it["subject_slug"],
+            "is_certo": it["is_certo"],
             "old_text": it["text"],
             "new_text": statement,
             "new_context": context or it["context_text"],
@@ -175,4 +238,9 @@ async def rewrite_fragments(
         FRAGMENT_MAX_CHARS,
     )
 
-    return {"rewritten": len(touched), "remaining": remaining, "items": touched}
+    return {
+        "rewritten": len(touched),
+        "rejected": rejected,
+        "remaining": remaining,
+        "items": touched,
+    }
