@@ -153,4 +153,49 @@ async function syncAnswers() {
   }
 }
 
+// ─── Notificações push ──────────────────────────────────────────────────────
+// O servidor manda o lembrete cifrado; aqui ele vira notificação na tela.
+// É esta parte que faz a cobrança chegar com o app fechado.
+
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch (e) {
+    payload = { title: 'Estudo PRF', body: event.data ? event.data.text() : '' };
+  }
+
+  const title = payload.title || 'Estudo PRF';
+  const options = {
+    body: payload.body || '',
+    tag: payload.tag || 'prf',
+    // Sem renotify uma cobrança nova substitui a anterior em silêncio.
+    renotify: true,
+    badge: '/manifest.json',
+    data: { url: payload.url || '/' },
+    vibrate: [80, 40, 80]
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || '/';
+
+  // Reaproveita a aba já aberta em vez de abrir outra a cada lembrete.
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((list) => {
+        for (const client of list) {
+          if ('focus' in client) {
+            client.navigate(target);
+            return client.focus();
+          }
+        }
+        return self.clients.openWindow(target);
+      })
+  );
+});
+
 console.log('[SW] Service Worker loaded');

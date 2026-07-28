@@ -46,6 +46,25 @@ MIGRATIONS: list[tuple[str, str]] = [
         "CREATE INDEX IF NOT EXISTS idx_questions_topic ON questions(topic_id)",
     ),
     (
+        "push_subscriptions",
+        """CREATE TABLE IF NOT EXISTS push_subscriptions (
+               id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+               user_id     UUID NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
+               endpoint    TEXT NOT NULL,
+               p256dh      TEXT NOT NULL,
+               auth        TEXT NOT NULL,
+               user_agent  TEXT,
+               created_at  TIMESTAMPTZ DEFAULT NOW(),
+               last_ok_at  TIMESTAMPTZ,
+               UNIQUE (endpoint)
+           )""",
+    ),
+    (
+        "idx_push_subscriptions_user",
+        "CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user "
+        "ON push_subscriptions(user_id)",
+    ),
+    (
         "idx_legal_articles_fts",
         # A busca da lei seca ordena por ts_rank sobre 3.600 artigos; sem o
         # índice cada consulta reconstrói o tsvector de todos eles.

@@ -12,11 +12,16 @@ Types:
   - weekly_report: end-of-week summary
 """
 from __future__ import annotations
-from datetime import datetime, time
+from datetime import datetime, time, timedelta, timezone
 from typing import Optional
 from uuid import UUID
 
 from prf.database.repository import PRFRepository
+
+# O servidor roda em UTC e o candidato estuda no horário de Brasília. Comparar
+# o silêncio noturno contra a hora do servidor faria a plataforma calar às 19h
+# e cobrar às 4h da manhã.
+BRT = timezone(timedelta(hours=-3))
 
 
 NOTIFICATION_TEMPLATES = {
@@ -81,7 +86,7 @@ class NotificationService:
         if not prefs:
             return
 
-        now = datetime.now()
+        now = datetime.now(BRT)
         quiet_start = prefs.get("quiet_start")
         quiet_end = prefs.get("quiet_end")
         if quiet_start and quiet_end:

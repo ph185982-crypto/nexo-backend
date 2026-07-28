@@ -25,6 +25,7 @@ from prf.routers.simulados import router as simulados_router
 from prf.routers.content_generator import router as generator_router
 from prf.routers.maintenance import router as maintenance_router
 from prf.routers.trilha import router as trilha_router
+from prf.routers.cron import router as cron_router
 from prf.database.repository import PRFRepository
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,7 @@ def register_prf_routers(app: FastAPI):
     app.include_router(generator_router,     prefix=f"{PREFIX}/generate",       tags=["PRF Content Generation"])
     app.include_router(maintenance_router,   prefix=f"{PREFIX}/maintenance",    tags=["PRF Maintenance"])
     app.include_router(trilha_router,        prefix=f"{PREFIX}/trilha",         tags=["PRF Trilha do Edital"])
+    app.include_router(cron_router,          prefix=f"{PREFIX}/cron",           tags=["PRF Agendador"])
 
     logger.info("[PRF] All routers registered under /api/prf")
 
