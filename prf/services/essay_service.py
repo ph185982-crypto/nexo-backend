@@ -46,11 +46,6 @@ Identifique CADA erro gramatical por linha:
   "strengths": ["<ponto forte 1>"],
   "improvement_plan": ["<ação 1>", "<ação 2>", "<ação 3>"]
 }
-
-TEMA DA REDAÇÃO: {theme}
-
-REDAÇÃO DO CANDIDATO:
-{text}
 """
 
 SYSTEM_PROMPT_OCR = """Transcreva o texto manuscrito da imagem abaixo com máxima fidelidade.
@@ -77,10 +72,14 @@ async def correct_essay(
         )
 
     try:
-        prompt = SYSTEM_PROMPT_CORRECTION.format(theme=theme, text=text)
+        # The prompt embeds a literal JSON schema, so it must not go through
+        # str.format — the braces would be read as format placeholders.
         diagnosis = await llm_service.chat_json([
-            {"role": "system", "content": "Você é um corretor oficial do CEBRASPE. Responda SEMPRE em JSON válido."},
-            {"role": "user", "content": prompt},
+            {"role": "system", "content": SYSTEM_PROMPT_CORRECTION},
+            {"role": "user", "content": (
+                f"TEMA DA REDAÇÃO:\n{theme}\n\n"
+                f"REDAÇÃO DO CANDIDATO:\n{text}"
+            )},
         ])
         nc = float(diagnosis.get("nc_score", 0))
         ne = int(diagnosis.get("ne_count", 0))
