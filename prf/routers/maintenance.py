@@ -298,6 +298,58 @@ async def seed_articles_now(
     return {**(result or {}), "articles_in_db": total}
 
 
+@router.post("/legal/purge-legacy")
+async def purge_legacy_articles(
+    dry_run: bool = Query(True, description="Só conta; não apaga"),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Remove os artigos gravados no formato antigo, agora duplicados.
+
+    O acervo anterior guardava recortes de artigo ("Art. 5°, I", "Art. 5°,
+    caput") com o grau e a vírgula na numeração. O texto oficial do Planalto
+    entra como artigo inteiro ("Art. 5"), então os dois formatos não colidem no
+    índice único e a mesma norma passou a aparecer duas vezes na biblioteca.
+
+    O recorte antigo é subconjunto do texto novo, e a explicação que ele
+    carregava volta a ser gerada sob demanda em cima do artigo completo.
+    """
+    _require_admin(x_maintenance_token)
+
+    # A numeração nova nunca traz grau nem vírgula, então o padrão isola
+    # exatamente o acervo antigo.
+    LEGACY = r"[°º,]"
+
+    rows = await repo._fetch(
+        """SELECT ld.slug, COUNT(*) AS n
+             FROM legal_articles la
+             JOIN legal_documents ld ON ld.id = la.document_id
+            WHERE la.article_number ~ $1
+            GROUP BY ld.slug ORDER BY n DESC""",
+        LEGACY,
+    )
+    total = sum(r["n"] for r in rows)
+
+    if dry_run:
+        return {"dry_run": True, "would_delete": total, "by_document": [dict(r) for r in rows]}
+
+    bookmarked = await repo._fetchval(
+        """SELECT COUNT(*) FROM user_legal_bookmarks b
+            JOIN legal_articles la ON la.id = b.article_id
+           WHERE la.article_number ~ $1""",
+        LEGACY,
+    )
+    deleted = await repo._fetch(
+        "DELETE FROM legal_articles WHERE article_number ~ $1 RETURNING id", LEGACY,
+    )
+    remaining = await repo._fetchval("SELECT COUNT(*) FROM legal_articles")
+    return {
+        "deleted": len(deleted),
+        "bookmarks_afetados": bookmarked,
+        "articles_in_db": remaining,
+    }
+
+
 @router.post("/fragments/purge-duplicates")
 async def purge_duplicates(
     x_maintenance_token: str | None = Header(default=None),
