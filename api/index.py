@@ -128,7 +128,6 @@ async def serve_sw():
     return FileResponse(sw_path, media_type="application/javascript")
 
 
-@app.get("/", response_class=HTMLResponse, tags=["Frontend"])
 @app.get("/app", response_class=HTMLResponse, tags=["Frontend"])
 async def serve_app():
     """Serve the complete PRF Estudo SPA application."""
