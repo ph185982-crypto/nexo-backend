@@ -1,6 +1,4 @@
 """Essays router — discursive exam practice with CEBRASPE scoring."""
-import json
-
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
 from typing import Optional
 from uuid import UUID
@@ -55,9 +53,6 @@ async def submit_essay(
     total_lines = len([l for l in text.strip().split("\n") if l.strip()])
     result = await correct_essay(text, context, total_lines)
 
-    # diagnosis is a JSONB column — asyncpg needs it serialized
-    diagnosis_json = json.dumps(result["diagnosis"], ensure_ascii=False)
-
     row = await repo._fetchrow(
         """INSERT INTO essays
            (user_id, theme_id, theme_title, input_type, original_text,
@@ -68,7 +63,7 @@ async def submit_essay(
         user_id, theme_id, theme_title, input_type, text,
         image_path, result["total_lines"], result["nc_score"],
         result["ne_count"], result["penalty"], result["final_score"],
-        diagnosis_json, result["feedback_text"],
+        result["diagnosis"], result["feedback_text"],
     )
 
     return {
@@ -118,10 +113,4 @@ async def get_essay(
     if not essay:
         raise HTTPException(404, "Redação não encontrada")
 
-    data = dict(essay)
-    if isinstance(data.get("diagnosis"), str):
-        try:
-            data["diagnosis"] = json.loads(data["diagnosis"])
-        except json.JSONDecodeError:
-            data["diagnosis"] = {}
-    return data
+    return dict(essay)

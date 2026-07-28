@@ -3,7 +3,6 @@ Database repository — async PostgreSQL queries via asyncpg.
 Central data access layer for the PRF module.
 """
 from __future__ import annotations
-import json
 from datetime import date, datetime, timedelta
 from typing import Optional, Any
 from uuid import UUID
@@ -807,7 +806,7 @@ class PRFRepository:
             """UPDATE tutor_conversations SET
                    messages = $2, outcome = $3, ended_at = CASE WHEN $3 IS NOT NULL THEN NOW() ELSE ended_at END
                WHERE id = $1""",
-            conv_id, json.dumps(messages, ensure_ascii=False), outcome,
+            conv_id, messages, outcome,
         )
 
     # ── Approval Estimates ────────────────────────────────────────────────────
@@ -816,8 +815,7 @@ class PRFRepository:
         await self._execute(
             """INSERT INTO approval_estimates (user_id, probability, factors, trend, notes)
                VALUES ($1, $2, $3, $4, $5)""",
-            user_id, data["probability"],
-            json.dumps(data["factors"], ensure_ascii=False),
+            user_id, data["probability"], data["factors"],
             data.get("trend"), data.get("notes"),
         )
 

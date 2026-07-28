@@ -60,11 +60,11 @@ async def generate_simulado(
         "simulado_prf",
         total,
         270,
-        json.dumps([str(q) for q in all_ids]),
-        json.dumps({
+        [str(q) for q in all_ids],
+        {
             f"bloco_{bn}": {"total": len(questions_by_block[bn]), "certas": 0, "erradas": 0, "branco": len(questions_by_block[bn]), "score": 0}
             for bn in [1, 2, 3]
-        }),
+        },
     )
 
     return {
@@ -173,7 +173,7 @@ async def answer_exam_question(
 
     await repo._execute(
         "UPDATE simulated_exams SET answers = $1 WHERE id = $2",
-        json.dumps(answers), exam_id,
+        answers, exam_id,
     )
 
     return {"is_correct": is_correct, "correct_answer": correct_alt["letter"]}
@@ -250,7 +250,7 @@ async def finish_exam(
                block_scores = $4, eliminated = $5
            WHERE id = $6""",
         datetime.now(timezone.utc), score_liquid, score_raw,
-        json.dumps(block_scores_json), eliminated, exam_id,
+        block_scores_json, eliminated, exam_id,
     )
 
     return {

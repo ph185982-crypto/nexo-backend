@@ -48,6 +48,23 @@ def register_prf_routers(app: FastAPI):
     logger.info("[PRF] All routers registered under /api/prf")
 
 
+async def _init_connection(conn: asyncpg.Connection):
+    """Decode JSONB to Python objects and encode them back on write.
+
+    Without this asyncpg hands JSONB back as raw text, which then fails
+    validation against list/dict fields in the Pydantic response models.
+    """
+    import json
+
+    for typename in ("json", "jsonb"):
+        await conn.set_type_codec(
+            typename,
+            encoder=lambda v: json.dumps(v, ensure_ascii=False),
+            decoder=json.loads,
+            schema="pg_catalog",
+        )
+
+
 async def init_prf_database(database_url: str) -> asyncpg.Pool:
     """Create connection pool, run schema, seed data, wire up the repository."""
     pool = await asyncpg.create_pool(
@@ -55,6 +72,7 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
         min_size=1,
         max_size=5,
         statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
+        init=_init_connection,
     )
 
     # Run schema
