@@ -128,7 +128,7 @@ async def _seed_legal_articles_from_json(
                              topic_id = EXCLUDED.topic_id""",
                         doc_id, subject_id, topic_id, a["article_number"],
                         a.get("chapter"), a["official_text"],
-                        a.get("simple_text"), json.dumps(a.get("highlights", [])),
+                        a.get("simple_text"), a.get("highlights") or [],
                         a.get("frequency_score", 0), count,
                     )
                     count += 1
@@ -207,7 +207,7 @@ async def _seed_achievements(pool: asyncpg.Pool):
                    ON CONFLICT (slug) DO NOTHING""",
                 a["slug"], a["name"], a["description"],
                 a["category"], a.get("xp_reward", 0),
-                json.dumps(a["condition_json"]), count,
+                a["condition_json"], count,
             )
             count += 1
     logger.info(f"[PRF] Seeded {count} achievements")
