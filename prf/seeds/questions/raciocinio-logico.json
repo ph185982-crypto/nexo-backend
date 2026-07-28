@@ -840,33 +840,6 @@
     "subject_slug": "raciocinio-logico",
     "topic_slug": "tabelas-verdade",
     "question_type": "certo_errado",
-    "context_text": "Acerca da lógica proposicional, julgue o item a seguir.",
-    "text": "O número 4 é uma proposição válida na lógica proposicional, mas essa afirmação está incorreta em relação ao gabarito.",
-    "difficulty": "medium",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreta em relação ao gabarito.",
-    "legal_basis": "Conceito de Lógica Proposicional - Tabelas-verdade (número de linhas)",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "raciocinio-logico",
-    "topic_slug": "tabelas-verdade",
-    "question_type": "certo_errado",
     "context_text": "Acerca de raciocínio lógico, julgue o item a seguir.",
     "text": "A afirmação de que 8 é a resposta correta está incorreta em relação ao gabarito.",
     "difficulty": "medium",
@@ -1488,33 +1461,6 @@
     "subject_slug": "raciocinio-logico",
     "topic_slug": "raciocinio-quantitativo",
     "question_type": "certo_errado",
-    "context_text": "Acerca do raciocínio lógico, julgue o item a seguir.",
-    "text": "O número 80 é uma resposta correta em relação ao gabarito, sendo um valor que se encaixa na regra de três simples.",
-    "difficulty": "medium",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreta em relação ao gabarito.",
-    "legal_basis": "Conceito de Raciocínio Quantitativo - Regra de três simples",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "raciocinio-logico",
-    "topic_slug": "raciocinio-quantitativo",
-    "question_type": "certo_errado",
     "context_text": "Acerca do conceito de Raciocínio Quantitativo, julgue o item a seguir.",
     "text": "O valor 85 é uma resposta correta em relação ao gabarito do conceito de Raciocínio Quantitativo - Regra de três simples.",
     "difficulty": "medium",
@@ -1571,33 +1517,6 @@
     "question_type": "certo_errado",
     "context_text": "Acerca do raciocínio lógico e problemas de idade, julgue o item a seguir.",
     "text": "O número 10 é uma resposta correta em relação ao gabarito de um problema de idade que envolve equações, conforme os conceitos de raciocínio quantitativo.",
-    "difficulty": "medium",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreta em relação ao gabarito.",
-    "legal_basis": "Conceito de Raciocínio Quantitativo - Problemas de idade (equações)",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "raciocinio-logico",
-    "topic_slug": "raciocinio-quantitativo",
-    "question_type": "certo_errado",
-    "context_text": "Acerca de raciocínio lógico e problemas de idade, julgue o item a seguir.",
-    "text": "O número 16 é uma resposta incorreta em relação ao gabarito de problemas que envolvem raciocínio quantitativo, especificamente no que diz respeito a equações relacionadas à idade.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -1733,33 +1652,6 @@
     "question_type": "certo_errado",
     "context_text": "Acerca de raciocínio lógico, julgue o item a seguir.",
     "text": "O número 24 é um elemento de uma sequência aritmética que possui uma razão igual a 2.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreta em relação ao gabarito.",
-    "legal_basis": "Conceito de Raciocínio Lógico - Sequências e padrões (progressão aritmética)",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "raciocinio-logico",
-    "topic_slug": "sequencias-padroes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da avaliação de respostas em raciocínio lógico, julgue o item a seguir.",
-    "text": "O número 25 é uma resposta correta em relação ao gabarito, sem qualquer erro na avaliação.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,

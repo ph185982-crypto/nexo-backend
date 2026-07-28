@@ -1083,33 +1083,6 @@
     "subject_slug": "direito-processual-penal",
     "topic_slug": "acao-penal",
     "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "easy",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 103 do CP prevê que o prazo decadencial para oferecimento de queixa-crime é de 6 meses, contados do dia em que o ofendido veio a saber quem é o autor do crime.",
-    "legal_basis": "Art. 103, CP; Art. 38, CPP",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-processual-penal",
-    "topic_slug": "acao-penal",
-    "question_type": "certo_errado",
     "context_text": "Acerca do processo de habilitação após cassação, julgue o item a seguir.",
     "text": "Após a cassação, o condutor deve aguardar o prazo mínimo de 2 anos antes de iniciar novo processo de habilitação.",
     "difficulty": "easy",

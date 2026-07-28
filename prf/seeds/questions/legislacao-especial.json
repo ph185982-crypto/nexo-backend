@@ -651,62 +651,8 @@
     "subject_slug": "legislacao-especial",
     "topic_slug": "estatuto-desarmamento",
     "question_type": "certo_errado",
-    "context_text": "Acerca da legislação especial, julgue o item a seguir.",
-    "text": "O porte de arma de uso restrito, conforme o artigo 16 da Lei 10.826/2003, é punido com reclusão de 3 a 6 anos e multa, sendo considerado um crime menos grave do que o porte de uso permitido.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O porte de arma de uso restrito (art. 16, Lei 10.826/2003) é punido com reclusão de 3 a 6 anos e multa. É crime mais grave que o porte de uso permitido.",
-    "legal_basis": "Art. 16, Lei 10.826/2003",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-especial",
-    "topic_slug": "estatuto-desarmamento",
-    "question_type": "certo_errado",
     "context_text": "Acerca do porte de arma, julgue o item a seguir.",
     "text": "O porte de arma de uso restrito é punido com reclusão de 4 a 8 anos e multa, conforme a legislação vigente.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O porte de arma de uso restrito (art. 16, Lei 10.826/2003) é punido com reclusão de 3 a 6 anos e multa. É crime mais grave que o porte de uso permitido.",
-    "legal_basis": "Art. 16, Lei 10.826/2003",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-especial",
-    "topic_slug": "estatuto-desarmamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das penalidades para porte de arma de uso restrito, julgue o item a seguir.",
-    "text": "O porte de arma de uso restrito é punido com reclusão de 2 a 4 anos e multa, conforme o art. 16 da Lei 10.826/2003, que estabelece penalidades para esse tipo de crime.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,
@@ -1847,60 +1793,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "O art. 303, §1°, do CTB agrava a pena quando o agente está sob efeito de álcool ou substância psicoativa, ou quando a lesão é grave ou gravíssima.",
     "legal_basis": "Art. 303, §1°, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Apenas dolosa.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "A participação em competição não autorizada (racha) no CTB pune tanto quem participa quanto o organizador, com pena de detenção de 6 meses a 3 anos.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Apenas quando praticada em rodovias federais.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "A participação em competição não autorizada (racha) no CTB pune tanto quem participa quanto o organizador, com pena de detenção de 6 meses a 3 anos.",
-    "legal_basis": "Art. 308, CTB",
     "alternatives": [
       {
         "letter": "C",

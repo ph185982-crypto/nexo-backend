@@ -732,33 +732,6 @@
     "subject_slug": "etica-servico-publico",
     "topic_slug": "regime-disciplinar",
     "question_type": "certo_errado",
-    "context_text": "Acerca da ética no serviço público, julgue o item subsequente.",
-    "text": "cometer a pessoa estranha à repartição o desempenho de atribuição que seja de sua responsabilidade.",
-    "difficulty": "medium",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 117 da Lei 8.112/90 elenca as proibições do servidor, entre as quais 'cometer a pessoa estranha à repartição, fora dos casos previstos em lei, o desempenho de atribuição que seja de sua responsabilidade ou de seu subordinado'.",
-    "legal_basis": "Lei 8.112/90, Art. 117",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "etica-servico-publico",
-    "topic_slug": "regime-disciplinar",
-    "question_type": "certo_errado",
     "context_text": "Acerca das obrigações dos servidores públicos, julgue o item a seguir.",
     "text": "Os servidores públicos devem zelar pela economia do material e pela conservação do patrimônio público.",
     "difficulty": "medium",
@@ -1523,60 +1496,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreta em relação ao gabarito.",
     "legal_basis": "Lei 8.429/92, Art. 12",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "etica-servico-publico",
-    "topic_slug": "improbidade",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do prazo prescricional para atos de improbidade, julgue o item a seguir.",
-    "text": "O prazo prescricional para atos de improbidade é de 8 anos, conforme estabelecido no art. 23 da Lei 8.429/92, com a redação dada pela Lei 14.230/2021.",
-    "difficulty": "hard",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 23, com a redação da Lei 14.230/2021, unificou o prazo prescricional em 8 (oito) anos, contado, em regra, da data da prática do ato de improbidade, ou, no caso de infração permanente, do dia em que cessou a permanência.",
-    "legal_basis": "Lei 8.429/92, Art. 23 (redação da Lei 14.230/21)",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "etica-servico-publico",
-    "topic_slug": "improbidade",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da ética no serviço público, julgue o item a seguir.",
-    "text": "O prazo de 5 anos para a prescrição de ações de improbidade administrativa está previsto na Lei 8.429/92, conforme a redação dada pela Lei 14.230/21.",
-    "difficulty": "hard",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreta em relação ao gabarito.",
-    "legal_basis": "Lei 8.429/92, Art. 23 (redação da Lei 14.230/21)",
     "alternatives": [
       {
         "letter": "C",

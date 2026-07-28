@@ -571,61 +571,7 @@
     "topic_slug": "pacto-san-jose",
     "question_type": "certo_errado",
     "context_text": "Acerca dos direitos humanos, julgue o item a seguir.",
-    "text": "O Pacto de São José foi adotado em 22 de novembro de 1969, tendo entrado em vigor apenas em 1978.",
-    "difficulty": "easy",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O Pacto de São José foi adotado em 22 de novembro de 1969 e entrou em vigor em 1978. Brasil ratificou em 1992.",
-    "legal_basis": "CADH/1969",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direitos-humanos",
-    "topic_slug": "pacto-san-jose",
-    "question_type": "certo_errado",
-    "context_text": "Acerca dos direitos humanos, julgue o item a seguir.",
     "text": "O Pacto de São José foi adotado em 16 de dezembro de 1966, o que está incorreto, pois a data correta é 22 de novembro de 1969.",
-    "difficulty": "easy",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O Pacto de São José foi adotado em 22 de novembro de 1969 e entrou em vigor em 1978. Brasil ratificou em 1992.",
-    "legal_basis": "CADH/1969",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direitos-humanos",
-    "topic_slug": "pacto-san-jose",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da adoção do Pacto de São José, julgue o item a seguir.",
-    "text": "O Pacto de São José foi adotado em 10 de dezembro de 1948, sendo um marco importante na proteção dos direitos humanos na América Latina.",
     "difficulty": "easy",
     "source": "CESPE/2022",
     "year": 2022,
@@ -2057,33 +2003,6 @@
     "question_type": "certo_errado",
     "context_text": "Acerca do direito à defesa no contexto do CADH, julgue o item a seguir.",
     "text": "No âmbito do CADH, a absolvição automática na dúvida é garantida, conforme o art. 8°.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 8° CADH prevê: tribunal competente, presunção de inocência, comunicação adequada, tempo para defesa, contraditório e outros.",
-    "legal_basis": "Art. 8°, CADH",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direitos-humanos",
-    "topic_slug": "garantias-processuais-dh",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do direito ao devido processo legal em direitos humanos, julgue o item a seguir.",
-    "text": "O direito ao devido processo legal abrange apenas o silêncio e a não-autoincriminação.",
     "difficulty": "medium",
     "source": "CESPE/2022",
     "year": 2022,

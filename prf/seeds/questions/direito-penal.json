@@ -2946,33 +2946,6 @@
     "subject_slug": "direito-penal",
     "topic_slug": "crimes-pessoa",
     "question_type": "certo_errado",
-    "context_text": "A respeito do direito penal brasileiro, julgue o item que se segue.",
-    "text": "Multa administrativa apenas, sem pena privativa de liberdade.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 308 do CTB pune a participação em competição automobilística não autorizada com detenção de 6 meses a 3 anos, suspensão ou proibição de se obter permissão ou habilitação para dirigir e multa.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-penal",
-    "topic_slug": "crimes-pessoa",
-    "question_type": "certo_errado",
     "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
     "text": "A infração gravíssima prevista no Código de Trânsito Brasileiro resulta em cassação imediata da CNH, conforme o disposto no art. 308.",
     "difficulty": "medium",
@@ -3073,33 +3046,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-penal",
-    "topic_slug": "crimes-pessoa",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das penas previstas no Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "O art. 303 do CTB prevê pena de detenção de 6 meses a 2 anos, sem prejuízo das outras sanções, para lesões de natureza leve.",
-    "difficulty": "easy",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 303 do CTB prevê pena de detenção de 6 meses a 2 anos, sem prejuízo das outras sanções. Se a lesão for de natureza grave ou gravíssima, aplica-se a causa de aumento do §1°.",
-    "legal_basis": "Art. 303, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
         "explanation": ""
       }
     ]
@@ -3262,33 +3208,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-penal",
-    "topic_slug": "crimes-pessoa",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das penas previstas na Lei de Drogas, julgue o item a seguir.",
-    "text": "O art. 28 da Lei de Drogas prevê reclusão de 1 a 3 anos para o usuário de drogas.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 28 da Lei de Drogas não prevê pena privativa de liberdade para o usuário. As penas são: advertência, prestação de serviços à comunidade e medida educativa.",
-    "legal_basis": "Art. 28, Lei 11.343/2006",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
         "explanation": ""
       }
     ]
@@ -3677,33 +3596,6 @@
     "question_type": "certo_errado",
     "context_text": "Acerca do direito penal, julgue o item a seguir.",
     "text": "Crime punível com detenção de 6 meses a 2 anos é tipificado pela Lei 9.296/1996, que trata da interceptação telefônica.",
-    "difficulty": "medium",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 10 da Lei 9.296/1996 tipifica a interceptação telefônica sem autorização judicial ou com outros fins que não os autorizados em lei como crime punível com reclusão de 2 a 4 anos.",
-    "legal_basis": "Art. 10, Lei 9.296/1996",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-penal",
-    "topic_slug": "concurso-pessoas",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das tipificações penais, julgue o item a seguir.",
-    "text": "A contravenção penal de menor potencial ofensivo é tipificada pelo art. 10 da Lei 9.296/1996 como interceptação telefônica sem autorização judicial.",
     "difficulty": "medium",
     "source": "CESPE/2024",
     "year": 2024,

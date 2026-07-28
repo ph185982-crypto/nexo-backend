@@ -867,33 +867,6 @@
     "subject_slug": "direito-constitucional",
     "topic_slug": "principios-fundamentais",
     "question_type": "certo_errado",
-    "context_text": "Acerca do artigo 1°, parágrafo único, da Constituição Federal, julgue o item a seguir.",
-    "text": "O artigo 1°, parágrafo único, da Constituição Federal estabelece que a República Federativa do Brasil buscará a integração econômica, política, social e cultural dos povos da América Latina.",
-    "difficulty": "medium",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O art. 4°, parágrafo único, da CF/88 estabelece que a República Federativa do Brasil buscará a integração econômica, política, social e cultural dos povos da América Latina.",
-    "legal_basis": "Art. 4°, parágrafo único, CF/88",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-constitucional",
-    "topic_slug": "principios-fundamentais",
-    "question_type": "certo_errado",
     "context_text": "Acerca da classificação da Constituição Federal de 1988, julgue o item a seguir.",
     "text": "A Constituição Federal de 1988 é promulgada, pois emanou da vontade popular por meio de Assembleia Constituinte.",
     "difficulty": "easy",
@@ -6016,33 +5989,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "direito-constitucional",
-    "topic_slug": "adm-publica-cf",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do princípio da legalidade no acesso a cargos públicos, julgue o item a seguir.",
-    "text": "Princípio da legalidade é fundamental para garantir a acessibilidade a cargos públicos, conforme o disposto no art. 37, I, da CF.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "A acessibilidade a cargos públicos (art. 37, I, CF) está relacionada ao princípio da impessoalidade e da isonomia, que impedem favorecimentos pessoais nos concursos e acessos ao serviço público.",
-    "legal_basis": "Art. 37, I, CF/88",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
         "explanation": ""
       }
     ]

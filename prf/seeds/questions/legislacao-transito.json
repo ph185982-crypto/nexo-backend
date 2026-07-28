@@ -1299,62 +1299,8 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "normas-circulacao",
     "question_type": "certo_errado",
-    "context_text": "Acerca da velocidade máxima permitida em rodovias de pista simples, julgue o item a seguir.",
-    "text": "A velocidade máxima em rodovias de pista simples é de 100 km/h para automóveis e camionetas.",
-    "difficulty": "easy",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Em rodovias de pista simples, a velocidade máxima é de 100 km/h para automóveis e camionetas.",
-    "legal_basis": "Art. 61, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "normas-circulacao",
-    "question_type": "certo_errado",
     "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
     "text": "A afirmação de que a velocidade máxima permitida em rodovias de pista simples é de 70 km/h é incorreta.",
-    "difficulty": "easy",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Em rodovias de pista simples, a velocidade máxima é de 100 km/h para automóveis e camionetas.",
-    "legal_basis": "Art. 61, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "normas-circulacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca dos limites de velocidade em vias urbanas, julgue o item a seguir.",
-    "text": "A velocidade máxima permitida em vias urbanas sem sinalização específica é de 80 km/h.",
     "difficulty": "easy",
     "source": "CESPE/2024",
     "year": 2024,
@@ -1975,33 +1921,6 @@
     "topic_slug": "normas-circulacao",
     "question_type": "certo_errado",
     "context_text": "Acerca dos limites de velocidade em vias urbanas, julgue o item a seguir.",
-    "text": "A velocidade máxima permitida em vias urbanas sem sinalização específica é de 80 km/h.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Em vias urbanas sem sinalização específica, a velocidade máxima é de 60 km/h para automóveis e camionetas.",
-    "legal_basis": "Art. 61, II, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "normas-circulacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca dos limites de velocidade em vias urbanas, julgue o item a seguir.",
     "text": "Em vias urbanas sem sinalização específica, a velocidade máxima é de 50 km/h para automóveis e camionetas, conforme o art. 61, II do Código de Trânsito Brasileiro.",
     "difficulty": "easy",
     "source": "CESPE/2016",
@@ -2452,33 +2371,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "normas-circulacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
-    "difficulty": "medium",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Exceder a velocidade permitida em até 20% é infração média, sujeita a multa e 4 pontos na CNH.",
-    "legal_basis": "Art. 218, I, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
         "explanation": ""
       }
     ]
@@ -4378,61 +4270,7 @@
     "topic_slug": "habilitacao",
     "question_type": "certo_errado",
     "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
-    "difficulty": "medium",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Conduzir com CNH vencida é infração grave, sujeita a multa de R$ 195,23 e 5 pontos na CNH, além da retenção do veículo.",
-    "legal_basis": "Art. 162, V, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "habilitacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
     "text": "Conduzir um veículo com a Carteira Nacional de Habilitação (CNH) vencida não constitui infração, apenas deve renovar.",
-    "difficulty": "medium",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Conduzir com CNH vencida é infração grave, sujeita a multa de R$ 195,23 e 5 pontos na CNH, além da retenção do veículo.",
-    "legal_basis": "Art. 162, V, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "habilitacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
     "difficulty": "medium",
     "source": "CESPE/2018",
     "year": 2018,
@@ -4531,33 +4369,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "habilitacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "180 dias após a entrada no território nacional.",
-    "difficulty": "hard",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O condutor estrangeiro não residente pode usar a CNH do país de origem no Brasil pelo prazo de 180 dias após sua entrada no território nacional.",
-    "legal_basis": "Art. 161, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
         "explanation": ""
       }
     ]
@@ -4701,33 +4512,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "habilitacao",
     "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "As infrações de trânsito prescrevem em 3 anos, contados da data da infração, conforme estipulado no Código de Trânsito Brasileiro.",
-    "difficulty": "medium",
-    "source": "CESPE/2015",
-    "year": 2015,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Para condutores com 65 anos ou mais, a CNH tem prazo de validade de 3 anos.",
-    "legal_basis": "Art. 159, §1°, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "habilitacao",
-    "question_type": "certo_errado",
     "context_text": "Acerca da ética no serviço público, julgue o item a seguir.",
     "text": "O prazo de 5 anos para a prescrição de ações de improbidade administrativa está previsto na Lei 8.429/92, conforme a redação dada pela Lei 14.230/21.",
     "difficulty": "medium",
@@ -4855,33 +4639,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito e suas classificações, julgue o item a seguir.",
-    "text": "A infração gravíssima é caracterizada por exceder a velocidade permitida em até 20%, sendo que até 15% está incluso como infração média.",
-    "difficulty": "easy",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Avançar o sinal vermelho é infração gravíssima (7 pontos, multa de R$ 293,47), conforme Art. 208 do CTB.",
-    "legal_basis": "Art. 208, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
         "explanation": ""
       }
     ]
@@ -5133,116 +4890,8 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "infracoes",
     "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "medium",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Exceder a velocidade máxima em mais de 50% é infração gravíssima com multa multiplicada por 3, suspensão da CNH e 7 pontos.",
-    "legal_basis": "Art. 218, III, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado leve, conforme o art. 230, II, do CTB.",
-    "difficulty": "medium",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Exceder a velocidade máxima em mais de 50% é infração gravíssima com multa multiplicada por 3, suspensão da CNH e 7 pontos.",
-    "legal_basis": "Art. 218, III, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da ética no serviço público, julgue o item a seguir.",
-    "text": "O prazo de 5 anos para a prescrição de ações de improbidade administrativa está previsto na Lei 8.429/92, conforme a redação dada pela Lei 14.230/21.",
-    "difficulty": "hard",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "As infrações de trânsito prescrevem em 5 anos, contados da data da infração.",
-    "legal_basis": "Art. 201, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
     "context_text": "Acerca da prescrição de infrações de trânsito, julgue o item a seguir.",
     "text": "O prazo de prescrição para infrações de trânsito é de 10 anos, contados da data da infração.",
-    "difficulty": "hard",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. As infrações de trânsito prescrevem em 5 anos, contados da data da infração.",
-    "legal_basis": "Art. 201, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "As infrações de trânsito prescrevem em 3 anos, contados da data da infração, conforme estipulado no Código de Trânsito Brasileiro.",
     "difficulty": "hard",
     "source": "CESPE/2018",
     "year": 2018,
@@ -5350,61 +4999,7 @@
     "topic_slug": "infracoes",
     "question_type": "certo_errado",
     "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "medium",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Estacionar em frente a entrada ou saída de veículos de garagem ou imóvel é infração média, conforme Art. 181, IX, do CTB.",
-    "legal_basis": "Art. 181, IX, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
     "text": "Não é infração estacionar em frente a entrada ou saída de veículos de garagem ou imóvel.",
-    "difficulty": "medium",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Estacionar em frente a entrada ou saída de veículos de garagem ou imóvel é infração média, conforme Art. 181, IX, do CTB.",
-    "legal_basis": "Art. 181, IX, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
     "difficulty": "medium",
     "source": "CESPE/2016",
     "year": 2016,
@@ -5511,33 +5106,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "infracoes",
     "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
-    "difficulty": "easy",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O não uso de cinto de segurança é infração grave com 5 pontos na CNH e multa de R$ 195,23.",
-    "legal_basis": "Art. 167, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
     "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
     "text": "Conduzir veículo sem o licenciamento é uma infração leve com advertência, conforme o art. 230, II, do Código de Trânsito Brasileiro.",
     "difficulty": "easy",
@@ -5546,114 +5114,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. O não uso de cinto de segurança é infração grave com 5 pontos na CNH e multa de R$ 195,23.",
     "legal_basis": "Art. 167, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "easy",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O não uso de cinto de segurança é infração grave com 5 pontos na CNH e multa de R$ 195,23.",
-    "legal_basis": "Art. 167, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Conduzir sem farol aceso em situação que exige seu uso é infração média.",
-    "legal_basis": "Art. 244, III, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado leve, conforme o art. 230, II, do CTB.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Conduzir sem farol aceso em situação que exige seu uso é infração média.",
-    "legal_basis": "Art. 244, III, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito e suas classificações, julgue o item a seguir.",
-    "text": "A infração gravíssima é caracterizada por exceder a velocidade permitida em até 20%, sendo que até 15% está incluso como infração média.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Conduzir sem farol aceso em situação que exige seu uso é infração média.",
-    "legal_basis": "Art. 244, III, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -5835,60 +5295,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "infracoes",
     "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito e suas classificações, julgue o item a seguir.",
-    "text": "A infração gravíssima é caracterizada por exceder a velocidade permitida em até 20%, sendo que até 15% está incluso como infração média.",
-    "difficulty": "easy",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O uso de celular ao volante sem viva-voz é infração gravíssima (7 pontos, multa de R$ 293,47), conforme Art. 252, VII, do CTB.",
-    "legal_basis": "Art. 252, VII, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado leve, conforme o art. 230, II, do CTB.",
-    "difficulty": "easy",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O uso de celular ao volante sem viva-voz é infração gravíssima (7 pontos, multa de R$ 293,47), conforme Art. 252, VII, do CTB.",
-    "legal_basis": "Art. 252, VII, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
     "context_text": "Acerca das infrações de trânsito relacionadas ao uso de celular ao volante, julgue o item a seguir.",
     "text": "Grave com suspensão é a classificação correta para a infração de usar celular ao volante sem viva-voz.",
     "difficulty": "easy",
@@ -5897,141 +5303,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. O uso de celular ao volante sem viva-voz é infração gravíssima (7 pontos, multa de R$ 293,47), conforme Art. 252, VII, do CTB.",
     "legal_basis": "Art. 252, VII, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Transitar com pneus em mau estado é infração grave, colocando em risco a segurança do condutor e dos demais usuários.",
-    "legal_basis": "Art. 230, V, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Transitar com pneus em mau estado é infração grave, colocando em risco a segurança do condutor e dos demais usuários.",
-    "legal_basis": "Art. 230, V, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado leve, conforme o art. 230, II, do CTB.",
-    "difficulty": "medium",
-    "source": "CESPE/2023",
-    "year": 2023,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Transitar com pneus em mau estado é infração grave, colocando em risco a segurança do condutor e dos demais usuários.",
-    "legal_basis": "Art. 230, V, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito e suas classificações, julgue o item a seguir.",
-    "text": "A infração gravíssima é caracterizada por exceder a velocidade permitida em até 20%, sendo que até 15% está incluso como infração média.",
-    "difficulty": "easy",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Conduzir motocicleta sem o capacete de segurança é infração gravíssima, com multa de R$ 293,47 e 7 pontos.",
-    "legal_basis": "Art. 244, I, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado leve, conforme o art. 230, II, do CTB.",
-    "difficulty": "easy",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Conduzir motocicleta sem o capacete de segurança é infração gravíssima, com multa de R$ 293,47 e 7 pontos.",
-    "legal_basis": "Art. 244, I, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -6159,33 +5430,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "infracoes",
     "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "medium",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "A notificação da autuação deve ser enviada ao infrator em até 30 dias da data da infração.",
-    "legal_basis": "Art. 281, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
     "context_text": "Acerca da comunicação de transferência de propriedade de veículo, julgue o item a seguir.",
     "text": "O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 90 dias, sob pena de responder pelas infrações cometidas pelo novo proprietário.",
     "difficulty": "medium",
@@ -6221,222 +5465,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. A notificação da autuação deve ser enviada ao infrator em até 30 dias da data da infração.",
     "legal_basis": "Art. 281, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "hard",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O uso irregular de faróis de milha em via urbana é infração média.",
-    "legal_basis": "Art. 230, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "O uso irregular de faróis de milha em via urbana não constitui infração, segundo a legislação de trânsito vigente.",
-    "difficulty": "hard",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O uso irregular de faróis de milha em via urbana é infração média.",
-    "legal_basis": "Art. 230, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
-    "difficulty": "hard",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O uso irregular de faróis de milha em via urbana é infração média.",
-    "legal_basis": "Art. 230, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado uma infração grave, com 5 pontos e retenção do veículo.",
-    "difficulty": "medium",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Conduzir veículo sem o licenciamento é infração grave com 5 pontos e retenção do veículo.",
-    "legal_basis": "Art. 230, II, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é considerado leve, conforme o art. 230, II, do CTB.",
-    "difficulty": "medium",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Conduzir veículo sem o licenciamento é infração grave com 5 pontos e retenção do veículo.",
-    "legal_basis": "Art. 230, II, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "Conduzir veículo sem o licenciamento é uma infração leve com advertência, conforme o art. 230, II, do Código de Trânsito Brasileiro.",
-    "difficulty": "medium",
-    "source": "CESPE/2024",
-    "year": 2024,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Conduzir veículo sem o licenciamento é infração grave com 5 pontos e retenção do veículo.",
-    "legal_basis": "Art. 230, II, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito, julgue o item a seguir.",
-    "text": "A infração média é caracterizada por exceder a velocidade permitida em até 20%, conforme o que está disposto no art. 218, I, do Código de Trânsito Brasileiro.",
-    "difficulty": "hard",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Exceder a velocidade permitida em até 20% (portanto até 15% está incluso) é infração média com 4 pontos.",
-    "legal_basis": "Art. 218, I, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "infracoes",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das infrações de trânsito e suas classificações, julgue o item a seguir.",
-    "text": "A infração gravíssima é caracterizada por exceder a velocidade permitida em até 20%, sendo que até 15% está incluso como infração média.",
-    "difficulty": "hard",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Exceder a velocidade permitida em até 20% (portanto até 15% está incluso) é infração média com 4 pontos.",
-    "legal_basis": "Art. 218, I, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -6861,87 +5889,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "penalidades",
     "question_type": "certo_errado",
-    "context_text": "Acerca da suspensão do direito de dirigir, julgue o item a seguir.",
-    "text": "O prazo mínimo para a suspensão do direito de dirigir é de 6 meses, conforme Art. 261 do CTB.",
-    "difficulty": "medium",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. A suspensão do direito de dirigir tem prazo mínimo de 1 mês e máximo de 12 meses, podendo ser estendido em casos especiais.",
-    "legal_basis": "Art. 261, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do processo de habilitação após cassação, julgue o item a seguir.",
-    "text": "Após a cassação, o condutor deve aguardar o prazo mínimo de 2 anos antes de iniciar novo processo de habilitação.",
-    "difficulty": "hard",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Após a cassação, o condutor deve aguardar o prazo mínimo de 2 anos antes de iniciar novo processo de habilitação.",
-    "legal_basis": "Art. 261, §3°, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da cassação da habilitação de condutores, julgue o item a seguir.",
-    "text": "Após a cassação, o condutor deve aguardar o prazo mínimo de 1 ano antes de iniciar novo processo de habilitação.",
-    "difficulty": "hard",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Após a cassação, o condutor deve aguardar o prazo mínimo de 2 anos antes de iniciar novo processo de habilitação.",
-    "legal_basis": "Art. 261, §3°, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
     "context_text": "Acerca do processo de habilitação após cassação, julgue o item a seguir.",
     "text": "Após a cassação, o condutor deve aguardar 1 ano e 6 meses antes de iniciar novo processo de habilitação.",
     "difficulty": "hard",
@@ -7031,60 +5978,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. A frequência obrigatória em curso de reciclagem é aplicada como penalidade acessória em casos de suspensão da CNH ou em situações específicas previstas no CTB.",
     "legal_basis": "Art. 256, VII, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "easy",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O infrator tem 30 dias a partir da notificação para pagar a multa com desconto ou apresentar defesa prévia.",
-    "legal_basis": "Art. 281, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 20 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "difficulty": "easy",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O infrator tem 30 dias a partir da notificação para pagar a multa com desconto ou apresentar defesa prévia.",
-    "legal_basis": "Art. 281, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -7860,87 +6753,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "penalidades",
     "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "hard",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O prazo para recorrer ao CONTRAN, após decisão desfavorável da JARI, é de 30 dias contados da notificação da decisão.",
-    "legal_basis": "Art. 288, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 20 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "difficulty": "hard",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O prazo para recorrer ao CONTRAN, após decisão desfavorável da JARI, é de 30 dias contados da notificação da decisão.",
-    "legal_basis": "Art. 288, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 60 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "difficulty": "hard",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O prazo para recorrer ao CONTRAN, após decisão desfavorável da JARI, é de 30 dias contados da notificação da decisão.",
-    "legal_basis": "Art. 288, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
     "context_text": "Acerca das medidas administrativas no trânsito, julgue o item a seguir.",
     "text": "A retenção de veículos no trânsito é uma medida administrativa temporária para regularização, enquanto a apreensão é uma medida mais gravosa.",
     "difficulty": "hard",
@@ -8022,62 +6834,8 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "penalidades",
     "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O prazo para apresentar defesa prévia junto ao órgão de trânsito é de 30 dias a contar da notificação da autuação.",
-    "legal_basis": "Art. 281, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
     "context_text": "Acerca da comunicação de transferência de propriedade de veículo, julgue o item a seguir.",
     "text": "O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 10 dias.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O prazo para apresentar defesa prévia junto ao órgão de trânsito é de 30 dias a contar da notificação da autuação.",
-    "legal_basis": "Art. 281, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "penalidades",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 60 dias para transferir o registro do veículo para o novo Estado de domicílio.",
     "difficulty": "easy",
     "source": "CESPE/2016",
     "year": 2016,
@@ -8211,33 +6969,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "crimes-transito",
     "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Reclusão de 1 a 4 anos.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. A lesão corporal culposa na direção de veículo automotor é punida com detenção de 6 meses a 2 anos e suspensão da CNH.",
-    "legal_basis": "Art. 303, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
     "context_text": "Acerca das penalidades no Código de Trânsito Brasileiro, julgue o item a seguir.",
     "text": "A lesão corporal culposa na direção de veículo automotor é punida apenas com multa, desconsiderando a detenção de 6 meses a 2 anos e a suspensão da CNH.",
     "difficulty": "easy",
@@ -8346,87 +7077,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "crimes-transito",
     "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Art. 308.",
-    "difficulty": "easy",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O Art. 308 do CTB tipifica o crime de participar de disputas de velocidade ou competições não autorizadas nas vias públicas.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Art. 306.",
-    "difficulty": "easy",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O Art. 308 do CTB tipifica o crime de participar de disputas de velocidade ou competições não autorizadas nas vias públicas.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Art. 305.",
-    "difficulty": "easy",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O Art. 308 do CTB tipifica o crime de participar de disputas de velocidade ou competições não autorizadas nas vias públicas.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
     "context_text": "Acerca das penalidades por omissão de socorro no trânsito, julgue o item a seguir.",
     "text": "Deixar de prestar socorro à vítima de acidente é crime de trânsito, com pena de detenção de 6 meses a 1 ano.",
     "difficulty": "medium",
@@ -8481,33 +7131,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "crimes-transito",
     "question_type": "certo_errado",
-    "context_text": "Acerca da infração administrativa no âmbito da legislação de trânsito, julgue o item a seguir.",
-    "text": "A infração administrativa gravíssima é caracterizada pela conduta de deixar de prestar socorro à vítima de acidente quando possível fazê-lo, sem risco pessoal, conforme o disposto no Art. 304 do CTB.",
-    "difficulty": "medium",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Deixar de prestar socorro à vítima de acidente quando possível fazê-lo, sem risco pessoal, é crime do Art. 304 do CTB, com pena de detenção de 6 meses a 1 ano.",
-    "legal_basis": "Art. 304, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
     "context_text": "Acerca dos crimes de trânsito, julgue o item a seguir.",
     "text": "O crime de trânsito punível com detenção de 6 meses a 1 ano é previsto no Art. 305 do CTB.",
     "difficulty": "medium",
@@ -8537,33 +7160,6 @@
     "question_type": "certo_errado",
     "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
     "text": "A omissão de socorro agravada é uma conduta prevista no Código de Trânsito Brasileiro (CTB) que se refere ao afastamento do local de acidente.",
-    "difficulty": "medium",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Afastar-se do local de acidente para se esquivar da responsabilidade penal ou civil é crime do Art. 305 do CTB.",
-    "legal_basis": "Art. 305, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca das contravenções penais no trânsito, julgue o item a seguir.",
-    "text": "A condução de veículo sem CNH é considerada contravenção penal, independentemente de gerar perigo de dano.",
     "difficulty": "medium",
     "source": "CESPE/2016",
     "year": 2016,
@@ -9048,33 +7644,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "crimes-transito",
     "question_type": "certo_errado",
-    "context_text": "Acerca das contravenções penais no trânsito, julgue o item a seguir.",
-    "text": "A condução de veículo sem CNH é considerada contravenção penal, independentemente de gerar perigo de dano.",
-    "difficulty": "medium",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O Art. 309 tipifica como crime a condução de veículo sem CNH, desde que gerando perigo de dano, com pena de detenção de 6 meses a 1 ano ou multa.",
-    "legal_basis": "Art. 309, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
     "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
     "text": "É admitida para crimes de menor potencial ofensivo sem violência ou grave ameaça.",
     "difficulty": "hard",
@@ -9318,33 +7887,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "crimes-transito",
     "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Detenção de 6 meses a 3 anos, multa e suspensão.",
-    "difficulty": "medium",
-    "source": "CESPE/2021",
-    "year": 2021,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "A pena do Art. 306 é detenção de 6 meses a 3 anos, multa e suspensão da CNH por 1 a 3 anos.",
-    "legal_basis": "Art. 306, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
     "context_text": "Acerca das penalidades previstas para condutores que cometem infrações graves, julgue o item a seguir.",
     "text": "A multa e a suspensão da CNH por 6 meses são as penalidades aplicáveis para a infração prevista no Art. 306 do Código de Trânsito Brasileiro.",
     "difficulty": "medium",
@@ -9542,87 +8084,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. A suspensão condicional do processo (sursis processual) é cabível nos crimes com pena mínima de até 1 ano. Lesão culposa (6 meses a 2 anos) admite o instituto.",
     "legal_basis": "Art. 89, Lei 9.099/95; Art. 303, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Detenção de 6 meses a 3 anos, multa e suspensão.",
-    "difficulty": "medium",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O crime de participar de disputas ou competições não autorizadas é punido com detenção de 6 meses a 3 anos, multa e suspensão da CNH.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Multa e suspensão da CNH por 2 anos.",
-    "difficulty": "medium",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O crime de participar de disputas ou competições não autorizadas é punido com detenção de 6 meses a 3 anos, multa e suspensão da CNH.",
-    "legal_basis": "Art. 308, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "crimes-transito",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Reclusão de 1 a 4 anos.",
-    "difficulty": "medium",
-    "source": "CESPE/2017",
-    "year": 2017,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O crime de participar de disputas ou competições não autorizadas é punido com detenção de 6 meses a 3 anos, multa e suspensão da CNH.",
-    "legal_basis": "Art. 308, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -10228,60 +8689,6 @@
         "letter": "E",
         "text": "Errado",
         "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "sinalizacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da sinalização de trânsito, julgue o item a seguir.",
-    "text": "Amarelo é a cor da placa R-1 (PARE), o que está incorreto, pois essa placa tem formato octogonal e fundo vermelho com inscrição branca.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. A placa R-1 (PARE) tem formato octogonal e fundo vermelho com inscrição branca.",
-    "legal_basis": "Res. CONTRAN 918/22",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "sinalizacao",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da sinalização de trânsito, julgue o item a seguir.",
-    "text": "A placa R-1 (PARE) é caracterizada por ter formato octogonal e fundo vermelho com inscrição branca.",
-    "difficulty": "easy",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. A placa R-1 (PARE) tem formato octogonal e fundo vermelho com inscrição branca.",
-    "legal_basis": "Res. CONTRAN 918/22",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
         "explanation": ""
       }
     ]
@@ -11424,87 +9831,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "veiculos",
     "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "hard",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O CTB prevê prazo de 30 dias para regularização de irregularidades não essenciais à segurança, como documentação faltante.",
-    "legal_basis": "Art. 270, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "veiculos",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da comunicação de transferência de propriedade de veículo, julgue o item a seguir.",
-    "text": "O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 10 dias.",
-    "difficulty": "hard",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O CTB prevê prazo de 30 dias para regularização de irregularidades não essenciais à segurança, como documentação faltante.",
-    "legal_basis": "Art. 270, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "veiculos",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 60 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "difficulty": "hard",
-    "source": "CESPE/2019",
-    "year": 2019,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O CTB prevê prazo de 30 dias para regularização de irregularidades não essenciais à segurança, como documentação faltante.",
-    "legal_basis": "Art. 270, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "veiculos",
-    "question_type": "certo_errado",
     "context_text": "Acerca da legislação de trânsito, julgue o item a seguir.",
     "text": "Os veículos de transporte coletivo devem passar por inspeção veicular periódica obrigatória em prazo menor que veículos particulares.",
     "difficulty": "medium",
@@ -11567,60 +9893,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. Os veículos de transporte coletivo passam por inspeção veicular periódica obrigatória mais frequente, visando garantir a segurança dos passageiros.",
     "legal_basis": "Art. 104, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "veiculos",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Considerado irregular e pode ser retido.",
-    "difficulty": "medium",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Alterações não autorizadas nas características originais do veículo são irregulares e o veículo pode ser retido até a regularização.",
-    "legal_basis": "Art. 98, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "veiculos",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da legislação de trânsito brasileira e do Código de Trânsito Brasileiro, julgue o item a seguir.",
-    "text": "Passível apenas de multa leve.",
-    "difficulty": "medium",
-    "source": "CESPE/2020",
-    "year": 2020,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. Alterações não autorizadas nas características originais do veículo são irregulares e o veículo pode ser retido até a regularização.",
-    "legal_basis": "Art. 98, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -11856,33 +10128,6 @@
     "subject_slug": "legislacao-transito",
     "topic_slug": "registro-licenciamento",
     "question_type": "certo_errado",
-    "context_text": "Acerca do licenciamento anual de veículos, julgue o item a seguir.",
-    "text": "A aprovação no exame de emissões é condição para o licenciamento anual do veículo.",
-    "difficulty": "easy",
-    "source": "CESPE/2018",
-    "year": 2018,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O licenciamento anual comprova que o veículo está em condições regulares de uso e que o proprietário pagou os tributos e encargos previstos em lei.",
-    "legal_basis": "Art. 130, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
     "context_text": "Acerca do licenciamento de veículos, julgue o item a seguir.",
     "text": "A afirmação de que apenas a propriedade do veículo é comprovada pelo licenciamento anual é incorreta, pois este atesta condições regulares de uso.",
     "difficulty": "easy",
@@ -11891,87 +10136,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. O licenciamento anual comprova que o veículo está em condições regulares de uso e que o proprietário pagou os tributos e encargos previstos em lei.",
     "legal_basis": "Art. 130, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "hard",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O proprietário que muda de Estado tem 30 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "legal_basis": "Art. 125, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 20 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "difficulty": "hard",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O proprietário que muda de Estado tem 30 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "legal_basis": "Art. 125, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da transferência de registro de veículos, julgue o item a seguir.",
-    "text": "O proprietário que muda de Estado tem 60 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "difficulty": "hard",
-    "source": "CESPE/2016",
-    "year": 2016,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O proprietário que muda de Estado tem 30 dias para transferir o registro do veículo para o novo Estado de domicílio.",
-    "legal_basis": "Art. 125, CTB",
     "alternatives": [
       {
         "letter": "C",
@@ -12134,87 +10298,6 @@
     "examiner": "CESPE/CEBRASPE",
     "explanation": "Incorreto. O Brasil adotou o padrão MERCOSUL de placas desde 2018, com formato alfanumérico: três letras, um número, uma letra e dois números (ex.: ABC1D23).",
     "legal_basis": "Res. CONTRAN 780/19",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca do prazo para oferecimento de queixa-crime, julgue o item a seguir.",
-    "text": "O prazo decadencial para oferecimento de queixa-crime é de 30 dias, contados do dia em que o ofendido souber quem é o autor.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 30 dias, sob pena de responder pelas infrações cometidas pelo novo proprietário.",
-    "legal_basis": "Art. 134, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": true,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": false,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da comunicação de transferência de propriedade de veículo, julgue o item a seguir.",
-    "text": "O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 90 dias, sob pena de responder pelas infrações cometidas pelo novo proprietário.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 30 dias, sob pena de responder pelas infrações cometidas pelo novo proprietário.",
-    "legal_basis": "Art. 134, CTB",
-    "alternatives": [
-      {
-        "letter": "C",
-        "text": "Certo",
-        "is_correct": false,
-        "explanation": ""
-      },
-      {
-        "letter": "E",
-        "text": "Errado",
-        "is_correct": true,
-        "explanation": ""
-      }
-    ]
-  },
-  {
-    "subject_slug": "legislacao-transito",
-    "topic_slug": "registro-licenciamento",
-    "question_type": "certo_errado",
-    "context_text": "Acerca da comunicação de transferência de propriedade de veículo, julgue o item a seguir.",
-    "text": "O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 10 dias.",
-    "difficulty": "medium",
-    "source": "CESPE/2022",
-    "year": 2022,
-    "examiner": "CESPE/CEBRASPE",
-    "explanation": "Incorreto. O vendedor deve comunicar a transferência de propriedade ao DETRAN em até 30 dias, sob pena de responder pelas infrações cometidas pelo novo proprietário.",
-    "legal_basis": "Art. 134, CTB",
     "alternatives": [
       {
         "letter": "C",

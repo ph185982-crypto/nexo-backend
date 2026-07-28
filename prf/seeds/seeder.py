@@ -17,6 +17,10 @@ from prf.seeds.loader import load_questions, load_articles
 
 logger = logging.getLogger(__name__)
 
+# Shortest text that can still be a judgeable Certo/Errado item. Below this the
+# entry is an orphaned multiple-choice alternative, not a question.
+MIN_ITEM_CHARS = 80
+
 
 async def seed_prf_database(pool: asyncpg.Pool):
     """Run all seed operations. Fully idempotent via ON CONFLICT."""
@@ -152,6 +156,13 @@ async def _seed_questions_from_json(
                 for q in batch:
                     subject_id = subject_map.get(q["subject_slug"])
                     if not subject_id:
+                        skipped += 1
+                        continue
+
+                    # A CEBRASPE item is a full assertion. Anything this short is
+                    # a leftover multiple-choice alternative that lost its stem,
+                    # and cannot be judged Certo or Errado — never seed one.
+                    if len(q.get("text") or "") < MIN_ITEM_CHARS:
                         skipped += 1
                         continue
 
