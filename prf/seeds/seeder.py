@@ -163,6 +163,16 @@ async def _seed_questions_from_json(
                         subject_id, q["text"],
                     )
                     if existing:
+                        # Update context_text and other fields for existing questions
+                        await conn.execute(
+                            """UPDATE questions
+                               SET context_text = $1, difficulty = $2, source = $3,
+                                   year = $4, examiner = $5, explanation = $6, legal_basis = $7
+                               WHERE id = $8""",
+                            q.get("context_text"), q.get("difficulty", "medium"),
+                            q.get("source"), q.get("year"), q.get("examiner"),
+                            q.get("explanation"), q.get("legal_basis"), existing,
+                        )
                         skipped += 1
                         continue
 
