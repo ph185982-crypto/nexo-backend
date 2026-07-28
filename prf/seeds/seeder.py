@@ -105,38 +105,62 @@ async def _seed_legal_articles_from_json(
         logger.info("[PRF] No article JSON files found, skipping")
         return
 
-    count = 0
     async with pool.acquire() as conn:
-        for batch_start in range(0, len(articles), 50):
-            batch = articles[batch_start:batch_start + 50]
-            async with conn.transaction():
-                for a in batch:
-                    doc_id = doc_map.get(a["document_slug"])
-                    subject_id = subject_map.get(a.get("subject_slug"))
-                    topic_key = f"{a.get('subject_slug')}:{a.get('topic_slug')}" if a.get("topic_slug") else None
-                    topic_id = topic_map.get(topic_key) if topic_key else None
-                    if not doc_id:
-                        continue
+        # A lei seca passa de 3.500 artigos e o seeder roda em todo cold start.
+        # Uma ida ao banco por artigo levaria a inicialização a estourar o tempo
+        # limite da função, então o que já está gravado é carregado de uma vez e
+        # só o que mudou de fato é reescrito — em regime normal, nada é.
+        existing = {
+            (r["document_id"], r["article_number"]): r["len"]
+            for r in await conn.fetch(
+                "SELECT document_id, article_number, length(official_text) AS len"
+                "  FROM legal_articles"
+            )
+        }
 
-                    await conn.execute(
-                        """INSERT INTO legal_articles
-                           (document_id, subject_id, topic_id, article_number, chapter,
-                            official_text, simple_text, highlights, frequency_score, display_order)
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                           ON CONFLICT (document_id, article_number) DO UPDATE SET
-                             official_text = EXCLUDED.official_text,
-                             simple_text = EXCLUDED.simple_text,
-                             highlights = EXCLUDED.highlights,
-                             frequency_score = EXCLUDED.frequency_score,
-                             subject_id = EXCLUDED.subject_id,
-                             topic_id = EXCLUDED.topic_id""",
-                        doc_id, subject_id, topic_id, a["article_number"],
-                        a.get("chapter"), a["official_text"],
-                        a.get("simple_text"), a.get("highlights") or [],
-                        a.get("frequency_score", 0), count,
-                    )
-                    count += 1
-    logger.info(f"[PRF] Seeded {count} legal articles")
+        rows = []
+        for order, a in enumerate(articles):
+            doc_id = doc_map.get(a["document_slug"])
+            if not doc_id:
+                continue
+            text = a["official_text"]
+            if existing.get((doc_id, a["article_number"])) == len(text):
+                continue
+
+            topic_key = (
+                f"{a.get('subject_slug')}:{a.get('topic_slug')}"
+                if a.get("topic_slug") else None
+            )
+            rows.append((
+                doc_id, subject_map.get(a.get("subject_slug")),
+                topic_map.get(topic_key) if topic_key else None,
+                a["article_number"], a.get("chapter"), text,
+                a.get("simple_text"), a.get("highlights") or [],
+                float(a.get("frequency_score") or 0), order,
+            ))
+
+        for start in range(0, len(rows), 200):
+            async with conn.transaction():
+                await conn.executemany(
+                    """INSERT INTO legal_articles
+                       (document_id, subject_id, topic_id, article_number, chapter,
+                        official_text, simple_text, highlights, frequency_score, display_order)
+                       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                       ON CONFLICT (document_id, article_number) DO UPDATE SET
+                         official_text = EXCLUDED.official_text,
+                         chapter = EXCLUDED.chapter,
+                         simple_text = COALESCE(EXCLUDED.simple_text, legal_articles.simple_text),
+                         highlights = EXCLUDED.highlights,
+                         frequency_score = EXCLUDED.frequency_score,
+                         subject_id = EXCLUDED.subject_id,
+                         topic_id = EXCLUDED.topic_id""",
+                    rows[start:start + 200],
+                )
+
+    logger.info(
+        f"[PRF] Legal articles: {len(rows)} gravados, "
+        f"{len(articles) - len(rows)} já em dia"
+    )
 
 
 async def _seed_questions_from_json(
@@ -150,44 +174,48 @@ async def _seed_questions_from_json(
     count = 0
     skipped = 0
     async with pool.acquire() as conn:
-        for batch_start in range(0, len(questions), 50):
-            batch = questions[batch_start:batch_start + 50]
-            async with conn.transaction():
-                for q in batch:
-                    subject_id = subject_map.get(q["subject_slug"])
-                    if not subject_id:
-                        skipped += 1
-                        continue
+        # Mesma razão dos artigos: consultar o banco uma vez por questão fazia o
+        # cold start pagar 1.700 idas de rede antes de servir a primeira request.
+        existing = {
+            (r["subject_id"], r["text"]): r["context_text"]
+            for r in await conn.fetch("SELECT subject_id, text, context_text FROM questions")
+        }
 
-                    # A CEBRASPE item is a full assertion. Anything this short is
-                    # a leftover multiple-choice alternative that lost its stem,
-                    # and cannot be judged Certo or Errado — never seed one.
-                    if len(q.get("text") or "") < MIN_ITEM_CHARS:
-                        skipped += 1
-                        continue
+        pending = []
+        for q in questions:
+            subject_id = subject_map.get(q["subject_slug"])
+            if not subject_id:
+                skipped += 1
+                continue
 
-                    topic_key = f"{q['subject_slug']}:{q.get('topic_slug')}" if q.get("topic_slug") else None
-                    topic_id = topic_map.get(topic_key) if topic_key else None
+            # A CEBRASPE item is a full assertion. Anything this short is
+            # a leftover multiple-choice alternative that lost its stem,
+            # and cannot be judged Certo or Errado — never seed one.
+            text = q.get("text") or ""
+            if len(text) < MIN_ITEM_CHARS:
+                skipped += 1
+                continue
 
-                    existing = await conn.fetchval(
-                        "SELECT id FROM questions WHERE subject_id = $1 AND text = $2",
-                        subject_id, q["text"],
+            key = (subject_id, text)
+            if key in existing:
+                # Só reescreve quando o texto-base do seed realmente mudou.
+                if q.get("context_text") and existing[key] != q.get("context_text"):
+                    await conn.execute(
+                        "UPDATE questions SET context_text = $1 WHERE subject_id = $2 AND text = $3",
+                        q.get("context_text"), subject_id, text,
                     )
-                    if existing:
-                        # Update context_text and other fields for existing questions
-                        await conn.execute(
-                            """UPDATE questions
-                               SET context_text = $1, difficulty = $2, source = $3,
-                                   year = $4, examiner = $5, explanation = $6, legal_basis = $7
-                               WHERE id = $8""",
-                            q.get("context_text"), q.get("difficulty", "medium"),
-                            q.get("source"), q.get("year"), q.get("examiner"),
-                            q.get("explanation"), q.get("legal_basis"), existing,
-                        )
-                        skipped += 1
-                        continue
+                skipped += 1
+                continue
 
-                    row = await conn.fetchrow(
+            topic_key = (
+                f"{q['subject_slug']}:{q.get('topic_slug')}" if q.get("topic_slug") else None
+            )
+            pending.append((q, subject_id, topic_map.get(topic_key) if topic_key else None))
+
+        for start in range(0, len(pending), 50):
+            async with conn.transaction():
+                for q, subject_id, topic_id in pending[start:start + 50]:
+                    question_id = await conn.fetchval(
                         """INSERT INTO questions
                            (subject_id, topic_id, question_type, context_text,
                             text, difficulty, source, year,
@@ -202,15 +230,14 @@ async def _seed_questions_from_json(
                         q.get("source"), q.get("year"), q.get("examiner"),
                         q.get("explanation"), q.get("legal_basis"),
                     )
-                    question_id = row["id"]
-
-                    for i, alt in enumerate(q.get("alternatives", [])):
-                        await conn.execute(
+                    alts = q.get("alternatives") or []
+                    if alts:
+                        await conn.executemany(
                             """INSERT INTO question_alternatives
                                (question_id, letter, text, is_correct, explanation, display_order)
                                VALUES ($1, $2, $3, $4, $5, $6)""",
-                            question_id, alt["letter"], alt["text"],
-                            alt.get("is_correct", False), alt.get("explanation"), i,
+                            [(question_id, a["letter"], a["text"], a.get("is_correct", False),
+                              a.get("explanation"), i) for i, a in enumerate(alts)],
                         )
                     count += 1
 

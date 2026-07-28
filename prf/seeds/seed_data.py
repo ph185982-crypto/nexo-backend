@@ -146,6 +146,25 @@ SUBJECTS = [
         "display_order": 14,
         "block": 1,
     },
+    # Matérias exclusivas do certame da PM (weight_prf 0: não caem na PRF).
+    {
+        "name": "Direito Penal Militar",
+        "slug": "direito-penal-militar",
+        "description": "Código Penal Militar — crimes militares próprios e impróprios",
+        "weight_prf": 0.0,
+        "color": "#0F766E",
+        "icon": "shield-half",
+        "display_order": 15,
+    },
+    {
+        "name": "Direito Processual Penal Militar",
+        "slug": "direito-processual-penal-militar",
+        "description": "Código de Processo Penal Militar — IPM, processo e competência da Justiça Militar",
+        "weight_prf": 0.0,
+        "color": "#115E59",
+        "icon": "gavel",
+        "display_order": 16,
+    },
 ]
 
 # ═══════════════════════════════════════════════════════════════════
@@ -391,6 +410,14 @@ LEGAL_DOCUMENTS = [
     {"name": "Estatuto do Desarmamento", "slug": "estatuto-desarmamento", "abbreviation": "Lei 10.826/03", "display_order": 6},
     {"name": "Lei Maria da Penha", "slug": "maria-penha", "abbreviation": "Lei 11.340/06", "display_order": 7},
     {"name": "Lei de Abuso de Autoridade", "slug": "abuso-autoridade", "abbreviation": "Lei 13.869/19", "display_order": 8},
+    {"name": "Estatuto da Criança e do Adolescente", "slug": "eca", "abbreviation": "ECA", "display_order": 9},
+    {"name": "Lei dos Crimes Hediondos", "slug": "crimes-hediondos", "abbreviation": "Lei 8.072/90", "display_order": 10},
+    {"name": "Lei de Tortura", "slug": "tortura", "abbreviation": "Lei 9.455/97", "display_order": 11},
+    {"name": "Lei de Organização Criminosa", "slug": "organizacao-criminosa", "abbreviation": "Lei 12.850/13", "display_order": 12},
+    {"name": "Lei do Racismo", "slug": "racismo", "abbreviation": "Lei 7.716/89", "display_order": 13},
+    # Códigos militares — exigidos no certame da PM, não no da PRF.
+    {"name": "Código Penal Militar", "slug": "cpm", "abbreviation": "CPM", "display_order": 14},
+    {"name": "Código de Processo Penal Militar", "slug": "cppm", "abbreviation": "CPPM", "display_order": 15},
 ]
 
 # ═══════════════════════════════════════════════════════════════════

@@ -1,4 +1,6 @@
 """Legal library router — browse laws, articles, bookmarks."""
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 from uuid import UUID
@@ -9,8 +11,17 @@ from prf.models.legal import (
 )
 from prf.routers.deps import get_repo, get_current_user_id
 from prf.database.repository import PRFRepository
+from prf.services import llm_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+EXPLAIN_SYSTEM = (
+    "Você é professor de cursinho para concursos policiais. Explica a lei seca "
+    "em linguagem direta, sem juridiquês, do jeito que faz o aluno lembrar na "
+    "hora da prova. Responde exclusivamente em JSON válido."
+)
 
 
 @router.get("/documents", response_model=list[LegalDocumentOut])
@@ -113,6 +124,81 @@ async def get_article(
         related_questions=[r["id"] for r in related_q],
         related_flashcards=[r["id"] for r in related_f],
     )
+
+
+@router.post("/articles/{article_id}/explain")
+async def explain_article(
+    article_id: UUID,
+    refresh: bool = Query(False, description="Regenera mesmo se já houver explicação"),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Explica um artigo em linguagem simples, gerando na primeira leitura.
+
+    São mais de 3.500 artigos na biblioteca. Escrever a explicação de todos de
+    antemão custaria caro e a maior parte nunca seria aberta, então a explicação
+    nasce quando o artigo é lido pela primeira vez e fica gravada — da segunda
+    leitura em diante a resposta é imediata e não custa nada.
+    """
+    article = await repo._fetchrow(
+        """SELECT la.id, la.article_number, la.official_text, la.simple_text,
+                  la.highlights, ld.name AS document_name
+             FROM legal_articles la
+             JOIN legal_documents ld ON ld.id = la.document_id
+            WHERE la.id = $1""",
+        article_id,
+    )
+    if not article:
+        raise HTTPException(404, "Artigo não encontrado")
+
+    if article["simple_text"] and not refresh:
+        return {
+            "article_id": str(article_id),
+            "simple_text": article["simple_text"],
+            "highlights": article["highlights"] or [],
+            "cached": True,
+        }
+
+    prompt = f"""Explique este dispositivo legal para um candidato de concurso policial.
+
+DOCUMENTO: {article['document_name']}
+{article['article_number']}
+TEXTO OFICIAL:
+{article['official_text'][:4000]}
+
+Responda em JSON:
+{{"simple_text": "explicação de 3 a 6 linhas, em linguagem direta, dizendo o que o dispositivo determina na prática e qual a pegadinha que a banca costuma fazer com ele",
+  "highlights": ["3 a 6 expressões-chave copiadas literalmente do texto oficial, as que a banca troca para tornar o item errado"]}}"""
+
+    try:
+        data = await llm_service.chat_json(
+            [
+                {"role": "system", "content": EXPLAIN_SYSTEM},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.3,
+            max_tokens=900,
+        )
+    except llm_service.LLMUnavailable as e:
+        raise HTTPException(503, f"IA indisponível: {e}")
+
+    simple = (data.get("simple_text") or "").strip()
+    if not simple:
+        raise HTTPException(502, "A IA não devolveu explicação utilizável")
+
+    highlights = [h for h in (data.get("highlights") or []) if isinstance(h, str) and h.strip()]
+
+    await repo._execute(
+        "UPDATE legal_articles SET simple_text = $1, highlights = $2 WHERE id = $3",
+        simple, highlights[:6], article_id,
+    )
+
+    return {
+        "article_id": str(article_id),
+        "simple_text": simple,
+        "highlights": highlights[:6],
+        "cached": False,
+    }
 
 
 @router.post("/bookmarks")
