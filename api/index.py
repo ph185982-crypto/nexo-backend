@@ -8,6 +8,7 @@ import logging
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 logging.basicConfig(level=logging.INFO)
@@ -75,3 +76,19 @@ async def root():
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "online", "prf_ready": _prf_ready}
+
+
+_html_cache = None
+
+
+@app.get("/app", response_class=HTMLResponse, tags=["Frontend"])
+async def serve_app():
+    global _html_cache
+    if _html_cache is None:
+        html_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "prf", "static", "app.html",
+        )
+        with open(html_path, encoding="utf-8") as f:
+            _html_cache = f.read()
+    return HTMLResponse(content=_html_cache)

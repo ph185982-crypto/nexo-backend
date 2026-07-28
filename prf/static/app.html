@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0F172A">
+<title>PRF Estudo</title>
+<style>
+:root {
+  --bg: #0F172A;
+  --bg2: #1E293B;
+  --bg3: #334155;
+  --primary: #3B82F6;
+  --primary-dark: #1E40AF;
+  --accent: #6366F1;
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --gold: #FBBF24;
+  --text: #F1F5F9;
+  --text2: #94A3B8;
+  --text3: #64748B;
+  --radius: 14px;
+  --nav-h: 68px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+#app { height: 100%; display: flex; flex-direction: column; }
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 calc(var(--nav-h) + var(--safe-b) + 8px) 0;
+}
+.content::-webkit-scrollbar { display: none; }
+.px { padding-left: 16px; padding-right: 16px; }
+
+/* === NAV === */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: calc(var(--nav-h) + var(--safe-b));
+  padding-bottom: var(--safe-b);
+  background: var(--bg2);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 12px; border: none; background: none; color: var(--text3);
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  transition: color .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--primary); }
+.nav-item:active { transform: scale(0.9); }
+.nav-item svg { width: 24px; height: 24px; }
+
+/* === HEADER === */
+.hero {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent) 100%);
+  padding: calc(var(--safe-t) + 16px) 16px 24px;
+  border-radius: 0 0 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; top: -50%; right: -30%; width: 200px; height: 200px;
+  background: rgba(255,255,255,0.06); border-radius: 50%;
+}
+.hero h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.hero p { font-size: 13px; color: rgba(255,255,255,0.75); }
+
+/* === CARDS === */
+.card {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.card-grid { display: grid; gap: 12px; padding: 16px; }
+.card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+
+/* === STAT CARDS === */
+.stat { text-align: center; }
+.stat-value { font-size: 26px; font-weight: 800; line-height: 1.1; }
+.stat-label { font-size: 11px; color: var(--text2); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* === SUBJECT CHIPS === */
+.subject-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
+.subject-card {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: transform .15s, border-color .2s;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.subject-card:active { transform: scale(0.97); }
+.subject-card .dot { width: 10px; height: 10px; border-radius: 50%; }
+.subject-card .name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.subject-card .meta { font-size: 11px; color: var(--text3); }
+
+/* === QUESTION === */
+.q-context {
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+  padding: 12px 14px; background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 12px;
+}
+.q-text { font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+.q-source { font-size: 11px; color: var(--text3); margin-bottom: 12px; }
+.q-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.q-btn {
+  padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700;
+  cursor: pointer; border: 2px solid var(--bg3); background: var(--bg2);
+  color: var(--text); transition: all .15s;
+}
+.q-btn:active { transform: scale(0.97); }
+.q-btn.selected-correct { border-color: var(--success); background: rgba(16,185,129,0.12); color: var(--success); }
+.q-btn.selected-wrong { border-color: var(--error); background: rgba(239,68,68,0.12); color: var(--error); }
+.q-btn.correct-highlight { border-color: var(--success); background: rgba(16,185,129,0.08); }
+.q-btn:disabled { opacity: 0.7; cursor: default; }
+
+.q-feedback {
+  margin-top: 16px; padding: 14px; border-radius: var(--radius);
+  font-size: 13px; line-height: 1.6;
+}
+.q-feedback.correct { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+.q-feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+.q-feedback h4 { font-size: 14px; margin-bottom: 6px; }
+.q-feedback .legal { margin-top: 8px; font-size: 12px; color: var(--text2); padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+.q-feedback .xp { display: inline-block; background: rgba(251,191,36,0.15); color: var(--gold); padding: 2px 8px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 6px; }
+
+/* === BUTTONS === */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 600;
+  cursor: pointer; border: none; transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-success { background: var(--success); color: white; }
+.btn-error { background: var(--error); color: white; }
+.btn-full { width: 100%; }
+.btn-sm { padding: 10px 16px; font-size: 13px; }
+
+/* === BACK BAR === */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: calc(var(--safe-t) + 12px) 16px 12px;
+  position: sticky; top: 0; background: var(--bg); z-index: 50;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.topbar .back {
+  background: none; border: none; color: var(--text); cursor: pointer;
+  padding: 4px; display: flex;
+}
+.topbar .title { font-size: 16px; font-weight: 600; }
+
+/* === SIMULADO === */
+.sim-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  position: sticky; top: 0; background: var(--bg); z-index: 50;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.sim-timer {
+  font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--gold); display: flex; align-items: center; gap: 6px;
+}
+.sim-timer.danger { color: var(--error); }
+.sim-blocks { display: flex; gap: 6px; padding: 12px 16px; }
+.sim-block-tab {
+  flex: 1; padding: 10px; border-radius: 10px; text-align: center;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  background: var(--bg2); color: var(--text2); border: 1.5px solid transparent;
+  transition: all .2s;
+}
+.sim-block-tab.active { border-color: var(--primary); color: var(--primary); background: rgba(59,130,246,0.08); }
+
+.sim-q-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; font-size: 13px; color: var(--text2);
+}
+.sim-q-counter { font-variant-numeric: tabular-nums; }
+
+.sim-result { padding: 16px; }
+.sim-score-big { text-align: center; padding: 24px 0; }
+.sim-score-big .number { font-size: 56px; font-weight: 800; }
+.sim-score-big .label { font-size: 14px; color: var(--text2); margin-top: 4px; }
+.sim-block-result {
+  padding: 14px; border-radius: var(--radius); background: var(--bg2);
+  margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.04);
+}
+.sim-block-result h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.sim-block-result .row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+.eliminated-badge {
+  display: inline-block; padding: 6px 14px; border-radius: 20px;
+  font-size: 13px; font-weight: 700; margin-top: 10px;
+}
+.eliminated-badge.pass { background: rgba(16,185,129,0.15); color: var(--success); }
+.eliminated-badge.fail { background: rgba(239,68,68,0.15); color: var(--error); }
+
+/* === LEGAL === */
+.legal-doc {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer; transition: background .15s;
+}
+.legal-doc:active { background: var(--bg2); }
+.legal-doc .abbr {
+  background: var(--bg3); padding: 8px 10px; border-radius: 10px;
+  font-size: 12px; font-weight: 700; color: var(--primary); min-width: 52px; text-align: center;
+}
+.legal-doc .info { flex: 1; }
+.legal-doc .info h3 { font-size: 14px; font-weight: 600; }
+.legal-doc .info p { font-size: 12px; color: var(--text3); }
+
+.legal-article {
+  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.legal-article .art-num { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.legal-article .art-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.legal-article .art-text { font-size: 13px; line-height: 1.6; color: var(--text2); }
+
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg2); border-radius: 12px;
+  padding: 10px 14px; margin: 12px 16px;
+  border: 1.5px solid rgba(255,255,255,0.06);
+}
+.search-box input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-size: 14px; font-family: inherit;
+}
+.search-box input::placeholder { color: var(--text3); }
+.search-box svg { width: 18px; height: 18px; color: var(--text3); flex-shrink: 0; }
+
+/* === ESSAY === */
+.theme-card {
+  background: var(--bg2); border-radius: var(--radius); padding: 16px;
+  margin: 0 16px 10px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: transform .15s;
+}
+.theme-card:active { transform: scale(0.98); }
+.theme-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.theme-card p { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.theme-card .tag { display: inline-block; background: rgba(59,130,246,0.12); color: var(--primary); font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; margin-top: 8px; }
+
+.essay-editor {
+  margin: 12px 16px; background: var(--bg2); border-radius: var(--radius);
+  padding: 14px; border: 1.5px solid rgba(255,255,255,0.06);
+}
+.essay-editor textarea {
+  width: 100%; min-height: 280px; background: none; border: none; outline: none;
+  color: var(--text); font-size: 14px; line-height: 1.8; font-family: inherit;
+  resize: vertical;
+}
+.essay-editor .counter {
+  text-align: right; font-size: 12px; color: var(--text3);
+  margin-top: 6px; font-variant-numeric: tabular-nums;
+}
+
+.essay-result { padding: 16px; }
+.essay-score-circle { text-align: center; margin: 16px 0; }
+.essay-detail { margin-top: 12px; }
+.essay-detail .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; }
+.essay-detail .row .label { color: var(--text2); }
+.essay-diagnosis { margin-top: 16px; padding: 14px; background: var(--bg2); border-radius: var(--radius); font-size: 13px; line-height: 1.7; color: var(--text2); white-space: pre-wrap; }
+
+/* === GAUGE === */
+.gauge { position: relative; display: inline-block; }
+.gauge svg { transform: rotate(-90deg); }
+.gauge .gauge-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center;
+}
+.gauge .gauge-text .pct { font-size: 28px; font-weight: 800; }
+.gauge .gauge-text .lbl { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* === STREAK === */
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(251,191,36,0.12); padding: 6px 12px; border-radius: 20px;
+  font-size: 14px; font-weight: 700; color: var(--gold);
+}
+
+/* === SHORTCUTS === */
+.shortcut {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg2); padding: 14px; border-radius: var(--radius);
+  cursor: pointer; border: 1px solid rgba(255,255,255,0.04);
+  transition: transform .15s;
+}
+.shortcut:active { transform: scale(0.98); }
+.shortcut .icon-circle {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.shortcut .info h3 { font-size: 14px; font-weight: 600; }
+.shortcut .info p { font-size: 12px; color: var(--text2); }
+
+/* === WEEKLY CHART === */
+.weekly-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; padding: 0 4px; }
+.weekly-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+.weekly-bar { width: 100%; border-radius: 6px 6px 0 0; background: var(--primary); min-height: 4px; transition: height .4s ease; align-self: flex-end; }
+.weekly-day { font-size: 10px; color: var(--text3); font-weight: 500; }
+
+/* === LOADING === */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 50%, var(--bg2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.splash {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999; transition: opacity .3s;
+}
+.splash.hide { opacity: 0; pointer-events: none; }
+.splash h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.splash p { font-size: 14px; color: var(--text2); }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--bg3); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin-top: 24px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* === TOAST === */
+.toast-container { position: fixed; top: calc(var(--safe-t) + 12px); left: 16px; right: 16px; z-index: 200; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast {
+  padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;
+  animation: toastIn .3s ease; pointer-events: auto;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.success { background: var(--success); color: white; }
+.toast.error { background: var(--error); color: white; }
+.toast.info { background: var(--primary); color: white; }
+.toast.xp { background: rgba(251,191,36,0.9); color: #1a1a1a; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } }
+
+/* === ANIMATIONS === */
+.fade-in { animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } }
+
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.shake { animation: shake .3s ease; }
+
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+.section-title { font-size: 16px; font-weight: 700; padding: 16px 16px 8px; }
+.section-sub { font-size: 12px; color: var(--text2); padding: 0 16px 12px; }
+
+.empty-state { text-align: center; padding: 48px 24px; }
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state h3 { font-size: 16px; margin-bottom: 6px; }
+.empty-state p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.gap-8 { gap: 8px; }
+.text-center { text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="splash" class="splash">
+  <h1>PRF Estudo</h1>
+  <p>Plataforma Adaptativa</p>
+  <div class="spinner"></div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<div id="app"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API = '';
+
+// ============================================================
+// STATE
+// ============================================================
+const S = {
+  tab: 'dashboard',
+  subView: null,
+  token: localStorage.getItem('prf_token'),
+  loading: {},
+  // Dashboard
+  dashboard: null,
+  subjects: null,
+  // Practice
+  selSubject: null,
+  questions: [],
+  qIndex: 0,
+  answerResult: null,
+  // Simulado
+  sim: null,
+  simQuestions: {},
+  simBlock: 1,
+  simIndex: {},
+  simAnswers: {},
+  simResult: null,
+  simSeconds: 0,
+  // Legal
+  legalDocs: null,
+  selDoc: null,
+  articles: [],
+  searchResults: null,
+  // Essays
+  themes: null,
+  selTheme: null,
+  essayText: '',
+  essayResult: null,
+};
+
+let timerInterval = null;
+
+// ============================================================
+// AUTH
+// ============================================================
+function uid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random()*16|0;
+    return (c==='x'?r:(r&0x3|0x8)).toString(16);
+  });
+}
+
+async function ensureAuth() {
+  if (S.token) {
+    try {
+      const r = await fetch(`${API}/api/prf/auth/me`, { headers: { 'Authorization': `Bearer ${S.token}` } });
+      if (r.ok) return;
+    } catch(e) {}
+    S.token = null;
+    localStorage.removeItem('prf_token');
+  }
+
+  let deviceId = localStorage.getItem('prf_device_id');
+  if (!deviceId) { deviceId = uid(); localStorage.setItem('prf_device_id', deviceId); }
+
+  const creds = { email: `estudante-${deviceId}@prfestudo.app`, password: `PRF#${deviceId.slice(0,16)}`, name: 'Estudante PRF' };
+
+  let r = await fetch(`${API}/api/prf/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(creds),
+  });
+
+  if (r.status === 409 || r.status === 400) {
+    r = await fetch(`${API}/api/prf/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: creds.email, password: creds.password }),
+    });
+  }
+
+  if (!r.ok) throw new Error('Auth failed');
+  const data = await r.json();
+  S.token = data.access_token;
+  localStorage.setItem('prf_token', S.token);
+}
+
+// ============================================================
+// API CLIENT
+// ============================================================
+async function api(path, opts = {}) {
+  const headers = { ...(opts.headers || {}) };
+  if (S.token) headers['Authorization'] = `Bearer ${S.token}`;
+  if (opts.json) {
+    headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(opts.json);
+    delete opts.json;
+  }
+  const r = await fetch(`${API}${path}`, { ...opts, headers });
+  if (r.status === 401) {
+    S.token = null; localStorage.removeItem('prf_token');
+    await ensureAuth();
+    headers['Authorization'] = `Bearer ${S.token}`;
+    return fetch(`${API}${path}`, { ...opts, headers }).then(r2 => r2.json());
+  }
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  return r.json();
+}
+
+async function apiForm(path, formData) {
+  const headers = {};
+  if (S.token) headers['Authorization'] = `Bearer ${S.token}`;
+  const r = await fetch(`${API}${path}`, { method: 'POST', headers, body: formData });
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  return r.json();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-10px)'; t.style.transition = 'all .3s'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+// ============================================================
+// ICONS (SVG)
+// ============================================================
+const ICONS = {
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7m-9-5v12a1 1 0 001 1h3m10-11l2 2m-2-2v12a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1"/></svg>`,
+  book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.25v13M12 6.25C10.83 5.48 9.25 5 7.5 5S4.17 5.48 3 6.25v13C4.17 18.48 5.75 18 7.5 18s3.33.48 4.5 1.25m0-13C13.17 5.48 14.75 5 16.5 5c1.75 0 3.33.48 4.5 1.25v13C19.83 18.48 18.25 18 16.5 18c-1.75 0-3.33.48-4.5 1.25"/></svg>`,
+  target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+  scale: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l4 9h0a4 4 0 004 0h0l-4-9m8 0l4 9h0a4 4 0 004 0h0l-4-9M12 3v18"/></svg>`,
+  pen: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>`,
+  back: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`,
+  clock: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
+  fire: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 23c-4.97 0-9-3.13-9-7 0-2.73 1.82-5.15 3-6.59V8c0-.27.11-.52.29-.71l.71-.71c.18-.18.44-.29.71-.29.55 0 1 .45 1 1v2.17c.64-.95 1.46-1.92 2.29-2.76C12.76 4.94 14.5 2.42 14.5 1c0 0 4.5 3.5 4.5 9 0 1.06-.19 2.06-.5 3 .56-.37 1-.93 1-1.5 0 0 2.5 2.43 2.5 5.5 0 3.87-4.03 6-10 6z"/></svg>`,
+};
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function fmtTime(sec) {
+  const h = Math.floor(sec/3600);
+  const m = Math.floor((sec%3600)/60);
+  const s = sec % 60;
+  return h > 0 ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function gauge(pct, size=110, stroke=10, color=null) {
+  const r = (size-stroke)/2;
+  const c = 2 * Math.PI * r;
+  const off = c - (pct/100)*c;
+  const col = color || (pct >= 60 ? 'var(--success)' : pct >= 30 ? 'var(--warning)' : 'var(--error)');
+  return `<div class="gauge">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="${stroke}" opacity="0.3"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${stroke}"
+        stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"
+        style="transition: stroke-dashoffset .8s ease"/>
+    </svg>
+    <div class="gauge-text"><div class="pct">${Math.round(pct)}</div><div class="lbl">Aprovacao</div></div>
+  </div>`;
+}
+
+function dayLabel(idx) { return ['D','S','T','Q','Q','S','S'][idx]; }
+
+// ============================================================
+// VIEWS
+// ============================================================
+
+// --- DASHBOARD ---
+function viewDashboard() {
+  const d = S.dashboard;
+  if (!d) return `<div class="card-grid"><div class="skeleton" style="height:180px"></div><div class="skeleton" style="height:100px"></div><div class="skeleton" style="height:100px"></div></div>`;
+
+  const wp = d.weekly_progress || [];
+  const maxMin = Math.max(...wp.map(w => w.study_minutes || 0), 1);
+  const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+
+  return `
+    <div class="hero">
+      <div class="flex-between">
+        <div>
+          <h1>${d.greeting || 'Bom estudo!'}</h1>
+          <p>Nivel ${d.level || 1} &bull; PRF Estudo</p>
+        </div>
+        <div class="streak-badge">${ICONS.fire} ${d.streak || 0}</div>
+      </div>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card stat">
+        <div class="stat-value" style="color:var(--primary)">${d.questions_today || 0}</div>
+        <div class="stat-label">Questoes hoje</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-value" style="color:var(--success)">${Math.round(d.accuracy_today || 0)}%</div>
+        <div class="stat-label">Acuracia</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-value" style="color:var(--gold)">${Math.round(d.time_studied_today || 0)}'</div>
+        <div class="stat-label">Tempo hoje</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-value" style="color:var(--accent)">${d.reviews_due || 0}</div>
+        <div class="stat-label">Revisoes</div>
+      </div>
+    </div>
+
+    <div class="px text-center mt-12">
+      ${gauge(d.approval_estimate || 0)}
+    </div>
+
+    ${wp.length > 0 ? `
+    <div class="section-title">Semana</div>
+    <div class="card" style="margin:0 16px">
+      <div class="weekly-chart">
+        ${wp.map((w, i) => {
+          const pct = maxMin > 0 ? Math.max(((w.study_minutes||0)/maxMin)*100, 5) : 5;
+          const d2 = new Date(w.date);
+          return `<div class="weekly-bar-wrap"><div class="weekly-bar" style="height:${pct}%;background:${w.mission_completed?'var(--success)':'var(--primary)'}"></div><span class="weekly-day">${days[d2.getDay()]}</span></div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
+    <div class="section-title">Acesso rapido</div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:0 16px;">
+      <div class="shortcut" onclick="switchTab('simulado')">
+        <div class="icon-circle" style="background:rgba(99,102,241,0.15);color:var(--accent)">&#127919;</div>
+        <div class="info"><h3>Simulado PRF</h3><p>120 questoes, correcao CEBRASPE</p></div>
+      </div>
+      <div class="shortcut" onclick="switchTab('practice')">
+        <div class="icon-circle" style="background:rgba(59,130,246,0.15);color:var(--primary)">&#128218;</div>
+        <div class="info"><h3>Praticar Questoes</h3><p>Questoes C/E por materia</p></div>
+      </div>
+      <div class="shortcut" onclick="switchTab('essays')">
+        <div class="icon-circle" style="background:rgba(16,185,129,0.15);color:var(--success)">&#9999;&#65039;</div>
+        <div class="info"><h3>Treinar Redacao</h3><p>Scanner com diagnostico CEBRASPE</p></div>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  `;
+}
+
+// --- PRACTICE ---
+function viewPractice() {
+  if (S.subView === 'questions') return viewPracticeQuestions();
+  if (!S.subjects) return `<div class="card-grid"><div class="skeleton" style="height:60px"></div><div class="skeleton" style="height:60px"></div><div class="skeleton" style="height:60px"></div></div>`;
+
+  const active = S.subjects.filter(s => s.is_active !== false && s.weight_prf > 0);
+  return `
+    <div class="hero">
+      <h1>Estudar</h1>
+      <p>${active.length} materias &bull; Questoes Certo ou Errado</p>
+    </div>
+    <div class="section-title">Escolha a materia</div>
+    <div class="subject-grid">
+      ${active.map(s => `
+        <div class="subject-card" onclick="selectSubject('${s.id}')">
+          <div class="dot" style="background:${s.color || '#3B82F6'}"></div>
+          <div class="name">${s.name}</div>
+          <div class="meta">Peso ${s.weight_prf}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function viewPracticeQuestions() {
+  if (S.loading.questions) return `<div class="topbar"><button class="back" onclick="goBack()"> ${ICONS.back}</button><span class="title">Carregando...</span></div><div class="card-grid"><div class="skeleton" style="height:200px"></div></div>`;
+
+  const sub = S.subjects?.find(s => s.id === S.selSubject);
+  const q = S.questions[S.qIndex];
+
+  if (!q) return `
+    <div class="topbar"><button class="back" onclick="goBack()">${ICONS.back}</button><span class="title">${sub?.name || 'Questoes'}</span></div>
+    <div class="empty-state"><div class="icon">&#128214;</div><h3>Sem questoes</h3><p>Nenhuma questao encontrada para esta materia.</p><button class="btn btn-primary mt-16" onclick="goBack()">Voltar</button></div>
+  `;
+
+  const answered = S.answerResult !== null;
+  const ar = S.answerResult;
+
+  return `
+    <div class="topbar">
+      <button class="back" onclick="goBack()">${ICONS.back}</button>
+      <span class="title">${sub?.name || 'Questoes'}</span>
+      <span style="margin-left:auto;font-size:13px;color:var(--text3)">${S.qIndex+1}/${S.questions.length}</span>
+    </div>
+    <div class="px fade-in">
+      <div class="card mt-12">
+        ${q.source ? `<div class="q-source">${q.source}${q.year ? ` (${q.year})` : ''}</div>` : ''}
+        ${q.context_text ? `<div class="q-context">${q.context_text}</div>` : ''}
+        <div class="q-text">${q.text}</div>
+        <div class="q-buttons">
+          ${q.alternatives.map(a => {
+            let cls = 'q-btn';
+            if (answered) {
+              if (a.id === ar.selected_alternative?.id && ar.is_correct) cls += ' selected-correct';
+              else if (a.id === ar.selected_alternative?.id && !ar.is_correct) cls += ' selected-wrong';
+              else if (a.id === ar.correct_alternative?.id) cls += ' correct-highlight';
+            }
+            return `<button class="${cls}" ${answered?'disabled':''} onclick="answerQuestion('${q.id}','${a.id}')">${a.text}</button>`;
+          }).join('')}
+        </div>
+        ${answered ? `
+          <div class="q-feedback ${ar.is_correct ? 'correct' : 'wrong'}">
+            <h4>${ar.is_correct ? '&#10003; Correto!' : '&#10007; Incorreto'}</h4>
+            ${ar.explanation ? `<p>${ar.explanation}</p>` : ''}
+            ${ar.legal_basis ? `<div class="legal"><strong>Base legal:</strong> ${ar.legal_basis}</div>` : ''}
+            ${ar.xp_earned ? `<div class="xp">+${ar.xp_earned} XP</div>` : ''}
+          </div>
+          <button class="btn btn-primary btn-full mt-16" onclick="nextQuestion()">
+            ${S.qIndex < S.questions.length - 1 ? 'Proxima Questao' : 'Voltar para Materias'}
+          </button>
+        ` : ''}
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  `;
+}
+
+// --- SIMULADO ---
+function viewSimulado() {
+  if (S.simResult) return viewSimuladoResult();
+  if (S.sim) return viewSimuladoExam();
+  return viewSimuladoStart();
+}
+
+function viewSimuladoStart() {
+  return `
+    <div class="hero">
+      <h1>Simulado PRF</h1>
+      <p>Prova completa no formato CEBRASPE</p>
+    </div>
+    <div class="px mt-16 fade-in">
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px">Formato da Prova</h3>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">
+          <p><strong>120 itens</strong> Certo ou Errado</p>
+          <p style="margin-top:8px"><strong>Bloco I</strong> — 55 itens: Portugues, RLM, Informatica, Fisica, Etica, Geopolitica, Espanhol</p>
+          <p style="margin-top:4px"><strong>Bloco II</strong> — 30 itens: Legislacao de Transito</p>
+          <p style="margin-top:4px"><strong>Bloco III</strong> — 35 itens: Dir. Administrativo, Constitucional, Penal, Proc. Penal, Leg. Especial, Dir. Humanos</p>
+          <p style="margin-top:12px"><strong>Tempo:</strong> 4 horas e 30 minutos</p>
+          <p style="margin-top:4px"><strong>Correcao:</strong> Certa +1, Errada -1, Branco 0</p>
+          <p style="margin-top:4px"><strong>Eliminacao:</strong> Nota negativa em qualquer bloco</p>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full mt-16" onclick="generateSimulado()" ${S.loading.sim?'disabled':''}>
+        ${S.loading.sim ? 'Gerando...' : 'Iniciar Simulado'}
+      </button>
+    </div>
+  `;
+}
+
+function viewSimuladoExam() {
+  const block = S.simBlock;
+  const questions = S.simQuestions[block] || [];
+  const idx = S.simIndex[block] || 0;
+  const q = questions[idx];
+  const totalAnswered = Object.keys(S.simAnswers).length;
+  const danger = S.simSeconds < 600;
+
+  return `
+    <div class="sim-header">
+      <button class="back" onclick="confirmExitSim()" style="background:none;border:none;color:var(--text);cursor:pointer">${ICONS.back}</button>
+      <div class="sim-timer ${danger?'danger':''}">${ICONS.clock} ${fmtTime(S.simSeconds)}</div>
+      <span style="font-size:12px;color:var(--text3)">${totalAnswered}/120</span>
+    </div>
+    <div class="sim-blocks">
+      ${[1,2,3].map(b => {
+        const bq = S.simQuestions[b] || [];
+        const bAnswered = bq.filter(q2 => S.simAnswers[q2.id]).length;
+        return `<div class="sim-block-tab ${block===b?'active':''}" onclick="switchSimBlock(${b})">
+          Bloco ${b}<br><span style="font-size:10px">${bAnswered}/${bq.length}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    ${q ? `
+    <div class="sim-q-nav">
+      <button class="btn btn-sm btn-outline" onclick="prevSimQ()" ${idx===0?'disabled':''} style="${idx===0?'opacity:0.3':''}">&larr; Anterior</button>
+      <span class="sim-q-counter">${idx+1} / ${questions.length}</span>
+      <button class="btn btn-sm btn-outline" onclick="nextSimQ()" ${idx>=questions.length-1?'disabled':''} style="${idx>=questions.length-1?'opacity:0.3':''}">&rarr; Proxima</button>
+    </div>
+    <div class="px fade-in">
+      <div class="card">
+        ${q.context_text ? `<div class="q-context">${q.context_text}</div>` : ''}
+        <div class="q-text">${q.text}</div>
+        <div class="q-buttons">
+          ${['C','E'].map(letter => {
+            const selected = S.simAnswers[q.id] === letter;
+            return `<button class="q-btn ${selected ? 'selected-correct' : ''}" onclick="answerSimQ('${q.id}','${letter}')">${letter === 'C' ? 'CERTO' : 'ERRADO'}</button>`;
+          }).join('')}
+        </div>
+        ${q.subject_name ? `<div style="font-size:11px;color:var(--text3);margin-top:10px">${q.subject_name}</div>` : ''}
+      </div>
+    </div>
+    ` : `<div class="empty-state"><div class="icon">&#128203;</div><h3>Carregando questoes...</h3></div>`}
+    <div style="padding:16px;margin-top:8px">
+      <button class="btn btn-error btn-full" onclick="confirmFinishSim()">Finalizar Prova</button>
+    </div>
+  `;
+}
+
+function viewSimuladoResult() {
+  const r = S.simResult;
+  const scoreColor = r.eliminated ? 'var(--error)' : r.percentage >= 60 ? 'var(--success)' : 'var(--warning)';
+  return `
+    <div class="topbar"><button class="back" onclick="resetSimulado()">${ICONS.back}</button><span class="title">Resultado do Simulado</span></div>
+    <div class="sim-result fade-in">
+      <div class="sim-score-big">
+        <div class="number" style="color:${scoreColor}">${r.score_raw != null ? r.score_raw : r.score}</div>
+        <div class="label">Pontuacao Bruta (certas - erradas)</div>
+        <div class="eliminated-badge ${r.eliminated ? 'fail' : 'pass'}">
+          ${r.eliminated ? 'ELIMINADO' : 'APROVADO nos blocos'}
+        </div>
+      </div>
+
+      <div class="card-grid cols-2" style="padding:0">
+        <div class="card stat"><div class="stat-value" style="color:var(--success)">${r.certas}</div><div class="stat-label">Certas</div></div>
+        <div class="card stat"><div class="stat-value" style="color:var(--error)">${r.erradas}</div><div class="stat-label">Erradas</div></div>
+        <div class="card stat"><div class="stat-value" style="color:var(--text3)">${r.branco}</div><div class="stat-label">Em branco</div></div>
+        <div class="card stat"><div class="stat-value" style="color:var(--primary)">${Math.round(r.percentage||0)}%</div><div class="stat-label">Aproveitamento</div></div>
+      </div>
+
+      <div class="section-title" style="padding-left:0">Por Bloco</div>
+      ${Object.entries(r.blocks || {}).map(([key, b]) => `
+        <div class="sim-block-result">
+          <h4>${key.replace('bloco_','Bloco ')} ${b.score < 0 ? '<span style="color:var(--error)"> ELIMINADO</span>' : ''}</h4>
+          <div class="row"><span>Certas</span><span style="color:var(--success)">${b.certas}</span></div>
+          <div class="row"><span>Erradas</span><span style="color:var(--error)">${b.erradas}</span></div>
+          <div class="row"><span>Em branco</span><span>${b.branco}</span></div>
+          <div class="row"><span><strong>Saldo</strong></span><span style="color:${b.score<0?'var(--error)':'var(--success)'}"><strong>${b.score > 0 ? '+' : ''}${b.score}</strong></span></div>
+        </div>
+      `).join('')}
+
+      <button class="btn btn-primary btn-full mt-16" onclick="resetSimulado()">Novo Simulado</button>
+    </div>
+  `;
+}
+
+// --- LEGAL ---
+function viewLegal() {
+  if (S.subView === 'articles') return viewLegalArticles();
+  if (S.subView === 'search') return viewLegalSearch();
+
+  if (!S.legalDocs) return `<div class="card-grid"><div class="skeleton" style="height:60px"></div><div class="skeleton" style="height:60px"></div><div class="skeleton" style="height:60px"></div></div>`;
+
+  return `
+    <div class="hero">
+      <h1>Legislacao</h1>
+      <p>${S.legalDocs.length} documentos &bull; ${S.legalDocs.reduce((s,d) => s+d.article_count, 0)} artigos</p>
+    </div>
+    <div class="search-box" onclick="startLegalSearch()">
+      ${ICONS.search}
+      <input placeholder="Buscar artigos..." readonly>
+    </div>
+    <div class="fade-in">
+      ${S.legalDocs.map(d => `
+        <div class="legal-doc" onclick="selectDoc('${d.id}','${d.name}')">
+          <div class="abbr">${d.abbreviation || d.slug}</div>
+          <div class="info"><h3>${d.name}</h3><p>${d.article_count} artigos</p></div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function viewLegalArticles() {
+  const docName = S.selDocName || 'Artigos';
+  if (S.loading.articles) return `<div class="topbar"><button class="back" onclick="goBack()">${ICONS.back}</button><span class="title">${docName}</span></div><div class="card-grid"><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div></div>`;
+
+  return `
+    <div class="topbar"><button class="back" onclick="goBack()">${ICONS.back}</button><span class="title">${docName}</span></div>
+    <div class="fade-in">
+      ${S.articles.length === 0 ? '<div class="empty-state"><div class="icon">&#128220;</div><h3>Sem artigos</h3></div>' :
+        S.articles.map(a => `
+          <div class="legal-article">
+            <div class="art-num">Art. ${a.article_number || '?'}</div>
+            ${a.title ? `<div class="art-title">${a.title}</div>` : ''}
+            <div class="art-text">${a.official_text || a.simple_text || ''}</div>
+            ${a.simple_text && a.official_text ? `<div style="margin-top:8px;font-size:12px;color:var(--primary);cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent==='Ver simplificado'?'Ocultar':'Ver simplificado'">Ver simplificado</div><div style="display:none;margin-top:6px;font-size:13px;color:var(--success);line-height:1.6">${a.simple_text}</div>` : ''}
+          </div>
+        `).join('')}
+    </div>
+  `;
+}
+
+function viewLegalSearch() {
+  return `
+    <div class="topbar">
+      <button class="back" onclick="goBack()">${ICONS.back}</button>
+      <div class="search-box" style="flex:1;margin:0">
+        ${ICONS.search}
+        <input id="search-input" placeholder="Buscar artigos..." autofocus oninput="debounceLegalSearch(this.value)">
+      </div>
+    </div>
+    <div id="search-results" class="fade-in">
+      ${S.searchResults ? (S.searchResults.length === 0 ?
+        '<div class="empty-state" style="padding:32px"><h3>Nenhum resultado</h3></div>' :
+        S.searchResults.map(a => `
+          <div class="legal-article">
+            <div class="art-num">${a.document_name || ''} — Art. ${a.article_number || '?'}</div>
+            ${a.title ? `<div class="art-title">${a.title}</div>` : ''}
+            <div class="art-text">${a.official_text || a.simple_text || ''}</div>
+          </div>
+        `).join('')
+      ) : '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Digite para buscar</div>'}
+    </div>
+  `;
+}
+
+// --- ESSAYS ---
+function viewEssays() {
+  if (S.essayResult) return viewEssayResult();
+  if (S.subView === 'write') return viewEssayWrite();
+
+  if (!S.themes) return `<div class="card-grid"><div class="skeleton" style="height:100px"></div><div class="skeleton" style="height:100px"></div></div>`;
+
+  return `
+    <div class="hero">
+      <h1>Redacao</h1>
+      <p>Scanner com diagnostico CEBRASPE</p>
+    </div>
+    <div class="section-title">Temas disponiveis</div>
+    <div class="fade-in">
+      ${S.themes.map(t => `
+        <div class="theme-card" onclick="selectTheme('${t.id}')">
+          <h3>${t.title}</h3>
+          <p>${t.description || ''}</p>
+          <div class="tag">${t.subject_area || 'PRF'}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function viewEssayWrite() {
+  const theme = S.selTheme;
+  if (!theme) return '';
+  const lines = (S.essayText || '').split('\n').length;
+
+  return `
+    <div class="topbar"><button class="back" onclick="goBack()">${ICONS.back}</button><span class="title">Redacao</span></div>
+    <div class="px fade-in">
+      <div class="card mb-8">
+        <h3 style="font-size:14px;margin-bottom:6px">${theme.title}</h3>
+        ${theme.context_text ? `<p style="font-size:13px;color:var(--text2);line-height:1.6">${theme.context_text}</p>` : ''}
+      </div>
+      <div class="essay-editor">
+        <textarea id="essay-textarea" placeholder="Escreva sua redacao aqui (ate 30 linhas)..." oninput="S.essayText=this.value;updateLineCount()">${S.essayText||''}</textarea>
+        <div class="counter"><span id="line-count">${lines}</span>/30 linhas</div>
+      </div>
+      <button class="btn btn-primary btn-full mt-12" onclick="submitEssay()" ${S.loading.essay?'disabled':''}>
+        ${S.loading.essay ? 'Corrigindo...' : 'Enviar para Correcao'}
+      </button>
+    </div>
+  `;
+}
+
+function viewEssayResult() {
+  const r = S.essayResult;
+  const scoreColor = r.final_score >= 14 ? 'var(--success)' : r.final_score >= 8 ? 'var(--warning)' : 'var(--error)';
+  return `
+    <div class="topbar"><button class="back" onclick="resetEssay()">${ICONS.back}</button><span class="title">Resultado da Redacao</span></div>
+    <div class="essay-result fade-in">
+      <div class="essay-score-circle">
+        ${gauge(Math.min((r.final_score/20)*100, 100), 130, 12, scoreColor)}
+        <div style="margin-top:-20px;font-size:12px;color:var(--text2)">${r.final_score?.toFixed(1) || 0} / 20 pontos</div>
+      </div>
+      <div class="card essay-detail">
+        <div class="row"><span class="label">Nota Conteudo (NC)</span><span>${r.nc_score?.toFixed(1) || 0}</span></div>
+        <div class="row"><span class="label">Erros Microestruturais (NE)</span><span>${r.ne_count || 0}</span></div>
+        <div class="row"><span class="label">Total de Linhas (TL)</span><span>${r.total_lines || 0}</span></div>
+        <div class="row"><span class="label">Penalidade</span><span style="color:var(--error)">-${r.penalty?.toFixed(2) || 0}</span></div>
+        <div class="row"><span class="label"><strong>Nota Final</strong></span><span style="color:${scoreColor}"><strong>${r.final_score?.toFixed(1) || 0}</strong></span></div>
+      </div>
+      ${r.feedback_text ? `
+        <div class="section-title" style="padding-left:0">Diagnostico</div>
+        <div class="essay-diagnosis">${r.feedback_text}</div>
+      ` : ''}
+      ${r.diagnosis ? `
+        <div class="section-title" style="padding-left:0">Detalhamento</div>
+        <div class="essay-diagnosis">${typeof r.diagnosis === 'string' ? r.diagnosis : JSON.stringify(r.diagnosis, null, 2)}</div>
+      ` : ''}
+      <button class="btn btn-primary btn-full mt-16" onclick="resetEssay()">Nova Redacao</button>
+    </div>
+  `;
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function renderNav() {
+  const tabs = [
+    { id: 'dashboard', icon: ICONS.home, label: 'Inicio' },
+    { id: 'practice', icon: ICONS.book, label: 'Estudar' },
+    { id: 'simulado', icon: ICONS.target, label: 'Simulado' },
+    { id: 'legal', icon: ICONS.scale, label: 'Leis' },
+    { id: 'essays', icon: ICONS.pen, label: 'Redacao' },
+  ];
+  return `<nav class="nav">${tabs.map(t =>
+    `<button class="nav-item ${S.tab===t.id?'active':''}" onclick="switchTab('${t.id}')">${t.icon}<span>${t.label}</span></button>`
+  ).join('')}</nav>`;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  const views = {
+    dashboard: viewDashboard,
+    practice: viewPractice,
+    simulado: viewSimulado,
+    legal: viewLegal,
+    essays: viewEssays,
+  };
+  const content = (views[S.tab] || viewDashboard)();
+  document.getElementById('app').innerHTML = `
+    <div class="content" id="main-content">${content}</div>
+    ${renderNav()}
+  `;
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function switchTab(tab) {
+  S.tab = tab;
+  S.subView = null;
+  S.answerResult = null;
+  render();
+  document.getElementById('main-content')?.scrollTo(0, 0);
+  if (tab === 'dashboard' && !S.dashboard) loadDashboard();
+  if (tab === 'practice' && !S.subjects) loadSubjects();
+  if (tab === 'legal' && !S.legalDocs) loadLegalDocs();
+  if (tab === 'essays' && !S.themes) loadThemes();
+}
+
+function goBack() {
+  S.subView = null;
+  S.answerResult = null;
+  S.searchResults = null;
+  render();
+}
+
+// Dashboard
+async function loadDashboard() {
+  try {
+    S.dashboard = await api('/api/prf/dashboard/');
+  } catch(e) {
+    S.dashboard = { greeting: 'Bem-vindo!', streak: 0, questions_today: 0, accuracy_today: 0, time_studied_today: 0, reviews_due: 0, approval_estimate: 0, level: 1, weekly_progress: [] };
+  }
+  render();
+}
+
+// Subjects
+async function loadSubjects() {
+  try {
+    const data = await api('/api/prf/onboarding/subjects');
+    S.subjects = data.subjects || data;
+  } catch(e) {
+    toast('Erro ao carregar materias', 'error');
+  }
+  render();
+}
+
+// Practice
+async function selectSubject(id) {
+  S.selSubject = id;
+  S.subView = 'questions';
+  S.qIndex = 0;
+  S.questions = [];
+  S.answerResult = null;
+  S.loading.questions = true;
+  render();
+  try {
+    const data = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
+    S.questions = data.questions || [];
+  } catch(e) { toast('Erro ao carregar questoes', 'error'); }
+  S.loading.questions = false;
+  render();
+}
+
+async function answerQuestion(qid, altId) {
+  if (S.answerResult) return;
+  try {
+    S.answerResult = await api('/api/prf/questions/answer', {
+      method: 'POST',
+      json: { question_id: qid, selected_alternative_id: altId }
+    });
+    if (S.answerResult.xp_earned) toast(`+${S.answerResult.xp_earned} XP`, 'xp');
+  } catch(e) { toast('Erro ao responder', 'error'); }
+  render();
+}
+
+function nextQuestion() {
+  if (S.qIndex < S.questions.length - 1) {
+    S.qIndex++;
+    S.answerResult = null;
+    render();
+    document.getElementById('main-content')?.scrollTo(0, 0);
+  } else {
+    goBack();
+  }
+}
+
+// Simulado
+async function generateSimulado() {
+  S.loading.sim = true;
+  render();
+  try {
+    S.sim = await api('/api/prf/simulados/generate', { method: 'POST' });
+    S.simBlock = 1;
+    S.simAnswers = {};
+    S.simResult = null;
+    S.simIndex = { 1: 0, 2: 0, 3: 0 };
+    S.simSeconds = (S.sim.time_limit_mins || 270) * 60;
+
+    for (const b of [1, 2, 3]) {
+      try {
+        const data = await api(`/api/prf/simulados/${S.sim.id}/questions?block=${b}`);
+        S.simQuestions[b] = data.questions || [];
+      } catch(e) { S.simQuestions[b] = []; }
+    }
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      S.simSeconds--;
+      const timerEl = document.querySelector('.sim-timer');
+      if (timerEl) {
+        timerEl.innerHTML = `${ICONS.clock} ${fmtTime(S.simSeconds)}`;
+        if (S.simSeconds < 600) timerEl.classList.add('danger');
+      }
+      if (S.simSeconds <= 0) { clearInterval(timerInterval); finishSimulado(); }
+    }, 1000);
+  } catch(e) { toast('Erro ao gerar simulado', 'error'); }
+  S.loading.sim = false;
+  render();
+}
+
+function switchSimBlock(b) { S.simBlock = b; render(); }
+function prevSimQ() { if ((S.simIndex[S.simBlock]||0) > 0) { S.simIndex[S.simBlock]--; render(); } }
+function nextSimQ() {
+  const qs = S.simQuestions[S.simBlock] || [];
+  if ((S.simIndex[S.simBlock]||0) < qs.length - 1) { S.simIndex[S.simBlock]++; render(); }
+}
+
+async function answerSimQ(qid, selected) {
+  S.simAnswers[qid] = selected;
+  try {
+    await api(`/api/prf/simulados/${S.sim.id}/answer?question_id=${qid}&selected=${selected}`, { method: 'POST' });
+  } catch(e) {}
+  render();
+}
+
+function confirmFinishSim() {
+  if (confirm('Finalizar a prova? Esta acao nao pode ser desfeita.')) finishSimulado();
+}
+function confirmExitSim() {
+  if (confirm('Sair do simulado? Seu progresso sera perdido.')) resetSimulado();
+}
+
+async function finishSimulado() {
+  clearInterval(timerInterval);
+  try {
+    S.simResult = await api(`/api/prf/simulados/${S.sim.id}/finish`, { method: 'POST' });
+  } catch(e) { toast('Erro ao finalizar', 'error'); }
+  render();
+}
+
+function resetSimulado() {
+  clearInterval(timerInterval);
+  S.sim = null; S.simQuestions = {}; S.simResult = null; S.simAnswers = {};
+  S.simIndex = {}; S.simBlock = 1; S.simSeconds = 0;
+  render();
+}
+
+// Legal
+async function loadLegalDocs() {
+  try { S.legalDocs = await api('/api/prf/legal/documents'); } catch(e) { S.legalDocs = []; }
+  render();
+}
+
+async function selectDoc(id, name) {
+  S.selDoc = id;
+  S.selDocName = name;
+  S.subView = 'articles';
+  S.articles = [];
+  S.loading.articles = true;
+  render();
+  try {
+    const data = await api(`/api/prf/legal/articles?document_id=${id}&limit=200`);
+    S.articles = data || [];
+  } catch(e) { toast('Erro ao carregar artigos', 'error'); }
+  S.loading.articles = false;
+  render();
+}
+
+function startLegalSearch() { S.subView = 'search'; S.searchResults = null; render(); setTimeout(() => document.getElementById('search-input')?.focus(), 100); }
+
+let searchTimeout;
+function debounceLegalSearch(q) {
+  clearTimeout(searchTimeout);
+  if (q.length < 2) { S.searchResults = null; return; }
+  searchTimeout = setTimeout(async () => {
+    try {
+      const data = await api(`/api/prf/legal/search?q=${encodeURIComponent(q)}&limit=20`);
+      S.searchResults = data.articles || [];
+    } catch(e) { S.searchResults = []; }
+    const el = document.getElementById('search-results');
+    if (el) {
+      el.innerHTML = S.searchResults.length === 0 ?
+        '<div class="empty-state" style="padding:32px"><h3>Nenhum resultado</h3></div>' :
+        S.searchResults.map(a => `
+          <div class="legal-article">
+            <div class="art-num">${a.document_name||''} — Art. ${a.article_number||'?'}</div>
+            ${a.title ? `<div class="art-title">${a.title}</div>` : ''}
+            <div class="art-text">${a.official_text||a.simple_text||''}</div>
+          </div>
+        `).join('');
+    }
+  }, 400);
+}
+
+// Essays
+async function loadThemes() {
+  try {
+    const data = await api('/api/prf/essays/themes');
+    S.themes = data.themes || data;
+  } catch(e) { S.themes = []; }
+  render();
+}
+
+function selectTheme(id) {
+  S.selTheme = S.themes.find(t => t.id === id);
+  S.subView = 'write';
+  S.essayText = '';
+  S.essayResult = null;
+  render();
+}
+
+function updateLineCount() {
+  const el = document.getElementById('line-count');
+  if (el) el.textContent = (S.essayText||'').split('\n').length;
+}
+
+async function submitEssay() {
+  if (!S.essayText?.trim()) { toast('Escreva sua redacao antes de enviar', 'error'); return; }
+  S.loading.essay = true;
+  render();
+  try {
+    const form = new FormData();
+    form.append('theme_title', S.selTheme.title);
+    form.append('text', S.essayText);
+    S.essayResult = await apiForm('/api/prf/essays/submit', form);
+    S.subView = null;
+  } catch(e) { toast('Erro na correcao. Tente novamente.', 'error'); }
+  S.loading.essay = false;
+  render();
+}
+
+function resetEssay() { S.essayResult = null; S.subView = null; S.essayText = ''; render(); }
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    await ensureAuth();
+  } catch(e) {
+    console.error('Auth error:', e);
+    toast('Erro de conexao. Tentando novamente...', 'error');
+    setTimeout(init, 3000);
+    return;
+  }
+
+  document.getElementById('splash').classList.add('hide');
+  setTimeout(() => document.getElementById('splash')?.remove(), 300);
+
+  render();
+  loadDashboard();
+  loadSubjects();
+}
+
+init();
+</script>
+</body>
+</html>
