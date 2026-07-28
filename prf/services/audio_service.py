@@ -25,18 +25,17 @@ async def generate_audio_script(
     Generate an audio lesson script from study content.
     Styles: summary, quiz, deep_dive, review
     """
-    api_key = os.getenv("GOOGLE_API_KEY", "")
-    if not api_key:
+    from prf.services import llm_service
+
+    if llm_service.active_provider() is None:
         return _fallback_script(topic, content, style)
 
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash")
-
-        prompt = _build_script_prompt(topic, content, style)
-        response = model.generate_content(prompt)
-        script = response.text.strip()
+        script = await llm_service.chat(
+            [{"role": "user", "content": _build_script_prompt(topic, content, style)}],
+            temperature=0.6,
+            max_tokens=1200,
+        )
 
         return {
             "script": script,

@@ -6,7 +6,7 @@ from uuid import UUID
 
 from prf.routers.deps import get_repo, get_current_user_id
 from prf.database.repository import PRFRepository
-from prf.services.audio_service import build_commute_playlist, generate_audio_lesson
+from prf.services.audio_service import build_commute_playlist
 
 router = APIRouter()
 
