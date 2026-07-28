@@ -69,16 +69,32 @@ async def root():
 
 
 @app.get("/status", tags=["Health"])
-async def status():
+async def status(check_ai: bool = False):
+    """Health payload. Pass ?check_ai=1 to actually call the AI providers."""
     from prf.services import llm_service
-    return {
+
+    payload = {
         "platform": "PRF Adaptive Study",
         "status": "online",
         "db": "connected" if _prf_ready else "not connected",
-        "ai_provider": llm_service.active_provider() or "none",
+        "ai_providers_configured": llm_service.configured_providers(),
         "app": "/app",
         "docs": "/docs",
     }
+
+    if check_ai:
+        checks = {}
+        for provider in llm_service.configured_providers():
+            try:
+                await llm_service._chat_with(
+                    provider, [{"role": "user", "content": "ping"}], 0.0, 5, False
+                )
+                checks[provider] = "ok"
+            except Exception as e:
+                checks[provider] = f"error: {str(e)[:160]}"
+        payload["ai_checks"] = checks
+
+    return payload
 
 
 @app.get("/health", tags=["Health"])

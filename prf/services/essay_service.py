@@ -70,7 +70,11 @@ async def correct_essay(
     from prf.services import llm_service
 
     if llm_service.active_provider() is None:
-        return _fallback_correction(text, theme, total_lines)
+        return _fallback_correction(
+            total_lines,
+            "Correção automática indisponível: nenhum provedor de IA configurado. "
+            "Defina OPENAI_API_KEY ou GOOGLE_API_KEY.",
+        )
 
     try:
         prompt = SYSTEM_PROMPT_CORRECTION.format(theme=theme, text=text)
@@ -94,7 +98,11 @@ async def correct_essay(
         }
     except Exception as e:
         logger.error(f"Essay correction error: {e}")
-        return _fallback_correction(text, theme, total_lines)
+        return _fallback_correction(
+            total_lines,
+            f"A correção por IA falhou: {e}. Verifique se a chave de API é válida "
+            "e se há créditos disponíveis.",
+        )
 
 
 async def ocr_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> str:
@@ -144,8 +152,8 @@ def _build_feedback(diagnosis: dict, nc: float, ne: int, tl: int, final: float) 
     return "\n".join(lines)
 
 
-def _fallback_correction(text: str, theme: str, total_lines: int) -> dict:
-    """Basic fallback when no LLM provider is available."""
+def _fallback_correction(total_lines: int, reason: str) -> dict:
+    """Placeholder result carrying the real reason the correction did not run."""
     return {
         "nc_score": 0,
         "ne_count": 0,
@@ -153,14 +161,11 @@ def _fallback_correction(text: str, theme: str, total_lines: int) -> dict:
         "penalty": 0,
         "final_score": 0,
         "diagnosis": {
-            "error": "Correção automática indisponível — nenhum provedor de IA configurado",
+            "error": reason,
             "macro": {},
             "errors": [],
             "weak_points": [],
             "improvement_plan": [],
         },
-        "feedback_text": (
-            "Correção automática indisponível no momento. "
-            "Configure OPENAI_API_KEY (ou GOOGLE_API_KEY) para habilitar."
-        ),
+        "feedback_text": reason,
     }

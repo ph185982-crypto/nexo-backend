@@ -23,15 +23,22 @@ GEMINI_MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.5-flash")
 
 
 class LLMUnavailable(RuntimeError):
-    """Raised when no LLM provider is configured."""
+    """Raised when no configured provider could serve the request."""
+
+
+def configured_providers() -> list[str]:
+    """Providers with a key set, in preference order."""
+    providers = []
+    if os.getenv("OPENAI_API_KEY"):
+        providers.append("openai")
+    if os.getenv("GOOGLE_API_KEY"):
+        providers.append("gemini")
+    return providers
 
 
 def active_provider() -> Optional[str]:
-    if os.getenv("OPENAI_API_KEY"):
-        return "openai"
-    if os.getenv("GOOGLE_API_KEY"):
-        return "gemini"
-    return None
+    providers = configured_providers()
+    return providers[0] if providers else None
 
 
 def _openai_client():
@@ -48,12 +55,32 @@ async def chat(
     """
     Send a chat completion. `messages` uses the OpenAI role format
     ({"role": "system"|"user"|"assistant", "content": str}).
-    Returns the assistant's text response.
-    """
-    provider = active_provider()
-    if provider is None:
-        raise LLMUnavailable("No LLM provider configured")
 
+    Tries each configured provider in order so an expired key on one does not
+    take the feature down. Raises LLMUnavailable when all of them fail.
+    """
+    providers = configured_providers()
+    if not providers:
+        raise LLMUnavailable("Nenhum provedor de IA configurado")
+
+    errors = []
+    for provider in providers:
+        try:
+            return await _chat_with(provider, messages, temperature, max_tokens, json_mode)
+        except Exception as e:
+            logger.warning(f"[LLM] {provider} failed: {e}")
+            errors.append(f"{provider}: {e}")
+
+    raise LLMUnavailable("; ".join(errors))
+
+
+async def _chat_with(
+    provider: str,
+    messages: list[dict],
+    temperature: float,
+    max_tokens: int,
+    json_mode: bool,
+) -> str:
     if provider == "openai":
         client = _openai_client()
         kwargs = {
@@ -67,7 +94,6 @@ async def chat(
         resp = await client.chat.completions.create(**kwargs)
         return (resp.choices[0].message.content or "").strip()
 
-    # Gemini fallback
     import google.generativeai as genai
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
@@ -108,11 +134,29 @@ async def vision(
     mime_type: str = "image/jpeg",
     max_tokens: int = 2000,
 ) -> str:
-    """Send an image + prompt to a vision model. Returns the text response."""
-    provider = active_provider()
-    if provider is None:
-        raise LLMUnavailable("No LLM provider configured")
+    """Send an image + prompt to a vision model, trying each provider in turn."""
+    providers = configured_providers()
+    if not providers:
+        raise LLMUnavailable("Nenhum provedor de IA configurado")
 
+    errors = []
+    for provider in providers:
+        try:
+            return await _vision_with(provider, prompt, image_bytes, mime_type, max_tokens)
+        except Exception as e:
+            logger.warning(f"[LLM] {provider} vision failed: {e}")
+            errors.append(f"{provider}: {e}")
+
+    raise LLMUnavailable("; ".join(errors))
+
+
+async def _vision_with(
+    provider: str,
+    prompt: str,
+    image_bytes: bytes,
+    mime_type: str,
+    max_tokens: int,
+) -> str:
     if provider == "openai":
         client = _openai_client()
         b64 = base64.b64encode(image_bytes).decode()
