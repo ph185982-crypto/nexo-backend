@@ -188,24 +188,40 @@ async def rewrite_fragments(
     for it in items:
         it["is_certo"] = bool(it.get("is_certo"))
 
-    try:
+    async def _ask(batch: list[dict]) -> dict[int, dict]:
         data = await llm_service.chat_json(
             [
                 {"role": "system", "content": REWRITE_SYSTEM},
-                {"role": "user", "content": _rewrite_prompt(items)},
+                {"role": "user", "content": _rewrite_prompt(batch)},
             ],
             temperature=0.4,
             max_tokens=4000,
         )
+        out: dict[int, dict] = {}
+        for entry in data.get("items") or []:
+            try:
+                out[int(entry.get("index"))] = entry
+            except (TypeError, ValueError):
+                continue
+        return out
+
+    try:
+        by_index = await _ask(items)
+
+        # The model routinely answers a few items too tersely to clear the
+        # fragment bar. Re-ask for just those instead of dropping the batch,
+        # which is what stalled the queue.
+        short_idx = [
+            i for i, it in enumerate(items)
+            if len((by_index.get(i, {}).get("statement") or "").strip()) < FRAGMENT_MAX_CHARS
+        ]
+        if short_idx:
+            retry = await _ask([items[i] for i in short_idx])
+            for pos, orig_i in enumerate(short_idx):
+                if pos in retry:
+                    by_index[orig_i] = retry[pos]
     except llm_service.LLMUnavailable as e:
         raise HTTPException(503, f"IA indisponível: {e}")
-
-    by_index = {}
-    for entry in data.get("items") or []:
-        try:
-            by_index[int(entry.get("index"))] = entry
-        except (TypeError, ValueError):
-            continue
 
     touched = []
     rejected = []
@@ -249,3 +265,33 @@ async def rewrite_fragments(
         "remaining": remaining,
         "items": touched,
     }
+
+
+@router.post("/fragments/purge-duplicates")
+async def purge_duplicates(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Delete fragment rows the seeder re-inserted after a rewrite.
+
+    The seeder looks an existing question up by its text, so once a row is
+    rewritten it stops matching and the original fragment is inserted again on
+    the next cold start. Those re-inserts carry no attempts, so they are safe to
+    drop; the rewritten row they duplicate stays.
+    """
+    _require_admin(x_maintenance_token)
+
+    rows = await repo._fetch(
+        """DELETE FROM questions q
+            WHERE length(q.text) < $1
+              AND NOT EXISTS (SELECT 1 FROM question_attempts a WHERE a.question_id = q.id)
+              AND NOT EXISTS (SELECT 1 FROM review_cards r WHERE r.question_id = q.id)
+              AND NOT EXISTS (SELECT 1 FROM error_notebook e WHERE e.question_id = q.id)
+          RETURNING q.id""",
+        FRAGMENT_MAX_CHARS,
+    )
+    remaining = await repo._fetchval(
+        "SELECT COUNT(*) FROM questions WHERE is_active AND length(text) < $1",
+        FRAGMENT_MAX_CHARS,
+    )
+    return {"deleted": len(rows), "remaining_fragments": remaining}
