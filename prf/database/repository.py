@@ -576,10 +576,33 @@ class PRFRepository:
             conditions.append(f"la.subject_id = ${idx}")
             params.append(subject_id)
             idx += 1
+        order_by = "la.display_order"
+
         if search:
             conditions.append(f"(la.official_text ILIKE ${idx} OR la.article_number ILIKE ${idx})")
             params.append(f"%{search}%")
             idx += 1
+
+            # Com mais de 3.500 artigos, listar por ordem de exibição faz a busca
+            # devolver o primeiro artigo que por acaso cita o termo, não o artigo
+            # que trata dele: procurar "capacidade psicomotora alterada" trazia o
+            # art. 303 do CTB, que só menciona a expressão num parágrafo, antes do
+            # art. 306, que é o tipo penal. Ordenar por relevância de texto, e em
+            # seguida por quão cedo o termo aparece, coloca o dispositivo certo no
+            # topo — quanto mais perto do caput, mais o artigo é sobre aquilo.
+            params.append(search)
+            rank_idx = idx
+            idx += 1
+            params.append(search)
+            pos_idx = idx
+            idx += 1
+            order_by = (
+                f"ts_rank(to_tsvector('portuguese', la.official_text),"
+                f"        plainto_tsquery('portuguese', ${rank_idx})) DESC,"
+                f" NULLIF(position(lower(${pos_idx}) in lower(la.official_text)), 0)"
+                f"        ASC NULLS LAST,"
+                f" la.frequency_score DESC, la.display_order"
+            )
 
         where = " AND ".join(conditions) if conditions else "TRUE"
         params.append(limit)
@@ -589,7 +612,7 @@ class PRFRepository:
                 FROM legal_articles la
                 JOIN legal_documents ld ON ld.id = la.document_id
                 WHERE {where}
-                ORDER BY la.display_order LIMIT ${idx}""",
+                ORDER BY {order_by} LIMIT ${idx}""",
             *params,
         )
 
