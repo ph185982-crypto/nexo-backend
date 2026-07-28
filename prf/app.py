@@ -22,6 +22,7 @@ from prf.routers.sessions import router as sessions_router
 from prf.routers.notifications import router as notifications_router
 from prf.routers.essays import router as essays_router
 from prf.routers.simulados import router as simulados_router
+from prf.routers.content_generator import router as generator_router
 from prf.database.repository import PRFRepository
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,7 @@ def register_prf_routers(app: FastAPI):
     app.include_router(notifications_router, prefix=f"{PREFIX}/notifications", tags=["PRF Notifications"])
     app.include_router(essays_router,        prefix=f"{PREFIX}/essays",         tags=["PRF Essays"])
     app.include_router(simulados_router,     prefix=f"{PREFIX}/simulados",      tags=["PRF Simulados"])
+    app.include_router(generator_router,     prefix=f"{PREFIX}/generate",       tags=["PRF Content Generation"])
 
     logger.info("[PRF] All routers registered under /api/prf")
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import logging
+import json
 
 # Make repo root importable inside Vercel's function sandbox
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -105,8 +106,32 @@ async def health():
 _html_cache = None
 
 
+@app.get("/manifest.json", tags=["PWA"])
+async def serve_manifest():
+    """PWA manifest — app metadata and icons."""
+    manifest_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "prf", "static", "manifest.json",
+    )
+    with open(manifest_path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+@app.get("/sw.js", tags=["PWA"])
+async def serve_sw():
+    """Service Worker for PWA offline support."""
+    from fastapi.responses import FileResponse
+    sw_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "prf", "static", "sw.js",
+    )
+    return FileResponse(sw_path, media_type="application/javascript")
+
+
+@app.get("/", response_class=HTMLResponse, tags=["Frontend"])
 @app.get("/app", response_class=HTMLResponse, tags=["Frontend"])
 async def serve_app():
+    """Serve the complete PRF Estudo SPA application."""
     global _html_cache
     if _html_cache is None:
         html_path = os.path.join(
