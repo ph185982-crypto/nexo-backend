@@ -530,7 +530,7 @@ class PRFRepository:
                FROM subject_mastery sm
                JOIN subjects s ON s.id = sm.subject_id
                WHERE sm.user_id = $1 AND sm.topic_id IS NULL
-               ORDER BY sm.mastery ASC""",
+               ORDER BY sm.mastery_level ASC""",
             user_id,
         )
 
@@ -721,8 +721,8 @@ class PRFRepository:
     async def get_daily_analytics(self, user_id: UUID, days: int = 7) -> list[dict]:
         return await self._fetch(
             """SELECT * FROM daily_analytics
-               WHERE user_id = $1 AND date >= CURRENT_DATE - $2
-               ORDER BY date DESC""",
+               WHERE user_id = $1 AND date >= CURRENT_DATE - ($2::int)
+               ORDER BY date ASC""",
             user_id, days,
         )
 

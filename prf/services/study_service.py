@@ -273,8 +273,11 @@ class StudyService:
         weekly = await self.repo.get_daily_analytics(user_id, days=7)
         estimate = await self.repo.get_latest_approval_estimate(user_id)
 
-        weakest = min(mastery, key=lambda m: m["mastery_level"]) if mastery else None
-        strongest = max(mastery, key=lambda m: m["mastery_level"]) if mastery else None
+        def _mastery_of(m):
+            return m.get("mastery_level") or 0
+
+        weakest = min(mastery, key=_mastery_of) if mastery else None
+        strongest = max(mastery, key=_mastery_of) if mastery else None
 
         mission_status = "pending"
         mission_pct = 0
