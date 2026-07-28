@@ -64,11 +64,15 @@ DEMAIS REGRAS:
    enunciado original. Nada de frases nominais soltas ("Verde.", "10 pontos.").
 2. Use a explicação e a base legal apenas para descobrir DE QUE o fragmento fala — o
    sujeito da afirmação —, nunca para consertar o que ele afirma.
-3. Escreva de 2 a 4 linhas, em linguagem técnica e formal, sem pronomes sem referente.
-4. Escreva também um texto-base curto ("context") no padrão
+3. COMPRIMENTO MÍNIMO: cada "statement" tem de passar de 140 caracteres. Um item curto
+   é rejeitado automaticamente. Para chegar lá sem inventar conteúdo novo, explicite o
+   instituto de que o fragmento trata, o dispositivo que o rege e a situação concreta em
+   que a afirmação se aplica — tudo isso já está na explicação e na base legal.
+4. Escreva de 2 a 4 linhas, em linguagem técnica e formal, sem pronomes sem referente.
+5. Escreva também um texto-base curto ("context") no padrão
    "Acerca de <assunto específico>, julgue o item a seguir." — específico do assunto do
    item, não genérico da disciplina.
-5. Não revele o gabarito dentro do texto do item.
+6. Não revele o gabarito dentro do texto do item.
 
 EXEMPLO (gabarito ERRADO):
   fragmento: "Legalidade, moralidade, eficiência e publicidade."
@@ -82,7 +86,8 @@ EXEMPLO (gabarito ERRADO):
 
 ITENS:{''.join(lines)}
 
-Responda com este JSON, um objeto por item, na mesma ordem:
+Responda com este JSON, um objeto por item, na mesma ordem. Confira, antes de enviar,
+que todo "statement" passa de 140 caracteres:
 {{"items": [{{"index": 0, "context": "...", "statement": "..."}}]}}"""
 
 
