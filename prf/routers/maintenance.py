@@ -267,6 +267,37 @@ async def rewrite_fragments(
     }
 
 
+@router.post("/seed/articles")
+async def seed_articles_now(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Grava toda a lei seca pendente de uma vez, sem o teto por boot.
+
+    O seed do startup escreve em pedaços para não estourar o tempo limite da
+    função. Depois de um deploy que traz muitos artigos novos, isto termina a
+    carga numa chamada só, em vez de esperar o acervo convergir em vários
+    cold starts.
+    """
+    _require_admin(x_maintenance_token)
+
+    from prf.seeds.seeder import (
+        _seed_subjects, _seed_topics, _seed_legal_documents,
+        _seed_legal_articles_from_json,
+    )
+
+    pool = repo._pool
+    subject_map = await _seed_subjects(pool)
+    topic_map = await _seed_topics(pool, subject_map)
+    doc_map = await _seed_legal_documents(pool)
+    result = await _seed_legal_articles_from_json(
+        pool, doc_map, subject_map, topic_map, max_writes=None,
+    )
+
+    total = await repo._fetchval("SELECT COUNT(*) FROM legal_articles")
+    return {**(result or {}), "articles_in_db": total}
+
+
 @router.post("/fragments/purge-duplicates")
 async def purge_duplicates(
     x_maintenance_token: str | None = Header(default=None),

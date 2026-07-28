@@ -21,6 +21,13 @@ logger = logging.getLogger(__name__)
 # entry is an orphaned multiple-choice alternative, not a question.
 MIN_ITEM_CHARS = 80
 
+# Quantos artigos um único boot pode gravar. O seed roda dentro do startup, que
+# na Vercel segura a primeira requisição: escrever os 3.529 de uma vez estoura o
+# tempo limite da função e derruba o boot inteiro. Com o teto, cada boot grava um
+# pedaço e o acervo converge em poucas execuções — ou de uma vez, pelo endpoint
+# de manutenção, que roda sem limite.
+MAX_ARTICLE_WRITES_PER_BOOT = 400
+
 
 async def seed_prf_database(pool: asyncpg.Pool):
     """Run all seed operations. Fully idempotent via ON CONFLICT."""
@@ -99,6 +106,7 @@ async def _seed_legal_documents(pool: asyncpg.Pool) -> dict[str, UUID]:
 async def _seed_legal_articles_from_json(
     pool: asyncpg.Pool, doc_map: dict[str, UUID],
     subject_map: dict[str, UUID], topic_map: dict[str, UUID],
+    max_writes: int | None = MAX_ARTICLE_WRITES_PER_BOOT,
 ):
     articles = load_articles()
     if not articles:
@@ -139,6 +147,10 @@ async def _seed_legal_articles_from_json(
                 float(a.get("frequency_score") or 0), order,
             ))
 
+        pending_total = len(rows)
+        if max_writes is not None and len(rows) > max_writes:
+            rows = rows[:max_writes]
+
         for start in range(0, len(rows), 200):
             async with conn.transaction():
                 await conn.executemany(
@@ -157,10 +169,12 @@ async def _seed_legal_articles_from_json(
                     rows[start:start + 200],
                 )
 
+    remaining = pending_total - len(rows)
     logger.info(
-        f"[PRF] Legal articles: {len(rows)} gravados, "
-        f"{len(articles) - len(rows)} já em dia"
+        f"[PRF] Legal articles: {len(rows)} gravados, {remaining} pendentes, "
+        f"{len(articles) - pending_total} já em dia"
     )
+    return {"written": len(rows), "remaining": remaining, "total": len(articles)}
 
 
 async def _seed_questions_from_json(
