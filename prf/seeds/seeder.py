@@ -119,9 +119,10 @@ async def _seed_legal_articles_from_json(
         # limite da função, então o que já está gravado é carregado de uma vez e
         # só o que mudou de fato é reescrito — em regime normal, nada é.
         existing = {
-            (r["document_id"], r["article_number"]): r["len"]
+            (r["document_id"], r["article_number"]): (r["len"], r["topic_id"])
             for r in await conn.fetch(
-                "SELECT document_id, article_number, length(official_text) AS len"
+                "SELECT document_id, article_number, topic_id,"
+                "       length(official_text) AS len"
                 "  FROM legal_articles"
             )
         }
@@ -132,16 +133,22 @@ async def _seed_legal_articles_from_json(
             if not doc_id:
                 continue
             text = a["official_text"]
-            if existing.get((doc_id, a["article_number"])) == len(text):
-                continue
 
             topic_key = (
                 f"{a.get('subject_slug')}:{a.get('topic_slug')}"
                 if a.get("topic_slug") else None
             )
+            topic_id = topic_map.get(topic_key) if topic_key else None
+
+            # O tópico entra na comparação junto com o texto. Conferir só o
+            # tamanho fazia com que vincular um artigo já gravado a um tópico
+            # do edital nunca chegasse ao banco — a trilha mostrava 15 dos 95
+            # artigos de Infrações porque o texto deles não havia mudado.
+            if existing.get((doc_id, a["article_number"])) == (len(text), topic_id):
+                continue
+
             rows.append((
-                doc_id, subject_map.get(a.get("subject_slug")),
-                topic_map.get(topic_key) if topic_key else None,
+                doc_id, subject_map.get(a.get("subject_slug")), topic_id,
                 a["article_number"], a.get("chapter"), text,
                 a.get("simple_text"), a.get("highlights") or [],
                 float(a.get("frequency_score") or 0), order,
