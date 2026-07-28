@@ -1,8 +1,12 @@
 """AI Tutor router — Socratic tutoring conversations."""
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
+
+logger = logging.getLogger(__name__)
 
 from prf.routers.deps import get_repo, get_current_user_id
 from prf.database.repository import PRFRepository
@@ -54,12 +58,15 @@ async def start_tutoring(
         legal_basis=question.get("legal_basis"),
     )
 
-    conv = await repo.create_tutor_conversation(user_id, {
-        "question_id": body.question_id,
-        "context": result["context"],
-    })
-
-    await repo.update_tutor_conversation(conv["id"], result["messages"])
+    try:
+        conv = await repo.create_tutor_conversation(user_id, {
+            "question_id": body.question_id,
+            "context": result["context"],
+        })
+        await repo.update_tutor_conversation(conv["id"], result["messages"])
+    except Exception as e:
+        logger.exception("Failed to open tutor conversation")
+        raise HTTPException(503, f"Não foi possível iniciar o tutor: {e}")
 
     return TutorResponse(
         conversation_id=conv["id"],
