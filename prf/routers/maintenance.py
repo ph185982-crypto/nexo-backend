@@ -86,10 +86,10 @@ Responda com este JSON, um objeto por item, na mesma ordem:
 {{"items": [{{"index": 0, "context": "...", "statement": "..."}}]}}"""
 
 
-NEGATIONS = (
-    "não ", "nao ", "nunca", "jamais", "nenhum", "nenhuma", "vedado", "vedada",
-    "proibido", "proibida", "salvo", "exceto", "inexiste", "sem que",
-)
+# Only direct sentence negators, which are what actually flips an item's truth
+# value. Qualifiers like "salvo" or "exceto" show up naturally when a fragment is
+# expanded into a full sentence and must not count as a flip.
+NEGATIONS = ("não ", "nao ", "nunca", "jamais", "inexiste")
 
 
 def _negation_count(text: str) -> int:
@@ -172,7 +172,7 @@ async def rewrite_fragments(
             f"""SELECT {select_cols}
                   FROM questions q JOIN subjects s ON s.id = q.subject_id
                  WHERE q.is_active AND length(q.text) < $1
-                 ORDER BY q.created_at
+                 ORDER BY random()
                  LIMIT $2""",
             FRAGMENT_MAX_CHARS, limit,
         )
