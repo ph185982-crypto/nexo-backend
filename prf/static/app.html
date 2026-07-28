@@ -1091,9 +1091,9 @@ function viewSimuladoResult() {
   return `<div class="topbar-sub"><button class="back-btn" onclick="resetSimulado()">${I.back}</button><span class="title-sub">Resultado</span></div>
     <div class="sim-result fade-in">
       <div class="verdict ${pass?'pass':'fail'}">
-        <div class="verdict-lbl">Pontuação bruta CEBRASPE</div>
-        <div class="verdict-num">${r.score_raw != null ? r.score_raw : r.score}</div>
-        <div class="verdict-scale">de 120 possíveis</div>
+        <div class="verdict-lbl">Pontuação CEBRASPE</div>
+        <div class="verdict-num">${r.score != null ? r.score : 0}</div>
+        <div class="verdict-scale">certas − erradas · de 120 possíveis</div>
         <div class="badge">${pass ? 'Aprovado nos blocos' : 'Eliminado'}</div>
       </div>
       <div class="sim-summary-grid">
