@@ -804,7 +804,9 @@ class PRFRepository:
     async def update_tutor_conversation(self, conv_id: UUID, messages: list, outcome: str | None = None):
         await self._execute(
             """UPDATE tutor_conversations SET
-                   messages = $2, outcome = $3, ended_at = CASE WHEN $3 IS NOT NULL THEN NOW() ELSE ended_at END
+                   messages = $2::jsonb,
+                   outcome = $3::text,
+                   ended_at = CASE WHEN $3::text IS NOT NULL THEN NOW() ELSE ended_at END
                WHERE id = $1""",
             conv_id, messages, outcome,
         )
