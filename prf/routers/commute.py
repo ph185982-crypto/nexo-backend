@@ -64,36 +64,37 @@ async def start_commute_session(
 @router.get("/audio/{lesson_id}")
 async def stream_audio(
     lesson_id: UUID,
-    voice: Optional[str] = Query(default=None, description="pt-BR-FranciscaNeural or pt-BR-AntonioNeural"),
+    voice: Optional[str] = Query(default=None, description="female, male, calm or narrator"),
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Stream synthesized TTS audio for a lesson."""
-    lessons = await repo.get_audio_lessons(limit=100)
-    lesson = next((l for l in lessons if str(l.get("id")) == str(lesson_id)), None)
+    """Stream synthesized TTS audio for a lesson's stored script."""
+    from fastapi import HTTPException
+    from prf.services.tts_service import TTSService
 
+    lessons = await repo.get_audio_lessons(limit=200)
+    lesson = next((l for l in lessons if str(l.get("id")) == str(lesson_id)), None)
     if not lesson:
-        from fastapi import HTTPException
         raise HTTPException(404, "Lesson not found")
 
-    result = await generate_audio_lesson(
-        topic=lesson.get("title", "Estudo"),
-        content=lesson.get("script", lesson.get("title", "")),
-        style=lesson.get("lesson_type", "summary"),
-        synthesize=True,
-        voice=voice,
-    )
+    script = lesson.get("script") or lesson.get("title") or ""
+    if not script.strip():
+        raise HTTPException(404, "Lesson has no script")
 
-    audio_bytes = result.get("audio_bytes", b"")
+    tts = TTSService(voice=voice)
+    audio_bytes = await tts.synthesize(script)
     if not audio_bytes:
-        from fastapi import HTTPException
-        raise HTTPException(503, "TTS synthesis unavailable")
+        raise HTTPException(503, "Síntese de áudio indisponível — configure OPENAI_API_KEY")
 
     import io
     return StreamingResponse(
         io.BytesIO(audio_bytes),
         media_type="audio/mpeg",
-        headers={"Content-Length": str(len(audio_bytes))},
+        headers={
+            "Content-Length": str(len(audio_bytes)),
+            "Cache-Control": "public, max-age=86400",
+            "Accept-Ranges": "bytes",
+        },
     )
 
 
@@ -104,19 +105,22 @@ async def synthesize_text(
     user_id: UUID = Depends(get_current_user_id),
 ):
     """Synthesize arbitrary text to audio (for legal articles, flashcards, etc.)."""
+    from fastapi import HTTPException
     from prf.services.tts_service import TTSService
+
     tts = TTSService(voice=voice)
     audio = await tts.synthesize(text)
-
     if not audio:
-        from fastapi import HTTPException
-        raise HTTPException(503, "TTS synthesis unavailable")
+        raise HTTPException(503, "Síntese de áudio indisponível — configure OPENAI_API_KEY")
 
     import io
     return StreamingResponse(
         io.BytesIO(audio),
         media_type="audio/mpeg",
-        headers={"Content-Length": str(len(audio))},
+        headers={
+            "Content-Length": str(len(audio)),
+            "Cache-Control": "public, max-age=86400",
+        },
     )
 
 

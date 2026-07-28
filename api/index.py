@@ -62,14 +62,22 @@ async def shutdown():
         await _prf_pool.close()
 
 
-@app.get("/", tags=["Health"])
+@app.get("/", include_in_schema=False)
 async def root():
+    """Serve the study app at the root URL."""
+    return await serve_app()
+
+
+@app.get("/status", tags=["Health"])
+async def status():
+    from prf.services import llm_service
     return {
         "platform": "PRF Adaptive Study",
         "status": "online",
         "db": "connected" if _prf_ready else "not connected",
+        "ai_provider": llm_service.active_provider() or "none",
+        "app": "/app",
         "docs": "/docs",
-        "endpoints": "/api/prf/...",
     }
 
 

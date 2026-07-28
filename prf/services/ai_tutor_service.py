@@ -82,38 +82,24 @@ async def continue_tutor_session(
     messages = messages.copy()
     messages.append({"role": "user", "content": student_message})
 
+    from prf.services import llm_service
+
     try:
-        api_key = os.getenv("GOOGLE_API_KEY", "")
-        if not api_key:
+        if llm_service.active_provider() is None:
+            fallback = _fallback_response(student_message)
+            messages.append({"role": "assistant", "content": fallback})
             return {
                 "messages": messages,
-                "tutor_message": _fallback_response(student_message),
+                "tutor_message": fallback,
                 "error_type": None,
                 "resolved": False,
             }
 
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash")
-
-        gemini_messages = []
-        system_parts = []
-        for m in messages:
-            if m["role"] == "system":
-                system_parts.append(m["content"])
-            elif m["role"] == "user":
-                gemini_messages.append({"role": "user", "parts": [m["content"]]})
-            elif m["role"] == "assistant":
-                gemini_messages.append({"role": "model", "parts": [m["content"]]})
-
-        system_instruction = "\n\n".join(system_parts) if system_parts else None
-
-        chat = model.start_chat(history=gemini_messages[:-1])
-        response = chat.send_message(
-            gemini_messages[-1]["parts"][0] if gemini_messages else student_message,
+        tutor_response = await llm_service.chat(
+            messages,
+            temperature=0.6,
+            max_tokens=400,
         )
-
-        tutor_response = response.text.strip()
 
         messages.append({"role": "assistant", "content": tutor_response})
 

@@ -67,23 +67,17 @@ async def correct_essay(
     if not total_lines:
         total_lines = max(1, len([l for l in text.strip().split("\n") if l.strip()]))
 
-    api_key = os.getenv("GOOGLE_API_KEY", "")
-    if not api_key:
+    from prf.services import llm_service
+
+    if llm_service.active_provider() is None:
         return _fallback_correction(text, theme, total_lines)
 
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash")
-
         prompt = SYSTEM_PROMPT_CORRECTION.format(theme=theme, text=text)
-        response = model.generate_content(prompt)
-        raw = response.text.strip()
-
-        if raw.startswith("```"):
-            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
-
-        diagnosis = json.loads(raw)
+        diagnosis = await llm_service.chat_json([
+            {"role": "system", "content": "Você é um corretor oficial do CEBRASPE. Responda SEMPRE em JSON válido."},
+            {"role": "user", "content": prompt},
+        ])
         nc = float(diagnosis.get("nc_score", 0))
         ne = int(diagnosis.get("ne_count", 0))
         penalty = CORRECTION_K * (ne / max(total_lines, 1))
@@ -104,20 +98,13 @@ async def correct_essay(
 
 
 async def ocr_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> str:
-    """Extract text from a handwritten essay photo via Gemini Vision."""
-    api_key = os.getenv("GOOGLE_API_KEY", "")
-    if not api_key:
-        raise ValueError("GOOGLE_API_KEY not set — cannot perform OCR")
+    """Extract text from a handwritten essay photo via a vision model."""
+    from prf.services import llm_service
 
-    import google.generativeai as genai
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    if llm_service.active_provider() is None:
+        raise ValueError("Nenhum provedor de IA configurado — OCR indisponível")
 
-    response = model.generate_content([
-        SYSTEM_PROMPT_OCR,
-        {"mime_type": mime_type, "data": image_bytes},
-    ])
-    return response.text.strip()
+    return await llm_service.vision(SYSTEM_PROMPT_OCR, image_bytes, mime_type)
 
 
 def _build_feedback(diagnosis: dict, nc: float, ne: int, tl: int, final: float) -> str:
@@ -158,7 +145,7 @@ def _build_feedback(diagnosis: dict, nc: float, ne: int, tl: int, final: float) 
 
 
 def _fallback_correction(text: str, theme: str, total_lines: int) -> dict:
-    """Basic fallback when Gemini is unavailable."""
+    """Basic fallback when no LLM provider is available."""
     return {
         "nc_score": 0,
         "ne_count": 0,
@@ -166,11 +153,14 @@ def _fallback_correction(text: str, theme: str, total_lines: int) -> dict:
         "penalty": 0,
         "final_score": 0,
         "diagnosis": {
-            "error": "Correção automática indisponível — GOOGLE_API_KEY não configurada",
+            "error": "Correção automática indisponível — nenhum provedor de IA configurado",
             "macro": {},
             "errors": [],
             "weak_points": [],
             "improvement_plan": [],
         },
-        "feedback_text": "Correção automática indisponível. Configure GOOGLE_API_KEY para habilitar.",
+        "feedback_text": (
+            "Correção automática indisponível no momento. "
+            "Configure OPENAI_API_KEY (ou GOOGLE_API_KEY) para habilitar."
+        ),
     }
