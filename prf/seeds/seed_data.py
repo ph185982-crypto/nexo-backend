@@ -271,6 +271,7 @@ TOPICS = {
         {"name": "ECA (8.069/90)", "slug": "eca", "weight": 1.5},
         {"name": "Lei de Crimes Ambientais (9.605/98)", "slug": "crimes-ambientais", "weight": 1.5},
         {"name": "Crimes Hediondos (8.072/90)", "slug": "crimes-hediondos", "weight": 2.0},
+        {"name": "Lei de Organização Criminosa (12.850/13)", "slug": "organizacao-criminosa", "weight": 1.5},
     ],
     "direito-administrativo": [
         {"name": "Atos administrativos", "slug": "atos-administrativos", "weight": 2.5},
@@ -345,6 +346,18 @@ TOPICS = {
         {"name": "Interpretação de textos em espanhol", "slug": "interpretacao-espanhol", "weight": 3.0},
         {"name": "Vocabulário e falsos cognatos", "slug": "vocabulario-espanhol", "weight": 2.0},
         {"name": "Gramática aplicada", "slug": "gramatica-espanhol", "weight": 2.0},
+    ],
+    # Matérias do certame da PM. Não caem na PRF, por isso ficam com peso
+    # próprio e só aparecem na trilha de quem estuda para a PM.
+    "direito-penal-militar": [
+        {"name": "Aplicação da lei penal militar", "slug": "aplicacao-lei-penal-militar", "weight": 2.0},
+        {"name": "Crime militar", "slug": "crime-militar", "weight": 3.0},
+        {"name": "Penas militares", "slug": "penas-militares", "weight": 2.0},
+        {"name": "Crimes militares em espécie", "slug": "crimes-militares-especie", "weight": 3.0},
+    ],
+    "direito-processual-penal-militar": [
+        {"name": "Inquérito policial militar (IPM)", "slug": "ipm", "weight": 3.0},
+        {"name": "Processo penal militar", "slug": "processo-penal-militar-geral", "weight": 2.0},
     ],
 }
 

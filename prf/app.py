@@ -24,6 +24,7 @@ from prf.routers.essays import router as essays_router
 from prf.routers.simulados import router as simulados_router
 from prf.routers.content_generator import router as generator_router
 from prf.routers.maintenance import router as maintenance_router
+from prf.routers.trilha import router as trilha_router
 from prf.database.repository import PRFRepository
 
 logger = logging.getLogger(__name__)
@@ -48,6 +49,7 @@ def register_prf_routers(app: FastAPI):
     app.include_router(simulados_router,     prefix=f"{PREFIX}/simulados",      tags=["PRF Simulados"])
     app.include_router(generator_router,     prefix=f"{PREFIX}/generate",       tags=["PRF Content Generation"])
     app.include_router(maintenance_router,   prefix=f"{PREFIX}/maintenance",    tags=["PRF Maintenance"])
+    app.include_router(trilha_router,        prefix=f"{PREFIX}/trilha",         tags=["PRF Trilha do Edital"])
 
     logger.info("[PRF] All routers registered under /api/prf")
 
@@ -90,6 +92,14 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
             logger.info("[PRF] Database schema applied")
         except Exception as e:
             logger.warning(f"[PRF] Schema apply note: {e}")
+
+    # Alterações de esquema posteriores ao schema.sql, que num banco já povoado
+    # nunca chegam a rodar (o lote aborta no primeiro CREATE TABLE duplicado).
+    try:
+        from prf.database.migrations import apply_migrations
+        await apply_migrations(pool)
+    except Exception as e:
+        logger.warning(f"[PRF] Migration note: {e}")
 
     # Seed data
     try:
