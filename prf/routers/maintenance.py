@@ -395,7 +395,7 @@ async def seed_audio(
 
     count = 0
     skipped = []
-    async with repo.pool.acquire() as conn:
+    async with repo._pool.acquire() as conn:
         for lesson in AUDIO_LESSONS:
             existing = await conn.fetchval(
                 "SELECT id FROM audio_lessons WHERE title = $1", lesson["title"],
