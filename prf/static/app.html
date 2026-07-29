@@ -538,6 +538,62 @@ button { font-family:inherit; }
 .legal-article .art-listen { font-size:12px; color:var(--accent); font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
 .legal-article .art-listen svg { width:13px; height:13px; }
 
+/* ── TRILHA ── */
+.trilha-subject { border-bottom:1px solid var(--border); }
+.trilha-subject-header {
+  display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer;
+  transition:background .15s;
+}
+.trilha-subject-header:active { background:var(--surface-2); }
+.trilha-subject-header .subj-color {
+  width:6px; height:36px; border-radius:3px; flex-shrink:0;
+}
+.trilha-subject-header .subj-info { flex:1; min-width:0; }
+.trilha-subject-header .subj-info h3 { font-size:15px; font-weight:600; margin-bottom:2px; }
+.trilha-subject-header .subj-info .subj-meta { font-size:12px; color:var(--ink-3); }
+.trilha-subject-header .subj-pct {
+  font-family:var(--mono); font-size:14px; font-weight:700; flex-shrink:0;
+}
+.trilha-topics { padding:0 20px 12px 38px; display:none; }
+.trilha-subject.open .trilha-topics { display:block; }
+.trilha-topic {
+  display:flex; align-items:center; gap:10px; padding:10px 0;
+  border-bottom:1px solid var(--border-soft, rgba(128,128,128,.12));
+  font-size:13.5px;
+}
+.trilha-topic:last-child { border-bottom:none; }
+.trilha-topic .t-dot {
+  width:10px; height:10px; border-radius:50%; flex-shrink:0;
+}
+.trilha-topic .t-dot.dominado { background:var(--success); }
+.trilha-topic .t-dot.em-andamento { background:var(--warning); }
+.trilha-topic .t-dot.nao-iniciado { background:var(--ink-3); opacity:.4; }
+.trilha-topic .t-name { flex:1; min-width:0; }
+.trilha-topic .t-pct { font-family:var(--mono); font-size:12px; color:var(--ink-3); min-width:40px; text-align:right; }
+.trilha-overall {
+  display:flex; align-items:center; gap:16px; padding:20px;
+  background:var(--surface); border-radius:var(--r-md); margin:16px 20px;
+}
+.trilha-overall .big-pct {
+  font-family:var(--mono); font-size:32px; font-weight:800; color:var(--primary);
+}
+.trilha-overall .big-label { font-size:13px; color:var(--ink-3); }
+
+/* ── SETTINGS ── */
+.settings-section { padding:20px; }
+.exam-toggle {
+  display:flex; gap:0; border:2px solid var(--primary); border-radius:var(--r-md);
+  overflow:hidden; margin:12px 0 20px;
+}
+.exam-toggle button {
+  flex:1; padding:14px 8px; font-size:15px; font-weight:700;
+  background:transparent; color:var(--primary); border:none; cursor:pointer;
+  transition:all .2s;
+}
+.exam-toggle button.active {
+  background:var(--primary); color:#fff;
+}
+
 /* ── ESSAYS ── */
 .essay-hero { padding:24px 20px 20px; }
 .theme-card { padding:18px 20px; cursor:pointer; border-bottom:1px solid var(--border); transition:background .15s; }
@@ -679,6 +735,9 @@ const S = {
   lessons: null, playingId: null, audioPos: 0, audioDur: 0, audioPlaying: false,
   reviews: null, reviewIdx: 0, reviewSummary: null, reviewRevealed: false,
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
+  pushOn: false,
+  targetExam: localStorage.getItem('prf_target_exam') || 'PRF',
+  trilha: null,
 };
 
 let timerInterval = null;
@@ -1418,16 +1477,24 @@ function viewEssayResult() {
 
 // ===== MORE =====
 function viewMore() {
-  if (S.subView === 'legal') return viewLegal();
+  if (S.subView === 'legal' || S.subView === 'articles' || S.subView === 'search') return viewLegal();
   if (S.subView === 'essays' || S.subView === 'essay-write') return viewEssays();
   if (S.subView === 'reviews') return viewReviews();
+  if (S.subView === 'trilha') return viewTrilha();
+  if (S.subView === 'settings') return viewSettings();
   const due = S.reviewSummary?.total_due ?? S.dashboard?.reviews_due ?? 0;
+  const trilhaPct = S.trilha ? S.trilha.coverage : null;
   return `${appbar()}
     <div class="hero-block fade-in">
       <div class="section-eyebrow">Mais</div>
       <div class="display-hero">Ferramentas de <em>estudo</em></div>
     </div>
     <div class="more-list">
+      <div class="shortcut" onclick="openTrilha()">
+        <div class="badge-icon" style="background:var(--primary)">${I.target}</div>
+        <div class="info"><h3>Trilha do edital</h3><p>${trilhaPct != null ? `${trilhaPct}% coberto` : 'Mapa completo das matérias'}</p></div>
+        <div class="chev">${I.chev}</div>
+      </div>
       <div class="shortcut" onclick="openReviews()">
         <div class="badge-icon gold">${I.refresh}</div>
         <div class="info"><h3>Revisões espaçadas</h3><p>Algoritmo SM-2 para memória de longo prazo</p></div>
@@ -1447,6 +1514,11 @@ function viewMore() {
         <div class="badge-icon">${I.clock}</div>
         <div class="info"><h3>Lembretes de estudo</h3><p>${S.pushOn ? 'Ativados neste aparelho' : 'Receber cobrança no celular'}</p></div>
         ${S.pushOn ? '<span class="count-badge">on</span>' : `<div class="chev">${I.chev}</div>`}
+      </div>
+      <div class="shortcut" onclick="openSettings()">
+        <div class="badge-icon">${I.grid}</div>
+        <div class="info"><h3>Meu concurso</h3><p>Estudando para ${S.targetExam}</p></div>
+        <div class="chev">${I.chev}</div>
       </div>
     </div>`;
 }
@@ -1498,6 +1570,7 @@ function switchTab(tab) {
   if (tab === 'practice' && !S.subjects) loadSubjects();
   if (tab === 'audio' && !S.lessons) loadLessons();
   if (tab === 'more' && !S.reviewSummary) loadReviewSummary();
+  if (tab === 'more' && !S.trilha) loadTrilha();
 }
 function goBack() {
   S.subView = null; S.answerResult = null; S.searchResults = null; S.searchQ = '';
@@ -1777,6 +1850,94 @@ function renderSearchResults() {
       <div class="art-text">${esc(a.official_text || a.simple_text || '')}</div>
     </div>`).join('');
   }
+}
+
+// Trilha
+function openTrilha() {
+  S.tab = 'more'; S.subView = 'trilha'; render(); scrollTop();
+  loadTrilha();
+}
+async function loadTrilha() {
+  try { S.trilha = await api(`/api/prf/trilha?exam=${S.targetExam}`); }
+  catch (e) { S.trilha = { coverage:0, subjects:[], topics_total:0, topics_done:0 }; }
+  render();
+}
+function viewTrilha() {
+  const head = `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Trilha do edital</span></div>`;
+  if (!S.trilha) return head + skeletonBlock(4, 60);
+  const t = S.trilha;
+  const pct = (t.coverage || 0).toFixed(1);
+  const pctColor = pct >= 70 ? 'var(--success)' : pct >= 30 ? 'var(--warning)' : 'var(--primary)';
+  return head + `
+    <div class="trilha-overall fade-in">
+      <div>
+        <div class="big-pct" style="color:${pctColor}">${pct}%</div>
+        <div class="big-label">cobertura</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--ink-2)">${t.topics_done || 0} de ${t.topics_total || 0} tópicos dominados</div>
+        ${t.days_left ? `<div style="font-size:12px;color:var(--ink-3);margin-top:4px">${t.days_left} dias até a prova</div>` : ''}
+        ${t.topics_per_week_needed ? `<div style="font-size:12px;color:var(--warning);margin-top:2px">${t.topics_per_week_needed} tópicos/semana necessários</div>` : ''}
+      </div>
+    </div>
+    <div class="section-eyebrow" style="padding:8px 20px">${S.targetExam} · ${(t.subjects||[]).length} matérias</div>
+    ${(t.subjects||[]).map((s, si) => {
+      const sPct = (s.coverage||0).toFixed(0);
+      const sColor = s.color || 'var(--primary)';
+      return `<div class="trilha-subject" id="trilha-s-${si}">
+        <div class="trilha-subject-header" onclick="toggleTrilhaSubject(${si})">
+          <div class="subj-color" style="background:${sColor}"></div>
+          <div class="subj-info">
+            <h3>${esc(s.name)}</h3>
+            <span class="subj-meta">${s.topics_done||0}/${s.topics_total||0} tópicos · peso ${s.weight||0}</span>
+          </div>
+          <div class="subj-pct" style="color:${sPct>=70?'var(--success)':sPct>0?'var(--warning)':'var(--ink-3)'}">${sPct}%</div>
+        </div>
+        <div class="trilha-topics">${(s.topics||[]).map(tp => `
+          <div class="trilha-topic">
+            <div class="t-dot ${tp.status}"></div>
+            <div class="t-name">${esc(tp.name)}</div>
+            <div class="t-pct">${(tp.coverage||0).toFixed(0)}%</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+function toggleTrilhaSubject(i) {
+  const el = document.getElementById(`trilha-s-${i}`);
+  if (el) el.classList.toggle('open');
+}
+
+// Settings
+function openSettings() {
+  S.tab = 'more'; S.subView = 'settings'; render(); scrollTop();
+}
+function viewSettings() {
+  return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Meu concurso</span></div>
+    <div class="settings-section fade-in">
+      <div class="section-eyebrow">Qual concurso você estuda?</div>
+      <div class="exam-toggle">
+        <button class="${S.targetExam==='PRF'?'active':''}" onclick="setExam('PRF')">PRF</button>
+        <button class="${S.targetExam==='PMGO'?'active':''}" onclick="setExam('PMGO')">PMGO</button>
+      </div>
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
+        ${S.targetExam === 'PMGO'
+          ? 'Matérias de Direito Penal Militar e Processual Penal Militar incluídas na trilha.'
+          : 'Trilha focada nas matérias do edital da PRF, com pesos do certame.'}
+      </p>
+    </div>`;
+}
+async function setExam(exam) {
+  S.targetExam = exam;
+  localStorage.setItem('prf_target_exam', exam);
+  S.trilha = null;
+  render();
+  try {
+    await api('/api/prf/onboarding/complete', {
+      method:'POST', json:{ target_exam: exam },
+    });
+  } catch (e) {}
+  toast(exam === 'PMGO' ? 'Trilha PMGO ativada' : 'Trilha PRF ativada', 'success');
 }
 
 // Essays
