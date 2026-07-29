@@ -1245,7 +1245,9 @@ function viewPracticeQuestions() {
         return `<div class="q-progress-dot ${c}"></div>`;
       }).join('')}</div>
       ${q.source ? `<div class="q-source-tag">${esc(q.source)}${q.year ? ' · ' + q.year : ''}</div>` : ''}
-      ${q.context_text ? `<div class="q-context">${esc(q.context_text)}</div>` : ''}
+      <div class="q-context">${esc(q.context_text || (q.question_type === 'multipla_escolha'
+        ? `Sobre ${q.subject_name || 'o tema'}, assinale a alternativa correta.`
+        : `Acerca de ${q.subject_name || 'o tema'}, julgue o item a seguir.`))}</div>
       <div class="q-text">${esc(q.text)}</div>
       <div class="q-choices">${q.alternatives.map(a => {
         let c = 'q-choice';
@@ -1729,7 +1731,7 @@ function scrollTop() { document.getElementById('main-content')?.scrollTo(0, 0); 
 function switchTab(tab) {
   S.tab = tab; S.subView = null; S.answerResult = null; S.answered = {};
   render(); scrollTop();
-  if (tab === 'dashboard' && !S.dashboard) loadDashboard();
+  if (tab === 'dashboard') loadDashboard();
   if (tab === 'practice' && !S.subjects) loadSubjects();
   if (tab === 'audio' && !S.lessons) loadLessons();
   if (tab === 'more' && !S.reviewSummary) loadReviewSummary();
@@ -1772,8 +1774,12 @@ async function startMissionBlock(blockIdx, type) {
     S.loading.questions = true; S.tab = 'practice'; render();
     try {
       const qtype = (S.targetExam && S.targetExam.startsWith('PM')) ? 'multipla_escolha' : 'certo_errado';
-        const d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
+      let d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
       S.questions = d.questions || [];
+      if (!S.questions.length) {
+        d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15`);
+        S.questions = d.questions || [];
+      }
       if (!S.questions.length) {
         toast('Nenhuma questão disponível — avançando', 'info');
         await finishMissionBlock();
@@ -1837,7 +1843,8 @@ async function selectSubject(id, name) {
   S.loading.questions = true; render();
   try {
     const qtype = (S.targetExam && S.targetExam.startsWith('PM')) ? 'multipla_escolha' : 'certo_errado';
-    const d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20&question_type=${qtype}`);
+    let d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20&question_type=${qtype}`);
+    if (!(d.questions || []).length) d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
     S.questions = d.questions || [];
   } catch (e) { toast('Erro ao carregar questões', 'error'); }
   S.loading.questions = false; render(); scrollTop();
