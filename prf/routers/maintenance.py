@@ -420,3 +420,28 @@ async def seed_audio(
 
     total = await repo._fetchval("SELECT COUNT(*) FROM audio_lessons")
     return {"seeded": count, "total": total, "skipped_slugs": skipped}
+
+
+@router.post("/seed/questions")
+async def seed_questions_now(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Seed all pending questions from JSON files into the database."""
+    _require_admin(x_maintenance_token)
+
+    from prf.seeds.seeder import _seed_subjects, _seed_topics, _seed_questions_from_json
+
+    pool = repo._pool
+    subject_map = await _seed_subjects(pool)
+    topic_map = await _seed_topics(pool, subject_map)
+    await _seed_questions_from_json(pool, subject_map, topic_map)
+
+    total = await repo._fetchval("SELECT COUNT(*) FROM questions WHERE is_active = TRUE")
+    by_type = await repo._fetch(
+        "SELECT question_type, COUNT(*) as cnt FROM questions WHERE is_active = TRUE GROUP BY question_type"
+    )
+    return {
+        "total_active": total,
+        "by_type": {r["question_type"]: r["cnt"] for r in by_type},
+    }
