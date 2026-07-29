@@ -29,6 +29,7 @@ class BlockType(str, Enum):
 class MissionBlockOut(BaseModel):
     id: UUID
     block_type: BlockType
+    subject_id: Optional[UUID] = None
     subject_name: Optional[str] = None
     topic_name: Optional[str] = None
     title: str

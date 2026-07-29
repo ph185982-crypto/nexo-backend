@@ -754,6 +754,22 @@ button { font-family:inherit; }
 }
 .mission-loading { padding:8px 0 4px; }
 .mission-empty { padding:16px 0 4px; text-align:center; color:var(--ink-3); font-size:14px; }
+.mission-ctx-bar {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; margin:12px 16px;
+  background:var(--primary); color:#fff;
+  border-radius:var(--r-md); font-size:13px; font-weight:600;
+  cursor:pointer; transition:opacity .15s;
+}
+.mission-ctx-bar:active { opacity:.85; }
+.mission-ctx-bar .mcb-icon { flex-shrink:0; }
+.mission-ctx-bar .mcb-text { flex:1; }
+.mission-ctx-bar .mcb-btn {
+  padding:6px 14px; background:rgba(255,255,255,.2);
+  border:none; border-radius:var(--r-sm); color:#fff;
+  font-size:13px; font-weight:600; cursor:pointer;
+}
+.mission-ctx-bar .mcb-btn:active { background:rgba(255,255,255,.35); }
 </style>
 </head>
 <body>
@@ -1107,12 +1123,12 @@ function viewDashboard() {
         const icon = b.block_type === 'questions' ? I.book :
           b.block_type === 'review' ? I.refresh :
           b.block_type === 'legal_reading' ? I.scale :
-          b.block_type === 'audio' ? I.headphones :
+          (b.block_type === 'audio' || b.block_type === 'audio_lesson') ? I.headphones :
           b.block_type === 'error_review' ? I.brain : I.target;
         const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
           b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
           b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
-          b.block_type === 'audio' ? `startMissionBlock(${i},'audio')` :
+          (b.block_type === 'audio' || b.block_type === 'audio_lesson') ? `startMissionBlock(${i},'audio')` :
           b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
           `startMissionBlock(${i},'practice')`;
         return `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">
@@ -1375,12 +1391,24 @@ function viewSimuladoResult() {
     </div>`;
 }
 
+function missionContextBar() {
+  if (S.activeMissionIdx == null || !S.missionBlockId) return '';
+  const b = S.mission?.blocks?.[S.activeMissionIdx];
+  const label = b ? b.title : 'Etapa da missão';
+  return `<div class="mission-ctx-bar" onclick="finishMissionBlock()">
+    <span class="mcb-icon">${I.target}</span>
+    <span class="mcb-text">${esc(label)}</span>
+    <button class="mcb-btn">Concluir etapa</button>
+  </div>`;
+}
+
 // ===== AUDIO =====
 function viewAudio() {
   if (!S.lessons) return appbar() + skeletonBlock(4, 76);
   if (!S.lessons.length) return appbar() + `<div class="empty">${I.headphones}<h3>Sem audiobooks</h3><p>As aulas em áudio ainda não foram carregadas.</p></div>`;
   const totalMin = Math.round(S.lessons.reduce((s,l) => s + (l.duration_secs||0), 0) / 60);
   return `${appbar()}
+    ${missionContextBar()}
     <div class="audio-hero fade-in">
       <div class="section-eyebrow">Audiobooks</div>
       <div class="display-hero">Estude <em>ouvindo</em></div>
@@ -1433,13 +1461,19 @@ function playerBar() {
 // ===== REVIEWS =====
 function viewReviews() {
   if (!S.reviews) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>` + skeletonBlock(2, 120);
-  if (!S.reviews.length) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
+  if (!S.reviews.length) {
+    if (S.activeMissionIdx != null) { finishMissionBlock(); return ''; }
+    return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
     <div class="empty">${I.refresh}<h3>Tudo em dia</h3><p>Nenhuma revisão pendente. Responda questões para alimentar a repetição espaçada.</p></div>`;
+  }
 
   const card = S.reviews[S.reviewIdx];
-  if (!card) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
+  if (!card) {
+    if (S.activeMissionIdx != null) { finishMissionBlock(); return ''; }
+    return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
     <div class="empty">${I.refresh}<h3>Sessão concluída</h3><p>Você revisou todos os cartões pendentes.</p>
     <button class="btn btn-primary mt-16" onclick="goBack()">Voltar</button></div>`;
+  }
 
   const QUALITIES = [
     { q:'blackout', label:'Esqueci', hint:'Não lembrei nada' },
@@ -1475,6 +1509,7 @@ function viewLegal() {
   if (!S.legalDocs) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Legislação</span></div>` + skeletonBlock();
   const total = S.legalDocs.reduce((s,d) => s + (d.article_count||0), 0);
   return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Legislação</span></div>
+    ${missionContextBar()}
     <div class="legal-hero fade-in">
       <div class="display-hero">Legislação <em>essencial</em></div>
       <div class="chip-row mt-12">
@@ -1725,13 +1760,21 @@ async function startMissionBlock(blockIdx, type) {
   const b = S.mission?.blocks?.[blockIdx];
   if (!b || b.is_completed) return;
   S.activeMissionIdx = blockIdx;
-  if (type === 'practice' && b.content_ids?.length) {
-    S.selSubject = null; S.selSubjectName = b.subject_name || b.title;
+  S.missionBlockId = b.id;
+  if (type === 'practice') {
+    const sid = b.subject_id || (b.content_ids?.length ? b.content_ids[0] : null);
+    if (!sid) { toast('Sem matéria para questões — avançando', 'info'); await finishMissionBlock(); return; }
+    S.selSubject = sid; S.selSubjectName = b.subject_name || b.title;
     S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {};
-    S.loading.questions = true; S.tab = 'practice'; S.missionBlockId = b.id; render();
+    S.loading.questions = true; S.tab = 'practice'; render();
     try {
-      const d = await api(`/api/prf/questions/list?subject_id=${b.content_ids[0]}&limit=15`);
+      const d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15`);
       S.questions = d.questions || [];
+      if (!S.questions.length) {
+        toast('Nenhuma questão disponível — avançando', 'info');
+        await finishMissionBlock();
+        return;
+      }
     } catch (e) { toast('Erro ao carregar questões', 'error'); }
     S.loading.questions = false; render(); scrollTop();
   } else if (type === 'review') {
@@ -1743,17 +1786,19 @@ async function startMissionBlock(blockIdx, type) {
   } else {
     switchTab('practice');
   }
-  await completeMissionBlock(b.id);
 }
-async function completeMissionBlock(blockId) {
+async function finishMissionBlock() {
+  const bid = S.missionBlockId;
+  if (!bid) return;
+  S.missionBlockId = null;
   try {
     await api('/api/prf/missions/blocks/complete', {
-      method:'POST', json:{ block_id: blockId },
+      method:'POST', json:{ block_id: bid },
     });
-    S.mission = null;
-    await loadMission();
-    advanceToNextMissionBlock();
   } catch (e) {}
+  S.mission = null;
+  await loadMission();
+  advanceToNextMissionBlock();
 }
 function advanceToNextMissionBlock() {
   if (!S.mission || !S.mission.blocks) return;
@@ -1762,6 +1807,7 @@ function advanceToNextMissionBlock() {
   if (!next) {
     toast('Missão cumprida!', 'success');
     S.activeMissionIdx = null;
+    S.missionBlockId = null;
     switchTab('dashboard');
     return;
   }
@@ -1769,10 +1815,10 @@ function advanceToNextMissionBlock() {
   const type = next.block_type === 'questions' ? 'practice' :
     next.block_type === 'review' ? 'review' :
     next.block_type === 'legal_reading' ? 'legal' :
-    next.block_type === 'audio' ? 'audio' :
+    (next.block_type === 'audio' || next.block_type === 'audio_lesson') ? 'audio' :
     next.block_type === 'error_review' ? 'review' : 'practice';
   toast(`Próxima etapa: ${next.title}`, 'info');
-  setTimeout(() => startMissionBlock(nextIdx, type), 1200);
+  setTimeout(() => startMissionBlock(nextIdx, type), 1500);
 }
 async function loadSubjects() {
   try { const d = await api('/api/prf/onboarding/subjects'); S.subjects = d.subjects || d; }
@@ -1807,6 +1853,7 @@ function nextQuestion() {
     S.qIndex++; S.answerResult = null; render(); scrollTop();
   } else if (S.activeMissionIdx != null) {
     toast('Etapa concluída!', 'success');
+    finishMissionBlock();
   } else {
     goBack();
   }

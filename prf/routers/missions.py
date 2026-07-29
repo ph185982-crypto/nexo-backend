@@ -41,6 +41,7 @@ async def get_today_mission(
             MissionBlockOut(
                 id=b["id"],
                 block_type=b["block_type"],
+                subject_id=b.get("subject_id"),
                 subject_name=b.get("subject_name"),
                 title=b["title"],
                 description=b.get("description"),
