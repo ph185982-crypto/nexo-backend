@@ -1337,17 +1337,22 @@ function viewSimuladoExam() {
   const idx = S.simIndex[b] || 0;
   const q = qs[idx];
   const total = Object.keys(S.simAnswers).length;
+  const isPM = S.targetExam && S.targetExam.startsWith('PM');
+  const blockNums = isPM ? [1, 2] : [1, 2, 3];
+  const totalQ = blockNums.reduce((s, n) => s + (S.simQuestions[n]||[]).length, 0);
+  const blockLabels = isPM
+    ? { 1: 'Gerais', 2: 'Específicos' }
+    : { 1: 'Bloco I', 2: 'Bloco II', 3: 'Bloco III' };
   return `<div class="sim-header">
       <button class="sim-close" onclick="confirmExitSim()">${I.close}</button>
       <div class="sim-timer ${S.simSeconds < 600 ? 'danger' : ''}">${I.clock}<span>${fmtTime(S.simSeconds)}</span></div>
-      <div class="sim-count">${total}/120</div>
+      <div class="sim-count">${total}/${totalQ}</div>
     </div>
-    <div class="segmented">${[1,2,3].map(n => {
+    <div class="segmented">${blockNums.map(n => {
       const bq = S.simQuestions[n] || [];
       const ans = bq.filter(x => S.simAnswers[x.id]).length;
-      const roman = n === 1 ? 'I' : n === 2 ? 'II' : 'III';
       return `<button class="segmented-item ${b===n?'active':''}" onclick="switchSimBlock(${n})">
-        <span>Bloco ${roman}</span><span class="seg-count">${ans}/${bq.length}</span></button>`;
+        <span>${blockLabels[n]}</span><span class="seg-count">${ans}/${bq.length}</span></button>`;
     }).join('')}</div>
     ${q ? `<div class="sim-q-nav">
       <button class="btn btn-ghost btn-sm" onclick="prevSimQ()" ${idx===0?'disabled':''}>${I.back}</button>
@@ -1357,9 +1362,14 @@ function viewSimuladoExam() {
     <div class="q-container fade-in" style="padding-top:0">
       ${q.context_text ? `<div class="q-context">${esc(q.context_text)}</div>` : ''}
       <div class="q-text">${esc(q.text)}</div>
-      <div class="q-choices">${[{l:'C',t:'Certo'},{l:'E',t:'Errado'}].map(o => `
-        <button class="q-choice ${S.simAnswers[q.id]===o.l?'correct':''}" onclick="answerSimQ('${q.id}','${o.l}')">
-          <span class="letter">${o.l}</span><span>${o.t}</span></button>`).join('')}</div>
+      <div class="q-choices">${(q.alternatives && q.alternatives.length > 2
+        ? q.alternatives.map(a => `
+          <button class="q-choice ${S.simAnswers[q.id]===a.letter?'correct':''}" onclick="answerSimQ('${q.id}','${a.letter}')">
+            <span class="letter">${esc(a.letter)}</span><span>${esc(a.text)}</span></button>`)
+        : [{l:'C',t:'Certo'},{l:'E',t:'Errado'}].map(o => `
+          <button class="q-choice ${S.simAnswers[q.id]===o.l?'correct':''}" onclick="answerSimQ('${q.id}','${o.l}')">
+            <span class="letter">${o.l}</span><span>${o.t}</span></button>`)
+      ).join('')}</div>
       ${q.subject_name ? `<div class="q-source-tag mt-16">${esc(q.subject_name)}</div>` : ''}
     </div>` : `<div class="empty">${I.book}<h3>Carregando questões...</h3></div>`}
     <div class="sim-actions"><button class="btn btn-danger btn-full" onclick="confirmFinishSim()">Finalizar prova</button></div>`;
@@ -1368,13 +1378,24 @@ function viewSimuladoExam() {
 function viewSimuladoResult() {
   const r = S.simResult;
   const pass = !r.eliminated;
+  const isPM = r.scoring_method === 'aocp_weighted';
+  const verdictLabel = isPM ? 'Pontuação AOCP' : 'Pontuação CEBRASPE';
+  const scaleLabel = isPM
+    ? `${r.score} de ${r.max_score || '85'} pontos`
+    : `certas − erradas · de ${r.total_questions} possíveis`;
+  const passLabel = isPM
+    ? (pass ? 'Aprovado (60%+)' : 'Reprovado (< 60%)')
+    : (pass ? 'Aprovado nos blocos' : 'Eliminado');
+  const blockLabels = isPM
+    ? { bloco_1: 'Gerais (peso 1)', bloco_2: 'Específicos (peso 2)' }
+    : { bloco_1: 'Bloco I', bloco_2: 'Bloco II', bloco_3: 'Bloco III' };
   return `<div class="topbar-sub"><button class="back-btn" onclick="resetSimulado()">${I.back}</button><span class="title-sub">Resultado</span></div>
     <div class="sim-result fade-in">
       <div class="verdict ${pass?'pass':'fail'}">
-        <div class="verdict-lbl">Pontuação CEBRASPE</div>
+        <div class="verdict-lbl">${verdictLabel}</div>
         <div class="verdict-num">${r.score != null ? r.score : 0}</div>
-        <div class="verdict-scale">certas − erradas · de 120 possíveis</div>
-        <div class="badge">${pass ? 'Aprovado nos blocos' : 'Eliminado'}</div>
+        <div class="verdict-scale">${scaleLabel}</div>
+        <div class="badge">${passLabel}</div>
       </div>
       <div class="sim-summary-grid">
         <div class="sim-summary-cell"><div class="lbl">Certas</div><div class="val" style="color:var(--success)">${r.certas}</div></div>
@@ -1384,9 +1405,9 @@ function viewSimuladoResult() {
       </div>
       <div class="section-eyebrow">Desempenho por bloco</div>
       <div class="mt-12">${Object.entries(r.blocks||{}).map(([k,bl]) => {
-        const roman = k.endsWith('1') ? 'I' : k.endsWith('2') ? 'II' : 'III';
+        const label = blockLabels[k] || k;
         return `<div class="sim-block-result">
-          <div class="br-head"><span class="br-name">Bloco ${roman}</span>
+          <div class="br-head"><span class="br-name">${label}</span>
             <span class="br-score ${bl.score<0?'neg':'pos'}">${bl.score>0?'+':''}${bl.score}</span></div>
           <div class="br-detail"><span><strong>${bl.certas}</strong> certas</span>
             <span><strong>${bl.erradas}</strong> erradas</span><span><strong>${bl.branco}</strong> branco</span></div>
@@ -1913,10 +1934,11 @@ async function generateSimulado() {
   S.loading.sim = true; render();
   try {
     S.sim = await api('/api/prf/simulados/generate', { method:'POST' });
-    S.simBlock = 1; S.simAnswers = {}; S.simResult = null;
-    S.simIndex = { 1:0, 2:0, 3:0 };
+    const blockNums = Object.keys(S.sim.blocks || {}).map(k => parseInt(k.replace('bloco_', '')));
+    S.simBlock = blockNums[0] || 1; S.simAnswers = {}; S.simResult = null;
+    S.simIndex = {}; blockNums.forEach(n => S.simIndex[n] = 0);
     S.simSeconds = (S.sim.time_limit_mins || 270) * 60;
-    for (const b of [1,2,3]) {
+    for (const b of blockNums) {
       try {
         const d = await api(`/api/prf/simulados/${S.sim.id}/questions?block=${b}`);
         S.simQuestions[b] = d.questions || [];
