@@ -3,7 +3,7 @@ Database repository — async PostgreSQL queries via asyncpg.
 Central data access layer for the PRF module.
 """
 from __future__ import annotations
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional, Any
 from uuid import UUID
 
@@ -458,7 +458,7 @@ class PRFRepository:
 
     async def get_todays_mission(self, user_id: UUID) -> Optional[dict]:
         mission = await self._fetchrow(
-            "SELECT * FROM daily_missions WHERE user_id = $1 AND date = CURRENT_DATE",
+            f"SELECT * FROM daily_missions WHERE user_id = $1 AND date = {self._TODAY_BRT}",
             user_id,
         )
         if mission:
@@ -473,9 +473,9 @@ class PRFRepository:
 
     async def create_mission(self, user_id: UUID, data: dict) -> dict:
         mission = await self._fetchrow(
-            """INSERT INTO daily_missions (user_id, date, estimated_mins, mode_suggested,
+            f"""INSERT INTO daily_missions (user_id, date, estimated_mins, mode_suggested,
                energy_detected, greeting, blocks_total)
-               VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6)
+               VALUES ($1, {self._TODAY_BRT}, $2, $3, $4, $5, $6)
                ON CONFLICT (user_id, date) DO UPDATE SET
                    estimated_mins = $2, mode_suggested = $3,
                    energy_detected = $4, greeting = $5, blocks_total = $6
@@ -658,7 +658,8 @@ class PRFRepository:
         )
 
     async def update_streak(self, user_id: UUID) -> dict:
-        today = date.today()
+        _BRT = timezone(timedelta(hours=-3))
+        today = datetime.now(_BRT).date()
         streak = await self.get_streak(user_id)
         if not streak:
             return await self._fetchrow(
@@ -723,12 +724,14 @@ class PRFRepository:
 
     # ── Analytics ─────────────────────────────────────────────────────────────
 
+    _TODAY_BRT = "(NOW() AT TIME ZONE 'America/Sao_Paulo')::date"
+
     async def upsert_daily_analytics(self, user_id: UUID, data: dict):
         await self._execute(
-            """INSERT INTO daily_analytics (user_id, date, study_minutes, questions_total,
+            f"""INSERT INTO daily_analytics (user_id, date, study_minutes, questions_total,
                questions_correct, reviews_done, reviews_due, mission_completed,
                commute_minutes, xp_earned, subjects_studied, accuracy_by_subject)
-               VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+               VALUES ($1, {self._TODAY_BRT}, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                ON CONFLICT (user_id, date) DO UPDATE SET
                    study_minutes = $2, questions_total = $3, questions_correct = $4,
                    reviews_done = $5, reviews_due = $6, mission_completed = $7,
@@ -741,17 +744,40 @@ class PRFRepository:
             data.get("subjects_studied", {}), data.get("accuracy_by_subject", {}),
         )
 
+    async def increment_daily_question(self, user_id: UUID, is_correct: bool, time_secs: int = 0):
+        """Atomically increment today's question count and study time."""
+        await self._execute(
+            f"""INSERT INTO daily_analytics
+                    (user_id, date, questions_total, questions_correct, study_minutes)
+                VALUES ($1, {self._TODAY_BRT}, 1, $2::int, $3)
+                ON CONFLICT (user_id, date) DO UPDATE SET
+                    questions_total   = daily_analytics.questions_total + 1,
+                    questions_correct = daily_analytics.questions_correct + $2::int,
+                    study_minutes     = daily_analytics.study_minutes + $3""",
+            user_id, int(is_correct), round(time_secs / 60, 2),
+        )
+
+    async def increment_daily_review(self, user_id: UUID):
+        """Atomically increment today's review count."""
+        await self._execute(
+            f"""INSERT INTO daily_analytics (user_id, date, reviews_done)
+                VALUES ($1, {self._TODAY_BRT}, 1)
+                ON CONFLICT (user_id, date) DO UPDATE SET
+                    reviews_done = daily_analytics.reviews_done + 1""",
+            user_id,
+        )
+
     async def get_daily_analytics(self, user_id: UUID, days: int = 7) -> list[dict]:
         return await self._fetch(
-            """SELECT * FROM daily_analytics
-               WHERE user_id = $1 AND date >= CURRENT_DATE - ($2::int)
+            f"""SELECT * FROM daily_analytics
+               WHERE user_id = $1 AND date >= {self._TODAY_BRT} - ($2::int)
                ORDER BY date ASC""",
             user_id, days,
         )
 
     async def get_today_analytics(self, user_id: UUID) -> Optional[dict]:
         return await self._fetchrow(
-            "SELECT * FROM daily_analytics WHERE user_id = $1 AND date = CURRENT_DATE",
+            f"SELECT * FROM daily_analytics WHERE user_id = $1 AND date = {self._TODAY_BRT}",
             user_id,
         )
 

@@ -3,7 +3,7 @@ Core Study Orchestration Service — coordinates engines, repository, and user c
 to deliver the optimal study experience.
 """
 from __future__ import annotations
-from datetime import date, datetime
+from datetime import date, datetime, timezone, timedelta
 from typing import Optional
 from uuid import UUID
 import json
@@ -53,7 +53,7 @@ class StudyService:
         energy = energy or EnergyLevel.MEDIUM
 
         if not mode:
-            hour = datetime.now().hour
+            hour = datetime.now(timezone(timedelta(hours=-3))).hour
             is_commuting = _is_commute_time(routine, hour) if routine else False
             mode_str = detect_study_mode(
                 hour, is_commuting, energy.value, available_mins
@@ -192,6 +192,7 @@ class StudyService:
         review_scheduled = not is_correct
 
         await self._update_mastery_for_question(user_id, question)
+        await self.repo.increment_daily_question(user_id, is_correct, time_spent or 0)
 
         selected_alt = next(
             (a for a in question["alternatives"] if str(a["id"]) == str(selected_alt_id)),
@@ -250,6 +251,7 @@ class StudyService:
         })
 
         await self.repo.add_xp(user_id, xp, "review")
+        await self.repo.increment_daily_review(user_id)
 
         return {
             "card_id": card_id,
@@ -295,7 +297,7 @@ class StudyService:
         goal_hours = profile["weekly_goal_hours"] if profile else 10
         weekly_goal_pct = min(100, (weekly_mins / 60) / goal_hours * 100)
 
-        hour = datetime.now().hour
+        hour = datetime.now(timezone(timedelta(hours=-3))).hour
         if hour < 12:
             greeting = "Bom dia"
         elif hour < 18:

@@ -1765,7 +1765,7 @@ async function startMissionBlock(blockIdx, type) {
     const sid = b.subject_id || (b.content_ids?.length ? b.content_ids[0] : null);
     if (!sid) { toast('Sem matéria para questões — avançando', 'info'); await finishMissionBlock(); return; }
     S.selSubject = sid; S.selSubjectName = b.subject_name || b.title;
-    S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {};
+    S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
     S.loading.questions = true; S.tab = 'practice'; render();
     try {
       const d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15`);
@@ -1829,7 +1829,7 @@ async function loadSubjects() {
 // Practice
 async function selectSubject(id, name) {
   S.selSubject = id; S.selSubjectName = name; S.subView = 'questions';
-  S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {};
+  S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
   S.loading.questions = true; render();
   try {
     const d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
@@ -1839,9 +1839,10 @@ async function selectSubject(id, name) {
 }
 async function answerQuestion(qid, altId) {
   if (S.answerResult) return;
+  const elapsed = S.qStartedAt ? Math.round((Date.now() - S.qStartedAt) / 1000) : null;
   try {
     S.answerResult = await api('/api/prf/questions/answer', {
-      method:'POST', json:{ question_id: qid, selected_alternative_id: altId },
+      method:'POST', json:{ question_id: qid, selected_alternative_id: altId, time_spent_secs: elapsed },
     });
     S.answered[S.qIndex] = S.answerResult.is_correct;
     if (S.answerResult.xp_earned) toast(`+${S.answerResult.xp_earned} XP`, 'xp');
@@ -1850,7 +1851,7 @@ async function answerQuestion(qid, altId) {
 }
 function nextQuestion() {
   if (S.qIndex < S.questions.length - 1) {
-    S.qIndex++; S.answerResult = null; render(); scrollTop();
+    S.qIndex++; S.answerResult = null; S.qStartedAt = Date.now(); render(); scrollTop();
   } else if (S.activeMissionIdx != null) {
     toast('Etapa concluída!', 'success');
     finishMissionBlock();
