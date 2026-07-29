@@ -50,14 +50,18 @@ async def _seed_subjects(pool: asyncpg.Pool) -> dict[str, UUID]:
     subject_map = {}
     async with pool.acquire() as conn:
         for s in SUBJECTS:
+            is_active = s.get("is_active", True)
             row = await conn.fetchrow(
-                """INSERT INTO subjects (name, slug, description, weight_prf, color, icon, display_order)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7)
-                   ON CONFLICT (slug) DO UPDATE SET name = $1, weight_prf = $4
+                """INSERT INTO subjects (name, slug, description, weight_prf, weight_pm, color, icon, display_order, is_active)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                   ON CONFLICT (slug) DO UPDATE SET
+                     name = $1, weight_prf = $4, weight_pm = $5,
+                     is_active = $9, display_order = $8
                    RETURNING id""",
                 s["name"], s["slug"], s.get("description"),
-                s.get("weight_prf", 1.0), s.get("color"), s.get("icon"),
-                s.get("display_order", 0),
+                s.get("weight_prf", 1.0), s.get("weight_pm", 0.0),
+                s.get("color"), s.get("icon"),
+                s.get("display_order", 0), is_active,
             )
             subject_map[s["slug"]] = row["id"]
     logger.info(f"[PRF] Seeded {len(subject_map)} subjects")

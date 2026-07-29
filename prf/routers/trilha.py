@@ -43,24 +43,13 @@ async def get_trilha(
         user_id,
     ) or {}
     target = (exam or profile.get("target_exam") or "PRF").upper()
-
-    # As matérias militares só existem no certame da PM; as demais valem para
-    # os dois. Filtrar aqui evita mostrar ao candidato da PRF uma trilha que
-    # ele nunca vai percorrer.
-    military = ("direito-penal-militar", "direito-processual-penal-militar")
-    if target.startswith("PM"):
-        subject_filter = "TRUE"
-    else:
-        subject_filter = "s.slug <> ALL($2::text[])"
-
-    params: list = [user_id]
-    if not target.startswith("PM"):
-        params.append(list(military))
+    is_pm = target.startswith("PM")
+    weight_col = "s.weight_pm" if is_pm else "s.weight_prf"
 
     rows = await repo._fetch(
         f"""
         SELECT s.id   AS subject_id, s.name AS subject_name, s.slug AS subject_slug,
-               s.color, s.icon, s.weight_prf, s.display_order,
+               s.color, s.icon, {weight_col} AS weight_exam, s.display_order,
                t.id   AS topic_id, t.name AS topic_name, t.slug AS topic_slug,
                t.weight AS topic_weight,
                (SELECT COUNT(*) FROM questions q
@@ -82,10 +71,10 @@ async def get_trilha(
           FROM subjects s
           JOIN topics t ON t.subject_id = s.id
           LEFT JOIN user_topic_progress p ON p.topic_id = t.id AND p.user_id = $1
-         WHERE s.is_active AND {subject_filter}
+         WHERE s.is_active AND {weight_col} > 0
          ORDER BY s.display_order, t.display_order
         """,
-        *params,
+        user_id,
     )
 
     subjects: dict[str, dict] = {}
@@ -97,7 +86,7 @@ async def get_trilha(
             "slug": r["subject_slug"],
             "color": r["color"],
             "icon": r["icon"],
-            "weight": float(r["weight_prf"] or 0),
+            "weight": float(r["weight_exam"] or 0),
             "topics": [],
         })
 
@@ -313,11 +302,17 @@ async def proximo_passo(
     trilha inteira empurra essa decisão de volta para ele, que é justamente o
     trabalho que a ferramenta deveria tirar do caminho.
     """
+    profile = await repo._fetchrow(
+        "SELECT target_exam FROM user_profiles WHERE user_id = $1", user_id,
+    ) or {}
+    target = (profile.get("target_exam") or "PRF").upper()
+    weight_col = "s.weight_pm" if target.startswith("PM") else "s.weight_prf"
+
     row = await repo._fetchrow(
-        """
+        f"""
         WITH t AS (
           SELECT tp.id, tp.name, tp.slug, tp.weight, s.name AS subject_name,
-                 s.weight_prf, s.color,
+                 {weight_col} AS weight_exam, s.color,
                  (SELECT COUNT(*) FROM questions q
                    WHERE q.topic_id = tp.id AND q.is_active) AS q_total,
                  (SELECT COUNT(*) FROM legal_articles la WHERE la.topic_id = tp.id) AS a_total,
@@ -331,12 +326,10 @@ async def proximo_passo(
                     JOIN questions q4 ON q4.id = a.question_id
                    WHERE q4.topic_id = tp.id AND a.user_id = $1) AS attempts
             FROM topics tp JOIN subjects s ON s.id = tp.subject_id
-           WHERE s.is_active
+           WHERE s.is_active AND {weight_col} > 0
         )
         SELECT *,
-               -- Peso na prova, penalizado pelo que já foi visto e pelo acerto:
-               -- o tópico mais caro de ignorar vem primeiro.
-               (COALESCE(weight_prf, 1) * COALESCE(weight, 1))
+               (COALESCE(weight_exam, 1) * COALESCE(weight, 1))
                * (1.0 - LEAST(answered::float / GREATEST(LEAST(q_total, 20), 1), 1.0))
                * (CASE WHEN attempts >= 5
                        THEN 1.4 - (correct::float / attempts)

@@ -1,11 +1,14 @@
-"""Simulados router — CEBRASPE-style exam simulation with block scoring."""
+"""Simulados router — exam simulation with block scoring (PRF/PMGO)."""
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 from uuid import UUID
 
 from prf.routers.deps import get_repo, get_current_user_id
 from prf.database.repository import PRFRepository
-from prf.seeds.seed_data import EXAM_BLOCKS, ITEMS_PER_SUBJECT_SIMULADO
+from prf.seeds.seed_data import (
+    EXAM_BLOCKS, ITEMS_PER_SUBJECT_SIMULADO,
+    EXAM_BLOCKS_PM, ITEMS_PER_SUBJECT_SIMULADO_PM,
+)
 
 router = APIRouter()
 
@@ -15,17 +18,28 @@ async def generate_simulado(
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Generate a full 120-item CEBRASPE-style PRF exam simulation."""
+    """Generate a full exam simulation adapted to the user's target exam."""
+    profile = await repo._fetchrow(
+        "SELECT target_exam FROM user_profiles WHERE user_id = $1", user_id,
+    ) or {}
+    target = (profile.get("target_exam") or "PRF").upper()
+    is_pm = target.startswith("PM")
+
+    exam_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
+    items_map = ITEMS_PER_SUBJECT_SIMULADO_PM if is_pm else ITEMS_PER_SUBJECT_SIMULADO
+    time_limit = 300 if is_pm else 270
+    exam_label = "PMGO" if is_pm else "PRF"
+
     questions_by_block = {1: [], 2: [], 3: []}
     subject_rows = await repo._fetch("SELECT id, slug FROM subjects WHERE is_active IS NOT FALSE")
     slug_to_id = {r["slug"]: r["id"] for r in subject_rows}
 
-    for block_num, block_info in EXAM_BLOCKS.items():
+    for block_num, block_info in exam_blocks.items():
         for subj_slug in block_info["subjects"]:
             subj_id = slug_to_id.get(subj_slug)
             if not subj_id:
                 continue
-            needed = ITEMS_PER_SUBJECT_SIMULADO.get(subj_slug, 5)
+            needed = items_map.get(subj_slug, 5)
             rows = await repo._fetch(
                 """SELECT id FROM questions
                    WHERE subject_id = $1 AND question_type = 'certo_errado'
@@ -56,10 +70,10 @@ async def generate_simulado(
            VALUES ($1, $2, $3, $4, $5, $6, $7)
            RETURNING id, started_at""",
         user_id,
-        f"Simulado PRF — {total} itens",
-        "simulado_prf",
+        f"Simulado {exam_label} — {total} itens",
+        f"simulado_{exam_label.lower()}",
         total,
-        270,
+        time_limit,
         [str(q) for q in all_ids],
         {
             f"bloco_{bn}": {"total": len(questions_by_block[bn]), "certas": 0, "erradas": 0, "branco": len(questions_by_block[bn]), "score": 0}
@@ -71,11 +85,12 @@ async def generate_simulado(
         "id": row["id"],
         "total_questions": total,
         "blocks": {
-            f"bloco_{bn}": {"total": len(questions_by_block[bn]), "subjects": EXAM_BLOCKS[bn]["subjects"]}
+            f"bloco_{bn}": {"total": len(questions_by_block[bn]), "subjects": exam_blocks[bn]["subjects"]}
             for bn in [1, 2, 3]
         },
-        "time_limit_mins": 270,
+        "time_limit_mins": time_limit,
         "started_at": row["started_at"],
+        "exam_type": exam_label,
     }
 
 
@@ -98,6 +113,9 @@ async def get_exam_questions(
     q_ids = json.loads(exam["questions"]) if isinstance(exam["questions"], str) else exam["questions"]
     block_scores = json.loads(exam["block_scores"]) if isinstance(exam["block_scores"], str) else exam["block_scores"]
 
+    is_pm = exam.get("exam_type", "").startswith("simulado_pm")
+    active_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
+
     results = []
     for qid_str in q_ids:
         q = await repo._fetchrow(
@@ -112,7 +130,7 @@ async def get_exam_questions(
 
         subj_slug = q["subject_slug"]
         q_block = None
-        for bn, bi in EXAM_BLOCKS.items():
+        for bn, bi in active_blocks.items():
             if subj_slug in bi["subjects"]:
                 q_block = bn
                 break
@@ -203,6 +221,9 @@ async def finish_exam(
                    2: {"certas": 0, "erradas": 0, "branco": 0, "total": 0},
                    3: {"certas": 0, "erradas": 0, "branco": 0, "total": 0}}
 
+    is_pm = exam.get("exam_type", "").startswith("simulado_pm")
+    active_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
+
     for qid_str in q_ids:
         q = await repo._fetchrow(
             "SELECT s.slug FROM questions q JOIN subjects s ON q.subject_id = s.id WHERE q.id = $1",
@@ -211,7 +232,7 @@ async def finish_exam(
         if not q:
             continue
         q_block = None
-        for bn, bi in EXAM_BLOCKS.items():
+        for bn, bi in active_blocks.items():
             if q["slug"] in bi["subjects"]:
                 q_block = bn
                 break

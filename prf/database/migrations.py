@@ -66,10 +66,12 @@ MIGRATIONS: list[tuple[str, str]] = [
     ),
     (
         "idx_legal_articles_fts",
-        # A busca da lei seca ordena por ts_rank sobre 3.600 artigos; sem o
-        # índice cada consulta reconstrói o tsvector de todos eles.
         "CREATE INDEX IF NOT EXISTS idx_legal_articles_fts "
         "ON legal_articles USING GIN (to_tsvector('portuguese', official_text))",
+    ),
+    (
+        "add_weight_pm_column",
+        "ALTER TABLE subjects ADD COLUMN IF NOT EXISTS weight_pm REAL DEFAULT 0.0",
     ),
 ]
 

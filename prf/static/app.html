@@ -708,7 +708,7 @@ button { font-family:inherit; }
 
 <div id="splash" class="splash">
   <div class="splash-brand">Estudo <em>PRF</em></div>
-  <div class="splash-sub">Plataforma adaptativa · CEBRASPE</div>
+  <div class="splash-sub">Plataforma adaptativa</div>
   <div class="spinner"></div>
 </div>
 
@@ -1047,7 +1047,7 @@ function viewDashboard() {
         </div>` : ''}
         <div class="shortcut" onclick="switchTab('simulado')">
           <div class="badge-icon accent">${I.target}</div>
-          <div class="info"><h3>Simulado completo</h3><p>120 questões · 3 blocos · 4h30</p></div>
+          <div class="info"><h3>Simulado ${S.targetExam||'PRF'}</h3><p>120 questões · 3 blocos · ${S.targetExam?.startsWith('PM')?'5h':'4h30'}</p></div>
           <div class="chev">${I.chev}</div>
         </div>
         <div class="shortcut" onclick="switchTab('practice')">
@@ -1074,11 +1074,13 @@ function viewPractice() {
   if (S.subView === 'tutor') return viewTutor();
   if (S.subView === 'questions') return viewPracticeQuestions();
   if (!S.subjects) return appbar() + skeletonBlock();
-  const active = S.subjects.filter(s => s.is_active !== false && s.weight_prf > 0)
-    .sort((a,b) => (b.weight_prf||0) - (a.weight_prf||0));
+  const isPM = S.targetExam && S.targetExam.startsWith('PM');
+  const wKey = isPM ? 'weight_pm' : 'weight_prf';
+  const active = S.subjects.filter(s => s.is_active !== false && (s[wKey] || 0) > 0)
+    .sort((a,b) => (b[wKey]||0) - (a[wKey]||0));
   return `${appbar()}
     <div class="hero-block fade-in">
-      <div class="section-eyebrow">Estudar</div>
+      <div class="section-eyebrow">Estudar · ${S.targetExam || 'PRF'}</div>
       <div class="display-hero">Escolha uma <em>matéria</em></div>
       <div class="chip-row mt-12"><span class="level-chip">${active.length} disciplinas</span></div>
     </div>
@@ -1089,7 +1091,7 @@ function viewPractice() {
           <div class="subj-name">${esc(s.name)}</div>
           <div class="subj-desc">${esc(s.description || '')}</div>
         </div>
-        <div class="subj-weight">${s.weight_prf}×</div>
+        <div class="subj-weight">${s[wKey] || 0}×</div>
       </div>`).join('')}
     </div>`;
 }
@@ -1167,24 +1169,33 @@ function viewTutor() {
 function viewSimulado() {
   if (S.simResult) return viewSimuladoResult();
   if (S.sim) return viewSimuladoExam();
+  const isPM = S.targetExam && S.targetExam.startsWith('PM');
+  const banca = isPM ? 'IBFC / IDECAN' : 'CEBRASPE';
+  const totalItens = isPM ? 120 : 120;
+  const tempo = isPM ? '5h' : '4h30';
+  const blocos = isPM ? [
+    { name:'Bloco I', count:'40 itens', desc:'Português, RLM, Informática, Ética' },
+    { name:'Bloco II', count:'40 itens', desc:'Dir. Constitucional, Penal, Proc. Penal, Administrativo, Leg. Especial, Dir. Humanos' },
+    { name:'Bloco III', count:'40 itens', desc:'Dir. Penal Militar, Proc. Penal Militar, Legislação PM, Criminologia, Medicina Legal' },
+  ] : [
+    { name:'Bloco I', count:'55 itens', desc:'Português, RLM, Informática, Física, Ética, Geopolítica, Espanhol' },
+    { name:'Bloco II', count:'30 itens', desc:'Legislação de Trânsito' },
+    { name:'Bloco III', count:'35 itens', desc:'Dir. Administrativo, Constitucional, Penal, Proc. Penal, Leg. Especial, Dir. Humanos' },
+  ];
   return `${appbar()}
     <div class="sim-intro fade-in">
-      <div class="section-eyebrow">Simulado CEBRASPE</div>
+      <div class="section-eyebrow">Simulado ${S.targetExam || 'PRF'} · ${banca}</div>
       <div class="sim-headline">Prova completa,<br><em>como no dia D</em>.</div>
-      <div class="sim-desc">120 itens Certo ou Errado, três blocos, correção CEBRASPE oficial. Você é eliminado se a nota de qualquer bloco ficar negativa.</div>
+      <div class="sim-desc">${totalItens} itens Certo ou Errado, três blocos, correção oficial. Você é eliminado se a nota de qualquer bloco ficar negativa.</div>
       <div class="sim-spec">
-        <div class="sim-spec-row"><span class="lbl">${I.layers}Total de itens</span><span class="val">120 itens</span></div>
-        <div class="sim-spec-row"><span class="lbl">${I.timer}Tempo</span><span class="val">4h30</span></div>
+        <div class="sim-spec-row"><span class="lbl">${I.layers}Total de itens</span><span class="val">${totalItens} itens</span></div>
+        <div class="sim-spec-row"><span class="lbl">${I.timer}Tempo</span><span class="val">${tempo}</span></div>
         <div class="sim-spec-row"><span class="lbl">${I.target}Correção</span><span class="val">+1 · −1 · 0</span></div>
       </div>
       <div class="section-eyebrow">Distribuição por bloco</div>
       <div class="sim-blocks-preview mt-12">
-        <div class="sim-block-preview"><div class="bl-head"><span class="bl-name">Bloco I</span><span class="bl-count">55 itens</span></div>
-          <div class="bl-desc">Português, RLM, Informática, Física, Ética, Geopolítica, Espanhol</div></div>
-        <div class="sim-block-preview"><div class="bl-head"><span class="bl-name">Bloco II</span><span class="bl-count">30 itens</span></div>
-          <div class="bl-desc">Legislação de Trânsito</div></div>
-        <div class="sim-block-preview"><div class="bl-head"><span class="bl-name">Bloco III</span><span class="bl-count">35 itens</span></div>
-          <div class="bl-desc">Dir. Administrativo, Constitucional, Penal, Proc. Penal, Leg. Especial, Dir. Humanos</div></div>
+        ${blocos.map(b => `<div class="sim-block-preview"><div class="bl-head"><span class="bl-name">${b.name}</span><span class="bl-count">${b.count}</span></div>
+          <div class="bl-desc">${b.desc}</div></div>`).join('')}
       </div>
       <button class="btn btn-primary btn-lg btn-full mt-24" onclick="generateSimulado()" ${S.loading.sim?'disabled':''}>
         ${S.loading.sim ? 'Gerando prova...' : 'Iniciar simulado'}</button>
@@ -1922,8 +1933,8 @@ function viewSettings() {
       </div>
       <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
         ${S.targetExam === 'PMGO'
-          ? 'Matérias de Direito Penal Militar e Processual Penal Militar incluídas na trilha.'
-          : 'Trilha focada nas matérias do edital da PRF, com pesos do certame.'}
+          ? 'Bancas: IBFC / IDECAN / AOCP. Inclui Dir. Penal Militar, Processual Penal Militar, Legislação Institucional PM, Criminologia e Medicina Legal. Exclui matérias exclusivas PRF.'
+          : 'Banca: CEBRASPE. Trilha focada nas matérias do edital da PRF, com pesos do certame.'}
       </p>
     </div>`;
 }
@@ -1931,13 +1942,15 @@ async function setExam(exam) {
   S.targetExam = exam;
   localStorage.setItem('prf_target_exam', exam);
   S.trilha = null;
+  S.subjects = null;
   render();
   try {
     await api('/api/prf/onboarding/complete', {
       method:'POST', json:{ target_exam: exam },
     });
   } catch (e) {}
-  toast(exam === 'PMGO' ? 'Trilha PMGO ativada' : 'Trilha PRF ativada', 'success');
+  loadSubjects();
+  toast(exam === 'PMGO' ? 'Trilha PMGO ativada — bancas IBFC/IDECAN' : 'Trilha PRF ativada — banca CEBRASPE', 'success');
 }
 
 // Essays
