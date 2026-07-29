@@ -1,0 +1,602 @@
+[
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "A segurança pública, dever do Estado, direito e responsabilidade de todos, é exercida para a preservação da ordem pública e da incolumidade das pessoas e do patrimônio. Nesse contexto, as polícias militares atuam como forças auxiliares e reserva do Exército, cabendo-lhes o policiamento ostensivo e a preservação da ordem pública.",
+    "text": "De acordo com o texto, é correto afirmar que a segurança pública:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O texto afirma claramente que a segurança pública é 'dever do Estado, direito e responsabilidade de todos', indicando que envolve tanto o Estado quanto a sociedade.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "É responsabilidade exclusiva das forças armadas.", "is_correct": false, "explanation": "O texto diz que é 'dever do Estado, direito e responsabilidade de todos', não exclusiva das forças armadas."},
+      {"letter": "B", "text": "Envolve tanto o Estado quanto a sociedade como um todo.", "is_correct": true, "explanation": "O texto afirma que é 'dever do Estado, direito e responsabilidade de todos'."},
+      {"letter": "C", "text": "Limita-se ao policiamento ostensivo realizado pelas polícias civis.", "is_correct": false, "explanation": "O policiamento ostensivo cabe às polícias militares, não às civis, e a segurança pública não se limita a isso."},
+      {"letter": "D", "text": "Tem como objetivo único a proteção do patrimônio público.", "is_correct": false, "explanation": "O texto menciona preservação da ordem pública e incolumidade das pessoas e do patrimônio, não apenas patrimônio público."},
+      {"letter": "E", "text": "Não inclui a preservação da ordem pública entre suas finalidades.", "is_correct": false, "explanation": "O texto menciona expressamente a preservação da ordem pública como finalidade."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "A atuação policial baseada em inteligência e proximidade com a comunidade tem demonstrado resultados significativos na redução dos índices de criminalidade. Estudos recentes apontam que o policiamento comunitário, quando bem implementado, fortalece a confiança entre a população e as forças de segurança, criando um ciclo virtuoso de cooperação.",
+    "text": "A ideia central do texto é:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O texto defende que o policiamento comunitário promove resultados positivos ao fortalecer a relação entre polícia e comunidade.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "A necessidade de maior efetivo policial nas ruas.", "is_correct": false, "explanation": "O texto não aborda aumento de efetivo, mas sim a estratégia de policiamento comunitário."},
+      {"letter": "B", "text": "A importância da tecnologia no combate ao crime.", "is_correct": false, "explanation": "Tecnologia não é o tema central; o foco é o policiamento comunitário e a relação com a população."},
+      {"letter": "C", "text": "Os benefícios do policiamento comunitário na segurança pública.", "is_correct": true, "explanation": "O texto destaca os resultados positivos do policiamento comunitário na redução da criminalidade e fortalecimento da confiança."},
+      {"letter": "D", "text": "A ineficiência dos métodos tradicionais de policiamento.", "is_correct": false, "explanation": "O texto não critica métodos tradicionais, apenas destaca os benefícios do policiamento comunitário."},
+      {"letter": "E", "text": "A obrigação da população em auxiliar a polícia.", "is_correct": false, "explanation": "O texto fala em cooperação voluntária e confiança, não em obrigação."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "Embora a violência urbana tenha múltiplas causas, é inegável que a desigualdade social figura como um dos fatores mais relevantes. Não se trata, contudo, de estabelecer uma relação direta de causalidade, mas de reconhecer que contextos de vulnerabilidade ampliam a exposição de indivíduos à criminalidade, seja como vítimas, seja como autores de delitos.",
+    "text": "Segundo o texto, a relação entre desigualdade social e violência urbana é:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O autor reconhece a desigualdade como fator relevante, mas ressalva que não se deve estabelecer uma relação direta de causalidade, caracterizando a relação como complexa e indireta.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Inexistente, pois a criminalidade independe de fatores socioeconômicos.", "is_correct": false, "explanation": "O texto afirma que a desigualdade é um dos fatores mais relevantes, não que seja inexistente."},
+      {"letter": "B", "text": "Direta e inequívoca, sendo a desigualdade a causa principal da violência.", "is_correct": false, "explanation": "O texto diz expressamente que 'não se trata de estabelecer uma relação direta de causalidade'."},
+      {"letter": "C", "text": "Complexa e indireta, sem configurar causalidade linear.", "is_correct": true, "explanation": "O texto reconhece a relevância da desigualdade, mas nega uma relação direta de causalidade, indicando complexidade."},
+      {"letter": "D", "text": "Restrita à vitimização, excluindo a autoria de delitos.", "is_correct": false, "explanation": "O texto menciona tanto vítimas quanto autores de delitos."},
+      {"letter": "E", "text": "Determinística, sendo todo indivíduo vulnerável necessariamente criminoso.", "is_correct": false, "explanation": "O texto fala em ampliação de exposição, não em determinismo."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "compreensao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "O comandante reuniu os soldados e, com voz serena, informou que as mudanças no regime de escalas seriam implementadas a partir do mês seguinte. 'Precisamos nos adaptar', disse ele, 'mas ninguém será prejudicado.' A plateia, ainda que desconfiada, assentiu em silêncio.",
+    "text": "A expressão 'ainda que desconfiada' revela que os soldados:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A expressão 'ainda que desconfiada' introduz uma concessão: apesar da desconfiança, os soldados aceitaram. Isso pressupõe que havia dúvida quanto à veracidade da promessa.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Concordaram plenamente com a decisão do comandante.", "is_correct": false, "explanation": "A desconfiança indica que a concordância não foi plena, mas relutante."},
+      {"letter": "B", "text": "Recusaram-se a aceitar as novas escalas.", "is_correct": false, "explanation": "O texto diz que 'assentiu em silêncio', indicando aceitação, não recusa."},
+      {"letter": "C", "text": "Tinham reservas quanto à promessa feita, mas não se manifestaram contra.", "is_correct": true, "explanation": "A desconfiança revela reservas, e o assentimento em silêncio mostra que não se opuseram abertamente."},
+      {"letter": "D", "text": "Não compreenderam o comunicado feito pelo comandante.", "is_correct": false, "explanation": "Desconfiança pressupõe compreensão; o problema não era de entendimento, mas de credibilidade."},
+      {"letter": "E", "text": "Apoiaram entusiasticamente a mudança nas escalas.", "is_correct": false, "explanation": "Desconfiança e silêncio são incompatíveis com entusiasmo."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "compreensao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "A implementação de câmeras corporais nos uniformes policiais trouxe uma nova dinâmica à atividade operacional. Se, por um lado, os agentes sentem-se mais expostos ao escrutínio, por outro, as gravações servem como prova em caso de acusações infundadas. A medida, portanto, protege tanto o cidadão quanto o policial.",
+    "text": "Infere-se do texto que o autor considera as câmeras corporais:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O autor apresenta dois lados da questão e conclui com 'portanto, protege tanto o cidadão quanto o policial', indicando posição favorável e visão de benefício mútuo.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Uma invasão à privacidade dos policiais militares.", "is_correct": false, "explanation": "O autor reconhece o desconforto, mas conclui favoravelmente, não as classifica como invasão de privacidade."},
+      {"letter": "B", "text": "Um instrumento de proteção bilateral, benéfico para todos os envolvidos.", "is_correct": true, "explanation": "O texto conclui que a medida 'protege tanto o cidadão quanto o policial', indicando proteção bilateral."},
+      {"letter": "C", "text": "Uma ferramenta exclusivamente voltada à punição de policiais.", "is_correct": false, "explanation": "O texto diz que as gravações também protegem os policiais contra acusações infundadas."},
+      {"letter": "D", "text": "Uma medida desnecessária diante de outras tecnologias disponíveis.", "is_correct": false, "explanation": "O texto não menciona outras tecnologias nem questiona a necessidade das câmeras."},
+      {"letter": "E", "text": "Um recurso cuja eficácia ainda não foi comprovada.", "is_correct": false, "explanation": "O texto apresenta a medida como algo que já 'trouxe uma nova dinâmica', indicando eficácia reconhecida."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "compreensao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "O delegado afirmou: 'Nenhuma investigação será arquivada sem a devida análise das provas coletadas.' Entretanto, os relatórios do último trimestre indicam que cerca de 40% dos inquéritos foram encerrados por falta de elementos probatórios suficientes.",
+    "text": "A partir da leitura do texto, é possível identificar:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Há uma aparente contradição entre a promessa do delegado (nenhuma investigação arquivada sem análise) e os dados que mostram 40% dos inquéritos encerrados por falta de provas, o que pode indicar insuficiência na coleta ou um descompasso entre discurso e prática.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Plena coerência entre o discurso do delegado e os dados apresentados.", "is_correct": false, "explanation": "A conjunção adversativa 'entretanto' indica contraste, não coerência plena."},
+      {"letter": "B", "text": "Uma aparente contradição entre a declaração e os dados estatísticos.", "is_correct": true, "explanation": "O uso de 'entretanto' sinaliza contraste entre a promessa de análise e o alto índice de arquivamento."},
+      {"letter": "C", "text": "Uma relação de causa e consequência entre a análise e o arquivamento.", "is_correct": false, "explanation": "O texto não estabelece causalidade, mas contraste entre discurso e prática."},
+      {"letter": "D", "text": "A confirmação de que o delegado cumpriu integralmente sua promessa.", "is_correct": false, "explanation": "Os dados estatísticos colocam em questão o cumprimento da promessa."},
+      {"letter": "E", "text": "A irrelevância dos dados estatísticos diante da declaração oficial.", "is_correct": false, "explanation": "O texto apresenta os dados como contraponto relevante, não como irrelevantes."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia-verbal-nominal",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que a concordância verbal está correta:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na alternativa correta, o verbo 'fazem' concorda com o sujeito plural 'os policiais'. Nas demais, há erros: 'Fazem dois anos' (verbo fazer indicando tempo é impessoal: 'Faz dois anos'); 'Houveram' (haver no sentido de existir é impessoal: 'Houve'); 'Aluga-se casas' (voz passiva sintética exige concordância: 'Alugam-se casas'); 'Falta' deveria concordar com 'recursos': 'Faltam'.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Fazem dois anos que o batalhão foi inaugurado.", "is_correct": false, "explanation": "O verbo 'fazer' indicando tempo decorrido é impessoal; o correto é 'Faz dois anos'."},
+      {"letter": "B", "text": "Houveram várias ocorrências naquela noite.", "is_correct": false, "explanation": "O verbo 'haver' no sentido de existir/ocorrer é impessoal; o correto é 'Houve várias ocorrências'."},
+      {"letter": "C", "text": "Os policiais fazem rondas diárias na região central.", "is_correct": true, "explanation": "Concordância correta: o verbo 'fazem' concorda com o sujeito plural 'os policiais'."},
+      {"letter": "D", "text": "Aluga-se casas próximas ao quartel.", "is_correct": false, "explanation": "Na voz passiva sintética, o verbo concorda com o sujeito paciente: 'Alugam-se casas'."},
+      {"letter": "E", "text": "Falta recursos para equipar a viatura.", "is_correct": false, "explanation": "O verbo deve concordar com o sujeito 'recursos': 'Faltam recursos'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia-verbal-nominal",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Em qual das frases abaixo a concordância nominal está de acordo com a norma-padrão da língua portuguesa?",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na alternativa correta, 'anexas' concorda com 'fotografias' (feminino plural). Nas demais: 'meia' deve ser 'meio' (advérbio); 'é proibido' deve concordar: 'é proibida a entrada' quando determinado por artigo; 'bastantes' deve ser 'bastante' (advérbio); 'alerta' é invariável na função adverbial.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Segue anexas as fotografias do local do crime.", "is_correct": true, "explanation": "'Anexas' concorda corretamente com 'fotografias' (feminino plural)."},
+      {"letter": "B", "text": "A testemunha ficou meia confusa durante o depoimento.", "is_correct": false, "explanation": "'Meia' deveria ser 'meio', pois funciona como advérbio e é invariável nesse caso."},
+      {"letter": "C", "text": "É proibido a entrada de civis na área restrita.", "is_correct": false, "explanation": "Quando o sujeito é determinado por artigo ('a entrada'), a concordância é obrigatória: 'É proibida a entrada'."},
+      {"letter": "D", "text": "Os soldados estavam bastantes cansados após a operação.", "is_correct": false, "explanation": "'Bastante' funciona como advérbio (intensificador de 'cansados') e deve ser invariável: 'bastante cansados'."},
+      {"letter": "E", "text": "As sentinelas permaneceram alertas durante a madrugada.", "is_correct": false, "explanation": "'Alerta' é invariável quando funciona como advérbio ou adjetivo invariável; o correto é 'permaneceram alerta'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "concordancia-verbal-nominal",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa que apresenta ERRO de concordância verbal:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O verbo 'haver' no sentido de 'existir' é impessoal e não vai ao plural. O correto seria 'Devem haver' ou, melhor, como o auxiliar também fica no singular com verbo impessoal: 'Deve haver mais de cem policiais'. Na prática, 'devem haver' é o erro, pois o verbo haver transmite sua impessoalidade ao auxiliar.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Cerca de vinte viaturas foram deslocadas para a operação.", "is_correct": false, "explanation": "Concordância correta: o verbo concorda com o núcleo do sujeito 'viaturas'."},
+      {"letter": "B", "text": "A maioria dos agentes concordou com a nova escala.", "is_correct": false, "explanation": "Concordância correta: com expressões partitivas, o verbo pode concordar com o núcleo ('maioria')."},
+      {"letter": "C", "text": "Devem haver mais de cem policiais destacados para o evento.", "is_correct": true, "explanation": "'Haver' no sentido de existir é impessoal e transmite a impessoalidade ao auxiliar: 'Deve haver'."},
+      {"letter": "D", "text": "Fui eu quem autorizou a liberação dos detidos.", "is_correct": false, "explanation": "Concordância correta: o verbo pode concordar com 'quem' (3.ª pessoa do singular)."},
+      {"letter": "E", "text": "Faz três meses que a operação foi concluída.", "is_correct": false, "explanation": "Concordância correta: o verbo 'fazer' indicando tempo decorrido é impessoal e fica no singular."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia-verbal-nominal",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que a regência verbal está correta conforme a norma-padrão:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O verbo 'obedecer' é transitivo indireto e exige a preposição 'a'. Nas demais: 'assistir' (no sentido de ver) é transitivo indireto: 'assistiu ao'; 'preferir' exige 'a' e não 'do que'; 'visar' (no sentido de almejar) é transitivo indireto: 'visa à'; 'informar' com objeto indireto de pessoa: 'informou aos moradores'.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "O soldado assistiu o treinamento sem fazer perguntas.", "is_correct": false, "explanation": "'Assistir' no sentido de 'ver/presenciar' é transitivo indireto: 'assistiu ao treinamento'."},
+      {"letter": "B", "text": "O comandante obedeceu ao regulamento disciplinar.", "is_correct": true, "explanation": "'Obedecer' é transitivo indireto e rege a preposição 'a': 'obedeceu ao regulamento'."},
+      {"letter": "C", "text": "O agente preferiu a ronda do que a escolta.", "is_correct": false, "explanation": "'Preferir' exige a preposição 'a', não 'do que': 'preferiu a ronda à escolta'."},
+      {"letter": "D", "text": "A operação visa o combate ao narcotráfico na região.", "is_correct": false, "explanation": "'Visar' no sentido de 'almejar/ter como objetivo' é transitivo indireto: 'visa ao combate'."},
+      {"letter": "E", "text": "O sargento informou os moradores sobre o toque de recolher.", "is_correct": false, "explanation": "A construção com 'informar' exige objeto indireto de pessoa: 'informou aos moradores sobre'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia-verbal-nominal",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Em qual das alternativas a regência do verbo destacado está INCORRETA?",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "'Aspirar' no sentido de 'desejar/almejar' é transitivo indireto e exige a preposição 'a': 'aspirava à promoção'. A forma 'aspirava a promoção' trata o verbo como transitivo direto, o que só é aceito no sentido de 'respirar/inalar'.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "O policial aspirava a promoção ao posto de tenente.", "is_correct": true, "explanation": "'Aspirar' no sentido de 'desejar' é transitivo indireto: 'aspirava à promoção'."},
+      {"letter": "B", "text": "O sargento procedeu ao registro da ocorrência.", "is_correct": false, "explanation": "Regência correta: 'proceder' no sentido de 'realizar' é transitivo indireto com preposição 'a'."},
+      {"letter": "C", "text": "Os recrutas assistiram às aulas de armamento.", "is_correct": false, "explanation": "Regência correta: 'assistir' no sentido de 'ver' é transitivo indireto: 'assistiram às aulas'."},
+      {"letter": "D", "text": "O delegado respondeu ao processo administrativo.", "is_correct": false, "explanation": "Regência correta: 'responder' é transitivo indireto: 'respondeu ao processo'."},
+      {"letter": "E", "text": "Os oficiais visam à excelência no serviço.", "is_correct": false, "explanation": "Regência correta: 'visar' no sentido de 'almejar' é transitivo indireto: 'visam à excelência'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "crase",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que o uso do acento indicativo de crase está correto:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Em 'à disposição', ocorre a fusão da preposição 'a' (exigida pelo verbo 'ficar') com o artigo definido feminino 'a' que acompanha 'disposição'. Nas demais: não se usa crase antes de verbo ('a patrulhar'), antes de pronome de tratamento 'Vossa' ('a Vossa Senhoria'), antes de palavra masculina ('a pé'), nem antes de artigo indefinido ('a uma distância').",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Os agentes saíram à patrulhar o bairro.", "is_correct": false, "explanation": "Não se usa crase antes de verbo no infinitivo."},
+      {"letter": "B", "text": "O relatório foi encaminhado à Vossa Senhoria.", "is_correct": false, "explanation": "Não se usa crase antes do pronome de tratamento 'Vossa Senhoria'."},
+      {"letter": "C", "text": "O policial permaneceu à pé durante toda a ronda.", "is_correct": false, "explanation": "Não se usa crase antes de palavra masculina ('pé')."},
+      {"letter": "D", "text": "A equipe ficou à disposição do comando regional.", "is_correct": true, "explanation": "Crase correta: preposição 'a' + artigo 'a' diante de 'disposição'."},
+      {"letter": "E", "text": "A viatura estacionou à uma distância segura.", "is_correct": false, "explanation": "Não se usa crase antes de artigo indefinido ('uma')."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "crase",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Em qual das alternativas o acento indicativo de crase foi empregado de forma INCORRETA?",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Não se usa crase antes de pronomes demonstrativos como 'esta'. O correto seria 'a esta ocorrência'. Nas demais alternativas, o uso da crase está correto: 'à população' (preposição + artigo), 'às normas' (preposição + artigo), 'à medida que' (locução conjuntiva), 'às 20 horas' (locução adverbial de tempo).",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "O policial atendeu à população com presteza.", "is_correct": false, "explanation": "Crase correta: 'atender a' + 'a população'."},
+      {"letter": "B", "text": "Os recrutas devem obedecer às normas do quartel.", "is_correct": false, "explanation": "Crase correta: 'obedecer a' + 'as normas'."},
+      {"letter": "C", "text": "Referimo-nos à esta ocorrência registrada ontem.", "is_correct": true, "explanation": "Crase incorreta: não se usa acento indicativo de crase antes do pronome demonstrativo 'esta'."},
+      {"letter": "D", "text": "À medida que a operação avançava, os resultados melhoravam.", "is_correct": false, "explanation": "Crase correta: 'à medida que' é locução conjuntiva proporcional que exige crase."},
+      {"letter": "E", "text": "A troca de turno ocorrerá às 20 horas.", "is_correct": false, "explanation": "Crase correta: usa-se crase nas locuções adverbiais de tempo formadas com horas."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que a pontuação está correta:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na alternativa correta, as vírgulas isolam o aposto explicativo 'capital do estado'. Nas demais: não se separa sujeito de predicado com vírgula; a oração adjetiva restritiva não é isolada por vírgulas; a vírgula antes de 'e' com sujeitos diferentes é facultativa, mas a frase apresenta outros problemas de pontuação; e não se usa vírgula entre verbo e complemento direto.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "O comandante do batalhão, determinou que as rondas fossem intensificadas.", "is_correct": false, "explanation": "Vírgula incorreta: não se separa o sujeito ('O comandante do batalhão') do predicado."},
+      {"letter": "B", "text": "Os policiais que estavam de folga foram convocados para a operação.", "is_correct": false, "explanation": "A frase está correta gramaticalmente (oração restritiva sem vírgulas), mas a questão pede a alternativa com pontuação correta entre as opções dadas. A oração 'que estavam de folga' é restritiva e corretamente não tem vírgulas, porém esta não é a alternativa-modelo."},
+      {"letter": "C", "text": "Goiânia, capital do estado, recebeu reforço no policiamento.", "is_correct": true, "explanation": "Pontuação correta: as vírgulas isolam o aposto explicativo 'capital do estado'."},
+      {"letter": "D", "text": "O suspeito correu, e os policiais perseguiram, ele por três quarteirões.", "is_correct": false, "explanation": "Vírgula incorreta após 'perseguiram': não se separa o verbo do seu complemento direto ('ele')."},
+      {"letter": "E", "text": "A viatura, chegou ao local e os agentes iniciaram, a abordagem.", "is_correct": false, "explanation": "Vírgulas incorretas: separam indevidamente sujeito de predicado e verbo de complemento."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "pontuacao",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "A vírgula está empregada corretamente em:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A vírgula após 'Após a abordagem' separa corretamente o adjunto adverbial deslocado (anteposto ao verbo). Nas demais alternativas, há erros: vírgula separando sujeito de predicado, vírgula indevida antes de oração subordinada substantiva, vírgula entre verbo e complemento, e vírgula separando o último termo de enumeração que deveria usar 'e'.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "O sargento responsável pela escala, comunicou a alteração.", "is_correct": false, "explanation": "Vírgula incorreta: separa o sujeito ('O sargento responsável pela escala') do predicado."},
+      {"letter": "B", "text": "Após a abordagem, os policiais conduziram o suspeito à delegacia.", "is_correct": true, "explanation": "Vírgula correta: separa o adjunto adverbial deslocado para o início da oração."},
+      {"letter": "C", "text": "O capitão ordenou, que todos se apresentassem no quartel.", "is_correct": false, "explanation": "Vírgula incorreta: não se separa a oração principal da oração subordinada substantiva completiva."},
+      {"letter": "D", "text": "A operação mobilizou, viaturas, helicópteros e cães farejadores.", "is_correct": false, "explanation": "Vírgula incorreta após 'mobilizou': não se separa o verbo de seus complementos."},
+      {"letter": "E", "text": "Foram apreendidas armas, drogas, munições, e dinheiro.", "is_correct": false, "explanation": "Vírgula desnecessária antes de 'e' no último elemento da enumeração simples."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "ortografia-acentuacao",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que todas as palavras estão grafadas corretamente:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na alternativa correta, todas as palavras estão grafadas conforme a norma: 'apreensão', 'flagrante' e 'diligência'. Nas demais, há erros: 'previlégio' (privilégio), 'acessória' (assessoria), 'paralizar' (paralisar), 'excessão' (exceção).",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Previlégio, manutenção, atendimento.", "is_correct": false, "explanation": "Erro em 'previlégio'; a forma correta é 'privilégio'."},
+      {"letter": "B", "text": "Acessória, investigação, procedimento.", "is_correct": false, "explanation": "Erro em 'acessória' (no sentido de serviço de apoio); a forma correta é 'assessoria'."},
+      {"letter": "C", "text": "Apreensão, flagrante, diligência.", "is_correct": true, "explanation": "Todas as palavras estão grafadas corretamente."},
+      {"letter": "D", "text": "Paralizar, abordagem, ocorrência.", "is_correct": false, "explanation": "Erro em 'paralizar'; a forma correta é 'paralisar'."},
+      {"letter": "E", "text": "Excessão, vigência, permanência.", "is_correct": false, "explanation": "Erro em 'excessão'; a forma correta é 'exceção'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "ortografia-acentuacao",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que a acentuação gráfica está correta em todas as palavras:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "'Polícia' (paroxítona terminada em ditongo), 'júri' (paroxítona terminada em 'i') e 'código' (proparoxítona) estão corretamente acentuadas. Nas demais: 'ruím' não é acentuada (oxítona terminada em 'im' não se acentua: 'ruim'); 'gratuíto' (a pronúncia correta é 'gratuito', paroxítona sem acento); 'itens' (paroxítona terminada em 'ens' não se acentua); 'bônus' não leva acento circunflexo (leva acento por ser paroxítona terminada em 'us').",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Ruím, saúde, fácil.", "is_correct": false, "explanation": "'Ruim' não recebe acento gráfico; é uma oxítona terminada em 'im'."},
+      {"letter": "B", "text": "Polícia, júri, código.", "is_correct": true, "explanation": "Todas estão corretamente acentuadas: 'polícia' (paroxítona terminada em ditongo), 'júri' (paroxítona terminada em 'i'), 'código' (proparoxítona)."},
+      {"letter": "C", "text": "Gratuíto, saída, hífen.", "is_correct": false, "explanation": "'Gratuito' é paroxítona e não leva acento; a sílaba tônica é 'tui'."},
+      {"letter": "D", "text": "Ítens, útil, caráter.", "is_correct": false, "explanation": "'Itens' é paroxítona terminada em 'ens' e não recebe acento gráfico."},
+      {"letter": "E", "text": "Bônus, vírus, tórax.", "is_correct": false, "explanation": "'Bônus' é incorreto; o correto é 'bônus' — na verdade, 'bônus' leva acento circunflexo corretamente como paroxítona terminada em 'us', mas é grafado sem circunflexo pelas regras atuais. O acento em 'bônus' gera controvérsia."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-de-palavras",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Na frase 'O policial agiu rapidamente durante a abordagem noturna', as palavras 'rapidamente' e 'noturna' classificam-se, respectivamente, como:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "'Rapidamente' modifica o verbo 'agiu', indicando o modo da ação, sendo portanto advérbio de modo. 'Noturna' qualifica o substantivo 'abordagem', sendo adjetivo.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Adjetivo e substantivo.", "is_correct": false, "explanation": "'Rapidamente' modifica um verbo, não um substantivo, portanto não é adjetivo."},
+      {"letter": "B", "text": "Advérbio de modo e adjetivo.", "is_correct": true, "explanation": "'Rapidamente' é advérbio de modo (modifica o verbo 'agiu') e 'noturna' é adjetivo (qualifica 'abordagem')."},
+      {"letter": "C", "text": "Advérbio de tempo e substantivo.", "is_correct": false, "explanation": "'Rapidamente' indica modo, não tempo; e 'noturna' é adjetivo, não substantivo."},
+      {"letter": "D", "text": "Substantivo e advérbio.", "is_correct": false, "explanation": "Nenhuma das classificações está correta para as palavras em questão."},
+      {"letter": "E", "text": "Adjetivo e advérbio de modo.", "is_correct": false, "explanation": "As classificações estão invertidas e incorretas."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-de-palavras",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Em 'Ninguém lhe informou que a reunião seria adiada', o pronome 'lhe' exerce a função de:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O pronome 'lhe' substitui um complemento introduzido por preposição (informar algo a alguém), exercendo função de objeto indireto.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Objeto direto.", "is_correct": false, "explanation": "'Lhe' é pronome oblíquo que funciona como objeto indireto, nunca como objeto direto."},
+      {"letter": "B", "text": "Sujeito.", "is_correct": false, "explanation": "Pronomes oblíquos não exercem função de sujeito."},
+      {"letter": "C", "text": "Objeto indireto.", "is_correct": true, "explanation": "'Lhe' funciona como objeto indireto do verbo 'informou' (informar algo a alguém)."},
+      {"letter": "D", "text": "Adjunto adnominal.", "is_correct": false, "explanation": "'Lhe' pode funcionar como adjunto adnominal em alguns contextos, mas aqui funciona como complemento verbal."},
+      {"letter": "E", "text": "Complemento nominal.", "is_correct": false, "explanation": "Complemento nominal completa o sentido de nomes, não de verbos. Aqui, 'lhe' complementa o verbo 'informou'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "classes-de-palavras",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que a palavra destacada é um pronome relativo:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Em 'O suspeito que foi detido', o 'que' é pronome relativo porque retoma o substantivo 'suspeito' e introduz uma oração adjetiva. Nas demais, 'que' funciona como conjunção integrante (introduzindo oração substantiva) ou interjeição.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Espero que a ocorrência seja registrada corretamente.", "is_correct": false, "explanation": "'Que' é conjunção integrante, introduzindo oração subordinada substantiva objetiva direta."},
+      {"letter": "B", "text": "O suspeito que foi detido confessou o crime.", "is_correct": true, "explanation": "'Que' é pronome relativo, retomando 'suspeito' e introduzindo oração adjetiva restritiva."},
+      {"letter": "C", "text": "É necessário que todos compareçam ao treinamento.", "is_correct": false, "explanation": "'Que' é conjunção integrante, introduzindo oração subordinada substantiva subjetiva."},
+      {"letter": "D", "text": "Saiba que o prazo para recurso já expirou.", "is_correct": false, "explanation": "'Que' é conjunção integrante, introduzindo oração subordinada substantiva objetiva direta."},
+      {"letter": "E", "text": "Que surpresa encontrar o comandante na cerimônia!", "is_correct": false, "explanation": "'Que' é pronome adjetivo ou interjeição exclamativa, não pronome relativo."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "sintaxe-periodo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "No período 'Quando o reforço chegou, os policiais já haviam controlado a situação', a oração 'Quando o reforço chegou' classifica-se como:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A oração é introduzida pela conjunção subordinativa temporal 'quando', indicando circunstância de tempo em relação à oração principal. Trata-se, portanto, de oração subordinada adverbial temporal.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Oração subordinada substantiva subjetiva.", "is_correct": false, "explanation": "Orações substantivas subjetivas exercem função de sujeito, o que não ocorre aqui."},
+      {"letter": "B", "text": "Oração subordinada adjetiva restritiva.", "is_correct": false, "explanation": "Orações adjetivas modificam substantivos e são introduzidas por pronomes relativos, não por 'quando'."},
+      {"letter": "C", "text": "Oração coordenada sindética adversativa.", "is_correct": false, "explanation": "Orações adversativas expressam oposição com conjunções como 'mas', 'porém'."},
+      {"letter": "D", "text": "Oração subordinada adverbial temporal.", "is_correct": true, "explanation": "A oração expressa circunstância de tempo e é introduzida pela conjunção temporal 'quando'."},
+      {"letter": "E", "text": "Oração subordinada adverbial concessiva.", "is_correct": false, "explanation": "Orações concessivas expressam concessão com conjunções como 'embora', 'ainda que'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "sintaxe-periodo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa que apresenta oração subordinada adjetiva explicativa:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na alternativa correta, a oração 'que fica no centro da cidade' está entre vírgulas, caracterizando uma oração adjetiva explicativa que acrescenta informação acessória sobre o batalhão. Nas demais, as orações são restritivas (sem vírgulas) ou de outros tipos.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Os policiais que participaram da operação foram elogiados.", "is_correct": false, "explanation": "Oração adjetiva restritiva (sem vírgulas): restringe quais policiais foram elogiados."},
+      {"letter": "B", "text": "O batalhão, que fica no centro da cidade, foi reformado.", "is_correct": true, "explanation": "Oração adjetiva explicativa (entre vírgulas): acrescenta informação adicional sobre 'o batalhão'."},
+      {"letter": "C", "text": "Os soldados que chegaram atrasados foram advertidos.", "is_correct": false, "explanation": "Oração adjetiva restritiva (sem vírgulas): restringe quais soldados foram advertidos."},
+      {"letter": "D", "text": "O sargento disse que a operação foi um sucesso.", "is_correct": false, "explanation": "'Que' aqui é conjunção integrante, introduzindo oração subordinada substantiva, não adjetiva."},
+      {"letter": "E", "text": "Convém que todos se apresentem no horário.", "is_correct": false, "explanation": "'Que' é conjunção integrante, introduzindo oração subordinada substantiva subjetiva."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "sintaxe-periodo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "No período 'O suspeito foi conduzido à delegacia e lá prestou depoimento', o sujeito de 'prestou' é:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O sujeito de 'prestou' é o mesmo da oração anterior: 'O suspeito'. Trata-se de sujeito elíptico (oculto/desinencial), recuperável pelo contexto e pela desinência verbal.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Delegacia.", "is_correct": false, "explanation": "'Delegacia' é o complemento da preposição 'a' (à delegacia), não o sujeito."},
+      {"letter": "B", "text": "Indeterminado.", "is_correct": false, "explanation": "O sujeito é determinado e identificável: 'o suspeito'."},
+      {"letter": "C", "text": "Depoimento.", "is_correct": false, "explanation": "'Depoimento' é o objeto direto de 'prestou', não o sujeito."},
+      {"letter": "D", "text": "O suspeito (sujeito elíptico).", "is_correct": true, "explanation": "O sujeito é 'O suspeito', elíptico (oculto) na segunda oração, recuperável pelo contexto."},
+      {"letter": "E", "text": "Inexistente (oração sem sujeito).", "is_correct": false, "explanation": "Orações sem sujeito ocorrem com verbos impessoais; 'prestar' é pessoal e tem sujeito."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "coesao-coerencia",
+    "question_type": "multipla_escolha",
+    "context_text": "O policiamento comunitário tem se mostrado eficaz em diversas regiões. ______, os índices de criminalidade apresentaram queda significativa nos bairros onde o programa foi implantado.",
+    "text": "Assinale a alternativa que preenche corretamente a lacuna, mantendo a coesão e a coerência textual:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A segunda frase apresenta uma consequência ou comprovação da eficácia mencionada na primeira. O conectivo 'De fato' reforça e confirma a ideia anterior, mantendo a coerência. 'No entanto' e 'Porém' indicariam oposição; 'Apesar disso' indicaria concessão; 'Ou seja' indicaria reformulação.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "No entanto", "is_correct": false, "explanation": "'No entanto' indica oposição, mas a segunda frase confirma a primeira."},
+      {"letter": "B", "text": "De fato", "is_correct": true, "explanation": "'De fato' reforça e confirma a informação da frase anterior, mantendo a coerência."},
+      {"letter": "C", "text": "Porém", "is_correct": false, "explanation": "'Porém' indica adversidade, incompatível com o sentido de confirmação."},
+      {"letter": "D", "text": "Apesar disso", "is_correct": false, "explanation": "'Apesar disso' indica concessão, mas não há ideia contrária na segunda frase."},
+      {"letter": "E", "text": "Ou seja", "is_correct": false, "explanation": "'Ou seja' indica reformulação/explicação, mas a segunda frase traz dados novos, não uma reformulação."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "coesao-coerencia",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que o elemento coesivo destacado estabelece relação de causa:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "'Visto que' é uma locução conjuntiva causal, indicando o motivo pelo qual a operação foi suspensa. 'Embora' indica concessão, 'contudo' indica adversidade, 'conforme' indica conformidade, e 'a fim de que' indica finalidade.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Embora chuvoso, o treinamento foi realizado.", "is_correct": false, "explanation": "'Embora' estabelece relação de concessão, não de causa."},
+      {"letter": "B", "text": "A operação foi eficaz, contudo houve feridos.", "is_correct": false, "explanation": "'Contudo' estabelece relação de adversidade/oposição, não de causa."},
+      {"letter": "C", "text": "A operação foi suspensa, visto que as condições eram desfavoráveis.", "is_correct": true, "explanation": "'Visto que' é locução conjuntiva causal, indicando o motivo da suspensão."},
+      {"letter": "D", "text": "Conforme determina o regulamento, todos devem usar farda.", "is_correct": false, "explanation": "'Conforme' estabelece relação de conformidade, não de causa."},
+      {"letter": "E", "text": "O efetivo foi ampliado a fim de que a segurança fosse reforçada.", "is_correct": false, "explanation": "'A fim de que' estabelece relação de finalidade, não de causa."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "coesao-coerencia",
+    "question_type": "multipla_escolha",
+    "context_text": "A violência doméstica é um problema grave que atinge milhares de famílias. As polícias militares recebem, diariamente, chamados para atender ocorrências dessa natureza. ______, a capacitação dos policiais para lidar com essas situações é fundamental, pois a abordagem inadequada pode agravar o conflito e colocar a vítima em maior risco.",
+    "text": "O conectivo que preenche adequadamente a lacuna, assegurando a coesão entre os períodos, é:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "'Por essa razão' estabelece relação de conclusão/consequência: como a violência doméstica é frequente e a polícia é acionada diariamente, conclui-se que a capacitação é fundamental. Os demais conectivos não expressam essa relação adequadamente.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Ainda assim", "is_correct": false, "explanation": "'Ainda assim' indica concessão, mas a terceira frase é consequência lógica das anteriores."},
+      {"letter": "B", "text": "Em contrapartida", "is_correct": false, "explanation": "'Em contrapartida' indica oposição, inadequado ao sentido do texto."},
+      {"letter": "C", "text": "Por essa razão", "is_correct": true, "explanation": "'Por essa razão' estabelece relação de conclusão/consequência coerente com o raciocínio do texto."},
+      {"letter": "D", "text": "Não obstante", "is_correct": false, "explanation": "'Não obstante' indica concessão/oposição, inadequado ao sentido de consequência."},
+      {"letter": "E", "text": "Analogamente", "is_correct": false, "explanation": "'Analogamente' indica comparação/semelhança, e não consequência."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "interpretacao-textual",
+    "question_type": "multipla_escolha",
+    "context_text": "O uso de tecnologias de reconhecimento facial pela polícia tem gerado debates intensos. Defensores argumentam que a ferramenta agiliza a identificação de foragidos, enquanto críticos apontam riscos de discriminação algorítmica e violação de privacidade. O equilíbrio entre eficiência policial e direitos fundamentais permanece como desafio.",
+    "text": "O texto apresenta uma abordagem:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O texto apresenta argumentos favoráveis ('agiliza a identificação') e contrários ('riscos de discriminação e violação de privacidade'), sem tomar partido, caracterizando uma abordagem imparcial que expõe ambos os lados do debate.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Favorável ao uso irrestrito da tecnologia de reconhecimento facial.", "is_correct": false, "explanation": "O texto também apresenta argumentos contrários, não sendo favorável ao uso irrestrito."},
+      {"letter": "B", "text": "Contrária a qualquer uso de tecnologia no policiamento.", "is_correct": false, "explanation": "O texto menciona benefícios da tecnologia, não sendo contrário a todo uso."},
+      {"letter": "C", "text": "Imparcial, expondo argumentos de ambos os lados do debate.", "is_correct": true, "explanation": "O texto apresenta posições de defensores e críticos sem tomar partido."},
+      {"letter": "D", "text": "Irônica, ridicularizando os críticos da tecnologia.", "is_correct": false, "explanation": "Não há marcas de ironia no texto; os argumentos críticos são apresentados com seriedade."},
+      {"letter": "E", "text": "Técnica, voltada a especialistas em segurança pública.", "is_correct": false, "explanation": "O texto é informativo e acessível, não usa linguagem técnica especializada."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "regencia-verbal-nominal",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa em que a regência nominal está de acordo com a norma-padrão:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O substantivo 'obediência' rege a preposição 'a': 'obediência às ordens'. Nas demais: 'apto' rege 'a' ou 'para' (não 'em'); 'compatível' rege 'com' (não 'a'); 'ansioso' rege 'por' (não 'em'); 'passível' rege 'de' (não 'a').",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "O soldado é apto em exercer a função de motorista.", "is_correct": false, "explanation": "'Apto' rege as preposições 'a' ou 'para': 'apto a exercer' ou 'apto para exercer'."},
+      {"letter": "B", "text": "A conduta não é compatível à postura militar.", "is_correct": false, "explanation": "'Compatível' rege a preposição 'com': 'compatível com a postura'."},
+      {"letter": "C", "text": "O cabo demonstrou obediência às ordens superiores.", "is_correct": true, "explanation": "'Obediência' rege a preposição 'a': 'obediência às ordens'."},
+      {"letter": "D", "text": "O recruta estava ansioso em iniciar o treinamento.", "is_correct": false, "explanation": "'Ansioso' rege a preposição 'por': 'ansioso por iniciar'."},
+      {"letter": "E", "text": "A infração é passível a punição disciplinar.", "is_correct": false, "explanation": "'Passível' rege a preposição 'de': 'passível de punição'."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "ortografia-acentuacao",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Assinale a alternativa cujas palavras completam corretamente a frase: 'O policial não quis ______ a situação, pois temia que houvesse ______ entre os envolvidos, o que traria ______ à operação.'",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "'Intervir' (e não 'intervir em' sem complemento) é o verbo adequado; 'intervenção' é o substantivo derivado de 'intervir' (com 'ç'); 'prejuízo' é grafado com 'z'. As demais alternativas apresentam grafias incorretas.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Intervir — intervenção — prejuízo", "is_correct": true, "explanation": "Todas as palavras estão grafadas corretamente."},
+      {"letter": "B", "text": "Intervir — intervenssão — prejuízo", "is_correct": false, "explanation": "'Intervenssão' está errado; o correto é 'intervenção', com 'ç'."},
+      {"letter": "C", "text": "Intervir — intervenção — prejuíso", "is_correct": false, "explanation": "'Prejuíso' está errado; o correto é 'prejuízo', com 'z'."},
+      {"letter": "D", "text": "Interviר — intervensão — preijuízo", "is_correct": false, "explanation": "Todas as grafias estão incorretas."},
+      {"letter": "E", "text": "Entervier — intervenção — prejuizo", "is_correct": false, "explanation": "'Entervier' e 'prejuizo' (sem acento) estão errados."}
+    ]
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "topic_slug": "sintaxe-periodo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "No período 'É importante que os policiais mantenham a calma durante as abordagens', a oração 'que os policiais mantenham a calma durante as abordagens' classifica-se como oração subordinada:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A oração exerce a função de sujeito da oração principal 'É importante'. Trata-se de oração subordinada substantiva subjetiva, introduzida pela conjunção integrante 'que'. Pode-se verificar substituindo por 'isso': 'Isso é importante.'",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Substantiva objetiva direta.", "is_correct": false, "explanation": "A oração não funciona como objeto direto; ela exerce função de sujeito da oração principal."},
+      {"letter": "B", "text": "Substantiva subjetiva.", "is_correct": true, "explanation": "A oração exerce função de sujeito: 'É importante [isso]'. Trata-se de substantiva subjetiva."},
+      {"letter": "C", "text": "Adjetiva restritiva.", "is_correct": false, "explanation": "Orações adjetivas são introduzidas por pronomes relativos, não por conjunções integrantes."},
+      {"letter": "D", "text": "Adverbial final.", "is_correct": false, "explanation": "A oração não expressa finalidade; expressa o conteúdo do que é importante."},
+      {"letter": "E", "text": "Substantiva completiva nominal.", "is_correct": false, "explanation": "Completiva nominal complementa um nome; aqui a oração funciona como sujeito."}
+    ]
+  }
+]

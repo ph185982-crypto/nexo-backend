@@ -1,0 +1,502 @@
+[
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "principio-da-legalidade",
+    "question_type": "multipla_escolha",
+    "context_text": "O soldado Ribeiro, recém-aprovado no concurso da PMGO, participa de uma instrução sobre princípios do Direito Penal. O instrutor apresenta o seguinte caso hipotético: um cidadão praticou uma conduta socialmente reprovável, porém não tipificada em lei penal. Com base no princípio da legalidade, assinale a alternativa correta:",
+    "text": "Considerando o princípio da legalidade e suas implicações no Direito Penal brasileiro, é correto afirmar que:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O princípio da legalidade, previsto no art. 1° do Código Penal e no art. 5°, XXXIX, da CF/88, estabelece que não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal (nullum crimen, nulla poena sine lege). Assim, condutas não tipificadas em lei não podem ser consideradas crimes, independentemente de sua reprovabilidade social.",
+    "legal_basis": "Art. 1°, CP; Art. 5°, XXXIX, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O juiz pode aplicar analogia in malam partem para suprir lacunas na legislação penal e punir condutas socialmente reprováveis.", "is_correct": false, "explanation": "A analogia in malam partem é vedada no Direito Penal. Somente a analogia in bonam partem (em benefício do réu) é admitida."},
+      {"letter": "B", "text": "Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal, sendo vedada a punição de condutas não tipificadas.", "is_correct": true, "explanation": "Correta. É a exata previsão do princípio da legalidade, também denominado princípio da reserva legal."},
+      {"letter": "C", "text": "Os costumes podem ser utilizados como fonte primária do Direito Penal incriminador, desde que haja consenso social.", "is_correct": false, "explanation": "Os costumes não podem ser fonte de tipos penais incriminadores. Somente a lei em sentido estrito pode criar crimes e cominar penas."},
+      {"letter": "D", "text": "Medidas provisórias podem definir crimes e cominar penas em situações de urgência e relevância.", "is_correct": false, "explanation": "O art. 62, §1°, I, 'b', da CF/88 veda expressamente que medidas provisórias versem sobre Direito Penal."},
+      {"letter": "E", "text": "O princípio da legalidade se aplica apenas aos crimes dolosos, não alcançando as contravenções penais.", "is_correct": false, "explanation": "O princípio da legalidade se aplica a todas as infrações penais, incluindo crimes dolosos, culposos e contravenções penais."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "principio-da-anterioridade",
+    "question_type": "multipla_escolha",
+    "context_text": "Em 15 de março de 2023, João praticou uma conduta que não era tipificada como crime. Em 20 de julho de 2023, entrou em vigor uma nova lei penal que passou a considerar tal conduta como crime, cominando pena de reclusão de 1 a 4 anos. O Ministério Público ofereceu denúncia contra João. Considerando o princípio da anterioridade da lei penal, assinale a alternativa correta:",
+    "text": "Diante da situação narrada, é correto afirmar que:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O princípio da anterioridade, consagrado no art. 1° do CP e no art. 5°, XXXIX, da CF/88, exige que a lei penal incriminadora seja anterior ao fato. Assim, a lei nova que cria um tipo penal não pode retroagir para alcançar fatos praticados antes de sua vigência, pois a irretroatividade da lei penal mais gravosa é garantia constitucional.",
+    "legal_basis": "Art. 1°, CP; Art. 5°, XXXIX e XL, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "João deve ser condenado, pois a nova lei já estava em vigor no momento do oferecimento da denúncia.", "is_correct": false, "explanation": "O que importa é o momento da conduta, e não o momento da denúncia. A lei deve ser anterior ao fato."},
+      {"letter": "B", "text": "João pode ser condenado, desde que o juiz aplique a pena mínima em respeito ao princípio da proporcionalidade.", "is_correct": false, "explanation": "Não se trata de dosimetria da pena, mas de impossibilidade de aplicação retroativa da lei penal incriminadora."},
+      {"letter": "C", "text": "João não pode ser condenado, pois a lei penal incriminadora não retroage para alcançar fatos anteriores à sua vigência.", "is_correct": true, "explanation": "Correta. Aplica-se o princípio da anterioridade: não há crime sem lei anterior que o defina."},
+      {"letter": "D", "text": "João deve ser condenado, pois a conduta já era socialmente reprovável antes da nova legislação.", "is_correct": false, "explanation": "A reprovabilidade social não substitui a tipificação legal. Sem lei anterior, não há crime."},
+      {"letter": "E", "text": "A denúncia é válida, cabendo ao juiz decidir discricionariamente sobre a aplicação retroativa da lei.", "is_correct": false, "explanation": "Não há discricionariedade judicial nessa matéria. A irretroatividade da lei penal mais gravosa é garantia constitucional absoluta."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "irretroatividade-da-lei-penal",
+    "question_type": "multipla_escolha",
+    "context_text": "Carlos foi condenado a 8 anos de reclusão pelo crime de furto qualificado. Durante o cumprimento da pena, sobreveio nova lei que reduziu a pena máxima do furto qualificado de 8 para 6 anos de reclusão. Considerando as regras de aplicação da lei penal no tempo, assinale a alternativa correta:",
+    "text": "Sobre a retroatividade da lei penal mais benéfica, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, XL, da CF/88 e o art. 2°, parágrafo único, do CP estabelecem que a lei posterior que de qualquer modo favorecer o agente aplica-se aos fatos anteriores, ainda que decididos por sentença condenatória transitada em julgado. Assim, Carlos tem direito à aplicação da lei mais benéfica.",
+    "legal_basis": "Art. 2°, parágrafo único, CP; Art. 5°, XL, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A nova lei não se aplica a Carlos, pois sua condenação já transitou em julgado.", "is_correct": false, "explanation": "A lei penal mais benéfica retroage mesmo após o trânsito em julgado da sentença condenatória, conforme art. 2°, parágrafo único, do CP."},
+      {"letter": "B", "text": "A lei posterior que de qualquer modo favorecer o agente aplica-se aos fatos anteriores, ainda que decididos por sentença condenatória transitada em julgado.", "is_correct": true, "explanation": "Correta. É a previsão expressa do art. 2°, parágrafo único, do CP, e do art. 5°, XL, da CF/88."},
+      {"letter": "C", "text": "A retroatividade benéfica somente se aplica antes do trânsito em julgado da sentença condenatória.", "is_correct": false, "explanation": "A retroatividade da lei penal mais benéfica é irrestrita, alcançando inclusive condenações transitadas em julgado."},
+      {"letter": "D", "text": "A nova lei somente se aplica a crimes praticados após sua vigência, em razão do princípio da anterioridade.", "is_correct": false, "explanation": "O princípio da anterioridade impede a retroatividade da lei mais gravosa, mas a lei mais benéfica sempre retroage."},
+      {"letter": "E", "text": "A aplicação da nova lei depende de requerimento do Ministério Público, não podendo o juiz aplicá-la de ofício.", "is_correct": false, "explanation": "A aplicação da lei mais benéfica pode e deve ser feita de ofício pelo juiz, independentemente de requerimento das partes."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "fato-tipico",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma operação policial, o soldado Mendes da PMGO apreende um menor de 16 anos que disparou uma arma de fogo contra um desafeto, causando-lhe lesões graves. Ao registrar a ocorrência, o delegado analisa os elementos do fato típico. Assinale a alternativa correta sobre a teoria do crime:",
+    "text": "De acordo com a teoria finalista da ação, adotada pelo Código Penal brasileiro, são elementos do fato típico:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na teoria finalista da ação, adotada pelo CP brasileiro, os elementos do fato típico são: conduta (ação ou omissão, dolosa ou culposa), resultado, nexo de causalidade e tipicidade. O dolo e a culpa integram a conduta, que é elemento do fato típico.",
+    "legal_basis": "Arts. 13 a 18, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Conduta, resultado, nexo causal e tipicidade, sendo o dolo e a culpa elementos da conduta.", "is_correct": true, "explanation": "Correta. Na teoria finalista, o dolo e a culpa são elementos subjetivos da conduta, que integra o fato típico."},
+      {"letter": "B", "text": "Conduta, resultado, nexo causal, tipicidade e culpabilidade, sendo esta última elemento essencial do fato típico.", "is_correct": false, "explanation": "A culpabilidade não é elemento do fato típico, mas sim o terceiro substrato do crime na teoria tripartida."},
+      {"letter": "C", "text": "Conduta, resultado, nexo causal e ilicitude, sendo o dolo e a culpa elementos da culpabilidade.", "is_correct": false, "explanation": "A ilicitude não é elemento do fato típico, mas sim o segundo substrato do crime. Na teoria finalista, dolo e culpa estão na conduta, não na culpabilidade."},
+      {"letter": "D", "text": "Conduta, resultado, nexo causal, tipicidade e imputabilidade do agente.", "is_correct": false, "explanation": "A imputabilidade é elemento da culpabilidade, não do fato típico."},
+      {"letter": "E", "text": "Conduta, resultado, nexo causal e punibilidade, sendo a tipicidade pressuposto do crime.", "is_correct": false, "explanation": "A punibilidade não é elemento do fato típico nem substrato do crime. A tipicidade é elemento do fato típico, não mero pressuposto."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "ilicitude",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre os substratos do crime, conforme a teoria tripartida adotada majoritariamente pela doutrina brasileira, assinale a alternativa correta:",
+    "text": "Crime, segundo a teoria tripartida, é:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A teoria tripartida, adotada majoritariamente pela doutrina brasileira, define crime como fato típico, ilícito (antijurídico) e culpável. Cada um desses elementos constitui um substrato do conceito analítico de crime.",
+    "legal_basis": "Doutrina; Arts. 13 a 29, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Fato típico e ilícito, sendo a culpabilidade mero pressuposto de aplicação da pena.", "is_correct": false, "explanation": "Esta é a posição da teoria bipartida, não da tripartida. Na tripartida, a culpabilidade é substrato do crime."},
+      {"letter": "B", "text": "Fato típico, ilícito e punível, sendo a culpabilidade elemento da punibilidade.", "is_correct": false, "explanation": "A punibilidade não é substrato do crime, mas consequência jurídica dele."},
+      {"letter": "C", "text": "Fato típico, ilícito e culpável.", "is_correct": true, "explanation": "Correta. Na teoria tripartida, os três substratos do crime são: fato típico, ilicitude (antijuridicidade) e culpabilidade."},
+      {"letter": "D", "text": "Fato típico, antijurídico, culpável e punível.", "is_correct": false, "explanation": "A teoria tripartida possui apenas três substratos. A punibilidade é consequência do crime, não substrato."},
+      {"letter": "E", "text": "Conduta, resultado e nexo causal, independentemente de tipicidade.", "is_correct": false, "explanation": "Conduta, resultado e nexo causal são elementos do fato típico, que é apenas um dos substratos do crime."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "legitima-defesa",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma ronda noturna, o soldado Ferreira, da PMGO, depara-se com uma situação em que Pedro, comerciante, relata que estava sendo assaltado à mão armada por dois indivíduos. Pedro afirma que sacou sua arma de fogo, legalmente registrada, e efetuou disparos contra os assaltantes, ferindo um deles. Pedro alega ter agido em legítima defesa. Assinale a alternativa correta sobre os requisitos da legítima defesa:",
+    "text": "São requisitos da legítima defesa, conforme o art. 25 do Código Penal:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A legítima defesa, prevista no art. 25 do CP, exige: (1) agressão injusta, atual ou iminente; (2) uso moderado dos meios necessários; (3) defesa de direito próprio ou de terceiro. Não se exige que a agressão seja exclusivamente física, podendo ser contra qualquer bem jurídico.",
+    "legal_basis": "Art. 25, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Agressão injusta, atual ou iminente, uso moderado dos meios necessários e defesa de direito próprio ou de outrem.", "is_correct": true, "explanation": "Correta. São os requisitos legais da legítima defesa previstos no art. 25 do CP."},
+      {"letter": "B", "text": "Agressão injusta, atual ou iminente, uso de qualquer meio disponível e defesa exclusivamente de direito próprio.", "is_correct": false, "explanation": "O uso dos meios deve ser moderado (proporcional), e a legítima defesa pode ser de direito próprio ou de terceiro."},
+      {"letter": "C", "text": "Agressão injusta, exclusivamente atual, uso moderado dos meios necessários e prévia autorização judicial.", "is_correct": false, "explanation": "A agressão pode ser atual ou iminente, e não se exige autorização judicial para o exercício da legítima defesa."},
+      {"letter": "D", "text": "Perigo atual ou iminente, não provocado pela vontade do agente, e impossibilidade de evitar de outro modo.", "is_correct": false, "explanation": "Estes são os requisitos do estado de necessidade (art. 24, CP), e não da legítima defesa."},
+      {"letter": "E", "text": "Agressão injusta, passada ou futura, uso de qualquer meio e defesa de direito patrimonial exclusivamente.", "is_correct": false, "explanation": "A agressão deve ser atual ou iminente (não passada ou futura), os meios devem ser moderados, e a defesa pode ser de qualquer direito."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "estado-de-necessidade",
+    "question_type": "multipla_escolha",
+    "context_text": "Maria, gestante de 8 meses, encontra-se em um prédio em chamas. Para escapar do incêndio, ela arromba a porta do apartamento vizinho, causando danos ao patrimônio do proprietário. Maria alega ter agido em estado de necessidade. Assinale a alternativa correta:",
+    "text": "Sobre o estado de necessidade como excludente de ilicitude, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O estado de necessidade, previsto no art. 24 do CP, exige: perigo atual, que a situação não tenha sido voluntariamente provocada pelo agente, que não haja dever legal de enfrentar o perigo, e que o sacrifício do bem seja razoável. No caso, Maria atendia a todos os requisitos, pois agia para salvar sua vida e a do nascituro.",
+    "legal_basis": "Art. 24, CP",
+    "alternatives": [
+      {"letter": "A", "text": "O estado de necessidade exige que o perigo seja atual, não provocado voluntariamente pelo agente, e que este não tenha o dever legal de enfrentá-lo.", "is_correct": true, "explanation": "Correta. São os requisitos do estado de necessidade previstos no art. 24 do CP."},
+      {"letter": "B", "text": "O estado de necessidade somente se aplica quando o bem sacrificado é de maior valor que o bem preservado.", "is_correct": false, "explanation": "Não é exigido que o bem sacrificado seja de maior valor, mas sim que o sacrifício seja razoável. Bens de igual valor também podem justificar o estado de necessidade."},
+      {"letter": "C", "text": "O agente que provocou o perigo por culpa não pode alegar estado de necessidade em nenhuma hipótese.", "is_correct": false, "explanation": "A lei exige que o perigo não tenha sido provocado voluntariamente (dolosamente). Se a provocação foi culposa, admite-se o estado de necessidade."},
+      {"letter": "D", "text": "O estado de necessidade somente pode ser invocado para proteção de direito próprio, não se admitindo o estado de necessidade de terceiro.", "is_correct": false, "explanation": "O estado de necessidade pode ser invocado para proteção de direito próprio ou alheio, conforme art. 24 do CP."},
+      {"letter": "E", "text": "O bombeiro militar nunca pode alegar estado de necessidade, pois possui dever legal de enfrentar qualquer perigo.", "is_correct": false, "explanation": "Mesmo quem tem dever legal de enfrentar o perigo pode alegar estado de necessidade quando a situação ultrapassar os limites razoáveis de exigibilidade."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime-doloso",
+    "question_type": "multipla_escolha",
+    "context_text": "Paulo, desejando matar seu desafeto Ricardo, adquire uma arma de fogo e aguarda a vítima na saída do trabalho. Ao avistar Ricardo, Paulo efetua três disparos em sua direção, atingindo-o na região torácica. Ricardo é socorrido e sobrevive. Sobre a classificação da conduta de Paulo quanto ao elemento subjetivo, assinale a alternativa correta:",
+    "text": "A conduta de Paulo configura crime praticado com:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O dolo direto (ou dolo de primeiro grau) ocorre quando o agente quer o resultado, dirigindo sua conduta finalisticamente à produção do evento criminoso. No caso, Paulo quis matar Ricardo, agindo com consciência e vontade de produzir o resultado morte.",
+    "legal_basis": "Art. 18, I, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Culpa consciente, pois Paulo previu o resultado, mas acreditou que pudesse evitá-lo.", "is_correct": false, "explanation": "Na culpa consciente, o agente prevê o resultado, mas acredita sinceramente que ele não ocorrerá. Paulo queria matar Ricardo."},
+      {"letter": "B", "text": "Dolo eventual, pois Paulo assumiu o risco de produzir o resultado morte.", "is_correct": false, "explanation": "No dolo eventual, o agente não quer diretamente o resultado, mas assume o risco. Paulo agiu com dolo direto, pois queria matar Ricardo."},
+      {"letter": "C", "text": "Dolo direto, pois Paulo agiu com consciência e vontade de produzir o resultado.", "is_correct": true, "explanation": "Correta. Paulo agiu com dolo direto (dolo de primeiro grau), pois sua conduta foi finalisticamente dirigida à morte de Ricardo."},
+      {"letter": "D", "text": "Preterdolo, pois o resultado ultrapassou a intenção do agente.", "is_correct": false, "explanation": "No preterdolo, há dolo no antecedente e culpa no consequente. Paulo queria o resultado mais grave (morte), não se trata de preterdolo."},
+      {"letter": "E", "text": "Culpa inconsciente, pois Paulo não previu o resultado de sua conduta.", "is_correct": false, "explanation": "Na culpa inconsciente, o agente não prevê o resultado previsível. Paulo não apenas previu como desejou o resultado."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crime-culposo",
+    "question_type": "multipla_escolha",
+    "context_text": "O motorista Antônio, ao dirigir em alta velocidade em via urbana, perde o controle do veículo e atropela um pedestre, causando-lhe a morte. Antônio não tinha intenção de matar, mas dirigia de forma imprudente. Assinale a alternativa correta sobre o crime culposo:",
+    "text": "São elementos do crime culposo:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O crime culposo possui os seguintes elementos: conduta voluntária, violação do dever objetivo de cuidado (por imprudência, negligência ou imperícia), resultado involuntário, nexo causal, tipicidade e previsibilidade objetiva do resultado.",
+    "legal_basis": "Art. 18, II, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Conduta voluntária, inobservância do dever de cuidado, resultado involuntário, nexo causal e previsibilidade objetiva.", "is_correct": true, "explanation": "Correta. São os elementos que compõem o crime culposo segundo a doutrina majoritária."},
+      {"letter": "B", "text": "Conduta involuntária, resultado querido pelo agente e nexo causal.", "is_correct": false, "explanation": "No crime culposo, a conduta é voluntária, mas o resultado é involuntário. O agente não quer o resultado."},
+      {"letter": "C", "text": "Conduta voluntária, resultado involuntário e dolo eventual.", "is_correct": false, "explanation": "O dolo eventual não é elemento do crime culposo, mas sim do crime doloso. São institutos distintos."},
+      {"letter": "D", "text": "Conduta dolosa, resultado culposo e nexo de imputação.", "is_correct": false, "explanation": "Esta descrição se aproxima do crime preterdoloso, não do crime culposo propriamente dito."},
+      {"letter": "E", "text": "Conduta voluntária, resultado involuntário, nexo causal e imprevisibilidade do resultado.", "is_correct": false, "explanation": "É necessária a previsibilidade objetiva do resultado, e não sua imprevisibilidade. Se o resultado é imprevisível, não há culpa."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "dolo-eventual-culpa-consciente",
+    "question_type": "multipla_escolha",
+    "context_text": "Em uma abordagem de rotina, o cabo da PMGO Oliveira se depara com um caso em que um motorista embriagado, trafegando a 140 km/h em via urbana com limite de 60 km/h, atropelou e matou um ciclista. A defesa alega culpa consciente, enquanto o Ministério Público sustenta dolo eventual. Assinale a alternativa correta sobre a distinção entre dolo eventual e culpa consciente:",
+    "text": "A diferença essencial entre dolo eventual e culpa consciente reside no fato de que:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "No dolo eventual, o agente prevê o resultado e, embora não o deseje diretamente, aceita-o como possível, assumindo o risco de produzi-lo. Na culpa consciente, o agente também prevê o resultado, mas acredita sinceramente que conseguirá evitá-lo. A diferença está no elemento volitivo: aceitação do risco (dolo eventual) versus crença sincera na evitação (culpa consciente).",
+    "legal_basis": "Art. 18, I e II, CP",
+    "alternatives": [
+      {"letter": "A", "text": "No dolo eventual, o agente não prevê o resultado, enquanto na culpa consciente ele o prevê.", "is_correct": false, "explanation": "Em ambos os casos o agente prevê o resultado. A diferença está no elemento volitivo, não cognitivo."},
+      {"letter": "B", "text": "No dolo eventual, o agente prevê o resultado e assume o risco; na culpa consciente, prevê o resultado, mas acredita sinceramente poder evitá-lo.", "is_correct": true, "explanation": "Correta. A diferença fundamental está no elemento volitivo: assunção do risco versus confiança na evitação."},
+      {"letter": "C", "text": "No dolo eventual, o agente quer diretamente o resultado; na culpa consciente, não o prevê.", "is_correct": false, "explanation": "No dolo eventual, o agente não quer diretamente o resultado (isso seria dolo direto). Na culpa consciente, o agente prevê o resultado."},
+      {"letter": "D", "text": "Dolo eventual e culpa consciente são institutos idênticos, diferenciando-se apenas na dosimetria da pena.", "is_correct": false, "explanation": "São institutos distintos, com consequências jurídicas completamente diferentes. O dolo eventual configura crime doloso, e a culpa consciente, crime culposo."},
+      {"letter": "E", "text": "Na culpa consciente, o agente deseja o resultado; no dolo eventual, o agente age com negligência.", "is_correct": false, "explanation": "Na culpa consciente, o agente não deseja o resultado, e no dolo eventual, o agente não age com simples negligência, mas com assunção do risco."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "tentativa",
+    "question_type": "multipla_escolha",
+    "context_text": "Marcos, com intenção de matar José, dispara cinco tiros contra a vítima, mas nenhum projétil a atinge, pois José se abaixa no momento dos disparos. Marcos é preso em flagrante por policiais militares que passavam pelo local. Assinale a alternativa correta sobre a tentativa:",
+    "text": "A conduta de Marcos configura:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O crime tentado ocorre quando, iniciada a execução, o crime não se consuma por circunstâncias alheias à vontade do agente (art. 14, II, CP). No caso, Marcos iniciou a execução (disparou os tiros), mas o crime não se consumou porque José se desviou. A pena da tentativa é a do crime consumado, diminuída de 1/3 a 2/3, conforme o iter criminis percorrido.",
+    "legal_basis": "Art. 14, II, e parágrafo único, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Crime impossível, pois nenhum projétil atingiu a vítima.", "is_correct": false, "explanation": "Crime impossível exige ineficácia absoluta do meio ou impropriedade absoluta do objeto. O meio era eficaz (arma de fogo funcional) e o objeto era próprio (pessoa viva)."},
+      {"letter": "B", "text": "Tentativa de homicídio, pois a execução foi iniciada, mas o crime não se consumou por circunstâncias alheias à vontade do agente.", "is_correct": true, "explanation": "Correta. Marcos iniciou a execução com o disparo dos tiros, mas o resultado morte não ocorreu por circunstância alheia à sua vontade (a vítima se desviou)."},
+      {"letter": "C", "text": "Desistência voluntária, pois Marcos não conseguiu acertar a vítima.", "is_correct": false, "explanation": "A desistência voluntária exige que o agente, por vontade própria, interrompa a execução. Marcos disparou todos os tiros, mas não acertou por circunstância alheia."},
+      {"letter": "D", "text": "Atos preparatórios não puníveis, pois a vítima não sofreu nenhuma lesão.", "is_correct": false, "explanation": "Os disparos configuram atos executórios, não preparatórios. A ausência de lesão não descaracteriza a tentativa."},
+      {"letter": "E", "text": "Mero crime de perigo, respondendo Marcos apenas pelo disparo de arma de fogo.", "is_correct": false, "explanation": "A conduta de Marcos configura tentativa de homicídio doloso, que absorve o crime de disparo de arma de fogo pelo princípio da consunção."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "desistencia-voluntaria-arrependimento-eficaz",
+    "question_type": "multipla_escolha",
+    "context_text": "Ana, com intenção de matar sua rival Beatriz, coloca veneno na bebida desta. Após Beatriz ingerir a substância, Ana se arrepende e imediatamente a leva ao hospital, onde Beatriz recebe tratamento e sobrevive sem sequelas. Assinale a alternativa correta:",
+    "text": "A conduta de Ana, ao socorrer Beatriz após o envenenamento, configura:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O arrependimento eficaz (art. 15, segunda parte, CP) ocorre quando o agente, após esgotar os atos executórios, impede voluntariamente que o resultado se produza. Ana já havia completado a execução (envenenou a bebida e Beatriz a ingeriu), mas impediu ativamente o resultado morte. Ana responde apenas pelos atos já praticados (no caso, nenhuma lesão, pois Beatriz se recuperou sem sequelas).",
+    "legal_basis": "Art. 15, segunda parte, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Desistência voluntária, respondendo Ana apenas pelos atos já praticados.", "is_correct": false, "explanation": "Na desistência voluntária, o agente interrompe a execução antes de esgotá-la. Ana já havia completado a execução (Beatriz ingeriu o veneno), caracterizando arrependimento eficaz, não desistência voluntária."},
+      {"letter": "B", "text": "Arrependimento eficaz, respondendo Ana apenas pelos atos já praticados.", "is_correct": true, "explanation": "Correta. Ana esgotou os atos executórios, mas impediu voluntariamente o resultado. Responde apenas pelos atos já praticados."},
+      {"letter": "C", "text": "Tentativa de homicídio, com atenuante genérica pelo arrependimento posterior.", "is_correct": false, "explanation": "Não se trata de tentativa com atenuante, mas de arrependimento eficaz, que é causa de exclusão da tentativa."},
+      {"letter": "D", "text": "Arrependimento posterior, com redução da pena de 1/3 a 2/3.", "is_correct": false, "explanation": "O arrependimento posterior (art. 16, CP) aplica-se apenas a crimes patrimoniais sem violência ou grave ameaça, mediante reparação do dano. O caso é de arrependimento eficaz."},
+      {"letter": "E", "text": "Homicídio consumado com atenuante, pois o envenenamento já havia ocorrido.", "is_correct": false, "explanation": "O homicídio não se consumou, pois Beatriz sobreviveu. O arrependimento eficaz impede a consumação do crime."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-de-pessoas",
+    "question_type": "multipla_escolha",
+    "context_text": "Lucas combina com Felipe a prática de um furto a uma residência. Lucas fica do lado de fora vigiando, enquanto Felipe ingressa no imóvel e subtrai objetos de valor. Ambos são presos pela PMGO quando tentavam fugir. Assinale a alternativa correta sobre o concurso de pessoas:",
+    "text": "Sobre o concurso de pessoas no caso narrado, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O concurso de pessoas (arts. 29 a 31 do CP) exige: pluralidade de agentes, relevância causal das condutas, liame subjetivo (vínculo psicológico) e identidade de infração penal. Lucas atuou como partícipe (vigilância), enquanto Felipe como autor. Ambos respondem pelo crime, nos limites de suas culpabilidades.",
+    "legal_basis": "Arts. 29 a 31, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas Felipe responde pelo furto, pois Lucas não ingressou na residência.", "is_correct": false, "explanation": "Lucas responde como partícipe, pois contribuiu para o crime ao fazer a vigilância, havendo liame subjetivo entre ambos."},
+      {"letter": "B", "text": "Lucas e Felipe respondem pelo furto em concurso de pessoas, cada um na medida de sua culpabilidade.", "is_correct": true, "explanation": "Correta. Ambos respondem pelo crime nos limites de suas culpabilidades, conforme art. 29 do CP."},
+      {"letter": "C", "text": "Lucas responde apenas pelo crime de favorecimento real, e não pelo furto.", "is_correct": false, "explanation": "Lucas é partícipe do furto, pois atuou com liame subjetivo e contribuiu causalmente para o crime, não se tratando de favorecimento real."},
+      {"letter": "D", "text": "O concurso de pessoas exige que todos os agentes pratiquem a mesma conduta executória.", "is_correct": false, "explanation": "O concurso de pessoas admite divisão de tarefas. Nem todos precisam praticar a conduta executória típica; a participação pode se dar por instigação, induzimento ou auxílio."},
+      {"letter": "E", "text": "Como Lucas e Felipe combinaram o crime previamente, configura-se associação criminosa, e não concurso de pessoas.", "is_correct": false, "explanation": "A associação criminosa (art. 288, CP) exige associação estável de 3 ou mais pessoas. Dois agentes que combinam a prática de um crime configuram concurso de pessoas."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-de-pessoas-comunicabilidade",
+    "question_type": "multipla_escolha",
+    "context_text": "Roberto, funcionário público, combina com seu amigo Thiago, que não é funcionário público, a prática de peculato. Roberto desvia valores públicos com o auxílio de Thiago. Assinale a alternativa correta sobre a comunicabilidade de circunstâncias no concurso de pessoas:",
+    "text": "No caso narrado, quanto à responsabilidade penal de Thiago, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Conforme o art. 30 do CP, as circunstâncias de caráter pessoal não se comunicam, salvo quando elementares do crime. A condição de funcionário público é elementar do crime de peculato, e não mera circunstância. Assim, comunica-se ao coautor ou partícipe que conhecia essa condição.",
+    "legal_basis": "Art. 30, CP; Art. 312, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Thiago responde por peculato, pois a condição de funcionário público é elementar do crime e se comunica ao partícipe que dela tinha conhecimento.", "is_correct": true, "explanation": "Correta. A condição de funcionário público é elementar do peculato e, nos termos do art. 30 do CP, comunica-se ao partícipe."},
+      {"letter": "B", "text": "Thiago não pode responder por peculato, pois não é funcionário público, devendo responder por furto.", "is_correct": false, "explanation": "A condição de funcionário público é elementar do crime e se comunica ao particular que conhecia essa condição."},
+      {"letter": "C", "text": "Thiago responde por receptação, pois apenas recebeu os valores desviados por Roberto.", "is_correct": false, "explanation": "Thiago não agiu como receptador, mas como partícipe do peculato, contribuindo para a conduta criminosa de Roberto."},
+      {"letter": "D", "text": "As elementares do crime nunca se comunicam entre os coautores ou partícipes.", "is_correct": false, "explanation": "As elementares sempre se comunicam, desde que ingressem na esfera de conhecimento do coautor ou partícipe (art. 30, CP)."},
+      {"letter": "E", "text": "Thiago responde por peculato somente se também for funcionário público, ainda que de órgão diverso.", "is_correct": false, "explanation": "Não é necessário que Thiago seja funcionário público. A elementar se comunica ao particular que conhecia a condição funcional do autor."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "penas-especies",
+    "question_type": "multipla_escolha",
+    "context_text": "Acerca das espécies de pena previstas no Código Penal brasileiro, assinale a alternativa correta:",
+    "text": "Segundo o art. 32 do Código Penal, as penas são:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 32 do CP prevê três espécies de pena: privativas de liberdade (reclusão e detenção), restritivas de direitos e multa. As penas privativas de liberdade podem ser cumpridas em regime fechado, semiaberto ou aberto.",
+    "legal_basis": "Art. 32, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Privativas de liberdade, restritivas de direitos e multa.", "is_correct": true, "explanation": "Correta. São as três espécies de pena previstas no art. 32 do CP."},
+      {"letter": "B", "text": "Privativas de liberdade, restritivas de direitos, multa e banimento.", "is_correct": false, "explanation": "O banimento é pena vedada pela Constituição Federal (art. 5°, XLVII, 'd'). Não é espécie de pena no sistema brasileiro."},
+      {"letter": "C", "text": "Reclusão, detenção e prisão simples.", "is_correct": false, "explanation": "Reclusão e detenção são modalidades de pena privativa de liberdade. Prisão simples é pena aplicada às contravenções penais. Não são as espécies de pena do art. 32."},
+      {"letter": "D", "text": "Privativas de liberdade, pecuniárias e de morte em caso de guerra declarada.", "is_correct": false, "explanation": "Embora a pena de morte em caso de guerra declarada seja prevista na CF, o art. 32 do CP não a inclui entre as espécies de pena."},
+      {"letter": "E", "text": "Privativas de liberdade, restritivas de direitos, multa e medidas de segurança.", "is_correct": false, "explanation": "As medidas de segurança não são espécies de pena, mas sim sanções penais destinadas aos inimputáveis e semi-imputáveis."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "penas-aplicacao",
+    "question_type": "multipla_escolha",
+    "context_text": "O juiz, ao proferir sentença condenatória, deve realizar a dosimetria da pena, seguindo o sistema trifásico previsto no Código Penal. Assinale a alternativa correta sobre o sistema trifásico de aplicação da pena:",
+    "text": "No sistema trifásico de aplicação da pena (art. 68, CP), o juiz deve, em sequência:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O sistema trifásico, previsto no art. 68 do CP, estabelece que o juiz deve: 1°) fixar a pena-base, considerando as circunstâncias judiciais do art. 59 do CP; 2°) aplicar as circunstâncias atenuantes e agravantes; 3°) aplicar as causas de diminuição e aumento de pena.",
+    "legal_basis": "Art. 68, CP; Art. 59, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Fixar a pena-base conforme as circunstâncias judiciais, aplicar as atenuantes e agravantes, e depois as causas de diminuição e aumento.", "is_correct": true, "explanation": "Correta. É a sequência do sistema trifásico prevista no art. 68 do CP."},
+      {"letter": "B", "text": "Aplicar as causas de aumento e diminuição, fixar a pena-base e depois considerar as atenuantes e agravantes.", "is_correct": false, "explanation": "A ordem está invertida. O sistema trifásico começa pela pena-base e termina com as causas de aumento e diminuição."},
+      {"letter": "C", "text": "Fixar a pena mínima prevista no tipo penal e aplicar exclusivamente as causas de aumento.", "is_correct": false, "explanation": "O juiz não fixa automaticamente a pena mínima, mas sim a pena-base conforme as circunstâncias judiciais, podendo esta ser acima do mínimo legal."},
+      {"letter": "D", "text": "Fixar a pena-base, aplicar as causas de diminuição e aumento, e por fim considerar as atenuantes e agravantes.", "is_correct": false, "explanation": "As atenuantes e agravantes são aplicadas na segunda fase, antes das causas de diminuição e aumento (terceira fase)."},
+      {"letter": "E", "text": "Aplicar as circunstâncias judiciais, as causas de aumento e as qualificadoras, nesta ordem.", "is_correct": false, "explanation": "As qualificadoras não fazem parte das fases da dosimetria; elas alteram os limites da pena em abstrato, incidindo antes do sistema trifásico."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "homicidio",
+    "question_type": "multipla_escolha",
+    "context_text": "Eduardo, tomado por violenta emoção após descobrir que sua esposa mantinha relacionamento extraconjugal, agride-a com socos e chutes, causando-lhe a morte. Eduardo é preso em flagrante pela PMGO. Assinale a alternativa correta:",
+    "text": "Sobre o homicídio privilegiado, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O homicídio privilegiado (art. 121, §1°, CP) prevê causa de diminuição de pena de 1/6 a 1/3 quando o agente comete o crime impelido por motivo de relevante valor social ou moral, ou sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima. A violenta emoção deve ser dominante (não mera influência) e a reação deve ser imediata à provocação.",
+    "legal_basis": "Art. 121, §1°, CP",
+    "alternatives": [
+      {"letter": "A", "text": "A violenta emoção, por si só, é suficiente para configurar o homicídio privilegiado, independentemente das circunstâncias.", "is_correct": false, "explanation": "Não basta a violenta emoção. É necessário que o agente esteja sob o domínio dela (não mera influência) e que a reação ocorra logo em seguida a injusta provocação da vítima."},
+      {"letter": "B", "text": "O homicídio privilegiado exige que o agente esteja sob o domínio de violenta emoção, logo em seguida a injusta provocação da vítima.", "is_correct": true, "explanation": "Correta. São requisitos cumulativos: domínio de violenta emoção + imediatidade da reação + injusta provocação da vítima."},
+      {"letter": "C", "text": "O homicídio privilegiado é causa de exclusão da ilicitude, isentando o agente de pena.", "is_correct": false, "explanation": "O privilégio é causa de diminuição de pena (1/6 a 1/3), não excludente de ilicitude. O agente é condenado, mas com pena reduzida."},
+      {"letter": "D", "text": "A descoberta de adultério configura automaticamente motivo de relevante valor moral, independentemente das circunstâncias.", "is_correct": false, "explanation": "O ciúme e a traição não configuram automaticamente motivo de relevante valor moral. A análise deve ser casuística, e a jurisprudência tem afastado essa tese."},
+      {"letter": "E", "text": "O homicídio privilegiado é incompatível com as qualificadoras do art. 121, §2°, do CP, em qualquer hipótese.", "is_correct": false, "explanation": "Segundo a jurisprudência do STJ e do STF, o privilégio é compatível com qualificadoras de natureza objetiva (ex.: meio cruel, emboscada)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "lesao-corporal",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma briga em um bar, Fábio desfere um golpe de garrafa na cabeça de Gustavo, causando-lhe uma cicatriz permanente no rosto. Gustavo registra ocorrência na delegacia. Assinale a alternativa correta sobre a classificação da lesão corporal:",
+    "text": "A lesão corporal que causa deformidade permanente na vítima é classificada como:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A lesão corporal de natureza grave está prevista no art. 129, §1°, e a de natureza gravíssima no art. 129, §2°, do CP. A deformidade permanente é classificada como lesão corporal gravíssima (§2°, IV), com pena de reclusão de 2 a 8 anos.",
+    "legal_basis": "Art. 129, §2°, IV, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Lesão corporal leve, pois não houve risco de vida.", "is_correct": false, "explanation": "A deformidade permanente qualifica a lesão como gravíssima, independentemente de ter havido ou não risco de vida."},
+      {"letter": "B", "text": "Lesão corporal grave, com pena de reclusão de 1 a 5 anos.", "is_correct": false, "explanation": "A deformidade permanente é hipótese de lesão gravíssima (§2°), não de lesão grave (§1°)."},
+      {"letter": "C", "text": "Lesão corporal gravíssima, com pena de reclusão de 2 a 8 anos.", "is_correct": true, "explanation": "Correta. A deformidade permanente é resultado qualificador da lesão corporal gravíssima (art. 129, §2°, IV, CP)."},
+      {"letter": "D", "text": "Tentativa de homicídio, por se tratar de golpe na cabeça.", "is_correct": false, "explanation": "O animus do agente era de lesionar, não de matar. O local do golpe, por si só, não configura tentativa de homicídio."},
+      {"letter": "E", "text": "Lesão corporal seguida de morte, por se tratar de golpe potencialmente letal.", "is_correct": false, "explanation": "A lesão corporal seguida de morte (art. 129, §3°, CP) exige o resultado morte, que não ocorreu no caso narrado."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "furto",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante patrulhamento, soldados da PMGO avistam um indivíduo escalando o muro de uma residência às 3 horas da madrugada. Ao ser abordado, constatam que ele carregava uma mochila com pertences subtraídos da residência. Assinale a alternativa correta:",
+    "text": "A conduta descrita configura furto qualificado quando praticado mediante:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O furto qualificado está previsto no art. 155, §4°, do CP. A escalada (inciso II) é uma das qualificadoras do furto, juntamente com a destruição ou rompimento de obstáculo, destreza, chave falsa e concurso de pessoas. O repouso noturno é causa de aumento de pena do furto simples (§1°), e há discussão sobre sua aplicação ao furto qualificado.",
+    "legal_basis": "Art. 155, §4°, II, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Escalada, que constitui qualificadora do crime de furto prevista no art. 155, §4°, II, do CP.", "is_correct": true, "explanation": "Correta. A escalada é qualificadora do furto, prevista no art. 155, §4°, II, do CP, com pena de reclusão de 2 a 8 anos."},
+      {"letter": "B", "text": "Repouso noturno, que constitui qualificadora do crime de furto.", "is_correct": false, "explanation": "O repouso noturno (art. 155, §1°, CP) é causa de aumento de pena de 1/3, e não qualificadora do furto."},
+      {"letter": "C", "text": "Violência à pessoa, que qualifica o furto e eleva a pena.", "is_correct": false, "explanation": "A subtração mediante violência ou grave ameaça configura roubo (art. 157, CP), e não furto qualificado."},
+      {"letter": "D", "text": "Emprego de arma, qualificadora exclusiva do crime de furto.", "is_correct": false, "explanation": "O emprego de arma não é qualificadora do furto, mas sim causa de aumento de pena no roubo (art. 157, §2°-A, CP)."},
+      {"letter": "E", "text": "Abuso de confiança, que sempre qualifica o furto noturno.", "is_correct": false, "explanation": "O abuso de confiança é qualificadora do furto (art. 155, §4°, II, CP), mas não se aplica ao caso narrado e não tem relação com o horário noturno."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "roubo",
+    "question_type": "multipla_escolha",
+    "context_text": "Pedro, empunhando uma faca, aborda Cláudio em via pública e exige a entrega de seu aparelho celular e carteira. Cláudio, temendo por sua vida, entrega os pertences. Pedro foge, mas é preso por uma guarnição da PMGO minutos depois. Assinale a alternativa correta:",
+    "text": "A conduta de Pedro configura:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O roubo (art. 157, CP) consiste em subtrair coisa móvel alheia, para si ou para outrem, mediante grave ameaça ou violência à pessoa, ou depois de havê-la, por qualquer meio, reduzido à impossibilidade de resistência. No caso, Pedro empregou grave ameaça (uso de faca) para subtrair os pertences da vítima.",
+    "legal_basis": "Art. 157, caput, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Furto qualificado, pois Pedro empregou destreza para subtrair os pertences.", "is_correct": false, "explanation": "A destreza é qualificadora do furto e pressupõe habilidade para evitar a percepção da vítima. No caso, houve grave ameaça, configurando roubo."},
+      {"letter": "B", "text": "Roubo próprio, consumado, praticado mediante grave ameaça.", "is_correct": true, "explanation": "Correta. Pedro empregou grave ameaça (faca) para subtrair os pertences, consumando o roubo com a posse da res furtiva, ainda que por breve período."},
+      {"letter": "C", "text": "Extorsão, pois Pedro exigiu a entrega dos bens sob ameaça.", "is_correct": false, "explanation": "Na extorsão (art. 158, CP), a colaboração da vítima é imprescindível. No roubo, o agente pode obter a coisa independentemente da vontade da vítima."},
+      {"letter": "D", "text": "Roubo tentado, pois Pedro foi preso logo após o crime.", "is_correct": false, "explanation": "O roubo se consumou no momento em que Pedro obteve a posse dos bens, ainda que transitória. A prisão posterior não descaracteriza a consumação."},
+      {"letter": "E", "text": "Furto simples com causa de aumento por emprego de arma branca.", "is_correct": false, "explanation": "O emprego de arma branca para intimidar a vítima configura grave ameaça, elemento do roubo, não do furto."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "crimes-contra-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "O servidor público estadual Roberto, lotado na Secretaria de Segurança Pública de Goiás, solicita a um cidadão o pagamento de R$ 500,00 para agilizar a emissão de um documento público a que o cidadão tinha direito. Assinale a alternativa correta:",
+    "text": "A conduta de Roberto configura o crime de:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A concussão (art. 316, CP) consiste em exigir, para si ou para outrem, direta ou indiretamente, vantagem indevida, em razão da função. A corrupção passiva (art. 317, CP) consiste em solicitar ou receber vantagem indevida, ou aceitar promessa de tal vantagem. No caso, Roberto solicitou a vantagem, configurando corrupção passiva.",
+    "legal_basis": "Art. 317, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Concussão, pois Roberto exigiu vantagem indevida em razão da função.", "is_correct": false, "explanation": "A concussão exige o verbo 'exigir', com conotação de imposição coercitiva. Roberto 'solicitou' o pagamento, configurando corrupção passiva."},
+      {"letter": "B", "text": "Corrupção passiva, pois Roberto solicitou vantagem indevida em razão da função.", "is_correct": true, "explanation": "Correta. O verbo 'solicitar' é núcleo do tipo da corrupção passiva (art. 317, CP)."},
+      {"letter": "C", "text": "Prevaricação, pois Roberto retardou indevidamente ato de ofício.", "is_correct": false, "explanation": "A prevaricação (art. 319, CP) exige que o funcionário retarde ou deixe de praticar ato de ofício para satisfazer interesse ou sentimento pessoal. O caso configura corrupção passiva."},
+      {"letter": "D", "text": "Peculato, pois Roberto se apropriou de valor público.", "is_correct": false, "explanation": "O peculato (art. 312, CP) exige apropriação de dinheiro, valor ou bem público. Roberto não se apropriou de bem público, mas solicitou vantagem indevida."},
+      {"letter": "E", "text": "Excesso de exação, pois Roberto cobrou tributo indevido.", "is_correct": false, "explanation": "O excesso de exação (art. 316, §1°, CP) refere-se à cobrança indevida de tributo ou contribuição social. Roberto não cobrou tributo, mas solicitou propina."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "peculato",
+    "question_type": "multipla_escolha",
+    "context_text": "O policial militar Sérgio, durante o serviço, desvia combustível da viatura oficial para abastecer seu veículo particular. A conduta é descoberta após auditoria interna. Assinale a alternativa correta:",
+    "text": "A conduta de Sérgio configura o crime de:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O peculato-desvio (art. 312, caput, segunda parte, CP) ocorre quando o funcionário público desvia, em proveito próprio ou alheio, dinheiro, valor ou qualquer outro bem móvel, público ou particular, de que tem a posse em razão do cargo. Sérgio, na condição de policial militar, tinha posse do combustível em razão da função e o desviou para uso particular.",
+    "legal_basis": "Art. 312, caput, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Furto qualificado pelo abuso de confiança.", "is_correct": false, "explanation": "Sérgio é funcionário público e tinha posse do bem em razão do cargo. A conduta configura peculato, não furto."},
+      {"letter": "B", "text": "Peculato-desvio, pois desviou bem público de que tinha posse em razão do cargo.", "is_correct": true, "explanation": "Correta. Sérgio desviou o combustível (bem público) de que tinha posse em razão da função, configurando peculato-desvio."},
+      {"letter": "C", "text": "Apropriação indébita, pois Sérgio se apropriou de bem de terceiro.", "is_correct": false, "explanation": "A apropriação indébita (art. 168, CP) é crime contra o patrimônio praticado por particular. Quando funcionário público se apropria ou desvia bem público, configura peculato."},
+      {"letter": "D", "text": "Peculato-furto, pois Sérgio subtraiu o combustível sem autorização.", "is_correct": false, "explanation": "O peculato-furto (art. 312, §1°, CP) ocorre quando o funcionário não tem posse do bem, mas se vale da facilidade do cargo para subtraí-lo. Sérgio tinha posse do combustível."},
+      {"letter": "E", "text": "Improbidade administrativa, sem repercussão penal.", "is_correct": false, "explanation": "A improbidade administrativa é ilícito de natureza civil. O desvio de bem público por funcionário público configura crime de peculato, com repercussão penal."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "excludente-culpabilidade",
+    "question_type": "multipla_escolha",
+    "context_text": "Renato, de 17 anos, pratica um assalto à mão armada, subtraindo o celular de um transeunte mediante grave ameaça. Assinale a alternativa correta sobre a responsabilidade penal de Renato:",
+    "text": "Considerando que Renato é menor de 18 anos, é correto afirmar que:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 27 do CP e o art. 228 da CF/88 estabelecem que os menores de 18 anos são penalmente inimputáveis, ficando sujeitos às normas do Estatuto da Criança e do Adolescente (ECA). A inimputabilidade por menoridade é causa de exclusão da culpabilidade, não havendo crime por ausência deste substrato (na teoria tripartida).",
+    "legal_basis": "Art. 27, CP; Art. 228, CF/88; ECA",
+    "alternatives": [
+      {"letter": "A", "text": "Renato é penalmente inimputável, ficando sujeito às normas do Estatuto da Criança e do Adolescente.", "is_correct": true, "explanation": "Correta. Menores de 18 anos são inimputáveis e ficam sujeitos à legislação especial (ECA)."},
+      {"letter": "B", "text": "Renato pode ser responsabilizado penalmente, desde que comprovada sua maturidade.", "is_correct": false, "explanation": "A inimputabilidade por menoridade é absoluta e não admite prova em contrário. Trata-se de presunção absoluta (juris et de jure)."},
+      {"letter": "C", "text": "Renato responde pelo crime com redução de pena de 1/3, por ser menor de idade.", "is_correct": false, "explanation": "Não há redução de pena para menores. Eles são absolutamente inimputáveis e sujeitos exclusivamente às medidas socioeducativas do ECA."},
+      {"letter": "D", "text": "A inimputabilidade de Renato depende de laudo pericial que ateste sua incapacidade de entender o caráter ilícito do fato.", "is_correct": false, "explanation": "A menoridade penal é critério puramente biológico (idade). Não depende de perícia sobre a capacidade de entendimento."},
+      {"letter": "E", "text": "Renato pode ser condenado penalmente se o crime for hediondo, conforme exceção constitucional.", "is_correct": false, "explanation": "Não há exceção constitucional à inimputabilidade penal dos menores de 18 anos, independentemente da gravidade do crime."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "consumacao-iter-criminis",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as fases do iter criminis (caminho do crime), assinale a alternativa correta:",
+    "text": "As fases do iter criminis são, em ordem:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O iter criminis compreende quatro fases: cogitação (pensamento sobre o crime), preparação (atos preparatórios), execução (início da conduta típica) e consumação (realização completa do tipo penal). Em regra, apenas os atos executórios são puníveis, sendo a cogitação e os atos preparatórios impuníveis.",
+    "legal_basis": "Arts. 14 e 15, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Cogitação, preparação, execução e consumação.", "is_correct": true, "explanation": "Correta. São as quatro fases do iter criminis, na ordem cronológica de desenvolvimento do crime."},
+      {"letter": "B", "text": "Preparação, cogitação, execução e consumação.", "is_correct": false, "explanation": "A cogitação (ideação do crime) sempre precede a preparação. A ordem está incorreta."},
+      {"letter": "C", "text": "Execução, consumação, cogitação e exaurimento.", "is_correct": false, "explanation": "A ordem está completamente incorreta, e o exaurimento é fase posterior à consumação, não integrando o iter criminis clássico."},
+      {"letter": "D", "text": "Cogitação, execução, preparação e consumação.", "is_correct": false, "explanation": "A preparação antecede a execução. A ordem correta é: cogitação, preparação, execução e consumação."},
+      {"letter": "E", "text": "Preparação, execução, tentativa e consumação.", "is_correct": false, "explanation": "A tentativa não é fase do iter criminis, mas sim consequência da não consumação por circunstâncias alheias à vontade do agente. A cogitação também está ausente."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "topic_slug": "concurso-de-crimes",
+    "question_type": "multipla_escolha",
+    "context_text": "Wagner, em uma única oportunidade, invade um escritório e subtrai o notebook de Ana, o celular de Bruno e a carteira de Carlos, que estavam trabalhando no local. Wagner é preso pela PMGO. Assinale a alternativa correta sobre o concurso de crimes:",
+    "text": "A conduta de Wagner configura:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Quando o agente, mediante uma única ação, pratica crimes contra vítimas diferentes, configura-se o concurso formal próprio (art. 70, CP). Wagner, com uma única conduta (invasão do escritório), praticou furtos contra três vítimas distintas. A pena é aplicada considerando a mais grave, aumentada de 1/6 a 1/2.",
+    "legal_basis": "Art. 70, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Crime único de furto, pois todos os bens foram subtraídos em um mesmo contexto fático.", "is_correct": false, "explanation": "São três crimes de furto, pois atingiram patrimônios de vítimas distintas. A pluralidade de vítimas impede a configuração de crime único."},
+      {"letter": "B", "text": "Concurso material de crimes, devendo as penas ser somadas.", "is_correct": false, "explanation": "O concurso material exige pluralidade de condutas. Wagner praticou uma única ação que resultou em múltiplos crimes."},
+      {"letter": "C", "text": "Concurso formal próprio, aplicando-se a pena do crime mais grave, aumentada de 1/6 a 1/2.", "is_correct": true, "explanation": "Correta. Uma única conduta produziu múltiplos resultados contra vítimas diversas, configurando concurso formal próprio (art. 70, CP)."},
+      {"letter": "D", "text": "Crime continuado, pois os furtos foram praticados em condições semelhantes de tempo e lugar.", "is_correct": false, "explanation": "O crime continuado (art. 71, CP) exige pluralidade de condutas em condições semelhantes. Wagner praticou uma única ação, configurando concurso formal."},
+      {"letter": "E", "text": "Concurso formal impróprio, devendo as penas ser somadas, pois houve desígnios autônomos.", "is_correct": false, "explanation": "O concurso formal impróprio exige desígnios autônomos para cada resultado. No caso, Wagner tinha um único desígnio de subtrair bens do escritório."}
+    ]
+  }
+]

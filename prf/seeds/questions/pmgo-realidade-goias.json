@@ -1,0 +1,362 @@
+[
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A historia de Goias esta intimamente ligada ao ciclo da mineracao do seculo XVIII, que atraiu bandeirantes e colonizadores para o interior do Brasil.",
+    "text": "Sobre o periodo da mineracao em Goias, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Bartolomeu Bueno da Silva, conhecido como Anhanguera (filho), liderou a bandeira que descobriu ouro na regiao de Goias em 1722, dando inicio ao ciclo da mineracao goiana. A regiao foi elevada a Capitania em 1749.",
+    "legal_basis": "Historia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "A descoberta de ouro em Goias se deu por acaso durante expedição jesuitica no seculo XVII.", "is_correct": false, "explanation": "A descoberta de ouro em Goias e atribuida a Bartolomeu Bueno da Silva (Anhanguera filho), em bandeira de 1722, nao a missoes jesuiticas."},
+      {"letter": "B", "text": "Bartolomeu Bueno da Silva, o Anhanguera filho, liderou a bandeira que descobriu ouro na regiao de Goias no inicio do seculo XVIII.", "is_correct": true, "explanation": "Correto. Anhanguera filho liderou a bandeira que chegou a regiao goiana por volta de 1722, iniciando o ciclo do ouro."},
+      {"letter": "C", "text": "A mineracao em Goias teve inicio no seculo XVI, contemporaneamente a exploracao no litoral brasileiro.", "is_correct": false, "explanation": "A mineracao em Goias teve inicio no seculo XVIII, nao no XVI. A exploracao do interior foi posterior a do litoral."},
+      {"letter": "D", "text": "O ciclo da mineracao em Goias durou ate o final do seculo XIX, quando foi substituido pela borracha.", "is_correct": false, "explanation": "O ciclo da mineracao em Goias declinou ainda no seculo XVIII. A borracha nao teve papel significativo na economia goiana."},
+      {"letter": "E", "text": "A mineracao goiana superou a producao de Minas Gerais durante todo o periodo colonial.", "is_correct": false, "explanation": "A producao aurifera de Goias nunca superou a de Minas Gerais, que foi a principal regiao mineradora do Brasil colonial."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A mudanca da capital de Goias da Cidade de Goias para Goiania foi um marco na modernizacao do Estado e representou o ideal de progresso e integracao nacional.",
+    "text": "Sobre a fundacao de Goiania e a mudanca da capital do Estado, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiania foi fundada em 1933 e inaugurada oficialmente em 1942, durante o governo de Pedro Ludovico Teixeira. O projeto urbanistico foi elaborado por Atilio Correa Lima e Armando de Godoy.",
+    "legal_basis": "Historia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Goiania foi fundada durante o governo de Pedro Ludovico Teixeira, com projeto urbanistico de Atilio Correa Lima, sendo inaugurada na decada de 1940.", "is_correct": true, "explanation": "Correto. Pedro Ludovico determinou a construcao da nova capital, projetada por Atilio Correa Lima, inaugurada oficialmente em 1942."},
+      {"letter": "B", "text": "Goiania foi fundada durante o Imperio, no reinado de D. Pedro II, como parte da politica de interiorizacao.", "is_correct": false, "explanation": "Goiania foi fundada na Republica, em 1933, nao durante o Imperio."},
+      {"letter": "C", "text": "A mudanca da capital foi decidida por plebiscito popular, com ampla participacao dos cidadaos goianos.", "is_correct": false, "explanation": "A decisao de mudar a capital foi tomada por Pedro Ludovico Teixeira, interventor federal, sem plebiscito."},
+      {"letter": "D", "text": "O projeto urbanistico de Goiania foi copiado integralmente do projeto de Brasilia.", "is_correct": false, "explanation": "Goiania foi planejada antes de Brasilia. Brasilia foi inaugurada em 1960, enquanto Goiania foi em 1942."},
+      {"letter": "E", "text": "A antiga capital, Cidade de Goias, foi completamente abandonada apos a mudanca.", "is_correct": false, "explanation": "A Cidade de Goias continuou existindo e foi reconhecida como Patrimonio Historico da Humanidade pela UNESCO em 2001."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A proclamacao da Republica em 1889 trouxe significativas mudancas politicas para Goias, com o fim do sistema provincial e a implantacao do regime republicano federativo.",
+    "text": "Sobre o periodo republicano em Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Com a Revolucao de 1930 e o governo de Getulio Vargas, Pedro Ludovico Teixeira foi nomeado interventor federal em Goias, rompendo com as oligarquias locais e promovendo a modernizacao do Estado.",
+    "legal_basis": "Historia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "A Republica Velha em Goias foi marcada pela politica dos coroneis e pelo dominio de oligarquias rurais, situacao alterada com a Revolucao de 1930.", "is_correct": true, "explanation": "Correto. A Republica Velha em Goias foi dominada por oligarquias, especialmente a familia Caiado, ate a Revolucao de 1930."},
+      {"letter": "B", "text": "Goias foi o primeiro Estado a aderir a Republica, antes mesmo da proclamacao oficial.", "is_correct": false, "explanation": "Goias nao foi o primeiro Estado a aderir. A adesao goiana ao regime republicano seguiu o processo nacional."},
+      {"letter": "C", "text": "O coronelismo nunca existiu em Goias, pois o Estado tinha base economica exclusivamente urbana.", "is_correct": false, "explanation": "O coronelismo foi bastante presente em Goias, baseado nas oligarquias rurais pecuaristas."},
+      {"letter": "D", "text": "A Revolucao de 1930 nao teve nenhum impacto em Goias, mantendo-se as mesmas estruturas politicas.", "is_correct": false, "explanation": "A Revolucao de 1930 teve forte impacto em Goias, com a nomeacao de Pedro Ludovico como interventor e a ruptura com as oligarquias."},
+      {"letter": "E", "text": "Durante a Republica Velha, Goias era o Estado mais industrializado do Centro-Oeste.", "is_correct": false, "explanation": "Goias era predominantemente rural e agropecuario durante a Republica Velha, com pouca industrializacao."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "geografia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estado de Goias possui caracteristicas geograficas marcantes, com predominancia do bioma Cerrado, que cobre a maior parte de seu territorio.",
+    "text": "Sobre o bioma Cerrado em Goias, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Cerrado e o segundo maior bioma do Brasil e predomina em Goias. E considerado hotspot de biodiversidade, abrigando grande diversidade de flora e fauna, e e fundamental para a recarga de aquiferos e nascentes de importantes bacias hidrograficas.",
+    "legal_basis": "Geografia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "O Cerrado e o bioma predominante em Goias, sendo considerado hotspot de biodiversidade e fundamental para a recarga de aquiferos.", "is_correct": true, "explanation": "Correto. O Cerrado predomina em Goias e e reconhecido internacionalmente como hotspot de biodiversidade."},
+      {"letter": "B", "text": "O bioma predominante em Goias e a Mata Atlantica, que cobre mais de 80% do territorio.", "is_correct": false, "explanation": "A Mata Atlantica nao predomina em Goias. O bioma predominante e o Cerrado."},
+      {"letter": "C", "text": "O Cerrado goiano possui apenas vegetacao rasteira, sem formacoes arborizadas.", "is_correct": false, "explanation": "O Cerrado possui diversas fitofisionomias, incluindo formacoes florestais (cerradao, matas de galeria), savanas e campos."},
+      {"letter": "D", "text": "O Cerrado goiano e um bioma homogeneo, com a mesma vegetacao em todo o territorio.", "is_correct": false, "explanation": "O Cerrado e bastante heterogeneo, com diversas fitofisionomias que variam conforme solo, relevo e hidrografia."},
+      {"letter": "E", "text": "O Cerrado em Goias foi totalmente preservado, nao havendo desmatamento significativo.", "is_correct": false, "explanation": "O Cerrado goiano sofreu significativo desmatamento, especialmente pela expansao agropecuaria nas ultimas decadas."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "geografia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estado de Goias possui uma rede hidrografica rica, com rios que integram importantes bacias hidrograficas brasileiras.",
+    "text": "Sobre a hidrografia de Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goias abriga nascentes e cursos d'agua de tres grandes bacias hidrograficas: Tocantins-Araguaia, Parana e Sao Francisco. O Rio Araguaia e um dos principais rios do Estado, marcando a divisa com Mato Grosso.",
+    "legal_basis": "Geografia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Goias possui rios pertencentes as bacias do Tocantins-Araguaia, Parana e Sao Francisco.", "is_correct": true, "explanation": "Correto. O territorio goiano abriga rios dessas tres grandes bacias hidrograficas brasileiras."},
+      {"letter": "B", "text": "A unica bacia hidrografica presente em Goias e a do Rio Tocantins.", "is_correct": false, "explanation": "Goias possui rios de tres bacias hidrograficas: Tocantins-Araguaia, Parana e Sao Francisco."},
+      {"letter": "C", "text": "O Rio Amazonas nasce em territorio goiano, sendo o principal rio do Estado.", "is_correct": false, "explanation": "O Rio Amazonas nao nasce em Goias. Os principais rios goianos sao Araguaia, Tocantins, Paranana e Corumba."},
+      {"letter": "D", "text": "Goias nao possui recursos hidricos significativos, sendo uma regiao semi-arida.", "is_correct": false, "explanation": "Goias possui rica rede hidrografia e nao e regiao semi-arida. O clima predominante e tropical com duas estacoes."},
+      {"letter": "E", "text": "Todos os rios de Goias deságuam diretamente no Oceano Atlantico.", "is_correct": false, "explanation": "Os rios goianos deságuam em bacias que seguem para o norte (Tocantins-Araguaia, para o Atlantico via Amazonia) e para o sul (Parana)."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "geografia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "O clima e o relevo de Goias influenciam diretamente a organizacao espacial, as atividades economicas e a biodiversidade do Estado.",
+    "text": "Sobre o clima e o relevo de Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O clima predominante em Goias e o tropical sazonal (Aw, segundo Koppen), com duas estacoes bem definidas: uma chuvosa (outubro a marco) e uma seca (abril a setembro). O relevo e predominantemente planaltico.",
+    "legal_basis": "Geografia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "O clima predominante e o equatorial umido, com chuvas distribuidas uniformemente ao longo do ano.", "is_correct": false, "explanation": "O clima predominante em Goias e o tropical sazonal, com estacoes seca e chuvosa bem definidas, nao o equatorial."},
+      {"letter": "B", "text": "O clima predominante e o tropical sazonal, com estacao chuvosa no verao e seca no inverno, e relevo predominantemente planaltico.", "is_correct": true, "explanation": "Correto. Goias possui clima tropical com duas estacoes e relevo de planaltos e chapadas."},
+      {"letter": "C", "text": "O relevo de Goias e predominantemente montanhoso, com altitudes superiores a 2.000 metros.", "is_correct": false, "explanation": "O relevo goiano e predominantemente planaltico, com altitudes medianas. O ponto mais elevado e a Serra dos Cristais."},
+      {"letter": "D", "text": "Goias possui clima subtropical em todo o seu territorio, com invernos rigorosos.", "is_correct": false, "explanation": "O clima subtropical nao predomina em Goias. O clima e tropical, com temperaturas elevadas durante a maior parte do ano."},
+      {"letter": "E", "text": "O Estado nao possui formacoes de chapadas ou serras em seu territorio.", "is_correct": false, "explanation": "Goias possui importantes formacoes de chapadas e serras, como a Chapada dos Veadeiros e a Serra Geral."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "economia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A economia de Goias passou por significativas transformacoes nas ultimas decadas, tornando-se uma das mais dinamicas do Centro-Oeste brasileiro.",
+    "text": "Sobre a economia de Goias na atualidade, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goias e um dos maiores produtores agropecuarios do Brasil, com destaque para soja, milho, cana-de-acucar e pecuaria bovina. O agronegocio e o setor mais importante da economia goiana.",
+    "legal_basis": "Economia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "O agronegocio e o principal setor da economia goiana, com destaque para soja, milho, cana-de-acucar e pecuaria bovina.", "is_correct": true, "explanation": "Correto. Goias e um dos maiores produtores agropecuarios do Brasil, com essas cadeias produtivas se destacando."},
+      {"letter": "B", "text": "A economia de Goias e baseada exclusivamente na mineracao de ouro, como no periodo colonial.", "is_correct": false, "explanation": "A mineracao de ouro perdeu importancia no seculo XVIII. A economia atual e diversificada, com forte base agropecuaria e industrial."},
+      {"letter": "C", "text": "Goias e o Estado com menor producao agropecuaria do Centro-Oeste.", "is_correct": false, "explanation": "Goias e um dos maiores produtores agropecuarios do Centro-Oeste e do Brasil."},
+      {"letter": "D", "text": "A economia goiana depende exclusivamente da exportacao de petroleo.", "is_correct": false, "explanation": "Goias nao e produtor significativo de petroleo. Sua economia se baseia no agronegocio, industria e servicos."},
+      {"letter": "E", "text": "O turismo e o setor que mais gera receitas em Goias, superando o agronegocio.", "is_correct": false, "explanation": "Embora o turismo seja relevante, o agronegocio e o setor mais importante da economia goiana."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "economia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "O setor industrial de Goias tem crescido significativamente, com destaque para a agroindustria e o polo farmaceutico de Anapolis.",
+    "text": "Sobre o setor industrial de Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Anapolis abriga o Distrito Agroindustrial de Anapolis (DAIA), um dos maiores polos farmaceuticos do Brasil, responsavel pela producao de medicamentos genericos. A agroindustria tambem e forte no Estado.",
+    "legal_basis": "Economia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Goias nao possui parques industriais relevantes, sendo sua economia exclusivamente primaria.", "is_correct": false, "explanation": "Goias possui importantes parques industriais, com destaque para o DAIA em Anapolis e a agroindustria em diversas cidades."},
+      {"letter": "B", "text": "Anapolis se destaca pelo polo farmaceutico, sendo um dos maiores centros de producao de medicamentos do Brasil, especialmente genericos.", "is_correct": true, "explanation": "Correto. O DAIA em Anapolis e um dos maiores polos farmaceuticos brasileiros, com forte producao de medicamentos genericos."},
+      {"letter": "C", "text": "A industria automobilistica e o principal segmento industrial de Goias.", "is_correct": false, "explanation": "O principal segmento industrial goiano e a agroindustria e o polo farmaceutico, nao a industria automobilistica."},
+      {"letter": "D", "text": "Toda a producao industrial de Goias se concentra exclusivamente em Goiania.", "is_correct": false, "explanation": "A producao industrial goiana e distribuida, com destaque para Anapolis, Goiania, Aparecida de Goiania, Catalao e outras cidades."},
+      {"letter": "E", "text": "O polo siderurgico de Goias e o maior da America Latina.", "is_correct": false, "explanation": "Goias nao possui o maior polo siderurgico da America Latina. Embora tenha atividade mineradora, a siderurgia nao e seu principal setor."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "economia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A posicao geografica estrategica de Goias no centro do Brasil tem sido um fator relevante para o desenvolvimento logistico e economico do Estado.",
+    "text": "Sobre a posicao estrategica de Goias e sua importância logistica, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goias ocupa posicao central no territorio brasileiro, sendo cortado por importantes rodovias federais como a BR-153 (Belem-Brasilia) e a BR-060. Anapolis e um importante entroncamento rodoferroviario que facilita o escoamento da producao.",
+    "legal_basis": "Geografia e Economia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Goias esta isolado dos principais centros consumidores do pais, sem conexao rodoviaria relevante.", "is_correct": false, "explanation": "Goias e bem conectado por rodovias federais importantes como BR-153, BR-060 e BR-364, alem de ferrovias."},
+      {"letter": "B", "text": "A posicao central de Goias facilita a conexao com diversas regioes do pais, sendo cortado por importantes rodovias federais como a BR-153.", "is_correct": true, "explanation": "Correto. A posicao central e a infraestrutura rodoviaria fazem de Goias um importante elo logistico no Brasil."},
+      {"letter": "C", "text": "O escoamento da producao goiana se da exclusivamente por via fluvial.", "is_correct": false, "explanation": "O escoamento da producao goiana e predominantemente rodoviario, com crescente uso de ferrovias."},
+      {"letter": "D", "text": "Goias nao possui aeroporto internacional, dependendo exclusivamente de Brasilia.", "is_correct": false, "explanation": "Goiania possui aeroporto que opera voos nacionais e internacionais. Brasilia e uma alternativa, mas nao a unica."},
+      {"letter": "E", "text": "A Ferrovia Norte-Sul nao passa pelo territorio goiano.", "is_correct": false, "explanation": "A Ferrovia Norte-Sul corta o territorio goiano, conectando-o ao norte e ao sul do pais."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "cultura-goiana",
+    "question_type": "multipla_escolha",
+    "context_text": "Goias possui uma rica tradicao cultural, com festas populares, manifestacoes religiosas e culinaria tipica que refletem a mistura de influencias indigenas, africanas e europeias.",
+    "text": "Sobre as festas populares e manifestacoes culturais de Goias, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Procissao do Fogaro, realizada na Cidade de Goias durante a Semana Santa, e uma das mais importantes manifestacoes culturais do Estado, atraindo milhares de turistas e sendo reconhecida como patrimonio imaterial.",
+    "legal_basis": "Cultura de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "A Procissao do Fogaro, realizada na Cidade de Goias durante a Semana Santa, e uma das mais tradicionais manifestacoes culturais do Estado.", "is_correct": true, "explanation": "Correto. A Procissao do Fogaro e uma tradicao secular da Cidade de Goias, reconhecida como importante patrimonio cultural."},
+      {"letter": "B", "text": "Goias nao possui manifestacoes culturais proprias, tendo importado todas suas tradicoes de outros estados.", "is_correct": false, "explanation": "Goias possui ricas manifestacoes culturais proprias, como a Procissao do Fogaro, a Cavalhada de Pirenopolis e festas do Divino."},
+      {"letter": "C", "text": "O Carnaval de rua e a unica manifestacao cultural relevante de Goias.", "is_correct": false, "explanation": "Goias possui diversas manifestacoes culturais alem do Carnaval, como festas religiosas, cavalhadas e folias de reis."},
+      {"letter": "D", "text": "As Cavalhadas nao sao praticadas em Goias, sendo exclusivas do Nordeste brasileiro.", "is_correct": false, "explanation": "As Cavalhadas de Pirenopolis sao uma das mais importantes manifestacoes culturais de Goias, realizadas durante a Festa do Divino."},
+      {"letter": "E", "text": "A cultura goiana e exclusivamente de influencia europeia, sem tracos indigenas ou africanos.", "is_correct": false, "explanation": "A cultura goiana e resultado da miscigenacao de influencias indigenas, africanas e europeias."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "cultura-goiana",
+    "question_type": "multipla_escolha",
+    "context_text": "A culinaria goiana e reconhecida pela riqueza de sabores e pelo uso de ingredientes tipicos do Cerrado e da cultura sertaneja.",
+    "text": "Sobre a culinaria tipica de Goias, assinale a alternativa que apresenta pratos e ingredientes caracteristicos da gastronomia goiana.",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A culinaria goiana e marcada por pratos como o empadao goiano, a galinhada com pequi, o arroz com pequi e a pamonha. O pequi e o ingrediente mais emblematico da culinaria goiana.",
+    "legal_basis": "Cultura de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Empadao goiano, arroz com pequi, galinhada e pamonha sao pratos tipicos da culinaria goiana.", "is_correct": true, "explanation": "Correto. Esses pratos sao emblematicos da gastronomia goiana, com destaque para o uso do pequi."},
+      {"letter": "B", "text": "A culinaria goiana e baseada exclusivamente em frutos do mar, dada a proximidade com o litoral.", "is_correct": false, "explanation": "Goias nao possui litoral. Sua culinaria e baseada em ingredientes do Cerrado e da cultura sertaneja."},
+      {"letter": "C", "text": "O acai e o ingrediente mais utilizado na culinaria goiana tradicional.", "is_correct": false, "explanation": "O acai e tipico da regiao Norte. Em Goias, o ingrediente mais emblematico e o pequi."},
+      {"letter": "D", "text": "A culinaria goiana nao utiliza nenhum fruto do Cerrado em seus pratos tipicos.", "is_correct": false, "explanation": "A culinaria goiana utiliza amplamente frutos do Cerrado, como pequi, baru, buriti e cagaita."},
+      {"letter": "E", "text": "O churrasco gaucho e o prato mais tradicional de Goias, sem adaptacoes regionais.", "is_correct": false, "explanation": "Embora o churrasco seja apreciado, a culinaria tipica goiana tem identidade propria, com pratos como empadao e arroz com pequi."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "cultura-goiana",
+    "question_type": "multipla_escolha",
+    "context_text": "A literatura goiana conta com escritores de reconhecimento nacional e internacional que retrataram a realidade do sertao e do Cerrado em suas obras.",
+    "text": "Dentre os escritores goianos que se destacaram na literatura brasileira, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Cora Coralina (pseudonimo de Ana Lins dos Guimaraes Peixoto Bretas) e a mais celebre escritora goiana, nascida na Cidade de Goias. Sua obra retrata a vida simples do interior goiano. Bernardo Elis e outro importante escritor goiano.",
+    "legal_basis": "Cultura de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Cora Coralina, nascida na Cidade de Goias, e uma das mais celebres escritoras goianas, com obras que retratam a vida simples do interior.", "is_correct": true, "explanation": "Correto. Cora Coralina e a mais celebre escritora goiana, reconhecida nacional e internacionalmente por sua obra poetica."},
+      {"letter": "B", "text": "Goias nao produziu escritores de relevancia nacional, sendo um Estado sem tradicao literaria.", "is_correct": false, "explanation": "Goias possui importantes escritores como Cora Coralina, Bernardo Elis, Hugo de Carvalho Ramos e Jose J. Veiga."},
+      {"letter": "C", "text": "Machado de Assis nasceu em Goias e retratou a realidade goiana em suas obras.", "is_correct": false, "explanation": "Machado de Assis nasceu no Rio de Janeiro, nao em Goias."},
+      {"letter": "D", "text": "A literatura goiana surgiu apenas no seculo XXI, nao havendo producao anterior.", "is_correct": false, "explanation": "A literatura goiana tem producao desde o seculo XIX, com autores como Hugo de Carvalho Ramos e outros."},
+      {"letter": "E", "text": "Bernardo Elis, embora citado como goiano, nasceu e viveu toda sua vida em Minas Gerais.", "is_correct": false, "explanation": "Bernardo Elis nasceu em Corumba de Goias e e um dos mais importantes escritores goianos, autor de 'O Tronco'."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "politica-organizacao-estado",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estado de Goias, como ente federativo, possui organizacao politico-administrativa propria, definida pela Constituicao Federal e pela Constituicao Estadual.",
+    "text": "Sobre a organizacao politico-administrativa do Estado de Goias, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goias e um Estado-membro da Republica Federativa do Brasil, com autonomia para se organizar mediante Constituicao e leis proprias. O Estado e dividido em municipios e possui os tres Poderes: Executivo, Legislativo (Assembleia Legislativa) e Judiciario.",
+    "legal_basis": "Art. 25, CF/88; Constituicao do Estado de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Goias e Estado-membro da federacao, dotado de autonomia, com Poder Executivo, Legislativo (Assembleia Legislativa) e Judiciario.", "is_correct": true, "explanation": "Correto. Goias possui os tres Poderes e autonomia para se organizar conforme sua Constituicao Estadual."},
+      {"letter": "B", "text": "Goias e territorio federal, sem autonomia politica propria.", "is_correct": false, "explanation": "Goias e Estado-membro, nao territorio federal. Possui plena autonomia nos termos da CF/88."},
+      {"letter": "C", "text": "A Assembleia Legislativa de Goias e composta por senadores e deputados.", "is_correct": false, "explanation": "A Assembleia Legislativa e composta apenas por deputados estaduais. Senadores representam o Estado no Senado Federal."},
+      {"letter": "D", "text": "Goias nao possui Poder Judiciario proprio, sendo subordinado ao Tribunal de Justica do Distrito Federal.", "is_correct": false, "explanation": "Goias possui Poder Judiciario proprio, com Tribunal de Justica e juizes estaduais."},
+      {"letter": "E", "text": "O Estado de Goias e administrado por um interventor federal nomeado pelo presidente da Republica.", "is_correct": false, "explanation": "Goias possui governador eleito democraticamente, nao interventor federal."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "politica-organizacao-estado",
+    "question_type": "multipla_escolha",
+    "context_text": "A divisao territorial de Goias sofreu alteracoes ao longo da historia, com a criacao do Estado de Tocantins em 1988.",
+    "text": "Sobre a criacao do Estado de Tocantins e seus impactos em Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Estado de Tocantins foi criado pela Constituicao Federal de 1988 (art. 13 do ADCT), a partir do desmembramento da porcao norte do Estado de Goias. A criacao de Tocantins reduziu significativamente o territorio goiano.",
+    "legal_basis": "Art. 13, ADCT, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O Estado de Tocantins foi criado pela CF/88, a partir do desmembramento da regiao norte de Goias.", "is_correct": true, "explanation": "Correto. O art. 13 do ADCT da CF/88 criou o Tocantins a partir do desmembramento do norte goiano."},
+      {"letter": "B", "text": "Tocantins foi criado no periodo colonial, nao tendo relacao historica com Goias.", "is_correct": false, "explanation": "Tocantins foi criado em 1988. Antes disso, o territorio pertencia a Goias."},
+      {"letter": "C", "text": "A criacao de Tocantins ampliou o territorio de Goias, incorporando areas de outros estados.", "is_correct": false, "explanation": "A criacao de Tocantins reduziu o territorio de Goias, que perdeu toda a porcao norte."},
+      {"letter": "D", "text": "Goias foi contrario a criacao de Tocantins e tentou impedir judicialmente o desmembramento.", "is_correct": false, "explanation": "A criacao de Tocantins foi determinada pela propria Constituicao Federal, resultado de amplo debate politico. O desmembramento atendia a reivindicacoes historicas da regiao norte."},
+      {"letter": "E", "text": "Tocantins e Goias permaneceram como um unico Estado ate o ano 2000.", "is_correct": false, "explanation": "Tocantins foi criado pela CF/88 e instalado em 1 de janeiro de 1989, nao permanecendo unido a Goias ate 2000."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "constituicao-estadual-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A Constituicao do Estado de Goias, promulgada em 1989, estabelece as normas fundamentais para a organizacao do Estado e a garantia dos direitos dos cidadaos goianos.",
+    "text": "Sobre a Constituicao do Estado de Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Constituicao Estadual de Goias de 1989 organiza os Poderes do Estado, define competencias, estabelece principios da administracao publica e garante direitos fundamentais em simetria com a CF/88.",
+    "legal_basis": "Constituicao do Estado de Goias de 1989",
+    "alternatives": [
+      {"letter": "A", "text": "A Constituicao do Estado de Goias pode contrariar a Constituicao Federal em materia de direitos fundamentais.", "is_correct": false, "explanation": "A Constituicao Estadual deve observar os principios da CF/88, nao podendo contraria-la em materia de direitos fundamentais."},
+      {"letter": "B", "text": "A Constituicao do Estado de Goias, promulgada em 1989, organiza os Poderes do Estado em simetria com a Constituicao Federal.", "is_correct": true, "explanation": "Correto. A CE/GO de 1989 segue o principio da simetria com a CF/88 na organizacao dos Poderes e na garantia de direitos."},
+      {"letter": "C", "text": "Goias nao possui Constituicao propria, sendo regido exclusivamente pela Constituicao Federal.", "is_correct": false, "explanation": "Como Estado-membro, Goias possui Constituicao propria, conforme autorizado pelo art. 25 da CF/88."},
+      {"letter": "D", "text": "A Constituicao de Goias so pode ser alterada por emenda aprovada pelo Congresso Nacional.", "is_correct": false, "explanation": "A CE/GO e alterada por emenda aprovada pela Assembleia Legislativa de Goias, nao pelo Congresso Nacional."},
+      {"letter": "E", "text": "A Constituicao de Goias de 1989 ainda nao foi promulgada, estando em fase de elaboracao.", "is_correct": false, "explanation": "A CE/GO foi promulgada em 5 de outubro de 1989, estando em plena vigencia."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "constituicao-estadual-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A seguranca publica no Estado de Goias e organizada conforme a Constituicao Estadual, que define os orgaos responsaveis pela preservacao da ordem publica.",
+    "text": "De acordo com a Constituicao do Estado de Goias, sao orgaos da seguranca publica estadual:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A seguranca publica em Goias e exercida pela Policia Militar (policiamento ostensivo e preservacao da ordem publica), Policia Civil (funcoes de policia judiciaria e apuracao de infracoes penais) e Corpo de Bombeiros Militar (defesa civil e incendios).",
+    "legal_basis": "Art. 144, CF/88; Constituicao do Estado de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "Policia Militar, Policia Civil e Corpo de Bombeiros Militar.", "is_correct": true, "explanation": "Correto. Esses sao os orgaos de seguranca publica no ambito do Estado de Goias, conforme a CE/GO e a CF/88."},
+      {"letter": "B", "text": "Policia Federal, Policia Rodoviaria Federal e Guarda Municipal.", "is_correct": false, "explanation": "Policia Federal e PRF sao orgaos federais, nao estaduais. A Guarda Municipal e orgao do municipio."},
+      {"letter": "C", "text": "Exclusivamente a Policia Militar, que acumula todas as funcoes de seguranca publica.", "is_correct": false, "explanation": "A PM, a Policia Civil e o Corpo de Bombeiros Militar sao orgaos distintos com funcoes proprias."},
+      {"letter": "D", "text": "Exercito, Marinha e Aeronautica, que atuam na seguranca publica estadual.", "is_correct": false, "explanation": "Exercito, Marinha e Aeronautica sao Forcas Armadas federais, nao orgaos de seguranca publica estadual."},
+      {"letter": "E", "text": "Policia Militar e Guarda Nacional, conforme a Constituicao Estadual.", "is_correct": false, "explanation": "A Guarda Nacional nao existe como orgao de seguranca publica estadual. Os orgaos estaduais sao PM, PC e BM."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "geografia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A Chapada dos Veadeiros, localizada no nordeste goiano, e uma das mais importantes unidades de conservacao do Cerrado brasileiro.",
+    "text": "Sobre a Chapada dos Veadeiros, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Parque Nacional da Chapada dos Veadeiros e Patrimonio Natural da Humanidade pela UNESCO desde 2001. Localizado na regiao nordeste de Goias, possui rica biodiversidade, formacoes rochosas milenares e diversas cachoeiras.",
+    "legal_basis": "Geografia de Goias; UNESCO",
+    "alternatives": [
+      {"letter": "A", "text": "A Chapada dos Veadeiros esta localizada no sudoeste goiano, proximo a divisa com Mato Grosso do Sul.", "is_correct": false, "explanation": "A Chapada dos Veadeiros esta localizada no nordeste goiano, nao no sudoeste."},
+      {"letter": "B", "text": "O Parque Nacional da Chapada dos Veadeiros e reconhecido como Patrimonio Natural da Humanidade pela UNESCO.", "is_correct": true, "explanation": "Correto. O parque recebeu o reconhecimento da UNESCO em 2001, junto com o Parque Nacional das Emas."},
+      {"letter": "C", "text": "A Chapada dos Veadeiros e uma formacao geologica recente, com menos de mil anos de existencia.", "is_correct": false, "explanation": "As formacoes rochosas da Chapada dos Veadeiros tem bilhoes de anos, estando entre as mais antigas do planeta."},
+      {"letter": "D", "text": "A Chapada dos Veadeiros esta inserida no bioma Amazonia, nao no Cerrado.", "is_correct": false, "explanation": "A Chapada dos Veadeiros esta inserida no bioma Cerrado, nao na Amazonia."},
+      {"letter": "E", "text": "O turismo e proibido na Chapada dos Veadeiros para preservacao integral do ecossistema.", "is_correct": false, "explanation": "O turismo ecologico e permitido e incentivado na Chapada dos Veadeiros, com trilhas e atracoes naturais abertas a visitacao."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "O acidente radioativo com Cesio-137, ocorrido em Goiania em setembro de 1987, e considerado o maior desastre radiologico do mundo fora de usinas nucleares.",
+    "text": "Sobre o acidente com o Cesio-137 em Goiania, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O acidente com o Cesio-137 ocorreu em setembro de 1987, quando catadores de papel encontraram um aparelho de radioterapia abandonado no antigo Instituto Goiano de Radioterapia. A capsula de cesio-137 foi violada, contaminando diversas pessoas e areas da cidade.",
+    "legal_basis": "Historia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "O acidente ocorreu em 1987, quando uma capsula de cesio-137 de um aparelho de radioterapia abandonado foi violada por catadores, provocando contaminacao radioativa.", "is_correct": true, "explanation": "Correto. O acidente ocorreu em setembro de 1987, a partir da violacao de um aparelho de radioterapia abandonado."},
+      {"letter": "B", "text": "O acidente ocorreu em uma usina nuclear localizada nos arredores de Goiania.", "is_correct": false, "explanation": "Nao ha usina nuclear em Goiania. O acidente envolveu um aparelho de radioterapia abandonado."},
+      {"letter": "C", "text": "O acidente nao causou vitimas fatais, sendo apenas um susto para a populacao.", "is_correct": false, "explanation": "O acidente causou vitimas fatais e centenas de pessoas contaminadas, sendo um dos maiores desastres radiologicos do mundo."},
+      {"letter": "D", "text": "O acidente ocorreu na decada de 1970, durante a ditadura militar.", "is_correct": false, "explanation": "O acidente ocorreu em setembro de 1987, ja no periodo de redemocratizacao."},
+      {"letter": "E", "text": "O material radioativo foi importado ilegalmente da Russia para uso em pesquisas.", "is_correct": false, "explanation": "O cesio-137 era parte de um equipamento de radioterapia do Instituto Goiano de Radioterapia, que foi abandonado no local."}
+    ]
+  }
+]

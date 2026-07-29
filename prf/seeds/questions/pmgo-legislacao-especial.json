@@ -1,0 +1,402 @@
+[
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cidadão foi flagrado transportando uma arma de fogo de uso permitido, devidamente registrada em seu nome, porém com o registro vencido há seis meses. O policial militar realizou a apreensão da arma e conduziu o cidadão à delegacia.",
+    "text": "Com base no Estatuto do Desarmamento (Lei 10.826/2003), a conduta do cidadão configura, em tese:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O porte de arma com registro vencido equivale ao porte ilegal, configurando o crime do art. 14 do Estatuto do Desarmamento (porte ilegal de arma de fogo de uso permitido), pois a autorização perdeu sua validade.",
+    "legal_basis": "Lei 10.826/2003, art. 14",
+    "alternatives": [
+      {"letter": "A", "text": "Exercício regular de direito, pois a arma está registrada.", "is_correct": false, "explanation": "O registro vencido invalida a autorização, não configurando exercício regular de direito."},
+      {"letter": "B", "text": "Crime de posse irregular de arma de fogo de uso permitido.", "is_correct": false, "explanation": "Posse irregular (art. 12) refere-se a manter a arma no interior de residência ou local de trabalho sem registro; aqui houve transporte."},
+      {"letter": "C", "text": "Crime de porte ilegal de arma de fogo de uso permitido.", "is_correct": true, "explanation": "O transporte de arma com registro vencido configura porte ilegal (art. 14), pois a autorização perdeu sua validade."},
+      {"letter": "D", "text": "Crime de comércio ilegal de arma de fogo.", "is_correct": false, "explanation": "Não há elementos que indiquem comércio; o cidadão estava transportando arma própria."},
+      {"letter": "E", "text": "Mera infração administrativa, sem repercussão penal.", "is_correct": false, "explanation": "O porte com registro vencido tem repercussão penal, não se limitando à esfera administrativa."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Nos termos do Estatuto do Desarmamento (Lei 10.826/2003), o porte de arma de fogo de uso RESTRITO por particular, sem autorização legal, sujeita o agente à pena de:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 16 do Estatuto do Desarmamento prevê para o porte ilegal de arma de fogo de uso restrito a pena de reclusão de 3 a 6 anos e multa, sendo mais grave que o porte de arma de uso permitido.",
+    "legal_basis": "Lei 10.826/2003, art. 16",
+    "alternatives": [
+      {"letter": "A", "text": "Detenção de 1 a 2 anos e multa.", "is_correct": false, "explanation": "Essa pena é inferior à prevista no art. 16 para arma de uso restrito."},
+      {"letter": "B", "text": "Reclusão de 2 a 4 anos e multa.", "is_correct": false, "explanation": "Essa é a pena do art. 14 (porte de arma de uso permitido), não de uso restrito."},
+      {"letter": "C", "text": "Reclusão de 3 a 6 anos e multa.", "is_correct": true, "explanation": "Art. 16 do Estatuto do Desarmamento: reclusão de 3 a 6 anos e multa para porte de arma de uso restrito."},
+      {"letter": "D", "text": "Reclusão de 4 a 8 anos e multa.", "is_correct": false, "explanation": "Essa pena é superior à prevista no art. 16."},
+      {"letter": "E", "text": "Reclusão de 1 a 3 anos e multa.", "is_correct": false, "explanation": "Essa pena é inferior à prevista para arma de uso restrito."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma operação policial, um indivíduo foi flagrado com 50 gramas de cocaína, uma balança de precisão, cadernos com anotações de valores e nomes, e R$ 3.000,00 em notas trocadas. O indivíduo alegou que a droga era para consumo próprio.",
+    "text": "De acordo com a Lei de Drogas (Lei 11.343/2006), considerando o conjunto de circunstâncias descritas, o agente deverá ser enquadrado, em princípio, no crime de:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 33 tipifica o tráfico de drogas. O art. 28, §2.º, da Lei 11.343/2006 determina que, para diferenciar uso pessoal de tráfico, devem ser analisados: natureza e quantidade da droga, local e condições da apreensão, circunstâncias sociais e pessoais, e conduta e antecedentes do agente. A presença de balança de precisão, anotações e dinheiro trocado são indicativos de traficância.",
+    "legal_basis": "Lei 11.343/2006, arts. 28, §2.º e 33",
+    "alternatives": [
+      {"letter": "A", "text": "Porte de droga para consumo pessoal (art. 28).", "is_correct": false, "explanation": "As circunstâncias (quantidade, balança, anotações, dinheiro) são incompatíveis com a configuração de uso pessoal."},
+      {"letter": "B", "text": "Tráfico de drogas (art. 33).", "is_correct": true, "explanation": "O conjunto probatório (quantidade, balança, anotações e dinheiro) configura indícios de tráfico de drogas."},
+      {"letter": "C", "text": "Associação para o tráfico (art. 35).", "is_correct": false, "explanation": "A associação exige união estável de duas ou mais pessoas; o caso descreve conduta individual."},
+      {"letter": "D", "text": "Financiamento do tráfico (art. 36).", "is_correct": false, "explanation": "O financiamento envolve financiar ou custear o tráfico de outrem; aqui o agente é o próprio traficante."},
+      {"letter": "E", "text": "Induzimento ao uso de drogas (art. 33, §2.º).", "is_correct": false, "explanation": "Não há elementos indicando que o agente induzia terceiros ao uso de drogas."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Segundo a Lei de Drogas (Lei 11.343/2006), o agente que, para consumo pessoal, adquire, guarda ou traz consigo drogas sem autorização legal, estará sujeito a:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 28 da Lei 11.343/2006 prevê para o usuário as seguintes medidas: advertência sobre os efeitos das drogas, prestação de serviços à comunidade e medida educativa de comparecimento a programa ou curso educativo. Não há pena de prisão para o usuário.",
+    "legal_basis": "Lei 11.343/2006, art. 28",
+    "alternatives": [
+      {"letter": "A", "text": "Pena de detenção de 6 meses a 1 ano.", "is_correct": false, "explanation": "A Lei de Drogas não prevê pena de detenção para o usuário."},
+      {"letter": "B", "text": "Advertência, prestação de serviços à comunidade e medida educativa.", "is_correct": true, "explanation": "Art. 28 prevê advertência, prestação de serviços à comunidade e comparecimento a programa educativo."},
+      {"letter": "C", "text": "Pena de reclusão de 1 a 3 anos.", "is_correct": false, "explanation": "Não há pena privativa de liberdade para o consumo pessoal na Lei de Drogas."},
+      {"letter": "D", "text": "Multa e apreensão de bens.", "is_correct": false, "explanation": "As medidas previstas no art. 28 não incluem multa nem apreensão de bens do usuário."},
+      {"letter": "E", "text": "Internação compulsória por 90 dias.", "is_correct": false, "explanation": "Internação compulsória não é medida prevista no art. 28 da Lei de Drogas."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-drogas",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Com relação ao tráfico de drogas previsto no art. 33 da Lei 11.343/2006, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O tráfico de drogas (art. 33, caput) é crime equiparado a hediondo por força do art. 2.º da Lei 8.072/90, sendo inafiançável e insuscetível de sursis, graça, indulto e liberdade provisória (com debates jurisprudenciais sobre a liberdade provisória). A pena é de reclusão de 5 a 15 anos.",
+    "legal_basis": "Lei 11.343/2006, art. 33; Lei 8.072/90, art. 2.º",
+    "alternatives": [
+      {"letter": "A", "text": "É crime afiançável, desde que o agente seja primário.", "is_correct": false, "explanation": "O tráfico de drogas é equiparado a hediondo e, portanto, inafiançável, independentemente de primariedade."},
+      {"letter": "B", "text": "É crime equiparado a hediondo e inafiançável.", "is_correct": true, "explanation": "O tráfico de drogas é equiparado a hediondo (art. 2.º da Lei 8.072/90), sendo inafiançável."},
+      {"letter": "C", "text": "Admite a substituição da pena privativa de liberdade por restritiva de direitos em qualquer caso.", "is_correct": false, "explanation": "A substituição é vedada em regra para crimes hediondos e equiparados, havendo debates jurisprudenciais."},
+      {"letter": "D", "text": "A pena prevista é de detenção de 3 a 10 anos.", "is_correct": false, "explanation": "A pena é de reclusão (não detenção) de 5 a 15 anos."},
+      {"letter": "E", "text": "Admite suspensão condicional do processo em todos os casos.", "is_correct": false, "explanation": "A pena mínima de 5 anos torna impossível a suspensão condicional do processo (exige pena mínima de até 1 ano)."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-maria-da-penha",
+    "question_type": "multipla_escolha",
+    "context_text": "Uma mulher compareceu à delegacia relatando que seu companheiro a agrediu fisicamente dentro da residência do casal. Ela solicitou medidas protetivas de urgência e manifestou desejo de representar criminalmente contra o agressor.",
+    "text": "Com base na Lei Maria da Penha (Lei 11.340/2006), assinale a alternativa correta quanto às medidas protetivas de urgência que podem ser aplicadas:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 22 da Lei Maria da Penha prevê, entre as medidas protetivas de urgência que obrigam o agressor: afastamento do lar, proibição de aproximação e contato com a vítima. Essas medidas podem ser aplicadas de imediato, isolada ou cumulativamente.",
+    "legal_basis": "Lei 11.340/2006, art. 22",
+    "alternatives": [
+      {"letter": "A", "text": "Somente podem ser aplicadas após o trânsito em julgado da sentença condenatória.", "is_correct": false, "explanation": "As medidas protetivas são de urgência e podem ser concedidas de imediato, independentemente de sentença."},
+      {"letter": "B", "text": "Incluem o afastamento do agressor do lar e a proibição de aproximação da vítima.", "is_correct": true, "explanation": "O art. 22, II e III, prevê afastamento do lar e proibição de aproximação como medidas protetivas de urgência."},
+      {"letter": "C", "text": "Dependem exclusivamente da representação criminal da vítima para serem concedidas.", "is_correct": false, "explanation": "As medidas protetivas podem ser concedidas independentemente de representação criminal."},
+      {"letter": "D", "text": "São aplicáveis apenas em caso de violência física, excluindo-se a violência psicológica.", "is_correct": false, "explanation": "A Lei Maria da Penha protege contra todas as formas de violência: física, psicológica, sexual, patrimonial e moral."},
+      {"letter": "E", "text": "Só podem ser requeridas pelo Ministério Público, não pela própria vítima.", "is_correct": false, "explanation": "A vítima pode requerer medidas protetivas diretamente, conforme art. 19 da Lei Maria da Penha."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-maria-da-penha",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com a Lei Maria da Penha (Lei 11.340/2006), constituem formas de violência doméstica e familiar contra a mulher, EXCETO:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei Maria da Penha, em seu art. 7.º, enumera cinco formas de violência: física, psicológica, sexual, patrimonial e moral. A violência 'institucional' não está expressamente prevista nesse rol.",
+    "legal_basis": "Lei 11.340/2006, art. 7.º",
+    "alternatives": [
+      {"letter": "A", "text": "Violência física.", "is_correct": false, "explanation": "A violência física está prevista no art. 7.º, I, da Lei Maria da Penha."},
+      {"letter": "B", "text": "Violência psicológica.", "is_correct": false, "explanation": "A violência psicológica está prevista no art. 7.º, II, da Lei Maria da Penha."},
+      {"letter": "C", "text": "Violência patrimonial.", "is_correct": false, "explanation": "A violência patrimonial está prevista no art. 7.º, IV, da Lei Maria da Penha."},
+      {"letter": "D", "text": "Violência institucional.", "is_correct": true, "explanation": "A violência institucional não integra o rol do art. 7.º da Lei Maria da Penha."},
+      {"letter": "E", "text": "Violência moral.", "is_correct": false, "explanation": "A violência moral está prevista no art. 7.º, V, da Lei Maria da Penha."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "eca",
+    "question_type": "multipla_escolha",
+    "context_text": "Um adolescente de 16 anos foi apreendido em flagrante pela prática de ato infracional análogo ao crime de roubo. O policial militar que realizou a apreensão conduziu o adolescente à delegacia especializada.",
+    "text": "Segundo o Estatuto da Criança e do Adolescente (Lei 8.069/90), o procedimento correto a ser adotado inclui:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 107 do ECA determina que a apreensão do adolescente deve ser comunicada imediatamente à autoridade judiciária competente e à família do adolescente. O art. 106 estabelece que nenhum adolescente será privado de liberdade senão em flagrante de ato infracional ou por ordem escrita e fundamentada da autoridade judiciária.",
+    "legal_basis": "Lei 8.069/90, arts. 106 e 107",
+    "alternatives": [
+      {"letter": "A", "text": "Lavrar auto de prisão em flagrante, como se maior fosse.", "is_correct": false, "explanation": "Adolescentes não são presos em flagrante; são apreendidos, com procedimento próprio previsto no ECA."},
+      {"letter": "B", "text": "Comunicar imediatamente a apreensão à autoridade judiciária e à família do adolescente.", "is_correct": true, "explanation": "O art. 107 do ECA exige comunicação imediata à autoridade judiciária e à família."},
+      {"letter": "C", "text": "Encaminhar o adolescente diretamente ao sistema prisional comum.", "is_correct": false, "explanation": "Adolescentes não podem ser encaminhados ao sistema prisional comum, conforme o ECA."},
+      {"letter": "D", "text": "Aplicar medida socioeducativa de internação no ato da apreensão.", "is_correct": false, "explanation": "A medida socioeducativa só pode ser aplicada pela autoridade judiciária, não pelo policial."},
+      {"letter": "E", "text": "Liberar o adolescente imediatamente, pois menores são inimputáveis.", "is_correct": false, "explanation": "A inimputabilidade penal não impede a apreensão; o ECA prevê medidas socioeducativas para atos infracionais."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "eca",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Nos termos do ECA (Lei 8.069/90), a medida socioeducativa de internação:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 121, §3.º, do ECA estabelece que em nenhuma hipótese o período máximo de internação excederá 3 anos. Além disso, o §2.º determina que a medida deve ser reavaliada a cada 6 meses no máximo.",
+    "legal_basis": "Lei 8.069/90, art. 121",
+    "alternatives": [
+      {"letter": "A", "text": "Pode ser aplicada por tempo indeterminado.", "is_correct": false, "explanation": "O art. 121, §3.º, limita a internação a no máximo 3 anos."},
+      {"letter": "B", "text": "Não pode exceder o período máximo de 3 anos.", "is_correct": true, "explanation": "O art. 121, §3.º, do ECA determina que em nenhuma hipótese o período máximo de internação excederá 3 anos."},
+      {"letter": "C", "text": "É aplicada apenas a adolescentes maiores de 16 anos.", "is_correct": false, "explanation": "A internação pode ser aplicada a qualquer adolescente (12 a 18 anos incompletos), não apenas maiores de 16."},
+      {"letter": "D", "text": "Dispensa reavaliação periódica pela autoridade judiciária.", "is_correct": false, "explanation": "O art. 121, §2.º, exige reavaliação no máximo a cada 6 meses."},
+      {"letter": "E", "text": "É a única medida socioeducativa prevista no ECA.", "is_correct": false, "explanation": "O ECA prevê diversas medidas: advertência, reparação do dano, prestação de serviços, liberdade assistida, semiliberdade e internação."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "codigo-consumidor",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com o Código de Defesa do Consumidor (Lei 8.078/90), é direito básico do consumidor:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 6.º, VIII, do CDC estabelece como direito básico do consumidor a facilitação da defesa de seus direitos, inclusive com a inversão do ônus da prova a seu favor no processo civil, quando, a critério do juiz, for verossímil a alegação ou quando for hipossuficiente.",
+    "legal_basis": "Lei 8.078/90, art. 6.º",
+    "alternatives": [
+      {"letter": "A", "text": "A inversão do ônus da prova a seu favor, quando verossímil a alegação ou quando for hipossuficiente.", "is_correct": true, "explanation": "Art. 6.º, VIII, do CDC: inversão do ônus da prova quando verossímil a alegação ou hipossuficiente o consumidor."},
+      {"letter": "B", "text": "A isenção total de pagamento em caso de produto defeituoso.", "is_correct": false, "explanation": "O CDC não prevê isenção total de pagamento como direito básico; prevê troca, reparo ou devolução do valor."},
+      {"letter": "C", "text": "A prisão imediata do fornecedor que descumprir o contrato.", "is_correct": false, "explanation": "O descumprimento contratual não enseja prisão imediata do fornecedor."},
+      {"letter": "D", "text": "A substituição automática de qualquer produto adquirido, independentemente de defeito.", "is_correct": false, "explanation": "A substituição depende da existência de vício ou defeito no produto."},
+      {"letter": "E", "text": "A imunidade tributária nas compras de produtos essenciais.", "is_correct": false, "explanation": "O CDC não trata de imunidade tributária; esta é matéria constitucional."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "codigo-consumidor",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Segundo o Código de Defesa do Consumidor (Lei 8.078/90), no caso de fornecimento de produto com vício de qualidade que o torne impróprio ao consumo, não sendo sanado o vício no prazo de 30 dias, o consumidor pode exigir, alternativamente:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 18, §1.º, do CDC estabelece que, não sendo o vício sanado em 30 dias, o consumidor pode exigir, alternativamente: substituição do produto, restituição imediata da quantia paga (com correção e perdas e danos) ou abatimento proporcional do preço.",
+    "legal_basis": "Lei 8.078/90, art. 18, §1.º",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas a substituição do produto por outro da mesma espécie.", "is_correct": false, "explanation": "O consumidor tem três alternativas, não apenas a substituição."},
+      {"letter": "B", "text": "A substituição do produto, a restituição da quantia paga ou o abatimento proporcional do preço.", "is_correct": true, "explanation": "Art. 18, §1.º, do CDC prevê essas três alternativas para o consumidor."},
+      {"letter": "C", "text": "Exclusivamente a devolução do dinheiro, sem outras opções.", "is_correct": false, "explanation": "O consumidor pode optar entre três alternativas, não apenas a devolução."},
+      {"letter": "D", "text": "Indenização por danos morais automaticamente, sem necessidade de comprovação.", "is_correct": false, "explanation": "Danos morais não são automáticos; dependem de comprovação do dano sofrido."},
+      {"letter": "E", "text": "Apenas o abatimento proporcional do preço.", "is_correct": false, "explanation": "O abatimento é uma das três opções, não a única."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar, durante uma abordagem, constrangeu um cidadão a confessar a prática de um crime, mediante uso de violência, sem que houvesse qualquer justificativa legal para tal conduta.",
+    "text": "Nos termos da Lei de Abuso de Autoridade (Lei 13.869/2019), a conduta do policial:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 13 da Lei 13.869/2019 tipifica como crime de abuso de autoridade constranger o preso ou o detido, mediante violência, grave ameaça ou redução de capacidade de resistência, a exibir-se ou ter seu corpo ou parte dele exibido a curiosidade pública, ou a produzir prova contra si mesmo ou contra terceiro. A conduta descrita se enquadra na parte que trata de constranger a produzir prova contra si mesmo.",
+    "legal_basis": "Lei 13.869/2019, art. 13",
+    "alternatives": [
+      {"letter": "A", "text": "Não configura abuso de autoridade, pois estava em exercício de função policial.", "is_correct": false, "explanation": "O exercício da função policial não autoriza o uso de violência para obter confissão."},
+      {"letter": "B", "text": "Configura crime de abuso de autoridade, por constranger a produzir prova contra si mesmo.", "is_correct": true, "explanation": "O art. 13 da Lei 13.869/2019 tipifica constranger, mediante violência, a produzir prova contra si mesmo."},
+      {"letter": "C", "text": "Configura apenas infração disciplinar, sem repercussão penal.", "is_correct": false, "explanation": "A conduta tem repercussão penal, configurando crime de abuso de autoridade."},
+      {"letter": "D", "text": "É admissível desde que autorizada pelo delegado de polícia.", "is_correct": false, "explanation": "Nenhuma autoridade pode autorizar violência para obtenção de confissão."},
+      {"letter": "E", "text": "Configura crime somente se resultar em lesão corporal grave.", "is_correct": false, "explanation": "O crime de abuso de autoridade se consuma com o constrangimento, independentemente de lesão corporal."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "abuso-autoridade",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Segundo a Lei de Abuso de Autoridade (Lei 13.869/2019), para que haja crime de abuso de autoridade, é necessário que o agente atue:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 1.º, §1.º, da Lei 13.869/2019 exige que as condutas sejam praticadas com a finalidade específica de prejudicar outrem, beneficiar a si mesmo ou a terceiro, ou por mero capricho ou satisfação pessoal. Trata-se de dolo específico.",
+    "legal_basis": "Lei 13.869/2019, art. 1.º, §1.º",
+    "alternatives": [
+      {"letter": "A", "text": "Com dolo ou culpa, bastando a negligência.", "is_correct": false, "explanation": "A lei exige finalidade específica, não admitindo a forma culposa."},
+      {"letter": "B", "text": "Com a finalidade específica de prejudicar outrem ou beneficiar a si mesmo ou a terceiro, ou por mero capricho.", "is_correct": true, "explanation": "O art. 1.º, §1.º, exige essa finalidade específica para configuração do crime."},
+      {"letter": "C", "text": "Em qualquer circunstância em que exceda os limites de sua função.", "is_correct": false, "explanation": "Não basta exceder os limites; é necessária a finalidade específica prevista na lei."},
+      {"letter": "D", "text": "Apenas em serviço, sendo atípica a conduta fora do horário de expediente.", "is_correct": false, "explanation": "O crime pode ser praticado no exercício ou em razão da função, mesmo fora do expediente."},
+      {"letter": "E", "text": "Independentemente de qualquer motivação, bastando o resultado danoso.", "is_correct": false, "explanation": "A lei exige finalidade específica; não basta o resultado danoso."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "crimes-hediondos",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Nos termos da Lei de Crimes Hediondos (Lei 8.072/90), assinale a alternativa que apresenta APENAS crimes considerados hediondos:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 1.º da Lei 8.072/90 lista os crimes hediondos, incluindo homicídio qualificado, latrocínio e estupro. Furto simples e estelionato não são crimes hediondos.",
+    "legal_basis": "Lei 8.072/90, art. 1.º",
+    "alternatives": [
+      {"letter": "A", "text": "Homicídio qualificado, latrocínio e estupro.", "is_correct": true, "explanation": "Todos são crimes hediondos previstos no art. 1.º da Lei 8.072/90."},
+      {"letter": "B", "text": "Furto simples, roubo e extorsão.", "is_correct": false, "explanation": "Furto simples não é crime hediondo."},
+      {"letter": "C", "text": "Estelionato, homicídio simples e lesão corporal leve.", "is_correct": false, "explanation": "Nenhum desses crimes é hediondo (homicídio simples não é hediondo, salvo exceções)."},
+      {"letter": "D", "text": "Ameaça, injúria racial e desacato.", "is_correct": false, "explanation": "Nenhum desses crimes é hediondo."},
+      {"letter": "E", "text": "Homicídio culposo, receptação e falsificação de documento.", "is_correct": false, "explanation": "Nenhum desses crimes é hediondo."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "crimes-hediondos",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com a Lei 8.072/90, os crimes hediondos são:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 2.º, II, da Lei 8.072/90 estabelece que os crimes hediondos são inafiançáveis. Contudo, admitem liberdade provisória sem fiança (conforme entendimento do STF). São insuscetíveis de anistia, graça e indulto.",
+    "legal_basis": "Lei 8.072/90, art. 2.º",
+    "alternatives": [
+      {"letter": "A", "text": "Afiançáveis e suscetíveis de anistia.", "is_correct": false, "explanation": "Os crimes hediondos são inafiançáveis e insuscetíveis de anistia."},
+      {"letter": "B", "text": "Inafiançáveis e insuscetíveis de graça, anistia e indulto.", "is_correct": true, "explanation": "Art. 2.º da Lei 8.072/90: inafiançáveis e insuscetíveis de anistia, graça e indulto."},
+      {"letter": "C", "text": "Afiançáveis apenas para réus primários.", "is_correct": false, "explanation": "A inafiançabilidade não comporta exceção quanto à primariedade do réu."},
+      {"letter": "D", "text": "Suscetíveis de indulto mediante decreto presidencial.", "is_correct": false, "explanation": "Os crimes hediondos são insuscetíveis de indulto."},
+      {"letter": "E", "text": "Sujeitos a regime integralmente fechado.", "is_correct": false, "explanation": "O STF declarou inconstitucional o regime integralmente fechado; a progressão de regime é possível."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-tortura",
+    "question_type": "multipla_escolha",
+    "context_text": "Um agente público, responsável pela custódia de presos em uma delegacia, submeteu um detento a sofrimento físico intenso com o objetivo de obter informações sobre o envolvimento de terceiros em organização criminosa.",
+    "text": "De acordo com a Lei de Tortura (Lei 9.455/97), a conduta descrita:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 1.º, I, 'a', da Lei 9.455/97 tipifica como tortura constranger alguém com emprego de violência ou grave ameaça, causando-lhe sofrimento físico ou mental, com o fim de obter informação, declaração ou confissão. Quando praticada por agente público, a pena é aumentada de um sexto até um terço (art. 1.º, §4.º).",
+    "legal_basis": "Lei 9.455/97, art. 1.º, I, 'a' e §4.º",
+    "alternatives": [
+      {"letter": "A", "text": "Não configura tortura, pois visava à investigação criminal.", "is_correct": false, "explanation": "O objetivo investigativo não exclui a tipificação de tortura; a lei proíbe o uso de violência para obter informações."},
+      {"letter": "B", "text": "Configura crime de tortura, com causa de aumento de pena por ser praticada por agente público.", "is_correct": true, "explanation": "Configura tortura (art. 1.º, I, 'a') com aumento de pena por ser agente público (§4.º)."},
+      {"letter": "C", "text": "Configura apenas lesão corporal, pois não há previsão legal de tortura por agente público.", "is_correct": false, "explanation": "A Lei de Tortura se aplica a qualquer pessoa, com agravamento quando praticada por agente público."},
+      {"letter": "D", "text": "Configura crime de abuso de autoridade, excluindo a tortura.", "is_correct": false, "explanation": "A conduta pode configurar ambos os crimes, não havendo exclusão da tortura."},
+      {"letter": "E", "text": "É atípica, pois o sofrimento foi momentâneo.", "is_correct": false, "explanation": "A lei exige sofrimento físico ou mental, sem requisito de duração prolongada."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-tortura",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Segundo a Lei de Tortura (Lei 9.455/97), constitui crime de tortura, EXCETO:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei de Tortura prevê como crime: constranger mediante violência para obter informação (art. 1.º, I, 'a'), para provocar ação ou omissão criminosa (art. 1.º, I, 'b'), submeter a sofrimento por discriminação (art. 1.º, I, 'c'), submeter pessoa sob guarda a violência ou grave ameaça (art. 1.º, II). O uso de algemas conforme protocolo legal não configura tortura.",
+    "legal_basis": "Lei 9.455/97, art. 1.º",
+    "alternatives": [
+      {"letter": "A", "text": "Constranger alguém com violência, causando sofrimento físico, para obter confissão.", "is_correct": false, "explanation": "Esta conduta está prevista no art. 1.º, I, 'a', da Lei de Tortura."},
+      {"letter": "B", "text": "Submeter pessoa sob sua guarda a intenso sofrimento físico, como forma de castigo.", "is_correct": false, "explanation": "Esta conduta está prevista no art. 1.º, II, da Lei de Tortura."},
+      {"letter": "C", "text": "Utilizar algemas em preso durante condução, conforme protocolo legal de segurança.", "is_correct": true, "explanation": "O uso de algemas conforme protocolo legal é medida de segurança, não configura tortura."},
+      {"letter": "D", "text": "Submeter alguém a sofrimento mental, por razão de discriminação racial.", "is_correct": false, "explanation": "Esta conduta está prevista no art. 1.º, I, 'c', da Lei de Tortura."},
+      {"letter": "E", "text": "Constranger mediante grave ameaça para provocar prática de crime.", "is_correct": false, "explanation": "Esta conduta está prevista no art. 1.º, I, 'b', da Lei de Tortura."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "estatuto-desarmamento",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Conforme o Estatuto do Desarmamento (Lei 10.826/2003), a posse de arma de fogo de uso permitido no interior da residência ou local de trabalho depende de:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5.º do Estatuto do Desarmamento estabelece que o certificado de Registro de Arma de Fogo autoriza o proprietário a manter a arma exclusivamente no interior de sua residência ou domicílio, ou dependência desses, ou em seu local de trabalho, desde que seja titular ou responsável legal.",
+    "legal_basis": "Lei 10.826/2003, art. 5.º",
+    "alternatives": [
+      {"letter": "A", "text": "Autorização do comandante da Polícia Militar do estado.", "is_correct": false, "explanation": "A posse depende de registro na Polícia Federal, não de autorização do comando da PM."},
+      {"letter": "B", "text": "Registro da arma junto à Polícia Federal e demais requisitos legais.", "is_correct": true, "explanation": "O art. 5.º exige certificado de registro, expedido pela Polícia Federal, com cumprimento dos requisitos legais."},
+      {"letter": "C", "text": "Apenas a nota fiscal de compra da arma.", "is_correct": false, "explanation": "A nota fiscal não substitui o registro; é necessário o certificado de registro."},
+      {"letter": "D", "text": "Nenhum requisito, pois a posse domiciliar é livre.", "is_correct": false, "explanation": "A posse domiciliar exige registro e cumprimento de requisitos legais."},
+      {"letter": "E", "text": "Autorização judicial específica para cada arma.", "is_correct": false, "explanation": "O registro é feito junto à Polícia Federal, não mediante autorização judicial."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "lei-maria-da-penha",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Nos termos da Lei Maria da Penha (Lei 11.340/2006), a violência doméstica e familiar contra a mulher independe de sua orientação sexual. Sobre o âmbito de aplicação da lei, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5.º, parágrafo único, da Lei Maria da Penha estabelece que as relações pessoais independem de orientação sexual. Assim, a lei se aplica em relações homoafetivas femininas. Além disso, conforme o art. 5.º, III, a violência pode ocorrer em qualquer relação íntima de afeto, independentemente de coabitação.",
+    "legal_basis": "Lei 11.340/2006, art. 5.º, parágrafo único",
+    "alternatives": [
+      {"letter": "A", "text": "A lei se aplica apenas às mulheres casadas formalmente.", "is_correct": false, "explanation": "A lei se aplica a qualquer relação íntima de afeto, não se limitando ao casamento formal."},
+      {"letter": "B", "text": "A violência doméstica só se configura quando há coabitação entre agressor e vítima.", "is_correct": false, "explanation": "O art. 5.º, III, dispensa a coabitação; basta relação íntima de afeto."},
+      {"letter": "C", "text": "A lei é aplicável em relações homoafetivas femininas e independe de coabitação.", "is_correct": true, "explanation": "A lei se aplica independentemente de orientação sexual e de coabitação (art. 5.º, parágrafo único, e inciso III)."},
+      {"letter": "D", "text": "A proteção se restringe à violência praticada pelo cônjuge ou companheiro.", "is_correct": false, "explanation": "A lei abrange violência no âmbito da unidade doméstica, da família e em qualquer relação íntima de afeto."},
+      {"letter": "E", "text": "Somente se aplica quando a vítima apresenta lesões físicas comprovadas.", "is_correct": false, "explanation": "A lei protege contra violência física, psicológica, sexual, patrimonial e moral, não exigindo lesões físicas."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "topic_slug": "eca",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com o Estatuto da Criança e do Adolescente (Lei 8.069/90), considera-se criança a pessoa com até:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 2.º do ECA define: criança é a pessoa até 12 anos de idade incompletos; adolescente é aquela entre 12 e 18 anos de idade. Excepcionalmente, o ECA se aplica a pessoas entre 18 e 21 anos nos casos expressos em lei.",
+    "legal_basis": "Lei 8.069/90, art. 2.º",
+    "alternatives": [
+      {"letter": "A", "text": "10 anos de idade incompletos.", "is_correct": false, "explanation": "O limite etário para criança é 12 anos incompletos, não 10."},
+      {"letter": "B", "text": "12 anos de idade incompletos.", "is_correct": true, "explanation": "Art. 2.º do ECA: considera-se criança a pessoa até 12 anos de idade incompletos."},
+      {"letter": "C", "text": "14 anos de idade incompletos.", "is_correct": false, "explanation": "14 anos não é o limite; criança é até 12 anos incompletos."},
+      {"letter": "D", "text": "16 anos de idade incompletos.", "is_correct": false, "explanation": "16 anos não é o limite; criança é até 12 anos incompletos."},
+      {"letter": "E", "text": "18 anos de idade incompletos.", "is_correct": false, "explanation": "Até 18 anos incompletos abrange tanto criança quanto adolescente; criança é especificamente até 12."}
+    ]
+  }
+]

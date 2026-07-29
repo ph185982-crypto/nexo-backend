@@ -1,0 +1,282 @@
+[
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "inquerito-policial-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Apos a pratica de suposto crime militar por um soldado da Policia Militar de Goias, o Comandante do Batalhao determinou a instauracao de Inquerito Policial Militar (IPM) para apurar os fatos.",
+    "text": "Sobre o Inquerito Policial Militar (IPM), conforme o Codigo de Processo Penal Militar (CPPM), assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O IPM e um procedimento administrativo de natureza inquisitorial, destinado a apurar a autoria e materialidade de crime militar. O encarregado do IPM deve ter posto superior ao do indiciado.",
+    "legal_basis": "Art. 9 a 28, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "O IPM e procedimento judicial, conduzido por juiz de direito da Justica Militar.", "is_correct": false, "explanation": "O IPM e procedimento administrativo, nao judicial. E conduzido por oficial encarregado, nao por juiz."},
+      {"letter": "B", "text": "O IPM e procedimento administrativo inquisitorial, destinado a apurar autoria e materialidade de crime militar, conduzido por oficial encarregado.", "is_correct": true, "explanation": "Correto. O IPM e procedimento administrativo, de natureza inquisitorial, conduzido por oficial designado pelo comandante."},
+      {"letter": "C", "text": "O IPM e obrigatorio para o oferecimento da denuncia, sem excecao.", "is_correct": false, "explanation": "O IPM e dispensavel quando o Ministerio Publico ja dispuser de elementos suficientes para o oferecimento da denuncia."},
+      {"letter": "D", "text": "Qualquer militar, independentemente de posto ou graduacao, pode ser encarregado do IPM.", "is_correct": false, "explanation": "O encarregado do IPM deve ter posto superior ao do indiciado, conforme o CPPM."},
+      {"letter": "E", "text": "O IPM assegura contraditorio e ampla defesa ao indiciado, por ser procedimento acusatorio.", "is_correct": false, "explanation": "O IPM e inquisitorial, nao assegurando contraditorio e ampla defesa em sua plenitude, embora o indiciado tenha alguns direitos."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "inquerito-policial-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "O Comandante-Geral da Policia Militar de Goias recebeu noticia de crime militar praticado por um tenente durante operacao policial.",
+    "text": "De acordo com o CPPM, o prazo para conclusao do IPM, quando o indiciado estiver preso, e de:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM estabelece que o IPM deve ser concluido no prazo de 20 dias, se o indiciado estiver preso, contados a partir da data da prisao. Se solto, o prazo e de 40 dias, prorrogavel por mais 20.",
+    "legal_basis": "Art. 20, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "10 dias, improrrogaveis, contados da data do fato.", "is_correct": false, "explanation": "O prazo com indiciado preso e de 20 dias, nao 10, e e contado da data da prisao, nao do fato."},
+      {"letter": "B", "text": "20 dias, contados a partir da data em que a autoridade ordenar sua instauracao.", "is_correct": false, "explanation": "O prazo de 20 dias e contado a partir da data da prisao do indiciado, nao da instauracao do IPM."},
+      {"letter": "C", "text": "20 dias, contados a partir da execucao da ordem de prisao, se o indiciado estiver preso.", "is_correct": true, "explanation": "Correto. Conforme o art. 20 do CPPM, o prazo e de 20 dias quando o indiciado estiver preso."},
+      {"letter": "D", "text": "30 dias, prorrogaveis por igual periodo, contados da instauracao.", "is_correct": false, "explanation": "O prazo de 30 dias nao corresponde ao prazo do IPM com indiciado preso previsto no CPPM."},
+      {"letter": "E", "text": "40 dias, prorrogaveis por mais 20, contados da data do fato.", "is_correct": false, "explanation": "O prazo de 40 dias, prorrogavel por mais 20, aplica-se quando o indiciado estiver solto, nao preso."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "inquerito-policial-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante a conducao de IPM instaurado para apurar crime de peculato militar cometido por um sargento da PMGO, o oficial encarregado deparou-se com duvidas sobre a necessidade de oitiva de testemunhas civis.",
+    "text": "Sobre a instrucao do IPM, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O encarregado do IPM pode ouvir testemunhas civis, realizar pericias, apreender objetos e documentos, e requisitar exames necessarios a elucidacao dos fatos, conforme o CPPM.",
+    "legal_basis": "Arts. 13 a 17, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "O encarregado do IPM somente pode ouvir testemunhas militares, sendo vedada a oitiva de civis.", "is_correct": false, "explanation": "O CPPM nao restringe a oitiva a militares. O encarregado pode ouvir qualquer pessoa que possa contribuir para a elucidacao dos fatos."},
+      {"letter": "B", "text": "O encarregado pode ouvir testemunhas civis e militares, realizar pericias e apreender objetos relacionados ao crime.", "is_correct": true, "explanation": "Correto. O encarregado do IPM tem amplos poderes investigatorios, incluindo oitiva de civis, pericias e apreensoes."},
+      {"letter": "C", "text": "O encarregado precisa de autorizacao judicial para ouvir testemunhas e realizar diligencias.", "is_correct": false, "explanation": "O encarregado do IPM nao precisa de autorizacao judicial para oitivas e diligencias ordinarias."},
+      {"letter": "D", "text": "O IPM nao admite pericias, que somente podem ser realizadas durante a instrucao criminal.", "is_correct": false, "explanation": "O CPPM permite a realizacao de pericias durante o IPM, sendo estas essenciais para a instrucao."},
+      {"letter": "E", "text": "O indiciado tem o direito de ser ouvido primeiro, antes de qualquer testemunha.", "is_correct": false, "explanation": "No IPM, nao ha obrigatoriedade de ouvir o indiciado antes das testemunhas. A ordem das oitivas fica a criterio do encarregado."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "acao-penal-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Apos a conclusao de IPM que apurou crime de desercao praticado por soldado da PMGO, os autos foram remetidos ao Ministerio Publico Militar para as providencias cabiveis.",
+    "text": "Sobre a acao penal militar, conforme o CPPM, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A acao penal militar e, em regra, publica incondicionada, cabendo ao Ministerio Publico Militar a titularidade para o oferecimento da denuncia.",
+    "legal_basis": "Art. 29 e seguintes, Decreto-lei 1.002/69 (CPPM); Art. 121, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A acao penal militar e sempre privada, cabendo a vitima o oferecimento da queixa-crime.", "is_correct": false, "explanation": "A acao penal militar e, em regra, publica incondicionada, nao cabendo acao privada."},
+      {"letter": "B", "text": "A acao penal militar e publica incondicionada, cabendo ao Ministerio Publico o oferecimento da denuncia.", "is_correct": true, "explanation": "Correto. A acao penal militar e publica incondicionada, sendo o MP o titular exclusivo da acao penal."},
+      {"letter": "C", "text": "A acao penal militar pode ser publica condicionada a representacao do ofendido em crimes contra a honra.", "is_correct": false, "explanation": "No ambito militar, a acao penal e publica incondicionada, mesmo em crimes contra a honra militar."},
+      {"letter": "D", "text": "O comandante da unidade pode oferecer a denuncia diretamente, dispensando a atuacao do MP.", "is_correct": false, "explanation": "A titularidade da acao penal e exclusiva do Ministerio Publico, nao podendo ser exercida pelo comandante."},
+      {"letter": "E", "text": "A acao penal militar depende de autorizacao do Comandante-Geral para ser exercida.", "is_correct": false, "explanation": "O MP nao depende de autorizacao do comando para exercer a acao penal militar."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "acao-penal-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "O Ministerio Publico Militar recebeu os autos de IPM que apurou crime de violencia contra inferior praticado por um capitao da PMGO. Ao analisar os autos, o promotor constatou que nao havia elementos suficientes para a denuncia.",
+    "text": "Diante da insuficiencia de elementos, o Ministerio Publico devera:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Quando o MP entende que faltam elementos para a denuncia, pode requerer novas diligencias ao juiz, que determinara o retorno dos autos ao encarregado para complementacao, ou pode requerer o arquivamento do IPM.",
+    "legal_basis": "Art. 397, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Oferecer a denuncia mesmo sem elementos suficientes, para que a instrucao criminal os produza.", "is_correct": false, "explanation": "O MP nao deve oferecer denuncia sem justa causa. A denuncia exige indicios de autoria e prova da materialidade."},
+      {"letter": "B", "text": "Requerer o arquivamento do IPM ao juiz ou solicitar novas diligencias para complementacao da investigacao.", "is_correct": true, "explanation": "Correto. O MP pode requerer o arquivamento ou solicitar novas diligencias quando os elementos forem insuficientes."},
+      {"letter": "C", "text": "Devolver os autos ao comandante para instauracao de novo IPM.", "is_correct": false, "explanation": "Nao se instaura novo IPM. O procedimento correto e solicitar a complementacao do existente ou requerer o arquivamento."},
+      {"letter": "D", "text": "Aguardar indefinidamente ate que surjam novos elementos, sem prazo limite.", "is_correct": false, "explanation": "O MP deve atuar dentro dos prazos legais, nao podendo permanecer indefinidamente inerte."},
+      {"letter": "E", "text": "Absolver sumariamente o indiciado, por falta de provas.", "is_correct": false, "explanation": "O MP nao tem poder de absolver. A absolvicao e ato jurisdicional. O MP pode requerer arquivamento."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "competencia-justica-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "A Justica Militar do Estado de Goias e composta por orgaos jurisdicionais definidos na Constituicao Federal e na Constituicao Estadual.",
+    "text": "Sobre a organizacao e competencia da Justica Militar estadual, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Nos Estados com efetivo militar superior a 20 mil integrantes, pode ser criado o Tribunal de Justica Militar. Nos Estados sem TJM, a competencia recursal e do Tribunal de Justica. Em primeiro grau, atuam os Conselhos de Justica.",
+    "legal_basis": "Art. 125, par. 3, 4 e 5, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A Justica Militar estadual e composta apenas por juizes de direito, que atuam singularmente em todas as causas.", "is_correct": false, "explanation": "A Justica Militar estadual funciona com os Conselhos de Justica (especial e permanente) e juiz de direito do juizo militar."},
+      {"letter": "B", "text": "Em primeiro grau, a Justica Militar estadual funciona com os Conselhos de Justica, compostos por juiz de direito e oficiais militares.", "is_correct": true, "explanation": "Correto. Os Conselhos de Justica (especial e permanente) sao compostos por um juiz de direito e oficiais da PM ou BM."},
+      {"letter": "C", "text": "A Justica Militar estadual tem competencia para julgar civis que cometam crimes em area militar.", "is_correct": false, "explanation": "Apos a EC 45/2004, a Justica Militar estadual nao julga civis. Esta competencia e da Justica Militar da Uniao."},
+      {"letter": "D", "text": "A Justica Militar estadual e orgao do Poder Executivo, vinculado ao Governador do Estado.", "is_correct": false, "explanation": "A Justica Militar estadual integra o Poder Judiciario, nao o Executivo."},
+      {"letter": "E", "text": "Todos os Estados da federacao sao obrigados a criar Tribunal de Justica Militar.", "is_correct": false, "explanation": "A criacao de TJM e facultativa, sendo permitida apenas para Estados com efetivo militar superior a 20 mil integrantes."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "competencia-justica-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar de Goias, durante policiamento ostensivo, praticou homicidio doloso contra um civil que resistia a abordagem.",
+    "text": "Quanto a competencia para julgamento de crime doloso contra a vida praticado por policial militar contra civil, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A EC 45/2004 alterou o art. 125, par. 4, da CF/88, excluindo da competencia da Justica Militar estadual os crimes dolosos contra a vida praticados contra civil, que passaram a ser julgados pelo Tribunal do Juri.",
+    "legal_basis": "Art. 125, par. 4, CF/88; EC 45/2004",
+    "alternatives": [
+      {"letter": "A", "text": "A competencia e da Justica Militar estadual, pois o crime foi praticado durante o servico.", "is_correct": false, "explanation": "Mesmo praticado durante o servico, o crime doloso contra a vida de civil e da competencia do Tribunal do Juri, conforme art. 125, par. 4, CF/88."},
+      {"letter": "B", "text": "A competencia e do Tribunal do Juri, conforme determinacao constitucional inserida pela EC 45/2004.", "is_correct": true, "explanation": "Correto. A EC 45/2004 excluiu da Justica Militar estadual a competencia para julgar crimes dolosos contra a vida de civil."},
+      {"letter": "C", "text": "A competencia e da Justica Militar da Uniao, por envolver homicidio doloso.", "is_correct": false, "explanation": "A Justica Militar da Uniao julga militares federais, nao estaduais. E a competencia para crime doloso contra vida de civil e do Juri."},
+      {"letter": "D", "text": "A competencia e da Justica Federal, por envolver violacao de direitos humanos.", "is_correct": false, "explanation": "A Justica Federal so seria competente em caso de incidente de deslocamento de competencia (IDC). A regra e competencia do Juri estadual."},
+      {"letter": "E", "text": "A competencia e definida pelo Comandante-Geral da PM, que escolhe entre Justica Militar e Juri.", "is_correct": false, "explanation": "A competencia jurisdicional e definida por lei e pela Constituicao, nao por autoridade administrativa."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "competencia-justica-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "O Conselho de Justica e o orgao de primeiro grau da Justica Militar estadual responsavel pelo julgamento dos crimes militares praticados por praças.",
+    "text": "Sobre os Conselhos de Justica na Justica Militar estadual, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Existem dois tipos de Conselhos de Justica: o Especial, constituido para cada processo envolvendo oficial, e o Permanente, que funciona por periodo determinado para julgar pracas. Ambos sao presididos pelo oficial de maior posto.",
+    "legal_basis": "Arts. 16 a 26, Decreto-lei 1.002/69 (CPPM); Art. 125, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O Conselho Especial e constituido para processar e julgar oficiais, sendo formado para cada processo individualmente.", "is_correct": true, "explanation": "Correto. O Conselho Especial de Justica e constituido especificamente para cada processo contra oficial, diferentemente do Permanente."},
+      {"letter": "B", "text": "O Conselho Permanente e formado exclusivamente por oficiais da mesma arma do acusado.", "is_correct": false, "explanation": "O Conselho Permanente e composto por juiz de direito e oficiais, sem a exigencia de serem da mesma arma do acusado."},
+      {"letter": "C", "text": "O juiz de direito nao participa dos Conselhos de Justica, atuando apenas em segunda instancia.", "is_correct": false, "explanation": "O juiz de direito do juizo militar integra os Conselhos de Justica, atuando como membro e relator."},
+      {"letter": "D", "text": "Os Conselhos de Justica sao compostos exclusivamente por militares, sem participacao de juiz togado.", "is_correct": false, "explanation": "Os Conselhos de Justica sao compostos por juiz de direito (togado) e oficiais militares."},
+      {"letter": "E", "text": "Nao existe distincao entre Conselho Especial e Permanente, sendo ambos iguais em composicao e competencia.", "is_correct": false, "explanation": "Ha distincao clara: o Especial julga oficiais e e constituido por processo; o Permanente julga pracas e funciona por periodo."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "prisao-liberdade-provisoria",
+    "question_type": "multipla_escolha",
+    "context_text": "Um sargento da PMGO foi preso em flagrante delito pela pratica de crime de peculato militar ao ser flagrado desviando combustivel das viaturas da corporacao.",
+    "text": "Sobre a prisao em flagrante no ambito da Justica Militar, conforme o CPPM, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "No CPPM, a autoridade militar que presidir a lavratura do auto de flagrante deve comunicar imediatamente ao juiz competente, que decidira sobre a manutencao da prisao ou concessao de liberdade provisoria.",
+    "legal_basis": "Arts. 243 a 253, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "A prisao em flagrante de militar so pode ser efetuada por autoridade militar de posto superior ao do preso.", "is_correct": false, "explanation": "Qualquer pessoa pode efetuar a prisao em flagrante, inclusive civil. O CPPM nao restringe a legitimidade para a prisao em flagrante a autoridade militar superior."},
+      {"letter": "B", "text": "O auto de prisao em flagrante deve ser lavrado por autoridade militar competente e comunicado ao juiz para decisao sobre manutencao ou relaxamento.", "is_correct": true, "explanation": "Correto. A autoridade militar lavra o auto e comunica ao juiz, que decidira sobre a legalidade e manutencao da prisao."},
+      {"letter": "C", "text": "Na Justica Militar, nao existe prisao em flagrante, apenas prisao preventiva decretada pelo juiz.", "is_correct": false, "explanation": "O CPPM preve expressamente a prisao em flagrante de militar, com procedimento proprio."},
+      {"letter": "D", "text": "O militar preso em flagrante e automaticamente excluido da corporacao, perdendo a graduacao.", "is_correct": false, "explanation": "A prisao em flagrante nao gera exclusao automatica nem perda de graduacao. Essas consequencias dependem de condenacao transitada em julgado."},
+      {"letter": "E", "text": "O Comandante-Geral e a unica autoridade competente para decidir sobre a manutencao da prisao em flagrante.", "is_correct": false, "explanation": "A decisao sobre manutencao ou relaxamento da prisao em flagrante cabe ao juiz competente, nao ao Comandante-Geral."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "prisao-liberdade-provisoria",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO, denunciado por crime de abandono de posto, requereu liberdade provisoria, alegando que o crime nao envolve violencia e que possui bons antecedentes.",
+    "text": "Sobre a liberdade provisoria no processo penal militar, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A liberdade provisoria no processo penal militar segue regras proprias do CPPM, tendo sofrido influencia da jurisprudencia do STF que reconhece a aplicacao de garantias constitucionais tambem no ambito militar.",
+    "legal_basis": "Arts. 270 a 273, Decreto-lei 1.002/69 (CPPM); Art. 5, LXVI, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A liberdade provisoria e totalmente vedada no processo penal militar, em razao da hierarquia e disciplina.", "is_correct": false, "explanation": "A liberdade provisoria e admitida no processo penal militar, conforme o CPPM e a jurisprudencia do STF."},
+      {"letter": "B", "text": "A liberdade provisoria e cabivel quando o crime nao for daqueles para os quais a lei preve pena privativa de liberdade.", "is_correct": false, "explanation": "A liberdade provisoria nao se limita a crimes sem pena privativa. O CPPM estabelece criterios proprios para sua concessao."},
+      {"letter": "C", "text": "A liberdade provisoria pode ser concedida pelo juiz militar, observados os requisitos legais, nao sendo automaticamente vedada em crimes militares.", "is_correct": true, "explanation": "Correto. O juiz militar pode conceder liberdade provisoria observando os requisitos do CPPM e as garantias constitucionais."},
+      {"letter": "D", "text": "Somente o Comandante-Geral da PM pode conceder liberdade provisoria ao militar preso.", "is_correct": false, "explanation": "A concessao de liberdade provisoria e ato jurisdicional, cabendo ao juiz competente, nao ao Comandante-Geral."},
+      {"letter": "E", "text": "A fianca e cabivel para todos os crimes militares, sem excecao.", "is_correct": false, "explanation": "Existem crimes militares inafiancaveis, conforme previsao legal. A fianca nao e cabivel em todas as hipoteses."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "prisao-liberdade-provisoria",
+    "question_type": "multipla_escolha",
+    "context_text": "O juiz de direito do juizo militar de Goias decretou a prisao preventiva de um tenente da PMGO acusado de crime militar de corrupao passiva.",
+    "text": "Sobre a prisao preventiva no processo penal militar, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A prisao preventiva no CPPM pode ser decretada pelo juiz de oficio, a requerimento do Ministerio Publico ou mediante representacao da autoridade encarregada do IPM, quando presentes os requisitos legais.",
+    "legal_basis": "Arts. 254 a 261, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "A prisao preventiva no CPPM somente pode ser decretada a requerimento do Ministerio Publico.", "is_correct": false, "explanation": "O CPPM admite a decretacao de oficio pelo juiz ou mediante representacao da autoridade do IPM, alem do requerimento do MP."},
+      {"letter": "B", "text": "A prisao preventiva pode ser decretada pelo juiz de oficio, a requerimento do MP ou por representacao da autoridade militar, presentes os requisitos legais.", "is_correct": true, "explanation": "Correto. O CPPM preve multiplas formas de provocacao para a decretacao da prisao preventiva."},
+      {"letter": "C", "text": "A prisao preventiva no processo militar e irrevogavel, nao podendo ser revista apos decretada.", "is_correct": false, "explanation": "A prisao preventiva pode ser revogada a qualquer tempo quando cessarem os motivos que a fundamentaram."},
+      {"letter": "D", "text": "Somente oficiais de alto posto podem ter prisao preventiva decretada.", "is_correct": false, "explanation": "A prisao preventiva pode ser decretada contra qualquer militar, independentemente de posto ou graduacao."},
+      {"letter": "E", "text": "A prisao preventiva no CPPM nao exige fundamentacao, bastando a existencia de denuncia.", "is_correct": false, "explanation": "A prisao preventiva exige fundamentacao com demonstracao dos requisitos legais, conforme garantias constitucionais."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "acao-penal-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "O Ministerio Publico ofereceu denuncia contra um cabo da PMGO pela pratica de crime de recusa de obediencia (art. 163 do CPM). O juiz recebeu a denuncia e determinou a citacao do acusado.",
+    "text": "Sobre o rito processual na Justica Militar, apos o recebimento da denuncia, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "No rito ordinario do CPPM, apos o recebimento da denuncia, o acusado e citado para apresentar defesa previa. Segue-se a instrucao criminal com oitiva de testemunhas, interrogatorio do acusado e debates orais ou memoriais.",
+    "legal_basis": "Arts. 395 a 437, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "O acusado e citado e deve apresentar resposta a acusacao no prazo legal, seguindo-se a instrucao criminal.", "is_correct": true, "explanation": "Correto. Apos o recebimento da denuncia, o acusado e citado para oferecer defesa previa, seguindo-se a instrucao processual."},
+      {"letter": "B", "text": "O acusado e intimado a comparecer imediatamente para interrogatorio, sem prazo para defesa.", "is_correct": false, "explanation": "O CPPM assegura prazo para apresentacao de defesa previa antes do interrogatorio."},
+      {"letter": "C", "text": "O julgamento e imediato apos o recebimento da denuncia, sem necessidade de instrucao.", "is_correct": false, "explanation": "O rito processual militar exige instrucao criminal completa antes do julgamento."},
+      {"letter": "D", "text": "O processo e suspenso ate que o acusado seja localizado, sem possibilidade de prosseguimento.", "is_correct": false, "explanation": "O CPPM preve procedimentos para citacao, inclusive por edital, permitindo o prosseguimento do feito."},
+      {"letter": "E", "text": "A defesa so pode ser exercida por advogado militar, sendo vedada a defesa por advogado civil.", "is_correct": false, "explanation": "O acusado pode constituir advogado civil ou militar para sua defesa. Nao ha restricao a atuacao de advogado civil."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "inquerito-policial-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "O oficial encarregado de um IPM na PMGO, ao concluir as investigacoes, deve elaborar relatorio final com suas conclusoes e encaminhar os autos a autoridade competente.",
+    "text": "Sobre a conclusao do IPM e o relatorio final, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Ao concluir o IPM, o encarregado elabora relatorio minucioso, indicando os fatos apurados, as provas colhidas e seu convencimento sobre a autoria e materialidade. Os autos sao encaminhados ao juiz competente, com remessa ao MP.",
+    "legal_basis": "Art. 22, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "O encarregado do IPM pode arquivar o procedimento de oficio quando nao encontrar provas do crime.", "is_correct": false, "explanation": "O encarregado nao tem poder de arquivamento. Os autos devem ser encaminhados ao juiz, que ouviraPM sobre o arquivamento."},
+      {"letter": "B", "text": "O encarregado elabora relatorio minucioso e encaminha os autos a autoridade competente para remessa ao juiz e ao MP.", "is_correct": true, "explanation": "Correto. O encarregado elabora relatorio e encaminha os autos para que o MP possa oferecer denuncia ou requerer o arquivamento."},
+      {"letter": "C", "text": "O relatorio do IPM tem forca vinculante para o juiz, que deve acatar as conclusoes do encarregado.", "is_correct": false, "explanation": "O relatorio do IPM nao vincula o juiz nem o MP. E peca meramente informativa."},
+      {"letter": "D", "text": "O encarregado pode oferecer denuncia diretamente ao juiz, dispensando a atuacao do MP.", "is_correct": false, "explanation": "O oferecimento da denuncia e atribuicao exclusiva do Ministerio Publico, nao do encarregado do IPM."},
+      {"letter": "E", "text": "O relatorio do IPM e dispensavel quando houver confissao do indiciado.", "is_correct": false, "explanation": "O relatorio e peca obrigatoria do IPM, independentemente da existencia de confissao."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "acao-penal-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Ao receber os autos do IPM, o Ministerio Publico Militar verificou que o fato investigado, embora irregular, nao configurava crime militar, tratando-se de mera transgressao disciplinar.",
+    "text": "Nessa hipotese, o Ministerio Publico devera:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Quando o fato nao configura crime militar, o MP deve requerer ao juiz o arquivamento do IPM, por atipicidade da conduta. O juiz pode concordar ou, discordando, remeter os autos ao Procurador-Geral.",
+    "legal_basis": "Art. 397, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Oferecer denuncia mesmo assim, pois a transgressao disciplinar pode ser reclassificada como crime durante o processo.", "is_correct": false, "explanation": "O MP nao deve denunciar por fato atipico. A denuncia exige tipicidade da conduta como crime."},
+      {"letter": "B", "text": "Requerer ao juiz o arquivamento do IPM, por atipicidade da conduta no ambito penal militar.", "is_correct": true, "explanation": "Correto. Sendo a conduta atipica como crime militar, o MP deve requerer o arquivamento."},
+      {"letter": "C", "text": "Aplicar diretamente a sancao disciplinar, pois o MP tem essa competencia no ambito militar.", "is_correct": false, "explanation": "O MP nao tem competencia para aplicar sancoes disciplinares. Essa atribuicao e do comando militar."},
+      {"letter": "D", "text": "Remeter os autos a Justica Comum para processamento como crime comum.", "is_correct": false, "explanation": "Se o fato nao configura crime militar nem crime comum, nao ha razao para remessa a outra justica. Cabe o arquivamento."},
+      {"letter": "E", "text": "Devolver os autos ao encarregado para que reclassifique o fato como crime militar.", "is_correct": false, "explanation": "O MP nao pode determinar ao encarregado que reclassifique o fato. A tipificacao juridica cabe ao MP e ao juiz."}
+    ]
+  }
+]

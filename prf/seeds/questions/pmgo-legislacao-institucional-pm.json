@@ -1,0 +1,302 @@
+[
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "estatuto-militares-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com o Estatuto dos Militares do Estado de Goiás (Lei 15.668/2006), são militares estaduais os integrantes:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Estatuto dos Militares do Estado de Goiás abrange os integrantes da Polícia Militar e do Corpo de Bombeiros Militar do Estado de Goiás, que compõem as forças auxiliares e reserva do Exército.",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas da Polícia Militar de Goiás.", "is_correct": false, "explanation": "O Estatuto abrange tanto a PM quanto o Corpo de Bombeiros Militar."},
+      {"letter": "B", "text": "Da Polícia Militar e do Corpo de Bombeiros Militar do Estado de Goiás.", "is_correct": true, "explanation": "O Estatuto dos Militares de Goiás abrange os integrantes da PM e do CBM do Estado de Goiás."},
+      {"letter": "C", "text": "De todas as forças de segurança pública do estado, incluindo a Polícia Civil.", "is_correct": false, "explanation": "A Polícia Civil é composta por servidores civis, não militares estaduais."},
+      {"letter": "D", "text": "Apenas do Corpo de Bombeiros Militar de Goiás.", "is_correct": false, "explanation": "O Estatuto também abrange a Polícia Militar de Goiás."},
+      {"letter": "E", "text": "Das Forças Armadas lotados no Estado de Goiás.", "is_correct": false, "explanation": "As Forças Armadas possuem legislação própria federal; o Estatuto é estadual."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "hierarquia-disciplina",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Na organização da Polícia Militar de Goiás, a hierarquia e a disciplina são pilares fundamentais. Sobre esses conceitos, é correto afirmar que:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A hierarquia militar é a ordenação da autoridade em níveis diferentes, dentro da estrutura da corporação. A disciplina é a rigorosa observância e acatamento integral das leis, regulamentos e normas, bem como das ordens legais emanadas de autoridade competente. São valores complementares e indissociáveis na instituição militar.",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "A hierarquia é a ordenação da autoridade em níveis diferentes, e a disciplina é a rigorosa observância das normas e ordens.", "is_correct": true, "explanation": "Definição correta: hierarquia como ordenação de autoridade e disciplina como observância de normas e ordens."},
+      {"letter": "B", "text": "A hierarquia depende exclusivamente do tempo de serviço, independentemente do posto ou graduação.", "is_correct": false, "explanation": "A hierarquia é definida pelo posto ou graduação, e não exclusivamente pelo tempo de serviço."},
+      {"letter": "C", "text": "A disciplina militar é facultativa e depende da adesão voluntária de cada policial.", "is_correct": false, "explanation": "A disciplina militar é obrigatória, não facultativa."},
+      {"letter": "D", "text": "A hierarquia se aplica apenas aos oficiais, não alcançando as praças.", "is_correct": false, "explanation": "A hierarquia abrange todos os militares, tanto oficiais quanto praças."},
+      {"letter": "E", "text": "Disciplina e hierarquia são conceitos independentes que não guardam relação entre si.", "is_correct": false, "explanation": "Hierarquia e disciplina são valores complementares e indissociáveis na instituição militar."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "hierarquia-disciplina",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Na Polícia Militar de Goiás, a escala hierárquica dos oficiais, em ordem crescente, é:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A escala hierárquica dos oficiais na PM segue a ordem crescente: Segundo-Tenente, Primeiro-Tenente, Capitão (oficiais subalternos/intermediários), Major, Tenente-Coronel e Coronel (oficiais superiores).",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Capitão, Major, Tenente-Coronel, Coronel, Segundo-Tenente, Primeiro-Tenente.", "is_correct": false, "explanation": "A ordem está incorreta; os tenentes são hierarquicamente inferiores ao capitão."},
+      {"letter": "B", "text": "Segundo-Tenente, Primeiro-Tenente, Capitão, Major, Tenente-Coronel, Coronel.", "is_correct": true, "explanation": "Ordem crescente correta: 2.º Ten, 1.º Ten, Cap, Maj, TC, Cel."},
+      {"letter": "C", "text": "Coronel, Tenente-Coronel, Major, Capitão, Primeiro-Tenente, Segundo-Tenente.", "is_correct": false, "explanation": "Esta é a ordem decrescente, não crescente."},
+      {"letter": "D", "text": "Cabo, Sargento, Subtenente, Segundo-Tenente, Primeiro-Tenente, Capitão.", "is_correct": false, "explanation": "Cabo, Sargento e Subtenente são graduações de praças, não postos de oficiais."},
+      {"letter": "E", "text": "Major, Capitão, Primeiro-Tenente, Segundo-Tenente, Coronel, Tenente-Coronel.", "is_correct": false, "explanation": "A ordem está totalmente desorganizada."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "deveres-obrigacoes",
+    "question_type": "multipla_escolha",
+    "context_text": "O Soldado Silva, ao presenciar um assalto a mão armada enquanto estava de folga, optou por não intervir e não comunicar o fato à autoridade competente, alegando que não estava em serviço.",
+    "text": "Com base na legislação da PMGO sobre deveres e obrigações do policial militar, a conduta do Soldado Silva:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O policial militar, mesmo de folga, tem o dever de agir diante de situações que exijam intervenção policial. A dedicação integral ao serviço é uma das obrigações fundamentais do militar estadual, não se limitando ao horário de expediente.",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Foi correta, pois o policial não tem obrigação de agir quando está de folga.", "is_correct": false, "explanation": "O policial militar tem o dever de dedicação integral, devendo agir mesmo fora do serviço."},
+      {"letter": "B", "text": "Constitui transgressão disciplinar, pois o policial militar tem dever de dedicação integral.", "is_correct": true, "explanation": "O policial militar tem o dever de agir diante de crimes, mesmo estando de folga, sob pena de transgressão disciplinar."},
+      {"letter": "C", "text": "É justificável se o policial estava sem armamento de serviço.", "is_correct": false, "explanation": "Mesmo sem armamento, o policial tem o dever de ao menos comunicar o fato à autoridade competente."},
+      {"letter": "D", "text": "Somente seria punível se houvesse determinação expressa de seu superior.", "is_correct": false, "explanation": "O dever de agir independe de ordem de superior; decorre da própria condição de militar."},
+      {"letter": "E", "text": "É amparada pelo direito ao descanso previsto na legislação trabalhista.", "is_correct": false, "explanation": "A legislação trabalhista comum não se aplica aos militares estaduais no que tange ao dever de agir."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "deveres-obrigacoes",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "São deveres do policial militar do Estado de Goiás, entre outros:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Estatuto dos Militares de Goiás prevê como deveres fundamentais: dedicação integral ao serviço, lealdade à instituição, disciplina, respeito à hierarquia, probidade e decoro da classe. O zelo pelo patrimônio público e a conduta ilibada são igualmente esperados.",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Dedicação integral ao serviço, lealdade à instituição e respeito à hierarquia.", "is_correct": true, "explanation": "Esses são deveres fundamentais previstos no Estatuto dos Militares de Goiás."},
+      {"letter": "B", "text": "Exercício de atividade político-partidária dentro do quartel.", "is_correct": false, "explanation": "Atividade político-partidária é vedada ao militar em serviço, não sendo um dever."},
+      {"letter": "C", "text": "Liberdade de expressão irrestrita sobre assuntos operacionais.", "is_correct": false, "explanation": "O militar deve observar sigilo sobre assuntos operacionais, não havendo liberdade irrestrita."},
+      {"letter": "D", "text": "Recusa a ordens que considere inconvenientes, mesmo que legais.", "is_correct": false, "explanation": "O militar deve cumprir ordens legais; a recusa constitui transgressão disciplinar."},
+      {"letter": "E", "text": "Sindicalização e participação em greves.", "is_correct": false, "explanation": "A sindicalização e a greve são vedadas aos militares pela Constituição Federal (art. 142, §3.º, IV)."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "transgressoes-disciplinares",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cabo da PMGO, durante o serviço, deixou de comparecer ao local determinado pelo seu superior hierárquico, sem apresentar justificativa plausível, causando prejuízo à operação em andamento.",
+    "text": "A conduta do cabo, de acordo com o Regulamento Disciplinar da PMGO, configura:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O não comparecimento ao local determinado pelo superior, sem justificativa, durante o serviço, constitui transgressão disciplinar por descumprimento de ordem legal. A gravidade leva em conta o prejuízo causado à operação.",
+    "legal_basis": "Regulamento Disciplinar da PMGO",
+    "alternatives": [
+      {"letter": "A", "text": "Crime militar de deserção.", "is_correct": false, "explanation": "Deserção exige ausência por prazo determinado em lei e não se confunde com descumprimento pontual de ordem."},
+      {"letter": "B", "text": "Transgressão disciplinar por descumprimento de ordem legal de superior hierárquico.", "is_correct": true, "explanation": "O não comparecimento sem justificativa ao local determinado por superior configura transgressão disciplinar."},
+      {"letter": "C", "text": "Conduta atípica, pois o cabo poderia ter impedimento pessoal.", "is_correct": false, "explanation": "A ausência de justificativa plausível afasta a possibilidade de impedimento pessoal legítimo."},
+      {"letter": "D", "text": "Infração penal comum, processável pela Justiça Estadual.", "is_correct": false, "explanation": "A conduta descrita é de natureza disciplinar, não configurando infração penal comum."},
+      {"letter": "E", "text": "Mera irregularidade administrativa, sem consequências disciplinares.", "is_correct": false, "explanation": "O descumprimento de ordem legal tem consequências disciplinares previstas no Regulamento."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "transgressoes-disciplinares",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com o Regulamento Disciplinar da PMGO, as transgressões disciplinares podem ser classificadas quanto à gravidade em:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Regulamento Disciplinar classifica as transgressões em leves, médias e graves, conforme a natureza e as circunstâncias do fato, suas consequências e os antecedentes do transgressor.",
+    "legal_basis": "Regulamento Disciplinar da PMGO",
+    "alternatives": [
+      {"letter": "A", "text": "Leves, médias e graves.", "is_correct": true, "explanation": "Classificação correta das transgressões disciplinares quanto à gravidade."},
+      {"letter": "B", "text": "Simples e qualificadas.", "is_correct": false, "explanation": "Esta classificação é utilizada para crimes, não para transgressões disciplinares."},
+      {"letter": "C", "text": "Dolosas e culposas.", "is_correct": false, "explanation": "Esta é uma classificação quanto ao elemento subjetivo, não quanto à gravidade."},
+      {"letter": "D", "text": "Administrativas e penais.", "is_correct": false, "explanation": "Esta classificação distingue esferas de responsabilidade, não gravidade de transgressões."},
+      {"letter": "E", "text": "Primárias, secundárias e terciárias.", "is_correct": false, "explanation": "Esta classificação não existe no Regulamento Disciplinar da PMGO."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "transgressoes-disciplinares",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "No Regulamento Disciplinar da PMGO, ao avaliar a gravidade de uma transgressão disciplinar, deve-se considerar:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A classificação da gravidade da transgressão disciplinar considera múltiplos fatores: as circunstâncias em que ocorreu, as consequências do ato, os antecedentes do transgressor e a natureza do fato. Todos esses elementos são avaliados conjuntamente pela autoridade competente.",
+    "legal_basis": "Regulamento Disciplinar da PMGO",
+    "alternatives": [
+      {"letter": "A", "text": "Exclusivamente a patente do transgressor.", "is_correct": false, "explanation": "A patente é um dos fatores, mas não o único critério de avaliação da gravidade."},
+      {"letter": "B", "text": "Apenas o resultado material da conduta.", "is_correct": false, "explanation": "O resultado material é um dos elementos, mas não o único a ser considerado."},
+      {"letter": "C", "text": "As circunstâncias do fato, suas consequências, os antecedentes do transgressor e a natureza do ato.", "is_correct": true, "explanation": "A avaliação da gravidade considera conjuntamente: circunstâncias, consequências, antecedentes e natureza do ato."},
+      {"letter": "D", "text": "Somente a intenção do agente, sendo irrelevantes as consequências.", "is_correct": false, "explanation": "As consequências são relevantes na avaliação da gravidade."},
+      {"letter": "E", "text": "A opinião pessoal do superior hierárquico, sem critérios objetivos.", "is_correct": false, "explanation": "A avaliação deve seguir critérios objetivos previstos no regulamento."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "direitos-policial-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Nos termos do Estatuto dos Militares de Goiás (Lei 15.668/2006), são direitos do policial militar, entre outros:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Estatuto dos Militares de Goiás assegura ao policial militar direitos como remuneração, assistência médico-hospitalar, férias anuais, estabilidade (após determinado período) e condições adequadas de trabalho. O uso das instalações militares para atividades de saúde e lazer também é previsto.",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Remuneração, assistência médico-hospitalar e férias anuais.", "is_correct": true, "explanation": "São direitos assegurados pelo Estatuto dos Militares de Goiás."},
+      {"letter": "B", "text": "Direito de greve e sindicalização.", "is_correct": false, "explanation": "A Constituição Federal veda greve e sindicalização aos militares (art. 142, §3.º, IV)."},
+      {"letter": "C", "text": "Liberdade para exercer cargo público eletivo sem restrições.", "is_correct": false, "explanation": "O militar deve observar restrições quanto ao exercício de cargos eletivos, conforme a Constituição."},
+      {"letter": "D", "text": "Autonomia para definir o próprio horário de trabalho.", "is_correct": false, "explanation": "O horário de trabalho é definido pela escala de serviço da corporação, não pelo próprio militar."},
+      {"letter": "E", "text": "Isenção de responsabilidade por atos praticados em serviço.", "is_correct": false, "explanation": "O militar responde por seus atos nas esferas administrativa, civil e penal."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "direitos-policial-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Sobre a garantia de ampla defesa e contraditório no âmbito disciplinar da PMGO, é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Constituição Federal (art. 5.º, LV) assegura aos litigantes, em processo judicial ou administrativo, o contraditório e a ampla defesa. Esse direito se aplica integralmente ao processo administrativo disciplinar militar, devendo ser garantido ao policial militar acusado de transgressão.",
+    "legal_basis": "CF/88, art. 5.º, LV; Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "São garantias aplicáveis apenas em processos judiciais, não em procedimentos administrativos.", "is_correct": false, "explanation": "A Constituição assegura essas garantias tanto em processos judiciais quanto administrativos."},
+      {"letter": "B", "text": "O militar acusado de transgressão tem direito à ampla defesa e ao contraditório no processo disciplinar.", "is_correct": true, "explanation": "A ampla defesa e o contraditório são garantias constitucionais aplicáveis ao processo disciplinar militar."},
+      {"letter": "C", "text": "Podem ser dispensados em casos de transgressões leves.", "is_correct": false, "explanation": "As garantias são irrenunciáveis, independentemente da gravidade da transgressão."},
+      {"letter": "D", "text": "São assegurados apenas aos oficiais, não se aplicando às praças.", "is_correct": false, "explanation": "As garantias se aplicam a todos os militares, sem distinção de posto ou graduação."},
+      {"letter": "E", "text": "Limitam-se à apresentação de defesa escrita, sem direito a produção de provas.", "is_correct": false, "explanation": "A ampla defesa inclui o direito à produção de provas, não se limitando à defesa escrita."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "organizacao-pmgo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "A Polícia Militar do Estado de Goiás, conforme a Constituição Federal e a legislação estadual, tem como missão constitucional:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 144, §5.º, da Constituição Federal estabelece que às polícias militares cabem a polícia ostensiva e a preservação da ordem pública. Essa é a missão constitucional das PMs, incluindo a PMGO.",
+    "legal_basis": "CF/88, art. 144, §5.º",
+    "alternatives": [
+      {"letter": "A", "text": "A investigação criminal e a apuração de infrações penais.", "is_correct": false, "explanation": "A investigação criminal é atribuição da Polícia Civil (art. 144, §4.º, CF)."},
+      {"letter": "B", "text": "A polícia ostensiva e a preservação da ordem pública.", "is_correct": true, "explanation": "Art. 144, §5.º, CF: às polícias militares cabem a polícia ostensiva e a preservação da ordem pública."},
+      {"letter": "C", "text": "A guarda das fronteiras nacionais e do espaço aéreo.", "is_correct": false, "explanation": "Essa é atribuição das Forças Armadas, não das polícias militares estaduais."},
+      {"letter": "D", "text": "Exclusivamente o policiamento de trânsito nas rodovias estaduais.", "is_correct": false, "explanation": "O policiamento de trânsito é uma das atribuições, mas não a única missão constitucional da PM."},
+      {"letter": "E", "text": "A custódia de presos em estabelecimentos prisionais.", "is_correct": false, "explanation": "A administração prisional é atribuição do sistema penitenciário, não da PM."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "organizacao-pmgo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "De acordo com a organização da PMGO, o comando-geral da Polícia Militar é exercido por:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Comando-Geral da Polícia Militar é exercido pelo Comandante-Geral, que é um oficial da ativa no posto de Coronel PM, nomeado pelo Governador do Estado. O Comandante-Geral é a autoridade máxima da corporação.",
+    "legal_basis": "Lei 15.668/2006; legislação de organização da PMGO",
+    "alternatives": [
+      {"letter": "A", "text": "Um oficial do Exército Brasileiro designado pelo Ministério da Defesa.", "is_correct": false, "explanation": "O Comandante-Geral é um oficial da própria PMGO, não do Exército."},
+      {"letter": "B", "text": "O Secretário de Segurança Pública do Estado.", "is_correct": false, "explanation": "O Secretário supervisiona a pasta, mas o comando operacional é do Comandante-Geral da PM."},
+      {"letter": "C", "text": "Um Coronel PM da ativa, nomeado pelo Governador do Estado.", "is_correct": true, "explanation": "O Comandante-Geral é um Coronel PM da ativa, nomeado pelo Governador do Estado."},
+      {"letter": "D", "text": "O oficial mais antigo da corporação, automaticamente.", "is_correct": false, "explanation": "A nomeação é ato do Governador, não sendo automática por antiguidade."},
+      {"letter": "E", "text": "Um delegado de polícia indicado pelo Poder Judiciário.", "is_correct": false, "explanation": "Delegados de polícia pertencem à Polícia Civil; o comando da PM é exercido por oficial PM."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "organizacao-pmgo",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "No contexto da organização da PMGO, os Batalhões de Polícia Militar (BPMs) são unidades operacionais responsáveis por:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os BPMs são as unidades operacionais de execução do policiamento ostensivo em suas respectivas áreas de responsabilidade territorial. São comandados por oficiais superiores (tenentes-coronéis ou coronéis) e possuem companhias e pelotões subordinados.",
+    "legal_basis": "Legislação de organização da PMGO",
+    "alternatives": [
+      {"letter": "A", "text": "Exclusivamente pela gestão administrativa e financeira da corporação.", "is_correct": false, "explanation": "A gestão administrativa e financeira é função dos órgãos de apoio, não dos BPMs operacionais."},
+      {"letter": "B", "text": "A execução do policiamento ostensivo em suas respectivas áreas de responsabilidade.", "is_correct": true, "explanation": "Os BPMs são unidades operacionais de execução do policiamento ostensivo em suas áreas territoriais."},
+      {"letter": "C", "text": "Apenas pela formação e treinamento de novos policiais militares.", "is_correct": false, "explanation": "A formação é atribuição dos centros de ensino e academias de polícia, não dos BPMs."},
+      {"letter": "D", "text": "A investigação de crimes cometidos por militares.", "is_correct": false, "explanation": "A investigação de crimes militares é atribuição da Corregedoria e da Justiça Militar."},
+      {"letter": "E", "text": "A custódia e transporte de presos em todo o estado.", "is_correct": false, "explanation": "Embora possam realizar escoltas, essa não é a missão principal dos BPMs."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "estatuto-militares-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "O Sargento Costa completou 30 anos de serviço na PMGO e solicitou transferência para a reserva remunerada. A administração da corporação analisou o pedido com base no Estatuto dos Militares de Goiás.",
+    "text": "Sobre a transferência para a reserva remunerada, nos termos do Estatuto dos Militares de Goiás (Lei 15.668/2006), é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Estatuto dos Militares de Goiás prevê a transferência para a reserva remunerada por diversas hipóteses, entre elas a pedido do militar com tempo de serviço suficiente, a ex officio por atingimento da idade-limite, e compulsoriamente. O militar mantém vínculo com a corporação e pode ser convocado em situações excepcionais.",
+    "legal_basis": "Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "O militar na reserva remunerada perde todo vínculo com a corporação.", "is_correct": false, "explanation": "O militar na reserva mantém vínculo e pode ser convocado em situações excepcionais."},
+      {"letter": "B", "text": "A transferência pode ocorrer a pedido do militar ou de ofício pela administração, conforme os requisitos legais.", "is_correct": true, "explanation": "A legislação prevê transferência para a reserva tanto a pedido quanto ex officio, conforme os requisitos legais."},
+      {"letter": "C", "text": "Somente é permitida após 35 anos de serviço efetivo.", "is_correct": false, "explanation": "O tempo exigido varia conforme as hipóteses previstas na legislação, não sendo exclusivamente 35 anos."},
+      {"letter": "D", "text": "Depende exclusivamente de autorização do Governador do Estado.", "is_correct": false, "explanation": "Embora o Governador participe em alguns casos, há hipóteses de transferência que independem de ato governamental direto."},
+      {"letter": "E", "text": "É vedada enquanto o militar estiver respondendo a processo disciplinar.", "is_correct": false, "explanation": "A existência de processo disciplinar pode ter impacto, mas não veda automaticamente a transferência para reserva em todas as hipóteses."}
+    ]
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "deveres-obrigacoes",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "O Regulamento Disciplinar da PMGO prevê, entre as obrigações do policial militar, o dever de sigilo. Sobre esse dever, assinale a alternativa correta:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O policial militar tem o dever de manter sigilo sobre assuntos da corporação que não devam ser divulgados, especialmente aqueles relacionados a operações policiais, informações de inteligência e dados estratégicos. A violação do dever de sigilo pode configurar transgressão disciplinar e, em casos graves, crime militar.",
+    "legal_basis": "Regulamento Disciplinar da PMGO; Lei 15.668/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Abrange assuntos operacionais e de inteligência da corporação que não devam ser divulgados.", "is_correct": true, "explanation": "O dever de sigilo protege informações operacionais e de inteligência que não devam ser divulgadas."},
+      {"letter": "B", "text": "Aplica-se apenas durante o horário de expediente, não alcançando a vida privada.", "is_correct": false, "explanation": "O dever de sigilo persiste mesmo fora do expediente, pois a informação protegida não perde seu caráter sigiloso."},
+      {"letter": "C", "text": "É dispensado quando a informação é compartilhada em redes sociais pessoais.", "is_correct": false, "explanation": "A divulgação em redes sociais agrava a violação do sigilo, não a dispensa."},
+      {"letter": "D", "text": "Refere-se exclusivamente a documentos classificados como ultrassecretos.", "is_correct": false, "explanation": "O dever de sigilo abrange todos os assuntos que não devam ser divulgados, não se limitando a documentos ultrassecretos."},
+      {"letter": "E", "text": "Cessa automaticamente quando o policial passa para a reserva remunerada.", "is_correct": false, "explanation": "O dever de sigilo sobre informações obtidas em razão do cargo persiste mesmo após a passagem para a reserva."}
+    ]
+  }
+]

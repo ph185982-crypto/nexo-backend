@@ -1,0 +1,502 @@
+[
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-fundamentais-art5",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma operação da PMGO, o soldado Almeida é questionado por um cidadão sobre seus direitos fundamentais durante uma abordagem policial. Com base no art. 5° da Constituição Federal, assinale a alternativa correta:",
+    "text": "Sobre os direitos e garantias fundamentais previstos no art. 5° da CF/88, é correto afirmar que:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, caput, da CF/88 assegura a igualdade de todos perante a lei, sem distinção de qualquer natureza, garantindo aos brasileiros e aos estrangeiros residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade.",
+    "legal_basis": "Art. 5°, caput, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Os direitos fundamentais são garantidos exclusivamente aos cidadãos brasileiros natos, não se estendendo aos estrangeiros.", "is_correct": false, "explanation": "O art. 5° garante direitos fundamentais aos brasileiros e aos estrangeiros residentes no País. O STF estende a proteção a estrangeiros não residentes."},
+      {"letter": "B", "text": "Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade.", "is_correct": true, "explanation": "Correta. É a previsão expressa do caput do art. 5° da CF/88."},
+      {"letter": "C", "text": "Os direitos fundamentais são absolutos e ilimitados, não podendo sofrer qualquer restrição.", "is_correct": false, "explanation": "Os direitos fundamentais não são absolutos. Podem sofrer limitações quando colidem entre si, aplicando-se o princípio da proporcionalidade."},
+      {"letter": "D", "text": "O rol de direitos fundamentais do art. 5° é taxativo, não se admitindo outros direitos não expressamente previstos.", "is_correct": false, "explanation": "O §2° do art. 5° da CF/88 prevê que os direitos fundamentais não excluem outros decorrentes do regime constitucional, dos princípios ou dos tratados internacionais."},
+      {"letter": "E", "text": "Os direitos fundamentais aplicam-se apenas nas relações entre o indivíduo e o Estado, nunca nas relações entre particulares.", "is_correct": false, "explanation": "Os direitos fundamentais também se aplicam às relações entre particulares, conforme a teoria da eficácia horizontal dos direitos fundamentais, adotada pelo STF."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "inviolabilidade-domicilio",
+    "question_type": "multipla_escolha",
+    "context_text": "Policiais militares da PMGO, durante patrulhamento noturno, ouvem gritos de socorro vindos de uma residência. Ao se aproximarem, constatam que uma mulher está sendo agredida pelo companheiro. Assinale a alternativa correta sobre a inviolabilidade do domicílio:",
+    "text": "Conforme o art. 5°, XI, da CF/88, a casa é asilo inviolável do indivíduo. Nessa situação, os policiais:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, XI, da CF/88 prevê que a casa é asilo inviolável, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito, desastre, para prestar socorro, ou, durante o dia, por determinação judicial. No caso, há flagrante delito (agressão em curso), autorizando o ingresso independentemente de mandado judicial ou autorização do morador.",
+    "legal_basis": "Art. 5°, XI, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Não podem ingressar na residência sem mandado judicial, mesmo ouvindo gritos de socorro.", "is_correct": false, "explanation": "Em caso de flagrante delito, o ingresso é autorizado independentemente de mandado judicial, a qualquer hora do dia ou da noite."},
+      {"letter": "B", "text": "Podem ingressar na residência apenas durante o dia, devendo aguardar ordem judicial para ingresso noturno.", "is_correct": false, "explanation": "A restrição de ingresso somente durante o dia aplica-se à determinação judicial. Em flagrante delito, o ingresso é autorizado a qualquer hora."},
+      {"letter": "C", "text": "Podem ingressar na residência, pois se trata de flagrante delito, hipótese que autoriza a entrada independentemente de mandado judicial.", "is_correct": true, "explanation": "Correta. O flagrante delito é exceção constitucional à inviolabilidade do domicílio, autorizando o ingresso a qualquer hora, sem necessidade de mandado."},
+      {"letter": "D", "text": "Devem solicitar autorização do agressor para ingressar na residência, por ser ele o morador.", "is_correct": false, "explanation": "Em situação de flagrante delito, não se exige consentimento do morador. A proteção constitucional visa garantir a segurança, não acobertar crimes."},
+      {"letter": "E", "text": "Podem ingressar, mas devem obrigatoriamente gravar toda a ação em vídeo para validar juridicamente a entrada.", "is_correct": false, "explanation": "Embora a gravação seja recomendável, não é requisito constitucional para o ingresso em flagrante delito."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "prisao-direitos-preso",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar realiza a prisão em flagrante de um suspeito de roubo. Ao ser preso, o indivíduo questiona seus direitos. Com base na Constituição Federal, assinale a alternativa correta sobre os direitos do preso:",
+    "text": "São direitos constitucionais assegurados ao preso:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, LXIII, da CF/88 garante ao preso o direito de ser informado de seus direitos, entre os quais o de permanecer calado, sendo-lhe assegurada a assistência da família e de advogado. Além disso, o art. 5°, LXII, determina a comunicação imediata ao juiz competente e à família do preso.",
+    "legal_basis": "Art. 5°, LXII e LXIII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O preso tem direito de ser informado de seus direitos, incluindo o de permanecer calado, com assistência da família e de advogado.", "is_correct": true, "explanation": "Correta. É a previsão do art. 5°, LXIII, da CF/88, que garante o direito ao silêncio e à assistência familiar e jurídica."},
+      {"letter": "B", "text": "O preso tem direito ao silêncio, mas este pode ser usado como confissão tácita pelo juiz.", "is_correct": false, "explanation": "O exercício do direito ao silêncio não pode ser interpretado em desfavor do preso, conforme jurisprudência consolidada do STF."},
+      {"letter": "C", "text": "A prisão deve ser comunicada ao juiz competente em até 48 horas após a captura.", "is_correct": false, "explanation": "A CF/88 exige comunicação imediata ao juiz competente, e não em 48 horas. O prazo de 24 horas refere-se à remessa do auto de prisão em flagrante (art. 306, CPP)."},
+      {"letter": "D", "text": "O preso tem direito a advogado apenas após o oferecimento da denúncia pelo Ministério Público.", "is_correct": false, "explanation": "O direito à assistência de advogado existe desde o momento da prisão, não apenas após a denúncia."},
+      {"letter": "E", "text": "O preso em flagrante não possui direito ao silêncio, que é reservado apenas ao réu em processo penal.", "is_correct": false, "explanation": "O direito ao silêncio é garantido a qualquer pessoa presa, desde o momento da prisão, não apenas ao réu processado."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "seguranca-publica-art144",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a segurança pública na Constituição Federal de 1988, assinale a alternativa correta:",
+    "text": "Conforme o art. 144 da CF/88, a segurança pública é exercida por meio dos seguintes órgãos:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 144 da CF/88 elenca os órgãos responsáveis pela segurança pública: Polícia Federal, Polícia Rodoviária Federal, Polícia Ferroviária Federal, Polícias Civis, Polícias Militares e Corpos de Bombeiros Militares, e Polícias Penais federal, estaduais e distrital (incluídas pela EC 104/2019).",
+    "legal_basis": "Art. 144, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Polícia Federal, Polícia Rodoviária Federal, Polícias Civis, Polícias Militares, Corpos de Bombeiros Militares e Polícias Penais.", "is_correct": true, "explanation": "Correta. São os órgãos previstos no art. 144 da CF/88, incluindo as Polícias Penais acrescentadas pela EC 104/2019, além da Polícia Ferroviária Federal."},
+      {"letter": "B", "text": "Apenas Polícia Federal, Polícia Civil e Polícia Militar, sendo os demais órgãos de natureza administrativa.", "is_correct": false, "explanation": "O art. 144 elenca outros órgãos além desses três, como a PRF, PFF, Bombeiros Militares e Polícias Penais."},
+      {"letter": "C", "text": "Forças Armadas, Polícia Federal, Polícia Civil e Polícia Militar.", "is_correct": false, "explanation": "As Forças Armadas não são órgãos de segurança pública, mas de defesa nacional (art. 142, CF/88)."},
+      {"letter": "D", "text": "Guardas municipais, Polícia Militar, Polícia Civil e Polícia Federal, exclusivamente.", "is_correct": false, "explanation": "As guardas municipais não constam no rol de órgãos de segurança pública do art. 144. Elas são previstas no §8° do art. 144 para proteção de bens e serviços municipais."},
+      {"letter": "E", "text": "Polícia Federal, Polícia Rodoviária Federal e Polícias Civis, sendo as Polícias Militares órgãos auxiliares do Exército.", "is_correct": false, "explanation": "As Polícias Militares são órgãos de segurança pública (art. 144, V) e forças auxiliares do Exército (art. 144, §6°), mas integram o rol de órgãos de segurança pública."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "policia-militar-competencia",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as atribuições constitucionais da Polícia Militar, assinale a alternativa correta:",
+    "text": "Conforme o art. 144, §5°, da CF/88, às polícias militares cabem:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 144, §5°, da CF/88 estabelece que às polícias militares cabem a polícia ostensiva e a preservação da ordem pública. São forças auxiliares e reserva do Exército, subordinadas aos Governadores dos Estados.",
+    "legal_basis": "Art. 144, §5° e §6°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A polícia ostensiva e a preservação da ordem pública.", "is_correct": true, "explanation": "Correta. É a atribuição constitucional expressa das Polícias Militares, conforme art. 144, §5°, CF/88."},
+      {"letter": "B", "text": "A investigação de crimes e a instauração de inquéritos policiais.", "is_correct": false, "explanation": "A investigação e a instauração de inquéritos policiais são atribuições das Polícias Civis (art. 144, §4°, CF/88), ressalvadas as atribuições da Polícia Federal."},
+      {"letter": "C", "text": "O patrulhamento ostensivo das rodovias federais.", "is_correct": false, "explanation": "O patrulhamento das rodovias federais é atribuição da Polícia Rodoviária Federal (art. 144, §2°, CF/88)."},
+      {"letter": "D", "text": "A prevenção e repressão ao tráfico de drogas internacional.", "is_correct": false, "explanation": "A repressão ao tráfico internacional de drogas é atribuição da Polícia Federal (art. 144, §1°, II, CF/88)."},
+      {"letter": "E", "text": "A proteção dos bens, serviços e instalações municipais.", "is_correct": false, "explanation": "A proteção de bens e serviços municipais é atribuição das guardas municipais (art. 144, §8°, CF/88)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "organizacao-estado-federacao",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a organização político-administrativa do Estado brasileiro, assinale a alternativa correta:",
+    "text": "A República Federativa do Brasil é formada por:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 18 da CF/88 estabelece que a organização político-administrativa da República Federativa do Brasil compreende a União, os Estados, o Distrito Federal e os Municípios, todos autônomos, nos termos da Constituição.",
+    "legal_basis": "Art. 18, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "União, Estados, Distrito Federal e Municípios, todos autônomos.", "is_correct": true, "explanation": "Correta. É a previsão do art. 18 da CF/88, que estabelece a organização político-administrativa da federação brasileira."},
+      {"letter": "B", "text": "União, Estados e Distrito Federal, sendo os Municípios subordinados aos Estados.", "is_correct": false, "explanation": "Os Municípios são entes federativos autônomos, não subordinados aos Estados. Possuem autonomia política, administrativa e financeira."},
+      {"letter": "C", "text": "União, Estados, Territórios e Municípios, todos soberanos.", "is_correct": false, "explanation": "Os Territórios não são entes federativos, mas autarquias territoriais da União. Além disso, os entes federativos possuem autonomia, não soberania (esta é atributo da República Federativa)."},
+      {"letter": "D", "text": "União e Estados-membros, sendo o Distrito Federal e os Municípios meras divisões administrativas.", "is_correct": false, "explanation": "O DF e os Municípios são entes federativos autônomos, não meras divisões administrativas."},
+      {"letter": "E", "text": "União, Estados, Distrito Federal, Municípios e Territórios, todos com personalidade jurídica de direito público interno.", "is_correct": false, "explanation": "Os Territórios não integram a organização político-administrativa como entes federativos autônomos. São autarquias territoriais da União."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "principios-fundamentais",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre os princípios fundamentais da República Federativa do Brasil, previstos nos arts. 1° a 4° da Constituição Federal, assinale a alternativa correta:",
+    "text": "São fundamentos da República Federativa do Brasil, EXCETO:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os fundamentos da República estão previstos no art. 1° da CF/88: soberania, cidadania, dignidade da pessoa humana, valores sociais do trabalho e da livre iniciativa, e pluralismo político. A garantia do desenvolvimento nacional é objetivo fundamental (art. 3°, II), não fundamento.",
+    "legal_basis": "Art. 1°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Soberania.", "is_correct": false, "explanation": "A soberania é fundamento da República, previsto no art. 1°, I, da CF/88."},
+      {"letter": "B", "text": "Cidadania.", "is_correct": false, "explanation": "A cidadania é fundamento da República, previsto no art. 1°, II, da CF/88."},
+      {"letter": "C", "text": "Dignidade da pessoa humana.", "is_correct": false, "explanation": "A dignidade da pessoa humana é fundamento da República, previsto no art. 1°, III, da CF/88."},
+      {"letter": "D", "text": "Garantia do desenvolvimento nacional.", "is_correct": true, "explanation": "Correta. A garantia do desenvolvimento nacional é objetivo fundamental (art. 3°, II, CF/88), e não fundamento da República (art. 1°)."},
+      {"letter": "E", "text": "Pluralismo político.", "is_correct": false, "explanation": "O pluralismo político é fundamento da República, previsto no art. 1°, V, da CF/88."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "objetivos-fundamentais",
+    "question_type": "multipla_escolha",
+    "context_text": "Acerca dos objetivos fundamentais da República Federativa do Brasil, previstos no art. 3° da Constituição Federal, assinale a alternativa correta:",
+    "text": "Constituem objetivos fundamentais da República Federativa do Brasil:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os objetivos fundamentais estão previstos no art. 3° da CF/88: construir uma sociedade livre, justa e solidária; garantir o desenvolvimento nacional; erradicar a pobreza e a marginalização e reduzir as desigualdades sociais e regionais; e promover o bem de todos, sem preconceitos.",
+    "legal_basis": "Art. 3°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Construir uma sociedade livre, justa e solidária; garantir o desenvolvimento nacional; erradicar a pobreza e reduzir as desigualdades sociais e regionais.", "is_correct": true, "explanation": "Correta. São objetivos fundamentais previstos no art. 3° da CF/88."},
+      {"letter": "B", "text": "Manter a soberania nacional, garantir a defesa do território e promover a cidadania.", "is_correct": false, "explanation": "A soberania é fundamento (art. 1°, I), e a defesa do território não consta como objetivo fundamental no art. 3°."},
+      {"letter": "C", "text": "Garantir a segurança pública, promover a justiça social e assegurar o direito de propriedade.", "is_correct": false, "explanation": "Estes não são objetivos fundamentais previstos no art. 3° da CF/88."},
+      {"letter": "D", "text": "Preservar a ordem pública, combater a criminalidade e assegurar a defesa nacional.", "is_correct": false, "explanation": "Estes são objetivos relacionados à segurança pública e defesa nacional, mas não são os objetivos fundamentais do art. 3°."},
+      {"letter": "E", "text": "Garantir o exercício dos direitos sociais e individuais e assegurar o pluralismo político.", "is_correct": false, "explanation": "Esta linguagem é do Preâmbulo da Constituição, não dos objetivos fundamentais do art. 3°."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "nacionalidade",
+    "question_type": "multipla_escolha",
+    "context_text": "João nasceu na Alemanha, filho de pai brasileiro que estava a serviço da República Federativa do Brasil. Sobre a nacionalidade de João, assinale a alternativa correta:",
+    "text": "Conforme o art. 12 da CF/88, João é considerado:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 12, I, 'b', da CF/88 prevê que são brasileiros natos os nascidos no estrangeiro, de pai brasileiro ou mãe brasileira, desde que qualquer deles esteja a serviço da República Federativa do Brasil. Como João nasceu no estrangeiro, filho de pai brasileiro a serviço do Brasil, é brasileiro nato.",
+    "legal_basis": "Art. 12, I, 'b', CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Brasileiro nato, pois nasceu no estrangeiro, de pai brasileiro a serviço da República Federativa do Brasil.", "is_correct": true, "explanation": "Correta. É a hipótese do art. 12, I, 'b', da CF/88: nascido no estrangeiro + pai ou mãe brasileiro(a) + a serviço do Brasil."},
+      {"letter": "B", "text": "Brasileiro naturalizado, devendo requerer a naturalização ao completar 18 anos.", "is_correct": false, "explanation": "João é brasileiro nato por força do art. 12, I, 'b', da CF/88, não sendo necessária naturalização."},
+      {"letter": "C", "text": "Estrangeiro, pois nasceu fora do território nacional, independentemente da nacionalidade dos pais.", "is_correct": false, "explanation": "O Brasil adota o critério do jus soli e do jus sanguinis. O nascimento no estrangeiro de pai brasileiro a serviço do Brasil confere a nacionalidade originária."},
+      {"letter": "D", "text": "Brasileiro nato somente se optar pela nacionalidade brasileira ao atingir a maioridade.", "is_correct": false, "explanation": "A opção pela nacionalidade aplica-se apenas à hipótese do art. 12, I, 'c', da CF/88 (nascido no estrangeiro, registrado em repartição brasileira ou residente no Brasil). No caso de João, não há necessidade de opção."},
+      {"letter": "E", "text": "Apátrida, pois o Brasil não reconhece a dupla nacionalidade.", "is_correct": false, "explanation": "O Brasil reconhece a dupla nacionalidade em hipóteses específicas (art. 12, §4°, II, CF/88), e João é brasileiro nato."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "cargos-privativos-brasileiro-nato",
+    "question_type": "multipla_escolha",
+    "context_text": "A Constituição Federal estabelece que determinados cargos são privativos de brasileiros natos. Assinale a alternativa que contém apenas cargos privativos de brasileiro nato:",
+    "text": "São cargos privativos de brasileiro nato, conforme o art. 12, §3°, da CF/88:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 12, §3°, da CF/88 prevê como privativos de brasileiro nato: Presidente e Vice-Presidente da República; Presidente da Câmara dos Deputados; Presidente do Senado Federal; Ministro do STF; carreira diplomática; oficial das Forças Armadas; e Ministro de Estado da Defesa.",
+    "legal_basis": "Art. 12, §3°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Presidente da República, Presidente da Câmara dos Deputados, Presidente do Senado Federal e Ministro do STF.", "is_correct": true, "explanation": "Correta. Todos são cargos privativos de brasileiro nato, conforme art. 12, §3°, CF/88."},
+      {"letter": "B", "text": "Presidente da República, Governador de Estado, Prefeito Municipal e Deputado Federal.", "is_correct": false, "explanation": "Governador, Prefeito e Deputado Federal não são cargos privativos de brasileiro nato. Podem ser exercidos por brasileiros naturalizados."},
+      {"letter": "C", "text": "Presidente da República, Ministro de Estado, Senador e Deputado Federal.", "is_correct": false, "explanation": "Senador e Deputado Federal não são privativos de brasileiro nato. O Ministro de Estado também não, exceto o Ministro da Defesa."},
+      {"letter": "D", "text": "Presidente da República, todos os Ministros de Estado, Desembargadores e Juízes Federais.", "is_correct": false, "explanation": "Apenas o Ministro de Estado da Defesa é privativo de brasileiro nato. Desembargadores e Juízes Federais não constam no rol."},
+      {"letter": "E", "text": "Presidente da República, Vice-Presidente, Presidente da OAB e Procurador-Geral da República.", "is_correct": false, "explanation": "O Presidente da OAB não consta no rol constitucional de cargos privativos de brasileiro nato. O PGR também não."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direitos-politicos",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre os direitos políticos previstos na Constituição Federal, assinale a alternativa correta:",
+    "text": "O alistamento eleitoral e o voto são obrigatórios para:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 14, §1°, I, da CF/88 estabelece que o alistamento eleitoral e o voto são obrigatórios para os maiores de 18 anos. O voto é facultativo para os analfabetos, os maiores de 70 anos e os maiores de 16 e menores de 18 anos (art. 14, §1°, II).",
+    "legal_basis": "Art. 14, §1°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Os maiores de 18 anos, sendo facultativo para os analfabetos, maiores de 70 anos e maiores de 16 e menores de 18 anos.", "is_correct": true, "explanation": "Correta. É a previsão do art. 14, §1°, I e II, da CF/88."},
+      {"letter": "B", "text": "Todos os brasileiros maiores de 16 anos, sem exceção.", "is_correct": false, "explanation": "Para os maiores de 16 e menores de 18 anos, o voto é facultativo, não obrigatório."},
+      {"letter": "C", "text": "Os maiores de 18 anos e menores de 70 anos, sendo vedado o voto aos analfabetos.", "is_correct": false, "explanation": "O voto não é vedado aos analfabetos; é facultativo. E os maiores de 70 anos também podem votar (facultativamente)."},
+      {"letter": "D", "text": "Apenas os brasileiros natos maiores de 18 anos, sendo vedado aos naturalizados.", "is_correct": false, "explanation": "O voto é obrigatório para todos os maiores de 18 anos, independentemente de serem natos ou naturalizados."},
+      {"letter": "E", "text": "Todos os residentes no território nacional, incluindo estrangeiros com visto permanente.", "is_correct": false, "explanation": "Os estrangeiros não possuem direitos políticos no Brasil, salvo os portugueses com reciprocidade (art. 12, §1°, CF/88)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "habeas-corpus",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cidadão encontra-se preso ilegalmente, sem que tenha sido lavrado auto de prisão em flagrante ou expedido mandado de prisão. Seu advogado pretende utilizar um remédio constitucional para garantir sua liberdade. Assinale a alternativa correta:",
+    "text": "O remédio constitucional adequado para tutelar a liberdade de locomoção quando alguém sofrer ou se achar ameaçado de sofrer violência ou coação em sua liberdade, por ilegalidade ou abuso de poder, é:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O habeas corpus (art. 5°, LXVIII, CF/88) é o remédio constitucional destinado a proteger a liberdade de locomoção. Pode ser preventivo (quando há ameaça de coação) ou repressivo/liberatório (quando a coação já está consumada).",
+    "legal_basis": "Art. 5°, LXVIII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Mandado de segurança, pois protege direito líquido e certo não amparado por habeas corpus.", "is_correct": false, "explanation": "O mandado de segurança não é adequado para tutelar a liberdade de locomoção. Para isso, o instrumento correto é o habeas corpus."},
+      {"letter": "B", "text": "Habeas data, pois garante o acesso a informações pessoais e a liberdade do cidadão.", "is_correct": false, "explanation": "O habeas data (art. 5°, LXXII, CF/88) destina-se ao conhecimento ou retificação de informações pessoais em registros públicos, não à proteção da liberdade de locomoção."},
+      {"letter": "C", "text": "Habeas corpus, que tutela a liberdade de locomoção contra ilegalidade ou abuso de poder.", "is_correct": true, "explanation": "Correta. O habeas corpus é o remédio constitucional específico para a proteção da liberdade de locomoção (art. 5°, LXVIII, CF/88)."},
+      {"letter": "D", "text": "Ação popular, pois qualquer cidadão pode ajuizá-la para proteger direitos individuais.", "is_correct": false, "explanation": "A ação popular (art. 5°, LXXIII, CF/88) visa anular ato lesivo ao patrimônio público, à moralidade administrativa, ao meio ambiente e ao patrimônio histórico e cultural."},
+      {"letter": "E", "text": "Mandado de injunção, pois supre a falta de norma regulamentadora que impede o exercício da liberdade.", "is_correct": false, "explanation": "O mandado de injunção (art. 5°, LXXI, CF/88) destina-se a viabilizar o exercício de direitos diante da falta de norma regulamentadora."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "mandado-de-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "Um candidato aprovado dentro do número de vagas em concurso público para a PMGO não é nomeado, mesmo após o vencimento do prazo de validade do concurso. Assinale a alternativa correta sobre o remédio constitucional cabível:",
+    "text": "Sobre o mandado de segurança, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O mandado de segurança (art. 5°, LXIX, CF/88) protege direito líquido e certo, não amparado por habeas corpus ou habeas data, quando o responsável pela ilegalidade ou abuso de poder for autoridade pública ou agente de pessoa jurídica no exercício de atribuições do Poder Público. O prazo para impetração é de 120 dias da ciência do ato coator.",
+    "legal_basis": "Art. 5°, LXIX, CF/88; Lei 12.016/2009",
+    "alternatives": [
+      {"letter": "A", "text": "Protege direito líquido e certo, não amparado por habeas corpus ou habeas data, contra ilegalidade ou abuso de poder de autoridade pública.", "is_correct": true, "explanation": "Correta. É a definição constitucional do mandado de segurança prevista no art. 5°, LXIX, da CF/88."},
+      {"letter": "B", "text": "Pode ser impetrado a qualquer tempo, não havendo prazo decadencial para sua propositura.", "is_correct": false, "explanation": "O mandado de segurança deve ser impetrado no prazo decadencial de 120 dias, contados da ciência do ato coator (art. 23, Lei 12.016/2009)."},
+      {"letter": "C", "text": "Somente pode ser impetrado por pessoa física, sendo vedada a impetração por pessoa jurídica.", "is_correct": false, "explanation": "Tanto pessoas físicas quanto jurídicas podem impetrar mandado de segurança, desde que sejam titulares de direito líquido e certo."},
+      {"letter": "D", "text": "Exige prévio esgotamento das vias administrativas para sua impetração.", "is_correct": false, "explanation": "Não é necessário o esgotamento da via administrativa para a impetração de mandado de segurança, em razão do princípio da inafastabilidade da jurisdição."},
+      {"letter": "E", "text": "Substitui o habeas corpus quando se trata de proteger a liberdade de locomoção de autoridade pública.", "is_correct": false, "explanation": "O mandado de segurança não substitui o habeas corpus. Quando se trata de liberdade de locomoção, o remédio adequado é o habeas corpus."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "competencia-legislativa-uniao",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a competência legislativa prevista na Constituição Federal, assinale a alternativa correta:",
+    "text": "Compete privativamente à União legislar sobre:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 22 da CF/88 estabelece as matérias de competência legislativa privativa da União. O direito penal, processual penal, civil, comercial, do trabalho, eleitoral, agrário, marítimo, aeronáutico, espacial e processual são de competência privativa da União.",
+    "legal_basis": "Art. 22, I, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Direito penal, processual, civil, comercial, do trabalho e eleitoral.", "is_correct": true, "explanation": "Correta. São matérias de competência legislativa privativa da União, conforme art. 22, I, da CF/88."},
+      {"letter": "B", "text": "Direito tributário, financeiro e urbanístico, de forma exclusiva.", "is_correct": false, "explanation": "Direito tributário, financeiro e urbanístico são matérias de competência legislativa concorrente entre União, Estados e DF (art. 24, I, CF/88)."},
+      {"letter": "C", "text": "Educação, cultura, ensino, desporto, ciência e tecnologia, de forma privativa.", "is_correct": false, "explanation": "Estas matérias são de competência legislativa concorrente (art. 24, IX, CF/88), não privativa da União."},
+      {"letter": "D", "text": "Todas as matérias jurídicas, sendo vedado aos Estados legislar sobre qualquer tema.", "is_correct": false, "explanation": "Os Estados possuem competência legislativa concorrente (art. 24), residual (art. 25, §1°) e suplementar."},
+      {"letter": "E", "text": "Proteção ao meio ambiente e controle da poluição, de forma privativa.", "is_correct": false, "explanation": "Proteção ao meio ambiente é competência legislativa concorrente (art. 24, VI, CF/88), não privativa da União."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "competencia-legislativa-concorrente",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estado de Goiás pretende legislar sobre matéria de competência legislativa concorrente. Assinale a alternativa correta sobre o exercício dessa competência:",
+    "text": "Sobre a competência legislativa concorrente entre União, Estados e Distrito Federal (art. 24, CF/88), é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Na competência legislativa concorrente (art. 24, CF/88), a União limita-se a estabelecer normas gerais (§1°). Os Estados exercem competência suplementar (§2°). Inexistindo lei federal sobre normas gerais, os Estados exercem competência legislativa plena (§3°). A superveniência de lei federal sobre normas gerais suspende a eficácia da lei estadual naquilo que lhe for contrário (§4°).",
+    "legal_basis": "Art. 24, §§1° a 4°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A União estabelece normas gerais, e os Estados exercem competência suplementar; na ausência de lei federal, os Estados exercem competência legislativa plena.", "is_correct": true, "explanation": "Correta. É a sistemática dos §§1° a 3° do art. 24 da CF/88."},
+      {"letter": "B", "text": "Os Estados somente podem legislar após autorização expressa da União, por meio de lei complementar.", "is_correct": false, "explanation": "Na competência concorrente, os Estados não dependem de autorização da União. A delegação por lei complementar aplica-se à competência privativa (art. 22, parágrafo único)."},
+      {"letter": "C", "text": "A superveniência de lei federal revoga automaticamente a lei estadual que lhe for contrária.", "is_correct": false, "explanation": "A lei federal superveniente sobre normas gerais suspende a eficácia da lei estadual no que lhe for contrário, não a revoga (art. 24, §4°, CF/88)."},
+      {"letter": "D", "text": "Os Municípios também exercem competência legislativa concorrente nos mesmos termos que os Estados.", "is_correct": false, "explanation": "Os Municípios não participam da competência legislativa concorrente do art. 24. Possuem competência para legislar sobre interesse local (art. 30, I) e suplementar a legislação federal e estadual (art. 30, II)."},
+      {"letter": "E", "text": "Na competência concorrente, a União legisla sobre normas específicas e os Estados sobre normas gerais.", "is_correct": false, "explanation": "É o inverso: a União estabelece normas gerais, e os Estados suplementam com normas específicas."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "poder-executivo",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre o Poder Executivo na Constituição Federal de 1988, assinale a alternativa correta:",
+    "text": "O Presidente da República é eleito pelo sistema:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 77 da CF/88 estabelece que a eleição do Presidente da República ocorre pelo sistema majoritário absoluto (dois turnos). No primeiro turno, é eleito o candidato que obtiver a maioria absoluta dos votos válidos. Se nenhum candidato atingir essa maioria, realiza-se segundo turno entre os dois mais votados.",
+    "legal_basis": "Art. 77, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Proporcional, com voto em lista aberta.", "is_correct": false, "explanation": "O sistema proporcional é utilizado para a eleição de deputados e vereadores, não para o Presidente da República."},
+      {"letter": "B", "text": "Majoritário absoluto, com possibilidade de segundo turno.", "is_correct": true, "explanation": "Correta. O Presidente é eleito pelo sistema majoritário absoluto, com possibilidade de segundo turno caso nenhum candidato obtenha maioria absoluta no primeiro (art. 77, CF/88)."},
+      {"letter": "C", "text": "Majoritário simples, em turno único.", "is_correct": false, "explanation": "O sistema majoritário simples (turno único) aplica-se à eleição de senadores e prefeitos de municípios com menos de 200 mil eleitores."},
+      {"letter": "D", "text": "Indireto, por meio de colégio eleitoral composto por membros do Congresso Nacional.", "is_correct": false, "explanation": "O Brasil adota a eleição direta para Presidente da República, conforme art. 77 da CF/88. A eleição indireta é exceção prevista no art. 81, §1°."},
+      {"letter": "E", "text": "Majoritário absoluto, sem possibilidade de segundo turno, bastando a maioria simples dos votos.", "is_correct": false, "explanation": "Se nenhum candidato obtiver maioria absoluta no primeiro turno, haverá segundo turno entre os dois mais votados."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "atribuicoes-presidente",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as atribuições do Presidente da República, assinale a alternativa correta:",
+    "text": "Compete privativamente ao Presidente da República, conforme o art. 84 da CF/88:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 84, IV, da CF/88 estabelece que compete privativamente ao Presidente da República sancionar, promulgar e fazer publicar as leis, bem como expedir decretos e regulamentos para sua fiel execução. O inciso VI prevê a competência para dispor, mediante decreto, sobre organização e funcionamento da administração federal, quando não implicar aumento de despesa nem criação ou extinção de órgãos públicos.",
+    "legal_basis": "Art. 84, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Nomear e exonerar os Ministros de Estado, sancionar, promulgar e fazer publicar as leis.", "is_correct": true, "explanation": "Correta. São atribuições privativas do Presidente previstas no art. 84, I e IV, da CF/88."},
+      {"letter": "B", "text": "Legislar sobre todas as matérias, independentemente de aprovação do Congresso Nacional.", "is_correct": false, "explanation": "O Presidente não possui poder legislativo amplo. Pode editar medidas provisórias e leis delegadas em hipóteses específicas."},
+      {"letter": "C", "text": "Julgar conflitos entre Estados-membros e entre estes e a União.", "is_correct": false, "explanation": "O julgamento de conflitos entre entes federativos compete ao STF (art. 102, I, 'f', CF/88), não ao Presidente."},
+      {"letter": "D", "text": "Nomear os membros do Tribunal de Contas da União, sem necessidade de aprovação do Senado.", "is_correct": false, "explanation": "O Presidente nomeia parte dos membros do TCU, mas a nomeação depende de aprovação do Senado Federal (art. 73, §2°, I, CF/88)."},
+      {"letter": "E", "text": "Declarar a inconstitucionalidade de leis federais, exercendo controle concentrado de constitucionalidade.", "is_correct": false, "explanation": "O controle concentrado de constitucionalidade é exercido pelo STF, não pelo Presidente da República."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "direito-reuniao",
+    "question_type": "multipla_escolha",
+    "context_text": "Um grupo de cidadãos comunica à PMGO que realizará uma manifestação pacífica em uma praça pública da cidade de Goiânia. Assinale a alternativa correta sobre o direito de reunião:",
+    "text": "Conforme o art. 5°, XVI, da CF/88, o direito de reunião exige que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, XVI, da CF/88 garante o direito de reunião pacífica, sem armas, em locais abertos ao público, independentemente de autorização, desde que não frustre outra reunião anteriormente convocada para o mesmo local, sendo apenas exigido prévio aviso à autoridade competente.",
+    "legal_basis": "Art. 5°, XVI, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A reunião seja pacífica, sem armas, em locais abertos ao público, com prévio aviso à autoridade competente, independentemente de autorização.", "is_correct": true, "explanation": "Correta. São os requisitos constitucionais do direito de reunião: caráter pacífico, sem armas, prévio aviso (não autorização) e não frustrar reunião anterior."},
+      {"letter": "B", "text": "Haja autorização prévia da autoridade policial para a realização da reunião.", "is_correct": false, "explanation": "A CF/88 exige apenas prévio aviso, não autorização. O direito de reunião independe de autorização estatal."},
+      {"letter": "C", "text": "A reunião ocorra exclusivamente em locais fechados, sendo vedada em vias públicas.", "is_correct": false, "explanation": "A CF/88 prevê que a reunião pode ocorrer em locais abertos ao público, incluindo vias e praças públicas."},
+      {"letter": "D", "text": "Os participantes estejam identificados e registrados previamente junto à Polícia Militar.", "is_correct": false, "explanation": "Não há exigência constitucional de identificação ou registro prévio dos participantes de reunião."},
+      {"letter": "E", "text": "A reunião seja convocada por partido político ou sindicato, sendo vedada a convocação por pessoas físicas.", "is_correct": false, "explanation": "Qualquer pessoa pode convocar reunião, não havendo restrição a partidos ou sindicatos."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "devido-processo-legal",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as garantias processuais previstas na Constituição Federal, assinale a alternativa correta:",
+    "text": "O princípio do devido processo legal, previsto no art. 5°, LIV, da CF/88, significa que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O devido processo legal (art. 5°, LIV, CF/88) é cláusula geral de proteção que garante que ninguém será privado da liberdade ou de seus bens sem o devido processo legal. Dele decorrem o contraditório, a ampla defesa, o juiz natural, a vedação de provas ilícitas, entre outras garantias.",
+    "legal_basis": "Art. 5°, LIV, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Ninguém será privado da liberdade ou de seus bens sem o devido processo legal, do qual decorrem o contraditório e a ampla defesa.", "is_correct": true, "explanation": "Correta. O devido processo legal é garantia constitucional que assegura a observância de normas processuais e da qual derivam o contraditório e a ampla defesa."},
+      {"letter": "B", "text": "O processo penal pode prescindir de defesa técnica, desde que o réu exerça sua autodefesa.", "is_correct": false, "explanation": "A defesa técnica por advogado é indispensável no processo penal, conforme Súmula 523 do STF. A autodefesa não a substitui."},
+      {"letter": "C", "text": "O devido processo legal é garantia exclusiva do processo penal, não se aplicando ao processo civil ou administrativo.", "is_correct": false, "explanation": "O devido processo legal aplica-se a todos os tipos de processo: penal, civil, administrativo, tributário, trabalhista, etc."},
+      {"letter": "D", "text": "O réu pode ser condenado com base exclusivamente em provas obtidas por meios ilícitos, se estas forem as únicas disponíveis.", "is_correct": false, "explanation": "As provas obtidas por meios ilícitos são inadmissíveis no processo (art. 5°, LVI, CF/88), independentemente de serem as únicas disponíveis."},
+      {"letter": "E", "text": "O devido processo legal somente se aplica após o trânsito em julgado da sentença condenatória.", "is_correct": false, "explanation": "O devido processo legal deve ser observado durante todo o processo, desde a fase pré-processual até o trânsito em julgado e a execução."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "presuncao-inocencia",
+    "question_type": "multipla_escolha",
+    "context_text": "O policial militar sargento Costa efetua a prisão em flagrante de um suspeito de tráfico de drogas. O suspeito afirma que é inocente e que não pode ser tratado como culpado. Assinale a alternativa correta sobre a presunção de inocência:",
+    "text": "Sobre o princípio da presunção de inocência (art. 5°, LVII, CF/88), é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, LVII, da CF/88 consagra o princípio da presunção de inocência: ninguém será considerado culpado até o trânsito em julgado de sentença penal condenatória. Este princípio não impede a prisão cautelar (preventiva, temporária ou em flagrante), que tem natureza processual e não representa antecipação de culpa.",
+    "legal_basis": "Art. 5°, LVII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Ninguém será considerado culpado até o trânsito em julgado de sentença penal condenatória, não impedindo, contudo, a prisão cautelar.", "is_correct": true, "explanation": "Correta. A presunção de inocência coexiste com as prisões cautelares, que possuem natureza e fundamentos diversos da prisão-pena."},
+      {"letter": "B", "text": "A presunção de inocência impede qualquer tipo de prisão antes da condenação definitiva.", "is_correct": false, "explanation": "A presunção de inocência não impede as prisões cautelares (flagrante, preventiva, temporária), que têm natureza e fundamentos distintos."},
+      {"letter": "C", "text": "O ônus de provar a inocência recai sobre o acusado, que deve demonstrar que não praticou o crime.", "is_correct": false, "explanation": "O ônus da prova recai sobre a acusação (Ministério Público), que deve demonstrar a culpa do acusado. Ao réu é garantida a presunção de inocência."},
+      {"letter": "D", "text": "A presunção de inocência se aplica apenas aos réus primários, não alcançando reincidentes.", "is_correct": false, "explanation": "A presunção de inocência é garantia de todos os acusados, independentemente de serem primários ou reincidentes."},
+      {"letter": "E", "text": "A prisão em flagrante delito viola a presunção de inocência, sendo inconstitucional.", "is_correct": false, "explanation": "A prisão em flagrante é expressamente prevista na CF/88 e não viola a presunção de inocência. Trata-se de medida cautelar de natureza processual."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "intervencao-federal",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a intervenção federal prevista na Constituição Federal, assinale a alternativa correta:",
+    "text": "A União poderá intervir nos Estados e no Distrito Federal para:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 34 da CF/88 prevê as hipóteses de intervenção federal, entre elas: manter a integridade nacional, repelir invasão estrangeira, pôr termo a grave comprometimento da ordem pública, garantir o livre exercício dos Poderes, reorganizar as finanças, prover execução de lei federal, ordem ou decisão judicial, e assegurar princípios constitucionais sensíveis.",
+    "legal_basis": "Art. 34, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Manter a integridade nacional, repelir invasão estrangeira, pôr termo a grave comprometimento da ordem pública, entre outras hipóteses do art. 34.", "is_correct": true, "explanation": "Correta. São hipóteses de intervenção federal previstas nos incisos I, II e III do art. 34 da CF/88."},
+      {"letter": "B", "text": "Qualquer situação de crise, a critério exclusivo do Presidente da República, sem necessidade de fundamentação.", "is_correct": false, "explanation": "A intervenção federal é medida excepcional e somente pode ocorrer nas hipóteses taxativamente previstas no art. 34 da CF/88."},
+      {"letter": "C", "text": "Substituir o governador do Estado sempre que houver discordância política entre o Estado e a União.", "is_correct": false, "explanation": "Discordância política não é hipótese de intervenção federal. As hipóteses são taxativas e previstas no art. 34 da CF/88."},
+      {"letter": "D", "text": "Modificar a legislação estadual que contrarie lei federal ordinária, independentemente de decisão judicial.", "is_correct": false, "explanation": "A intervenção não tem por objetivo modificar legislação estadual. O controle de constitucionalidade é exercido pelo Poder Judiciário."},
+      {"letter": "E", "text": "Nomear interventor em qualquer município do Estado que descumprir determinação federal.", "is_correct": false, "explanation": "A intervenção nos Municípios compete aos Estados (art. 35, CF/88), não à União. A União intervém nos Estados e no DF."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "estado-defesa-sitio",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre o estado de defesa e o estado de sítio, previstos na Constituição Federal, assinale a alternativa correta:",
+    "text": "O estado de defesa (art. 136, CF/88) pode ser decretado pelo Presidente da República para:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O estado de defesa (art. 136, CF/88) pode ser decretado para preservar ou prontamente restabelecer, em locais restritos e determinados, a ordem pública ou a paz social ameaçadas por grave e iminente instabilidade institucional ou atingidas por calamidades de grandes proporções na natureza.",
+    "legal_basis": "Art. 136, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Preservar ou restabelecer a ordem pública ou a paz social ameaçadas por grave instabilidade institucional ou calamidades naturais, em locais restritos e determinados.", "is_correct": true, "explanation": "Correta. É a previsão do art. 136 da CF/88, que restringe o estado de defesa a locais determinados."},
+      {"letter": "B", "text": "Suspender todos os direitos fundamentais em todo o território nacional, sem limitação temporal.", "is_correct": false, "explanation": "O estado de defesa é restrito a locais determinados, com prazo de até 30 dias (prorrogável por igual período), e somente restringe direitos específicos."},
+      {"letter": "C", "text": "Dissolver o Congresso Nacional e governar por decretos-leis até o restabelecimento da ordem.", "is_correct": false, "explanation": "O Presidente não pode dissolver o Congresso Nacional em nenhuma hipótese. O Congresso continua funcionando durante o estado de defesa."},
+      {"letter": "D", "text": "Substituir os governadores dos Estados afetados por interventores federais nomeados pelo Presidente.", "is_correct": false, "explanation": "O estado de defesa não autoriza a substituição de governadores. Esta medida pode ocorrer na intervenção federal (art. 36, §1°, CF/88)."},
+      {"letter": "E", "text": "Suspender as garantias individuais em todo o território nacional, mediante aprovação prévia do Congresso.", "is_correct": false, "explanation": "O estado de defesa é restrito a locais determinados, não abrange todo o território, e não depende de aprovação prévia do Congresso (mas deve ser submetido em 24 horas)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "liberdade-expressao",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a liberdade de expressão na Constituição Federal, assinale a alternativa correta:",
+    "text": "Conforme o art. 5°, IV, da CF/88, é livre a manifestação do pensamento, sendo vedado:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, IV, da CF/88 garante a livre manifestação do pensamento, vedado o anonimato. Esta vedação visa assegurar a responsabilidade do emissor por eventuais danos causados pela manifestação. A liberdade de expressão não é absoluta, devendo ser exercida com responsabilidade.",
+    "legal_basis": "Art. 5°, IV, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O anonimato, assegurando-se a responsabilidade pela manifestação.", "is_correct": true, "explanation": "Correta. A CF/88 garante a liberdade de expressão, mas veda o anonimato para assegurar a responsabilização por eventuais danos."},
+      {"letter": "B", "text": "A manifestação de qualquer opinião contrária ao governo, sob pena de responsabilização criminal.", "is_correct": false, "explanation": "A liberdade de expressão inclui o direito de criticar o governo. A opinião contrária ao governo é protegida constitucionalmente."},
+      {"letter": "C", "text": "Qualquer forma de manifestação em meios de comunicação, que depende de autorização governamental.", "is_correct": false, "explanation": "A manifestação do pensamento é livre e não depende de autorização governamental (art. 5°, IX, CF/88). É vedada a censura prévia."},
+      {"letter": "D", "text": "A expressão de opiniões religiosas, que somente pode ocorrer em locais de culto.", "is_correct": false, "explanation": "A liberdade de expressão religiosa não está restrita a locais de culto. Pode ser exercida em qualquer lugar, respeitados os demais direitos."},
+      {"letter": "E", "text": "A publicação de livros e periódicos sem prévia autorização da autoridade competente.", "is_correct": false, "explanation": "A publicação de livros e periódicos não depende de autorização prévia. É vedada a censura (art. 220, §2°, CF/88)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "provas-ilicitas",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante investigação policial, foram obtidas provas por meio de interceptação telefônica realizada sem autorização judicial. Assinale a alternativa correta:",
+    "text": "Sobre a admissibilidade de provas no processo penal brasileiro, conforme a CF/88, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, LVI, da CF/88 estabelece que são inadmissíveis, no processo, as provas obtidas por meios ilícitos. A teoria dos frutos da árvore envenenada (fruits of the poisonous tree), adotada pelo STF, determina que as provas derivadas de provas ilícitas também são inadmissíveis, salvo exceções reconhecidas pela jurisprudência.",
+    "legal_basis": "Art. 5°, LVI, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "São inadmissíveis as provas obtidas por meios ilícitos, contaminando também as provas delas derivadas, salvo exceções reconhecidas pela jurisprudência.", "is_correct": true, "explanation": "Correta. Aplica-se a teoria dos frutos da árvore envenenada, com exceções como a fonte independente e a descoberta inevitável."},
+      {"letter": "B", "text": "As provas ilícitas podem ser utilizadas pelo juiz se forem as únicas que comprovem a autoria do crime.", "is_correct": false, "explanation": "As provas ilícitas são inadmissíveis em qualquer hipótese, mesmo que sejam as únicas provas disponíveis."},
+      {"letter": "C", "text": "A interceptação telefônica sem autorização judicial é admissível em crimes hediondos.", "is_correct": false, "explanation": "A interceptação telefônica sem autorização judicial é ilícita em qualquer crime, inclusive hediondos. A Lei 9.296/96 exige autorização judicial."},
+      {"letter": "D", "text": "As provas ilícitas são admissíveis no processo penal, sendo vedadas apenas no processo civil.", "is_correct": false, "explanation": "A vedação constitucional às provas ilícitas aplica-se a todos os ramos do direito processual, sem distinção."},
+      {"letter": "E", "text": "A prova ilícita pode ser convalidada pelo Ministério Público mediante ratificação posterior.", "is_correct": false, "explanation": "Não existe possibilidade de convalidação ou ratificação de prova ilícita. A ilicitude é insanável."}
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "topic_slug": "tribunais-militares-estaduais",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a Justiça Militar Estadual, prevista na Constituição Federal, assinale a alternativa correta:",
+    "text": "A Justiça Militar Estadual, conforme o art. 125, §§3° a 5°, da CF/88, tem competência para:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Justiça Militar Estadual tem competência para processar e julgar os policiais militares e bombeiros militares nos crimes militares definidos em lei. A EC 45/2004 ampliou a competência para incluir ações judiciais contra atos disciplinares militares. O Tribunal de Justiça Militar pode ser criado nos Estados com efetivo superior a 20 mil integrantes.",
+    "legal_basis": "Art. 125, §§3° a 5°, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Processar e julgar os policiais militares e bombeiros militares nos crimes militares definidos em lei, e decidir sobre perda do posto e da patente dos oficiais.", "is_correct": true, "explanation": "Correta. A Justiça Militar Estadual julga crimes militares de PMs e BMs, e o Tribunal de Justiça (ou TJM) decide sobre perda do posto e da patente."},
+      {"letter": "B", "text": "Processar e julgar civis que pratiquem crimes contra instituições militares estaduais.", "is_correct": false, "explanation": "A Justiça Militar Estadual não julga civis. A competência para julgamento de civis existe apenas na Justiça Militar da União."},
+      {"letter": "C", "text": "Processar e julgar todos os crimes praticados por policiais militares, inclusive os crimes comuns.", "is_correct": false, "explanation": "A Justiça Militar Estadual julga apenas os crimes militares. Os crimes comuns praticados por PMs são julgados pela Justiça Comum."},
+      {"letter": "D", "text": "Processar e julgar apenas os crimes praticados por oficiais superiores, sendo os demais julgados pela Justiça Comum.", "is_correct": false, "explanation": "A Justiça Militar Estadual julga todos os militares estaduais, independentemente da graduação ou posto."},
+      {"letter": "E", "text": "Processar e julgar exclusivamente infrações disciplinares, sem competência criminal.", "is_correct": false, "explanation": "A Justiça Militar Estadual possui competência criminal (crimes militares) e, após a EC 45/2004, também para ações contra atos disciplinares."}
+    ]
+  }
+]

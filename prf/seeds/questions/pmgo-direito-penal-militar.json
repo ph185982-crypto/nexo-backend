@@ -1,0 +1,402 @@
+[
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da Policia Militar de Goias, escalado para servico de guarda no quartel, abandonou o posto sem autorizacao de seu superior, permanecendo ausente por mais de duas horas durante seu turno.",
+    "text": "A conduta do soldado configura, em tese, o crime militar de:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O abandono de posto e crime militar proprio previsto no art. 195 do Codigo Penal Militar, que consiste em abandonar, sem ordem superior, o posto ou lugar de servico que lhe tenha sido designado, ou o servico que lhe cumpria.",
+    "legal_basis": "Art. 195, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Desercao, por ter se ausentado do servico militar sem autorizacao.", "is_correct": false, "explanation": "A desercao exige ausencia por mais de 8 dias. O abandono temporario do posto configura crime diverso."},
+      {"letter": "B", "text": "Abandono de posto, por ter deixado o lugar de servico sem autorizacao superior.", "is_correct": true, "explanation": "Correto. O abandono de posto (art. 195, CPM) se configura quando o militar deixa, sem ordem superior, o posto ou lugar de servico que lhe foi designado."},
+      {"letter": "C", "text": "Insubordinacao, por ter desobedecido ordem de permanecer no posto.", "is_correct": false, "explanation": "A insubordinacao exige descumprimento de ordem direta e pessoal do superior. O abandono de posto e tipo penal autonomo."},
+      {"letter": "D", "text": "Prevaricacao militar, por ter retardado indevidamente ato de oficio.", "is_correct": false, "explanation": "A prevaricacao exige que o agente retarde ou deixe de praticar ato de oficio para satisfazer interesse pessoal. O tipo e diverso."},
+      {"letter": "E", "text": "Negligencia no servico, por nao ter cumprido adequadamente suas funcoes.", "is_correct": false, "explanation": "A negligencia (art. 203, CPM) refere-se a deixar de observar regulamento. O abandono de posto tem tipificacao propria e mais especifica."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a classificacao dos crimes militares no ordenamento juridico brasileiro, o Codigo Penal Militar distingue crimes militares proprios e improprios.",
+    "text": "Assinale a alternativa que apresenta corretamente a distincao entre crimes militares proprios e improprios.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Crimes militares proprios sao aqueles que so podem ser praticados por militares e que nao encontram correspondencia na legislacao penal comum. Crimes militares improprios sao aqueles que tambem possuem previsao na legislacao penal comum, mas que, em determinadas circunstancias, sao julgados pela Justica Militar.",
+    "legal_basis": "Art. 9, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Crimes militares proprios sao aqueles cometidos por oficiais, e improprios os cometidos por pracas.", "is_correct": false, "explanation": "A distincao nao se baseia na graduacao do militar, mas na natureza do tipo penal e sua correspondencia com a legislacao comum."},
+      {"letter": "B", "text": "Crimes militares proprios so existem no CPM e so podem ser praticados por militares; improprios tem correspondencia na legislacao penal comum.", "is_correct": true, "explanation": "Correto. Crimes proprios sao exclusivos do CPM e so militares podem pratica-los. Improprios tem tipo correspondente no Codigo Penal comum."},
+      {"letter": "C", "text": "Crimes militares proprios sao os dolosos e improprios os culposos.", "is_correct": false, "explanation": "A classificacao nao se baseia no elemento subjetivo (dolo ou culpa), mas na exclusividade do tipo penal militar."},
+      {"letter": "D", "text": "Crimes militares proprios sao os praticados em tempo de guerra, e improprios os praticados em tempo de paz.", "is_correct": false, "explanation": "Ambas as categorias podem ser praticados tanto em tempo de paz quanto de guerra. A distincao nao se relaciona ao momento da pratica."},
+      {"letter": "E", "text": "Nao existe distincao entre crimes proprios e improprios no CPM; trata-se de classificacao exclusivamente doutrinaria sem efeitos praticos.", "is_correct": false, "explanation": "A distincao tem relevancia pratica, especialmente para definicao de competencia e aplicacao da lei."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "desercao",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cabo da Policia Militar de Goias, apos retornar de ferias regulamentares, nao se apresentou na unidade dentro do prazo previsto, permanecendo ausente por 12 dias consecutivos.",
+    "text": "Considerando o Codigo Penal Militar, a conduta do cabo configura, em tese, o crime de:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A desercao esta prevista no art. 187 do CPM e consiste na ausencia sem licenca por mais de 8 dias da unidade em que serve. O prazo de graca para a consumacao e de 8 dias.",
+    "legal_basis": "Art. 187, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Abandono de posto, pois nao retornou ao local de trabalho no prazo previsto.", "is_correct": false, "explanation": "O abandono de posto refere-se ao afastamento do posto de servico durante o expediente, nao a ausencia prolongada da unidade."},
+      {"letter": "B", "text": "Insubordinacao, pois descumpriu a ordem de se apresentar apos as ferias.", "is_correct": false, "explanation": "A insubordinacao exige descumprimento de ordem legal do superior. A ausencia prolongada configura tipo penal especifico."},
+      {"letter": "C", "text": "Desercao, pois se ausentou da unidade por mais de 8 dias sem licenca.", "is_correct": true, "explanation": "Correto. A desercao se consuma com a ausencia sem licenca por mais de 8 dias, conforme art. 187 do CPM."},
+      {"letter": "D", "text": "Transgressao disciplinar, sem repercussao penal, pois apenas retardou o retorno.", "is_correct": false, "explanation": "A ausencia por mais de 8 dias configura crime militar (desercao), nao mera transgressao disciplinar."},
+      {"letter": "E", "text": "Falta ao servico, que e mera infracao administrativa sem tipificacao no CPM.", "is_correct": false, "explanation": "A ausencia por mais de 8 dias transcende a mera falta administrativa, configurando o crime de desercao."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "desercao",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO ausentou-se sem licenca de sua unidade. Decorridos 5 dias de ausencia, o militar se apresentou voluntariamente ao quartel.",
+    "text": "Considerando o prazo de graca previsto no CPM para a consumacao do crime de desercao, a apresentacao do soldado antes de completar 8 dias implica que:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O crime de desercao (art. 187, CPM) se consuma apos 8 dias de ausencia sem licenca. A apresentacao dentro do prazo de graca impede a consumacao do crime, podendo o militar responder apenas por transgressao disciplinar.",
+    "legal_basis": "Art. 187, Decreto-lei 1.001/69 (CPM); Art. 188, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "O crime de desercao se consumou no momento da ausencia, independentemente do prazo de graca.", "is_correct": false, "explanation": "A desercao e crime permanente que so se consuma apos o transcurso do prazo de graca de 8 dias."},
+      {"letter": "B", "text": "Nao houve crime de desercao, pois o militar se apresentou dentro do prazo de graca de 8 dias, podendo responder por transgressao disciplinar.", "is_correct": true, "explanation": "Correto. A apresentacao dentro do prazo de graca impede a consumacao da desercao, restando possivel apenas sancao disciplinar."},
+      {"letter": "C", "text": "O crime se consumou, mas a apresentacao voluntaria e causa obrigatoria de extincao da punibilidade.", "is_correct": false, "explanation": "Como o crime nao se consumou (apresentacao dentro dos 8 dias), nao ha que se falar em extincao de punibilidade."},
+      {"letter": "D", "text": "O prazo de graca para desercao e de 3 dias, de modo que o crime ja se consumou ao 5 dia.", "is_correct": false, "explanation": "O prazo de graca previsto no CPM para a desercao e de 8 dias, nao de 3 dias."},
+      {"letter": "E", "text": "A desercao admite tentativa, devendo o militar responder por tentativa de desercao.", "is_correct": false, "explanation": "A desercao nao admite tentativa, pois ou o prazo de graca se esgota e o crime se consuma, ou o militar se apresenta e nao ha crime."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "insubordinacao",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma operacao policial em Goiania, um sargento da PMGO recusou-se a cumprir ordem direta e legal de seu tenente para isolar a area de ocorrencia, alegando que a ordem era desnecessaria.",
+    "text": "A conduta do sargento que recusa ordem direta e legal de superior hierarquico configura, no Codigo Penal Militar, o crime de:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A recusa de obediencia a ordem legal de superior hierarquico configura o crime de insubordinacao na modalidade de recusa de obediencia, previsto no art. 163 do CPM.",
+    "legal_basis": "Art. 163, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Motim, por ter se rebelado contra decisao do comando.", "is_correct": false, "explanation": "O motim exige reuniao de dois ou mais militares agindo contra a ordem ou disciplina. O caso descreve conduta individual."},
+      {"letter": "B", "text": "Recusa de obediencia, por ter deixado de cumprir ordem legal de superior hierarquico.", "is_correct": true, "explanation": "Correto. O art. 163 do CPM tipifica como crime a recusa de obediencia a ordem do superior sobre assunto ou materia de servico."},
+      {"letter": "C", "text": "Desrespeito a superior, por ter questionado publicamente a ordem recebida.", "is_correct": false, "explanation": "O desrespeito a superior (art. 160, CPM) e tipo penal diverso. A recusa de obediencia tem tipificacao propria."},
+      {"letter": "D", "text": "Cobardia, por ter se recusado a participar da operacao policial.", "is_correct": false, "explanation": "A cobardia (art. 364, CPM) e crime em tempo de guerra. A recusa no caso configura recusa de obediencia."},
+      {"letter": "E", "text": "Desobediencia, nos termos do Codigo Penal comum, por se tratar de crime improprio.", "is_correct": false, "explanation": "A recusa de obediencia por militar a superior hierarquico e crime militar proprio, julgado pela Justica Militar."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "insubordinacao",
+    "question_type": "multipla_escolha",
+    "context_text": "O Codigo Penal Militar tipifica diversas condutas relacionadas a insubordinacao e ao descumprimento de ordens e regulamentos militares.",
+    "text": "Assinale a alternativa que apresenta corretamente um crime de insubordinacao previsto no CPM.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A reuniao ilicita (art. 165, CPM) e crime de insubordinacao que consiste em promover a reuniao de militares para discussao de ato de superior ou assunto atinente a disciplina militar.",
+    "legal_basis": "Arts. 163 a 166, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Publicacao ou critica indevida, consistente em publicar militar da ativa, sem licenca, ato ou documento oficial, ou criticar publicamente ato de seu superior.", "is_correct": true, "explanation": "Correto. O art. 166 do CPM tipifica a publicacao ou critica indevida como crime de insubordinacao."},
+      {"letter": "B", "text": "Abandono de posto, que consiste em deixar o servico sem autorizacao do superior.", "is_correct": false, "explanation": "O abandono de posto (art. 195, CPM) e classificado como crime contra o servico e o dever militar, nao como insubordinacao."},
+      {"letter": "C", "text": "Embriaguez em servico, que compromete a disciplina e a hierarquia militar.", "is_correct": false, "explanation": "A embriaguez em servico (art. 202, CPM) e crime contra o servico e o dever militar, nao contra a insubordinacao."},
+      {"letter": "D", "text": "Peculato militar, por desviar bem publico confiado a sua guarda.", "is_correct": false, "explanation": "O peculato militar (art. 303, CPM) e crime contra a administracao militar, nao crime de insubordinacao."},
+      {"letter": "E", "text": "Furto de uso, consistente na subtracao temporaria de equipamento militar.", "is_correct": false, "explanation": "O furto de uso nao e classificado como crime de insubordinacao no CPM."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "violencia-contra-superior-inferior",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO, durante o servico, agrediu fisicamente um cabo que o havia repreendido por chegar atrasado. As agressoes resultaram em lesoes corporais leves no cabo.",
+    "text": "A conduta do soldado que agride fisicamente um superior hierarquico configura, no CPM, o crime de:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A violencia contra superior e crime previsto no art. 157 do CPM, que consiste em praticar violencia contra superior hierarquico. E crime militar proprio que protege a hierarquia e a disciplina militar.",
+    "legal_basis": "Art. 157, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Violencia contra superior, previsto no art. 157 do CPM.", "is_correct": true, "explanation": "Correto. O art. 157 do CPM tipifica a violencia contra superior como crime militar, independentemente do resultado das lesoes."},
+      {"letter": "B", "text": "Lesao corporal simples, nos termos do Codigo Penal comum.", "is_correct": false, "explanation": "Por se tratar de violencia praticada por militar contra superior durante o servico, aplica-se o tipo especifico do CPM."},
+      {"letter": "C", "text": "Desrespeito a superior, previsto no art. 160 do CPM.", "is_correct": false, "explanation": "O desrespeito a superior envolve ofensa verbal ou gestual, nao agressao fisica. A violencia fisica tem tipificacao propria."},
+      {"letter": "D", "text": "Vias de fato, previsto no CPM, por se tratar de lesoes leves.", "is_correct": false, "explanation": "Quando ha violencia contra superior, aplica-se o tipo especifico do art. 157, nao o tipo generico de vias de fato."},
+      {"letter": "E", "text": "Motim, pois o soldado se insurgiu contra a autoridade do cabo.", "is_correct": false, "explanation": "O motim exige concurso de dois ou mais militares. A conduta individual configura violencia contra superior."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "violencia-contra-superior-inferior",
+    "question_type": "multipla_escolha",
+    "context_text": "Um tenente da PMGO, durante instrucao de treinamento, agrediu um soldado com tapas no rosto, causando-lhe humilhacao perante a tropa, sob o pretexto de 'corrigir disciplina'.",
+    "text": "A conduta do tenente que pratica violencia contra subordinado configura, no CPM:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 175 do CPM tipifica a violencia contra inferior, consistente em praticar violencia contra subordinado. O fato de o superior hierarquico alegar pretexto disciplinar nao afasta a tipicidade da conduta.",
+    "legal_basis": "Art. 175, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Conduta atipica, pois o superior tem poder disciplinar sobre o subordinado.", "is_correct": false, "explanation": "O poder disciplinar nao autoriza o uso de violencia fisica. A agressao configura crime militar."},
+      {"letter": "B", "text": "Mera transgressao disciplinar, por se tratar de excesso no exercicio da funcao.", "is_correct": false, "explanation": "A violencia fisica contra subordinado transcende a esfera disciplinar, configurando crime militar previsto no CPM."},
+      {"letter": "C", "text": "Violencia contra inferior, prevista no art. 175 do CPM, independentemente do pretexto alegado.", "is_correct": true, "explanation": "Correto. O art. 175 do CPM tipifica a violencia contra inferior, sendo irrelevante o pretexto disciplinar alegado pelo agressor."},
+      {"letter": "D", "text": "Abuso de autoridade, nos termos da Lei 13.869/2019, por ser lei penal comum mais favoravel.", "is_correct": false, "explanation": "A violencia contra inferior tem tipificacao propria no CPM, sendo crime militar submetido a jurisdicao militar."},
+      {"letter": "E", "text": "Exercicio arbitrario das proprias razoes, conforme art. 345 do CP comum.", "is_correct": false, "explanation": "A conduta de superior que agride subordinado configura crime militar especifico, nao tipo penal comum."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "peculato-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Um sargento da PMGO, responsavel pelo almoxarifado do batalhao, desviou em proveito proprio 50 litros de combustivel destinado as viaturas da corporacao, utilizando-os em seu veiculo particular.",
+    "text": "A conduta do sargento configura, no Codigo Penal Militar, o crime de:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O peculato militar esta previsto no art. 303 do CPM e consiste em apropriar-se de dinheiro, valor ou qualquer outro bem movel, publico ou particular, de que tem a posse ou detencao em razao do cargo ou comissao, ou desvia-lo em proveito proprio ou alheio.",
+    "legal_basis": "Art. 303, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Furto qualificado, por ter subtraido bem do Estado.", "is_correct": false, "explanation": "O sargento tinha a posse do combustivel em razao do cargo. A subtracao de bem de que se tem a posse configura peculato, nao furto."},
+      {"letter": "B", "text": "Peculato-desvio, pois desviou em proveito proprio bem publico de que tinha a posse em razao do cargo.", "is_correct": true, "explanation": "Correto. O desvio de bem publico de que se tem posse em razao do cargo configura peculato-desvio (art. 303 do CPM)."},
+      {"letter": "C", "text": "Apropriacao indebita, conforme o Codigo Penal comum, por ser mais favoravel ao reu.", "is_correct": false, "explanation": "A conduta configura crime militar especifico (peculato), submetido a jurisdicao militar, nao se aplicando o CP comum."},
+      {"letter": "D", "text": "Concussao, por ter exigido vantagem indevida em razao da funcao.", "is_correct": false, "explanation": "A concussao exige a exigencia de vantagem de terceiro. No caso, houve desvio de bem publico sob sua posse."},
+      {"letter": "E", "text": "Estelionato militar, por ter induzido a administracao em erro.", "is_correct": false, "explanation": "O estelionato exige emprego de artificio ou ardil para induzir alguem em erro. O caso configura peculato."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "peculato-militar",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cabo da PMGO, responsavel pela custodia de armamento apreendido, permitiu que um colega retirasse uma arma de fogo do deposito sem autorizacao, por negligencia na fiscalizacao do acervo.",
+    "text": "A conduta do cabo que, por negligencia, concorre para a apropriacao de bem publico por terceiro configura:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 303, par. 2, do CPM preve o peculato culposo, que ocorre quando o funcionario concorre culposamente para o crime de outrem. No caso, a negligencia do cabo na guarda do armamento permitiu a apropriacao por terceiro.",
+    "legal_basis": "Art. 303, par. 2, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Peculato culposo, pois o cabo concorreu culposamente para a apropriacao de bem sob sua guarda.", "is_correct": true, "explanation": "Correto. O peculato culposo (art. 303, par. 2, CPM) se configura quando o agente concorre culposamente para o crime de outrem."},
+      {"letter": "B", "text": "Conduta atipica, pois o peculato so admite a modalidade dolosa.", "is_correct": false, "explanation": "O CPM preve expressamente a modalidade culposa do peculato no par. 2 do art. 303."},
+      {"letter": "C", "text": "Prevaricacao, pois o cabo retardou indevidamente ato de oficio.", "is_correct": false, "explanation": "A prevaricacao exige dolo especifico de satisfazer interesse pessoal. No caso, houve negligencia, configurando peculato culposo."},
+      {"letter": "D", "text": "Coautoria em peculato doloso, respondendo o cabo na mesma pena que o colega.", "is_correct": false, "explanation": "A participacao culposa nao configura coautoria em crime doloso. O cabo responde por peculato culposo."},
+      {"letter": "E", "text": "Crime de extravio, que e tipo penal autonomo diverso do peculato.", "is_correct": false, "explanation": "O extravio, perda ou inutilizacao culposa de material pode ser enquadrado no peculato culposo quando houver concorrencia para a apropriacao."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "Um grupo de cinco soldados da PMGO, insatisfeitos com as condicoes de trabalho, reuniram-se no alojamento e recusaram-se coletivamente a comparecer ao servico, exigindo melhores condicoes.",
+    "text": "A conduta coletiva dos soldados, no ambito do Codigo Penal Militar, pode configurar o crime de:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O motim esta previsto no art. 149 do CPM e consiste em reunirem-se militares para agirem contra a ordem recebida de superior ou para se recusarem a cumprir dever militar, perturbando a disciplina.",
+    "legal_basis": "Art. 149, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Motim, pois houve reuniao de militares para se recusarem a cumprir dever militar.", "is_correct": true, "explanation": "Correto. O motim (art. 149, CPM) se configura quando dois ou mais militares se reunem para agir contra a ordem ou recusar-se a cumprir dever militar."},
+      {"letter": "B", "text": "Greve, direito assegurado aos militares pela CF/88.", "is_correct": false, "explanation": "A CF/88 expressamente veda o direito de greve aos militares (art. 142, par. 3, IV). A conduta configura crime militar."},
+      {"letter": "C", "text": "Insubordinacao individual de cada soldado, respondendo separadamente.", "is_correct": false, "explanation": "A recusa coletiva, com reuniao para esse fim, configura motim, que e tipo penal mais grave que a insubordinacao individual."},
+      {"letter": "D", "text": "Revolta, independentemente de uso de violencia ou armas.", "is_correct": false, "explanation": "A revolta e o motim com uso de armas (art. 149, par. unico, CPM). Sem mencao a armas, configura-se o motim simples."},
+      {"letter": "E", "text": "Conduta atipica, pois a manifestacao pacifica por melhores condicoes e direito constitucional.", "is_correct": false, "explanation": "A recusa coletiva de militares ao servico nao e protegida como manifestacao pacifica, configurando crime de motim."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "jurisdicao-militar-estadual",
+    "question_type": "multipla_escolha",
+    "context_text": "A Justica Militar dos Estados possui competencia definida pela Constituicao Federal e pela legislacao infraconstitucional, com jurisdicao especifica sobre determinados tipos de crimes.",
+    "text": "De acordo com a Constituicao Federal, compete a Justica Militar estadual processar e julgar:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A EC 45/2004 alterou o art. 125, par. 5, da CF/88, estabelecendo que compete a Justica Militar estadual processar e julgar os militares dos Estados nos crimes militares definidos em lei, cabendo ao tribunal competente decidir sobre a perda do posto e da patente dos oficiais.",
+    "legal_basis": "Art. 125, par. 4 e 5, CF/88; EC 45/2004",
+    "alternatives": [
+      {"letter": "A", "text": "Os militares dos Estados e civis, nos crimes militares definidos em lei.", "is_correct": false, "explanation": "Apos a EC 45/2004, a Justica Militar estadual nao julga civis. A competencia sobre civis e exclusiva da Justica Militar da Uniao."},
+      {"letter": "B", "text": "Os militares dos Estados, nos crimes militares definidos em lei, e as acoes judiciais contra atos disciplinares militares.", "is_correct": true, "explanation": "Correto. O art. 125, par. 4 e 5, da CF/88 atribuiu a Justica Militar estadual competencia para crimes militares de militares estaduais e acoes contra atos disciplinares."},
+      {"letter": "C", "text": "Qualquer pessoa que cometa crime em area militar estadual, independentemente de ser militar.", "is_correct": false, "explanation": "A competencia da Justica Militar estadual e definida pela qualidade do agente (militar estadual), nao pelo local do crime."},
+      {"letter": "D", "text": "Exclusivamente crimes militares proprios, sendo os improprios de competencia da justica comum.", "is_correct": false, "explanation": "A Justica Militar estadual julga tanto crimes proprios quanto improprios, desde que praticados por militares estaduais."},
+      {"letter": "E", "text": "Crimes militares e crimes comuns praticados por policiais militares no exercicio da funcao.", "is_correct": false, "explanation": "Crimes comuns praticados por PMs sao julgados pela justica comum, salvo se a conduta se enquadrar como crime militar."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "jurisdicao-militar-estadual",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar de Goias, fora do servico e a paisana, cometeu crime de lesao corporal dolosa contra um civil durante discussao no transito.",
+    "text": "Quanto a competencia para processar e julgar o referido crime, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A competencia da Justica Militar depende da configuracao do crime como militar, nos termos do art. 9 do CPM. Crime doloso contra a vida de civil praticado por militar estadual e de competencia do Tribunal do Juri (art. 125, par. 4, CF/88). Ja a lesao corporal, se nao preencher as hipoteses do art. 9, sera de competencia da justica comum.",
+    "legal_basis": "Art. 9, Decreto-lei 1.001/69 (CPM); Art. 125, par. 4, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A competencia e da Justica Militar estadual, pois todo crime praticado por militar e crime militar.", "is_correct": false, "explanation": "Nem todo crime praticado por militar e crime militar. E necessario que a conduta se enquadre nas hipoteses do art. 9 do CPM."},
+      {"letter": "B", "text": "A competencia e da justica comum estadual, pois o PM estava fora do servico e a conduta nao se enquadra como crime militar.", "is_correct": true, "explanation": "Correto. Estando fora de servico e a paisana, em situacao desvinculada da atividade militar, a lesao corporal contra civil e de competencia da justica comum."},
+      {"letter": "C", "text": "A competencia e da Justica Militar da Uniao, por envolver violencia contra civil.", "is_correct": false, "explanation": "A Justica Militar da Uniao julga militares federais, nao estaduais. E a conduta, nas circunstancias descritas, nao configura crime militar."},
+      {"letter": "D", "text": "A competencia e do Tribunal do Juri, por se tratar de crime doloso contra a vida.", "is_correct": false, "explanation": "Lesao corporal dolosa nao e crime doloso contra a vida. Crimes contra a vida sao homicidio, infanticidio, aborto e instigacao ao suicidio."},
+      {"letter": "E", "text": "A competencia e da Justica Federal, por envolver agente de seguranca publica.", "is_correct": false, "explanation": "Policiais militares sao servidores estaduais. A competencia da Justica Federal nao se aplica ao caso."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO, durante servico de patrulhamento, apresentou-se embriagado, sendo flagrado pelo comandante da patrulha com halito etilico e comportamento alterado.",
+    "text": "A embriaguez em servico, no ambito do Codigo Penal Militar, e considerada:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A embriaguez em servico esta prevista no art. 202 do CPM como crime contra o servico e o dever militar. Diferentemente do CP comum, que trata a embriaguez apenas como circunstancia, o CPM a tipifica como crime autonomo.",
+    "legal_basis": "Art. 202, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Crime militar contra o servico e o dever militar, previsto no art. 202 do CPM.", "is_correct": true, "explanation": "Correto. O art. 202 do CPM tipifica a embriaguez em servico como crime militar, punindo o militar que se embriaga em servico ou se apresenta embriagado para presta-lo."},
+      {"letter": "B", "text": "Mera transgressao disciplinar, sem repercussao penal.", "is_correct": false, "explanation": "No ambito militar, a embriaguez em servico e tipificada como crime no CPM, transcendendo a esfera meramente disciplinar."},
+      {"letter": "C", "text": "Contravencao penal, conforme a Lei de Contravencoes Penais.", "is_correct": false, "explanation": "A embriaguez em servico do militar e crime militar previsto no CPM, nao contravencao penal."},
+      {"letter": "D", "text": "Crime militar somente se causar dano ao servico ou a terceiros.", "is_correct": false, "explanation": "O crime de embriaguez em servico e de perigo abstrato, consumando-se com a mera embriaguez, independentemente de dano efetivo."},
+      {"letter": "E", "text": "Atenuante de pena para outros crimes eventualmente cometidos durante o servico.", "is_correct": false, "explanation": "A embriaguez em servico e crime autonomo no CPM. Alem disso, a embriaguez preordenada e agravante, nao atenuante."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "O Codigo Penal Militar apresenta diferencas significativas em relacao ao Codigo Penal comum, especialmente quanto a aplicacao da lei penal militar.",
+    "text": "Sobre a aplicacao da lei penal militar, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM admite a aplicacao do principio da insignificancia em crimes militares, conforme jurisprudencia do STF, embora com maior rigor em razao dos principios da hierarquia e disciplina. O furto de pequeno valor tem tratamento especifico no CPM.",
+    "legal_basis": "Arts. 1 a 37, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "O CPM nao admite em nenhuma hipotese a aplicacao de penas restritivas de direitos em substituicao a pena privativa de liberdade.", "is_correct": false, "explanation": "A jurisprudencia e a legislacao posterior ao CPM admitem, em determinadas hipoteses, a substituicao de penas."},
+      {"letter": "B", "text": "O CPM preve a pena de morte em tempo de guerra para determinados crimes militares.", "is_correct": true, "explanation": "Correto. O CPM preve a pena de morte por fuzilamento para crimes militares praticados em tempo de guerra, conforme autorizado pela CF/88 (art. 5, XLVII, 'a')."},
+      {"letter": "C", "text": "O CPM revogou integralmente o Codigo Penal comum para militares, que so se submetem a legislacao castrense.", "is_correct": false, "explanation": "O CPM nao revogou o CP comum. Militares podem responder por crimes comuns perante a justica comum."},
+      {"letter": "D", "text": "O CPM nao preve a figura da tentativa, sendo todos os crimes consumados para fins de punibilidade.", "is_correct": false, "explanation": "O CPM preve expressamente a tentativa no art. 30, com reducao de pena proporcional."},
+      {"letter": "E", "text": "A prescricao nao se aplica aos crimes militares, que sao imprescritiveis.", "is_correct": false, "explanation": "Os crimes militares sao prescritiveis. O CPM preve regras especificas de prescricao nos arts. 125 a 132."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "violencia-contra-superior-inferior",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO proferiu palavras ofensivas contra um major durante formacao, na presenca de toda a tropa, chamando-o de 'incompetente' e 'covarde'.",
+    "text": "A conduta do soldado que ofende a honra de superior hierarquico na presenca da tropa configura, no CPM:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O desrespeito a superior (art. 160, CPM) consiste em desrespeitar superior diante de outro militar. Ja o desacato a superior (art. 298, CPM) consiste em desacatar superior em razao de sua funcao. A doutrina e jurisprudencia distinguem as condutas pela intensidade da ofensa e o contexto.",
+    "legal_basis": "Art. 160, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Desrespeito a superior, previsto no art. 160 do CPM, por ter ofendido superior diante de outros militares.", "is_correct": true, "explanation": "Correto. O art. 160 do CPM tipifica o desrespeito a superior praticado diante de outro militar."},
+      {"letter": "B", "text": "Injuria, nos termos do Codigo Penal comum, por se tratar de ofensa a dignidade pessoal.", "is_correct": false, "explanation": "A ofensa a superior hierarquico no ambito militar tem tipificacao propria no CPM, nao se aplicando o CP comum."},
+      {"letter": "C", "text": "Conduta atipica, pois a liberdade de expressao assegura o direito de critica.", "is_correct": false, "explanation": "No ambito militar, a hierarquia e a disciplina limitam a liberdade de expressao, sendo a ofensa a superior tipificada como crime."},
+      {"letter": "D", "text": "Motim, por ter se insurgido contra a autoridade do superior.", "is_correct": false, "explanation": "O motim exige concurso de dois ou mais militares. A conduta individual de ofensa constitui desrespeito, nao motim."},
+      {"letter": "E", "text": "Recusa de obediencia, prevista no art. 163 do CPM.", "is_correct": false, "explanation": "A recusa de obediencia se refere ao descumprimento de ordem. A ofensa verbal tem tipificacao propria no art. 160."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar de Goias, em servico de rondas, dormiu dentro da viatura durante todo o periodo noturno, deixando de realizar as rondas determinadas pelo comando.",
+    "text": "A conduta do policial que dorme em servico pode configurar, no CPM, o crime de:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 203 do CPM tipifica a dormir em servico como crime contra o dever militar, com pena de detencao de tres meses a um ano. E um crime militar proprio que somente militares podem praticar.",
+    "legal_basis": "Art. 203, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Abandono de posto, pois deixou de cumprir o servico designado.", "is_correct": false, "explanation": "O abandono de posto exige que o militar deixe fisicamente o local de servico. Dormir no posto e tipo penal distinto."},
+      {"letter": "B", "text": "Dormir em servico, previsto no art. 203 do CPM, que e crime contra o dever militar.", "is_correct": true, "explanation": "Correto. O CPM tipifica especificamente a conduta de dormir em servico no art. 203."},
+      {"letter": "C", "text": "Negligencia, previsto no art. 203 do CPM, em sua modalidade culposa.", "is_correct": false, "explanation": "Dormir em servico e tipo penal autonomo. Embora a negligencia tambem esteja prevista no CPM, a conduta descrita se enquadra especificamente em dormir em servico."},
+      {"letter": "D", "text": "Prevaricacao militar, por retardar o cumprimento do dever funcional.", "is_correct": false, "explanation": "A prevaricacao exige o elemento subjetivo de satisfazer interesse pessoal. Dormir em servico tem tipificacao propria."},
+      {"letter": "E", "text": "Conduta atipica, pois dormir e necessidade biologica que nao pode ser criminalizada.", "is_correct": false, "explanation": "O CPM criminaliza especificamente dormir em servico em razao do comprometimento da atividade militar."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "desercao",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO consumou o crime de desercao, permanecendo ausente por 30 dias. Posteriormente, apresentou-se voluntariamente a sua unidade.",
+    "text": "Sobre os efeitos da apresentacao voluntaria do desertor, conforme o CPM, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A apresentacao voluntaria do desertor nao extingue a punibilidade. O desertor que se apresenta voluntariamente sera recolhido a unidade e submetido a inspecao de saude, permanecendo na condicao de preso ate o julgamento, conforme art. 452 do CPPM.",
+    "legal_basis": "Art. 187 e seguintes, Decreto-lei 1.001/69 (CPM); Art. 452, Decreto-lei 1.002/69 (CPPM)",
+    "alternatives": [
+      {"letter": "A", "text": "A apresentacao voluntaria extingue automaticamente a punibilidade do crime de desercao.", "is_correct": false, "explanation": "A apresentacao voluntaria nao extingue a punibilidade. O desertor sera processado e julgado normalmente."},
+      {"letter": "B", "text": "O desertor que se apresenta voluntariamente sera recolhido a unidade e submetido aos procedimentos legais, nao se extinguindo a punibilidade.", "is_correct": true, "explanation": "Correto. A apresentacao voluntaria nao extingue a punibilidade. O militar sera submetido a procedimentos legais e julgado."},
+      {"letter": "C", "text": "A apresentacao voluntaria converte o crime de desercao em mera transgressao disciplinar.", "is_correct": false, "explanation": "A desercao consumada nao se converte em transgressao pela apresentacao. O crime permanece configurado."},
+      {"letter": "D", "text": "O desertor so pode ser capturado, nao sendo admitida a apresentacao voluntaria.", "is_correct": false, "explanation": "O CPM admite a apresentacao voluntaria do desertor, que sera recolhido a unidade para os procedimentos legais."},
+      {"letter": "E", "text": "A apresentacao voluntaria gera anistia automatica ao desertor de primeira vez.", "is_correct": false, "explanation": "Nao ha anistia automatica para desertores. O militar sera processado e julgado normalmente."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-militares-proprios",
+    "question_type": "multipla_escolha",
+    "context_text": "O Codigo Penal Militar preve crimes especificos relacionados ao uso indevido de uniforme e insígnias militares.",
+    "text": "Assinale a alternativa que apresenta corretamente um crime previsto no CPM relacionado a funcao militar.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O uso indevido de uniforme, distintivo ou insignia militar por quem nao tem direito e crime previsto no art. 172 do CPM. Tambem o CPM tipifica crimes como a simulacao de funcao militar (art. 169).",
+    "legal_basis": "Arts. 169 e 172, Decreto-lei 1.001/69 (CPM)",
+    "alternatives": [
+      {"letter": "A", "text": "Uso indevido de distintivo ou insignia militar e tipificado no CPM como crime contra a autoridade ou disciplina militar.", "is_correct": true, "explanation": "Correto. O art. 172 do CPM tipifica o uso indevido por quem nao tem direito de uniforme, distintivo ou insignia militar."},
+      {"letter": "B", "text": "O uso de uniforme militar por civil em festa a fantasia configura crime militar inafiancavel.", "is_correct": false, "explanation": "O contexto e a intencao sao relevantes para a tipificacao. Nem todo uso de uniforme por civil configura crime, e nao se trata de crime inafiancavel."},
+      {"letter": "C", "text": "Nao existe crime relacionado ao uso indevido de uniforme no Codigo Penal Militar.", "is_correct": false, "explanation": "O CPM preve expressamente crimes relacionados ao uso indevido de uniforme e insignias militares."},
+      {"letter": "D", "text": "Somente o Codigo Penal comum tipifica o uso indevido de fardamento militar.", "is_correct": false, "explanation": "O CPM possui tipos penais proprios para o uso indevido de uniformes e insignias militares."},
+      {"letter": "E", "text": "O uso de uniforme militar antigo ou reformado nao configura crime em nenhuma hipotese.", "is_correct": false, "explanation": "A tipicidade depende das circunstancias concretas, nao havendo exclusao absoluta para uniformes antigos."}
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "jurisdicao-militar-estadual",
+    "question_type": "multipla_escolha",
+    "context_text": "A Emenda Constitucional 45/2004 trouxe significativas alteracoes na competencia da Justica Militar estadual, especialmente no que tange ao julgamento de civis e de crimes dolosos contra a vida.",
+    "text": "Sobre as alteracoes promovidas pela EC 45/2004 na Justica Militar estadual, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A EC 45/2004 excluiu os civis da competencia da Justica Militar estadual e determinou que crimes dolosos contra a vida de civil, praticados por militares estaduais, sejam julgados pelo Tribunal do Juri.",
+    "legal_basis": "Art. 125, par. 4 e 5, CF/88; EC 45/2004",
+    "alternatives": [
+      {"letter": "A", "text": "A EC 45/2004 ampliou a competencia da Justica Militar estadual para julgar civis que cometam crimes em area militar.", "is_correct": false, "explanation": "A EC 45/2004 fez o oposto: retirou da Justica Militar estadual a competencia para julgar civis."},
+      {"letter": "B", "text": "A EC 45/2004 nao alterou a competencia da Justica Militar estadual, mantendo-a integralmente.", "is_correct": false, "explanation": "A EC 45/2004 trouxe significativas alteracoes, excluindo civis e crimes dolosos contra vida de civil da Justica Militar estadual."},
+      {"letter": "C", "text": "A EC 45/2004 extinguiu completamente a Justica Militar estadual.", "is_correct": false, "explanation": "A Justica Militar estadual nao foi extinta, tendo sido apenas alterada sua competencia."},
+      {"letter": "D", "text": "Apos a EC 45/2004, civis nao sao mais julgados pela Justica Militar estadual, e crimes dolosos contra a vida de civil sao de competencia do Tribunal do Juri.", "is_correct": true, "explanation": "Correto. A EC 45/2004 excluiu civis da Justica Militar estadual e remeteu crimes dolosos contra vida de civil ao Juri."},
+      {"letter": "E", "text": "A EC 45/2004 transferiu toda a competencia da Justica Militar estadual para a Justica Militar da Uniao.", "is_correct": false, "explanation": "A Justica Militar estadual manteve sua competencia para crimes militares de militares estaduais, apenas com as restricoes introduzidas."}
+    ]
+  }
+]

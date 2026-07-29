@@ -1,0 +1,502 @@
+[
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "principios-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "O prefeito de determinado municipio goiano nomeou seu sobrinho, recem-formado em Direito, para o cargo comissionado de assessor juridico da Secretaria de Obras, sem que houvesse qualquer processo seletivo ou justificativa tecnica para a escolha.",
+    "text": "A conduta do prefeito, conforme a jurisprudencia consolidada e os principios constitucionais da administracao publica, viola diretamente qual principio?",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A nomeacao de parentes para cargos comissionados configura nepotismo, pratica vedada pela Sumula Vinculante 13 do STF, que viola diretamente o principio da moralidade administrativa previsto no art. 37, caput, da CF/88.",
+    "legal_basis": "Art. 37, caput, CF/88; Sumula Vinculante 13 do STF",
+    "alternatives": [
+      {"letter": "A", "text": "Principio da legalidade, pois nao ha lei que autorize a nomeacao de parentes.", "is_correct": false, "explanation": "Embora a legalidade esteja envolvida, o principio diretamente violado pelo nepotismo e o da moralidade, conforme entendimento consolidado pelo STF."},
+      {"letter": "B", "text": "Principio da impessoalidade, pois o prefeito agiu com favoritismo pessoal.", "is_correct": false, "explanation": "A impessoalidade tambem e afetada, mas a Sumula Vinculante 13 do STF relaciona o nepotismo primariamente a violacao da moralidade administrativa."},
+      {"letter": "C", "text": "Principio da moralidade, pois a nomeacao configura nepotismo vedado pela Sumula Vinculante 13 do STF.", "is_correct": true, "explanation": "Correto. O nepotismo e pratica que ofende diretamente a moralidade administrativa, conforme consolidado pela Sumula Vinculante 13 do STF."},
+      {"letter": "D", "text": "Principio da publicidade, pois a nomeacao nao foi divulgada em diario oficial.", "is_correct": false, "explanation": "O enunciado nao menciona ausencia de publicacao. O problema central e o nepotismo, nao a falta de publicidade."},
+      {"letter": "E", "text": "Principio da eficiencia, pois o nomeado nao possui experiencia profissional.", "is_correct": false, "explanation": "A eficiencia pode ser questionada, mas o vicio principal da conduta e a violacao da moralidade por configurar nepotismo."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "principios-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "A Constituicao Federal de 1988, em seu art. 37, caput, estabelece os principios explicitos que regem a administracao publica direta e indireta de qualquer dos Poderes da Uniao, dos Estados, do Distrito Federal e dos Municipios.",
+    "text": "Acerca dos principios expressos da administracao publica previstos no art. 37 da CF/88, assinale a alternativa correta.",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os principios expressos no art. 37 da CF/88 formam o acronimo LIMPE: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiencia. O principio da eficiencia foi incluido pela EC 19/1998.",
+    "legal_basis": "Art. 37, caput, CF/88; EC 19/1998",
+    "alternatives": [
+      {"letter": "A", "text": "Sao principios expressos: legalidade, impessoalidade, moralidade, publicidade e supremacia do interesse publico.", "is_correct": false, "explanation": "A supremacia do interesse publico e um principio implicito, nao estando expressamente previsto no art. 37 da CF/88."},
+      {"letter": "B", "text": "O principio da eficiencia foi incluido no texto original da CF/88, sendo principio originario.", "is_correct": false, "explanation": "O principio da eficiencia foi acrescentado pela Emenda Constitucional n. 19/1998, nao constando do texto originario."},
+      {"letter": "C", "text": "Sao principios expressos: legalidade, impessoalidade, moralidade, publicidade e eficiencia.", "is_correct": true, "explanation": "Correto. Esses sao os cinco principios expressos no art. 37, caput, da CF/88, conhecidos pelo acronimo LIMPE."},
+      {"letter": "D", "text": "O principio da razoabilidade esta expressamente previsto no art. 37 da CF/88.", "is_correct": false, "explanation": "A razoabilidade e um principio implicito na CF/88, sendo expresso apenas na Lei 9.784/99."},
+      {"letter": "E", "text": "O principio da autotutela e um dos principios expressos do art. 37 da CF/88.", "is_correct": false, "explanation": "A autotutela e um principio implicito, consagrado na Sumula 473 do STF, nao estando expresso no art. 37."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "principios-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "Um servidor publico estadual de Goias, lotado na Secretaria de Seguranca Publica, publicou em suas redes sociais informacoes sigilosas sobre uma operacao policial que seria realizada no dia seguinte, comprometendo o sigilo da acao.",
+    "text": "Embora o principio da publicidade exija transparencia na administracao publica, a conduta do servidor e reprovavel porque:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O principio da publicidade comporta excecoes, especialmente quando o sigilo for imprescindivel a seguranca da sociedade e do Estado, conforme art. 5, XXXIII, da CF/88.",
+    "legal_basis": "Art. 5, XXXIII, CF/88; Art. 37, caput, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O principio da publicidade e absoluto e nao comporta excecoes no ordenamento juridico brasileiro.", "is_correct": false, "explanation": "Incorreto. O principio da publicidade nao e absoluto e comporta excecoes expressamente previstas na CF/88."},
+      {"letter": "B", "text": "O sigilo so pode ser decretado por decisao judicial, nao cabendo a administracao restringe-lo.", "is_correct": false, "explanation": "A propria administracao pode classificar informacoes como sigilosas nos termos da Lei de Acesso a Informacao."},
+      {"letter": "C", "text": "A publicidade dos atos administrativos pode ser restringida quando imprescindivel a seguranca da sociedade e do Estado, conforme previsao constitucional.", "is_correct": true, "explanation": "Correto. O art. 5, XXXIII, da CF/88 ressalva o sigilo imprescindivel a seguranca da sociedade e do Estado."},
+      {"letter": "D", "text": "Servidores publicos nao podem utilizar redes sociais em nenhuma hipotese durante o exercicio do cargo.", "is_correct": false, "explanation": "Nao ha vedacao absoluta ao uso de redes sociais por servidores. O problema e a divulgacao de informacao sigilosa."},
+      {"letter": "E", "text": "A publicidade so se aplica aos atos do Poder Executivo, nao alcancando operacoes policiais.", "is_correct": false, "explanation": "O principio da publicidade se aplica a toda a administracao publica, incluindo atividades policiais, com as ressalvas constitucionais."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "O Comandante-Geral da Policia Militar do Estado de Goias editou portaria determinando a transferencia de um oficial para comarca do interior do Estado. O oficial questionou o ato alegando ausencia de motivacao.",
+    "text": "Sobre os elementos do ato administrativo e a obrigatoriedade de motivacao, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Segundo a teoria dos motivos determinantes, quando a administracao motiva um ato, mesmo que nao fosse obrigada, fica vinculada aos motivos apresentados. A remocao de oficio de militar, em regra, prescinde de motivacao, salvo quando a lei expressamente a exigir.",
+    "legal_basis": "Art. 2, Lei 9.784/99; Art. 50, Lei 9.784/99",
+    "alternatives": [
+      {"letter": "A", "text": "Todos os atos administrativos, sem excecao, devem ser obrigatoriamente motivados, sob pena de nulidade absoluta.", "is_correct": false, "explanation": "Nem todos os atos exigem motivacao. A nomeacao para cargo em comissao e a exoneracao ad nutum, por exemplo, dispensam motivacao."},
+      {"letter": "B", "text": "A motivacao e um dos cinco elementos essenciais do ato administrativo, ao lado de competencia, finalidade, forma e objeto.", "is_correct": false, "explanation": "Os cinco elementos do ato administrativo sao: competencia, finalidade, forma, motivo e objeto. Motivacao e a exterorizacao dos motivos, nao se confundindo com o motivo em si."},
+      {"letter": "C", "text": "Se a autoridade motivar o ato, ainda que nao estivesse obrigada a faze-lo, ficara vinculada aos motivos que apresentou, por forca da teoria dos motivos determinantes.", "is_correct": true, "explanation": "Correto. A teoria dos motivos determinantes estabelece que a validade do ato fica vinculada a veracidade dos motivos apresentados."},
+      {"letter": "D", "text": "O motivo e a finalidade do ato administrativo sao elementos sinonimos que se confundem na pratica administrativa.", "is_correct": false, "explanation": "Motivo e a situacao de fato e de direito que justifica o ato; finalidade e o resultado que se pretende alcancar. Sao elementos distintos."},
+      {"letter": "E", "text": "A ausencia de motivacao torna o ato administrativo inexistente, impedindo a producao de qualquer efeito juridico.", "is_correct": false, "explanation": "A falta de motivacao, quando exigida, gera anulabilidade do ato, nao inexistencia. Atos anulaveis podem produzir efeitos ate serem invalidados."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "Uma autoridade administrativa do Estado de Goias emitiu alvara de licenca para funcionamento de estabelecimento comercial. Posteriormente, constatou-se que o requerente havia apresentado documentacao fraudulenta para obtencao do alvara.",
+    "text": "Diante da situacao descrita, a administracao publica devera:",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Quando o ato administrativo possui vicio de legalidade (no caso, vicio no motivo pela fraude documental), a administracao deve anula-lo, com efeitos retroativos (ex tunc), ressalvados os direitos de terceiros de boa-fe.",
+    "legal_basis": "Art. 53, Lei 9.784/99; Sumula 473, STF",
+    "alternatives": [
+      {"letter": "A", "text": "Revogar o alvara, por razoes de conveniencia e oportunidade, com efeitos retroativos.", "is_correct": false, "explanation": "A revogacao se da por razoes de merito (conveniencia e oportunidade) e tem efeitos prospectivos (ex nunc). No caso, ha vicio de legalidade, exigindo anulacao."},
+      {"letter": "B", "text": "Anular o alvara, com efeitos retroativos, ressalvados os direitos adquiridos de terceiros de boa-fe.", "is_correct": true, "explanation": "Correto. A fraude documental vicia o ato na sua origem, exigindo anulacao com efeitos ex tunc, conforme Sumula 473 do STF."},
+      {"letter": "C", "text": "Convalidar o alvara, sanando o vicio existente, para preservar a seguranca juridica.", "is_correct": false, "explanation": "A convalidacao so e possivel para vicios sanaveis em atos anulabilidade. A fraude documental e vicio insanavel que impede convalidacao."},
+      {"letter": "D", "text": "Cassar o alvara, pois o beneficiario descumpriu condicoes fixadas para manutencao do ato.", "is_correct": false, "explanation": "A cassacao ocorre quando o destinatario descumpre condicoes posteriores. No caso, a fraude foi na propria obtencao, configurando vicio de origem."},
+      {"letter": "E", "text": "Manter o alvara, pois atos administrativos ja consumados nao podem ser revistos pela administracao.", "is_correct": false, "explanation": "A administracao tem o poder-dever de anular atos eivados de ilegalidade, nao havendo impedimento a revisao de atos viciados."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar do Estado de Goias requereu licenca para tratar de interesses particulares. O comando da unidade indeferiu o pedido sob o fundamento de necessidade do servico.",
+    "text": "Quanto a classificacao dos atos administrativos, o indeferimento do pedido de licenca pelo comando constitui ato administrativo:",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O indeferimento de licenca para tratar de interesses particulares e ato discricionario, pois a concessao depende de juizo de conveniencia e oportunidade da administracao, vinculado a necessidade do servico.",
+    "legal_basis": "Art. 91, Lei 8.112/90",
+    "alternatives": [
+      {"letter": "A", "text": "Vinculado, pois a administracao e obrigada a conceder licenca sempre que requerida pelo servidor.", "is_correct": false, "explanation": "A licenca para tratar de interesses particulares e ato discricionario, pois a administracao pode indeferir com base na necessidade do servico."},
+      {"letter": "B", "text": "Complexo, pois depende da manifestacao de vontade de dois ou mais orgaos para se aperfeicoar.", "is_correct": false, "explanation": "Ato complexo depende de duas ou mais vontades de orgaos distintos. O indeferimento pelo comando e ato simples."},
+      {"letter": "C", "text": "Composto, pois exige a ratificacao do governador do Estado para produzir efeitos.", "is_correct": false, "explanation": "Ato composto exige visto ou homologacao de outra autoridade. O enunciado nao menciona essa exigencia."},
+      {"letter": "D", "text": "Discricionario, pois a concessao da licenca depende de juizo de conveniencia e oportunidade da administracao, conforme a necessidade do servico.", "is_correct": true, "explanation": "Correto. A licenca para tratar de interesses particulares e ato discricionario, podendo a administracao indeferir com base na necessidade do servico."},
+      {"letter": "E", "text": "Enunciativo, pois apenas declara uma situacao juridica preexistente sem criar novos direitos.", "is_correct": false, "explanation": "Atos enunciativos sao os que atestam ou certificam uma situacao. O indeferimento e ato decisorio que nega a pretensao do requerente."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "",
+    "text": "Sobre os atributos dos atos administrativos, assinale a alternativa INCORRETA.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A autoexecutoriedade nao esta presente em todos os atos administrativos. Alguns atos exigem autorizacao judicial para serem executados, como a cobranca de multas nao pagas, que depende de execucao fiscal.",
+    "legal_basis": "Doutrina de Direito Administrativo",
+    "alternatives": [
+      {"letter": "A", "text": "A presuncao de legitimidade significa que os atos administrativos se presumem editados em conformidade com o ordenamento juridico ate prova em contrario.", "is_correct": false, "explanation": "Correto conceitualmente. A presuncao de legitimidade e atributo presente em todos os atos administrativos e e relativa (juris tantum)."},
+      {"letter": "B", "text": "A imperatividade permite que a administracao imponha unilateralmente obrigacoes aos administrados, independentemente de concordancia.", "is_correct": false, "explanation": "Correto conceitualmente. A imperatividade decorre do poder extroverso do Estado."},
+      {"letter": "C", "text": "A autoexecutoriedade esta presente em todos os atos administrativos, permitindo que a administracao execute diretamente qualquer ato sem intervencao judicial.", "is_correct": true, "explanation": "INCORRETA. A autoexecutoriedade nao e atributo de todos os atos. A cobranca de multas nao pagas, por exemplo, exige execucao fiscal perante o Judiciario."},
+      {"letter": "D", "text": "A tipicidade exige que os atos administrativos correspondam a figuras previamente definidas em lei.", "is_correct": false, "explanation": "Correto conceitualmente. A tipicidade, segundo Maria Sylvia Zanella Di Pietro, e atributo pelo qual o ato deve corresponder a figuras previamente definidas."},
+      {"letter": "E", "text": "A presuncao de legitimidade e relativa, admitindo prova em contrario pelo administrado interessado.", "is_correct": false, "explanation": "Correto conceitualmente. A presuncao e juris tantum, podendo ser afastada mediante prova."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "O Comandante de um Batalhao da Policia Militar de Goias aplicou sancao disciplinar de detencao a um soldado que se apresentou embriagado ao servico, apos regular processo administrativo.",
+    "text": "O poder administrativo exercido pelo Comandante na situacao descrita e o poder:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O poder disciplinar e aquele que autoriza a administracao a aplicar sancoes aos seus agentes que praticam infracoes funcionais. A aplicacao de sancao disciplinar a subordinado configura exercicio tipico do poder disciplinar.",
+    "legal_basis": "Doutrina de Direito Administrativo; Estatuto da PMGO",
+    "alternatives": [
+      {"letter": "A", "text": "Hierarquico, que permite a aplicacao de sancoes a qualquer pessoa subordinada a administracao.", "is_correct": false, "explanation": "O poder hierarquico abrange a organizacao interna, com funcoes de comando, fiscalizacao e coordenacao. A aplicacao de sancoes e expressao do poder disciplinar."},
+      {"letter": "B", "text": "Disciplinar, que autoriza a administracao a apurar infracoes funcionais e aplicar penalidades aos seus agentes.", "is_correct": true, "explanation": "Correto. O poder disciplinar autoriza a administracao a punir internamente infracoes funcionais de seus servidores e agentes."},
+      {"letter": "C", "text": "De policia, que autoriza a administracao a restringir direitos individuais em favor do interesse publico.", "is_correct": false, "explanation": "O poder de policia incide sobre particulares, nao sobre servidores. A sancao a subordinado decorre do poder disciplinar."},
+      {"letter": "D", "text": "Regulamentar, que permite a edicao de normas gerais e abstratas para cumprimento da lei.", "is_correct": false, "explanation": "O poder regulamentar consiste na edicao de atos normativos para fiel execucao das leis, nao na aplicacao de sancoes individuais."},
+      {"letter": "E", "text": "Vinculado, pois o comandante nao possui margem de escolha na aplicacao da sancao.", "is_correct": false, "explanation": "O poder vinculado nao e propriamente um poder autonomo, mas uma forma de exercicio do poder. Alem disso, o poder disciplinar e predominantemente discricionario."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "A Vigilancia Sanitaria do municipio de Goiania interditou um restaurante que funcionava em condicoes precarias de higiene, sem alvara sanitario vigente, oferecendo risco a saude publica dos consumidores.",
+    "text": "A atuacao da Vigilancia Sanitaria descrita no enunciado constitui expressao do poder:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O poder de policia administrativa consiste na faculdade de que dispoe a administracao publica para condicionar e restringir o uso e gozo de bens, atividades e direitos individuais em beneficio da coletividade.",
+    "legal_basis": "Art. 78, CTN; Art. 174, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Disciplinar, pois a administracao esta punindo uma infracao cometida pelo particular.", "is_correct": false, "explanation": "O poder disciplinar e exercido sobre agentes publicos e particulares com vinculo especial com a administracao, nao sobre a generalidade dos administrados."},
+      {"letter": "B", "text": "Hierarquico, pois a Vigilancia Sanitaria esta subordinada ao Ministerio da Saude.", "is_correct": false, "explanation": "O poder hierarquico se refere a organizacao interna da administracao e nao a atuacao sobre particulares."},
+      {"letter": "C", "text": "De policia, pois a administracao esta restringindo atividade particular em prol do interesse publico.", "is_correct": true, "explanation": "Correto. A interdicao de estabelecimento por razoes sanitarias e manifestacao tipica do poder de policia administrativa."},
+      {"letter": "D", "text": "Regulamentar, pois a Vigilancia Sanitaria esta regulamentando o funcionamento de estabelecimentos.", "is_correct": false, "explanation": "O poder regulamentar consiste na edicao de normas gerais e abstratas. A interdicao de estabelecimento e ato concreto de policia administrativa."},
+      {"letter": "E", "text": "Vinculado, pois a administracao nao tem opcao senao interditar o estabelecimento irregular.", "is_correct": false, "explanation": "A questao pergunta qual poder e exercido, nao a natureza vinculada ou discricionaria. O poder exercido e o de policia."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "O Governador do Estado de Goias editou decreto regulamentando dispositivos de lei estadual sobre o porte de arma de fogo por policiais militares fora de servico, detalhando procedimentos e requisitos complementares.",
+    "text": "O decreto editado pelo Governador constitui exercicio do poder:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O poder regulamentar e a prerrogativa conferida ao chefe do Poder Executivo para editar decretos e regulamentos visando a fiel execucao das leis, conforme art. 84, IV, da CF/88.",
+    "legal_basis": "Art. 84, IV, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Hierarquico, pois o Governador e a autoridade maxima do Estado.", "is_correct": false, "explanation": "O poder hierarquico refere-se a relacao de subordinacao interna. A edicao de decreto regulamentar e manifestacao do poder regulamentar."},
+      {"letter": "B", "text": "Disciplinar, pois trata de normas aplicaveis aos policiais militares.", "is_correct": false, "explanation": "O poder disciplinar se refere a apuracao de infracoes e aplicacao de sancoes, nao a edicao de regulamentos."},
+      {"letter": "C", "text": "De policia, pois restringe o porte de arma fora de servico.", "is_correct": false, "explanation": "O poder de policia incide sobre particulares. O decreto visa regulamentar uma lei, nao restringir atividade particular."},
+      {"letter": "D", "text": "Regulamentar, pois visa detalhar e viabilizar a fiel execucao da lei estadual.", "is_correct": true, "explanation": "Correto. O decreto regulamentar e instrumento tipico do poder regulamentar, que visa dar fiel execucao as leis."},
+      {"letter": "E", "text": "Normativo autonomo, pois o decreto cria obrigacoes nao previstas na lei regulamentada.", "is_correct": false, "explanation": "O enunciado fala em regulamentacao de lei existente, nao em decreto autonomo. Decretos regulamentares nao podem criar obrigacoes nao previstas em lei."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-civil-estado",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar do Estado de Goias, durante abordagem de rotina em uma blitz na BR-153, efetuou disparos de arma de fogo contra um veiculo que furou a barreira policial, atingindo um passageiro inocente que sofreu lesoes corporais graves.",
+    "text": "Sobre a responsabilidade civil do Estado na situacao descrita, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A responsabilidade civil do Estado por atos comissivos de seus agentes e objetiva, na modalidade risco administrativo, bastando a comprovacao da conduta, do dano e do nexo causal. O Estado pode exercer direito de regresso contra o agente que agiu com dolo ou culpa.",
+    "legal_basis": "Art. 37, par. 6, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O Estado responde objetivamente, independentemente de dolo ou culpa do agente, cabendo direito de regresso contra o policial em caso de dolo ou culpa.", "is_correct": true, "explanation": "Correto. O art. 37, par. 6, da CF/88 consagra a responsabilidade objetiva do Estado com direito de regresso contra o agente causador do dano."},
+      {"letter": "B", "text": "O Estado somente responde se ficar comprovada a culpa do policial militar na abordagem.", "is_correct": false, "explanation": "A responsabilidade do Estado e objetiva, nao dependendo de comprovacao de culpa do agente perante a vitima."},
+      {"letter": "C", "text": "O passageiro deve acionar diretamente o policial militar, pois este agiu por conta propria.", "is_correct": false, "explanation": "O policial estava no exercicio de suas funcoes, ensejando a responsabilidade objetiva do Estado perante a vitima."},
+      {"letter": "D", "text": "A responsabilidade e integral do Estado, sem possibilidade de regresso contra o agente publico.", "is_correct": false, "explanation": "O art. 37, par. 6, da CF/88 expressamente preve o direito de regresso contra o agente que agiu com dolo ou culpa."},
+      {"letter": "E", "text": "Por se tratar de atividade de policia, aplica-se a teoria do risco integral, nao admitindo excludentes.", "is_correct": false, "explanation": "A regra geral e a teoria do risco administrativo, que admite excludentes como culpa exclusiva da vitima e caso fortuito."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-civil-estado",
+    "question_type": "multipla_escolha",
+    "context_text": "Um preso custodiado em unidade prisional do Estado de Goias faleceu em decorrencia de briga com outro detento dentro da cela. A familia do falecido ingressou com acao de indenizacao contra o Estado.",
+    "text": "Com base na jurisprudencia do STF sobre responsabilidade civil do Estado por morte de preso, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O STF, no RE 841.526 (repercussao geral), fixou a tese de que em caso de inobservancia do dever especifico de protecao previsto no art. 5, XLIX, da CF/88, o Estado e responsavel pela morte de detento.",
+    "legal_basis": "Art. 5, XLIX, CF/88; RE 841.526/STF",
+    "alternatives": [
+      {"letter": "A", "text": "O Estado nao pode ser responsabilizado, pois a morte decorreu de ato de terceiro (outro preso), configurando excludente de responsabilidade.", "is_correct": false, "explanation": "O STF entendeu que o Estado tem dever especifico de protecao dos presos, nao se eximindo pela conduta de terceiro dentro do estabelecimento prisional."},
+      {"letter": "B", "text": "O Estado responde objetivamente pela morte de detento sob sua custodia, em razao do dever constitucional de garantir a integridade fisica dos presos.", "is_correct": true, "explanation": "Correto. Conforme o RE 841.526 do STF, o Estado responde pela morte de detento sob sua custodia em razao da inobservancia do dever de protecao."},
+      {"letter": "C", "text": "A responsabilidade e exclusivamente subjetiva, exigindo a comprovacao de culpa individualizada de agente estatal.", "is_correct": false, "explanation": "O STF adotou a responsabilidade objetiva pela omissao especifica do Estado no dever de custodia."},
+      {"letter": "D", "text": "A familia do preso so pode pleitear indenizacao se comprovar que o Estado contribuiu diretamente para o ato de violencia.", "is_correct": false, "explanation": "O dever de custodia implica responsabilidade objetiva do Estado, dispensando a comprovacao de contribuicao direta para o ato."},
+      {"letter": "E", "text": "A teoria do risco integral se aplica, impedindo qualquer excludente de responsabilidade do Estado.", "is_correct": false, "explanation": "O STF nao adotou a teoria do risco integral. Se o Estado comprovar que nao poderia ter evitado a morte, pode haver excludente."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "question_type": "multipla_escolha",
+    "context_text": "Um candidato aprovado em concurso publico para o cargo de soldado da Policia Militar do Estado de Goias, dentro do numero de vagas previstas no edital, nao foi convocado para nomeacao mesmo apos o transcurso de seis meses da homologacao do certame.",
+    "text": "De acordo com a jurisprudencia consolidada do STF, o candidato aprovado dentro do numero de vagas:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O STF, no RE 598.099 (repercussao geral), fixou entendimento de que o candidato aprovado em concurso publico dentro do numero de vagas previstas no edital tem direito subjetivo a nomeacao.",
+    "legal_basis": "RE 598.099/STF; Art. 37, IV, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Possui mera expectativa de direito a nomeacao, que depende de conveniencia da administracao.", "is_correct": false, "explanation": "A mera expectativa se aplica ao candidato aprovado fora do numero de vagas. O aprovado dentro das vagas tem direito subjetivo."},
+      {"letter": "B", "text": "Tem direito subjetivo a nomeacao dentro do prazo de validade do concurso.", "is_correct": true, "explanation": "Correto. O STF consolidou no RE 598.099 que o aprovado dentro do numero de vagas tem direito subjetivo a nomeacao."},
+      {"letter": "C", "text": "So pode exigir a nomeacao apos decisao judicial que determine a obrigacao de nomear.", "is_correct": false, "explanation": "O direito subjetivo existe independentemente de decisao judicial, podendo a via judicial ser usada para compelir a administracao caso nao nomeie."},
+      {"letter": "D", "text": "Perde o direito a nomeacao se a administracao comprovar insuficiencia financeira.", "is_correct": false, "explanation": "O STF entendeu que situacoes excepcionais e supervenientes podem justificar a nao nomeacao, mas a mera alegacao de insuficiencia nao basta."},
+      {"letter": "E", "text": "Tem direito a nomeacao somente se nao houver outros candidatos melhor classificados aguardando.", "is_correct": false, "explanation": "A nomeacao deve respeitar a ordem de classificacao, mas todos os aprovados dentro das vagas tem direito subjetivo."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar do Estado de Goias, estavel no servico publico, foi condenado em processo administrativo disciplinar pela pratica de falta grave, resultando em sua demissao do servico publico.",
+    "text": "Sobre a perda do cargo pelo servidor publico estavel, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O servidor estavel pode perder o cargo nas hipoteses do art. 41, par. 1, da CF/88: sentenca judicial transitada em julgado, processo administrativo com ampla defesa, e avaliacao periodica de desempenho. A EC 19/98 acrescentou tambem a hipotese de excesso de despesa (art. 169).",
+    "legal_basis": "Art. 41, par. 1, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O servidor estavel somente pode perder o cargo por sentenca judicial transitada em julgado, nao sendo admitida a demissao por processo administrativo.", "is_correct": false, "explanation": "A CF/88 preve a perda do cargo por processo administrativo em que seja assegurada ampla defesa como uma das hipoteses."},
+      {"letter": "B", "text": "A estabilidade impede a perda do cargo em qualquer hipotese, salvo por decisao do chefe do Poder Executivo.", "is_correct": false, "explanation": "A estabilidade nao e absoluta, sendo possivel a perda do cargo nas hipoteses constitucionais, independentemente de decisao do chefe do Executivo."},
+      {"letter": "C", "text": "O servidor estavel pode perder o cargo por sentenca judicial transitada em julgado, processo administrativo com ampla defesa ou avaliacao periodica de desempenho.", "is_correct": true, "explanation": "Correto. Sao as tres hipoteses previstas no art. 41, par. 1, da CF/88 para perda do cargo pelo servidor estavel."},
+      {"letter": "D", "text": "A demissao do servidor estavel por processo administrativo independe de ampla defesa, bastando a decisao motivada da autoridade superior.", "is_correct": false, "explanation": "A CF/88 exige expressamente que o processo administrativo assegure ampla defesa ao servidor."},
+      {"letter": "E", "text": "O servidor estavel demitido indevidamente tem direito a reconduzir-se ao cargo somente por decisao judicial.", "is_correct": false, "explanation": "A reintegracao pode decorrer de decisao judicial ou administrativa que reconheca a ilegalidade da demissao."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "servidores-publicos",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estado de Goias realizou concurso publico para provimento de vagas no cargo de soldado da PMGO, exigindo dos candidatos, entre outros requisitos, altura minima de 1,65m para homens e 1,60m para mulheres.",
+    "text": "Acerca da exigencia de altura minima em concursos para carreiras policiais militares, conforme a jurisprudencia do STF, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O STF, no tema 540 de repercussao geral, decidiu que a exigencia de altura minima para ingresso nas carreiras militares e constitucional, desde que prevista em lei em sentido formal.",
+    "legal_basis": "Tema 540 STF; Art. 39, par. 3, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A exigencia de altura minima e sempre inconstitucional por violar o principio da isonomia.", "is_correct": false, "explanation": "O STF entendeu que a exigencia e constitucional se houver lei em sentido formal que a preveja."},
+      {"letter": "B", "text": "A exigencia pode constar apenas do edital do concurso, sem necessidade de previsao legal.", "is_correct": false, "explanation": "O STF exige que a restricao esteja prevista em lei formal, nao bastando a mera previsao editalicia."},
+      {"letter": "C", "text": "A exigencia de altura minima e constitucional, desde que haja previsao em lei formal, conforme entendimento do STF.", "is_correct": true, "explanation": "Correto. O STF consolidou que a exigencia de altura minima exige previsao em lei em sentido formal para ser valida."},
+      {"letter": "D", "text": "Somente o Poder Judiciario pode estabelecer criterios de altura minima para concursos publicos.", "is_correct": false, "explanation": "A definicao de requisitos para ingresso em carreiras policiais e competencia do legislador, nao do Judiciario."},
+      {"letter": "E", "text": "A exigencia de altura diferenciada entre homens e mulheres e inconstitucional por violar a igualdade de genero.", "is_correct": false, "explanation": "A diferenciacao de altura entre sexos e admitida, considerando as diferencas biologicas, desde que prevista em lei."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacao",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estado de Goias pretende adquirir viaturas para a Policia Militar, devendo observar as regras da nova Lei de Licitacoes e Contratos Administrativos.",
+    "text": "De acordo com a Lei n. 14.133/2021 (Nova Lei de Licitacoes), assinale a alternativa correta sobre as modalidades de licitacao.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 14.133/2021 estabelece cinco modalidades de licitacao: pregao, concorrencia, concurso, leilao e dialogo competitivo. As modalidades tomada de precos e convite foram extintas.",
+    "legal_basis": "Art. 28, Lei 14.133/2021",
+    "alternatives": [
+      {"letter": "A", "text": "A Lei 14.133/2021 mantem as modalidades tomada de precos e convite, ao lado das demais modalidades.", "is_correct": false, "explanation": "A nova lei extinguiu as modalidades tomada de precos e convite, prevendo apenas pregao, concorrencia, concurso, leilao e dialogo competitivo."},
+      {"letter": "B", "text": "O dialogo competitivo e modalidade nova, prevista na Lei 14.133/2021, para contratacoes de inovacao tecnologica ou que envolvam solucoes complexas.", "is_correct": true, "explanation": "Correto. O dialogo competitivo e inovacao da Lei 14.133/2021, utilizado para objetos que envolvam inovacao ou solucoes que a administracao nao consiga definir previamente."},
+      {"letter": "C", "text": "O pregao, na nova lei, pode ser utilizado para qualquer tipo de objeto, incluindo obras de engenharia de qualquer valor.", "is_correct": false, "explanation": "O pregao e destinado a aquisicao de bens e servicos comuns, incluindo servicos comuns de engenharia, mas nao para obras de engenharia."},
+      {"letter": "D", "text": "A concorrencia, na Lei 14.133/2021, e utilizada exclusivamente para contratacoes acima de R$ 1 milhao.", "is_correct": false, "explanation": "Na nova lei, a concorrencia nao e definida por faixa de valor, mas pelo tipo de objeto e criterio de julgamento."},
+      {"letter": "E", "text": "O leilao foi extinto pela Lei 14.133/2021, sendo substituido pelo pregao para alienacao de bens.", "is_correct": false, "explanation": "O leilao permanece como modalidade na Lei 14.133/2021 para alienacao de bens imoveis e moveis inserviceis."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacao",
+    "question_type": "multipla_escolha",
+    "context_text": "A Policia Militar do Estado de Goias necessita contratar servico de manutencao em equipamentos de comunicacao. O valor estimado da contratacao e de R$ 45.000,00.",
+    "text": "Sobre a dispensa e inexigibilidade de licitacao na Lei 14.133/2021, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 14.133/2021 distingue claramente dispensa (situacoes em que a licitacao e possivel mas a lei autoriza sua nao realizacao) e inexigibilidade (situacoes em que a competicao e inviavel).",
+    "legal_basis": "Arts. 74 e 75, Lei 14.133/2021",
+    "alternatives": [
+      {"letter": "A", "text": "A dispensa de licitacao ocorre quando a competicao e inviavel, enquanto a inexigibilidade se da nas hipoteses taxativamente previstas em lei.", "is_correct": false, "explanation": "E o contrario: a inexigibilidade ocorre quando a competicao e inviavel; a dispensa se da nas hipoteses legalmente previstas."},
+      {"letter": "B", "text": "A inexigibilidade de licitacao e cabivel quando a competicao for inviavel, sendo suas hipoteses exemplificativas.", "is_correct": true, "explanation": "Correto. A inexigibilidade decorre da inviabilidade de competicao, e o art. 74 da Lei 14.133/2021 traz rol exemplificativo."},
+      {"letter": "C", "text": "A dispensa de licitacao por valor so e admitida para compras de ate R$ 10.000,00, sem excecao.", "is_correct": false, "explanation": "A Lei 14.133/2021 preve valores diferenciados para dispensa, incluindo limites maiores para consorcio publico e agencias reguladoras."},
+      {"letter": "D", "text": "Na Lei 14.133/2021, nao existe mais a figura da dispensa de licitacao, havendo apenas inexigibilidade.", "is_correct": false, "explanation": "A Lei 14.133/2021 mantem ambos os institutos: dispensa (art. 75) e inexigibilidade (art. 74)."},
+      {"letter": "E", "text": "A contratacao direta, seja por dispensa ou inexigibilidade, nao exige qualquer justificativa por parte do administrador.", "is_correct": false, "explanation": "A contratacao direta exige justificativa formal, inclusive com instrucao processual adequada, conforme art. 72 da Lei 14.133/2021."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacao",
+    "question_type": "multipla_escolha",
+    "context_text": "O Governo do Estado de Goias pretende celebrar contrato para construcao de nova sede do Comando Geral da PMGO, com valor estimado de R$ 25 milhoes.",
+    "text": "De acordo com a Lei 14.133/2021, qual o criterio de julgamento que deve ser preferencialmente adotado para licitacao de obras?",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 14.133/2021 estabelece como regra o criterio de julgamento por menor preco ou maior desconto para a maioria das contratacoes. Para obras e servicos de engenharia, admite-se tambem melhor tecnica ou tecnica e preco em situacoes especificas.",
+    "legal_basis": "Arts. 33 e 36, Lei 14.133/2021",
+    "alternatives": [
+      {"letter": "A", "text": "Exclusivamente menor preco, sendo vedado qualquer outro criterio para obras publicas.", "is_correct": false, "explanation": "Embora menor preco seja preferencial, a lei admite outros criterios como tecnica e preco para obras de grande vulto ou predominancia intelectual."},
+      {"letter": "B", "text": "Menor preco ou maior desconto, como regra, admitindo-se tecnica e preco em casos de predominancia intelectual ou complexidade.", "is_correct": true, "explanation": "Correto. A lei preve menor preco ou maior desconto como regra, com excecoes para objetos de natureza intelectual ou complexa."},
+      {"letter": "C", "text": "Obrigatoriamente tecnica e preco, por se tratar de obra de grande vulto.", "is_correct": false, "explanation": "Tecnica e preco nao e obrigatorio para todas as obras de grande vulto, sendo o menor preco a regra geral."},
+      {"letter": "D", "text": "Maior lance, tratando-se de contratacao por pregao eletronico.", "is_correct": false, "explanation": "Maior lance e criterio de julgamento de leilao. Obras nao sao licitadas por pregao."},
+      {"letter": "E", "text": "Melhor tecnica exclusivamente, dispensando-se a analise de precos.", "is_correct": false, "explanation": "O criterio de melhor tecnica e admitido em hipoteses restritas e nao dispensa a verificacao da compatibilidade do preco com o mercado."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "controle-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "O Tribunal de Contas do Estado de Goias realizou auditoria nas contas da Policia Militar e identificou irregularidades em contratacoes realizadas sem licitacao, determinando a aplicacao de multa ao gestor responsavel.",
+    "text": "Sobre o controle exercido pelo Tribunal de Contas, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os Tribunais de Contas exercem controle externo, sendo orgaos auxiliares do Poder Legislativo. Podem aplicar multas e sancoes, mas nao exercem funcao jurisdicional, pois suas decisoes podem ser revistas pelo Judiciario.",
+    "legal_basis": "Arts. 70 a 75, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "O Tribunal de Contas exerce funcao jurisdicional, sendo suas decisoes insuscetiveis de revisao pelo Poder Judiciario.", "is_correct": false, "explanation": "O TCE nao exerce jurisdicao em sentido proprio. Suas decisoes sao administrativas e podem ser revistas pelo Judiciario."},
+      {"letter": "B", "text": "O controle exercido pelo Tribunal de Contas e classificado como controle externo, sendo orgao auxiliar do Poder Legislativo.", "is_correct": true, "explanation": "Correto. O TCE exerce controle externo como orgao auxiliar do Poder Legislativo, conforme arts. 70 e 71 da CF/88."},
+      {"letter": "C", "text": "O Tribunal de Contas e orgao do Poder Judiciario, exercendo controle interno da administracao.", "is_correct": false, "explanation": "O TCE nao integra o Poder Judiciario. E orgao auxiliar do Legislativo que exerce controle externo."},
+      {"letter": "D", "text": "O Tribunal de Contas nao tem competencia para aplicar multas, podendo apenas emitir pareceres.", "is_correct": false, "explanation": "O TCE tem competencia constitucional para aplicar multas aos responsaveis por irregularidades, conforme art. 71, VIII, da CF/88."},
+      {"letter": "E", "text": "As decisoes do Tribunal de Contas que resultam em imputacao de debito tem natureza de titulo executivo judicial.", "is_correct": false, "explanation": "As decisoes do TCE que resultam em imputacao de debito tem eficacia de titulo executivo extrajudicial, nao judicial."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "controle-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cidadao goiano tomou conhecimento de irregularidades na administracao publica municipal e deseja questionar judicialmente o ato lesivo ao patrimonio publico.",
+    "text": "O instrumento constitucional adequado para que qualquer cidadao questione ato lesivo ao patrimonio publico e:",
+    "difficulty": "easy",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A acao popular e o instrumento constitucional que legitima qualquer cidadao a pleitear a anulacao de ato lesivo ao patrimonio publico, a moralidade administrativa, ao meio ambiente e ao patrimonio historico e cultural.",
+    "legal_basis": "Art. 5, LXXIII, CF/88; Lei 4.717/65",
+    "alternatives": [
+      {"letter": "A", "text": "Acao civil publica, de legitimidade exclusiva do Ministerio Publico.", "is_correct": false, "explanation": "A ACP nao e de legitimidade exclusiva do MP, e o cidadao comum nao tem legitimidade para propor ACP. O instrumento correto para o cidadao e a acao popular."},
+      {"letter": "B", "text": "Mandado de seguranca coletivo, proposto por qualquer cidadao para proteger o patrimonio publico.", "is_correct": false, "explanation": "O mandado de seguranca coletivo e impetrado por partido politico, organizacao sindical ou associacao, nao por cidadao individualmente para esse fim."},
+      {"letter": "C", "text": "Acao popular, que legitima qualquer cidadao a pleitear a anulacao de ato lesivo ao patrimonio publico.", "is_correct": true, "explanation": "Correto. A acao popular, prevista no art. 5, LXXIII, da CF/88, e o instrumento adequado a disposicao de qualquer cidadao."},
+      {"letter": "D", "text": "Habeas data, para obter informacoes sobre os atos irregulares praticados pela administracao.", "is_correct": false, "explanation": "O habeas data se destina a garantir acesso a informacoes pessoais do impetrante, nao a questionar atos lesivos ao patrimonio publico."},
+      {"letter": "E", "text": "Reclamacao constitucional perante o Tribunal de Justica do Estado.", "is_correct": false, "explanation": "A reclamacao constitucional tem finalidade diversa, servindo para preservar a competencia do tribunal ou garantir a autoridade de suas decisoes."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "responsabilidade-civil-estado",
+    "question_type": "multipla_escolha",
+    "context_text": "Uma forte tempestade causou a queda de arvores sobre veiculos estacionados em via publica no municipio de Anapolis-GO. Os proprietarios dos veiculos ingressaram com acao contra o municipio alegando omissao na poda das arvores.",
+    "text": "Sobre a responsabilidade civil do Estado por omissao, assinale a alternativa que apresenta o entendimento predominante na doutrina e jurisprudencia.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A doutrina majoritaria e a jurisprudencia do STF e do STJ tem entendido que a responsabilidade civil do Estado por omissao e, em regra, subjetiva, exigindo a comprovacao de culpa (faute du service), salvo em situacoes de omissao especifica.",
+    "legal_basis": "Art. 37, par. 6, CF/88; RE 841.526/STF",
+    "alternatives": [
+      {"letter": "A", "text": "A responsabilidade por omissao do Estado e sempre objetiva, assim como nos casos de acao.", "is_correct": false, "explanation": "O entendimento predominante e que a responsabilidade por omissao generica e subjetiva, diferentemente da responsabilidade por acao."},
+      {"letter": "B", "text": "O Estado jamais responde por omissao, pois nao pode ser obrigado a evitar todos os danos.", "is_correct": false, "explanation": "O Estado pode sim ser responsabilizado por omissao quando comprovada a culpa do servico (faute du service)."},
+      {"letter": "C", "text": "A responsabilidade por omissao generica e, em regra, subjetiva, exigindo a demonstracao de culpa ou falta do servico.", "is_correct": true, "explanation": "Correto. Na omissao generica, aplica-se a teoria da culpa do servico (faute du service), exigindo-se a comprovacao de que o servico nao funcionou, funcionou mal ou funcionou atrasado."},
+      {"letter": "D", "text": "A teoria do risco integral se aplica a todos os casos de omissao estatal.", "is_correct": false, "explanation": "A teoria do risco integral e excecional, aplicando-se apenas em hipoteses especificas como danos nucleares e atentados terroristas em aeronaves."},
+      {"letter": "E", "text": "A responsabilidade por omissao depende de previsao em lei especifica do ente federativo.", "is_correct": false, "explanation": "A responsabilidade por omissao decorre do proprio art. 37, par. 6, da CF/88, nao dependendo de lei especifica."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "poderes-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "O poder de policia administrativa exercido pela Policia Militar possui caracteristicas proprias que o distinguem de outras atividades administrativas.",
+    "text": "Sao caracteristicas do poder de policia administrativa, EXCETO:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O poder de policia possui como atributos a discricionariedade, a autoexecutoriedade e a coercibilidade. O contraditorio previo nao e caracteristica do poder de policia, podendo a administracao agir de forma imediata em situacoes de urgencia.",
+    "legal_basis": "Art. 78, CTN; Doutrina administrativa",
+    "alternatives": [
+      {"letter": "A", "text": "Discricionariedade, em regra, quanto aos meios de atuacao.", "is_correct": false, "explanation": "A discricionariedade e atributo do poder de policia, permitindo a administracao escolher os meios mais adequados de atuacao."},
+      {"letter": "B", "text": "Autoexecutoriedade, permitindo a execucao direta das medidas sem necessidade de autorizacao judicial previa.", "is_correct": false, "explanation": "A autoexecutoriedade e atributo tipico do poder de policia, permitindo a execucao direta das medidas."},
+      {"letter": "C", "text": "Coercibilidade, que impoe a obrigatoriedade das medidas adotadas.", "is_correct": false, "explanation": "A coercibilidade e atributo do poder de policia, tornando obrigatorias as determinacoes da administracao."},
+      {"letter": "D", "text": "Contraditorio previo obrigatorio em todas as situacoes, sob pena de nulidade do ato de policia.", "is_correct": true, "explanation": "EXCECAO correta. O contraditorio previo nao e obrigatorio em todas as situacoes de policia administrativa, especialmente em casos de urgencia."},
+      {"letter": "E", "text": "Incidencia sobre atividades e bens dos particulares, nao sobre pessoas diretamente.", "is_correct": false, "explanation": "O poder de policia incide sobre bens, direitos e atividades, sendo correta a afirmacao."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "atos-administrativos",
+    "question_type": "multipla_escolha",
+    "context_text": "Uma sargento da Policia Militar de Goias teve seu requerimento de ferias indeferido por autoridade incompetente. Posteriormente, a autoridade competente ratificou o indeferimento, mantendo a decisao pelos mesmos fundamentos.",
+    "text": "A ratificacao do ato pela autoridade competente configura:",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A convalidacao e o ato pelo qual a administracao sana vicios de atos anulabilidade, conferindo-lhes validade retroativa. A ratificacao pela autoridade competente de ato praticado por autoridade incompetente e forma de convalidacao, sanando o vicio de competencia.",
+    "legal_basis": "Art. 55, Lei 9.784/99",
+    "alternatives": [
+      {"letter": "A", "text": "Revogacao do ato anterior, substituindo-o por um novo ato valido.", "is_correct": false, "explanation": "A revogacao pressupoe um ato valido que e retirado por conveniencia. No caso, houve saneamento de vicio de competencia."},
+      {"letter": "B", "text": "Anulacao parcial, pois reconhece o vicio de competencia sem invalidar o conteudo.", "is_correct": false, "explanation": "Nao se trata de anulacao, mas de convalidacao, pois o ato e mantido com o saneamento do vicio."},
+      {"letter": "C", "text": "Convalidacao do ato administrativo, sanando o vicio de competencia com efeitos retroativos.", "is_correct": true, "explanation": "Correto. A ratificacao pela autoridade competente e forma de convalidacao que sana o vicio de competencia, com efeitos ex tunc."},
+      {"letter": "D", "text": "Conversao do ato administrativo, transformando-o em especie diversa.", "is_correct": false, "explanation": "A conversao transforma um ato invalido em ato de outra categoria valida. No caso, o ato manteve a mesma natureza, havendo apenas saneamento de competencia."},
+      {"letter": "E", "text": "Reforma do ato administrativo, pois altera parcialmente seu conteudo.", "is_correct": false, "explanation": "A reforma altera o conteudo do ato. No caso, o conteudo foi mantido, sendo sanado apenas o vicio de competencia."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "licitacao",
+    "question_type": "multipla_escolha",
+    "context_text": "A Policia Militar de Goias instaurou processo licitatorio para aquisicao de armamento letal padronizado para uso institucional.",
+    "text": "Segundo a Lei 14.133/2021, a fase de julgamento das propostas no processo licitatorio precede a fase de habilitacao. Essa inversao, em relacao a Lei 8.666/93, e conhecida como:",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 14.133/2021 adotou como regra a inversao de fases, na qual o julgamento das propostas precede a habilitacao dos licitantes, semelhante ao que ja ocorria no pregao. Essa inversao busca dar celeridade ao processo.",
+    "legal_basis": "Art. 17, Lei 14.133/2021",
+    "alternatives": [
+      {"letter": "A", "text": "Inversao de fases, na qual primeiro se julga as propostas e depois se verifica a habilitacao do vencedor.", "is_correct": true, "explanation": "Correto. A Lei 14.133/2021 adotou como regra a inversao de fases, verificando-se a habilitacao apenas do licitante com a proposta mais vantajosa."},
+      {"letter": "B", "text": "Adjudicacao compulsoria, na qual o vencedor e automaticamente habilitado.", "is_correct": false, "explanation": "A adjudicacao compulsoria nao dispensa a habilitacao. Apenas a ordem das fases e invertida."},
+      {"letter": "C", "text": "Preclusao administrativa, na qual as fases anteriores nao podem mais ser revistas.", "is_correct": false, "explanation": "Preclusao administrativa e conceito diverso, referindo-se a impossibilidade de reabrir fases superadas."},
+      {"letter": "D", "text": "Saneamento processual, na qual vicios de habilitacao sao corrigidos antes do julgamento.", "is_correct": false, "explanation": "O saneamento de vicios e possibilidade prevista na lei, mas nao se confunde com a inversao de fases."},
+      {"letter": "E", "text": "Homologacao antecipada, na qual a autoridade superior aprova o resultado antes da habilitacao.", "is_correct": false, "explanation": "A homologacao e a ultima fase do processo licitatorio, nao ocorrendo antes da habilitacao."}
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "topic_slug": "principios-administracao-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "A administracao publica constatou que um ato administrativo de concessao de beneficio a servidor foi editado em desacordo com a lei. A autoridade competente pretende rever o ato de oficio.",
+    "text": "O principio que fundamenta o poder da administracao de rever seus proprios atos, anulando os ilegais ou revogando os inconvenientes, e o principio da:",
+    "difficulty": "easy",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O principio da autotutela permite que a administracao publica reveja seus proprios atos, anulando os ilegais e revogando os inconvenientes, independentemente de provocacao judicial. Esta consagrado na Sumula 473 do STF.",
+    "legal_basis": "Sumula 473, STF; Art. 53, Lei 9.784/99",
+    "alternatives": [
+      {"letter": "A", "text": "Legalidade, que obriga a administracao a agir somente conforme a lei.", "is_correct": false, "explanation": "A legalidade e principio mais amplo que fundamenta a atuacao conforme a lei, mas o poder de revisao de oficio decorre especificamente da autotutela."},
+      {"letter": "B", "text": "Autotutela, que permite a administracao rever de oficio seus proprios atos, anulando os ilegais ou revogando os inconvenientes.", "is_correct": true, "explanation": "Correto. A autotutela e o principio que autoriza a administracao a controlar seus proprios atos, conforme Sumula 473 do STF."},
+      {"letter": "C", "text": "Tutela, que permite ao ente federativo controlar os atos das entidades da administracao indireta.", "is_correct": false, "explanation": "A tutela (ou supervisao ministerial) refere-se ao controle da administracao direta sobre a indireta, nao ao controle interno de seus proprios atos."},
+      {"letter": "D", "text": "Oficialidade, que determina que a administracao deve agir de oficio em todos os processos administrativos.", "is_correct": false, "explanation": "A oficialidade e principio do processo administrativo, nao se confundindo com o poder de revisao dos atos administrativos."},
+      {"letter": "E", "text": "Hierarquia, que permite ao superior hierarquico rever os atos de seus subordinados.", "is_correct": false, "explanation": "A hierarquia permite o controle dos atos dos subordinados, mas o poder de autorrevisao decorre da autotutela."}
+    ]
+  }
+]

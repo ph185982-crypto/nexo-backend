@@ -1,0 +1,502 @@
+[
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial",
+    "question_type": "multipla_escolha",
+    "context_text": "O delegado de polícia instaura inquérito policial para apurar um crime de roubo ocorrido na cidade de Goiânia. Sobre as características do inquérito policial, assinale a alternativa correta:",
+    "text": "São características do inquérito policial:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O inquérito policial possui as seguintes características: é procedimento administrativo, escrito, sigiloso, oficial, oficioso (nos crimes de ação penal pública incondicionada), inquisitivo (sem contraditório e ampla defesa plenos), indisponível (a autoridade policial não pode arquivá-lo) e dispensável (a ação penal pode ser proposta sem ele).",
+    "legal_basis": "Arts. 4° a 23, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Procedimento administrativo, inquisitivo, escrito, sigiloso e indisponível pela autoridade policial.", "is_correct": true, "explanation": "Correta. São características essenciais do inquérito policial, conforme doutrina e legislação processual penal."},
+      {"letter": "B", "text": "Procedimento judicial, contraditório, público e obrigatório para o oferecimento da denúncia.", "is_correct": false, "explanation": "O inquérito é procedimento administrativo (não judicial), inquisitivo (não contraditório) e dispensável (não obrigatório para a denúncia)."},
+      {"letter": "C", "text": "Procedimento administrativo que pode ser arquivado pela autoridade policial quando julgar inexistir crime.", "is_correct": false, "explanation": "O inquérito policial é indisponível: a autoridade policial não pode mandar arquivá-lo (art. 17, CPP). O arquivamento depende de manifestação do MP e decisão judicial."},
+      {"letter": "D", "text": "Procedimento obrigatório e imprescindível para a propositura da ação penal pelo Ministério Público.", "is_correct": false, "explanation": "O inquérito policial é dispensável. O MP pode oferecer denúncia com base em outras peças de informação (art. 39, §5°, CPP)."},
+      {"letter": "E", "text": "Procedimento administrativo, contraditório e público, assegurada a ampla defesa ao investigado.", "is_correct": false, "explanation": "O inquérito é inquisitivo (sem contraditório pleno) e sigiloso, não sendo assegurados contraditório e ampla defesa na mesma extensão que no processo judicial."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial-instauracao",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as formas de instauração do inquérito policial, assinale a alternativa correta:",
+    "text": "O inquérito policial pode ser instaurado mediante:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O inquérito policial pode ser instaurado de ofício pela autoridade policial (portaria), mediante requisição do Ministério Público ou do juiz, por requerimento do ofendido, por auto de prisão em flagrante, ou por notícia oferecida por qualquer pessoa (delatio criminis). Nos crimes de ação penal pública condicionada, depende de representação do ofendido.",
+    "legal_basis": "Arts. 5° e 6°, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Portaria da autoridade policial (de ofício), requisição do MP ou do juiz, requerimento do ofendido, auto de prisão em flagrante ou delatio criminis.", "is_correct": true, "explanation": "Correta. São as formas de instauração do inquérito policial previstas no CPP."},
+      {"letter": "B", "text": "Exclusivamente por requisição do Ministério Público, sendo vedada a instauração de ofício.", "is_correct": false, "explanation": "A autoridade policial pode instaurar inquérito de ofício nos crimes de ação penal pública incondicionada (art. 5°, I, CPP)."},
+      {"letter": "C", "text": "Apenas por requerimento do ofendido, em qualquer espécie de crime.", "is_correct": false, "explanation": "Nos crimes de ação penal pública incondicionada, o inquérito pode ser instaurado de ofício, sem necessidade de requerimento do ofendido."},
+      {"letter": "D", "text": "Determinação do juiz, que pode investigar diretamente os crimes, sem necessidade de delegado.", "is_correct": false, "explanation": "O juiz não investiga diretamente. Ele pode requisitar a instauração do inquérito, mas a investigação cabe à autoridade policial. O sistema acusatório veda a investigação pelo juiz."},
+      {"letter": "E", "text": "Apenas por portaria da autoridade policial ou auto de prisão em flagrante, sendo vedada a requisição do MP.", "is_correct": false, "explanation": "A requisição do MP é forma legítima de instauração do inquérito policial (art. 5°, II, CPP), sendo obrigatória para a autoridade policial."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "inquerito-policial-prazo",
+    "question_type": "multipla_escolha",
+    "context_text": "O delegado de polícia instaura inquérito policial para apurar crime de homicídio. O indiciado encontra-se preso. Sobre os prazos para conclusão do inquérito policial, assinale a alternativa correta:",
+    "text": "O prazo para conclusão do inquérito policial, conforme o CPP, quando o indiciado estiver preso, é de:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 10 do CPP estabelece que o inquérito deve ser concluído em 10 dias quando o indiciado estiver preso e em 30 dias quando estiver solto. Esses prazos podem variar conforme legislação especial (ex.: Lei de Drogas: 30 dias preso, 90 dias solto; Justiça Federal: 15 dias preso, prorrogável).",
+    "legal_basis": "Art. 10, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "10 dias, conforme o art. 10 do CPP.", "is_correct": true, "explanation": "Correta. O prazo para conclusão do inquérito com indiciado preso é de 10 dias (art. 10, CPP)."},
+      {"letter": "B", "text": "30 dias, prorrogáveis por igual período.", "is_correct": false, "explanation": "O prazo de 30 dias é para indiciado solto. Com indiciado preso, o prazo é de 10 dias."},
+      {"letter": "C", "text": "5 dias, improrrogáveis.", "is_correct": false, "explanation": "Não existe prazo de 5 dias no CPP para conclusão de inquérito policial."},
+      {"letter": "D", "text": "15 dias, prorrogáveis por mais 15 dias, mediante autorização judicial.", "is_correct": false, "explanation": "O prazo de 15 dias (prorrogável) é previsto na Justiça Federal (art. 66, Lei 5.010/66), não no CPP como regra geral."},
+      {"letter": "E", "text": "60 dias, para crimes de maior complexidade investigativa.", "is_correct": false, "explanation": "Não há previsão de prazo de 60 dias no CPP para inquérito com indiciado preso."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-em-flagrante",
+    "question_type": "multipla_escolha",
+    "context_text": "Policiais militares da PMGO avistam um indivíduo saindo de uma loja com produtos furtados escondidos sob a roupa. O alarme da loja dispara e o segurança aponta o suspeito. Os policiais realizam a abordagem e constatam os produtos furtados. Assinale a alternativa correta sobre a prisão em flagrante:",
+    "text": "Conforme o art. 302 do CPP, considera-se em flagrante delito quem:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 302 do CPP prevê quatro hipóteses de flagrante: I - está cometendo a infração penal (flagrante próprio); II - acaba de cometê-la (flagrante próprio); III - é perseguido logo após pela autoridade, pelo ofendido ou por qualquer pessoa, em situação que faça presumir ser autor (flagrante impróprio); IV - é encontrado logo depois com instrumentos, armas, objetos ou papéis que façam presumir ser ele o autor (flagrante presumido).",
+    "legal_basis": "Art. 302, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Está cometendo a infração penal; acaba de cometê-la; é perseguido logo após em situação que faça presumir ser o autor; ou é encontrado logo depois com instrumentos ou objetos do crime.", "is_correct": true, "explanation": "Correta. São as quatro hipóteses de flagrante delito previstas no art. 302, I a IV, do CPP."},
+      {"letter": "B", "text": "Apenas quem é surpreendido no exato momento da prática do crime, sendo vedada a prisão após a consumação.", "is_correct": false, "explanation": "A prisão em flagrante abrange também quem acaba de cometer o crime, quem é perseguido logo após e quem é encontrado logo depois com objetos do crime."},
+      {"letter": "C", "text": "É encontrado com objetos do crime em qualquer momento posterior ao fato, sem limite temporal.", "is_correct": false, "explanation": "O flagrante presumido exige que o agente seja encontrado 'logo depois' do crime, havendo limite temporal de proximidade com o fato."},
+      {"letter": "D", "text": "É denunciado por testemunha e localizado pela polícia dias após o crime.", "is_correct": false, "explanation": "A localização dias após o crime não configura flagrante. Nesse caso, é necessário mandado de prisão expedido por autoridade judicial."},
+      {"letter": "E", "text": "Confessa a prática do crime perante a autoridade policial, mesmo dias após o fato.", "is_correct": false, "explanation": "A confissão posterior não configura flagrante delito. O flagrante exige proximidade temporal com o fato."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-em-flagrante-formalidades",
+    "question_type": "multipla_escolha",
+    "context_text": "Após a prisão em flagrante de um suspeito por tráfico de drogas, a autoridade policial deve observar diversas formalidades legais. Assinale a alternativa correta sobre os procedimentos após a prisão em flagrante:",
+    "text": "Após a lavratura do auto de prisão em flagrante, a autoridade policial deverá, no prazo de até 24 horas:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 306 do CPP determina que a prisão de qualquer pessoa deve ser comunicada imediatamente ao juiz competente, ao MP e à família do preso ou à pessoa por ele indicada. O auto de prisão em flagrante deve ser encaminhado ao juiz competente em até 24 horas, acompanhado de todas as oitivas colhidas.",
+    "legal_basis": "Art. 306, CPP; Art. 5°, LXII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Encaminhar o auto de prisão em flagrante ao juiz competente e entregar a nota de culpa ao preso, comunicando a prisão ao MP e à família.", "is_correct": true, "explanation": "Correta. O art. 306 do CPP e a CF/88 exigem a remessa do APF ao juiz, a entrega da nota de culpa e a comunicação ao MP e à família."},
+      {"letter": "B", "text": "Encaminhar o preso diretamente ao Ministério Público para o oferecimento da denúncia.", "is_correct": false, "explanation": "O preso não é encaminhado ao MP. O auto de prisão em flagrante é remetido ao juiz, que decide sobre a manutenção da prisão."},
+      {"letter": "C", "text": "Liberar o preso automaticamente, caso o crime seja afiançável.", "is_correct": false, "explanation": "A autoridade policial pode conceder fiança nos crimes com pena máxima de até 4 anos, mas não há liberação automática. O APF deve ser encaminhado ao juiz."},
+      {"letter": "D", "text": "Interrogar o preso obrigatoriamente, sendo nulo o flagrante se o interrogatório não for realizado em 24 horas.", "is_correct": false, "explanation": "O preso tem direito ao silêncio e não é obrigado a ser interrogado. A ausência de interrogatório não gera nulidade do flagrante por si só."},
+      {"letter": "E", "text": "Concluir o inquérito policial e remetê-lo ao juiz com relatório final.", "is_correct": false, "explanation": "O prazo de 24 horas é para remessa do APF ao juiz, não para conclusão do inquérito, que tem prazo próprio (10 dias com preso)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "audiencia-custodia",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a audiência de custódia, assinale a alternativa correta:",
+    "text": "A audiência de custódia, prevista no art. 310 do CPP, deve ser realizada:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A audiência de custódia, prevista no art. 310 do CPP (com redação dada pela Lei 13.964/2019 - Pacote Anticrime), deve ser realizada no prazo máximo de 24 horas após a prisão em flagrante, com a presença do preso, do juiz, do MP e da defesa. Nela, o juiz decidirá sobre o relaxamento da prisão ilegal, a conversão em prisão preventiva ou a concessão de liberdade provisória.",
+    "legal_basis": "Art. 310, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "No prazo máximo de 24 horas após a realização da prisão em flagrante, com a presença do preso perante o juiz.", "is_correct": true, "explanation": "Correta. A audiência de custódia deve ocorrer em até 24 horas após a prisão, garantindo o controle judicial imediato da legalidade."},
+      {"letter": "B", "text": "No prazo de 10 dias após a prisão, coincidindo com o prazo para conclusão do inquérito policial.", "is_correct": false, "explanation": "A audiência de custódia deve ocorrer em até 24 horas, não em 10 dias. Seu objetivo é o controle imediato da legalidade da prisão."},
+      {"letter": "C", "text": "Apenas quando o preso solicitar expressamente ao juiz, não sendo obrigatória.", "is_correct": false, "explanation": "A audiência de custódia é obrigatória e independe de solicitação do preso. Deve ser realizada de ofício pelo juiz."},
+      {"letter": "D", "text": "Somente para crimes hediondos e equiparados, sendo dispensada nos demais crimes.", "is_correct": false, "explanation": "A audiência de custódia é obrigatória para qualquer prisão em flagrante, independentemente da natureza do crime."},
+      {"letter": "E", "text": "No prazo de 5 dias após a prisão, na presença exclusiva do juiz e do preso, sem participação do MP ou da defesa.", "is_correct": false, "explanation": "O prazo é de 24 horas, e a audiência exige a presença do MP e da defesa, além do juiz e do preso."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-preventiva",
+    "question_type": "multipla_escolha",
+    "context_text": "O Ministério Público requer ao juiz a decretação da prisão preventiva de um investigado por homicídio qualificado. Assinale a alternativa correta sobre os requisitos e fundamentos da prisão preventiva:",
+    "text": "A prisão preventiva pode ser decretada quando presentes:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A prisão preventiva (arts. 311 a 316, CPP) exige a presença simultânea de pressupostos (prova da existência do crime e indícios suficientes de autoria) e fundamentos (garantia da ordem pública, da ordem econômica, conveniência da instrução criminal ou garantia de aplicação da lei penal). Após o Pacote Anticrime, o juiz não pode mais decretá-la de ofício.",
+    "legal_basis": "Arts. 312 e 313, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Prova da existência do crime e indícios suficientes de autoria, mais a necessidade de garantia da ordem pública, da instrução criminal ou de aplicação da lei penal.", "is_correct": true, "explanation": "Correta. São os pressupostos (fumus comissi delicti) e fundamentos (periculum libertatis) da prisão preventiva."},
+      {"letter": "B", "text": "Apenas a gravidade abstrata do crime, independentemente de fundamentação concreta.", "is_correct": false, "explanation": "A gravidade abstrata do crime, por si só, não justifica a prisão preventiva. É necessária fundamentação concreta, conforme jurisprudência do STF e STJ."},
+      {"letter": "C", "text": "Requisição do Ministério Público, sendo o juiz obrigado a decretá-la sempre que requerida.", "is_correct": false, "explanation": "O juiz não é obrigado a decretar a preventiva. Deve analisar a presença dos pressupostos e fundamentos legais, podendo indeferir o requerimento."},
+      {"letter": "D", "text": "A necessidade de garantia da ordem pública, podendo o juiz decretá-la de ofício durante a investigação.", "is_correct": false, "explanation": "Após o Pacote Anticrime (Lei 13.964/2019), o juiz não pode mais decretar prisão preventiva de ofício, dependendo de requerimento do MP, do querelante ou do assistente."},
+      {"letter": "E", "text": "Condenação em primeira instância, como antecipação do cumprimento da pena.", "is_correct": false, "explanation": "A prisão preventiva não é antecipação de pena. Trata-se de medida cautelar com fundamentos processuais próprios."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-preventiva-hipoteses",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as hipóteses de admissibilidade da prisão preventiva, assinale a alternativa correta:",
+    "text": "Conforme o art. 313 do CPP, a prisão preventiva é admitida:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 313 do CPP prevê que a prisão preventiva é admitida: I - nos crimes dolosos punidos com pena privativa de liberdade máxima superior a 4 anos; II - se o investigado tiver sido condenado por outro crime doloso, com trânsito em julgado; III - se o crime envolver violência doméstica para garantir a execução de medidas protetivas. O §2° veda a prisão preventiva com a finalidade de antecipação de pena.",
+    "legal_basis": "Art. 313, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Nos crimes dolosos com pena máxima superior a 4 anos, quando o réu for reincidente em crime doloso, ou para garantir medidas protetivas em violência doméstica.", "is_correct": true, "explanation": "Correta. São as hipóteses de admissibilidade da prisão preventiva previstas no art. 313, I a III, do CPP."},
+      {"letter": "B", "text": "Em qualquer crime, independentemente da pena cominada, desde que haja requerimento do Ministério Público.", "is_correct": false, "explanation": "A prisão preventiva possui hipóteses de admissibilidade taxativas. Não pode ser decretada em qualquer crime."},
+      {"letter": "C", "text": "Apenas nos crimes hediondos e equiparados, sendo vedada nos demais crimes.", "is_correct": false, "explanation": "A prisão preventiva não se restringe aos crimes hediondos. Pode ser decretada em qualquer crime doloso com pena máxima superior a 4 anos, entre outras hipóteses."},
+      {"letter": "D", "text": "Nos crimes dolosos e culposos com pena superior a 2 anos, sem necessidade de fundamentação.", "is_correct": false, "explanation": "A preventiva não cabe em crimes culposos (em regra), o limite é de 4 anos (não 2), e sempre exige fundamentação."},
+      {"letter": "E", "text": "Exclusivamente quando o investigado for estrangeiro sem residência fixa no Brasil.", "is_correct": false, "explanation": "A condição de estrangeiro não é, por si só, hipótese de admissibilidade da prisão preventiva."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "prisao-temporaria",
+    "question_type": "multipla_escolha",
+    "context_text": "O delegado de polícia representa pela prisão temporária de um suspeito de latrocínio durante a investigação. Assinale a alternativa correta sobre a prisão temporária:",
+    "text": "Sobre a prisão temporária (Lei 7.960/89), é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A prisão temporária (Lei 7.960/89) tem prazo de 5 dias, prorrogável por mais 5 dias em caso de extrema e comprovada necessidade. Para crimes hediondos (Lei 8.072/90), o prazo é de 30 dias, prorrogável por mais 30 dias. Somente pode ser decretada durante a investigação policial, não durante a ação penal.",
+    "legal_basis": "Lei 7.960/89; Art. 2°, §4°, Lei 8.072/90",
+    "alternatives": [
+      {"letter": "A", "text": "Tem prazo de 5 dias, prorrogável por mais 5, sendo de 30 dias, prorrogável por mais 30, para crimes hediondos, e somente pode ser decretada durante o inquérito policial.", "is_correct": true, "explanation": "Correta. São os prazos e a condição temporal da prisão temporária, conforme Lei 7.960/89 e Lei 8.072/90."},
+      {"letter": "B", "text": "Pode ser decretada de ofício pelo juiz, a qualquer tempo, inclusive durante a ação penal.", "is_correct": false, "explanation": "Após o Pacote Anticrime, o juiz não pode decretar prisão temporária de ofício. Além disso, ela é cabível apenas durante o inquérito policial."},
+      {"letter": "C", "text": "Tem prazo indeterminado, podendo ser mantida enquanto houver necessidade investigativa.", "is_correct": false, "explanation": "A prisão temporária tem prazo determinado (5+5 dias ou 30+30 dias para hediondos). Findo o prazo, o preso deve ser solto imediatamente."},
+      {"letter": "D", "text": "Pode ser decretada para qualquer crime, independentemente de sua natureza ou gravidade.", "is_correct": false, "explanation": "A prisão temporária somente pode ser decretada para os crimes listados no art. 1°, III, da Lei 7.960/89."},
+      {"letter": "E", "text": "Tem prazo de 30 dias para qualquer crime, prorrogável indefinidamente mediante autorização judicial.", "is_correct": false, "explanation": "O prazo de 30 dias é apenas para crimes hediondos. Para os demais, o prazo é de 5 dias, e a prorrogação é limitada."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas-conceito",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre o sistema de provas adotado pelo Código de Processo Penal brasileiro, assinale a alternativa correta:",
+    "text": "O CPP brasileiro adota, predominantemente, o sistema de apreciação de provas denominado:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPP brasileiro adota predominantemente o sistema do livre convencimento motivado (persuasão racional), previsto no art. 155 do CPP. O juiz é livre para apreciar as provas, mas deve fundamentar sua decisão, não podendo basear-se exclusivamente em elementos informativos colhidos na investigação (salvo provas cautelares, irrepetíveis e antecipadas).",
+    "legal_basis": "Art. 155, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Livre convencimento motivado (persuasão racional), pelo qual o juiz forma sua convicção pela livre apreciação da prova, devendo fundamentar a decisão.", "is_correct": true, "explanation": "Correta. É o sistema adotado pelo CPP, que combina liberdade na apreciação com obrigatoriedade de fundamentação."},
+      {"letter": "B", "text": "Prova legal (tarifada), pelo qual cada prova possui valor predeterminado em lei.", "is_correct": false, "explanation": "O sistema da prova legal (tarifada) não é adotado pelo CPP como regra. Nele, a lei atribui valor fixo a cada prova, o que não ocorre no sistema brasileiro."},
+      {"letter": "C", "text": "Íntima convicção, pelo qual o juiz decide conforme sua consciência, sem necessidade de fundamentação.", "is_correct": false, "explanation": "O sistema da íntima convicção, no Brasil, aplica-se apenas ao Tribunal do Júri (jurados). O juiz togado deve fundamentar suas decisões."},
+      {"letter": "D", "text": "Verdade formal, pelo qual o juiz se limita às provas apresentadas pelas partes, sem poder determinar diligências.", "is_correct": false, "explanation": "O CPP permite que o juiz determine, de ofício, a produção de provas consideradas urgentes e necessárias (art. 156, CPP)."},
+      {"letter": "E", "text": "Prova plena, pelo qual somente a confissão do réu pode fundamentar a condenação.", "is_correct": false, "explanation": "A confissão, no sistema brasileiro, não possui valor absoluto e deve ser confrontada com as demais provas (art. 197, CPP)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas-ilicitas-processo-penal",
+    "question_type": "multipla_escolha",
+    "context_text": "Durante uma operação policial, agentes da PMGO encontram drogas na residência de um suspeito após ingressarem no imóvel sem mandado judicial e sem autorização do morador, não havendo situação de flagrante delito. Assinale a alternativa correta:",
+    "text": "Sobre a prova obtida por meio ilícito no processo penal, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 157 do CPP (com redação dada pela Lei 11.690/2008) prevê que são inadmissíveis as provas ilícitas, devendo ser desentranhadas do processo. São também inadmissíveis as provas derivadas das ilícitas (teoria dos frutos da árvore envenenada), salvo quando não evidenciado o nexo de causalidade ou quando puderem ser obtidas por fonte independente.",
+    "legal_basis": "Art. 157, CPP; Art. 5°, LVI, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "É inadmissível, devendo ser desentranhada do processo, assim como as provas derivadas, salvo quando obtidas por fonte independente.", "is_correct": true, "explanation": "Correta. As provas ilícitas e suas derivadas devem ser desentranhadas, salvo exceções como a fonte independente (art. 157, §1°, CPP)."},
+      {"letter": "B", "text": "É admissível se for a única prova capaz de demonstrar a materialidade e autoria do crime.", "is_correct": false, "explanation": "A inadmissibilidade da prova ilícita é absoluta, independentemente de ser a única prova existente."},
+      {"letter": "C", "text": "É admissível se o crime investigado for hediondo ou equiparado.", "is_correct": false, "explanation": "A vedação às provas ilícitas não comporta exceção em razão da gravidade do crime."},
+      {"letter": "D", "text": "É admissível desde que ratificada por decisão judicial posterior à obtenção.", "is_correct": false, "explanation": "A prova ilícita não pode ser convalidada ou ratificada por decisão judicial posterior."},
+      {"letter": "E", "text": "Pode ser utilizada exclusivamente em favor da acusação, sendo vedada em favor da defesa.", "is_correct": false, "explanation": "A doutrina e jurisprudência admitem, excepcionalmente, a utilização da prova ilícita em favor da defesa (pro reo), com base no princípio da proporcionalidade."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "provas-exame-corpo-delito",
+    "question_type": "multipla_escolha",
+    "context_text": "Um crime de lesão corporal grave é cometido contra um cidadão. A autoridade policial determina a realização do exame de corpo de delito. Assinale a alternativa correta:",
+    "text": "Sobre o exame de corpo de delito no processo penal brasileiro, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 158 do CPP estabelece que quando a infração deixar vestígios, será indispensável o exame de corpo de delito, direto ou indireto, não podendo supri-lo a confissão do acusado. A falta do exame de corpo de delito gera nulidade, salvo se os vestígios tiverem desaparecido, hipótese em que a prova testemunhal poderá suprir-lhe a falta (art. 167, CPP).",
+    "legal_basis": "Arts. 158 e 167, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "É indispensável quando a infração deixar vestígios, não podendo ser suprido pela confissão do acusado.", "is_correct": true, "explanation": "Correta. É a previsão do art. 158 do CPP, que torna obrigatório o exame quando há vestígios."},
+      {"letter": "B", "text": "Pode ser dispensado quando o acusado confessar a prática do crime perante o delegado.", "is_correct": false, "explanation": "A confissão não supre o exame de corpo de delito, conforme art. 158 do CPP. A confissão é retratável e não dispensa a perícia."},
+      {"letter": "C", "text": "Somente pode ser realizado por médicos legistas, sendo vedada a realização por outros peritos.", "is_correct": false, "explanation": "O exame de corpo de delito pode ser realizado por peritos oficiais ou, na falta destes, por duas pessoas idôneas com habilitação técnica (art. 159, §1°, CPP)."},
+      {"letter": "D", "text": "É obrigatório apenas nos crimes contra a vida, sendo dispensado nas demais infrações.", "is_correct": false, "explanation": "O exame é obrigatório para qualquer infração que deixe vestígios, não apenas nos crimes contra a vida."},
+      {"letter": "E", "text": "Pode ser substituído por fotografias do local do crime em qualquer hipótese.", "is_correct": false, "explanation": "As fotografias podem complementar o exame, mas não o substituem. O exame pericial é indispensável quando há vestígios."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal-publica",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a ação penal pública no processo penal brasileiro, assinale a alternativa correta:",
+    "text": "A ação penal pública incondicionada é promovida pelo:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A ação penal pública, condicionada ou incondicionada, é de titularidade do Ministério Público (art. 129, I, CF/88; art. 24, CPP). Na ação penal pública incondicionada, o MP age independentemente de representação do ofendido ou requisição do Ministro da Justiça. A peça inaugural é a denúncia.",
+    "legal_basis": "Art. 24, CPP; Art. 129, I, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Ministério Público, por meio de denúncia, independentemente de provocação do ofendido.", "is_correct": true, "explanation": "Correta. O MP é o titular da ação penal pública incondicionada, oferecendo denúncia sem necessidade de representação ou requisição."},
+      {"letter": "B", "text": "Delegado de polícia, por meio do inquérito policial, que constitui a peça acusatória.", "is_correct": false, "explanation": "O delegado não é titular da ação penal. O inquérito é peça informativa, e a denúncia (peça acusatória) é de competência do MP."},
+      {"letter": "C", "text": "Ofendido ou seu representante legal, por meio de queixa-crime.", "is_correct": false, "explanation": "A queixa-crime é a peça inaugural da ação penal privada, não da pública. A ação penal pública é promovida pelo MP mediante denúncia."},
+      {"letter": "D", "text": "Juiz de direito, de ofício, quando tomar conhecimento da prática de infração penal.", "is_correct": false, "explanation": "O juiz não pode iniciar ação penal de ofício. O sistema acusatório separa as funções de acusar (MP) e julgar (juiz)."},
+      {"letter": "E", "text": "Qualquer cidadão, por meio de ação penal popular, nos crimes contra a administração pública.", "is_correct": false, "explanation": "Não existe ação penal popular no direito brasileiro. A ação penal pública é privativa do MP."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "acao-penal-privada",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cidadão é vítima de crime de ação penal privada e deseja processar o autor do fato. Assinale a alternativa correta sobre a ação penal privada:",
+    "text": "Sobre a ação penal de iniciativa privada, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A ação penal privada é promovida pelo ofendido ou seu representante legal, mediante queixa-crime, no prazo decadencial de 6 meses (art. 38, CPP). Admite os institutos do perdão, da perempção, da renúncia e da decadência como causas de extinção da punibilidade. A ação penal privada subsidiária da pública é cabível quando o MP não oferece denúncia no prazo legal.",
+    "legal_basis": "Arts. 29 a 46, CPP; Art. 5°, LIX, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "É promovida pelo ofendido mediante queixa-crime, no prazo decadencial de 6 meses, admitindo perdão, perempção e renúncia.", "is_correct": true, "explanation": "Correta. São as características da ação penal privada, incluindo o prazo decadencial e as causas extintivas de punibilidade próprias."},
+      {"letter": "B", "text": "É promovida pelo Ministério Público mediante denúncia, quando o ofendido não tiver condições financeiras.", "is_correct": false, "explanation": "A ação penal privada é de iniciativa do ofendido, não do MP. O MP atua como fiscal da lei (custos legis) na ação penal privada."},
+      {"letter": "C", "text": "O prazo para oferecimento da queixa-crime é de 2 anos, contados da data do fato.", "is_correct": false, "explanation": "O prazo decadencial é de 6 meses, contados do dia em que o ofendido veio a saber quem é o autor do crime (art. 38, CPP)."},
+      {"letter": "D", "text": "Não admite o perdão do ofendido após o início da ação penal.", "is_correct": false, "explanation": "O perdão pode ser concedido até o trânsito em julgado da sentença (art. 106, §2°, CP), extinguindo a punibilidade se aceito pelo querelado."},
+      {"letter": "E", "text": "Pode ser proposta contra qualquer pessoa, independentemente de indícios de autoria.", "is_correct": false, "explanation": "A queixa-crime deve observar os mesmos requisitos da denúncia, incluindo indícios suficientes de autoria e materialidade."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-ratione-materiae",
+    "question_type": "multipla_escolha",
+    "context_text": "Um policial militar da PMGO, durante o exercício de sua função, pratica crime doloso contra a vida de um civil. Assinale a alternativa correta sobre a competência para julgamento:",
+    "text": "O crime doloso contra a vida praticado por policial militar em serviço contra civil é julgado:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 9.299/96, alterando o art. 9° do Código Penal Militar, determinou que os crimes dolosos contra a vida praticados por militares contra civis são de competência da Justiça Comum (Tribunal do Júri), conforme também decidido pelo STF. A competência do Júri é constitucional (art. 5°, XXXVIII, CF/88).",
+    "legal_basis": "Art. 9°, parágrafo único, CPM; Lei 9.299/96; Art. 5°, XXXVIII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Pela Justiça Militar Estadual, por se tratar de crime praticado por militar em serviço.", "is_correct": false, "explanation": "Os crimes dolosos contra a vida de civil, ainda que praticados por militar em serviço, são de competência da Justiça Comum, conforme Lei 9.299/96."},
+      {"letter": "B", "text": "Pelo Tribunal do Júri da Justiça Comum, conforme determinação da Lei 9.299/96.", "is_correct": true, "explanation": "Correta. A Lei 9.299/96 transferiu a competência dos crimes dolosos contra a vida de civil para o Tribunal do Júri."},
+      {"letter": "C", "text": "Pelo Superior Tribunal Militar, em razão da hierarquia militar.", "is_correct": false, "explanation": "O STM não tem competência originária para julgar crimes dolosos contra a vida de civis praticados por militares estaduais."},
+      {"letter": "D", "text": "Pela Justiça Federal, por envolver agente público no exercício da função.", "is_correct": false, "explanation": "A Justiça Federal não tem competência para este caso. A competência é do Tribunal do Júri da Justiça Estadual Comum."},
+      {"letter": "E", "text": "Pela Justiça Militar ou pelo Tribunal do Júri, conforme opção do Ministério Público.", "is_correct": false, "explanation": "Não há opção do MP. A competência é fixada por lei: crimes dolosos contra a vida de civil são julgados pelo Tribunal do Júri."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "competencia-territorial",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a competência territorial no processo penal, assinale a alternativa correta:",
+    "text": "A competência territorial no processo penal é determinada, em regra:",
+    "difficulty": "easy",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 70 do CPP estabelece que a competência será, de regra, determinada pelo lugar em que se consumar a infração, ou, no caso de tentativa, pelo lugar em que for praticado o último ato de execução. É a chamada teoria do resultado.",
+    "legal_basis": "Art. 70, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Pelo lugar em que se consumar a infração, ou, no caso de tentativa, pelo lugar do último ato de execução.", "is_correct": true, "explanation": "Correta. O CPP adota a teoria do resultado para fixação da competência territorial (art. 70)."},
+      {"letter": "B", "text": "Pelo domicílio do réu, independentemente do local da infração.", "is_correct": false, "explanation": "O domicílio do réu é critério subsidiário (art. 72, CPP), aplicável quando não for conhecido o local da infração."},
+      {"letter": "C", "text": "Pelo local de nascimento do ofendido, como regra geral.", "is_correct": false, "explanation": "O local de nascimento do ofendido não é critério de fixação de competência territorial no processo penal."},
+      {"letter": "D", "text": "Pela sede do Ministério Público que ofereceu a denúncia.", "is_correct": false, "explanation": "A sede do MP não determina a competência territorial. O promotor atua no foro competente, determinado pelo local da infração."},
+      {"letter": "E", "text": "Pelo local onde o réu for encontrado e preso, independentemente de onde ocorreu o crime.", "is_correct": false, "explanation": "O local da prisão do réu não determina, por si só, a competência territorial para o processo."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "citacao",
+    "question_type": "multipla_escolha",
+    "context_text": "Após o recebimento da denúncia pelo juiz, o réu deve ser citado para tomar conhecimento da acusação e apresentar sua defesa. Assinale a alternativa correta sobre a citação no processo penal:",
+    "text": "Sobre a citação no processo penal, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A citação é o ato processual pelo qual se dá ciência ao réu da existência de uma ação penal contra ele, chamando-o para se defender. No processo penal, a citação pessoal é a regra (art. 351, CPP). Se o réu não for encontrado, será citado por edital (art. 363, CPP), e o processo ficará suspenso até seu comparecimento.",
+    "legal_basis": "Arts. 351 a 369, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "A citação pessoal é a regra no processo penal, e o réu citado por edital que não comparecer terá o processo e o prazo prescricional suspensos.", "is_correct": true, "explanation": "Correta. A citação pessoal é regra, e a citação por edital com suspensão do processo e da prescrição está prevista no art. 366 do CPP."},
+      {"letter": "B", "text": "O réu pode ser citado por hora certa no processo penal, sendo esta a forma preferencial.", "is_correct": false, "explanation": "A citação por hora certa é admitida no processo penal (art. 362, CPP), mas não é a forma preferencial. A citação pessoal é a regra."},
+      {"letter": "C", "text": "A falta de citação válida é mera irregularidade processual, que não gera nulidade.", "is_correct": false, "explanation": "A falta de citação válida gera nulidade absoluta, pois viola o direito ao contraditório e à ampla defesa."},
+      {"letter": "D", "text": "A citação pode ser realizada pelo Ministério Público, sem necessidade de mandado judicial.", "is_correct": false, "explanation": "A citação é ato judicial, realizado por oficial de justiça mediante mandado expedido pelo juiz, não pelo MP."},
+      {"letter": "E", "text": "O réu citado por edital que não comparecer será julgado à revelia, prosseguindo-se normalmente o processo.", "is_correct": false, "explanation": "No processo penal, diferentemente do civil, o réu citado por edital que não comparece tem o processo suspenso (art. 366, CPP), não sendo julgado à revelia."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "intimacao",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre a intimação no processo penal, assinale a alternativa correta:",
+    "text": "A intimação da sentença condenatória deve ser feita:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A intimação da sentença condenatória deve ser feita pessoalmente ao réu e ao seu defensor. Se o réu estiver preso, será intimado pessoalmente. Se solto, a intimação pode ser pessoal ou por edital (caso não seja encontrado). O defensor é intimado pela imprensa oficial ou pessoalmente (defensor público ou dativo).",
+    "legal_basis": "Arts. 370 a 372, CPP; Art. 392, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Ao réu e ao seu defensor, pessoalmente, sendo a intimação ato essencial para o início do prazo recursal.", "is_correct": true, "explanation": "Correta. A intimação da sentença condenatória deve alcançar tanto o réu quanto seu defensor, e o prazo recursal corre a partir da última intimação."},
+      {"letter": "B", "text": "Exclusivamente ao defensor constituído, sendo desnecessária a intimação pessoal do réu.", "is_correct": false, "explanation": "A intimação do réu é obrigatória, pois ele possui direito autônomo de recorrer, independentemente da vontade de seu defensor."},
+      {"letter": "C", "text": "Apenas ao réu, cabendo a este informar seu defensor sobre o teor da decisão.", "is_correct": false, "explanation": "Tanto o réu quanto o defensor devem ser intimados. A intimação exclusiva do réu é insuficiente."},
+      {"letter": "D", "text": "Por meio de publicação em diário oficial, sendo dispensada a intimação pessoal em qualquer hipótese.", "is_correct": false, "explanation": "A publicação no diário oficial pode servir para intimação do defensor constituído, mas o réu deve ser intimado pessoalmente."},
+      {"letter": "E", "text": "Exclusivamente por via postal (carta com aviso de recebimento), em qualquer caso.", "is_correct": false, "explanation": "A intimação por via postal é admitida em alguns casos, mas não é a forma exclusiva. A intimação pessoal do réu preso é obrigatória."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "habeas-corpus-processual",
+    "question_type": "multipla_escolha",
+    "context_text": "Um cidadão encontra-se preso preventivamente há 6 meses, sem que a instrução criminal tenha sido concluída, e não houve fundamentação para a manutenção da prisão. Seu advogado pretende impetrar habeas corpus. Assinale a alternativa correta:",
+    "text": "Sobre o habeas corpus no processo penal, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O habeas corpus (art. 647 a 667, CPP; art. 5°, LXVIII, CF/88) é ação autônoma de impugnação que tutela a liberdade de locomoção. Pode ser impetrado por qualquer pessoa (não exige advogado), em favor próprio ou de terceiro. Pode ser preventivo (quando há ameaça) ou liberatório (quando a coação já ocorreu). O excesso de prazo na prisão preventiva é causa para concessão de habeas corpus.",
+    "legal_basis": "Arts. 647 a 667, CPP; Art. 5°, LXVIII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Pode ser impetrado por qualquer pessoa, em seu favor ou de terceiro, independentemente de capacidade postulatória, para proteger a liberdade de locomoção.", "is_correct": true, "explanation": "Correta. O habeas corpus dispensa advogado e pode ser impetrado por qualquer pessoa em favor próprio ou alheio."},
+      {"letter": "B", "text": "Somente pode ser impetrado por advogado regularmente inscrito na OAB.", "is_correct": false, "explanation": "O habeas corpus é exceção à exigência de capacidade postulatória. Qualquer pessoa pode impetrá-lo, incluindo o próprio preso."},
+      {"letter": "C", "text": "Somente é cabível contra ato de autoridade policial, sendo vedada a impetração contra ato judicial.", "is_correct": false, "explanation": "O habeas corpus pode ser impetrado contra ato de qualquer autoridade, inclusive judicial."},
+      {"letter": "D", "text": "Exige o pagamento de custas processuais e a apresentação de procuração.", "is_correct": false, "explanation": "O habeas corpus é gratuito (art. 5°, LXXVII, CF/88) e dispensa procuração, podendo ser impetrado por qualquer pessoa."},
+      {"letter": "E", "text": "É cabível apenas na modalidade repressiva, quando a prisão ilegal já tiver sido efetivada.", "is_correct": false, "explanation": "O habeas corpus pode ser preventivo (quando há ameaça de coação à liberdade) ou repressivo/liberatório (quando a coação já ocorreu)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "habeas-corpus-hipoteses",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre as hipóteses de cabimento do habeas corpus, previstas no art. 648 do CPP, assinale a alternativa correta:",
+    "text": "Será concedido habeas corpus quando:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 648 do CPP prevê as hipóteses de coação ilegal que autorizam a concessão de habeas corpus: quando não houver justa causa para a coação; quando alguém estiver preso por mais tempo que determina a lei; quando quem ordenar a coação não tiver competência; quando houver cessado o motivo que autorizou a coação; quando não for alguém admitido a prestar fiança nos casos em que a lei a autoriza; quando o processo for manifestamente nulo; e quando extinta a punibilidade.",
+    "legal_basis": "Art. 648, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Quando não houver justa causa para a coação, quando o processo for manifestamente nulo ou quando extinta a punibilidade, entre outras hipóteses do art. 648, CPP.", "is_correct": true, "explanation": "Correta. São hipóteses expressas do art. 648 do CPP que autorizam a concessão de habeas corpus."},
+      {"letter": "B", "text": "Exclusivamente quando houver prisão ilegal, não sendo cabível para questões relativas ao processo.", "is_correct": false, "explanation": "O habeas corpus também é cabível para questões processuais, como nulidade do processo e extinção da punibilidade, desde que afetem a liberdade de locomoção."},
+      {"letter": "C", "text": "Apenas quando o paciente estiver efetivamente preso, não sendo cabível de forma preventiva.", "is_correct": false, "explanation": "O habeas corpus preventivo é cabível quando houver ameaça de coação à liberdade de locomoção."},
+      {"letter": "D", "text": "Somente para crimes afiançáveis, sendo vedado para crimes hediondos e inafiançáveis.", "is_correct": false, "explanation": "O habeas corpus é cabível para qualquer crime, inclusive hediondos e inafiançáveis, quando houver ilegalidade na coação."},
+      {"letter": "E", "text": "Exclusivamente quando houver excesso de prazo na prisão, não sendo cabível em outras hipóteses.", "is_correct": false, "explanation": "O excesso de prazo é apenas uma das hipóteses de cabimento. O art. 648 prevê diversas outras causas de coação ilegal."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "medidas-cautelares-diversas",
+    "question_type": "multipla_escolha",
+    "context_text": "Com a entrada em vigor da Lei 12.403/2011, foram introduzidas no CPP medidas cautelares diversas da prisão. Assinale a alternativa correta:",
+    "text": "Sobre as medidas cautelares diversas da prisão (art. 319, CPP), é correto afirmar que:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 12.403/2011 introduziu diversas medidas cautelares alternativas à prisão, como comparecimento periódico em juízo, proibição de acesso a determinados lugares, proibição de contato com pessoa determinada, monitoração eletrônica, entre outras. A prisão preventiva passou a ser medida excepcional, cabível apenas quando as outras medidas se mostrarem insuficientes.",
+    "legal_basis": "Arts. 319 e 282, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "A prisão preventiva deve ser considerada medida excepcional, cabível apenas quando as medidas cautelares diversas se mostrarem insuficientes.", "is_correct": true, "explanation": "Correta. A Lei 12.403/2011 consagrou a excepcionalidade da prisão preventiva, priorizando as medidas cautelares alternativas (art. 282, §6°, CPP)."},
+      {"letter": "B", "text": "As medidas cautelares diversas substituem integralmente a prisão preventiva, que foi abolida pela Lei 12.403/2011.", "is_correct": false, "explanation": "A prisão preventiva não foi abolida. Continua existindo como medida cautelar extrema, de caráter excepcional."},
+      {"letter": "C", "text": "As medidas cautelares diversas somente podem ser aplicadas após o trânsito em julgado da sentença condenatória.", "is_correct": false, "explanation": "As medidas cautelares são aplicáveis durante o inquérito policial ou a ação penal, antes do trânsito em julgado."},
+      {"letter": "D", "text": "O descumprimento de medida cautelar diversa da prisão não autoriza a decretação da prisão preventiva.", "is_correct": false, "explanation": "O descumprimento de medida cautelar diversa pode autorizar a substituição por outra medida, a cumulação, ou a decretação da prisão preventiva (art. 282, §4°, CPP)."},
+      {"letter": "E", "text": "As medidas cautelares diversas não podem ser cumuladas entre si, devendo o juiz optar por apenas uma.", "is_correct": false, "explanation": "As medidas cautelares diversas podem ser aplicadas isolada ou cumulativamente (art. 282, §1°, CPP)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "liberdade-provisoria",
+    "question_type": "multipla_escolha",
+    "context_text": "Após a lavratura do auto de prisão em flagrante por furto simples, o delegado analisa a possibilidade de arbitrar fiança ao preso. Assinale a alternativa correta sobre a liberdade provisória mediante fiança:",
+    "text": "Sobre a fiança no processo penal, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A fiança pode ser concedida pela autoridade policial nos crimes com pena privativa de liberdade máxima não superior a 4 anos (art. 322, CPP). Nos demais casos, a fiança somente pode ser concedida pelo juiz (art. 321, CPP). São inafiançáveis os crimes hediondos, racismo, ação de grupos armados contra a ordem constitucional e o terrorismo (art. 5°, XLII, XLIII e XLIV, CF/88).",
+    "legal_basis": "Arts. 321 a 350, CPP; Art. 5°, XLII a XLIV, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A autoridade policial pode conceder fiança nos crimes com pena máxima não superior a 4 anos; nos demais casos, a competência é do juiz.", "is_correct": true, "explanation": "Correta. É a previsão do art. 322 do CPP: delegado pode arbitrar fiança em crimes com pena máxima até 4 anos."},
+      {"letter": "B", "text": "Somente o juiz pode conceder fiança, sendo vedada ao delegado de polícia em qualquer hipótese.", "is_correct": false, "explanation": "O delegado pode conceder fiança nos crimes com pena máxima até 4 anos (art. 322, CPP)."},
+      {"letter": "C", "text": "A fiança é cabível em todos os crimes, inclusive nos hediondos e no racismo.", "is_correct": false, "explanation": "A CF/88 prevê crimes inafiançáveis: hediondos e equiparados (art. 5°, XLIII), racismo (art. 5°, XLII), ação de grupos armados (art. 5°, XLIV)."},
+      {"letter": "D", "text": "A fiança substitui a prisão preventiva, impedindo sua decretação posterior.", "is_correct": false, "explanation": "A concessão de fiança não impede a decretação posterior de prisão preventiva, se presentes seus pressupostos e fundamentos."},
+      {"letter": "E", "text": "O valor da fiança é fixado exclusivamente com base na renda do preso, sem relação com a gravidade do crime.", "is_correct": false, "explanation": "O valor da fiança é fixado com base na gravidade do crime (pena cominada), nas condições financeiras do preso e em outros elementos do caso."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "interceptacao-telefonica",
+    "question_type": "multipla_escolha",
+    "context_text": "O delegado de polícia representa ao juiz pela interceptação telefônica de um investigado por tráfico de drogas. Assinale a alternativa correta sobre os requisitos da interceptação telefônica:",
+    "text": "Conforme a Lei 9.296/96, a interceptação telefônica:",
+    "difficulty": "hard",
+    "source": "Instituto AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A interceptação telefônica (Lei 9.296/96) depende de ordem judicial, sob segredo de justiça, em investigação criminal ou instrução processual penal. Exige indícios razoáveis de autoria e participação, que a prova não possa ser obtida por outros meios e que o fato seja punido com pena de reclusão. O prazo é de 15 dias, renovável por igual período.",
+    "legal_basis": "Lei 9.296/96",
+    "alternatives": [
+      {"letter": "A", "text": "Depende de ordem judicial fundamentada, é cabível apenas em crimes punidos com reclusão, e tem prazo de 15 dias, renovável por igual período.", "is_correct": true, "explanation": "Correta. São os requisitos e condições da interceptação telefônica previstos na Lei 9.296/96."},
+      {"letter": "B", "text": "Pode ser determinada pela autoridade policial, independentemente de autorização judicial, em casos urgentes.", "is_correct": false, "explanation": "A interceptação telefônica depende exclusivamente de autorização judicial (art. 5°, XII, CF/88). A autoridade policial não pode determiná-la."},
+      {"letter": "C", "text": "É cabível em qualquer infração penal, inclusive contravenções penais e crimes punidos com detenção.", "is_correct": false, "explanation": "A Lei 9.296/96 veda a interceptação quando o fato for punido com detenção (art. 2°, III). Somente é cabível em crimes punidos com reclusão."},
+      {"letter": "D", "text": "Tem prazo indeterminado, podendo ser mantida enquanto houver necessidade investigativa.", "is_correct": false, "explanation": "O prazo é de 15 dias, renovável por decisão judicial fundamentada (art. 5°, Lei 9.296/96)."},
+      {"letter": "E", "text": "Pode ser realizada pelo Ministério Público diretamente, sem necessidade de provocar o Poder Judiciário.", "is_correct": false, "explanation": "O MP pode representar pela interceptação, mas a autorização é exclusivamente judicial. O MP não pode determiná-la diretamente."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "principio-juiz-natural",
+    "question_type": "multipla_escolha",
+    "context_text": "Sobre os princípios processuais penais, assinale a alternativa correta:",
+    "text": "O princípio do juiz natural, previsto no art. 5°, XXXVII e LIII, da CF/88, significa que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O princípio do juiz natural tem dupla dimensão: proíbe a criação de tribunais de exceção (art. 5°, XXXVII, CF/88) e garante que ninguém será processado ou sentenciado senão pela autoridade competente (art. 5°, LIII, CF/88). É garantia fundamental que assegura a imparcialidade do julgamento.",
+    "legal_basis": "Art. 5°, XXXVII e LIII, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Não haverá juízo ou tribunal de exceção, e ninguém será processado ou sentenciado senão pela autoridade competente.", "is_correct": true, "explanation": "Correta. São as duas dimensões do princípio do juiz natural: vedação de tribunais de exceção e garantia de julgamento por autoridade competente."},
+      {"letter": "B", "text": "O réu pode escolher o juiz que irá julgá-lo, desde que seja competente para a matéria.", "is_correct": false, "explanation": "O princípio do juiz natural não permite a escolha do juiz pelo réu. A competência é fixada por critérios legais e constitucionais."},
+      {"letter": "C", "text": "O juiz que presidiu a instrução criminal não pode proferir a sentença, devendo outro juiz julgá-lo.", "is_correct": false, "explanation": "Em regra, o juiz que presidiu a instrução deve proferir a sentença (princípio da identidade física do juiz). O juiz natural refere-se à competência, não à identidade do magistrado."},
+      {"letter": "D", "text": "Tribunais de exceção são permitidos em caso de estado de defesa ou estado de sítio.", "is_correct": false, "explanation": "A vedação de tribunais de exceção é absoluta e não comporta exceção, mesmo durante estado de defesa ou estado de sítio."},
+      {"letter": "E", "text": "Aplica-se apenas aos processos criminais, não se estendendo aos processos cíveis ou administrativos.", "is_correct": false, "explanation": "O princípio do juiz natural aplica-se a todos os processos (criminais, cíveis, administrativos, trabalhistas, etc.)."}
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "topic_slug": "relaxamento-prisao",
+    "question_type": "multipla_escolha",
+    "context_text": "Um indivíduo é preso em flagrante pela PMGO por suposto crime de receptação. Ao analisar o auto de prisão em flagrante, o juiz constata que não foram observadas as formalidades legais e que não havia situação de flagrância. Assinale a alternativa correta:",
+    "text": "Sobre o relaxamento da prisão em flagrante, é correto afirmar que:",
+    "difficulty": "medium",
+    "source": "Instituto AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 310 do CPP determina que o juiz, ao receber o auto de prisão em flagrante, deve fundamentadamente: relaxar a prisão ilegal; converter a prisão em flagrante em preventiva, quando presentes os requisitos legais e as medidas cautelares diversas se mostrarem insuficientes; ou conceder liberdade provisória, com ou sem fiança. A prisão ilegal deve ser imediatamente relaxada pela autoridade judiciária (art. 5°, LXV, CF/88).",
+    "legal_basis": "Art. 310, CPP; Art. 5°, LXV, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "A prisão ilegal deve ser imediatamente relaxada pela autoridade judiciária, sendo dever constitucional do juiz.", "is_correct": true, "explanation": "Correta. O art. 5°, LXV, da CF/88 garante que a prisão ilegal será imediatamente relaxada pela autoridade judiciária."},
+      {"letter": "B", "text": "O juiz deve manter a prisão e aguardar manifestação do Ministério Público antes de decidir sobre o relaxamento.", "is_correct": false, "explanation": "O relaxamento de prisão ilegal é dever imediato do juiz, não dependendo de manifestação prévia do MP."},
+      {"letter": "C", "text": "O delegado de polícia pode relaxar a prisão em flagrante que considerar ilegal, sem necessidade de provocar o Judiciário.", "is_correct": false, "explanation": "O relaxamento da prisão é ato exclusivamente judicial. O delegado não tem competência para relaxar prisão em flagrante."},
+      {"letter": "D", "text": "A prisão ilegal somente pode ser relaxada mediante habeas corpus impetrado pela defesa.", "is_correct": false, "explanation": "O juiz deve relaxar a prisão ilegal de ofício ao analisar o APF, independentemente de habeas corpus. O HC é via adicional, não exclusiva."},
+      {"letter": "E", "text": "O relaxamento da prisão ilegal depende de fiança, devendo o preso permanecer custodiado até o pagamento.", "is_correct": false, "explanation": "O relaxamento não depende de fiança. Se a prisão é ilegal, deve ser relaxada imediatamente e sem condições."}
+    ]
+  }
+]
