@@ -702,6 +702,56 @@ button { font-family:inherit; }
   color:var(--ink-2); font-size:11.5px; font-weight:700;
   letter-spacing:.06em; text-transform:uppercase;
 }
+
+.mission-block {
+  margin:0 20px 4px; padding:20px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); box-shadow:var(--shadow-sm);
+}
+.mission-header {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;
+}
+.mission-ring { position:relative; width:48px; height:48px; flex-shrink:0; }
+.mission-svg { width:100%; height:100%; transform:rotate(-90deg); }
+.ring-bg { fill:none; stroke:var(--surface-2); stroke-width:3; }
+.ring-fill {
+  fill:none; stroke:var(--primary); stroke-width:3;
+  stroke-linecap:round; transition:stroke-dasharray .6s cubic-bezier(.22,1,.36,1);
+}
+.ring-fill.done { stroke:var(--success); }
+.ring-text {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:var(--ink-2); font-variant-numeric:tabular-nums;
+}
+
+.mission-tasks { display:flex; flex-direction:column; gap:2px; }
+.mission-task {
+  display:flex; align-items:center; gap:12px; padding:12px 0;
+  border-top:1px solid var(--border); cursor:pointer; transition:opacity .2s;
+}
+.mission-task:first-child { border-top:none; }
+.mission-task:active:not(.done) { opacity:.7; }
+.mission-task.done { opacity:.55; }
+.mission-task.done .task-title { text-decoration:line-through; }
+.task-check { width:22px; height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.task-check svg { width:22px; height:22px; }
+.task-circle {
+  width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong);
+  transition:border-color .2s;
+}
+.mission-task:hover:not(.done) .task-circle { border-color:var(--primary); }
+.task-icon { flex-shrink:0; color:var(--ink-3); }
+.task-icon svg { width:18px; height:18px; }
+.task-info { flex:1; min-width:0; }
+.task-title { font-size:14px; font-weight:600; line-height:1.3; }
+.task-meta { font-size:12px; color:var(--ink-3); margin-top:2px; line-height:1.3; }
+
+.mission-complete-banner {
+  margin-top:16px; padding:14px; text-align:center;
+  background:var(--success-soft); color:var(--success);
+  border-radius:var(--r-md); font-size:14px; font-weight:600;
+}
+.mission-loading { padding:8px 0 4px; }
+.mission-empty { padding:16px 0 4px; text-align:center; color:var(--ink-3); font-size:14px; }
 </style>
 </head>
 <body>
@@ -738,6 +788,7 @@ const S = {
   pushOn: false,
   targetExam: localStorage.getItem('prf_target_exam') || 'PRF',
   trilha: null,
+  mission: null,
 };
 
 let timerInterval = null;
@@ -987,6 +1038,12 @@ function skeletonBlock(n = 3, h = 70) {
 }
 
 // ===== DASHBOARD =====
+function localGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Bom dia';
+  if (h < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
 function viewDashboard() {
   const d = S.dashboard;
   if (!d) return appbar() + skeletonBlock(3, 100);
@@ -995,18 +1052,30 @@ function viewDashboard() {
   const maxMin = Math.max(...wp.map(w => w.study_minutes || 0), 30);
   const SD = ['D','S','T','Q','Q','S','S'];
   const today = new Date().getDay();
-  const greeting = (d.greeting || 'Bom estudo').replace(/[!.]+$/, '');
+  const greeting = localGreeting();
   const apr = Math.round(d.approval_estimate || 0);
   const dateStr = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
   const due = d.reviews_due || 0;
+  const mission = S.mission;
+  const missionDone = mission && mission.status === 'completed';
+  const mBlocks = mission ? (mission.blocks || []) : [];
+  const mTotal = mission ? (mission.blocks_total || mBlocks.length) : 0;
+  const mDone = mission ? (mission.blocks_done || 0) : 0;
+  const mPct = mTotal > 0 ? Math.round(mDone / mTotal * 100) : 0;
+
+  const motivational = d.streak >= 7 ? 'você é consistente' :
+    d.streak >= 3 ? 'continue firme' :
+    d.questions_today > 0 ? 'bom progresso' :
+    'hora de começar';
 
   return `${appbar()}
     <div class="hero-block fade-in">
       <div class="greeting-eyebrow">${dateStr}</div>
-      <div class="greeting-line">${esc(greeting)},<br><em>continue firme</em>.</div>
+      <div class="greeting-line">${esc(greeting)},<br><em>${motivational}</em>.</div>
       <div class="chip-row">
         <span class="level-chip">Nível ${d.level || 1}</span>
         ${d.streak > 0 ? `<span class="streak-inline">${I.fire} ${d.streak} ${d.streak === 1 ? 'dia' : 'dias'}</span>` : ''}
+        <span class="level-chip">${S.targetExam || 'PRF'}</span>
       </div>
     </div>
     <div class="stat-row">
@@ -1014,6 +1083,48 @@ function viewDashboard() {
       <div class="stat-cell"><div class="stat-eyebrow">Acerto</div><div class="stat-num">${Math.round(d.accuracy_today||0)}<span class="stat-num-sm">%</span></div></div>
       <div class="stat-cell"><div class="stat-eyebrow">Tempo</div><div class="stat-num">${Math.round(d.time_studied_today||0)}<span class="stat-num-sm">min</span></div></div>
     </div>
+
+    <div class="mission-block fade-in">
+      <div class="mission-header">
+        <div>
+          <div class="section-eyebrow">Missão do dia</div>
+          <div class="section-title">${missionDone ? 'Missão cumprida!' : mTotal > 0 ? `${mDone} de ${mTotal} etapas` : 'Carregando...'}</div>
+        </div>
+        ${mTotal > 0 ? `<div class="mission-ring">
+          <svg viewBox="0 0 36 36" class="mission-svg">
+            <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="ring-fill ${missionDone?'done':''}" stroke-dasharray="${mPct}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+          </svg>
+          <span class="ring-text">${mPct}%</span>
+        </div>` : ''}
+      </div>
+      ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
+      mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => {
+        const done = b.is_completed;
+        const icon = b.block_type === 'questions' ? I.book :
+          b.block_type === 'review' ? I.refresh :
+          b.block_type === 'legal_reading' ? I.scale :
+          b.block_type === 'audio' ? I.headphones :
+          b.block_type === 'error_review' ? I.brain : I.target;
+        const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
+          b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
+          b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
+          b.block_type === 'audio' ? `startMissionBlock(${i},'audio')` :
+          b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
+          `startMissionBlock(${i},'practice')`;
+        return `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">
+          <div class="task-check">${done ? '<svg viewBox="0 0 24 24" fill="var(--success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : `<div class="task-circle"></div>`}</div>
+          <div class="task-icon">${icon}</div>
+          <div class="task-info">
+            <div class="task-title">${esc(b.title)}</div>
+            <div class="task-meta">${esc(b.description || '')} · ${b.estimated_mins||10} min</div>
+          </div>
+          ${done ? '' : `<div class="chev">${I.chev}</div>`}
+        </div>`;
+      }).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
+      ${missionDone ? `<div class="mission-complete-banner"><span>Parabéns! Volte amanhã para a próxima missão.</span></div>` : ''}
+    </div>
+
     <div class="approval-block">
       <div class="approval-head">
         <span class="lbl">Chance de aprovação</span>
@@ -1037,32 +1148,26 @@ function viewDashboard() {
       }).join('')}</div>
     </div>` : ''}
     <div class="shortcuts-block">
-      <div class="section-eyebrow">Continuar estudando</div>
-      <div class="section-title">Onde começar hoje</div>
+      <div class="section-eyebrow">Atalhos rápidos</div>
       <div class="shortcut-list">
         ${due > 0 ? `<div class="shortcut" onclick="switchTab('more');openReviews()">
           <div class="badge-icon gold">${I.refresh}</div>
-          <div class="info"><h3>Revisões pendentes</h3><p>Repetição espaçada — memória de longo prazo</p></div>
+          <div class="info"><h3>Revisões pendentes</h3><p>Repetição espaçada</p></div>
           <span class="count-badge">${due}</span>
         </div>` : ''}
         <div class="shortcut" onclick="switchTab('simulado')">
           <div class="badge-icon accent">${I.target}</div>
-          <div class="info"><h3>Simulado ${S.targetExam||'PRF'}</h3><p>120 questões · 3 blocos · ${S.targetExam?.startsWith('PM')?'5h':'4h30'}</p></div>
+          <div class="info"><h3>Simulado ${S.targetExam||'PRF'}</h3><p>Prova completa · 3 blocos</p></div>
           <div class="chev">${I.chev}</div>
         </div>
         <div class="shortcut" onclick="switchTab('practice')">
           <div class="badge-icon">${I.book}</div>
-          <div class="info"><h3>Praticar por matéria</h3><p>Questões C/E com tutor de IA</p></div>
+          <div class="info"><h3>Praticar por matéria</h3><p>Questões C/E com tutor IA</p></div>
           <div class="chev">${I.chev}</div>
         </div>
-        <div class="shortcut" onclick="switchTab('audio')">
-          <div class="badge-icon success">${I.headphones}</div>
-          <div class="info"><h3>Audiobooks</h3><p>Estude ouvindo no deslocamento</p></div>
-          <div class="chev">${I.chev}</div>
-        </div>
-        <div class="shortcut" onclick="switchTab('more');openEssays()">
-          <div class="badge-icon accent">${I.pen}</div>
-          <div class="info"><h3>Treinar redação</h3><p>Correção CEBRASPE com diagnóstico</p></div>
+        <div class="shortcut" onclick="switchTab('more');openTrilha()">
+          <div class="badge-icon">${I.target}</div>
+          <div class="info"><h3>Trilha do edital</h3><p>Mapa de cobertura</p></div>
           <div class="chev">${I.chev}</div>
         </div>
       </div>
@@ -1597,6 +1702,47 @@ async function loadDashboard() {
       time_studied_today:0, reviews_due:0, approval_estimate:0, level:1, weekly_progress:[] };
   }
   render();
+  if (!S.mission) loadMission();
+}
+async function loadMission() {
+  try {
+    S.mission = await api('/api/prf/missions/today');
+  } catch (e) {
+    S.mission = { status:'empty', blocks:[], blocks_total:0, blocks_done:0 };
+  }
+  render();
+}
+async function startMissionBlock(blockIdx, type) {
+  const b = S.mission?.blocks?.[blockIdx];
+  if (!b || b.is_completed) return;
+  if (type === 'practice' && b.content_ids?.length) {
+    S.selSubject = null; S.selSubjectName = b.subject_name || b.title;
+    S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {};
+    S.loading.questions = true; S.tab = 'practice'; S.missionBlockId = b.id; render();
+    try {
+      const d = await api(`/api/prf/questions/list?subject_id=${b.content_ids[0]}&limit=15`);
+      S.questions = d.questions || [];
+    } catch (e) { toast('Erro ao carregar questões', 'error'); }
+    S.loading.questions = false; render(); scrollTop();
+  } else if (type === 'review') {
+    switchTab('more'); openReviews();
+  } else if (type === 'legal') {
+    switchTab('more'); openLegal();
+  } else if (type === 'audio') {
+    switchTab('audio');
+  } else {
+    switchTab('practice');
+  }
+  completeMissionBlock(b.id);
+}
+async function completeMissionBlock(blockId) {
+  try {
+    await api('/api/prf/missions/blocks/complete', {
+      method:'POST', json:{ block_id: blockId },
+    });
+    S.mission = null;
+    loadMission();
+  } catch (e) {}
 }
 async function loadSubjects() {
   try { const d = await api('/api/prf/onboarding/subjects'); S.subjects = d.subjects || d; }
