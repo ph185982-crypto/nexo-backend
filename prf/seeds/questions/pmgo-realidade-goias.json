@@ -358,5 +358,45 @@
       {"letter": "D", "text": "O acidente ocorreu na decada de 1970, durante a ditadura militar.", "is_correct": false, "explanation": "O acidente ocorreu em setembro de 1987, ja no periodo de redemocratizacao."},
       {"letter": "E", "text": "O material radioativo foi importado ilegalmente da Russia para uso em pesquisas.", "is_correct": false, "explanation": "O cesio-137 era parte de um equipamento de radioterapia do Instituto Goiano de Radioterapia, que foi abandonado no local."}
     ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "economia-goias",
+    "question_type": "multipla_escolha",
+    "context_text": "A mineracao continua sendo uma atividade economica relevante em Goias, embora com perfil diferente do periodo colonial. O Estado possui importantes reservas minerais exploradas industrialmente.",
+    "text": "Sobre a atividade mineradora contemporanea em Goias, assinale a alternativa correta.",
+    "difficulty": "hard",
+    "source": "AOCP/2022",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goias e um importante produtor mineral do Brasil, com destaque para niquel (Niquelandia e Barro Alto), amianto (Minacu), cobre, ouro, fosfato e nióbio. A mineracao e uma das bases economicas de varios municipios goianos.",
+    "legal_basis": "Economia de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "A mineracao foi completamente abandonada em Goias apos o fim do ciclo do ouro no seculo XVIII.", "is_correct": false, "explanation": "A mineracao continua ativa em Goias, com exploracao de diversos minerais como niquel, cobre, fosfato e outros."},
+      {"letter": "B", "text": "Goias e importante produtor de minerais como niquel, amianto, cobre e fosfato, com destaque para Niquelandia e Catalao.", "is_correct": true, "explanation": "Correto. Goias possui importante atividade mineradora, com Niquelandia destacando-se no niquel e Catalao nos fosfatos e niobio."},
+      {"letter": "C", "text": "A unica atividade mineradora de Goias na atualidade e a extracao de diamantes.", "is_correct": false, "explanation": "Goias possui atividade mineradora diversificada, nao se limitando a diamantes."},
+      {"letter": "D", "text": "Goias nao possui reservas minerais significativas, importando todos os minerais que consome.", "is_correct": false, "explanation": "Goias possui reservas minerais significativas e e exportador de diversos minerais."},
+      {"letter": "E", "text": "A mineracao em Goias e exclusivamente de material para construcao civil, como areia e pedra.", "is_correct": false, "explanation": "A mineracao goiana vai muito alem de materiais de construcao, incluindo niquel, cobre, fosfato, niobio e outros."}
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "cultura-goiana",
+    "question_type": "multipla_escolha",
+    "context_text": "As Cavalhadas de Pirenopolis sao uma das mais tradicionais manifestacoes culturais de Goias, realizadas durante as Festas do Divino Espirito Santo.",
+    "text": "Sobre as Cavalhadas de Pirenopolis e as Festas do Divino em Goias, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "As Cavalhadas de Pirenopolis sao realizadas durante as Festas do Divino Espirito Santo e representam as batalhas medievais entre mouros e cristaos. A tradicao remonta ao periodo colonial e e uma das mais importantes manifestacoes folcloricas de Goias.",
+    "legal_basis": "Cultura de Goias",
+    "alternatives": [
+      {"letter": "A", "text": "As Cavalhadas representam as batalhas medievais entre mouros e cristaos, sendo realizadas durante as Festas do Divino Espirito Santo em Pirenopolis.", "is_correct": true, "explanation": "Correto. As Cavalhadas de Pirenopolis sao encenacoes das lutas medievais entre mouros e cristaos, integradas as Festas do Divino."},
+      {"letter": "B", "text": "As Cavalhadas sao uma manifestacao recente, criada no seculo XXI para atrair turistas.", "is_correct": false, "explanation": "As Cavalhadas sao uma tradicao secular, trazida pelos colonizadores portugueses no periodo colonial."},
+      {"letter": "C", "text": "As Cavalhadas representam batalhas entre indigenas e bandeirantes na colonizacao de Goias.", "is_correct": false, "explanation": "As Cavalhadas representam as lutas entre mouros e cristaos na Peninsula Iberica, nao batalhas coloniais."},
+      {"letter": "D", "text": "As Festas do Divino sao realizadas exclusivamente em Goiania, nao ocorrendo em outras cidades.", "is_correct": false, "explanation": "As Festas do Divino ocorrem em diversas cidades goianas, sendo as de Pirenopolis as mais tradicionais."},
+      {"letter": "E", "text": "As Cavalhadas sao corridas de cavalos profissionais, sem conteudo religioso ou cultural.", "is_correct": false, "explanation": "As Cavalhadas sao manifestacoes culturais e folcloricas com profundo conteudo religioso, nao corridas esportivas."}
+    ]
   }
 ]

@@ -278,5 +278,25 @@
       {"letter": "D", "text": "Remeter os autos a Justica Comum para processamento como crime comum.", "is_correct": false, "explanation": "Se o fato nao configura crime militar nem crime comum, nao ha razao para remessa a outra justica. Cabe o arquivamento."},
       {"letter": "E", "text": "Devolver os autos ao encarregado para que reclassifique o fato como crime militar.", "is_correct": false, "explanation": "O MP nao pode determinar ao encarregado que reclassifique o fato. A tipificacao juridica cabe ao MP e ao juiz."}
     ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "prisao-liberdade-provisoria",
+    "question_type": "multipla_escolha",
+    "context_text": "Um soldado da PMGO foi preso em flagrante por crime de abandono de posto. O auto de prisao em flagrante foi lavrado pelo oficial de servico e remetido ao juiz militar competente.",
+    "text": "Sobre a comunicacao da prisao em flagrante e os direitos do preso no processo penal militar, assinale a alternativa correta.",
+    "difficulty": "medium",
+    "source": "AOCP/2023",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "No processo penal militar, a prisao em flagrante deve ser comunicada imediatamente ao juiz competente, a familia do preso ou a pessoa por ele indicada. As garantias constitucionais do preso se aplicam tambem ao ambito militar.",
+    "legal_basis": "Art. 5, LXII a LXV, CF/88; CPPM",
+    "alternatives": [
+      {"letter": "A", "text": "A prisao nao precisa ser comunicada a ninguem, sendo exclusivo do ambito interno militar.", "is_correct": false, "explanation": "A CF/88 exige comunicacao imediata ao juiz e a familia do preso, aplicando-se tambem no ambito militar."},
+      {"letter": "B", "text": "A prisao deve ser comunicada imediatamente ao juiz competente e a familia do preso ou pessoa indicada, conforme garantias constitucionais.", "is_correct": true, "explanation": "Correto. As garantias do art. 5, LXII, da CF/88 aplicam-se integralmente ao preso militar."},
+      {"letter": "C", "text": "A comunicacao da prisao deve ser feita exclusivamente ao Comandante-Geral da PM, que decidira sobre a manutencao.", "is_correct": false, "explanation": "A comunicacao ao juiz e obrigatoria e independe do Comandante-Geral. O juiz decide sobre a legalidade."},
+      {"letter": "D", "text": "O militar preso nao tem direito a assistencia de advogado, pois o CPPM nao preve essa garantia.", "is_correct": false, "explanation": "O direito a assistencia de advogado e garantia constitucional (art. 5, LXIII) aplicavel a todos, inclusive militares."},
+      {"letter": "E", "text": "O prazo para comunicacao da prisao ao juiz e de 30 dias, conforme o CPPM.", "is_correct": false, "explanation": "A comunicacao deve ser imediata, nao havendo prazo de 30 dias. A CF/88 exige comunicacao sem demora."}
+    ]
   }
 ]
