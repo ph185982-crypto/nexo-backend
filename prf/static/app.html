@@ -438,7 +438,9 @@ button { font-family:inherit; }
 }
 @keyframes slideUpBar { from { transform:translateY(100%); } to { transform:translateY(0); } }
 .player-bar .pb-top { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-.player-bar .pb-title { flex:1; min-width:0; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.player-bar .pb-title { flex:1; min-width:0; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:baseline; gap:6px; }
+.player-bar .pb-pos { font-size:10px; color:var(--ink-3); font-weight:400; font-variant-numeric:tabular-nums; flex-shrink:0; }
+.player-bar .pb-btn:disabled { opacity:.3; cursor:default; }
 .player-bar .pb-btn {
   width:38px; height:38px; border-radius:var(--r-full); border:none;
   background:var(--primary); color:#fff; cursor:pointer;
@@ -789,6 +791,7 @@ const S = {
   targetExam: localStorage.getItem('prf_target_exam') || 'PRF',
   trilha: null,
   mission: null,
+  activeMissionIdx: null,
 };
 
 let timerInterval = null;
@@ -1404,13 +1407,19 @@ function viewAudio() {
 
 function playerBar() {
   if (!S.playingId) return '';
-  const l = (S.lessons || []).find(x => x.id === S.playingId);
+  const lessons = S.lessons || [];
+  const l = lessons.find(x => x.id === S.playingId);
   if (!l) return '';
+  const idx = lessons.indexOf(l);
   const pct = S.audioDur > 0 ? (S.audioPos / S.audioDur) * 100 : 0;
+  const hasPrev = idx > 0;
+  const hasNext = idx < lessons.length - 1;
   return `<div class="player-bar">
     <div class="pb-top">
+      <button class="pb-btn ${hasPrev?'':'ghost'}" onclick="playPrevLesson()" ${hasPrev?'':'disabled'}>${I.back}</button>
       <button class="pb-btn" onclick="togglePlayPause()">${S.audioPlaying ? I.pause : I.play}</button>
-      <div class="pb-title">${esc(l.title)}</div>
+      <button class="pb-btn ${hasNext?'':'ghost'}" onclick="playNextLesson()" ${hasNext?'':'disabled'}>${I.chev}</button>
+      <div class="pb-title">${esc(l.title)}<span class="pb-pos">${idx+1}/${lessons.length}</span></div>
       <button class="pb-btn ghost" onclick="stopAudio()">${I.close}</button>
     </div>
     <div class="pb-progress">
@@ -1715,6 +1724,7 @@ async function loadMission() {
 async function startMissionBlock(blockIdx, type) {
   const b = S.mission?.blocks?.[blockIdx];
   if (!b || b.is_completed) return;
+  S.activeMissionIdx = blockIdx;
   if (type === 'practice' && b.content_ids?.length) {
     S.selSubject = null; S.selSubjectName = b.subject_name || b.title;
     S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {};
@@ -1733,7 +1743,7 @@ async function startMissionBlock(blockIdx, type) {
   } else {
     switchTab('practice');
   }
-  completeMissionBlock(b.id);
+  await completeMissionBlock(b.id);
 }
 async function completeMissionBlock(blockId) {
   try {
@@ -1741,8 +1751,28 @@ async function completeMissionBlock(blockId) {
       method:'POST', json:{ block_id: blockId },
     });
     S.mission = null;
-    loadMission();
+    await loadMission();
+    advanceToNextMissionBlock();
   } catch (e) {}
+}
+function advanceToNextMissionBlock() {
+  if (!S.mission || !S.mission.blocks) return;
+  const blocks = S.mission.blocks;
+  const next = blocks.find(b => !b.is_completed);
+  if (!next) {
+    toast('Missão cumprida!', 'success');
+    S.activeMissionIdx = null;
+    switchTab('dashboard');
+    return;
+  }
+  const nextIdx = blocks.indexOf(next);
+  const type = next.block_type === 'questions' ? 'practice' :
+    next.block_type === 'review' ? 'review' :
+    next.block_type === 'legal_reading' ? 'legal' :
+    next.block_type === 'audio' ? 'audio' :
+    next.block_type === 'error_review' ? 'review' : 'practice';
+  toast(`Próxima etapa: ${next.title}`, 'info');
+  setTimeout(() => startMissionBlock(nextIdx, type), 1200);
 }
 async function loadSubjects() {
   try { const d = await api('/api/prf/onboarding/subjects'); S.subjects = d.subjects || d; }
@@ -1775,7 +1805,11 @@ async function answerQuestion(qid, altId) {
 function nextQuestion() {
   if (S.qIndex < S.questions.length - 1) {
     S.qIndex++; S.answerResult = null; render(); scrollTop();
-  } else goBack();
+  } else if (S.activeMissionIdx != null) {
+    toast('Etapa concluída!', 'success');
+  } else {
+    goBack();
+  }
 }
 
 // Tutor
@@ -1901,6 +1935,16 @@ function togglePlayPause() {
   else { audioEl.pause(); S.audioPlaying = false; }
   render();
 }
+function playNextLesson() {
+  const lessons = S.lessons || [];
+  const idx = lessons.findIndex(l => l.id === S.playingId);
+  if (idx >= 0 && idx < lessons.length - 1) toggleLesson(lessons[idx + 1].id);
+}
+function playPrevLesson() {
+  const lessons = S.lessons || [];
+  const idx = lessons.findIndex(l => l.id === S.playingId);
+  if (idx > 0) toggleLesson(lessons[idx - 1].id);
+}
 function stopAudio() {
   audioEl.pause(); audioEl.currentTime = 0;
   S.playingId = null; S.audioPlaying = false; S.audioPos = 0; S.audioDur = 0;
@@ -1920,7 +1964,19 @@ audioEl.addEventListener('timeupdate', () => {
   if (times[0]) times[0].textContent = fmtTime(S.audioPos);
   if (times[1]) times[1].textContent = fmtTime(S.audioDur);
 });
-audioEl.addEventListener('ended', () => { S.audioPlaying = false; render(); });
+audioEl.addEventListener('ended', () => {
+  S.audioPlaying = false;
+  const lessons = S.lessons || [];
+  const idx = lessons.findIndex(l => l.id === S.playingId);
+  if (idx >= 0 && idx < lessons.length - 1) {
+    toast('Próxima aula...', 'info');
+    toggleLesson(lessons[idx + 1].id);
+  } else {
+    S.playingId = null;
+    toast('Playlist concluída', 'success');
+    render();
+  }
+});
 
 async function listenArticle(text) {
   if (!text) return;

@@ -290,6 +290,198 @@ AUDIO_LESSONS = [
             "Esse rol é bastante cobrado em prova."
         ),
     },
+    {
+        "subject_slug": "legislacao-especial",
+        "title": "Organização criminosa e colaboração premiada",
+        "description": "Lei 12.850/13 — definição, meios de investigação e acordo",
+        "lesson_type": "deep_dive",
+        "difficulty": "medium",
+        "display_order": 32,
+        "duration_secs": 215,
+        "script": (
+            "A Lei doze mil oitocentos e cinquenta, de dois mil e treze, define organização criminosa e "
+            "disciplina a investigação criminal, os meios de obtenção da prova e o procedimento criminal. "
+            "O artigo primeiro, parágrafo primeiro, define organização criminosa como a associação de quatro "
+            "ou mais pessoas estruturalmente ordenada e caracterizada pela divisão de tarefas, ainda que "
+            "informalmente, com objetivo de obter, direta ou indiretamente, vantagem de qualquer natureza, "
+            "mediante a prática de infrações penais cujas penas máximas sejam superiores a quatro anos, ou "
+            "que sejam de caráter transnacional. "
+            "Guarde: quatro ou mais pessoas e pena máxima superior a quatro anos. A banca adora trocar esses "
+            "números. "
+            "O artigo segundo tipifica o crime de promover, constituir, financiar ou integrar organização "
+            "criminosa. Pena: reclusão de três a oito anos e multa. "
+            "Os meios de obtenção de prova estão no artigo terceiro. São eles: colaboração premiada, captação "
+            "ambiental, ação controlada, acesso a registros telefônicos e telemáticos, interceptação, "
+            "afastamento de sigilo financeiro e bancário, cooperação entre instituições e órgãos, e "
+            "infiltração de agentes policiais. "
+            "A colaboração premiada está no artigo quarto. O juiz poderá, a requerimento das partes, conceder "
+            "o perdão judicial, reduzir em até dois terços a pena privativa de liberdade ou substituí-la por "
+            "restritiva de direitos daquele que tenha colaborado efetiva e voluntariamente com a investigação. "
+            "A ação controlada, artigo oitavo, consiste em retardar a intervenção policial para que a medida "
+            "se concretize no momento mais eficaz do ponto de vista da formação de provas e fornecimento de "
+            "informações. Muito relevante na prática da PRF, especialmente em operações de combate ao tráfico."
+        ),
+    },
+    # ── Direito Processual Penal ─────────────────────────────────────────────
+    {
+        "subject_slug": "direito-processual-penal",
+        "title": "Inquérito policial: natureza, características e prazos",
+        "description": "Artigos 4º a 23 do CPP",
+        "lesson_type": "summary",
+        "difficulty": "medium",
+        "display_order": 25,
+        "duration_secs": 210,
+        "script": (
+            "Vamos ao inquérito policial, peça fundamental para a atividade da PRF. "
+            "O inquérito policial é um procedimento administrativo, inquisitorial, escrito e sigiloso, "
+            "conduzido pela autoridade policial para apurar infrações penais e sua autoria. "
+            "O artigo quarto do Código de Processo Penal estabelece que a polícia judiciária será exercida "
+            "pelas autoridades policiais. O parágrafo único esclarece que a competência da polícia judiciária "
+            "não excluirá a de outras autoridades administrativas a quem por lei seja cometida a mesma função. "
+            "Características essenciais do inquérito. "
+            "Inquisitorial: não há contraditório nem ampla defesa. O investigado não é acusado, é investigado. "
+            "Escrito: todas as peças devem ser reduzidas a termo. Artigo nono do CPP. "
+            "Sigiloso: o artigo vinte do CPP autoriza o sigilo necessário à elucidação do fato. Mas atenção: "
+            "a Súmula Vinculante quatorze do STF garante ao advogado acesso aos elementos já documentados. "
+            "Dispensável: o Ministério Público pode oferecer denúncia sem inquérito se dispuser de informações "
+            "suficientes. "
+            "Indisponível: o artigo dezessete do CPP determina que a autoridade policial não poderá mandar "
+            "arquivar autos de inquérito. "
+            "Quanto aos prazos. Réu preso: dez dias, contados da prisão. Réu solto: trinta dias, podendo ser "
+            "prorrogado. Na Justiça Federal, réu preso: quinze dias, prorrogáveis por mais quinze. "
+            "O indiciamento é ato privativo do delegado de polícia, conforme artigo segundo, parágrafo sexto, "
+            "da Lei doze mil oitocentos e trinta."
+        ),
+    },
+    {
+        "subject_slug": "direito-processual-penal",
+        "title": "Prisão em flagrante: espécies e formalidades",
+        "description": "Artigos 301 a 310 do CPP",
+        "lesson_type": "deep_dive",
+        "difficulty": "medium",
+        "display_order": 26,
+        "duration_secs": 220,
+        "script": (
+            "A prisão em flagrante é a situação que o policial rodoviário federal mais enfrenta na prática. "
+            "O artigo trezentos e dois do CPP define quem se considera em flagrante delito. "
+            "Inciso primeiro: quem está cometendo a infração penal. É o flagrante próprio ou real. "
+            "Inciso segundo: quem acaba de cometê-la. Também é flagrante próprio. "
+            "Inciso terceiro: quem é perseguido logo após, pela autoridade, pelo ofendido ou por qualquer "
+            "pessoa, em situação que faça presumir ser autor da infração. É o flagrante impróprio ou quase-flagrante. "
+            "A expressão logo após é ampla. O STJ admite perseguição iniciada horas depois, desde que ininterrupta. "
+            "Inciso quarto: quem é encontrado logo depois com instrumentos, armas, objetos ou papéis que façam "
+            "presumir ser ele autor da infração. É o flagrante presumido ou ficto. "
+            "O artigo trezentos e um estabelece que qualquer pessoa do povo pode prender quem quer que seja "
+            "encontrado em flagrante delito. As autoridades policiais e seus agentes deverão prender quem "
+            "quer que seja encontrado em flagrante delito. "
+            "Repare a diferença: para o particular é uma faculdade, para a autoridade policial é uma obrigação. "
+            "O artigo trezentos e quatro traz as formalidades do auto de prisão em flagrante. O preso será "
+            "informado de seus direitos, entre os quais o de permanecer calado. "
+            "O parágrafo primeiro do artigo trezentos e seis, com a redação dada pelo pacote anticrime, "
+            "estabelece que em até vinte e quatro horas após a realização da prisão será encaminhado ao juiz "
+            "competente o auto de prisão em flagrante e, caso o autuado não informe o nome de seu advogado, "
+            "cópia integral para a Defensoria Pública. "
+            "E o artigo trezentos e dez determina que o juiz, ao receber o auto, deverá fundamentadamente: "
+            "relaxar a prisão ilegal, converter o flagrante em preventiva quando presentes os requisitos, "
+            "ou conceder liberdade provisória, com ou sem fiança."
+        ),
+    },
+    # ── Informática ──────────────────────────────────────────────────────────
+    {
+        "subject_slug": "informatica",
+        "title": "Segurança da informação: malwares e ataques",
+        "description": "Tipos de ameaças cobrados pelo CEBRASPE",
+        "lesson_type": "summary",
+        "difficulty": "easy",
+        "display_order": 90,
+        "duration_secs": 195,
+        "script": (
+            "Segurança da informação é o tema de informática que mais cai na PRF. Vamos aos tipos de malware. "
+            "Vírus: programa malicioso que se propaga inserindo cópias de si mesmo em outros programas ou "
+            "arquivos. Depende de execução pelo usuário para se propagar. Essa é a diferença fundamental "
+            "para o worm. "
+            "Worm, ou verme: propaga-se automaticamente pelas redes, enviando cópias de si mesmo de computador "
+            "para computador. Não precisa de execução pelo usuário. Consome recursos de rede e pode causar "
+            "lentidão. "
+            "Trojan, ou cavalo de Tróia: programa que parece ser útil ou inofensivo, mas executa funções "
+            "maliciosas sem o conhecimento do usuário. Não se replica sozinho. "
+            "Ransomware: sequestra os dados do computador, criptografando-os, e exige pagamento de resgate "
+            "para devolver o acesso. É a ameaça que mais cresceu nos últimos anos. "
+            "Spyware: programa que monitora as atividades do sistema e envia as informações coletadas para "
+            "terceiros. Há dois tipos principais: keylogger, que captura o que é digitado no teclado; e "
+            "screenlogger, que captura telas. "
+            "Rootkit: conjunto de programas que permitem esconder e assegurar a presença de um invasor no "
+            "computador comprometido. É o mais difícil de detectar. "
+            "Bot e botnet: bot é um programa que permite controle remoto do computador infectado. Quando "
+            "vários computadores são infectados e controlados em conjunto, formam uma botnet, usada para "
+            "ataques distribuídos de negação de serviço. "
+            "Phishing não é malware, é uma técnica de engenharia social. Usa e-mails, sites ou mensagens "
+            "falsas que imitam instituições legítimas para obter dados pessoais. A banca costuma confundir "
+            "phishing com pharming, que é o redirecionamento do tráfego de um site legítimo para um site falso."
+        ),
+    },
+    {
+        "subject_slug": "informatica",
+        "title": "Redes de computadores e protocolos",
+        "description": "TCP/IP, HTTP, DNS e conceitos de rede",
+        "lesson_type": "summary",
+        "difficulty": "medium",
+        "display_order": 91,
+        "duration_secs": 185,
+        "script": (
+            "Redes de computadores é presença garantida na prova. Vamos aos conceitos que mais caem. "
+            "O modelo TCP/IP tem quatro camadas: aplicação, transporte, internet e acesso à rede. "
+            "Na camada de aplicação temos os protocolos que o usuário usa. HTTP é o protocolo de transferência "
+            "de hipertexto, usado para acessar páginas web. HTTPS é a versão segura, que usa criptografia "
+            "TLS ou SSL. A porta padrão do HTTP é oitenta, e do HTTPS é quatrocentos e quarenta e três. "
+            "O SMTP é o protocolo de envio de e-mail. Porta vinte e cinco ou quinhentos e oitenta e sete. "
+            "POP3 é para receber e-mails baixando do servidor. Porta cento e dez. IMAP é para acessar "
+            "e-mails no servidor sem baixar. Porta cento e quarenta e três. "
+            "DNS é o sistema de nomes de domínio, que traduz nomes como exemplo ponto com em endereços IP. "
+            "FTP é o protocolo de transferência de arquivos. Porta vinte e um para controle e vinte para dados. "
+            "Na camada de transporte, TCP é orientado a conexão, confiável, com controle de fluxo. UDP não é "
+            "orientado a conexão e não garante entrega, mas é mais rápido. "
+            "Na camada de internet, o IP é responsável pelo endereçamento e roteamento. IPv4 usa endereços de "
+            "trinta e dois bits. IPv6 usa cento e vinte e oito bits. "
+            "Sobre redes: LAN é rede local. MAN é rede metropolitana. WAN é rede de longa distância. "
+            "VPN, rede privada virtual, cria um túnel criptografado sobre uma rede pública. É muito cobrado "
+            "o fato de que a VPN usa criptografia para garantir confidencialidade sobre a internet pública. "
+            "E firewall: dispositivo ou software que filtra pacotes de rede com base em regras. Não detecta "
+            "vírus — essa é a função do antivírus. A banca troca essas funções com frequência."
+        ),
+    },
+    # ── Redação Oficial ──────────────────────────────────────────────────────
+    {
+        "subject_slug": "redacao-oficial",
+        "title": "Manual de Redação da Presidência: princípios e pronomes de tratamento",
+        "description": "MRPR 3ª edição — impessoalidade, clareza e padrão ofício",
+        "lesson_type": "summary",
+        "difficulty": "easy",
+        "display_order": 95,
+        "duration_secs": 190,
+        "script": (
+            "A redação oficial é regida pelo Manual de Redação da Presidência da República, atualmente na "
+            "terceira edição. Os princípios fundamentais são: impessoalidade, clareza, concisão, formalidade "
+            "e uniformidade. "
+            "A impessoalidade exige que o texto seja isento de impressões individuais. A redação é feita em "
+            "nome do cargo, não da pessoa que o ocupa. "
+            "A clareza obriga o uso de palavras e expressões em seu sentido comum, evitando jargão técnico "
+            "desnecessário e ambiguidades. "
+            "A concisão é transmitir o máximo de informações com o mínimo de palavras. "
+            "A terceira edição do manual trouxe mudanças importantes nos pronomes de tratamento. "
+            "A forma de tratamento agora é uniforme: senhor ou senhora, seguido do cargo, para todas as "
+            "autoridades. Não se usam mais Vossa Excelência, Vossa Senhoria ou Vossa Magnificência. "
+            "A única exceção mantida é para o Presidente da República, que pode usar Excelentíssimo Senhor "
+            "Presidente da República. "
+            "O padrão ofício unificou ofício, aviso e memorando em um único tipo de expediente: o ofício. "
+            "O cabeçalho deve conter: brasão da República, nome do órgão, endereço, tipo e número do expediente, "
+            "local e data. "
+            "O fecho padrão é Atenciosamente para autoridades de mesma hierarquia ou inferior, e "
+            "Respeitosamente para autoridades de hierarquia superior. "
+            "Atenção: a terceira edição não menciona mais os termos aviso e memorando como tipos de documentos "
+            "separados. Se a questão apresentar esses termos como tipos vigentes, provavelmente está errada."
+        ),
+    },
     # ── Direito Administrativo ────────────────────────────────────────────────
     {
         "subject_slug": "direito-administrativo",
@@ -319,6 +511,68 @@ AUDIO_LESSONS = [
             "três do Supremo Tribunal Federal: a administração pode anular seus próprios atos quando eivados de "
             "vícios, e revogá-los por motivo de conveniência ou oportunidade. "
             "E o princípio da razoabilidade e proporcionalidade, que limita a discricionariedade administrativa."
+        ),
+    },
+    {
+        "subject_slug": "direito-administrativo",
+        "title": "Atos administrativos: conceito, atributos e extinção",
+        "description": "Classificação, atributos PATI e formas de extinção",
+        "lesson_type": "deep_dive",
+        "difficulty": "medium",
+        "display_order": 41,
+        "duration_secs": 210,
+        "script": (
+            "Continuando Direito Administrativo, vamos aos atos administrativos. "
+            "Ato administrativo é toda manifestação unilateral de vontade da Administração Pública que, "
+            "agindo nessa qualidade, tenha por fim imediato adquirir, resguardar, transferir, modificar, "
+            "extinguir e declarar direitos, ou impor obrigações. "
+            "São cinco os elementos ou requisitos do ato administrativo: competência, finalidade, forma, "
+            "motivo e objeto. Memorize pela sigla CO FI FO MO OB. "
+            "A competência é quem pode praticar o ato. A finalidade é sempre o interesse público. A forma "
+            "é como o ato se exterioriza. O motivo é o pressuposto de fato e de direito. O objeto é o "
+            "conteúdo do ato. "
+            "Destes, competência, finalidade e forma são sempre vinculados. Motivo e objeto podem ser "
+            "discricionários. "
+            "Os atributos do ato administrativo são quatro. Presunção de legitimidade: os atos presumem-se "
+            "legais até prova em contrário. Autoexecutoriedade: a Administração pode executar seus atos "
+            "diretamente, sem precisar do Judiciário. Tipicidade: cada ato corresponde a uma figura prevista "
+            "em lei. E imperatividade: os atos impõem obrigações ao particular independentemente de sua "
+            "concordância. "
+            "Formas de extinção. Anulação: quando o ato é ilegal, feita pela Administração ou pelo Judiciário, "
+            "com efeitos retroativos, ex tunc. Revogação: quando o ato é legal, mas inconveniente ou inoportuno, "
+            "só pela Administração, com efeitos prospectivos, ex nunc. "
+            "A Súmula quatrocentos e setenta e três do STF consagra a autotutela: a administração pode anular "
+            "seus próprios atos quando eivados de vícios que os tornem ilegais, porque deles não se originam "
+            "direitos, ou revogá-los por motivo de conveniência ou oportunidade."
+        ),
+    },
+    {
+        "subject_slug": "direito-administrativo",
+        "title": "Poderes administrativos e abuso de poder",
+        "description": "Poder de polícia, disciplinar, hierárquico e regulamentar",
+        "lesson_type": "deep_dive",
+        "difficulty": "medium",
+        "display_order": 42,
+        "duration_secs": 200,
+        "script": (
+            "Os poderes administrativos são instrumentos para a Administração cumprir suas finalidades. "
+            "O poder hierárquico permite organizar a estrutura interna, distribuir competências, dar ordens, "
+            "fiscalizar, delegar e avocar competências. Gera relações de subordinação. "
+            "O poder disciplinar é a prerrogativa de apurar infrações e aplicar penalidades a agentes públicos "
+            "e particulares que tenham vínculo jurídico específico com a Administração. Não se confunde com "
+            "o poder de polícia, que atinge a coletividade. "
+            "O poder regulamentar é a competência do chefe do Executivo para editar decretos e regulamentos "
+            "visando à fiel execução das leis. Não pode inovar na ordem jurídica, ou seja, não pode criar "
+            "obrigações ou direitos não previstos em lei. "
+            "O poder de polícia é o mais cobrado. O artigo setenta e oito do CTN define: considera-se poder "
+            "de polícia a atividade da administração pública que, limitando ou disciplinando direito, interesse "
+            "ou liberdade, regula a prática de ato ou abstenção de fato, em razão de interesse público. "
+            "Os atributos do poder de polícia são: discricionariedade, autoexecutoriedade e coercibilidade. "
+            "O abuso de poder tem duas modalidades. Excesso de poder: o agente atua fora dos limites de sua "
+            "competência. Desvio de poder, também chamado desvio de finalidade: o agente atua dentro de sua "
+            "competência, mas com finalidade diversa da prevista em lei. "
+            "O desvio de poder é mais difícil de provar porque exige demonstrar a intenção do agente. A banca "
+            "costuma apresentar situações em que o ato é formalmente legal, mas a motivação é perseguição pessoal."
         ),
     },
     # ── Direitos Humanos ──────────────────────────────────────────────────────
