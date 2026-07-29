@@ -27,10 +27,12 @@ async def generate_simulado(
 
     exam_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
     items_map = ITEMS_PER_SUBJECT_SIMULADO_PM if is_pm else ITEMS_PER_SUBJECT_SIMULADO
-    time_limit = 300 if is_pm else 270
+    time_limit = 240 if is_pm else 270
     exam_label = "PMGO" if is_pm else "PRF"
+    q_type = "multipla_escolha" if is_pm else "certo_errado"
 
-    questions_by_block = {1: [], 2: [], 3: []}
+    block_nums = sorted(exam_blocks.keys())
+    questions_by_block = {bn: [] for bn in block_nums}
     subject_rows = await repo._fetch("SELECT id, slug FROM subjects WHERE is_active IS NOT FALSE")
     slug_to_id = {r["slug"]: r["id"] for r in subject_rows}
 
@@ -42,55 +44,69 @@ async def generate_simulado(
             needed = items_map.get(subj_slug, 5)
             rows = await repo._fetch(
                 """SELECT id FROM questions
-                   WHERE subject_id = $1 AND question_type = 'certo_errado'
+                   WHERE subject_id = $1 AND question_type = $2
                      AND is_active = TRUE
-                   ORDER BY RANDOM() LIMIT $2""",
-                subj_id, needed,
+                   ORDER BY RANDOM() LIMIT $3""",
+                subj_id, q_type, needed,
             )
             questions_by_block[block_num].extend([r["id"] for r in rows])
 
     all_ids = []
     block_map = {}
-    for bn in [1, 2, 3]:
+    for bn in block_nums:
         for qid in questions_by_block[bn]:
             block_map[str(qid)] = bn
             all_ids.append(qid)
 
     total = len(all_ids)
-    if total < 20:
+    min_required = 10 if is_pm else 20
+    if total < min_required:
+        fmt = "múltipla escolha" if is_pm else "C/E"
         raise HTTPException(
             400,
-            f"Banco insuficiente para simulado: apenas {total} questões C/E disponíveis"
+            f"Banco insuficiente para simulado: apenas {total} questões {fmt} disponíveis"
         )
 
     import json
+    block_scores_init = {
+        f"bloco_{bn}": {
+            "total": len(questions_by_block[bn]),
+            "certas": 0, "erradas": 0,
+            "branco": len(questions_by_block[bn]),
+            "score": 0,
+        }
+        for bn in block_nums
+    }
+
     row = await repo._fetchrow(
         """INSERT INTO simulated_exams
            (user_id, title, exam_type, total_questions, time_limit_mins, questions, block_scores)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
            RETURNING id, started_at""",
         user_id,
-        f"Simulado {exam_label} — {total} itens",
+        f"Simulado {exam_label} — {total} {'questões' if is_pm else 'itens'}",
         f"simulado_{exam_label.lower()}",
         total,
         time_limit,
         [str(q) for q in all_ids],
-        {
-            f"bloco_{bn}": {"total": len(questions_by_block[bn]), "certas": 0, "erradas": 0, "branco": len(questions_by_block[bn]), "score": 0}
-            for bn in [1, 2, 3]
-        },
+        block_scores_init,
     )
 
     return {
         "id": row["id"],
         "total_questions": total,
         "blocks": {
-            f"bloco_{bn}": {"total": len(questions_by_block[bn]), "subjects": exam_blocks[bn]["subjects"]}
-            for bn in [1, 2, 3]
+            f"bloco_{bn}": {
+                "total": len(questions_by_block[bn]),
+                "subjects": exam_blocks[bn]["subjects"],
+                "name": exam_blocks[bn].get("name", f"Bloco {bn}"),
+            }
+            for bn in block_nums
         },
         "time_limit_mins": time_limit,
         "started_at": row["started_at"],
         "exam_type": exam_label,
+        "question_format": "multipla_escolha" if is_pm else "certo_errado",
     }
 
 
@@ -163,10 +179,11 @@ async def answer_exam_question(
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Answer a single question in the exam (C or E)."""
+    """Answer a single question in the exam."""
     import json
-    if selected not in ("C", "E"):
-        raise HTTPException(400, "Resposta deve ser 'C' (Certo) ou 'E' (Errado)")
+    valid_answers = {"A", "B", "C", "D", "E"}
+    if selected.upper() not in valid_answers:
+        raise HTTPException(400, "Resposta deve ser A, B, C, D ou E")
 
     exam = await repo._fetchrow(
         "SELECT * FROM simulated_exams WHERE id = $1 AND user_id = $2",
@@ -184,10 +201,10 @@ async def answer_exam_question(
     if not correct_alt:
         raise HTTPException(404, "Questão não encontrada no simulado")
 
-    is_correct = selected == correct_alt["letter"]
+    is_correct = selected.upper() == correct_alt["letter"]
 
     answers = json.loads(exam["answers"]) if isinstance(exam["answers"], str) else exam["answers"]
-    answers[str(question_id)] = {"selected": selected, "correct": is_correct}
+    answers[str(question_id)] = {"selected": selected.upper(), "correct": is_correct}
 
     await repo._execute(
         "UPDATE simulated_exams SET answers = $1 WHERE id = $2",
@@ -203,7 +220,7 @@ async def finish_exam(
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Finish the exam and calculate CEBRASPE scoring."""
+    """Finish the exam and calculate scoring (CEBRASPE for PRF, AOCP for PMGO)."""
     import json
     from datetime import datetime, timezone
 
@@ -217,12 +234,11 @@ async def finish_exam(
     q_ids = json.loads(exam["questions"]) if isinstance(exam["questions"], str) else exam["questions"]
     answers = json.loads(exam["answers"]) if isinstance(exam["answers"], str) else exam["answers"]
 
-    block_stats = {1: {"certas": 0, "erradas": 0, "branco": 0, "total": 0},
-                   2: {"certas": 0, "erradas": 0, "branco": 0, "total": 0},
-                   3: {"certas": 0, "erradas": 0, "branco": 0, "total": 0}}
-
     is_pm = exam.get("exam_type", "").startswith("simulado_pm")
     active_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
+    block_nums = sorted(active_blocks.keys())
+
+    block_stats = {bn: {"certas": 0, "erradas": 0, "branco": 0, "total": 0} for bn in block_nums}
 
     for qid_str in q_ids:
         q = await repo._fetchrow(
@@ -248,21 +264,42 @@ async def finish_exam(
         else:
             block_stats[q_block]["erradas"] += 1
 
-    for bn in block_stats:
-        s = block_stats[bn]
-        s["score"] = s["certas"] - s["erradas"]
+    if is_pm:
+        for bn in block_stats:
+            s = block_stats[bn]
+            weight = active_blocks[bn].get("weight", 1)
+            s["score"] = s["certas"] * weight
 
-    total_certas = sum(s["certas"] for s in block_stats.values())
-    total_erradas = sum(s["erradas"] for s in block_stats.values())
-    score_liquid = total_certas - total_erradas
-    score_raw = total_certas
+        total_score = sum(s["score"] for s in block_stats.values())
+        max_score = sum(
+            block_stats[bn]["total"] * active_blocks[bn].get("weight", 1)
+            for bn in block_nums
+        )
+        percentage = round(total_score / max(max_score, 1) * 100, 1)
+        eliminated = percentage < 60
+        any_zero = any(
+            block_stats[bn]["certas"] == 0 and block_stats[bn]["total"] > 0
+            for bn in block_nums
+        )
+        if any_zero:
+            eliminated = True
 
-    eliminated = any(
-        s["score"] < 0 for s in block_stats.values()
-    )
+        score_liquid = total_score
+        score_raw = sum(s["certas"] for s in block_stats.values())
+    else:
+        for bn in block_stats:
+            s = block_stats[bn]
+            s["score"] = s["certas"] - s["erradas"]
+
+        total_certas = sum(s["certas"] for s in block_stats.values())
+        total_erradas = sum(s["erradas"] for s in block_stats.values())
+        score_liquid = total_certas - total_erradas
+        score_raw = total_certas
+        percentage = round(score_liquid / max(len(q_ids), 1) * 100, 1)
+        eliminated = any(s["score"] < 0 for s in block_stats.values())
 
     block_scores_json = {
-        f"bloco_{bn}": block_stats[bn] for bn in [1, 2, 3]
+        f"bloco_{bn}": block_stats[bn] for bn in block_nums
     }
 
     await repo._execute(
@@ -274,17 +311,26 @@ async def finish_exam(
         block_scores_json, eliminated, exam_id,
     )
 
-    return {
+    result = {
         "score": score_liquid,
         "score_raw": score_raw,
         "total_questions": len(q_ids),
-        "certas": total_certas,
-        "erradas": total_erradas,
-        "branco": len(q_ids) - total_certas - total_erradas,
+        "certas": sum(s["certas"] for s in block_stats.values()),
+        "erradas": sum(s["erradas"] for s in block_stats.values()),
+        "branco": sum(s["branco"] for s in block_stats.values()),
         "blocks": block_scores_json,
         "eliminated": eliminated,
-        "percentage": round(score_liquid / max(len(q_ids), 1) * 100, 1),
+        "percentage": percentage,
     }
+
+    if is_pm:
+        result["scoring_method"] = "aocp_weighted"
+        result["max_score"] = max_score
+        result["passing_threshold"] = "60%"
+    else:
+        result["scoring_method"] = "cebraspe"
+
+    return result
 
 
 @router.get("/history")

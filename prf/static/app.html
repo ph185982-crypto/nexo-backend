@@ -1294,27 +1294,30 @@ function viewSimulado() {
   if (S.simResult) return viewSimuladoResult();
   if (S.sim) return viewSimuladoExam();
   const isPM = S.targetExam && S.targetExam.startsWith('PM');
-  const banca = isPM ? 'IBFC / IDECAN' : 'CEBRASPE';
-  const totalItens = isPM ? 120 : 120;
-  const tempo = isPM ? '5h' : '4h30';
+  const banca = isPM ? 'Instituto AOCP' : 'CEBRASPE';
+  const totalItens = isPM ? 50 : 120;
+  const tempo = isPM ? '4h' : '4h30';
+  const correcao = isPM ? '+1 ou +2 · 0' : '+1 · −1 · 0';
   const blocos = isPM ? [
-    { name:'Bloco I', count:'40 itens', desc:'Português, RLM, Informática, Ética' },
-    { name:'Bloco II', count:'40 itens', desc:'Dir. Constitucional, Penal, Proc. Penal, Administrativo, Leg. Especial, Dir. Humanos' },
-    { name:'Bloco III', count:'40 itens', desc:'Dir. Penal Militar, Proc. Penal Militar, Legislação PM, Criminologia, Medicina Legal' },
+    { name:'Conhec. Gerais', count:'15 questões', desc:'Português (10) · Realidade de Goiás (5) — Peso 1' },
+    { name:'Conhec. Específicos', count:'35 questões', desc:'Dir. Constitucional, Penal, Proc. Penal, Administrativo, Penal Militar, Proc. Penal Militar, Leg. Extravagante — Peso 2' },
   ] : [
     { name:'Bloco I', count:'55 itens', desc:'Português, RLM, Informática, Física, Ética, Geopolítica, Espanhol' },
     { name:'Bloco II', count:'30 itens', desc:'Legislação de Trânsito' },
     { name:'Bloco III', count:'35 itens', desc:'Dir. Administrativo, Constitucional, Penal, Proc. Penal, Leg. Especial, Dir. Humanos' },
   ];
+  const formatDesc = isPM
+    ? `${totalItens} questões de múltipla escolha (A a E), dois blocos com pesos diferenciados. Nota mínima: 60%.`
+    : `${totalItens} itens Certo ou Errado, três blocos, correção oficial. Você é eliminado se a nota de qualquer bloco ficar negativa.`;
   return `${appbar()}
     <div class="sim-intro fade-in">
       <div class="section-eyebrow">Simulado ${S.targetExam || 'PRF'} · ${banca}</div>
       <div class="sim-headline">Prova completa,<br><em>como no dia D</em>.</div>
-      <div class="sim-desc">${totalItens} itens Certo ou Errado, três blocos, correção oficial. Você é eliminado se a nota de qualquer bloco ficar negativa.</div>
+      <div class="sim-desc">${formatDesc}</div>
       <div class="sim-spec">
-        <div class="sim-spec-row"><span class="lbl">${I.layers}Total de itens</span><span class="val">${totalItens} itens</span></div>
+        <div class="sim-spec-row"><span class="lbl">${I.layers}Total</span><span class="val">${totalItens} ${isPM ? 'questões' : 'itens'}</span></div>
         <div class="sim-spec-row"><span class="lbl">${I.timer}Tempo</span><span class="val">${tempo}</span></div>
-        <div class="sim-spec-row"><span class="lbl">${I.target}Correção</span><span class="val">+1 · −1 · 0</span></div>
+        <div class="sim-spec-row"><span class="lbl">${I.target}Correção</span><span class="val">${correcao}</span></div>
       </div>
       <div class="section-eyebrow">Distribuição por bloco</div>
       <div class="sim-blocks-preview mt-12">
@@ -1768,7 +1771,8 @@ async function startMissionBlock(blockIdx, type) {
     S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
     S.loading.questions = true; S.tab = 'practice'; render();
     try {
-      const d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15`);
+      const qtype = (S.targetExam && S.targetExam.startsWith('PM')) ? 'multipla_escolha' : 'certo_errado';
+        const d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
       S.questions = d.questions || [];
       if (!S.questions.length) {
         toast('Nenhuma questão disponível — avançando', 'info');
@@ -1832,7 +1836,8 @@ async function selectSubject(id, name) {
   S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
   S.loading.questions = true; render();
   try {
-    const d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
+    const qtype = (S.targetExam && S.targetExam.startsWith('PM')) ? 'multipla_escolha' : 'certo_errado';
+    const d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20&question_type=${qtype}`);
     S.questions = d.questions || [];
   } catch (e) { toast('Erro ao carregar questões', 'error'); }
   S.loading.questions = false; render(); scrollTop();

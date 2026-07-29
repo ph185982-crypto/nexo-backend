@@ -172,6 +172,7 @@ class PRFRepository:
         subject_id: UUID | None = None,
         topic_id: UUID | None = None,
         difficulty: str | None = None,
+        question_type: str | None = None,
         limit: int = 10,
         exclude_ids: list[UUID] | None = None,
     ) -> list[dict]:
@@ -190,6 +191,10 @@ class PRFRepository:
         if difficulty:
             conditions.append(f"q.difficulty = ${idx}")
             params.append(difficulty)
+            idx += 1
+        if question_type:
+            conditions.append(f"q.question_type = ${idx}")
+            params.append(question_type)
             idx += 1
         if exclude_ids:
             conditions.append(f"q.id != ALL(${idx})")

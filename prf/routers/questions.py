@@ -19,6 +19,7 @@ async def list_questions(
     subject_id: Optional[UUID] = None,
     topic_id: Optional[UUID] = None,
     difficulty: Optional[str] = None,
+    question_type: Optional[str] = None,
     limit: int = Query(default=10, ge=1, le=100),
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
@@ -28,6 +29,7 @@ async def list_questions(
         subject_id=subject_id,
         topic_id=topic_id,
         difficulty=difficulty,
+        question_type=question_type,
         limit=limit,
     )
 

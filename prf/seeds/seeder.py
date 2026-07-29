@@ -213,11 +213,8 @@ async def _seed_questions_from_json(
                 skipped += 1
                 continue
 
-            # A CEBRASPE item is a full assertion. Anything this short is
-            # a leftover multiple-choice alternative that lost its stem,
-            # and cannot be judged Certo or Errado — never seed one.
             text = q.get("text") or ""
-            if len(text) < MIN_ITEM_CHARS:
+            if q.get("question_type", "certo_errado") == "certo_errado" and len(text) < MIN_ITEM_CHARS:
                 skipped += 1
                 continue
 

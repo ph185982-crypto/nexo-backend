@@ -191,6 +191,15 @@ SUBJECTS = [
         "icon": "heart",
         "display_order": 19,
     },
+    {
+        "name": "Realidade de Goiás",
+        "slug": "realidade-goias",
+        "description": "História, geografia, cultura, política e economia do Estado de Goiás",
+        "weight_prf": 0.0, "weight_pm": 1.5,
+        "color": "#059669",
+        "icon": "map",
+        "display_order": 20,
+    },
 ]
 
 # ═══════════════════════════════════════════════════════════════════
@@ -242,53 +251,43 @@ ITEMS_PER_SUBJECT_SIMULADO = {
 }
 
 # ═══════════════════════════════════════════════════════════════════
-# BLOCOS DA PROVA PMGO (bancas: IBFC / IDECAN / Instituto AOCP)
+# BLOCOS DA PROVA PMGO — Soldado Combatente (Instituto AOCP 2022)
+# 50 questões, múltipla escolha A-E, sem pontuação negativa
+# Conhec. Gerais peso 1 · Conhec. Específicos peso 2
 # ═══════════════════════════════════════════════════════════════════
 
 EXAM_BLOCKS_PM = {
     1: {
-        "name": "Bloco I — Conhecimentos Básicos",
-        "total_items": 40,
+        "name": "Conhecimentos Gerais",
+        "total_items": 15,
+        "weight": 1,
         "subjects": [
-            "lingua-portuguesa", "raciocinio-logico", "informatica",
-            "etica-servico-publico",
+            "lingua-portuguesa", "realidade-goias",
         ],
     },
     2: {
-        "name": "Bloco II — Legislação e Direitos",
-        "total_items": 40,
+        "name": "Conhecimentos Específicos",
+        "total_items": 35,
+        "weight": 2,
         "subjects": [
             "direito-constitucional", "direito-penal",
             "direito-processual-penal", "direito-administrativo",
-            "legislacao-especial", "direitos-humanos",
-        ],
-    },
-    3: {
-        "name": "Bloco III — Conhecimentos Específicos PM",
-        "total_items": 40,
-        "subjects": [
             "direito-penal-militar", "direito-processual-penal-militar",
-            "legislacao-institucional-pm", "criminologia", "medicina-legal",
+            "legislacao-especial",
         ],
     },
 }
 
 ITEMS_PER_SUBJECT_SIMULADO_PM = {
-    "lingua-portuguesa": 12,
-    "raciocinio-logico": 10,
-    "informatica": 8,
-    "etica-servico-publico": 10,
-    "direito-constitucional": 8,
-    "direito-penal": 8,
-    "direito-processual-penal": 6,
+    "lingua-portuguesa": 10,
+    "realidade-goias": 5,
+    "direito-constitucional": 6,
+    "direito-penal": 5,
+    "direito-processual-penal": 5,
     "direito-administrativo": 6,
-    "legislacao-especial": 6,
-    "direitos-humanos": 6,
-    "direito-penal-militar": 10,
-    "direito-processual-penal-militar": 8,
-    "legislacao-institucional-pm": 10,
-    "criminologia": 6,
-    "medicina-legal": 6,
+    "direito-penal-militar": 4,
+    "direito-processual-penal-militar": 5,
+    "legislacao-especial": 4,
 }
 
 # ═══════════════════════════════════════════════════════════════════
@@ -452,6 +451,13 @@ TOPICS = {
         {"name": "Tanatologia", "slug": "tanatologia", "weight": 2.0},
         {"name": "Toxicologia forense", "slug": "toxicologia-forense", "weight": 2.0},
         {"name": "Documentos médico-legais", "slug": "documentos-medico-legais", "weight": 1.5},
+    ],
+    "realidade-goias": [
+        {"name": "História de Goiás", "slug": "historia-goias", "weight": 2.5},
+        {"name": "Geografia de Goiás", "slug": "geografia-goias", "weight": 2.0},
+        {"name": "Economia de Goiás", "slug": "economia-goias", "weight": 2.0},
+        {"name": "Cultura e sociedade goiana", "slug": "cultura-sociedade-goiana", "weight": 1.5},
+        {"name": "Política e organização do Estado", "slug": "politica-organizacao-go", "weight": 2.0},
     ],
 }
 
