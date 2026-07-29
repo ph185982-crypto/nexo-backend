@@ -378,3 +378,45 @@ async def purge_duplicates(
         FRAGMENT_MAX_CHARS,
     )
     return {"deleted": len(rows), "remaining_fragments": remaining}
+
+
+@router.post("/seed/audio")
+async def seed_audio(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Seed missing audio lessons into the database."""
+    _require_admin(x_maintenance_token)
+
+    from prf.seeds.audio_lessons import AUDIO_LESSONS
+
+    subject_rows = await repo._fetch("SELECT id, slug FROM subjects")
+    subject_map = {r["slug"]: r["id"] for r in subject_rows}
+
+    count = 0
+    skipped = []
+    async with repo.pool.acquire() as conn:
+        for lesson in AUDIO_LESSONS:
+            existing = await conn.fetchval(
+                "SELECT id FROM audio_lessons WHERE title = $1", lesson["title"],
+            )
+            if existing:
+                continue
+            sid = subject_map.get(lesson["subject_slug"])
+            if not sid:
+                skipped.append(lesson["subject_slug"])
+                continue
+            await conn.execute(
+                """INSERT INTO audio_lessons
+                     (subject_id, title, description, script, duration_secs,
+                      lesson_type, difficulty, display_order, is_active)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7::difficulty_level, $8, TRUE)""",
+                sid,
+                lesson["title"], lesson.get("description"), lesson["script"],
+                lesson.get("duration_secs"), lesson.get("lesson_type", "summary"),
+                lesson.get("difficulty", "medium"), lesson.get("display_order", 0),
+            )
+            count += 1
+
+    total = await repo._fetchval("SELECT COUNT(*) FROM audio_lessons")
+    return {"seeded": count, "total": total, "skipped_slugs": skipped}

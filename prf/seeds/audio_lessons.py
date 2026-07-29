@@ -452,7 +452,7 @@ AUDIO_LESSONS = [
     },
     # ── Redação Oficial ──────────────────────────────────────────────────────
     {
-        "subject_slug": "redacao-oficial",
+        "subject_slug": "lingua-portuguesa",
         "title": "Manual de Redação da Presidência: princípios e pronomes de tratamento",
         "description": "MRPR 3ª edição — impessoalidade, clareza e padrão ofício",
         "lesson_type": "summary",

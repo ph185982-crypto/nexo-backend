@@ -309,20 +309,27 @@ async def _seed_audio_lessons(pool: asyncpg.Pool, subject_map: dict[str, UUID]):
     count = 0
     async with pool.acquire() as conn:
         for lesson in AUDIO_LESSONS:
-            existing = await conn.fetchval(
-                "SELECT id FROM audio_lessons WHERE title = $1", lesson["title"],
-            )
-            if existing:
-                continue
-            await conn.execute(
-                """INSERT INTO audio_lessons
-                     (subject_id, title, description, script, duration_secs,
-                      lesson_type, difficulty, display_order, is_active)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7::difficulty_level, $8, TRUE)""",
-                subject_map.get(lesson["subject_slug"]),
-                lesson["title"], lesson.get("description"), lesson["script"],
-                lesson.get("duration_secs"), lesson.get("lesson_type", "summary"),
-                lesson.get("difficulty", "medium"), lesson.get("display_order", 0),
-            )
-            count += 1
+            try:
+                existing = await conn.fetchval(
+                    "SELECT id FROM audio_lessons WHERE title = $1", lesson["title"],
+                )
+                if existing:
+                    continue
+                sid = subject_map.get(lesson["subject_slug"])
+                if not sid:
+                    logger.warning(f"[PRF] Audio lesson skip — unknown slug: {lesson['subject_slug']}")
+                    continue
+                await conn.execute(
+                    """INSERT INTO audio_lessons
+                         (subject_id, title, description, script, duration_secs,
+                          lesson_type, difficulty, display_order, is_active)
+                       VALUES ($1, $2, $3, $4, $5, $6, $7::difficulty_level, $8, TRUE)""",
+                    sid,
+                    lesson["title"], lesson.get("description"), lesson["script"],
+                    lesson.get("duration_secs"), lesson.get("lesson_type", "summary"),
+                    lesson.get("difficulty", "medium"), lesson.get("display_order", 0),
+                )
+                count += 1
+            except Exception as e:
+                logger.warning(f"[PRF] Audio lesson seed error: {e}")
     logger.info(f"[PRF] Seeded {count} audio lessons")
