@@ -2217,7 +2217,7 @@ function viewSettings() {
       </div>
       <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
         ${S.targetExam === 'PMGO'
-          ? 'Bancas: IBFC / IDECAN / AOCP. Inclui Dir. Penal Militar, Processual Penal Militar, Legislação Institucional PM, Criminologia e Medicina Legal. Exclui matérias exclusivas PRF.'
+          ? 'Banca: Instituto AOCP (2022). Inclui Dir. Penal Militar, Processual Penal Militar, Legislação Institucional PM, Criminologia e Medicina Legal. Exclui matérias exclusivas PRF.'
           : 'Banca: CEBRASPE. Trilha focada nas matérias do edital da PRF, com pesos do certame.'}
       </p>
     </div>`;
@@ -2229,12 +2229,12 @@ async function setExam(exam) {
   S.subjects = null;
   render();
   try {
-    await api('/api/prf/onboarding/complete', {
-      method:'POST', json:{ target_exam: exam },
+    await api('/api/prf/onboarding/target-exam', {
+      method:'PATCH', json:{ target_exam: exam },
     });
   } catch (e) {}
   loadSubjects();
-  toast(exam === 'PMGO' ? 'Trilha PMGO ativada — bancas IBFC/IDECAN' : 'Trilha PRF ativada — banca CEBRASPE', 'success');
+  toast(exam === 'PMGO' ? 'Trilha PMGO ativada — banca Instituto AOCP' : 'Trilha PRF ativada — banca CEBRASPE', 'success');
 }
 
 // Essays

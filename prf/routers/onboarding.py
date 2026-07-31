@@ -91,6 +91,25 @@ async def get_routines(
     ) for r in routines]
 
 
+@router.patch("/target-exam")
+async def set_target_exam(
+    body: dict,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Update only the target exam without touching other profile settings."""
+    exam = (body.get("target_exam") or "PRF").upper()
+    if exam not in ("PRF", "PMGO", "PM"):
+        raise HTTPException(400, "target_exam deve ser PRF ou PMGO")
+    await repo._execute(
+        """INSERT INTO user_profiles (user_id, target_exam, onboarding_complete)
+           VALUES ($1, $2, TRUE)
+           ON CONFLICT (user_id) DO UPDATE SET target_exam = $2, updated_at = NOW()""",
+        user_id, exam,
+    )
+    return {"target_exam": exam}
+
+
 @router.get("/subjects")
 async def list_subjects(repo: PRFRepository = Depends(get_repo)):
     subjects = await repo.get_subjects()
