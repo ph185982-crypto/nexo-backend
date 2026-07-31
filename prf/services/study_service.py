@@ -331,6 +331,7 @@ class StudyService:
                 if xp else 0, 1
             ),
             "next_review_in": _next_review_label(reviews_due),
+            "target_exam": (profile or {}).get("target_exam", "PRF"),
         }
 
     # ── Approval Estimate ─────────────────────────────────────────────────────
