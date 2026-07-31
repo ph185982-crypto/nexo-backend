@@ -1,0 +1,184 @@
+[
+  {
+    "subject_slug": "realidade-goias",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "O texto se refere à Bacia Hidrográfica do rio",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Ribeiro.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Parnaíba.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Meia Ponte.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "Atlântico Leste.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Tocantins-Araguaia.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Localizada na região centro-sul do Estado de Goiás, pode ser considerada a principal bacia hidrográfica goiana por concentrar, em apenas 4,2% do território do Estado, aproximadamente 40% de sua população, incluindo a Região Metropolitana de Goiânia e importantes municípios, polos industriais e agroindustriais, que utilizam as suas águas para diversas atividades."
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "O advento da mineração imprimiu significativa e profunda mudança no espaço geográfico brasileiro. Foi um período de grandes transformações econômicas e sociais e que teve como consequências a",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "melhoria substancial da qualidade de vida das populações dos arraiais e das comunidades indígenas estabelecidas no entorno dessas localidades.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "concentração do poder político e econômico na região Sudeste, alavancando o desenvolvimento industrial e urbano nessa região do país.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "substancial expansão das capitanias da Bahia, de Pernambuco e de São Vicente, além da ampliação da linha imaginária do Tratado de Tordesilhas até a bacia do rio Prata.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "criação e a estruturação de um empreendimento comum português e flamengo, uma fusão que foi essencial para viabilizar a exportação do ouro brasileiro para a Europa.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "multiplicação dos arraiais, o aumento populacional considerável e a estruturação capitalista em detrimento do primitivismo indígena, à medida que a mineração avançava.",
+        "is_correct": true
+      }
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "O texto se refere à mobilização de",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Trombas e Formoso.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "Sabinada.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Canudos.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Chibata.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Malês.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Lideradas por José Porfírio e atraídas pela política de expansão da fronteira agrícola do governo Getúlio Vargas, dezenas de famílias de camponeses ocuparam, na década de 1940, uma região a 400 km ao norte de Goiânia.\n\nO conflito começou quando, vendo o progresso dos posseiros, fazendeiros locais, sem nenhum direito sobre as terras, passaram a exigir uma parcela da sua produção, o que foi, é claro, negado. A tensão na região se agravou ainda mais com a chegada de grileiros que, forjando títulos de propriedade, tentaram expulsar os camponeses das terras ocupadas. Estes buscaram, por diversas vezes, resolver legalmente a questão, mas sem êxito.\n\nEste movimento ganhou força a partir de 1954, quando militantes do Partido Comunista Brasileiro (PCB) chegaram à região com o intuito de estabelecer contato com os camponeses e \"ajudar na organização da resistência\", além de ampliar a área de atuação política do partido.\n\nOs posseiros se armaram e passaram a se organizar em grupos. Além da recém-fundada Associação dos Lavradores da região, eles criaram os chamados conselhos de córrego, de acordo com o curso d'água onde cada grupo morava. Cada conselho discutia os seus problemas e o encaminhamento da luta, além de defender o local contra ações da polícia e dos pistoleiros."
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Em relação à escravidão no estado de Goiás, informe se é verdadeiro (V) ou falso (F) o que se afirma a seguir e assinale a alternativa com a sequência correta.\n\n( ) A população de Goiás, em princípios do século XIX, era composta, majoritariamente, por negros e pardos que juntos correspondiam a 80% da população goiana.\n( ) O caráter urbano da sociedade mineradora, com uma atividade comercial intensa e variada, trouxe novas modalidades de escravidão, tal como a escravidão de ganho.\n( ) A escravidão nas minas apresentava-se como menos opressiva que nas regiões agrícolas. A fiscalização dos garimpos também era menos intensa, pois acreditava-se na lealdade dos escravos.\n( ) A decadência das minas e a transição para a economia agropastoril iniciaram, em Goiás, a gradativa desagregação do sistema escravista, já que a pecuária, única atividade de caráter comercial ao longo do século XIX em Goiás, empregava pouca ou nenhuma mão de obra escrava.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "V – F – V – F.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "F – V – F – F.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "V – V – F – V.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "F – V – F – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "F – F – V – V.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "A região da Chapada dos Veadeiros está localizada em Goiás e abarca os municípios de Alto Paraíso de Goiás, Cavalcante, Teresina de Goiás e Colinas do Sul, que abrigam o Parque Nacional de mesmo nome. Geomorfologicamente, essa chapada se encontra na região",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "do Planalto Residual Norte-Amazônico e do Planalto dos Guimarães.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "das Chapadas dos Cocais e do Complexo Montanhoso Mangabeiras.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "da Planície da Borborema e da Chapada do Apodi.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "do Planalto Central Goiano e do Complexo Montanhoso Veadeiros-Araí.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "das Chapadas do Araripe e das Chapadas da Bacia do Parnaíba.",
+        "is_correct": false
+      }
+    ]
+  }
+]

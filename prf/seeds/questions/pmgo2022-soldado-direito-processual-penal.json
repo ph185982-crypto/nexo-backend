@@ -1,0 +1,183 @@
+[
+  {
+    "subject_slug": "direito-processual-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa com a sequência correta (V/F) das afirmativas sobre a requisição de informações sobre estações rádio base no caso de tráfico de pessoas.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "V – F – V – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "V – V – F – F.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "V – F – F – F.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "F – V – V – F.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "F – F – V – V.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Por intermédio do seu disque denúncia, a Polícia Militar do Estado de Goiás foi informada que determinada organização criminosa, especializada na prática do crime de tráfico de pessoas, estaria agindo na região do município de Abadiânia. Conforme as informações colhidas, primeiramente, membros da organização criminosa, mediante o emprego de fraude, aliciavam adolescentes em situação de vulnerabilidade, para, posteriormente, transportá-los ao exterior com a finalidade de exploração sexual.\n\nConsiderando o caso narrado e à luz das disposições do Código de Processo Penal acerca da requisição de informações sobre as estações rádio base, informe se é verdadeiro (V) ou falso (F) o que se afirma a seguir e assinale a alternativa com a sequência correta.\n\n( ) Se necessário à prevenção e à repressão dos crimes relacionados ao tráfico de pessoas, o membro do Ministério Público ou o delegado de polícia poderão requisitar, mediante autorização judicial, às empresas prestadoras de serviço de telecomunicações e/ou telemática que disponibilizem imediatamente os meios técnicos adequados – como sinais, informações e outros – que permitam a localização da vítima ou dos suspeitos do delito em curso.\n( ) O sinal deverá ser fornecido pela prestadora de telefonia móvel celular por período não superior a quinze dias, renovável por uma única vez, por igual período.\n( ) O inquérito policial deverá ser instaurado no prazo máximo de quarenta e oito horas, contado do registro da respectiva ocorrência policial.\n( ) Não havendo manifestação judicial no prazo máximo de vinte e quatro horas, a autoridade competente requisitará às empresas prestadoras de serviço de telecomunicações e/ou telemática que disponibilizem imediatamente os meios técnicos adequados – como sinais, informações e outros – que permitam a localização da vítima ou dos suspeitos do delito em curso, com imediata comunicação ao juiz."
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Com base na jurisprudência do Superior Tribunal de Justiça, assinale a alternativa INCORRETA.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Antes da entrada em vigor do Pacote Anticrime, não é ilegal a decretação de prisão preventiva de ofício, ainda que decorrente de conversão da prisão em flagrante, pois as normas de natureza processual sujeitam-se ao princípio tempus regit actum e não retroagem para atingir atos praticados antes da sua vigência.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Compete ao juiz federal do local da apreensão da droga remetida do exterior pela via postal processar e julgar o crime de tráfico internacional.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "O acordo de não persecução penal (ANPP) aplica-se a fatos ocorridos antes da Lei nº 13.964/2019 (Pacote Anticrime), desde que não recebida a denúncia.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "O prazo de 90 dias previsto para a revisão da prisão preventiva não é peremptório, de modo que eventual atraso na execução do ato não implica reconhecimento automático da ilegalidade da prisão, tampouco a imediata colocação do custodiado cautelar em liberdade.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Em delitos sexuais, comumente praticados às ocultas, a palavra da vítima possui especial relevância, desde que esteja em consonância com as demais provas acostadas aos autos.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Em relação à liberdade provisória e ao habeas corpus, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A autoridade policial somente poderá conceder fiança nos casos de infração cuja pena privativa de liberdade máxima não seja superior a quatro anos.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "Em caso de prisão civil ou militar, é admitida a concessão de fiança.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "O réu afiançado não poderá, sob pena de quebramento da fiança, mudar de residência, sem prévia permissão da autoridade processante, ou ausentar-se por mais de sete dias de sua residência, sem comunicar àquela autoridade o lugar onde será encontrado.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "A superveniência da sentença condenatória não prejudica o pedido de trancamento da ação penal por falta de justa causa feito em habeas corpus.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Em atenção ao princípio da inércia da jurisdição, os juízes e os tribunais não têm competência para expedir de ofício ordem de habeas corpus.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "De acordo com o Código de Processo Penal, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Os processos que apurem a prática de crime hediondo terão prioridade de tramitação em todas as instâncias.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "Na instrução do procedimento ordinário, poderão ser inquiridas até cinco testemunhas arroladas pela acusação e cinco pela defesa.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "No processo e julgamento dos crimes de responsabilidade dos funcionários públicos, quando se tratar de crimes afiançáveis e estando a denúncia ou queixa em devida forma, o juiz mandará autuá-la e ordenará a notificação do acusado, para responder por escrito, dentro do prazo de dez dias.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Da decisão que não receber a denúncia ou a queixa, caberá apelação.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "É de cinco dias o prazo para interposição de carta testemunhável.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre a prisão temporária (Lei Federal nº 7.960/1989), assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A prisão temporária, que tem natureza de prisão cautelar, poderá ser decretada, se presentes os demais requisitos, quando imprescindível para a instrução criminal.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Para a doutrina majoritária, o rol dos crimes que comportam a prisão temporária é exemplificativo.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Os presos temporários deverão permanecer, obrigatoriamente, separados dos demais detentos, exceto se determinação diferente constar do decreto de prisão.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "A prisão temporária será decretada pelo juiz, em face da representação da autoridade policial ou de requerimento do Ministério Público, e terá o prazo de cinco dias, prorrogável por igual período em caso de extrema e comprovada necessidade.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "Exclui-se o dia do cumprimento do mandado de prisão no cômputo do prazo de prisão temporária.",
+        "is_correct": false
+      }
+    ]
+  }
+]

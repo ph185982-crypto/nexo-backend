@@ -1,0 +1,334 @@
+[
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa em que o \"se\" é uma conjunção integrante.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "[...] o tipo que nos perguntamos se vale a pena conservar\".",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "\"Se bem elaborada, tal experiência poderá levar [...]\".",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "\"Um homem não se recupera desses solavancos [...]\".",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "\"A mulher que precisa se afastar da maternidade [...]\".",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "\"Se quisermos continuar, sabemos que [...]\".",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre os mecanismos de coesão empregados no texto, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "No quarto parágrafo, a expressão \"tal experiência\" retoma a ideia de que a pintura de pratos pode ser uma atividade terapêutica que diminui o medo das pessoas.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "No primeiro parágrafo, os \"solavancos\" mencionados por Scott Fitzgerald incluem o colapso nervoso sofrido por ele.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "O termo destacado em \"Talvez isso ocorra [...]\", no segundo parágrafo, refere-se à ideia de \"olhar para trás\" e rememorar eventos passados.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Em \"[...] todos esses são casos de pratos fabricados para não passarem de certo tamanho.\", no segundo parágrafo, os itens em destaque são catafóricos, substituindo o termo \"pratos\".",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Em \"Ele se via como um prato quebrado [...]\", no primeiro parágrafo, o termo destacado evita a repetição da palavra \"homem\".",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre a pontuação empregada no texto, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "As três ocorrências de aspas presentes no texto indicam que o conteúdo abarcado por elas é uma citação direta.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Em \"Olhando para trás, é estranho ter a sensação [...]\", a vírgula isola uma oração que indica uma circunstância.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "Em \"Prato que nunca mais será usado para visitas, mas que servirá [...]\", a vírgula é facultativa.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Em \"Como disse Fitzgerald, um homem não se recupera desses solavancos.\", a vírgula isola uma oração comparativa.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Em \"[...] diminuição do medo daquilo que, um dia, fomos obrigados a excluir.\", as vírgulas poderiam ser substituídas por parênteses.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "No quarto parágrafo do texto, qual é a relação sintático-semântica mantida entre \"Algo do excluído poderá ser trabalhado e integrado [...]\" e \"[...] algo deverá ser irremediavelmente perdido.\"?",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Condição.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Conclusão.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Causa.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Adversidade.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "Explicação.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa em que o pronome átono pode ser posposto ao verbo.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "\"[...] é com pratos quebrados que sempre se ofereceram jantares.\".",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "\"[...] uma paixão na qual se misturam coisas que deveriam estar separadas [...]\".",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "\"Ele se via como um prato quebrado [...]\".",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "\"[...] aquilo que nos horroriza e fascina.\".",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "\"[...] em dado momento, o prato se quebrará [...]\".",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre o excerto \"[...] é com pratos quebrados que sempre se ofereceram jantares.\", assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O excerto poderia ser reescrito como \"nunca se ofereceram jantares com pratos inteiros\", sem que isso causasse prejuízo sintático ou semântico ao texto.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "O termo \"quebrados\" é um adjetivo que exerce a função sintática de predicativo.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "O item \"se\" sinaliza que o sujeito é indeterminado.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "O verbo \"ofereceram\" é classificado como transitivo direto, cujo objeto é o termo \"jantares\".",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "O termo \"sempre\" é um advérbio de intensidade, que pode ser substituído pela expressão \"todas as vezes\".",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa que apresenta uma reescrita semântica e gramaticalmente adequada para o excerto \"No entanto, ninguém vai ao banquete por causa da sobremesa.\".",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Porém, os convidados não vão no banquete devido à sobremesa.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Embora as pessoas não vão nas festas pela sobremesa.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Porquanto, nenhuma pessoa se dirige à refeição por conta da sobremesa.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Todavia, não é a sobremesa que faz com que as pessoas vão nos jantares.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Porém, o motivo pelo qual as pessoas comparecem aos jantares não é a sobremesa.",
+        "is_correct": true
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "A partir da leitura do excerto \"[...] a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada.\", é correto afirmar que",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "apesar de não ser uma ação sem importância, a exclusão não deve ser feita de forma simples.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "a exclusão, ao mesmo tempo em que apresenta fundamentos plausíveis, não necessita ser tomada como algo absoluto, que deve ocorrer de maneira completa.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "embora a exclusão de algo quebrado não seja simples, ela tem de acontecer sempre e de forma radical, definitiva.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "a exclusão é algo que depende única e exclusivamente da vontade do indivíduo, sendo uma ação facultativa e extremamente violenta.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "a necessidade da exclusão é obrigatória e não precisa ter sua importância diminuída.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "PRATOS QUEBRADOS — Vladimir Safatle\n\n\"Um homem não se recupera desses solavancos, ele se torna uma pessoa diferente e eventualmente a nova pessoa encontra novas preocupações.\" Foi isso o que Scott Fitzgerald tinha a dizer depois de seu colapso nervoso. Ele se via como um prato quebrado, \"o tipo que nos perguntamos se vale a pena conservar\". Prato que nunca mais será usado para visitas, mas que servirá para guardar biscoitos tarde da noite.\n\nDe fato, há certos momentos no interior da vida de um sujeito nos quais algo quebra, que não será mais colado. Olhando para trás, é estranho ter a sensação de que andávamos em direção a esse ponto de ruptura, como se fosse impossível evitá-lo caso quiséssemos continuar avançando. Como se houvesse passagens que só poderiam ser vivenciadas como quebra. Talvez isso ocorra porque somos feitos de forma tal que precisamos nos afastar de certas experiências, de certos modos de gozo, para podermos funcionar. Dessa forma, conseguiremos fabricar um prato com nossas vidas, um prato pequeno. A mulher que precisa se afastar da maternidade, o homem que precisa se afastar de uma paixão na qual se misturam coisas que deveriam estar separadas: todos esses são casos de pratos fabricados para não passarem de certo tamanho.\n\nNo entanto, somos às vezes pegos por situações nas quais acabamos por nos confrontar com aquilo que nos horroriza e fascina. Se quisermos continuar, sabemos que, em dado momento, o prato se quebrará, que ele nunca será recuperado, que talvez não funcionará \"melhor\", até porque ele viverá com a consciência clara de que há vários pontos da superfície nos quais sua vulnerabilidade ficará visível. Como disse Fitzgerald, um homem não se recupera desses solavancos. Algo desse sofrimento fica inscrito para sempre.\n\nMas ele também poderá descobrir que, mesmo depois da quebra, ainda é capaz de se colar, de continuar funcionando, um pouco como esses pratos que pintamos de outra forma para disfarçar as rachaduras. Se bem elaborada, tal experiência poderá levar à diminuição do medo daquilo que, um dia, fomos obrigados a excluir. Talvez aprendamos a compor com doses do excluído, já que a necessidade da exclusão não era simplesmente arbitrária, embora ela não precise ser radicalmente hipostasiada. Algo do excluído poderá ser trabalhado e integrado; algo deverá ser irremediavelmente perdido.\n\nUm dia, descobriremos que todos os pratos da sala de jantar estão quebrados em algum ponto e que é com pratos quebrados que sempre se ofereceram jantares. Os pratos que não passam por alguma quebra são pequenos e, por isso, só servem para a sobremesa. No entanto, ninguém vai ao banquete por causa da sobremesa."
+  },
+  {
+    "subject_slug": "lingua-portuguesa",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa que apresenta um atributo que NÃO caracteriza redação oficial.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Objetividade.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Formalidade.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Impessoalidade.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Retórica.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "Concisão.",
+        "is_correct": false
+      }
+    ]
+  }
+]

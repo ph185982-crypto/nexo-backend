@@ -1,0 +1,184 @@
+[
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa correta acerca do Código de Processo Penal Militar (CPPM).",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Nos casos concretos, se houver divergência entre as normas do CPPM e as de convenção ou tratado de que o Brasil seja signatário, prevalecerão as primeiras.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "A lei de processo penal militar deve ser interpretada no sentido literal de suas expressões, sendo vedada, em qualquer caso, interpretações que venham a restringir ou ampliar o sentido da norma.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Obedecidas as normas regulamentares de jurisdição, hierarquia e comando, as atribuições de polícia judiciária militar poderão ser delegadas a oficiais da ativa ou da reserva, para fins especificados e por tempo limitado.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "O inquérito policial militar é instaurado por instrumento formal denominado portaria.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Em se tratando de delegação para instauração de inquérito policial militar, deverá aquela recair em oficial de posto superior ao do indiciado, salvo seja este oficial reformado.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Referente ao Código de Processo Penal Militar (CPPM), assinale a alternativa INCORRETA.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não obstante o CPPM não trate do assunto, a ação penal privada subsidiária, por ter fundamento constitucional, aplica-se também aos crimes militares.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Vige, na ação penal militar, o princípio da indisponibilidade, segundo o qual, apresentada a denúncia, o Ministério Público não poderá desistir da ação penal.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Nos processos em que seu cônjuge for diretamente interessado, o juiz dar-se-á por suspeito e, se o não fizer, poderá ser recusado por qualquer das partes.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "O rol de testemunhas poderá ser dispensado, se o Ministério Público dispuser de prova documental suficiente para oferecer a denúncia.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Na exceção de litispendência, o juiz ouvirá a parte contrária a respeito da arguição, e decidirá de plano, irrecorrivelmente.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "De acordo com as regras de competência, é correto afirmar que Mário",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "responderá por ambos os crimes perante a Justiça Militar, pois a competência da Justiça Especial prevalece sobre a competência da Justiça Comum.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "responderá por ambos os crimes perante o Tribunal do Júri, pois a competência para o julgamento dos crimes dolosos contra a vida, como decorre de normas da Constituição Federal, atrai a competência para o julgamento do crime militar.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "responderá por ambos os crimes perante o Tribunal do Júri, pois as ações deverão ser reunidas em razão da conexão existente entre as infrações penais.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "responderá por ambos os crimes perante a Justiça Militar, pois as ações deverão ser reunidas em razão da continência existente entre as infrações penais.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "responderá pelo crime de estupro perante a Justiça Militar, entretanto o homicídio será de competência do Tribunal do Júri.",
+        "is_correct": true
+      }
+    ],
+    "context_text": "Suponha que Mário, policial militar, durante o serviço de policiamento ostensivo em determinada comunidade, pratique atos que caracterizem o crime de estupro contra uma moradora local. Dias depois, para assegurar a impunidade do referido delito, Mário retorna à comunidade e assassina a irmã da vítima, que havia testemunhado o primeiro crime. De acordo com as regras de competência, é correto afirmar que Mário"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa que aponta as assertivas corretas em relação aos recursos e à revisão criminal.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas I e II.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Apenas II e III.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Apenas III e IV.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "Apenas I, II e IV.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Apenas II, III e IV.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Em relação aos recursos e à revisão criminal, analise as assertivas e assinale a alternativa que aponta as corretas.\n\nI. Da decisão que julgar procedente a exceção, salvo de suspeição, caberá apelação.\nII. Os recursos em sentido estrito serão interpostos no prazo de cinco dias, contados da data da intimação da decisão, ou da sua publicação ou leitura em pública audiência.\nIII. Quando cabível a apelação, não poderá ser usado o recurso em sentido estrito, ainda que somente de parte da decisão se recorra.\nIV. A revisão poderá ser requerida a qualquer tempo e, em hipótese alguma, poderá ser agravada a pena imposta pela sentença revista."
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre o inquérito policial militar, preencha as lacunas e assinale a alternativa correta.\nEm tempo de guerra, o prazo para a conclusão do inquérito policial militar é de __________ dias, podendo, por motivo excepcional, ser prorrogado por mais __________ dias.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "5 (cinco) / 3 (três)",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "10 (dez) / 5 (cinco)",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "15 (quinze) / 15 (quinze)",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "20 (vinte) / 40 (quarenta)",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "30 (trinta) / 60 (sessenta)",
+        "is_correct": false
+      }
+    ]
+  }
+]

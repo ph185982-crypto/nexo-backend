@@ -1,0 +1,147 @@
+[
+  {
+    "subject_slug": "legislacao-especial",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre os Juizados Especiais Criminais, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O Juizado Especial Criminal tem competência para o julgamento das infrações penais de menor potencial ofensivo, considerando-se essas as contravenções penais e os crimes a que a lei comine pena máxima não superior a três anos.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Os embargos de declaração, que devem ser opostos no prazo de cinco dias, suspendem o prazo para a interposição de recurso.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "A homologação da transação penal faz coisa julgada material, de forma que, descumpridas suas cláusulas, cabe ao Ministério Público a execução judicial do acordo, sendo vedada a continuidade da persecução penal mediante o oferecimento de denúncia.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Não se admite a suspensão condicional do processo por crime continuado, se a soma da pena mínima da infração mais grave com o aumento mínimo de um sexto for superior a um ano.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Expirado o prazo sem revogação da suspensão condicional do processo, o Juiz declarará extinta a culpabilidade.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Considere os seis crimes listados a seguir:\n1. Tráfico internacional de arma de fogo, acessório ou munição (art. 18 da Lei nº 10.826/2003);\n2. Injúria racial (art. 140, §3º, do Código Penal);\n3. Furto qualificado pelo emprego de explosivo ou de artefato análogo que cause perigo comum (art. 155, §4º-A, do Código Penal);\n4. Infanticídio (art. 123 do Código Penal);\n5. Associação para o tráfico de drogas (art. 35 da Lei nº 11.343/2006);\n6. Tráfico de drogas privilegiado (art. 33, §4º, da Lei nº 11.343/2006).\n\nConsiderando o rol taxativo constante da Lei Federal nº 8.072/1990, bem como o entendimento dos Tribunais Superiores, são crimes hediondos ou equiparados os delitos indicados apenas em",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "1 e 3.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "1, 4 e 5.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "2, 5 e 6.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "1, 2, 3 e 5.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "2, 3, 4 e 6.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa que NÃO apresenta um dos requisitos cumulativos para o reconhecimento da causa de diminuição de pena do tráfico privilegiado.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Agente primário.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Apreensão de pequena quantidade de drogas.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Bons antecedentes.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Não dedicação a atividades criminosas.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "Não integração de organização criminosa.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Zeus, 27 anos, segurança, foi preso em flagrante por policiais militares, enquanto vendia drogas em determinada praça pública de Anápolis. Concluído o inquérito policial, Zeus foi denunciado pela prática do crime de tráfico de drogas (art. 33, caput, da Lei nº 11.343/2006). Finda instrução criminal, o juiz reconheceu o benefício do tráfico privilegiado (art. 33, §4º), condenando o réu à pena de reclusão de três anos e dois meses. Nesse contexto, de acordo com as disposições do supracitado diploma normativo, assinale a alternativa que NÃO apresenta um dos requisitos cumulativos para o reconhecimento da causa de diminuição de pena do tráfico privilegiado."
+  },
+  {
+    "subject_slug": "legislacao-especial",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Referente ao Código de Trânsito Brasileiro - CTB (Lei Federal nº 9.503/1997), assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Constitui crime a conduta de permitir, confiar ou entregar a direção de veículo automotor a pessoa que não seja habilitada, independentemente da ocorrência de lesão ou de perigo de dano concreto na condução do veículo.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "É inconstitucional o tipo penal que prevê o crime de fuga do local do acidente (art. 305 do CTB), pois viola o princípio da não incriminação.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "A penalidade de suspensão ou de proibição de se obter a permissão ou a habilitação, para dirigir veículo automotor, tem a duração de seis meses a dois anos.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Aos crimes cometidos na direção de veículos automotores previstos no CTB, independentemente da pena cominada, não se aplicam as disposições da Lei nº 9.099/1995.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "É incompatível com a Constituição Federal a imposição da pena de suspensão de habilitação para dirigir veículo automotor ao motorista profissional condenado por homicídio culposo no trânsito, pois infringe o direito constitucional ao trabalho.",
+        "is_correct": false
+      }
+    ]
+  }
+]

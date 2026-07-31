@@ -1,0 +1,218 @@
+[
+  {
+    "subject_slug": "direito-constitucional",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Renomada associação privada de âmbito municipal, que atua na área da proteção à infância e à juventude, foi objeto de matéria jornalística veiculada em programa televisivo dominical, na qual se denunciou, com a exibição de evidências robustas, que as atividades institucionais desenvolvidas pela associação estariam ligadas ao tráfico internacional de menores. Considerando o caso narrado e as disposições constitucionais acerca das associações, é correto afirmar que",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "a entidade associativa não poderá ser compulsoriamente dissolvida, em razão do direito constitucional de liberdade de associação.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "a associação somente poderá ter suas atividades suspensas ao final de regular processo administrativo, em que lhe seja assegurada ampla defesa.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "as atividades da associação não poderão ser suspensas, eis que ela não detém caráter paramilitar.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "na esfera administrativa, para que a associação tenha suas atividades suspensas, faz-se imprescindível que o processo judicial que apura o ilícito penal já tenha transitado em julgado.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "as atividades da associação só poderão ser suspensas por decisão judicial, independentemente do trânsito em julgado da ação.",
+        "is_correct": true
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Suponha que a República Federativa do Brasil tenha celebrado tratado internacional sobre direitos humanos, o qual foi aprovado pelo Congresso Nacional pelo procedimento ordinário (CF, art. 47). Nesse caso, segundo o entendimento do Supremo Tribunal Federal, o referido tratado internacional ingressará no ordenamento jurídico brasileiro",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "com status equivalente às emendas constitucionais.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "como norma de natureza supralegal.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "com força de lei ordinária.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "com força de lei complementar.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "como norma de natureza infralegal.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "No que concerne aos princípios fundamentais, à organização do Estado e à Administração Pública, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A solução pacífica dos conflitos, a defesa da paz e a soberania nacional podem ser apontadas como princípios que regem a República Federativa do Brasil nas suas relações internacionais.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "Os Estados podem incorporar-se entre si, subdividir-se ou desmembrar-se para se anexarem a outros, ou formarem novos Estados ou Territórios Federais, mediante aprovação da população diretamente interessada, através de plebiscito, e do Congresso Nacional, por lei complementar.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Inexistindo lei federal sobre normas gerais, os Estados exercerão a competência legislativa plena para atender a suas peculiaridades. No entanto a eventual superveniência de lei federal sobre normas gerais revoga a lei estadual no que lhe for contrário.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Os atos de improbidade administrativa importarão a cassação dos direitos políticos, a perda da função pública, a indisponibilidade dos bens e o ressarcimento ao erário, na forma e gradação previstas em lei, sem prejuízo da ação penal cabível.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Após a aquisição da estabilidade, o servidor público só perde o cargo em virtude de sentença judicial transitada em julgado ou mediante processo administrativo em que lhe seja assegurada ampla defesa.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Suponha que o Presidente da República e o Vice-Presidente viajarão em missão oficial com a finalidade de representar a República Federativa do Brasil em importante reunião internacional, que ocorrerá na sede europeia da ONU (Genebra/Suíça), para discutir questões afetas à segurança mundial. Nesse contexto, conforme a ordem de substituição estabelecida na Constituição Federal, será primeiramente chamado ao exercício da Presidência o",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Presidente da Câmara dos Deputados.",
+        "is_correct": true
+      },
+      {
+        "letter": "B",
+        "text": "Presidente do Senado Federal.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Presidente do Tribunal de Contas da União.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Presidente do Supremo Tribunal Federal.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Ministro da Defesa.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Determinado Deputado Estadual apresentou projeto de lei dispondo sobre o regime jurídico dos militares estaduais, a fim de instituir regulamentação acerca da indenização por morte e invalidez permanente dos militares de Goiás. Como forma de reconhecer e valorizar o excelente serviço prestado pela categoria, a proposta foi aprovada pela Assembleia Legislativa e sancionada pelo Governador do Estado. Considerando o caso narrado e a jurisprudência do Supremo Tribunal Federal, é correto afirmar que a nova lei estadual é",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "incompatível com a Constituição Federal, haja vista que lei de iniciativa parlamentar, por força do princípio da simetria, não pode dispor sobre o regime jurídico dos militares estaduais.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "inconstitucional, porque compete à União legislar sobre direito civil, o que abrange as indenizações por morte e invalidez permanente dos militares estaduais.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "constitucional, pois o regime jurídico dos servidores públicos militares é norma de iniciativa concorrente.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "constitucional, eis que a sanção do Governador do Estado sanou eventual vício de iniciativa.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "compatível com a Constituição Federal, pois as regras de processo legislativo não são normas de reprodução obrigatória pelos Estados-membros.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-constitucional",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Em relação à defesa do Estado e das Instituições Democráticas, assinale a alternativa INCORRETA.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Não cabe habeas corpus em relação a punições disciplinares militares.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Ao militar são proibidas a sindicalização e a greve.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Decretado o estado de defesa ou sua prorrogação, o Presidente da República, dentro de vinte e quatro horas, submeterá o ato com a respectiva justificação ao Congresso Nacional, que decidirá por maioria absoluta.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "A remuneração dos servidores policiais integrantes dos órgãos da segurança pública é fixada pelo regime de vencimentos.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "As polícias militares e os corpos de bombeiros militares, forças auxiliares e reserva do Exército subordinam-se, juntamente com as polícias civis e as polícias penais estaduais e distrital, aos Governadores dos Estados, do Distrito Federal e dos Territórios.",
+        "is_correct": false
+      }
+    ]
+  }
+]

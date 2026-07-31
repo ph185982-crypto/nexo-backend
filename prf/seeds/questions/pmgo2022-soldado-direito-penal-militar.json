@@ -1,0 +1,147 @@
+[
+  {
+    "subject_slug": "direito-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa correta acerca do Código Penal Militar (CPM).",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Quanto ao tempo do crime, o CPM adotou a teoria da ubiquidade, segundo a qual se considera praticado o crime no momento da ação ou omissão, bem como quando se produziu ou deveria produzir-se o resultado.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "A abolitio criminis, tida como hipótese de descriminalização do fato criminoso, caracteriza causa de extinção da punibilidade.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "A pena cumprida no estrangeiro atenua a pena imposta no Brasil pelo mesmo crime, quando idênticas, ou nela é computada, quando diversas.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Em tempo de guerra, consideram-se crimes militares somente os previstos nesse Código para o tempo de guerra.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "O defeito do ato de incorporação não exclui a aplicação da lei penal militar, ainda que alegado ou conhecido antes da prática do crime.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "No que concerne ao Código Penal Militar (CPM), assinale a alternativa INCORRETA.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "O resultado de que depende a existência do crime somente é imputável a quem lhe deu causa. Considera-se causa a ação ou omissão sem a qual o resultado não teria ocorrido.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "A preexistência de causa relativamente independente exclui a imputação quando, por si só, produziu o resultado. Os fatos anteriores imputam-se, entretanto, a quem os praticou.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "Não é imputável quem, no momento da ação ou da omissão, não possui a capacidade de entender o caráter ilícito do fato ou de determinar-se de acordo com esse entendimento, em virtude de doença mental, de desenvolvimento mental incompleto ou retardado.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "A pena é agravada em relação ao agente que coage outrem à execução material do crime.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "O ajuste, a determinação ou instigação e o auxílio, salvo disposição em contrário, não são puníveis se o crime não chega, pelo menos, a ser tentado.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa que aponta a(s) assertiva(s) correta(s) acerca do Código Penal Militar (CPM).",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Apenas III.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Apenas IV.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "Apenas I e III.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Apenas II e IV.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Apenas I, II e III.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Referente ao Código Penal Militar (CPM), analise as assertivas e assinale a alternativa que aponta a(s) correta(s).\n\nI. Nos casos admitidos, a pena de morte será executada por fuzilamento ou eletrocussão.\nII. As penas de impedimento e reforma são consideradas penas acessórias.\nIII. São efeitos da condenação, dentre outros, a obrigação de reparar o dano resultante do crime e a perda do posto e patente.\nIV. No crime de deserção, embora decorrido o prazo da prescrição, esta só extingue a punibilidade quando o desertor atinge a idade de quarenta e cinco anos, e, se oficial, a de sessenta."
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Suponha que determinado grupo de policiais militares se reuniram e, armados, agiram contra a ordem expressa recebida de superior. Nesse caso, de acordo com o Código Penal Militar (CPM), está caracterizado o crime de",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "desobediência.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "insubmissão.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "traição.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "motim.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "revolta.",
+        "is_correct": false
+      }
+    ]
+  }
+]

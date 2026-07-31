@@ -1,0 +1,221 @@
+[
+  {
+    "subject_slug": "direito-administrativo",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa correta acerca do direito administrativo.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "Compete privativamente ao Presidente da República dispor, mediante decreto, sobre a extinção de funções ou cargos públicos, quando preenchidos.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "É da competência exclusiva do Poder Judiciário sustar os atos normativos do Poder Executivo que exorbitem do poder regulamentar.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "O entendimento majoritário da doutrina interpreta os atos decorrentes do poder disciplinar como discricionários, inclusive no que tange à opção de sancionar ou não o agente infrator.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "A discricionariedade, a autoexecutoriedade e a coercibilidade são elementos (requisitos) dos atos administrativos.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Prevalece o entendimento de que a aposentadoria de servidor público caracteriza ato complexo, haja vista depender da manifestação da entidade administrativa a que o agente é subordinado e da aprovação do respectivo Tribunal de Contas.",
+        "is_correct": true
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Referente aos princípios da Administração Pública e à organização administrativa do Estado, assinale a alternativa INCORRETA.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "V – F – F – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "V – V – V – F.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "F – V – F – F.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "F – F – V – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "F – V – F – V.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "No que diz respeito aos agentes públicos, informe se é verdadeiro (V) ou falso (F) o que se afirma a seguir e assinale a alternativa com a sequência correta.\n\n( ) Os jurados e os mesários podem ser citados como exemplos de agentes honoríficos.\n( ) Hades, servidor efetivo do município de Goiânia, ocupante do cargo de motorista, foi aprovado no concurso da Polícia Militar do Estado de Goiás para o cargo de Soldado Combatente. Nesse caso, ainda que haja compatibilidade de horários, Hades não poderá acumular ambos os cargos públicos.\n( ) As funções de confiança, exercidas exclusivamente por servidores ocupantes de cargo efetivo, destinam-se apenas às atribuições de direção, chefia e assessoramento.\n( ) A falta de defesa técnica por advogado no processo administrativo disciplinar ofende a Constituição."
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "A respeito dos princípios da Administração Pública e da organização administrativa, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A vedação ao nepotismo e as regras quanto à realização de concurso público para o ingresso na carreira pública podem ser apontadas como corolário do princípio da impessoalidade.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Segundo o princípio da autotutela, a administração pode anular seus próprios atos, quando eivados de vícios que os tornam ilegais, porque deles não se originam direitos; ou revogá-los, por motivo de conveniência ou oportunidade, respeitados os direitos adquiridos, e ressalvada, em todos os casos, a apreciação judicial.",
+        "is_correct": true
+      },
+      {
+        "letter": "C",
+        "text": "Na outorga, também denominada descentralização por colaboração, é transferida a titularidade e a execução do serviço público à pessoa jurídica diversa do Estado.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "As atividades de conteúdo econômico e as passíveis de delegação, quando definidas como objetos de dada fundação, ainda que essa seja instituída ou mantida pelo poder público, podem se submeter ao regime jurídico de direito privado.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Embora não possuam personalidade jurídica própria, determinados órgãos públicos gozam de capacidade processual ativa, de modo que, em tais casos, terão capacidade postulatória para agirem judicialmente em nome próprio.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "O Comandante Geral da Polícia Militar do Estado de Goiás, no âmbito de sua competência, deseja publicar ato administrativo em que torne obrigatória a utilização de farda, durante o expediente, para todos os policiais militares que estão lotados em setores administrativos da corporação. Nesse caso, o ato administrativo correto a ser utilizado para veicular tal regramento é o/a",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "instrução normativa.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "memorando.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "ordem de serviço.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "circular.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "portaria.",
+        "is_correct": true
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "À luz da sistemática constitucional acerca da responsabilidade civil do Estado, é correto afirmar que",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "os herdeiros da vítima devem ajuizar ação indenizatória em face da Polícia Militar do Estado de Goiás, com fundamento na responsabilidade civil objetiva do Estado.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "eventual ação indenizatória deverá ser ajuizada diretamente contra Hefesto, diante das evidências que o referido agente público agiu com culpa.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "o Estado de Goiás, com base na teoria do risco administrativo, responde objetivamente pelos danos causados por Hefesto, sendo dispensável a comprovação do elemento subjetivo na conduta deste último.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "Hefesto não poderá ser responsabilizado, ainda que em eventual ação de regresso, pois sua conduta não foi dolosa.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Hefesto, a Polícia Militar e o Estado de Goiás respondem solidariamente pela morte de Dionísio.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Hefesto, policial militar do Estado de Goiás, durante patrulhamento de rotina, atropelou Dionísio, causando-lhe ferimentos que o levaram à morte. No decurso da investigação, restou constatado que, no momento do acidente, Hefesto dirigia em velocidade incompatível para o local e que havia avançado o sinal vermelho do semáforo, atropelando a vítima na faixa de pedestre porque se distraiu ao responder mensagens de texto de sua esposa. À luz da sistemática constitucional acerca da responsabilidade civil do Estado, é correto afirmar que"
+  },
+  {
+    "subject_slug": "direito-administrativo",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Nesse caso, nos termos da Lei Federal nº 8.429/1992, é correto afirmar que",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "o agente público municipal deverá ser absolvido da referida ação de improbidade, caso já tenha sido condenado no âmbito penal, em respeito à proibição da dupla punição pelo mesmo fato (ne bis in idem).",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "as sanções previstas para o sobredito ato de improbidade administrativa poderão ser executadas provisoriamente, após decisão proferida por órgão colegiado.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "em virtude do ato de improbidade cometido, o servidor, ao final do processo, estará sujeito, entre outras penas, à perda da função pública.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "da decisão que rejeitar questões preliminares suscitadas pelo réu em sua contestação, caberá apelação.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "a conduta do agente público municipal caracterizou ato de improbidade administrativa que atenta contra os princípios da administração pública.",
+        "is_correct": true
+      }
+    ],
+    "context_text": "O Presidente da Comissão de Licitações de determinado município frustrou, em ofensa à imparcialidade, o caráter concorrencial de procedimento licitatório que visava à aquisição de câmeras de segurança para a instalação nas escolas públicas municipais. Ao longo da investigação, restou comprovado que os atos praticados foram motivados para beneficiar certo empresário da cidade, em razão da amizade longínqua entre os dois. Por esse motivo, o referido servidor público foi denunciado por ato de improbidade administrativa. Nesse caso, nos termos da Lei Federal nº 8.429/1992, é correto afirmar que"
+  }
+]

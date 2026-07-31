@@ -1,0 +1,184 @@
+[
+  {
+    "subject_slug": "direito-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Considerando o caso narrado, é correto afirmar que",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "a referida lei é um exemplo clássico de lei penal excepcional, que possui como uma de suas características ser autorrevogável.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "se trata de uma típica lei penal intermediária, dotada de ultratividade, razão pela qual José, em caso de condenação, estará sujeito à pena de reclusão, de três a nove anos.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "José, caso seja condenado, estará sujeito à pena de reclusão, de um a cinco anos, haja vista o princípio da retroatividade da lei penal mais benéfica.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "caso seja condenado, José estará sujeito à pena de reclusão, de três a nove anos, tendo em vista que, na data dos fatos, estava vigente uma típica lei penal temporária.",
+        "is_correct": true
+      },
+      {
+        "letter": "E",
+        "text": "em atenção ao princípio da legalidade, José não poderá ser condenado, pois a lei penal que vigorava na data dos fatos não está mais vigente.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "Suponha que, em agosto de 2022, o Brasil sedie importante evento internacional esportivo, com duração de um mês e que ocorrerá nas principais cidades do país. A previsão é de que venham ao Brasil para acompanhar o evento mais de 2 milhões de turistas, isso sem considerar o deslocamento de pessoas que ocorrerá por conta do próprio turismo interno brasileiro. À vista disso e temendo o aumento exagerado da ocorrência de alguns delitos, foi publicada lei de conteúdo penal prevendo que, durante o período de 15/06/2022 até 15/10/2022, a pena do crime de estelionato será de reclusão, de três a nove anos, sendo que, ao término do período estipulado em lei, a pena voltará a ser a prevista originariamente, isto é, reclusão, de um a cinco anos. No dia 04/08/2022, José, notável golpista, pratica o crime de estelionato contra Jimmy, turista americano que visitava Goiânia para acompanhar o evento esportivo. Encerrado o inquérito policial, José foi denunciado pelos fatos em 01/11/2022."
+  },
+  {
+    "subject_slug": "direito-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Assinale a alternativa correta acerca do conflito aparente de normas penais.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "No conflito aparente, duas ou mais leis penais disputam a aplicação a um mesmo fato típico, contudo somente uma delas pode ser aplicada, pois as outras já não estão mais em vigor.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "Especialidade, subsidiariedade, consunção e alteridade são princípios apontados pela doutrina como solucionadores do conflito aparente.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Conforme o princípio da especialidade, a lei especial prevalece sobre a lei geral, devendo essa análise ocorrer no plano abstrato.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "O conflito aparente, que pode ser enquadrado no âmbito da interpretação da lei penal, possui três requisitos, quais sejam: (i) pluralidade de fatos; (ii) pluralidade de leis penais; e (iii) vigência simultânea de todas elas.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "O crime progressivo e a progressão criminosa podem ser apontados como hipóteses de aplicação do princípio da subsidiariedade.",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Sobre o direito penal, assinale a alternativa correta.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "A interpretação analógica, método de colmatação do ordenamento jurídico, caso seja desfavorável ao réu, não pode ser admitida no direito penal, em atenção ao princípio da reserva legal.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "A nova lei penal que implique tratamento mais rigoroso à conduta já classificada como infração penal é denominada lex mitior. Como se trata de lei penal mais grave, somente terá aplicação aos fatos posteriores à sua entrada em vigor.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "Segundo o princípio da representação, ficam sujeitos à lei brasileira, embora cometidos no estrangeiro, os crimes praticados contra a administração pública por quem está a seu serviço.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "Configura bis in idem o reconhecimento das qualificadoras de motivo torpe e de feminicídio no crime de homicídio praticado contra mulher em situação de violência doméstica e familiar.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "Não há flagrante quando a entrega de valores ocorre em momento posterior à exigência, pois o crime de concussão é formal e o recebimento se consubstancia em mero exaurimento.",
+        "is_correct": true
+      }
+    ]
+  },
+  {
+    "subject_slug": "direito-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "Considerando o caso narrado e o entendimento do Superior Tribunal de Justiça, é correto afirmar que Calígula responderá por",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "roubo simples, na forma consumada.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "roubo majorado, na forma tentada.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "roubo majorado, na forma consumada.",
+        "is_correct": true
+      },
+      {
+        "letter": "D",
+        "text": "roubo qualificado, na forma tentada.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "roubo qualificado, na forma consumada.",
+        "is_correct": false
+      }
+    ],
+    "context_text": "No dia 10 de abril de 2022, na saída de um prestigiado restaurante de Goiânia, Cleópatra foi surpreendida por Calígula, fugitivo do sistema prisional, que, portando uma faca e mediante grave ameaça, subtraiu a sua bolsa, a qual continha em seu interior objetos pessoais e um celular de última geração. Sem demora, Calígula saiu em disparada pela via pública, sendo capturado, a dois quarteirões de distância, por policiais militares que estavam de patrulha e que desconfiaram de seu comportamento."
+  },
+  {
+    "subject_slug": "direito-penal",
+    "question_type": "multipla_escolha",
+    "difficulty": "medium",
+    "source": "PMGO 2022 - Instituto AOCP - Soldado 2ª Classe QPPM Combatente (prova oficial)",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "text": "No que diz respeito à Lei Maria da Penha - LMP (Lei Federal nº 11.340/2006), informe se é verdadeiro (V) ou falso (F) o que se afirma a seguir e assinale a alternativa com a sequência correta.\n\n( ) A LMP objetiva proteger a mulher da violência doméstica e familiar que lhe cause morte, lesão, sofrimento físico, sexual ou psicológico, e dano moral ou patrimonial, desde que o crime seja cometido no âmbito da unidade doméstica, da família ou em qualquer relação íntima de afeto.\n( ) A agressão do namorado contra a namorada, mesmo cessado o relacionamento, mas que ocorra em decorrência dele, não pode ser caracterizada mais como relação íntima de afeto, razão pela qual restam afastadas as disposições da LMP.\n( ) Para a configuração da violência doméstica e familiar, exige-se a coabitação entre autor e vítima.\n( ) A violência psicológica, reconhecida expressamente como forma de violência doméstica e familiar contra a mulher, é aquela entendida como qualquer conduta que configure calúnia, difamação ou injúria.",
+    "alternatives": [
+      {
+        "letter": "A",
+        "text": "F – V – F – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "B",
+        "text": "F – F – V – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "C",
+        "text": "V – V – F – F.",
+        "is_correct": false
+      },
+      {
+        "letter": "D",
+        "text": "V – F – V – V.",
+        "is_correct": false
+      },
+      {
+        "letter": "E",
+        "text": "V – F – F – F.",
+        "is_correct": true
+      }
+    ]
+  }
+]
