@@ -531,7 +531,7 @@ class PRFRepository:
 
     async def get_subject_mastery(self, user_id: UUID) -> list[dict]:
         return await self._fetch(
-            """SELECT sm.*, s.name as subject_name, s.weight_prf, s.color
+            """SELECT sm.*, s.name as subject_name, s.weight_prf, s.weight_pm, s.color
                FROM subject_mastery sm
                JOIN subjects s ON s.id = sm.subject_id
                WHERE sm.user_id = $1 AND sm.topic_id IS NULL

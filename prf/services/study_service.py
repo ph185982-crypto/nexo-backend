@@ -64,15 +64,21 @@ class StudyService:
         mastery_list = await self.repo.get_subject_mastery(user_id)
         mastery_map = {m["subject_id"]: m for m in mastery_list}
 
+        is_pm = (profile or {}).get("target_exam", "PRF").upper().startswith("PM")
+        weight_key = "weight_pm" if is_pm else "weight_prf"
+
         subject_states = []
         for s in subjects:
+            exam_weight = s.get(weight_key, 0) or 0
+            if exam_weight <= 0:
+                continue
             m = mastery_map.get(s["id"], {})
             recurring = await self.repo.get_recurring_error_count(user_id, s["id"])
             reviews_due = 0  # will be counted below per-subject
             subject_states.append(SubjectState(
                 subject_id=s["id"],
                 subject_name=s["name"],
-                weight_prf=s.get("weight_prf", 1.0),
+                weight_prf=exam_weight,
                 mastery=m.get("mastery_level", 0),
                 accuracy=m.get("accuracy", 0),
                 total_attempts=m.get("total_attempts", 0),
@@ -334,11 +340,17 @@ class StudyService:
         profile = await self.repo.get_profile(user_id)
         behavior = await self.repo.get_behavior_metrics(user_id)
 
+        is_pm = (profile or {}).get("target_exam", "PRF").upper().startswith("PM")
+        weight_key = "weight_pm" if is_pm else "weight_prf"
+
         subjects = []
         for m in mastery_rows:
+            exam_weight = m.get(weight_key, 0) or 0
+            if exam_weight <= 0:
+                continue
             subjects.append(ApprovalSubject(
                 subject_name=m["subject_name"],
-                weight_prf=m.get("weight_prf", 1.0),
+                weight_prf=exam_weight,
                 mastery=m.get("mastery_level", 0),
                 accuracy=m.get("accuracy", 0),
                 total_attempts=m.get("total_attempts", 0),
