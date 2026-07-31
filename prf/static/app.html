@@ -1671,6 +1671,7 @@ function viewMore() {
   if (S.subView === 'settings') return viewSettings();
   const due = S.reviewSummary?.total_due ?? S.dashboard?.reviews_due ?? 0;
   const trilhaPct = S.trilha ? S.trilha.coverage : null;
+  const isPM = S.targetExam && S.targetExam.startsWith('PM');
   return `${appbar()}
     <div class="hero-block fade-in">
       <div class="section-eyebrow">Mais</div>
@@ -1692,11 +1693,11 @@ function viewMore() {
         <div class="info"><h3>Biblioteca jurídica</h3><p>Constituição, códigos e leis especiais</p></div>
         <div class="chev">${I.chev}</div>
       </div>
-      <div class="shortcut" onclick="openEssays()">
+      ${!isPM ? `<div class="shortcut" onclick="openEssays()">
         <div class="badge-icon accent">${I.pen}</div>
         <div class="info"><h3>Redação discursiva</h3><p>Correção CEBRASPE com diagnóstico por IA</p></div>
         <div class="chev">${I.chev}</div>
-      </div>
+      </div>` : ''}
       <div class="shortcut" onclick="toggleLembretes()">
         <div class="badge-icon">${I.clock}</div>
         <div class="info"><h3>Lembretes de estudo</h3><p>${S.pushOn ? 'Ativados neste aparelho' : 'Receber cobrança no celular'}</p></div>
