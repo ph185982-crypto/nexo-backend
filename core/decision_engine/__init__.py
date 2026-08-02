@@ -8,6 +8,7 @@ from .engine import DecisionEngine
 from .interfaces.enums import StepType, DecisionReason, MissionPriority
 from .interfaces.inputs import DecisionInput, SubjectMasterySnapshot, TopicSnapshot
 from .interfaces.inputs import ReviewQueueItem, RecentError, MissionHistoryEntry
+from .interfaces.inputs import KnowledgeGapSummary
 from .interfaces.outputs import MissionPlan, MissionStep
 from .interfaces.metrics import MissionMetrics, MissionResult, StepMetrics
 from .interfaces.execution import MissionExecution, StepExecution
@@ -23,6 +24,7 @@ __all__ = [
     "ReviewQueueItem",
     "RecentError",
     "MissionHistoryEntry",
+    "KnowledgeGapSummary",
     "MissionPlan",
     "MissionStep",
     "MissionMetrics",

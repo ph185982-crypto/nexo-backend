@@ -6,6 +6,7 @@ from .low_coverage import LowCoverageStrategy
 from .retention_drop import RetentionDropStrategy
 from .simulation_ready import SimulationReadyStrategy
 from .short_time import ShortTimeStrategy
+from .knowledge_gap import KnowledgeGapStrategy
 
 __all__ = [
     "BaseStrategy",
@@ -17,4 +18,5 @@ __all__ = [
     "RetentionDropStrategy",
     "SimulationReadyStrategy",
     "ShortTimeStrategy",
+    "KnowledgeGapStrategy",
 ]

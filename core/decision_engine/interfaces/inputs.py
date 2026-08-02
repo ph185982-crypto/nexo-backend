@@ -62,6 +62,24 @@ class MissionHistoryEntry:
 
 
 @dataclass
+class KnowledgeGapSummary:
+    """
+    Lightweight projection of a KnowledgeGraph gap — consumed by Decision Engine
+    strategies without exposing any graph internals.
+    """
+    node_id: str                  # "topic:{uuid}" | "subject:{uuid}"
+    node_type: str                # "topic" | "subject"
+    label: str
+    subject_id: Optional[UUID]
+    topic_id: Optional[UUID]
+    gap_score: float              # 0-1 — importance × mastery_deficit
+    importance: float             # 0-1 — normalised edital weight
+    impact_score: float           # composite: gap + error_pressure + review_pressure
+    recommended_step: str         # "questions" | "review" | "flashcards" | "law"
+    explanation: str
+
+
+@dataclass
 class DecisionInput:
     user_id: UUID
     target_exam: str              # "PRF" | "PMGO"
@@ -75,3 +93,4 @@ class DecisionInput:
     streak_days: int
     approval_estimate: float      # 0-100
     exam_date: Optional[datetime] = None
+    knowledge_gaps: list[KnowledgeGapSummary] = field(default_factory=list)

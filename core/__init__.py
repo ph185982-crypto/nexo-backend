@@ -1,1 +1,1 @@
-# Core domain — Decision Engine and future engines live here.
+# Core domain — Decision Engine, Knowledge Graph Engine, and future engines.

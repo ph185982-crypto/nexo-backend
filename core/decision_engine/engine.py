@@ -14,17 +14,19 @@ from .strategies.retention_drop import RetentionDropStrategy
 from .strategies.low_coverage import LowCoverageStrategy
 from .strategies.simulation_ready import SimulationReadyStrategy
 from .strategies.short_time import ShortTimeStrategy
+from .strategies.knowledge_gap import KnowledgeGapStrategy
 
 _BREAK_THRESHOLD_MINUTES = 45
 _BREAK_MINUTES = 5
 _DEFAULT_STRATEGIES: list[BaseStrategy] = [
-    SpacedReviewStrategy(),
-    RecentErrorsStrategy(),
-    WeakSubjectStrategy(),
-    RetentionDropStrategy(),
-    LowCoverageStrategy(),
-    SimulationReadyStrategy(),
-    ShortTimeStrategy(),
+    SpacedReviewStrategy(),        # 1000+ — SM-2 overdue (non-negotiable)
+    RecentErrorsStrategy(),        # 900+  — retry recent wrong answers
+    KnowledgeGapStrategy(),        # 800+  — KGE-ranked gaps (topic-level precision)
+    WeakSubjectStrategy(),         # 700-900 — low mastery × high weight
+    RetentionDropStrategy(),       # 700+  — correct_rate drop
+    LowCoverageStrategy(),         # 600+  — untouched topics
+    SimulationReadyStrategy(),     # 300+  — exam approaching
+    ShortTimeStrategy(),           # 500   — < 15 min available
 ]
 
 
