@@ -799,6 +799,41 @@ button { font-family:inherit; }
   font-size:13px; font-weight:600; cursor:pointer;
 }
 .mission-ctx-bar .mcb-btn:active { background:rgba(255,255,255,.35); }
+
+/* ── Coverage heatmap ─── */
+.coverage-block { padding:20px 20px 8px; }
+.coverage-grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:12px;
+}
+.cov-cell {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-md); padding:10px 12px;
+  display:flex; align-items:center; gap:10px;
+  transition:opacity .15s; cursor:pointer;
+}
+.cov-cell:active { opacity:.75; }
+.cov-dot {
+  width:10px; height:10px; border-radius:50%; flex-shrink:0;
+}
+.cov-dot.good    { background:var(--success); }
+.cov-dot.low     { background:#F59E0B; }
+.cov-dot.critical{ background:var(--error); }
+.cov-dot.empty   { background:var(--ink-3); }
+.cov-info { flex:1; min-width:0; }
+.cov-name { font-size:12px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cov-count{ font-size:11px; color:var(--ink-3); margin-top:1px; }
+.cov-legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; padding:0 2px; }
+.cov-leg-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ink-3); }
+.cov-leg-dot { width:7px; height:7px; border-radius:50%; }
+
+/* ── PMGO badge ─── */
+.pmgo-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  background:var(--primary-soft); color:var(--primary);
+  border:1px solid var(--primary-tint);
+  border-radius:var(--r-full); padding:2px 8px;
+  font-size:11px; font-weight:700; letter-spacing:.02em;
+}
 </style>
 </head>
 <body>
@@ -837,6 +872,7 @@ const S = {
   trilha: null,
   mission: null,
   activeMissionIdx: null,
+  coverage: null,
 };
 
 let timerInterval = null;
@@ -1082,9 +1118,13 @@ function attr(v) { return esc(JSON.stringify(String(v))).replace(/&quot;/g, '&qu
 // ===== APPBAR =====
 function appbar() {
   const ti = S.theme === 'dark' ? I.moon : S.theme === 'light' ? I.sun : I.auto;
-  const examLabel = (S.targetExam && S.targetExam.startsWith('PM')) ? 'PMGO' : 'PRF';
+  const isPM = S.targetExam && S.targetExam.startsWith('PM');
+  const examLabel = isPM ? 'PMGO' : 'PRF';
+  const badge = isPM
+    ? `<span class="pmgo-badge">PMGO</span>`
+    : '';
   return `<div class="appbar" id="appbar">
-    <div class="brand">Estudo <em>${examLabel}</em></div>
+    <div class="brand" style="display:flex;align-items:center;gap:8px">Estudo ${badge || `<em>${examLabel}</em>`}</div>
     <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema">${ti}</button>
   </div>`;
 }
@@ -1092,6 +1132,47 @@ function skeletonBlock(n = 3, h = 70) {
   return `<div class="px" style="padding-top:20px">${
     Array.from({length:n}, () => `<div class="skeleton" style="height:${h}px;margin-bottom:10px"></div>`).join('')
   }</div>`;
+}
+
+// ===== COVERAGE HEATMAP =====
+async function loadCoverage() {
+  const exam = S.targetExam || 'PRF';
+  const path = exam.startsWith('PM') ? '/api/prf/coverage/pmgo' : '/api/prf/coverage/prf';
+  try {
+    S.coverage = await api(path);
+    if (S.tab === 'dashboard') render();
+  } catch (e) { S.coverage = null; }
+}
+
+function renderCoverageHeatmap() {
+  const cov = S.coverage;
+  if (!cov || !cov.subjects || !cov.subjects.length) return '';
+  const flagOrder = { empty: 0, critical: 1, low: 2, good: 3 };
+  const subjects = [...cov.subjects].sort((a,b) => flagOrder[a.flag] - flagOrder[b.flag]);
+  const readiness = Math.round((cov.exam_readiness_score || 0) * 100);
+  const readColor = readiness >= 80 ? 'var(--success)' : readiness >= 50 ? '#F59E0B' : 'var(--error)';
+  return `<div class="coverage-block">
+    <div class="section-eyebrow">Banco de questões</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:2px">
+      <div class="section-title">Cobertura por matéria</div>
+      <span style="font-size:13px;font-weight:700;color:${readColor}">${readiness}% pronto</span>
+    </div>
+    <div class="coverage-grid">
+      ${subjects.map(s => `<div class="cov-cell" onclick="switchTab('more');openTrilha()">
+        <div class="cov-dot ${s.flag}"></div>
+        <div class="cov-info">
+          <div class="cov-name">${esc(s.name)}</div>
+          <div class="cov-count">${s.question_count}q · ${s.flag === 'good' ? 'OK' : s.flag === 'low' ? 'baixo' : s.flag === 'critical' ? 'crítico' : 'vazio'}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="cov-legend">
+      <div class="cov-leg-item"><div class="cov-leg-dot" style="background:var(--success)"></div>≥20 questões</div>
+      <div class="cov-leg-item"><div class="cov-leg-dot" style="background:#F59E0B"></div>5-19</div>
+      <div class="cov-leg-item"><div class="cov-leg-dot" style="background:var(--error)"></div>1-4</div>
+      <div class="cov-leg-item"><div class="cov-leg-dot" style="background:var(--ink-3)"></div>vazio</div>
+    </div>
+  </div>`;
 }
 
 // ===== DASHBOARD =====
@@ -1228,7 +1309,8 @@ function viewDashboard() {
           <div class="chev">${I.chev}</div>
         </div>
       </div>
-    </div>`;
+    </div>
+    ${renderCoverageHeatmap()}`;
 }
 
 // ===== PRACTICE =====
@@ -2272,6 +2354,7 @@ async function setExam(exam) {
   applyExamTheme(exam);
   S.trilha = null;
   S.subjects = null;
+  S.coverage = null;
   render();
   try {
     await api('/api/prf/onboarding/target-exam', {
@@ -2279,6 +2362,7 @@ async function setExam(exam) {
     });
   } catch (e) {}
   loadSubjects();
+  loadCoverage();
   toast(exam === 'PMGO' ? 'Trilha PMGO ativada — banca Instituto AOCP' : 'Trilha PRF ativada — banca CEBRASPE', 'success');
 }
 
@@ -2340,6 +2424,7 @@ async function init() {
   render();
   loadDashboard();
   loadSubjects();
+  loadCoverage();
 
   // O service worker serve o app offline e recebe os lembretes. Registrar
   // depois da primeira renderização evita competir com o carregamento inicial;

@@ -15,6 +15,14 @@ class CoverageFlag(str, Enum):
 
 
 @dataclass
+class TopicCoverage:
+    topic_slug: str
+    question_count: int
+    difficulty_distribution: dict[str, int]  # {easy: N, medium: N, hard: N}
+    flag: CoverageFlag
+
+
+@dataclass
 class SubjectCoverage:
     subject_slug: str
     subject_name: str
@@ -22,6 +30,8 @@ class SubjectCoverage:
     question_count: int
     topic_count: int
     flag: CoverageFlag
+    difficulty_distribution: dict[str, int] = field(default_factory=dict)
+    topics: list[TopicCoverage] = field(default_factory=list)
 
     @property
     def priority_score(self) -> float:
@@ -29,6 +39,11 @@ class SubjectCoverage:
         weight_factor = self.weight
         scarcity_factor = max(0, 20 - self.question_count) / 20
         return round(weight_factor * scarcity_factor, 3)
+
+    @property
+    def missing_topic_count(self) -> int:
+        """Topics with zero questions (from known edital topics)."""
+        return sum(1 for t in self.topics if t.flag == CoverageFlag.EMPTY)
 
 
 @dataclass
@@ -44,6 +59,7 @@ class CoverageReport:
     low_coverage_subjects: list[str]
     import_priority: list[str]                    # ordered by priority_score DESC
     recommendations: list[str] = field(default_factory=list)
+    difficulty_distribution: dict[str, int] = field(default_factory=dict)
 
     @property
     def subject_coverage_pct(self) -> float:
@@ -63,6 +79,7 @@ class CoverageReport:
             "low_coverage_subjects": self.low_coverage_subjects,
             "import_priority": self.import_priority,
             "recommendations": self.recommendations,
+            "difficulty_distribution": self.difficulty_distribution,
             "subjects": [
                 {
                     "slug": sc.subject_slug,
@@ -72,6 +89,16 @@ class CoverageReport:
                     "topic_count": sc.topic_count,
                     "flag": sc.flag.value,
                     "priority_score": sc.priority_score,
+                    "difficulty_distribution": sc.difficulty_distribution,
+                    "topics": [
+                        {
+                            "slug": t.topic_slug,
+                            "question_count": t.question_count,
+                            "flag": t.flag.value,
+                            "difficulty_distribution": t.difficulty_distribution,
+                        }
+                        for t in sorted(sc.topics, key=lambda x: -x.question_count)
+                    ],
                 }
                 for sc in sorted(self.subject_coverage, key=lambda x: -x.weight)
             ],

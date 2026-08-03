@@ -1,0 +1,302 @@
+[
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "teorias-criminologicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A teoria do Controle Social de Travis Hirschi (1969) procura explicar por que a maioria das pessoas NÃO comete crimes.",
+    "text": "Segundo a Teoria do Controle Social de Travis Hirschi (1969), os vínculos que ligam o indivíduo à sociedade e inibem o comportamento desviante são:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Hirschi identificou quatro vínculos sociais: attachment (apego afetivo a pessoas e instituições), commitment (investimento em conformidade — estudos, carreira), involvement (engajamento em atividades legítimas — pouco tempo para crime) e belief (crença na validade das normas sociais). A ausência de qualquer desses vínculos libera o indivíduo para delinquir.",
+    "legal_basis": "Hirschi, Causes of Delinquency (1969)",
+    "alternatives": [
+      {"letter": "A", "text": "Deterrência, punição, arrependimento e recompensa.", "is_correct": false, "explanation": "Esses são elementos da teoria da dissuasão/retribuição (Escola Clássica), não do controle social de Hirschi."},
+      {"letter": "B", "text": "Apego (attachment), compromisso (commitment), envolvimento (involvement) e crença (belief).", "is_correct": true, "explanation": "Correto. Os quatro vínculos de Hirschi: apego afetivo (attachment), investimento em conformidade (commitment), engajamento em atividades legítimas (involvement) e crença na validade das normas (belief)."},
+      {"letter": "C", "text": "Anomia, tensão, inovação e ritualismo.", "is_correct": false, "explanation": "Anomia e modos de adaptação (inovação, ritualismo, etc.) são conceitos da teoria da tensão de Merton, não do controle social de Hirschi."},
+      {"letter": "D", "text": "Rotulação, estigma, desvio primário e desvio secundário.", "is_correct": false, "explanation": "Rotulação, estigma e desvio primário/secundário pertencem à teoria do etiquetamento (labeling theory — Becker, Lemert)."},
+      {"letter": "E", "text": "Herança genética, temperamento, impulsividade e inteligência baixa.", "is_correct": false, "explanation": "Esses são fatores do determinismo biológico (positivismo lombrosiano) e da teoria geral do crime de Gottfredson & Hirschi. O controle social de 1969 foca em vínculos sociais, não em traços individuais."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "teorias-criminologicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A Teoria da Associação Diferencial, de Edwin Sutherland, explica como o comportamento criminoso é aprendido através da interação social.",
+    "text": "Conforme a Teoria da Associação Diferencial de Sutherland, o comportamento criminal é aprendido principalmente:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Sutherland propôs que o crime é aprendido nas relações interpessoais íntimas (não pela mídia, necessidade econômica ou herança genética). O indivíduo aprende técnicas, motivos, atitudes e racionalizações favoráveis ao crime. Torna-se delinquente quando as definições favoráveis ao crime superam as desfavoráveis — daí 'associação diferencial' (o diferencial entre definições pró e anti-crime).",
+    "legal_basis": "Sutherland, Principles of Criminology (1939); White-collar Crime (1949)",
+    "alternatives": [
+      {"letter": "A", "text": "Pelo instinto de sobrevivência do indivíduo em situações de extrema pobreza.", "is_correct": false, "explanation": "Sutherland rejeitou a pobreza e o instinto como causa. Crime de colarinho branco (praticado por ricos) demonstrou que pobreza não é pré-condição do crime."},
+      {"letter": "B", "text": "Pela exposição a mídia violenta que estimula comportamentos agressivos.", "is_correct": false, "explanation": "Sutherland excluiu a mídia como veículo primário de aprendizado criminal. A aprendizagem ocorre nas relações íntimas diretas, não na comunicação impessoal."},
+      {"letter": "C", "text": "Na interação com pessoas em um processo de comunicação íntima que transmite técnicas e definições favoráveis ao crime.", "is_correct": true, "explanation": "Correto. Para Sutherland, o comportamento criminoso é aprendido na comunicação interpessoal íntima: o sujeito aprende técnicas criminosas e definições (atitudes, motivações, racionalizações) favoráveis à violação da lei."},
+      {"letter": "D", "text": "Por condicionamento operante: o crime é reforçado pela impunidade e punido pelo encarceramento.", "is_correct": false, "explanation": "O condicionamento operante é da teoria behaviorista (Skinner) e da teoria da aprendizagem social de Burgess e Akers (que revisou Sutherland). A associação diferencial em si não é behaviorista."},
+      {"letter": "E", "text": "Exclusivamente por transmissão genética entre gerações de famílias criminosas.", "is_correct": false, "explanation": "A herança genética do crime é tese do positivismo biológico, que Sutherland refutou com os dados sobre crime de colarinho branco, incompatível com predisposição genética de classe."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "policiamento-comunitario",
+    "question_type": "multipla_escolha",
+    "context_text": "O policiamento orientado ao problema (POP) e o policiamento comunitário são estratégias modernas de prevenção criminal.",
+    "text": "O modelo SARA, utilizado no Policiamento Orientado ao Problema (POP), compreende as seguintes etapas:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O modelo SARA (Scanning, Analysis, Response, Assessment) é o método de resolução de problemas do POP: Scanning = identificar e priorizar problemas; Analysis = analisar causas e condições; Response = desenvolver e implementar soluções; Assessment = avaliar a efetividade das medidas adotadas. Desenvolvido por Eck e Spelman (1987) a partir das ideias de Herman Goldstein.",
+    "legal_basis": "Goldstein, Problem-Oriented Policing (1990); Eck e Spelman, Problem-Solving: Problem-Oriented Policing in Newport News (1987)",
+    "alternatives": [
+      {"letter": "A", "text": "Suspeição, Abordagem, Repressão e Avaliação.", "is_correct": false, "explanation": "Essa sequência descreve uma abordagem policial tática, não o modelo SARA do POP. Suspeição e abordagem são procedimentos operacionais, não fases de resolução de problemas."},
+      {"letter": "B", "text": "Seleção, Análise, Responsabilização e Aprovação.", "is_correct": false, "explanation": "Essas palavras não correspondem ao acrônimo SARA do POP. Responsabilização e aprovação não são etapas do modelo."},
+      {"letter": "C", "text": "Scanning (varredura), Analysis (análise), Response (resposta) e Assessment (avaliação).", "is_correct": true, "explanation": "Correto. SARA = Scanning (identificar padrões de problemas), Analysis (analisar causas subjacentes), Response (implementar soluções específicas) e Assessment (avaliar se as respostas funcionaram)."},
+      {"letter": "D", "text": "Situação, Ação, Resultado e Aprendizagem.", "is_correct": false, "explanation": "Situação-Ação-Resultado-Aprendizagem é uma estrutura de ciclo de aprendizagem experiencial, não o modelo SARA do policiamento orientado ao problema."},
+      {"letter": "E", "text": "Segurança, Abordagem, Registro e Análise.", "is_correct": false, "explanation": "Segurança-Abordagem-Registro-Análise descreve procedimentos de atividade policial de campo, não as fases do modelo SARA de resolução de problemas criminais."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "prevencao-crime",
+    "question_type": "multipla_escolha",
+    "context_text": "A teoria dos Padrões de Crime (Pattern Theory) e a abordagem de hotspots são ferramentas da criminologia ambiental.",
+    "text": "No contexto do policiamento de hotspots, um 'hotspot de crime' refere-se a:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Hotspot de crime é um local pequeno (ponto, esquina, segmento de rua) com concentração estatisticamente elevada de ocorrências criminais. Pesquisas demonstram que cerca de 50% dos crimes ocorrem em apenas 3-5% dos lugares (Weisburd's Law of Crime Concentration). O policiamento focado nessas áreas é mais eficiente que o patrulhamento aleatório.",
+    "legal_basis": "Sherman et al., Hot Spots of Predatory Crime (1989); Weisburd, The Law of Crime Concentration at Place (2015)",
+    "alternatives": [
+      {"letter": "A", "text": "Qualquer bairro com índice de criminalidade acima da média municipal.", "is_correct": false, "explanation": "Bairro é unidade territorial grande. Hotspot é muito mais específico — um ponto, esquina ou trecho de rua — onde crimes se concentram dentro de um bairro."},
+      {"letter": "B", "text": "Uma área pequena (ponto, esquina, trecho de via) com concentração estatisticamente elevada de crimes.", "is_correct": true, "explanation": "Correto. Hotspot é micro-espaço (às vezes tão pequeno quanto um endereço específico) com concentração de crimes muito acima da média. A Lei de Concentração de Weisburd mostra que ~50% dos crimes ocorrem em 3-5% dos lugares."},
+      {"letter": "C", "text": "O conjunto de suspeitos recorrentes em determinada área, conhecidos pela polícia local.", "is_correct": false, "explanation": "Suspeitos recorrentes são o foco do policiamento orientado ao infrator, não ao lugar. Hotspot foca no espaço geográfico, não no perfil das pessoas."},
+      {"letter": "D", "text": "O horário de pico de crimes em uma cidade, entre 22h e 2h da manhã.", "is_correct": false, "explanation": "Horários de pico de crimes são variáveis temporais, não geográficas. Hotspot é um conceito espacial."},
+      {"letter": "E", "text": "Qualquer estabelecimento comercial com histórico de roubos registrados na delegacia.", "is_correct": false, "explanation": "Estabelecimentos com histórico de roubos podem ser hotspots, mas o conceito é mais amplo e inclui qualquer micro-lugar com concentração elevada de qualquer tipo de crime."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-ambiental",
+    "question_type": "multipla_escolha",
+    "context_text": "A teoria das Janelas Quebradas (Broken Windows Theory) foi proposta por James Q. Wilson e George Kelling em 1982.",
+    "text": "A teoria das Janelas Quebradas (Wilson e Kelling, 1982) propõe que:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Wilson e Kelling argumentaram que sinais visíveis de desordem e descuido (janelas quebradas, grafites, abandono) criam ambiente favorável ao crime grave, pois sinalizam que ninguém se importa com o local. A política de tolerância zero em NYC nos anos 1990 baseou-se parcialmente nessa teoria. É controversa: críticos apontam que promove discriminação racial e que a queda do crime em NYC teve outras causas.",
+    "legal_basis": "Wilson e Kelling, Broken Windows: The Police and Neighborhood Safety (1982)",
+    "alternatives": [
+      {"letter": "A", "text": "A pobreza extrema e a desigualdade social são as principais causas do crime urbano.", "is_correct": false, "explanation": "Esse é o argumento da criminologia crítica e da teoria da privação relativa. A teoria das Janelas Quebradas foca em sinais de desordem física e social, não na desigualdade econômica diretamente."},
+      {"letter": "B", "text": "Sinais visíveis de desordem e descuido encorajam o crime grave ao sinalizar ausência de controle social.", "is_correct": true, "explanation": "Correto. Janelas quebradas não reparadas, grafites, lixo e desordem sinalizam que a comunidade não exerce controle social efetivo, criando ambiente favorável ao crime progressivamente mais grave."},
+      {"letter": "C", "text": "O policiamento deve focar apenas nos crimes graves, ignorando infrações menores.", "is_correct": false, "explanation": "A teoria das Janelas Quebradas propõe exatamente o oposto: a repressão de infrações menores (desordem, vandalismo) previne crimes mais graves. A tolerância zero nasceu dessa lógica."},
+      {"letter": "D", "text": "A habitação precária e a superlotação são determinantes do comportamento criminoso dos moradores.", "is_correct": false, "explanation": "Habitação precária e superlotação são temas da ecologia criminal (Escola de Chicago) e da teoria das zonas concêntricas. Janelas Quebradas foca em sinais de desordem, não em condições habitacionais."},
+      {"letter": "E", "text": "O crime é uma escolha racional baseada no cálculo de custo-benefício pelo infrator.", "is_correct": false, "explanation": "A escolha racional e o cálculo custo-benefício são a base da Escola Clássica e da teoria da deterrência. As Janelas Quebradas focam nos sinais ambientais que permitem ou inibem o crime."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "violencia-genero",
+    "question_type": "multipla_escolha",
+    "context_text": "O ciclo de violência doméstica foi descrito pela pesquisadora Lenore Walker como um padrão recorrente em relacionamentos abusivos.",
+    "text": "O ciclo da violência doméstica, descrito por Lenore Walker, é composto pelas seguintes fases em sequência:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Walker identificou três fases cíclicas: (1) Tensão/acumulação — pequenos incidentes, irritabilidade crescente; (2) Explosão/incidente agudo — a agressão em si; (3) Lua de mel/reconciliação — arrependimento, promessas de mudança, afeto. Com o tempo, a fase de lua de mel tende a diminuir e as explosões ficam mais graves. O ciclo ajuda a explicar por que vítimas não saem imediatamente do relacionamento abusivo.",
+    "legal_basis": "Walker, The Battered Woman (1979); Lei 11.340/2006 (Lei Maria da Penha)",
+    "alternatives": [
+      {"letter": "A", "text": "Agressão, fuga, retorno e reconciliação.", "is_correct": false, "explanation": "Esse não é o modelo de Walker. A vítima não necessariamente foge na fase aguda, e o modelo de Walker inclui a fase de tensão antes da explosão."},
+      {"letter": "B", "text": "Tensão/acumulação, explosão/incidente agudo e lua de mel/reconciliação.", "is_correct": true, "explanation": "Correto. O ciclo de Walker: (1) Tensão crescente — irritações pequenas, (2) Explosão — o incidente de violência, (3) Lua de mel — arrependimento, afeto, promessas. O ciclo se repete e tende a se agravar com o tempo."},
+      {"letter": "C", "text": "Negação, raiva, barganha, depressão e aceitação.", "is_correct": false, "explanation": "Esse é o modelo de Elisabeth Kübler-Ross para os estágios do luto, não o ciclo da violência doméstica de Walker."},
+      {"letter": "D", "text": "Dependência emocional, isolamento social, submissão e agressão.", "is_correct": false, "explanation": "Dependência emocional e isolamento são características da dinâmica abusiva, mas não correspondem às fases do ciclo de Walker."},
+      {"letter": "E", "text": "Provocação da vítima, reação do agressor, intervenção policial e acordo judicial.", "is_correct": false, "explanation": "Essa sequência culpabiliza a vítima ('provocação'), o que é contrário às premissas da teoria de Walker e da Lei Maria da Penha."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "vitimologia",
+    "question_type": "multipla_escolha",
+    "context_text": "A pesquisa de vitimização (survey de vitimização) é instrumento metodológico fundamental da criminologia.",
+    "text": "As pesquisas de vitimização (victim surveys) são importantes para a criminologia porque:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "As pesquisas de vitimização perguntam diretamente às pessoas se foram vítimas de crimes, revelando a cifra negra — os crimes não registrados pela polícia. São fundamentais porque as estatísticas oficiais medem apenas a criminalidade aparente (registrada), enquanto os surveys capturam a criminalidade real, incluindo roubos, agressões e violências sexuais que nunca chegam ao registro policial.",
+    "legal_basis": "PNAD Contínua — Segurança Pública (IBGE); BNDS de Vitimização (FBSP); ICVS (International Crime Victim Survey)",
+    "alternatives": [
+      {"letter": "A", "text": "Permitem identificar o perfil psicológico dos criminosos e prever reincidência.", "is_correct": false, "explanation": "Perfil psicológico de criminosos é objeto de avaliação forense e criminologia clínica, não de pesquisas de vitimização, que focam nas experiências das vítimas."},
+      {"letter": "B", "text": "Revelam a cifra negra ao capturar crimes não registrados nas estatísticas policiais.", "is_correct": true, "explanation": "Correto. O principal valor dos surveys de vitimização é revelar a cifra negra: crimes cometidos mas não denunciados. Isso permite estimar a criminalidade real, não apenas a aparente (registrada pela polícia)."},
+      {"letter": "C", "text": "Substituem os inquéritos policiais ao documentar formalmente os crimes ocorridos.", "is_correct": false, "explanation": "Pesquisas de vitimização são instrumentos de pesquisa científica, não têm valor jurídico probatório e não substituem inquéritos policiais."},
+      {"letter": "D", "text": "Identificam os autores dos crimes para facilitar a investigação policial.", "is_correct": false, "explanation": "Pesquisas de vitimização são anônimas e estatísticas: capturam experiências de vítimas, não identificam autores de crimes específicos."},
+      {"letter": "E", "text": "Medem exclusivamente os crimes contra o patrimônio, desconsiderando a violência interpessoal.", "is_correct": false, "explanation": "Pesquisas de vitimização cobrem ampla gama de crimes: contra o patrimônio, violência física, sexual, doméstica, etc. Não se limitam a patrimônio."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "prevencao-crime",
+    "question_type": "multipla_escolha",
+    "context_text": "A reincidência criminal é indicador central para avaliar a efetividade do sistema de justiça criminal.",
+    "text": "No Direito Penal brasileiro, a reincidência é circunstância agravante que se verifica quando o agente:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Art. 63 do CP: reincidência = cometeu novo crime após condenação transitada em julgado por crime anterior, no Brasil ou exterior. O art. 64 limita o período depurador: a condenação anterior não prevalece se entre a extinção da pena e o novo crime passaram mais de 5 anos. A reincidência como circunstância agravante está no art. 61, I, do CP.",
+    "legal_basis": "Arts. 61, I, 63 e 64, CP",
+    "alternatives": [
+      {"letter": "A", "text": "Comete novo crime após qualquer registro policial anterior, independentemente de condenação.", "is_correct": false, "explanation": "Mero registro policial (inquérito, indiciamento) não gera reincidência. Exige-se condenação transitada em julgado — sentença definitiva, sem mais recursos."},
+      {"letter": "B", "text": "É condenado por dois crimes praticados no mesmo dia, em concurso formal.", "is_correct": false, "explanation": "Concurso formal (um ato gera dois crimes) é causa de cúmulo de penas (art. 70, CP), não de reincidência, que exige dois momentos distintos: condenação anterior e novo crime posterior."},
+      {"letter": "C", "text": "Comete novo crime depois do trânsito em julgado de condenação anterior, dentro do período de 5 anos.", "is_correct": true, "explanation": "Correto. Art. 63 CP: reincidência = novo crime após condenação definitiva (trânsito em julgado) por crime anterior. Art. 64: o período depurador é de 5 anos — após esse prazo, a condenação anterior não gera reincidência."},
+      {"letter": "D", "text": "Pratica crime doloso após responder processo por crime culposo ainda em andamento.", "is_correct": false, "explanation": "Processo em andamento (sem trânsito em julgado) não gera reincidência. Gera apenas maus antecedentes, caso seja condenado. Reincidência exige condenação definitiva prévia."},
+      {"letter": "E", "text": "É preso preventivamente mais de uma vez pela mesma autoridade policial.", "is_correct": false, "explanation": "Prisões preventivas são medidas cautelares, não condenações. Reincidência exige sentença condenatória transitada em julgado, não prisões provisórias."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "controle-social",
+    "question_type": "multipla_escolha",
+    "context_text": "A Constituição Federal de 1988 estabelece o sistema de segurança pública brasileiro, com atribuições definidas para cada órgão.",
+    "text": "Segundo o art. 144 da Constituição Federal de 1988, são órgãos da segurança pública:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 144 da CF/88 elenca os órgãos de segurança pública: Polícia Federal, Polícia Rodoviária Federal, Polícia Ferroviária Federal, Polícias Civis, Polícias Militares e Corpos de Bombeiros Militares (§4°-§6°), Polícias Penais Federal, Estaduais e Distrital (EC 104/2019), e Guardas Municipais (§8°). O Ministério Público e a Defesa Civil não são órgãos de segurança pública no sentido estrito do art. 144.",
+    "legal_basis": "Art. 144, CF/88; EC 104/2019",
+    "alternatives": [
+      {"letter": "A", "text": "Polícia Federal, Ministério Público, Poder Judiciário e Forças Armadas.", "is_correct": false, "explanation": "MP e Judiciário são funções essenciais à justiça (arts. 127-135, CF). Forças Armadas são para defesa nacional (art. 142, CF). Não integram o rol de segurança pública do art. 144."},
+      {"letter": "B", "text": "Polícia Federal, Polícia Rodoviária Federal, Polícias Civis, Polícias Militares, Polícias Penais e Guardas Municipais.", "is_correct": true, "explanation": "Correto. Art. 144 CF/88 (com EC 104/2019): PF, PRF, Polícia Ferroviária Federal, Polícias Civis, Polícias Militares e CBM, Polícias Penais Federal/Estaduais/DF, e Guardas Municipais."},
+      {"letter": "C", "text": "Somente a Polícia Civil e a Polícia Militar, pois as demais forças são federais.", "is_correct": false, "explanation": "O art. 144 inclui órgãos federais e estaduais. A afirmação está errada ao limitar as forças estaduais e excluir a Polícia Federal, PRF e Polícias Penais."},
+      {"letter": "D", "text": "Agência Brasileira de Inteligência (ABIN), Polícia Federal e Polícia Civil.", "is_correct": false, "explanation": "A ABIN (inteligência) não está no rol do art. 144. É órgão da atividade de inteligência (Lei 9.883/1999), diferente de segurança pública."},
+      {"letter": "E", "text": "Polícia Militar, Corpo de Bombeiros, PROCON e Vigilância Sanitária.", "is_correct": false, "explanation": "PROCON e Vigilância Sanitária são órgãos de defesa do consumidor e saúde pública, respectivamente. Não integram o rol de segurança pública do art. 144 da CF."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-classica",
+    "question_type": "multipla_escolha",
+    "context_text": "Jeremy Bentham desenvolveu o conceito do Panóptico como modelo arquitetônico de vigilância e controle.",
+    "text": "O conceito de Panóptico, desenvolvido por Jeremy Bentham e analisado por Michel Foucault em 'Vigiar e Punir', representa:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Panóptico é um projeto arquitetônico em que um único vigilante central pode observar todos os presos sem ser visto. Foucault usou a metáfora para analisar o poder disciplinar moderno: a sensação de ser potencialmente observado em qualquer momento induz a autodisciplina, tornando o controle externo desnecessário. O panoptismo representa a internalização do olhar disciplinar.",
+    "legal_basis": "Bentham, Panopticon (1787); Foucault, Vigiar e Punir (1975)",
+    "alternatives": [
+      {"letter": "A", "text": "Um modelo de pena retributiva que visa causar sofrimento proporcional ao dano causado pela infração.", "is_correct": false, "explanation": "A pena retributiva proporcional é tese da Escola Clássica (Beccaria). O Panóptico não é sobre proporcionalidade da pena, mas sobre vigilância e autodisciplina."},
+      {"letter": "B", "text": "Um sistema arquitetônico de vigilância em que a possibilidade de ser observado a qualquer momento produz autodisciplina no vigiado.", "is_correct": true, "explanation": "Correto. O Panóptico de Bentham (e a análise de Foucault) mostra que a incerteza sobre quando se está sendo observado leva o indivíduo a se comportar como se sempre estivesse sendo vigiado — produzindo autodisciplina e controle sem necessidade de força direta."},
+      {"letter": "C", "text": "Uma teoria sobre a ressocialização do preso pelo trabalho coletivo em condições de liberdade vigiada.", "is_correct": false, "explanation": "Ressocialização pelo trabalho é tese das escolas reformistas. O Panóptico é sobre vigilância arquitetônica e poder disciplinar, não sobre ressocialização produtiva."},
+      {"letter": "D", "text": "O projeto de prisão ideal de Beccaria, baseado na separação por gravidade do crime cometido.", "is_correct": false, "explanation": "Beccaria propôs proporcionalidade de penas, não projeto arquitetônico. O Panóptico é de Jeremy Bentham (1787), não de Beccaria."},
+      {"letter": "E", "text": "Um método de identificação criminal baseado na observação de características físicas dos detentos.", "is_correct": false, "explanation": "A identificação por características físicas é o método de Bertillon (retrato falado e antropometria) e de Lombroso (tipo criminoso). O Panóptico é sobre vigilância e poder disciplinar, não identificação."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "teoria-da-pena",
+    "question_type": "multipla_escolha",
+    "context_text": "As teorias da pena buscam justificar a finalidade da punição criminal no Estado Democrático de Direito.",
+    "text": "A teoria mista (eclética ou unificadora) da pena, adotada pelo Código Penal brasileiro (art. 59), propõe que a pena:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A teoria mista une as funções retributiva (a pena como resposta justa ao mal causado — absoluta) e preventiva (a pena visa evitar crimes futuros — relativa: prevenção geral e especial). O art. 59 do CP reflete essa síntese ao estabelecer que o juiz fixará a pena 'conforme seja necessário e suficiente para reprovação e prevenção do crime'. Reprova = retribuição; previne = prevenção.",
+    "legal_basis": "Art. 59, CP; Exposição de Motivos do CP; Roxin, Derecho Penal Parte General",
+    "alternatives": [
+      {"letter": "A", "text": "Tem finalidade exclusivamente retributiva: impõe sofrimento proporcional ao crime sem consideração preventiva.", "is_correct": false, "explanation": "A finalidade exclusivamente retributiva é da teoria absoluta (Kant, Hegel). O CP brasileiro adota a teoria mista, que inclui a prevenção."},
+      {"letter": "B", "text": "Une as funções retributiva (reprovação do crime) e preventiva (geral e especial), como expressado no art. 59 do CP.", "is_correct": true, "explanation": "Correto. A teoria mista (adotada no CP, art. 59) combina: retribuição (a pena como resposta merecida ao crime) + prevenção geral (intimidar a sociedade) + prevenção especial (ressocializar ou neutralizar o infrator específico)."},
+      {"letter": "C", "text": "Serve exclusivamente para ressocializar o condenado, sem qualquer função punitiva ou intimidatória.", "is_correct": false, "explanation": "Ressocialização exclusiva é tese da teoria preventiva especial positiva (Von Liszt). O CP não nega a função retributiva — o art. 59 fala em 'reprovação' expressamente."},
+      {"letter": "D", "text": "Deve ser substituída por medidas de segurança para todos os condenados, pois o crime é sempre sintoma de doença.", "is_correct": false, "explanation": "Isso seria o determinismo positivista de Ferri e Garofalo. O sistema dualista brasileiro (pena + medida de segurança) aplica penas para imputáveis e medidas de segurança para inimputáveis."},
+      {"letter": "E", "text": "Não tem eficácia preventiva comprovada e deve ser abolida em favor de medidas alternativas.", "is_correct": false, "explanation": "O abolicionismo penal (Christie, Hulsman) propõe eliminar o sistema penal, mas não é a teoria adotada pelo CP. A questão sobre eficácia empírica da pena é separada da teoria jurídica adotada pela lei."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-critica",
+    "question_type": "multipla_escolha",
+    "context_text": "O Garantismo Penal, de Luigi Ferrajoli, é uma importante corrente do pensamento jurídico-criminológico contemporâneo.",
+    "text": "O Garantismo Penal, de Luigi Ferrajoli, propõe que o sistema penal deve ser limitado por garantias constitucionais. Qual é o princípio central dessa teoria?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Garantismo (Ferrajoli, Diritto e Ragione, 1989) propõe que o poder punitivo do Estado deve ser controlado por garantias formais e substanciais: legalidade estrita, presunção de inocência, contraditório, ampla defesa, proporcionalidade, humanidade das penas. É um modelo normativo — o Direito Penal mínimo — que limita o poder punitivo para proteger o cidadão contra o arbítrio estatal.",
+    "legal_basis": "Ferrajoli, Diritto e Ragione (1989); Art. 5°, CF/88 (garantias processuais)",
+    "alternatives": [
+      {"letter": "A", "text": "O Estado deve ampliar o poder punitivo para responder à criminalidade de forma mais eficaz.", "is_correct": false, "explanation": "O expansionismo penal (punitivismo) é a posição oposta ao garantismo. Ferrajoli propõe limitação do poder punitivo, não sua ampliação."},
+      {"letter": "B", "text": "O poder punitivo do Estado deve ser limitado por garantias formais e substanciais que protejam o cidadão do arbítrio estatal.", "is_correct": true, "explanation": "Correto. O garantismo penal de Ferrajoli propõe um Direito Penal mínimo: o Estado só pode punir quando estritamente necessário, com respeito a todas as garantias (legalidade, presunção de inocência, contraditório, proporcionalidade, humanidade)."},
+      {"letter": "C", "text": "A pena deve ser determinada pela periculosidade do indivíduo, medida por especialistas antes do crime.", "is_correct": false, "explanation": "Punição antecipada pela periculosidade é o Direito Penal do Autor (positivismo perigosista), que Ferrajoli critica como incompatível com o Estado de Direito."},
+      {"letter": "D", "text": "Crimes graves devem ser julgados por tribunais de exceção com competência especial.", "is_correct": false, "explanation": "Tribunais de exceção são proibidos pelo garantismo (e pela CF, art. 5°, XXXVII) por violarem o princípio do juiz natural e a imparcialidade."},
+      {"letter": "E", "text": "O sistema penal deve ser abolido e substituído por mecanismos de mediação comunitária.", "is_correct": false, "explanation": "Abolicionismo (Christie, Hulsman) propõe eliminar o sistema penal. Ferrajoli não é abolicionista — propõe reformá-lo com garantias, não eliminá-lo."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "conceito-objeto-criminologia",
+    "question_type": "multipla_escolha",
+    "context_text": "A criminologia é reconhecida como ciência empírica e interdisciplinar.",
+    "text": "O método empírico utilizado pela criminologia distingue-a das ciências jurídico-normativas. Esse método caracteriza-se por:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O método empírico (observação, experimentação, mensuração, indução) é o que diferencia a criminologia das ciências normativas (Direito Penal, Processual) que trabalham com normas e dedução. A criminologia observa o fenômeno criminal tal como ocorre na realidade, coletando dados de campo, realizando surveys, estudos longitudinais e experimentos. É ciência do ser (Sein), não do dever ser (Sollen).",
+    "legal_basis": "García-Pablos de Molina, Criminologia; Garrido Genovés, Principios de Criminología",
+    "alternatives": [
+      {"letter": "A", "text": "Interpretação lógico-dedutiva de normas jurídicas para extrair consequências legais.", "is_correct": false, "explanation": "Interpretação lógico-dedutiva de normas é o método do Direito Positivo (dogmática jurídica), não da criminologia empírica."},
+      {"letter": "B", "text": "Observação, mensuração e análise sistemática do fenômeno criminal tal como ocorre na realidade.", "is_correct": true, "explanation": "Correto. O método empírico da criminologia parte da realidade observável: surveys de vitimização, estudos longitudinais, análise de dados policiais, experimentos criminológicos — tudo orientado ao fenômeno tal como é, não como deveria ser."},
+      {"letter": "C", "text": "Elaboração de categorias conceituais abstratas para classificar tipos criminais.", "is_correct": false, "explanation": "Elaboração de categorias abstratas é método da dogmática penal e da filosofia do Direito. A criminologia empírica parte dos fatos, não de conceitos a priori."},
+      {"letter": "D", "text": "Análise filosófica dos fundamentos éticos da punição e da justiça criminal.", "is_correct": false, "explanation": "Análise filosófica da punição e justiça é objeto da filosofia do Direito Penal, não da criminologia empírica. Criminologia é ciência factual, não normativa."},
+      {"letter": "E", "text": "Estudo exclusivo de decisões judiciais passadas para identificar padrões de aplicação da lei.", "is_correct": false, "explanation": "Estudo de decisões judiciais (jurisprudência) é método da dogmática processual. A criminologia pode usar dados judiciais, mas seu objeto é mais amplo: o fenômeno criminal, a vítima, o controle social."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "drogas-crime",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei nº 11.343/2006 (Lei de Drogas) regulamentou as condutas relacionadas a substâncias entorpecentes no Brasil.",
+    "text": "Conforme a Lei 11.343/2006, qual é o critério principal para distinguir o usuário de drogas do traficante?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 28 (usuário) vs. art. 33 (tráfico) da Lei de Drogas: a distinção não é pela quantidade, mas pelo conjunto de circunstâncias: natureza e quantidade da droga, local, condições do flagrante, e outros dados pessoais (art. 28, §2°). O juiz decidirá se era para consumo pessoal. Na prática, a ausência de critério quantitativo objetivo é criticada por gerar seletividade racial e social na aplicação da lei.",
+    "legal_basis": "Arts. 28 e 33, Lei 11.343/2006; Súmula 704, STF (competência)",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas a quantidade encontrada com o indivíduo: acima de determinado peso, é tráfico.", "is_correct": false, "explanation": "A Lei 11.343/2006 não fixou quantidade-limite entre usuário e traficante. A crítica a essa omissão é que gera insegurança jurídica e seletividade policial."},
+      {"letter": "B", "text": "O conjunto de circunstâncias: natureza, quantidade, local, condições e dados pessoais, avaliados pelo juiz.", "is_correct": true, "explanation": "Correto. Art. 28, §2° da Lei 11.343/2006: o juiz avaliará se era para consumo pessoal considerando natureza e quantidade da substância, local das circunstâncias, condições sociais e pessoais, antecedentes do agente. Não há limite numérico fixo."},
+      {"letter": "C", "text": "A presença de dinheiro e celular com o indivíduo, indicativos obrigatórios de tráfico.", "is_correct": false, "explanation": "Dinheiro e celular são indícios que o delegado e o MP podem usar, mas não são critérios legais obrigatórios para classificação. O art. 28, §2° lista os critérios legais."},
+      {"letter": "D", "text": "A confissão do indivíduo sobre sua intenção de vender ou consumir a droga.", "is_correct": false, "explanation": "A confissão é relevante, mas não é o critério exclusivo. O art. 28, §2° estabelece critérios objetivos e subjetivos combinados que o juiz avalia, independentemente de confissão."},
+      {"letter": "E", "text": "A ficha criminal anterior: primário é usuário, reincidente é traficante.", "is_correct": false, "explanation": "Antecedentes criminais são um dos fatores (art. 28, §2°), mas não são o critério exclusivo determinante. Um reincidente pode ser usuário; um primário pode ser traficante."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-classica",
+    "question_type": "multipla_escolha",
+    "context_text": "A criminologia evoluiu ao longo dos séculos com diferentes escolas e paradigmas.",
+    "text": "O que caracterizou a passagem do paradigma etiológico da criminologia para o paradigma da reação social (labeling)?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O paradigma etiológico (positivismo) buscava as causas (etiologia) do comportamento criminoso no próprio indivíduo (biológico, psicológico) ou no ambiente social. A virada para o paradigma da reação social (labeling, anos 1960-70) deslocou o foco: de 'por que essa pessoa cometeu crime?' para 'por que esse comportamento foi definido como crime?' e 'por que esse indivíduo foi selecionado como criminoso?'. É uma inversão epistemológica fundamental.",
+    "legal_basis": "Becker, Outsiders (1963); Lemert, Human Deviance (1967); Baratta, Criminologia Crítica",
+    "alternatives": [
+      {"letter": "A", "text": "A adoção de métodos quantitativos mais sofisticados para medir as causas biológicas do crime.", "is_correct": false, "explanation": "Métodos quantitativos mais sofisticados ainda estariam no paradigma etiológico. A virada do labeling é qualitativa e epistemológica, não metodológico-quantitativa."},
+      {"letter": "B", "text": "A mudança do foco das causas do comportamento criminoso para a análise dos processos de definição e seleção do que é crime e quem é criminoso.", "is_correct": true, "explanation": "Correto. O labeling theory inverteu a pergunta criminológica: de 'por que esse indivíduo cometeu crime?' (etiologia) para 'como um comportamento e uma pessoa são definidos como criminosos pela sociedade e pelo sistema?' (reação social)."},
+      {"letter": "C", "text": "A substituição do método empírico pelo método dedutivo e filosófico na análise do crime.", "is_correct": false, "explanation": "O labeling continuou empírico (estudos de campo, entrevistas). A mudança foi no objeto e pergunta de pesquisa, não no método."},
+      {"letter": "D", "text": "O abandono do estudo da vítima e a concentração exclusiva no sistema de justiça criminal.", "is_correct": false, "explanation": "A vitimologia se desenvolveu em paralelo ao labeling, não foi abandonada. O labeling focou na rotulação do 'criminoso', mas a vítima continuou sendo estudada."},
+      {"letter": "E", "text": "A aceitação do livre-arbítrio do criminoso como fundamento da responsabilidade penal.", "is_correct": false, "explanation": "O livre-arbítrio é premissa da Escola Clássica. O labeling não é sobre responsabilidade penal — é sobre processos sociais de definição e seleção, sem tomar posição sobre livre-arbítrio."}
+    ]
+  }
+]

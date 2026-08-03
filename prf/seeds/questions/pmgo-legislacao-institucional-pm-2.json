@@ -1,0 +1,135 @@
+[
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "lei-organica-pm-goias",
+    "question_type": "multipla_escolha",
+    "text": "De acordo com a Lei Complementar nº 144/2010 (Lei de Organização Básica da PMGO), a Polícia Militar de Goiás é considerada:",
+    "alternatives": [
+      { "letter": "A", "text": "Órgão de segurança pública federal subordinado ao Ministério da Justiça e Segurança Pública.", "is_correct": false },
+      { "letter": "B", "text": "Instituição de segurança pública estadual, permanente e regular, organizada com base na hierarquia e na disciplina.", "is_correct": true },
+      { "letter": "C", "text": "Corporação paramilitar vinculada ao Comando do Exército Brasileiro nos termos do art. 144 da CF.", "is_correct": false },
+      { "letter": "D", "text": "Força auxiliar e reserva do Exército, com competência exclusiva para o policiamento ostensivo rural.", "is_correct": false },
+      { "letter": "E", "text": "Órgão integrante do Sistema Nacional de Informações de Segurança Pública (SINESP) com missão investigatória.", "is_correct": false }
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A PMGO é instituição estadual de segurança pública, permanente e regular (não temporária), organizada com base na hierarquia e na disciplina. É força auxiliar e reserva do Exército Brasileiro (art. 144 §6° CF), mas não está subordinada a ele no cotidiano — subordina-se ao Governador do Estado de Goiás. Sua missão é o policiamento ostensivo e a preservação da ordem pública no Estado de Goiás.",
+    "legal_basis": "CF art. 144 §5° e §6°; LC Estadual 144/2010 — Lei de Organização Básica da PMGO"
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "hierarquia-disciplina-pm",
+    "question_type": "multipla_escolha",
+    "text": "Segundo o Regulamento Disciplinar da Polícia Militar de Goiás (Decreto Estadual nº 9.316/2018), é considerada transgressão disciplinar de natureza GRAVE:",
+    "alternatives": [
+      { "letter": "A", "text": "Apresentar-se ao serviço com uniforme incompleto ou mal conservado.", "is_correct": false },
+      { "letter": "B", "text": "Chegar atrasado ao serviço por motivo justificado e comunicado à chefia imediata.", "is_correct": false },
+      { "letter": "C", "text": "Praticar ato atentatório ao decoro da classe ou à moralidade pública, ainda que fora do exercício da função.", "is_correct": true },
+      { "letter": "D", "text": "Esquecer equipamento individual de serviço em quartel ou viatura.", "is_correct": false },
+      { "letter": "E", "text": "Não cumprimentar superior hierárquico durante a hora do almoço dentro das dependências do quartel.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Regulamento Disciplinar classifica as transgressões em leve, média e grave. Atos atentatórios ao decoro da classe ou à moralidade pública — mesmo fora do serviço — constituem transgressão grave, pois afetam a imagem institucional da PMGO e o conceito público da corporação. A hierarquia e a disciplina são os pilares da instituição militar (CF art. 42).",
+    "legal_basis": "CF art. 42; Decreto Estadual 9.316/2018 — Regulamento Disciplinar PMGO"
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "postos-graduacoes-pm",
+    "question_type": "multipla_escolha",
+    "text": "Na hierarquia da Polícia Militar de Goiás, os postos e graduações são organizados em Quadro de Oficiais e Quadro de Praças. Dentro do Quadro de Praças, a graduação IMEDIATAMENTE SUPERIOR à de Soldado de 2ª Classe é a de:",
+    "alternatives": [
+      { "letter": "A", "text": "Sargento.", "is_correct": false },
+      { "letter": "B", "text": "Cabo.", "is_correct": false },
+      { "letter": "C", "text": "Soldado de 1ª Classe.", "is_correct": true },
+      { "letter": "D", "text": "3° Sargento.", "is_correct": false },
+      { "letter": "E", "text": "Subtenente.", "is_correct": false }
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A hierarquia das praças na PMGO (crescente): Soldado de 2ª Classe → Soldado de 1ª Classe → Cabo → 3° Sargento → 2° Sargento → 1° Sargento → Subtenente. O Aspirante-a-Oficial é a graduação de transição para o quadro de oficiais (após formação na Academia de Polícia Militar de Goiás — APMG). Conhecer essa progressão é essencial para entender promoções, antiguidade e prerrogativas hierárquicas.",
+    "legal_basis": "LC Estadual 144/2010 — Quadro de Cargos e Funções PMGO"
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "missao-valores-pm",
+    "question_type": "multipla_escolha",
+    "text": "A atividade de POLICIAMENTO OSTENSIVO, missão constitucional precípua da Polícia Militar, caracteriza-se por:",
+    "alternatives": [
+      { "letter": "A", "text": "Investigação sigilosa de crimes consumados, coleta de provas e identificação de autores de infrações penais.", "is_correct": false },
+      { "letter": "B", "text": "Presença fardada e visível do policial, com caráter preventivo e dissuasório, destinado a preservar a ordem pública.", "is_correct": true },
+      { "letter": "C", "text": "Execução de mandados de prisão e busca e apreensão mediante ordem judicial.", "is_correct": false },
+      { "letter": "D", "text": "Fiscalização exclusiva de trânsito urbano em vias públicas municipais.", "is_correct": false },
+      { "letter": "E", "text": "Guarda de estabelecimentos penais e custodia de presos provisórios.", "is_correct": false }
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Policiamento ostensivo: ação policial com presença VISÍVEL (fardamento, viatura identificada) cujo efeito é preventivo e dissuasório — inibe a prática de crimes pela simples presença policial. É missão da Polícia Militar (art. 144 §5° CF). Diferencia-se do policiamento investigativo (Polícia Civil) e da guarda de presos (Polícia Penal). O caráter ostensivo pressupõe que o agente seja facilmente identificado como policial.",
+    "legal_basis": "CF art. 144 §5°; Lei 9.503/1997 (CTB) art. 23 — competências PM no trânsito"
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "regime-juridico-militar",
+    "question_type": "multipla_escolha",
+    "text": "O policial militar, enquanto servidor público estadual de natureza militar, NÃO tem o direito constitucional de:",
+    "alternatives": [
+      { "letter": "A", "text": "Perceber salário mínimo como remuneração base.", "is_correct": false },
+      { "letter": "B", "text": "Ser reintegrado ao cargo após demissão ilegal reconhecida judicialmente.", "is_correct": false },
+      { "letter": "C", "text": "Sindicalizar-se e participar de greve.", "is_correct": true },
+      { "letter": "D", "text": "Ter acesso a prontuário e documentos pessoais existentes no arquivo da corporação.", "is_correct": false },
+      { "letter": "E", "text": "Candidatar-se a cargo eletivo, se afastado temporariamente para desincompatibilização.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A CF art. 142 §3° inciso IV (aplicável aos militares estaduais via art. 42 §1°) veda expressamente a sindicalização e a greve dos militares. Essa vedação é absoluta — diferente dos servidores civis, que têm direito à greve, embora regulamentado. Os demais direitos listados (salário mínimo, reintegração judicial, acesso a documentos, candidatura com desincompatibilização) são garantidos ao policial militar.",
+    "legal_basis": "CF art. 42 §1° c/c art. 142 §3° IV — vedação de greve e sindicalização dos militares estaduais"
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "lei-organica-pm-goias",
+    "question_type": "multipla_escolha",
+    "text": "Segundo o Estatuto dos Policiais Militares de Goiás, a LICENÇA ESPECIAL é um benefício concedido ao policial militar que:",
+    "alternatives": [
+      { "letter": "A", "text": "Apresentar atestado médico por doença grave com duração superior a 30 dias.", "is_correct": false },
+      { "letter": "B", "text": "For eleito para cargo público eletivo (vereador, deputado) e precisar se afastar para o mandato.", "is_correct": false },
+      { "letter": "C", "text": "Completar certo número de anos de serviço efetivo, podendo gozar um período de afastamento remunerado.", "is_correct": true },
+      { "letter": "D", "text": "Sofrer acidente em serviço e necessitar de afastamento para tratamento médico.", "is_correct": false },
+      { "letter": "E", "text": "For designado para missão de paz no exterior pelo Governo Federal.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A licença especial (também chamada licença-prêmio) é concedida ao policial militar que completa determinado número de anos de serviço efetivo ininterrupto (tipicamente 5 anos) — a corporação o autoriza a se afastar por um período (geralmente 3 meses) com remuneração integral. É um benefício pela antiguidade e dedicação ao serviço. Não se confunde com licença saúde (doença) ou licença para tratamento de familiar.",
+    "legal_basis": "Estatuto dos Policiais Militares de Goiás — LC Estadual 14/1982 e alterações"
+  },
+  {
+    "subject_slug": "legislacao-institucional-pm",
+    "topic_slug": "hierarquia-disciplina-pm",
+    "question_type": "multipla_escolha",
+    "text": "Na Polícia Militar de Goiás, a CONSELHO DE DISCIPLINA é instaurado para apurar transgressão disciplinar imputada a:",
+    "alternatives": [
+      { "letter": "A", "text": "Officiais com posto de Coronel ou superior, por decisão do Governador.", "is_correct": false },
+      { "letter": "B", "text": "Praças com estabilidade — Cabos e Sargentos — cujas transgressões possam resultar em exclusão a bem da disciplina.", "is_correct": true },
+      { "letter": "C", "text": "Oficiais de qualquer posto, sempre que houver suspeita de crime militar.", "is_correct": false },
+      { "letter": "D", "text": "Praças em estágio probatório, independentemente da graduação.", "is_correct": false },
+      { "letter": "E", "text": "Civis que prestam serviço voluntário à PMGO em convênio com a Secretaria de Segurança.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Conselho de Disciplina é o procedimento administrativo para apurar transgressão disciplinar imputada a praça com estabilidade (Cabo, Sargento, Subtenente), quando a pena aplicável pode resultar em exclusão a bem da disciplina. Para Soldados sem estabilidade, usa-se processo simplificado. Para Oficiais, aplica-se o Conselho de Justificação. Cada instância tem rito próprio, garantindo o contraditório e a ampla defesa.",
+    "legal_basis": "DL 667/1969; LC Estadual 144/2010; Regulamento Disciplinar PMGO"
+  }
+]

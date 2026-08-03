@@ -33,13 +33,12 @@ async def list_questions(
         limit=limit,
     )
 
-    results = []
-    for q in questions:
-        alts_raw = await repo._fetch(
-            "SELECT id, letter, text, display_order FROM question_alternatives WHERE question_id = $1 ORDER BY display_order",
-            q["id"],
-        )
-        results.append({
+    # Batch-fetch all alternatives in one query (avoids N+1)
+    q_ids = [q["id"] for q in questions]
+    alts_map = await repo.get_alternatives_batch(q_ids)
+
+    results = [
+        {
             "id": q["id"],
             "subject_id": q["subject_id"],
             "subject_name": q.get("subject_name"),
@@ -54,9 +53,11 @@ async def list_questions(
             "tags": q.get("tags", []),
             "alternatives": [
                 {"id": a["id"], "letter": a["letter"], "text": a["text"], "display_order": a["display_order"]}
-                for a in alts_raw
+                for a in alts_map.get(q["id"], [])
             ],
-        })
+        }
+        for q in questions
+    ]
 
     return {"questions": results, "total": len(results)}
 
@@ -121,6 +122,119 @@ async def answer_question(
         xp_earned=result["xp_earned"],
         error_recorded=result["error_recorded"],
     )
+
+
+@router.get("/smart")
+async def smart_next_question(
+    exam: str = Query(default="PRF", description="PRF ou PMGO"),
+    subject_id: Optional[UUID] = None,
+    exclude: Optional[str] = Query(default=None, description="Comma-separated question UUIDs to exclude"),
+    question_type: Optional[str] = None,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """
+    Smart question selection biased toward subjects with low coverage.
+
+    With 70% probability selects from the weakest covered subject for the exam;
+    with 30% picks any subject. Falls back to random if coverage data unavailable.
+    """
+    import random
+    from prf.seeds.seed_data import SUBJECTS
+    from core.coverage_audit import CoverageAuditor
+    from core.coverage_audit.models import CoverageFlag
+
+    exclude_ids: set[UUID] = set()
+    if exclude:
+        for raw in exclude.split(","):
+            raw = raw.strip()
+            if raw:
+                try:
+                    exclude_ids.add(UUID(raw))
+                except ValueError:
+                    pass
+
+    # If caller pinned a subject, use it directly
+    if subject_id:
+        return await _fetch_question(repo, subject_id, question_type, exclude_ids)
+
+    # Load coverage to find weak subjects
+    target_subject_id: Optional[UUID] = None
+    try:
+        all_questions = await repo.get_questions_for_coverage()
+        auditor = CoverageAuditor(exam=exam.upper())
+        report = auditor.audit(questions=all_questions, subjects=SUBJECTS)
+
+        weight_key = "weight_pm" if exam.upper() == "PMGO" else "weight_prf"
+        # Subjects with CRITICAL or LOW flag, weighted by priority_score
+        weak = [sc for sc in report.subject_coverage
+                if sc.flag in (CoverageFlag.CRITICAL, CoverageFlag.LOW, CoverageFlag.EMPTY)]
+        if weak and random.random() < 0.70:
+            # Pick a weak subject weighted by priority_score
+            total_priority = sum(sc.priority_score for sc in weak) or 1
+            r = random.uniform(0, total_priority)
+            cumulative = 0.0
+            for sc in weak:
+                cumulative += sc.priority_score
+                if r <= cumulative:
+                    # Resolve slug → subject UUID
+                    row = await repo._fetchrow(
+                        "SELECT id FROM subjects WHERE slug = $1", sc.subject_slug
+                    )
+                    if row:
+                        target_subject_id = row["id"]
+                    break
+    except Exception:
+        pass  # fall back to random
+
+    return await _fetch_question(repo, target_subject_id, question_type, exclude_ids)
+
+
+async def _fetch_question(
+    repo: PRFRepository,
+    subject_id: Optional[UUID],
+    question_type: Optional[str],
+    exclude_ids: set,
+) -> dict:
+    """Fetch one question, excluding already-seen ids."""
+    questions = await repo.get_questions(
+        subject_id=subject_id,
+        question_type=question_type,
+        limit=30,
+    )
+    available = [q for q in questions if q["id"] not in exclude_ids]
+    if not available:
+        # Try without subject filter
+        questions = await repo.get_questions(question_type=question_type, limit=30)
+        available = [q for q in questions if q["id"] not in exclude_ids]
+    if not available:
+        from fastapi import HTTPException
+        raise HTTPException(404, "No questions available")
+
+    import random
+    q = random.choice(available)
+    alts_raw = await repo._fetch(
+        "SELECT id, letter, text, display_order FROM question_alternatives WHERE question_id = $1 ORDER BY display_order",
+        q["id"],
+    )
+    return {
+        "id": q["id"],
+        "subject_id": q["subject_id"],
+        "subject_name": q.get("subject_name"),
+        "topic_id": q.get("topic_id"),
+        "question_type": q.get("question_type", "certo_errado"),
+        "context_text": q.get("context_text"),
+        "text": q["text"],
+        "difficulty": q["difficulty"],
+        "source": q.get("source"),
+        "year": q.get("year"),
+        "examiner": q.get("examiner"),
+        "tags": q.get("tags", []),
+        "alternatives": [
+            {"id": a["id"], "letter": a["letter"], "text": a["text"], "display_order": a["display_order"]}
+            for a in alts_raw
+        ],
+    }
 
 
 @router.get("/errors/notebook")

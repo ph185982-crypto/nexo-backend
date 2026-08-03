@@ -1,0 +1,269 @@
+[
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "text": "Em tanatologia forense, a putrefação cadavérica passa por fases distintas. A fase de COLORAÇÃO, também chamada de fase cromática, caracteriza-se principalmente por:",
+    "alternatives": [
+      { "letter": "A", "text": "Formação de bolhas de gás sob a pele com odor fétido intenso e liquefação dos tecidos moles.", "is_correct": false },
+      { "letter": "B", "text": "Coloração esverdeada iniciada na fossa ilíaca direita, devida à ação de bactérias intestinais sobre a hemoglobina.", "is_correct": true },
+      { "letter": "C", "text": "Dessecação progressiva dos tecidos com formação de adipocera.", "is_correct": false },
+      { "letter": "D", "text": "Maceração dos tecidos com liberação de gases odoríferos e escurecimento uniforme da pele.", "is_correct": false },
+      { "letter": "E", "text": "Liquefação visceral completa com perda do contorno corporal.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "A fase cromática (coloração) da putrefação caracteriza-se pelo surgimento de coloração esverdeada na fossa ilíaca direita — onde fica o ceco, com maior concentração bacteriana. As bactérias intestinais transformam a hemoglobina em sulfo-hemoglobina (verde). Em seguida surgem a circulação póstuma e a rede venosa esverdeada visível sob a pele.",
+    "legal_basis": "Medicina Legal — Tanatologia forense"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "text": "A ADIPOCERA é um fenômeno conservador tardio do cadáver que consiste em:",
+    "alternatives": [
+      { "letter": "A", "text": "Dessecação acelerada dos tecidos por exposição ao calor e vento, preservando os traços externos.", "is_correct": false },
+      { "letter": "B", "text": "Transformação do tecido adiposo em substância saponácea (ácidos graxos saturados), com aspecto branco-acinzentado e consistência cerosa.", "is_correct": true },
+      { "letter": "C", "text": "Calcificação progressiva de vísceras e tecidos moles por deposição de sais minerais.", "is_correct": false },
+      { "letter": "D", "text": "Maceração dos tecidos em ambiente úmido com preservação do esqueleto.", "is_correct": false },
+      { "letter": "E", "text": "Esclerose da pele por exposição prolongada ao frio, impedindo a decomposição.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Adipocera (saponificação) ocorre em cadáveres submersos ou enterrados em solo úmido e impermeável: o tecido adiposo sofre hidrólise e hidrogenação, transformando-se em ácidos graxos saturados (ácido palmítico, esteárico) — substância de aspecto ceroso, branco-acinzentada, com odor rançoso. É um fenômeno conservador pois atrasa a decomposição e pode preservar formas do corpo por anos.",
+    "legal_basis": "Medicina Legal — Fenômenos cadavéricos conservadores"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "text": "Segundo a medicina legal brasileira, o ESPERMATOZOIDE é o elemento de referência para determinar o intervalo pós-morte com base em dados bioquímicos. Contudo, para a estimativa da DATA DA MORTE em casos com decomposição avançada, o principal método utilizado é:",
+    "alternatives": [
+      { "letter": "A", "text": "Análise de marcadores de DNA mitocondrial.", "is_correct": false },
+      { "letter": "B", "text": "Entomologia forense — estudo dos insetos colonizadores e seu ciclo de desenvolvimento.", "is_correct": true },
+      { "letter": "C", "text": "Dosagem de ureia e creatinina no liquor cadavérico.", "is_correct": false },
+      { "letter": "D", "text": "Avaliação da coloração da hipóstase e ausência de rigor mortis.", "is_correct": false },
+      { "letter": "E", "text": "Radiografia do crânio para análise das suturas cranianas.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Com decomposição avançada, fenômenos abióticos (rigor, hipóstase) e bioquímicos já não são mais mensuráveis. A entomologia forense identifica as espécies de insetos presentes e o estágio larval, determinando o intervalo mínimo pós-morte (PMI mínimo) com base no ciclo de vida de cada espécie e temperatura ambiente.",
+    "legal_basis": "Medicina Legal — Cronotanatognose"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "traumatologia-forense",
+    "question_type": "multipla_escolha",
+    "text": "Um laudo necroscópico descreve lesão com: canal de entrada pequeno, bordas regulares, sem zona de contusão, trajeto linear, sem projétil recuperado. Esses achados são mais compatíveis com ferimento por arma de fogo do tipo:",
+    "alternatives": [
+      { "letter": "A", "text": "Projétil de arma de fogo de baixa velocidade (pistola calibre .22) disparado à queima-roupa.", "is_correct": false },
+      { "letter": "B", "text": "Espingarda de caça com carga de chumbo a curta distância.", "is_correct": false },
+      { "letter": "C", "text": "Fuzil de alta velocidade — perfurante (orifício de entrada pequeno e regular, trajeto retilíneo, saída possível ou não).", "is_correct": true },
+      { "letter": "D", "text": "Arma de fogo com cano raspado (sawed-off) a média distância.", "is_correct": false },
+      { "letter": "E", "text": "Cartucho de festim (carga de pólvora sem projétil metálico).", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "Projéteis de alta velocidade (fuzis, rifles) tipicamente produzem: orifício de entrada pequeno e regular (menor que o calibre real), sem halo de contusão perceptível, trajeto retilíneo, cavidade temporária de grande extensão. A ausência de projétil indica tiro passante (orifício de saída) ou projétil de alta penetração. Pistola a queima-roupa produz halo de fuligem; espingarda a curta distância produz múltiplos orifícios.",
+    "legal_basis": "Medicina Legal — Balística forense"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "traumatologia-forense",
+    "question_type": "multipla_escolha",
+    "text": "No exame de corpo de delito em vítima de violência, a equimose (hematoma superficial) tem importância médico-legal porque:",
+    "alternatives": [
+      { "letter": "A", "text": "Aparece imediatamente após o trauma, fornecendo dado preciso sobre o horário da agressão.", "is_correct": false },
+      { "letter": "B", "text": "Sua evolução de cores (vermelho → azul-arroxeado → esverdeado → amarelado) permite estimar, com ressalvas, a data aproximada do trauma.", "is_correct": true },
+      { "letter": "C", "text": "Representa sempre violência dolosa, sendo suficiente para configurar lesão corporal grave.", "is_correct": false },
+      { "letter": "D", "text": "Ocorre exclusivamente em tecidos moles superficiais e nunca em vísceras.", "is_correct": false },
+      { "letter": "E", "text": "Sua profundidade é sempre proporcional à intensidade do traumatismo sofrido.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A equimose evolui cromaticamente pela degradação da hemoglobina: oxiemoglobina (vermelho) → hemoglobina reduzida (azul-arroxeado) → biliverdina (verde) → bilirrubina/hemossiderina (amarelo-ocre). Essa evolução — com ressalvas de variação individual, profundidade e temperatura — permite estimar a data relativa do trauma. Não indica automaticamente dolo; a gravidade da lesão corporal depende de outros critérios (art. 129 CP).",
+    "legal_basis": "CP art. 129 — Lesão corporal; Medicina Legal — Vitalidade das lesões"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "asfixiologia",
+    "question_type": "multipla_escolha",
+    "text": "Na necropsia de vítima de AFOGAMENTO, os achados internos mais característicos são:",
+    "alternatives": [
+      { "letter": "A", "text": "Petéquias subconjuntivais, sulco cervical oblíquo e hemorragias petequiais cerebelares.", "is_correct": false },
+      { "letter": "B",
+        "text": "Pulmões volumosos, pesados e com aspecto marmóreo (manchas de Paltauf), cogumelo de espuma na boca/narinas e diatomáceas nos tecidos.", "is_correct": true },
+      { "letter": "C", "text": "Cianose generalizada, petéquias na pleura e pericárdio, e hiperinsuflação pulmonar sem líquido.", "is_correct": false },
+      { "letter": "D", "text": "Congestão visceral generalizada, liquor hemorrágico e ausência de líquido nas vias aéreas.", "is_correct": false },
+      { "letter": "E", "text": "Edema cerebral intenso, hemorragia subaracnoidea e colapso pulmonar bilateral.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "No afogamento típico (úmido): líquido penetra nas vias aéreas → pulmões volumosos e pesados (300-400g acima do normal), com manchas de Paltauf (áreas azul-violáceas por mistura de sangue e água), cogumelo de espuma (água + muco + ar agitados = espuma persistente), e — quando em água doce com diatomáceas — essas microalgas são detectadas em órgãos internos por espectrometria, sendo prova de afogamento vital.",
+    "legal_basis": "Medicina Legal — Asfixiologia; síndrome de imersão"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "asfixiologia",
+    "question_type": "multipla_escolha",
+    "text": "A SÍNDROME ASFÍXICA GERAL, comum a todas as modalidades de asfixia mecânica, inclui os seguintes sinais externos e internos, EXCETO:",
+    "alternatives": [
+      { "letter": "A", "text": "Cianose da face e mucosas.", "is_correct": false },
+      { "letter": "B", "text": "Petéquias subconjuntivais e na pleura (manchas de Tardieu).", "is_correct": false },
+      { "letter": "C", "text": "Congestão e edema viscerocraniano.", "is_correct": false },
+      { "letter": "D", "text": "Fluidez do sangue cadavérico.", "is_correct": false },
+      { "letter": "E", "text": "Rigidez cadavérica precoce e intensa, surgindo imediatamente após a morte.", "is_correct": true }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A síndrome asfíxica geral inclui: cianose (hipóxia → acúmulo de hemoglobina reduzida), petéquias (manchas de Tardieu — ruptura de pequenos vasos por aumento brusco de pressão), congestão visceral, fluidez do sangue (por liberação de fibrinolisinas em hipóxia) e hipóstases precoces e abundantes. A rigidez cadavérica precoce e intensa (rigor precoce) NÃO é típica de asfixia; ao contrário, o sangue fluido e hipóstases precoces são os achados típicos.",
+    "legal_basis": "Medicina Legal — Asfixiologia"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "sexologia-forense",
+    "question_type": "multipla_escolha",
+    "text": "No exame de corpo de delito em crime de estupro, a AUSÊNCIA de lesões físicas genitais:",
+    "alternatives": [
+      { "letter": "A", "text": "Comprova que a relação foi consentida, afastando o crime de estupro.", "is_correct": false },
+      { "letter": "B", "text": "Exclui a possibilidade de materialidade do delito, pois a lesão é elemento constitutivo do crime de estupro.", "is_correct": false },
+      { "letter": "C", "text": "NÃO afasta o crime de estupro, pois a violência pode ser presumida (menor de 14 anos) ou o ato pode ter ocorrido sem resistência por grave ameaça ou incapacidade de resistência.", "is_correct": true },
+      { "letter": "D", "text": "Impede a condenação por estupro sem exame de DNA positivo.", "is_correct": false },
+      { "letter": "E", "text": "Só é possível em adolescentes com hímen complacente, sendo impossível em adultos com relação sexual forçada.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O crime de estupro (art. 213 CP) consiste em constranger alguém à conjunção carnal ou a praticar outro ato libidinoso mediante violência ou grave ameaça. A violência física não é elemento essencial: pode haver grave ameaça (sem resistência física), vulnerabilidade (menor de 14 — art. 217-A CP), ou impossibilidade de resistir. Hímen íntegro ou ausência de lesões NÃO exclui o crime. A prova testemunhal e a palavra da vítima têm relevância central nesses casos.",
+    "legal_basis": "CP art. 213 (estupro), art. 217-A (estupro de vulnerável); CPP art. 158"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "identificacao-humana",
+    "question_type": "multipla_escolha",
+    "text": "Na identificação odontológica (odontologia forense), o sistema de NOTAÇÃO DENTAL mais utilizado no Brasil é o sistema FDI (Federação Dentária Internacional), que:",
+    "alternatives": [
+      { "letter": "A", "text": "Representa cada dente por uma letra seguida de um número, como I1, C, PM1, M3.", "is_correct": false },
+      { "letter": "B", "text": "Usa dois dígitos — o primeiro indica o quadrante (1-4 permanente, 5-8 decíduo) e o segundo o dente naquele quadrante (1-8).", "is_correct": true },
+      { "letter": "C", "text": "Numera os dentes de 1 a 32 em sentido horário partindo do terceiro molar superior direito.", "is_correct": false },
+      { "letter": "D", "text": "Classifica os dentes apenas pela posição (superior/inferior, direito/esquerdo) sem numeração individual.", "is_correct": false },
+      { "letter": "E", "text": "Identifica os dentes por letras maiúsculas para permanentes e minúsculas para decíduos, sem distinção de quadrante.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O sistema FDI (ISO 3950) usa dois dígitos: o primeiro indica o quadrante — 1=superior direito, 2=superior esquerdo, 3=inferior esquerdo, 4=inferior direito (permanentes); 5-8 para decíduos. O segundo dígito indica a posição do dente naquele quadrante (1=incisivo central, ..., 8=terceiro molar). Ex.: dente 18 = terceiro molar superior direito. É útil na identificação por comparação com prontuários odontológicos ante-mortem.",
+    "legal_basis": "Medicina Legal — Identificação humana; Odontologia forense"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "identificacao-humana",
+    "question_type": "multipla_escolha",
+    "text": "A RUGOSCOPIA PALATINA é uma técnica auxiliar de identificação humana que se baseia nas pregas ou rugas do palato duro. Sua principal vantagem em relação à datiloscopia é:",
+    "alternatives": [
+      { "letter": "A", "text": "Maior precisão estatística, pois apresenta padrões com menor variabilidade entre indivíduos.", "is_correct": false },
+      { "letter": "B", "text": "Resistência ao calor intenso e a traumatismos que podem destruir as polpas digitais, mantendo os padrões palatinos intactos.", "is_correct": true },
+      { "letter": "C", "text": "Possibilidade de identificação a distância por análise de imagens fotográficas.", "is_correct": false },
+      { "letter": "D", "text": "Padronização internacional igual à datiloscopia, com banco de dados consolidado.", "is_correct": false },
+      { "letter": "E", "text": "Menor custo operacional e maior rapidez na comparação de dados.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "As rugas palatinas são protegidas pelos lábios, bochechas, língua e osso palatino. Em incêndios, explosões ou traumas violentos que destroem as mãos e impossibilitam a coleta de impressões digitais, o palato costuma preservar seus padrões. São perenidade, imutabilidade e unicidade — assim como as papilas dérmicas — mas com maior resistência ao calor. Usada principalmente em vítimas de acidentes aéreos e incêndios.",
+    "legal_basis": "Medicina Legal — Identificação humana; rugoscopia"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "toxicologia-forense",
+    "question_type": "multipla_escolha",
+    "text": "Em toxicologia forense, a JANELA DE DETECÇÃO de uma substância é o período após o uso em que ela (ou seus metabólitos) pode ser detectada numa amostra biológica. Para o álcool etílico, a MENOR janela de detecção é verificada em:",
+    "alternatives": [
+      { "letter": "A", "text": "Urina — até 80 horas pelo marcador EtG (etilglucuronídeo).", "is_correct": false },
+      { "letter": "B", "text": "Sangue — até 12 horas após ingestão moderada.", "is_correct": true },
+      { "letter": "C", "text": "Cabelo — até 90 dias após uso.", "is_correct": false },
+      { "letter": "D", "text": "Saliva — até 24 horas após ingestão.", "is_correct": false },
+      { "letter": "E", "text": "Liquor — até 48 horas após ingestão.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O etanol é eliminado rapidamente: no sangue (dosagem direta) apenas até ~12h após ingestão moderada, dependendo da taxa de eliminação (~0,15 g/L/h). Na urina, o EtG (marcador indireto de metabolismo alcoólico) pode ser detectado até 80h. No cabelo, o EtG e o FAEE (ésteres etílicos de ácidos graxos) indicam uso crônico em janelas de 3-6 meses. O sangue tem a MENOR janela — mas é a amostra padrão para alcoolemia ao volante (CTB art. 306).",
+    "legal_basis": "CTB art. 306; Medicina Legal — Toxicologia do álcool"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "psiquiatria-forense",
+    "question_type": "multipla_escolha",
+    "text": "O INCIDENTE DE INSANIDADE MENTAL (art. 149 do CPP) é instaurado quando:",
+    "alternatives": [
+      { "letter": "A", "text": "O réu confessa o crime alegando ter agido sob estado de emoção violenta.", "is_correct": false },
+      { "letter": "B", "text": "Houver dúvida sobre a integridade mental do acusado, podendo ser instaurado de ofício ou a requerimento.", "is_correct": true },
+      { "letter": "C", "text": "O laudo psiquiátrico preliminar atestar que o réu é portador de transtorno de personalidade antissocial.", "is_correct": false },
+      { "letter": "D", "text": "O réu solicitar o benefício do livramento condicional com base em doença mental superveniente.", "is_correct": false },
+      { "letter": "E", "text": "A defesa apresentar laudo particular de psiquiatra atestando inimputabilidade plena do acusado.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPP art. 149 determina que, quando houver dúvida sobre a saúde mental do acusado, o juiz, de ofício ou a requerimento do MP, defensor, curador, ascendente, descendente, irmão ou cônjuge, ordenará o exame de insanidade mental. O processo fica suspenso até o laudo (art. 152). O laudo de médico oficial é obrigatório; laudos particulares são complementares. Não basta mera alegação — deve haver indícios concretos de doença mental.",
+    "legal_basis": "CPP arts. 149-154 — Incidente de insanidade mental"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "text": "A TEMPERATURA CORPORAL (algor mortis) é um dos métodos mais utilizados para estimativa do intervalo pós-morte nas primeiras horas. A fórmula de Henssge (nomograma) considera, entre outros fatores:",
+    "alternatives": [
+      { "letter": "A", "text": "Apenas a temperatura retal do cadáver no momento do exame.", "is_correct": false },
+      { "letter": "B", "text": "Temperatura retal, temperatura ambiente, massa corporal e fatores de correção (roupas, substrato).", "is_correct": true },
+      { "letter": "C", "text": "Temperatura axilar e umidade relativa do ar no local.", "is_correct": false },
+      { "letter": "D", "text": "Temperatura hepática e grau de rigor mortis simultâneo.", "is_correct": false },
+      { "letter": "E", "text": "Temperatura timpânica e pressão osmótica do humor vítreo.", "is_correct": false }
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2023,
+    "examiner": "Instituto AOCP",
+    "explanation": "O nomograma de Henssge para estimativa do PMI baseia-se na temperatura retal atual, temperatura ambiente (medida no local e no momento), massa corporal do cadáver e fatores corretivos (roupas, substrato como cama ou piso molhado). O processo parte do plateau (ausência de queda nas primeiras 0-3h) e entra na curva sigmóide de resfriamento descrita por Marshall & Hoare. Fornece PMI com intervalo de confiança de ±95%.",
+    "legal_basis": "Medicina Legal — Cronotanatognose; nomograma de Henssge"
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "traumatologia-forense",
+    "question_type": "multipla_escolha",
+    "text": "O TRAUMA CRÂNIO-ENCEFÁLICO (TCE) é frequente em mortes violentas. O achado de HEMATOMA EPIDURAL (extradural) na necropsia é classicamente associado a:",
+    "alternatives": [
+      { "letter": "A", "text": "Ruptura de veias-ponte entre o córtex cerebral e os seios durais, com sangramento venoso lento.", "is_correct": false },
+      { "letter": "B", "text": "Ruptura de artéria meníngea média, com sangramento arterial, frequentemente associado à fratura do osso temporal.", "is_correct": true },
+      { "letter": "C", "text": "Traumatismo difuso por aceleração-desaceleração, sem lesão vascular focal.", "is_correct": false },
+      { "letter": "D", "text": "Ruptura de aneurisma cerebral congênito por esforço físico intenso.", "is_correct": false },
+      { "letter": "E", "text": "Contusão cerebral bilateral com edema difuso e herniação transtentorial.", "is_correct": false }
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O hematoma epidural clássico resulta da ruptura da artéria meníngea média (ramo da artéria maxilar interna) por fratura da região temporal (escama do temporal). O sangramento arterial acumula-se entre o crânio e a dura-máter, formando coleção lenticular. O paciente pode ter intervalo lúcido antes de deteriorar rapidamente ('talk and die'). Diferente do subdural: ruptura de veias-ponte, sangramento lento, apresentação mais insidiosa.",
+    "legal_basis": "Medicina Legal — Traumatologia do crânio; TCE"
+  }
+]

@@ -28,11 +28,17 @@ SUBJECTS = [
 ]
 
 
+_DIFFS = ["easy", "medium", "hard"]
+
 def _questions(counts: dict[str, int]) -> list[dict]:
     qs = []
     for slug, n in counts.items():
         for i in range(n):
-            qs.append({"subject_slug": slug, "topic_slug": f"topic-{i}"})
+            qs.append({
+                "subject_slug": slug,
+                "topic_slug": f"topic-{i % 3}",
+                "difficulty": _DIFFS[i % 3],
+            })
     return qs
 
 
@@ -116,9 +122,47 @@ def test_as_dict_structure() -> None:
     d = report.as_dict()
     for key in ("exam", "total_questions", "total_subjects", "covered_subjects",
                  "subject_coverage_pct", "exam_readiness_score", "missing_subjects",
-                 "low_coverage_subjects", "import_priority", "recommendations", "subjects"):
+                 "low_coverage_subjects", "import_priority", "recommendations",
+                 "difficulty_distribution", "subjects"):
         assert key in d, f"missing key in as_dict(): {key}"
-    _ok("as_dict() contains all required keys")
+    subj = d["subjects"][0]
+    for key in ("slug", "name", "weight", "question_count", "topic_count", "flag",
+                "priority_score", "difficulty_distribution", "topics"):
+        assert key in subj, f"missing key in subject dict: {key}"
+    _ok("as_dict() contains all required keys including topic-level and difficulty data")
+
+
+def test_topic_level_coverage() -> None:
+    from core.coverage_audit import CoverageAuditor, CoverageFlag
+    auditor = CoverageAuditor("PMGO")
+    qs = [
+        {"subject_slug": "direito-penal", "topic_slug": "crimes-contra-pessoa", "difficulty": "easy"},
+        {"subject_slug": "direito-penal", "topic_slug": "crimes-contra-pessoa", "difficulty": "medium"},
+        {"subject_slug": "direito-penal", "topic_slug": "crimes-contra-patrimonio", "difficulty": "hard"},
+    ]
+    report = auditor.audit(questions=qs, subjects=SUBJECTS)
+    penal = next(sc for sc in report.subject_coverage if sc.subject_slug == "direito-penal")
+    assert penal.topic_count == 2, f"expected 2 topics, got {penal.topic_count}"
+    assert penal.difficulty_distribution == {"easy": 1, "medium": 1, "hard": 1}, \
+        f"unexpected difficulty dist: {penal.difficulty_distribution}"
+    assert any(t.topic_slug == "crimes-contra-pessoa" and t.question_count == 2 for t in penal.topics)
+    _ok("topic-level coverage: correct topic count, difficulty distribution per subject")
+
+
+def test_global_difficulty_distribution() -> None:
+    from core.coverage_audit import CoverageAuditor
+    auditor = CoverageAuditor("PMGO")
+    qs = [
+        {"subject_slug": "direito-penal", "topic_slug": "t1", "difficulty": "easy"},
+        {"subject_slug": "criminologia", "topic_slug": "t1", "difficulty": "hard"},
+        {"subject_slug": "criminologia", "topic_slug": "t2", "difficulty": "hard"},
+    ]
+    report = auditor.audit(questions=qs, subjects=SUBJECTS)
+    d = report.as_dict()
+    assert d["difficulty_distribution"]["easy"] == 1
+    assert d["difficulty_distribution"]["hard"] == 2
+    assert d["difficulty_distribution"]["medium"] == 0
+    _ok("global difficulty distribution correctly aggregated")
 
 
 def test_prf_exam_mode() -> None:
@@ -143,6 +187,8 @@ TESTS = [
     test_recommendations_generated,
     test_as_dict_structure,
     test_prf_exam_mode,
+    test_topic_level_coverage,
+    test_global_difficulty_distribution,
 ]
 
 

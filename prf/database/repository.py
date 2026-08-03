@@ -232,10 +232,29 @@ class PRFRepository:
         q["alternatives"] = alts
         return q
 
-    async def get_questions_for_coverage(self) -> list[dict]:
-        """Return minimal question data (subject_slug, topic_slug) for coverage analysis."""
+    async def get_alternatives_batch(self, question_ids: list) -> dict:
+        """Fetch alternatives for multiple questions in one query. Returns {question_id: [alts]}."""
+        if not question_ids:
+            return {}
         rows = await self._fetch(
-            """SELECT s.slug AS subject_slug, t.slug AS topic_slug
+            """SELECT id, question_id, letter, text, display_order
+               FROM question_alternatives
+               WHERE question_id = ANY($1)
+               ORDER BY question_id, display_order""",
+            question_ids,
+        )
+        result: dict = {}
+        for r in rows:
+            qid = r["question_id"]
+            if qid not in result:
+                result[qid] = []
+            result[qid].append(dict(r))
+        return result
+
+    async def get_questions_for_coverage(self) -> list[dict]:
+        """Return minimal question data for coverage analysis (subject, topic, difficulty)."""
+        rows = await self._fetch(
+            """SELECT s.slug AS subject_slug, t.slug AS topic_slug, q.difficulty
                FROM questions q
                JOIN subjects s ON s.id = q.subject_id
                LEFT JOIN topics t ON t.id = q.topic_id
@@ -665,6 +684,78 @@ class PRFRepository:
             user_id, article_id, note,
         )
         return True
+
+    # ── Law mastery ───────────────────────────────────────────────────────────
+
+    async def record_article_read(self, user_id: UUID, article_id: UUID) -> dict:
+        """Increment read count and update mastery score for an article."""
+        row = await self._fetchrow(
+            """INSERT INTO user_article_progress (user_id, article_id, read_count, last_read_at)
+               VALUES ($1, $2, 1, NOW())
+               ON CONFLICT (user_id, article_id) DO UPDATE
+                 SET read_count   = user_article_progress.read_count + 1,
+                     last_read_at = NOW(),
+                     mastery_score = LEAST(1.0,
+                         ROUND(
+                             (user_article_progress.read_count + 1)::numeric / 5.0,
+                             2
+                         )
+                     )
+               RETURNING *""",
+            user_id, article_id,
+        )
+        return dict(row) if row else {}
+
+    async def record_article_error(self, user_id: UUID, article_id: UUID) -> dict:
+        """Increment error count for an article (when user answers a related question wrong)."""
+        row = await self._fetchrow(
+            """INSERT INTO user_article_progress (user_id, article_id, error_count)
+               VALUES ($1, $2, 1)
+               ON CONFLICT (user_id, article_id) DO UPDATE
+                 SET error_count = user_article_progress.error_count + 1
+               RETURNING *""",
+            user_id, article_id,
+        )
+        return dict(row) if row else {}
+
+    async def get_article_progress(self, user_id: UUID, article_id: UUID) -> Optional[dict]:
+        row = await self._fetchrow(
+            "SELECT * FROM user_article_progress WHERE user_id = $1 AND article_id = $2",
+            user_id, article_id,
+        )
+        return dict(row) if row else None
+
+    async def get_user_article_mastery(self, user_id: UUID, limit: int = 50) -> list[dict]:
+        """Return articles with the lowest mastery score (for focused review)."""
+        rows = await self._fetch(
+            """SELECT uap.*, la.article_number, la.official_text,
+                      ld.name AS document_name, ld.slug AS document_slug
+               FROM user_article_progress uap
+               JOIN legal_articles la ON la.id = uap.article_id
+               JOIN legal_documents ld ON ld.id = la.document_id
+               WHERE uap.user_id = $1
+               ORDER BY uap.mastery_score ASC, uap.error_count DESC
+               LIMIT $2""",
+            user_id, limit,
+        )
+        return [dict(r) for r in rows]
+
+    async def get_weak_articles(self, user_id: UUID, limit: int = 10) -> list[dict]:
+        """Articles with errors but low mastery — highest priority for review."""
+        rows = await self._fetch(
+            """SELECT uap.article_id, uap.mastery_score, uap.error_count, uap.read_count,
+                      la.article_number, la.official_text,
+                      ld.name AS document_name
+               FROM user_article_progress uap
+               JOIN legal_articles la ON la.id = uap.article_id
+               JOIN legal_documents ld ON ld.id = la.document_id
+               WHERE uap.user_id = $1 AND uap.error_count > 0
+               ORDER BY (uap.error_count::real / GREATEST(uap.read_count, 1)) DESC,
+                         uap.mastery_score ASC
+               LIMIT $2""",
+            user_id, limit,
+        )
+        return [dict(r) for r in rows]
 
     # ── Gamification ──────────────────────────────────────────────────────────
 

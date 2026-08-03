@@ -73,6 +73,30 @@ MIGRATIONS: list[tuple[str, str]] = [
         "add_weight_pm_column",
         "ALTER TABLE subjects ADD COLUMN IF NOT EXISTS weight_pm REAL DEFAULT 0.0",
     ),
+    (
+        "user_article_progress",
+        """CREATE TABLE IF NOT EXISTS user_article_progress (
+               id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+               user_id         UUID NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
+               article_id      UUID NOT NULL REFERENCES legal_articles(id) ON DELETE CASCADE,
+               read_count      INTEGER DEFAULT 0,
+               mastery_score   REAL DEFAULT 0.0,
+               last_read_at    TIMESTAMPTZ,
+               error_count     INTEGER DEFAULT 0,
+               created_at      TIMESTAMPTZ DEFAULT NOW(),
+               UNIQUE (user_id, article_id)
+           )""",
+    ),
+    (
+        "idx_user_article_progress_user",
+        "CREATE INDEX IF NOT EXISTS idx_user_article_progress_user "
+        "ON user_article_progress(user_id)",
+    ),
+    (
+        "idx_user_article_progress_article",
+        "CREATE INDEX IF NOT EXISTS idx_user_article_progress_article "
+        "ON user_article_progress(article_id)",
+    ),
 ]
 
 

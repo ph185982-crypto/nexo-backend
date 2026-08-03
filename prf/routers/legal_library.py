@@ -231,6 +231,73 @@ async def list_bookmarks(
     return {"bookmarks": bookmarks}
 
 
+@router.post("/articles/{article_id}/read")
+async def record_read(
+    article_id: UUID,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Record that the user read this article. Updates mastery score (capped at 1.0 after 5 reads)."""
+    progress = await repo.record_article_read(user_id, article_id)
+    return {
+        "article_id": str(article_id),
+        "read_count": progress.get("read_count", 1),
+        "mastery_score": progress.get("mastery_score", 0.0),
+        "last_read_at": progress.get("last_read_at"),
+    }
+
+
+@router.get("/mastery")
+async def get_mastery(
+    limit: int = Query(default=50, ge=1, le=200),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Return articles sorted by lowest mastery score (priority review list)."""
+    articles = await repo.get_user_article_mastery(user_id, limit=limit)
+    return {
+        "articles": [
+            {
+                "article_id": str(a["article_id"]),
+                "article_number": a.get("article_number"),
+                "document_name": a.get("document_name"),
+                "document_slug": a.get("document_slug"),
+                "read_count": a.get("read_count", 0),
+                "mastery_score": a.get("mastery_score", 0.0),
+                "error_count": a.get("error_count", 0),
+                "last_read_at": a.get("last_read_at"),
+                "official_text": (a.get("official_text") or "")[:300],
+            }
+            for a in articles
+        ],
+        "total": len(articles),
+    }
+
+
+@router.get("/weak-articles")
+async def get_weak_articles(
+    limit: int = Query(default=10, ge=1, le=50),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Articles with high error rate relative to reads — highest review priority."""
+    articles = await repo.get_weak_articles(user_id, limit=limit)
+    return {
+        "articles": [
+            {
+                "article_id": str(a["article_id"]),
+                "article_number": a.get("article_number"),
+                "document_name": a.get("document_name"),
+                "mastery_score": a.get("mastery_score", 0.0),
+                "error_count": a.get("error_count", 0),
+                "read_count": a.get("read_count", 0),
+                "official_text": (a.get("official_text") or "")[:300],
+            }
+            for a in articles
+        ],
+    }
+
+
 @router.get("/search", response_model=LegalSearchResult)
 async def search_articles(
     q: str = Query(min_length=2),
