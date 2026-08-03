@@ -80,39 +80,28 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     import asyncio
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
 
+    # Do NOT pass ssl= explicitly — let asyncpg read sslmode from the DSN URL.
+    # _resolve_db_url() appends ?sslmode=require which in asyncpg means
+    # "use SSL but do not verify the certificate", avoiding cert/hostname
+    # validation failures while still encrypting the connection.
     pool = None
-    # Try progressively relaxed SSL modes in case the external Render endpoint
-    # drops connections during SSL negotiation.
-    ssl_modes = [True, "prefer", False]
-    last_err = None
-    for ssl_mode in ssl_modes:
-        for attempt in range(2):
-            try:
-                pool = await asyncpg.create_pool(
-                    database_url,
-                    min_size=1,
-                    max_size=5,
-                    statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
-                    init=_init_connection,
-                    ssl=ssl_mode,
-                )
-                logger.info(f"[PRF] Pool connected (ssl={ssl_mode})")
-                break
-            except OSError as e:
-                if e.errno == 16 and attempt < 1:  # EBUSY
-                    await asyncio.sleep(1)
-                    continue
-                last_err = e
-                break
-            except Exception as e:
-                last_err = e
-                logger.warning(f"[PRF] Pool attempt ssl={ssl_mode} failed: {type(e).__name__}: {e}")
-                break
-        if pool:
+    for attempt in range(3):
+        try:
+            pool = await asyncpg.create_pool(
+                database_url,
+                min_size=1,
+                max_size=5,
+                statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
+                init=_init_connection,
+            )
             break
-
-    if pool is None:
-        raise last_err or RuntimeError("Could not create DB pool")
+        except OSError as e:
+            if e.errno == 16 and attempt < 2:  # EBUSY retry
+                wait = 2 ** attempt
+                logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/3 in {wait}s…")
+                await asyncio.sleep(wait)
+            else:
+                raise
 
     logger.info("[PRF] DB pool created")
 
