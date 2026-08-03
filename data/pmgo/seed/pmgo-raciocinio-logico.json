@@ -1,0 +1,382 @@
+[
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-logicas",
+    "question_type": "multipla_escolha",
+    "context_text": "Em lógica proposicional, as conectivas fundamentais são: negação (¬), conjunção (∧), disjunção (∨), condicional (→) e bicondicional (↔).",
+    "text": "Dada a proposição P: 'Todo policial militar cumpre o regulamento', a negação correta de P é:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A negação de uma proposição do tipo 'Todo A é B' (universal afirmativa) é 'Algum A não é B' (particular negativa). Portanto, a negação de 'Todo policial militar cumpre o regulamento' é 'Algum policial militar não cumpre o regulamento'.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Nenhum policial militar cumpre o regulamento.", "is_correct": false, "explanation": "Essa é a contrária (universal negativa), não a negação lógica (contraditória). A contrária pode ser falsa ao mesmo tempo que a proposição original."},
+      {"letter": "B", "text": "Algum policial militar não cumpre o regulamento.", "is_correct": true, "explanation": "Correto. A negação de 'Todo A é B' é 'Algum A não é B'. Basta existir um policial que não cumpra o regulamento para a proposição original ser falsa."},
+      {"letter": "C", "text": "Nenhum policial militar deixa de cumprir o regulamento.", "is_correct": false, "explanation": "Essa proposição é equivalente à original (dupla negação), não é sua negação."},
+      {"letter": "D", "text": "Todos os policiais militares não cumprem o regulamento.", "is_correct": false, "explanation": "Equivalente a 'Nenhum policial cumpre', o que é a contrária, não a contraditória (negação) da proposição original."},
+      {"letter": "E", "text": "Algum policial militar cumpre o regulamento.", "is_correct": false, "explanation": "Essa proposição particular afirmativa não é a negação; seria compatível com a original (se todos cumprem, algum também cumpre)."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-logicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A tabela-verdade é ferramenta fundamental para avaliar proposições compostas.",
+    "text": "Considere a proposição condicional P → Q ('Se P, então Q'). Em quantas combinações de valores-verdade de P e Q essa condicional é FALSA?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A condicional P → Q é falsa somente quando P é verdadeira e Q é falsa (antecedente verdadeiro e consequente falso). Nas demais combinações — P falso com Q qualquer, ou ambos verdadeiros — a condicional é verdadeira. Portanto, há apenas 1 combinação que torna P → Q falsa.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Zero — a condicional é sempre verdadeira.", "is_correct": false, "explanation": "A condicional é falsa quando P é V e Q é F; portanto não é sempre verdadeira."},
+      {"letter": "B", "text": "Uma — apenas quando P é verdadeiro e Q é falso.", "is_correct": true, "explanation": "Correto. P → Q é falsa em exatamente uma situação: quando o antecedente (P) é verdadeiro e o consequente (Q) é falso."},
+      {"letter": "C", "text": "Duas — quando P e Q têm valores de verdade diferentes.", "is_correct": false, "explanation": "Quando P é falso e Q é verdadeiro, a condicional é verdadeira, portanto não são duas situações."},
+      {"letter": "D", "text": "Três — em todos os casos exceto quando ambas são verdadeiras.", "is_correct": false, "explanation": "Apenas um dos quatro casos torna a condicional falsa."},
+      {"letter": "E", "text": "Quatro — a condicional é sempre falsa quando envolve proposições opostas.", "is_correct": false, "explanation": "Não existe regra de que condicionais com proposições opostas sejam sempre falsas; depende das combinações concretas de V e F."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "silogismos",
+    "question_type": "multipla_escolha",
+    "context_text": "O silogismo é uma forma de raciocínio dedutivo composta por duas premissas e uma conclusão.",
+    "text": "Dado o silogismo: 'Todos os soldados são militares. Todos os militares são servidores públicos. Portanto, ___', qual é a conclusão logicamente válida?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A conclusão de um silogismo categórico decorre necessariamente das premissas. Se todos os soldados são militares e todos os militares são servidores, então todos os soldados são servidores (Barbara — o modo mais simples do silogismo).",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Todos os servidores públicos são soldados.", "is_correct": false, "explanation": "Essa conclusão inverte a relação; não se pode concluir que todo servidor é soldado a partir das premissas dadas."},
+      {"letter": "B", "text": "Alguns militares não são soldados.", "is_correct": false, "explanation": "Essa conclusão pode ser verdadeira no mundo real, mas não decorre logicamente das premissas fornecidas."},
+      {"letter": "C", "text": "Todos os soldados são servidores públicos.", "is_correct": true, "explanation": "Correto. Pela transitividade: soldados ⊆ militares ⊆ servidores. Portanto, todos os soldados são servidores públicos."},
+      {"letter": "D", "text": "Nenhum soldado é servidor público.", "is_correct": false, "explanation": "Essa conclusão contradiz as premissas; não pode ser validamente extraída."},
+      {"letter": "E", "text": "Alguns soldados não são servidores públicos.", "is_correct": false, "explanation": "Essa conclusão contradiz o que se deduz das premissas (todos os soldados são servidores)."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "teoria-conjuntos",
+    "question_type": "multipla_escolha",
+    "context_text": "Em um pelotão com 30 policiais militares, sabe-se que 18 praticam futebol, 15 praticam corrida e 8 praticam ambos os esportes.",
+    "text": "Quantos policiais do pelotão praticam ao menos um dos dois esportes (futebol ou corrida)?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Pelo Princípio da Inclusão-Exclusão: |A ∪ B| = |A| + |B| − |A ∩ B| = 18 + 15 − 8 = 25. Portanto, 25 policiais praticam ao menos um dos dois esportes.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "25", "is_correct": true, "explanation": "Correto. |Futebol ∪ Corrida| = 18 + 15 − 8 = 25. O Princípio da Inclusão-Exclusão subtrai a interseção para evitar dupla contagem."},
+      {"letter": "B", "text": "33", "is_correct": false, "explanation": "33 = 18 + 15, mas isso conta duas vezes os 8 que praticam ambos. Deve-se subtrair a interseção."},
+      {"letter": "C", "text": "22", "is_correct": false, "explanation": "22 não resulta de nenhuma combinação correta dos dados fornecidos."},
+      {"letter": "D", "text": "27", "is_correct": false, "explanation": "27 não resulta do cálculo correto de inclusão-exclusão."},
+      {"letter": "E", "text": "30", "is_correct": false, "explanation": "Só seria 30 se todos os policiais praticassem pelo menos um esporte, o que não é informado."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-numericas",
+    "question_type": "multipla_escolha",
+    "context_text": "Sequências numéricas aparecem regularmente em provas de raciocínio lógico de concursos públicos.",
+    "text": "Qual é o próximo número da sequência: 2, 5, 11, 23, 47, ___?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A sequência segue a lei: cada termo = 2 × (termo anterior) + 1. Verificando: 2×2+1=5, 2×5+1=11, 2×11+1=23, 2×23+1=47, 2×47+1=95. Portanto, o próximo número é 95.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "93", "is_correct": false, "explanation": "93 ≠ 2×47+1. Verificar a lei da sequência: cada termo é o dobro do anterior mais 1."},
+      {"letter": "B", "text": "94", "is_correct": false, "explanation": "94 ≠ 2×47+1."},
+      {"letter": "C", "text": "95", "is_correct": true, "explanation": "Correto. A lei é aₙ = 2aₙ₋₁ + 1. Portanto, a próximo = 2 × 47 + 1 = 95."},
+      {"letter": "D", "text": "96", "is_correct": false, "explanation": "96 resultaria de outra lei (2×47+2), não da lei observada na sequência."},
+      {"letter": "E", "text": "100", "is_correct": false, "explanation": "100 não corresponde à lei da sequência."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-logicas",
+    "question_type": "multipla_escolha",
+    "context_text": "As leis de De Morgan são fundamentais em lógica proposicional.",
+    "text": "Segundo as Leis de De Morgan, a negação de 'P ∧ Q' (P e Q) é equivalente a:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Pela Primeira Lei de De Morgan: ¬(P ∧ Q) ≡ ¬P ∨ ¬Q. A negação de uma conjunção é a disjunção das negações. De forma análoga, a negação de (P ∨ Q) é ¬P ∧ ¬Q (Segunda Lei de De Morgan).",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "¬P ∧ ¬Q (não-P e não-Q).", "is_correct": false, "explanation": "¬P ∧ ¬Q é a negação de (P ∨ Q), não de (P ∧ Q). Confunde as duas Leis de De Morgan."},
+      {"letter": "B", "text": "¬P ∨ ¬Q (não-P ou não-Q).", "is_correct": true, "explanation": "Correto. Primeira Lei de De Morgan: ¬(P ∧ Q) ≡ ¬P ∨ ¬Q. A negação da conjunção é a disjunção das negações."},
+      {"letter": "C", "text": "P ∨ Q (P ou Q).", "is_correct": false, "explanation": "Negar a conjunção não produz a disjunção dos mesmos termos; as negações devem ser aplicadas a cada variável."},
+      {"letter": "D", "text": "P ∧ Q (P e Q).", "is_correct": false, "explanation": "P ∧ Q é a proposição original, não sua negação."},
+      {"letter": "E", "text": "¬(P ∨ Q) — negar a alternativa.", "is_correct": false, "explanation": "¬(P ∨ Q) ≡ ¬P ∧ ¬Q (Segunda Lei de De Morgan), não é equivalente a ¬(P ∧ Q)."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-matematico",
+    "question_type": "multipla_escolha",
+    "context_text": "Problemas de proporcionalidade são frequentes em concursos da área de segurança pública.",
+    "text": "Uma patrulha policial percorre 120 km em 2 horas. Se mantiver a mesma velocidade média, em quanto tempo percorrerá 300 km?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A velocidade média é 120/2 = 60 km/h. Para percorrer 300 km: t = 300/60 = 5 horas.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "3 horas e 30 minutos.", "is_correct": false, "explanation": "3h30 corresponde a 210 km na velocidade de 60 km/h, não 300 km."},
+      {"letter": "B", "text": "4 horas.", "is_correct": false, "explanation": "4h corresponde a 240 km, não 300 km."},
+      {"letter": "C", "text": "4 horas e 30 minutos.", "is_correct": false, "explanation": "4h30 corresponde a 270 km, não 300 km."},
+      {"letter": "D", "text": "5 horas.", "is_correct": true, "explanation": "Correto. Velocidade = 120/2 = 60 km/h. Tempo = 300/60 = 5 horas."},
+      {"letter": "E", "text": "6 horas.", "is_correct": false, "explanation": "6h corresponderia a 360 km, não 300 km."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-logicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A contrapositiva de um condicional é logicamente equivalente a ele.",
+    "text": "A contrapositiva da proposição 'Se é policial militar, então usa farda' é:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A contrapositiva de 'Se P, então Q' (P → Q) é 'Se não Q, então não P' (¬Q → ¬P). São logicamente equivalentes. Portanto, a contrapositiva é: 'Se não usa farda, então não é policial militar'.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Se não é policial militar, então não usa farda.", "is_correct": false, "explanation": "Essa é a inversa (¬P → ¬Q), não a contrapositiva. A inversa não é equivalente ao condicional original."},
+      {"letter": "B", "text": "Se usa farda, então é policial militar.", "is_correct": false, "explanation": "Essa é a recíproca (Q → P), não a contrapositiva. A recíproca também não é equivalente ao condicional original."},
+      {"letter": "C", "text": "Se não usa farda, então não é policial militar.", "is_correct": true, "explanation": "Correto. A contrapositiva de (P → Q) é (¬Q → ¬P). Aqui: 'Se não usa farda (¬Q), então não é policial militar (¬P)'."},
+      {"letter": "D", "text": "Não é policial militar ou usa farda.", "is_correct": false, "explanation": "Essa é a forma disjuntiva equivalente ao condicional (¬P ∨ Q), não a contrapositiva."},
+      {"letter": "E", "text": "É policial militar e não usa farda.", "is_correct": false, "explanation": "Essa seria a negação do condicional (P ∧ ¬Q), não a contrapositiva."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "teoria-conjuntos",
+    "question_type": "multipla_escolha",
+    "context_text": "A teoria de conjuntos é aplicada na interpretação de dados estatísticos em concursos.",
+    "text": "Em uma companhia de 50 policiais militares, 30 conhecem Língua Espanhola, 25 conhecem Informática e 10 não conhecem nenhuma das duas. Quantos policiais conhecem AMBAS as habilidades?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Total = 50. Que não conhecem nenhum = 10. Que conhecem pelo menos um = 50 − 10 = 40. Pela inclusão-exclusão: |E ∪ I| = |E| + |I| − |E ∩ I|. Logo: 40 = 30 + 25 − |E ∩ I|. |E ∩ I| = 55 − 40 = 15.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "5", "is_correct": false, "explanation": "5 não resulta do cálculo correto de inclusão-exclusão."},
+      {"letter": "B", "text": "10", "is_correct": false, "explanation": "10 é o número que não conhece nenhuma das duas, não o número que conhece ambas."},
+      {"letter": "C", "text": "15", "is_correct": true, "explanation": "Correto. 50−10=40 conhecem pelo menos uma. 40=30+25−x → x=15 conhecem ambas."},
+      {"letter": "D", "text": "20", "is_correct": false, "explanation": "20 não resulta do cálculo; verificar: 30+25−20=35 ≠ 40."},
+      {"letter": "E", "text": "25", "is_correct": false, "explanation": "25 é o número de policiais que conhecem Informática, não o que conhece ambas."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-matematico",
+    "question_type": "multipla_escolha",
+    "context_text": "Problemas de porcentagem são comuns em provas de raciocínio lógico.",
+    "text": "Um soldado realizou 80 questões de uma prova. Acertou 75% das questões de Língua Portuguesa e 60% das de Direito. Se havia 40 questões de cada matéria, qual o total de acertos?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Língua Portuguesa: 75% de 40 = 0,75 × 40 = 30 acertos. Direito: 60% de 40 = 0,60 × 40 = 24 acertos. Total de acertos = 30 + 24 = 54.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "48", "is_correct": false, "explanation": "48 não corresponde: LP = 30, Direito = 24, total = 54."},
+      {"letter": "B", "text": "50", "is_correct": false, "explanation": "50 = 67,5% do total, não o resultado calculado."},
+      {"letter": "C", "text": "52", "is_correct": false, "explanation": "52 não resulta dos cálculos corretos."},
+      {"letter": "D", "text": "54", "is_correct": true, "explanation": "Correto. LP: 0,75×40=30. Direito: 0,60×40=24. Total: 30+24=54."},
+      {"letter": "E", "text": "60", "is_correct": false, "explanation": "60 representaria 75% de 80 questões, desconsiderando a diferença de aproveitamento por matéria."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "silogismos",
+    "question_type": "multipla_escolha",
+    "context_text": "Os argumentos dedutivos válidos preservam a verdade das premissas para a conclusão.",
+    "text": "Analise o argumento: 'Nenhum suspeito é inocente. João é suspeito. Portanto, João não é inocente.' Esse argumento é:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O argumento é logicamente válido (a conclusão decorre necessariamente das premissas). Se 'nenhum suspeito é inocente' e 'João é suspeito', então 'João não é inocente' segue necessariamente. A validade não depende da verdade material das premissas (João pode ser inocente no mundo real); depende da estrutura lógica.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Inválido, pois a presunção de inocência garante que João é inocente até prova contrária.", "is_correct": false, "explanation": "A validade lógica é independente de princípios jurídicos ou morais; avalia apenas se a conclusão decorre formalmente das premissas."},
+      {"letter": "B", "text": "Válido, pois a conclusão decorre necessariamente das premissas.", "is_correct": true, "explanation": "Correto. A estrutura é: Nenhum S é I. João é S. Portanto, João não é I. A conclusão decorre formalmente das premissas (silogismo válido)."},
+      {"letter": "C", "text": "Inválido, pois a primeira premissa é falsa no sistema jurídico brasileiro.", "is_correct": false, "explanation": "A validade lógica não depende da verdade das premissas; um argumento pode ser válido com premissas falsas (mas será uma dedução, não uma prova material)."},
+      {"letter": "D", "text": "Indeterminado, pois não há informação suficiente para avaliar o argumento.", "is_correct": false, "explanation": "Há informação suficiente; a estrutura formal é clara e o argumento é validamente dedutivo."},
+      {"letter": "E", "text": "Válido apenas se a premissa 'nenhum suspeito é inocente' for juridicamente correta.", "is_correct": false, "explanation": "A validade lógica não depende da correção jurídica das premissas; depende apenas da estrutura formal do argumento."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-matematico",
+    "question_type": "multipla_escolha",
+    "context_text": "A análise combinatória é aplicada em problemas de escala e distribuição de tarefas policiais.",
+    "text": "De quantas maneiras diferentes podem ser dispostos 5 policiais em fila indiana (um atrás do outro)?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A disposição de n elementos em fila é um arranjo de permutação simples: n! = 5! = 5×4×3×2×1 = 120. Cada policial pode ocupar qualquer posição, e a ordem importa.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "25", "is_correct": false, "explanation": "25 = 5², usado em outras fórmulas, mas não na permutação de 5 elementos."},
+      {"letter": "B", "text": "60", "is_correct": false, "explanation": "60 = 5!/2, que seria a permutação de 5 com 2 elementos repetidos, não o caso aqui."},
+      {"letter": "C", "text": "100", "is_correct": false, "explanation": "100 não corresponde a nenhuma fórmula combinatória padrão aplicável aqui."},
+      {"letter": "D", "text": "120", "is_correct": true, "explanation": "Correto. P(5) = 5! = 5×4×3×2×1 = 120 maneiras de dispor 5 policiais em fila."},
+      {"letter": "E", "text": "150", "is_correct": false, "explanation": "150 não é o resultado de 5!."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-numericas",
+    "question_type": "multipla_escolha",
+    "context_text": "Sequências com razão constante (PA) são frequentes em concursos.",
+    "text": "Em uma progressão aritmética, o primeiro termo é 4 e a razão é 3. Qual é o 10º termo?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Para uma PA: aₙ = a₁ + (n−1)×r. Com a₁=4, r=3 e n=10: a₁₀ = 4 + (10−1)×3 = 4 + 9×3 = 4 + 27 = 31.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "28", "is_correct": false, "explanation": "28 = 4 + (9−1)×3 = 4 + 24, corresponderia ao 9º termo se a fórmula fosse aplicada errada."},
+      {"letter": "B", "text": "29", "is_correct": false, "explanation": "29 não resulta da fórmula correta."},
+      {"letter": "C", "text": "30", "is_correct": false, "explanation": "30 = 4 + (9)×(30−4)/9... não resulta de a₁₀ com esses parâmetros."},
+      {"letter": "D", "text": "31", "is_correct": true, "explanation": "Correto. a₁₀ = 4 + (10−1)×3 = 4 + 27 = 31."},
+      {"letter": "E", "text": "34", "is_correct": false, "explanation": "34 = 4 + (10)×3, esquecendo de subtrair 1 da fórmula: (n−1) e não n."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-matematico",
+    "question_type": "multipla_escolha",
+    "context_text": "Problemas de regra de três simples são comuns em provas de concurso.",
+    "text": "Uma delegacia registrou 240 ocorrências em 30 dias. Mantendo o mesmo ritmo, em quantos dias serão registradas 400 ocorrências?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Regra de três simples direta: 240 ocorrências → 30 dias. 400 ocorrências → x dias. x = (400 × 30) / 240 = 12.000 / 240 = 50 dias.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "40 dias", "is_correct": false, "explanation": "40 dias: 40×8=320 ocorrências. A taxa é 240/30=8 por dia; 400/8=50."},
+      {"letter": "B", "text": "45 dias", "is_correct": false, "explanation": "45 dias: 45×8=360 ocorrências, não 400."},
+      {"letter": "C", "text": "50 dias", "is_correct": true, "explanation": "Correto. Taxa = 240/30 = 8 ocorrências/dia. Dias para 400: 400/8 = 50 dias."},
+      {"letter": "D", "text": "55 dias", "is_correct": false, "explanation": "55 dias: 55×8=440 ocorrências, não 400."},
+      {"letter": "E", "text": "60 dias", "is_correct": false, "explanation": "60 dias: 60×8=480 ocorrências, não 400."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "probabilidade",
+    "question_type": "multipla_escolha",
+    "context_text": "A probabilidade é uma ferramenta estatística importante para a análise de dados policiais.",
+    "text": "Uma urna contém 5 bolas vermelhas, 3 azuis e 2 brancas. Ao retirar uma bola ao acaso, qual é a probabilidade de ser azul?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Total de bolas = 5 + 3 + 2 = 10. Bolas azuis = 3. Probabilidade = 3/10 = 0,3 = 30%.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "1/5 = 20%", "is_correct": false, "explanation": "1/5 = 2/10, que seria a probabilidade de bola branca."},
+      {"letter": "B", "text": "3/10 = 30%", "is_correct": true, "explanation": "Correto. P(azul) = 3/10 = 30%."},
+      {"letter": "C", "text": "1/2 = 50%", "is_correct": false, "explanation": "1/2 = 5/10, que seria a probabilidade de bola vermelha."},
+      {"letter": "D", "text": "3/5 = 60%", "is_correct": false, "explanation": "3/5 = 6/10, superior ao número de bolas azuis."},
+      {"letter": "E", "text": "7/10 = 70%", "is_correct": false, "explanation": "7/10 seria a probabilidade de NÃO retirar bola azul."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "proposicoes-logicas",
+    "question_type": "multipla_escolha",
+    "context_text": "Em lógica, o bicondicional (P ↔ Q) é verdadeiro apenas quando as proposições têm o mesmo valor de verdade.",
+    "text": "O bicondicional 'Pedro é aprovado no concurso se e somente se ele estudar muito' é verdadeiro quando:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O bicondicional P ↔ Q é verdadeiro quando P e Q têm o mesmo valor de verdade (ambos V ou ambos F). É falso quando têm valores opostos. Portanto, é verdadeiro quando Pedro é aprovado E estudou muito, ou quando não é aprovado E não estudou muito.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "Pedro é aprovado, mesmo não tendo estudado muito.", "is_correct": false, "explanation": "Nesse caso, P é V e Q é F — o bicondicional é falso."},
+      {"letter": "B", "text": "Pedro não é aprovado, mesmo tendo estudado muito.", "is_correct": false, "explanation": "Nesse caso, P é F e Q é V — o bicondicional é falso."},
+      {"letter": "C", "text": "Pedro é aprovado e estudou muito, ou não é aprovado e não estudou muito.", "is_correct": true, "explanation": "Correto. O bicondicional é verdadeiro quando ambas as proposições têm o mesmo valor: (V,V) ou (F,F)."},
+      {"letter": "D", "text": "Pedro estudou muito, independentemente do resultado no concurso.", "is_correct": false, "explanation": "Se Pedro estudou (Q=V) mas não foi aprovado (P=F), o bicondicional é falso."},
+      {"letter": "E", "text": "Pedro não estudou muito, independentemente do resultado.", "is_correct": false, "explanation": "Se Pedro não estudou (Q=F) mas foi aprovado (P=V), o bicondicional é falso."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "raciocinio-matematico",
+    "question_type": "multipla_escolha",
+    "context_text": "Geometria básica é cobrada em concursos de raciocínio lógico.",
+    "text": "Um terreno retangular tem 60 m de comprimento e 40 m de largura. Qual é a área do terreno em metros quadrados?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Área do retângulo = comprimento × largura = 60 × 40 = 2.400 m².",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "200 m²", "is_correct": false, "explanation": "200 m² = (60+40)×2/2, o que seria o perímetro dividido por 2, não a área."},
+      {"letter": "B", "text": "1.200 m²", "is_correct": false, "explanation": "1.200 = 60×40/2, que seria a área de um triângulo, não de um retângulo."},
+      {"letter": "C", "text": "2.400 m²", "is_correct": true, "explanation": "Correto. Área = 60 × 40 = 2.400 m²."},
+      {"letter": "D", "text": "3.600 m²", "is_correct": false, "explanation": "3.600 = 60², seria a área de um quadrado de lado 60, não do retângulo 60×40."},
+      {"letter": "E", "text": "4.800 m²", "is_correct": false, "explanation": "4.800 = 60×40×2, o que dobra a área erroneamente."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "sequencias-numericas",
+    "question_type": "multipla_escolha",
+    "context_text": "Progressões geométricas aparecem em concursos da área de segurança pública.",
+    "text": "Em uma progressão geométrica, o primeiro termo é 3 e a razão é 2. Qual é a soma dos 5 primeiros termos?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os termos são: 3, 6, 12, 24, 48. Soma = 3 + 6 + 12 + 24 + 48 = 93. Pela fórmula: Sₙ = a₁(rⁿ − 1)/(r − 1) = 3(2⁵ − 1)/(2 − 1) = 3 × 31 = 93.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "63", "is_correct": false, "explanation": "63 = 3×(2⁴−1) = 3×21... não corresponde à fórmula correta para n=5."},
+      {"letter": "B", "text": "90", "is_correct": false, "explanation": "90 está próximo mas não é o resultado correto; verificar a soma: 3+6+12+24+48=93."},
+      {"letter": "C", "text": "93", "is_correct": true, "explanation": "Correto. 3+6+12+24+48=93. Pela fórmula: S₅=3(2⁵−1)/(2−1)=3×31=93."},
+      {"letter": "D", "text": "96", "is_correct": false, "explanation": "96 = 3 × 32 = 3 × 2⁵, que não é a soma correta."},
+      {"letter": "E", "text": "99", "is_correct": false, "explanation": "99 não resulta da soma dos 5 termos da PG."}
+    ]
+  },
+  {
+    "subject_slug": "raciocinio-logico",
+    "topic_slug": "probabilidade",
+    "question_type": "multipla_escolha",
+    "context_text": "Estatística descritiva é usada para análise de ocorrências policiais.",
+    "text": "As notas de 5 candidatos em uma prova foram: 6, 7, 8, 9 e 10. Qual é a média aritmética dessas notas?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Média = (6 + 7 + 8 + 9 + 10) / 5 = 40 / 5 = 8.",
+    "legal_basis": "",
+    "alternatives": [
+      {"letter": "A", "text": "7", "is_correct": false, "explanation": "7 seria a mediana de 5 valores se fossem 5, 6, 7, 8, 9, não a média dos valores dados."},
+      {"letter": "B", "text": "7,5", "is_correct": false, "explanation": "7,5 = 40/5,3... não corresponde à divisão correta."},
+      {"letter": "C", "text": "8", "is_correct": true, "explanation": "Correto. (6+7+8+9+10)/5 = 40/5 = 8."},
+      {"letter": "D", "text": "8,5", "is_correct": false, "explanation": "8,5 = 42,5/5, não é a soma correta dos valores dados."},
+      {"letter": "E", "text": "9", "is_correct": false, "explanation": "9 seria a mediana se os valores fossem 7, 8, 9, 10, 11."}
+    ]
+  }
+]

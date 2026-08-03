@@ -1,0 +1,242 @@
+[
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "conceitos-basicos",
+    "question_type": "multipla_escolha",
+    "context_text": "A medicina legal é a especialidade que aplica conhecimentos médicos e biológicos ao serviço do Direito.",
+    "text": "Qual das alternativas melhor define o objeto da medicina legal?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A medicina legal aplica conhecimentos das ciências médicas e biológicas ao esclarecimento de questões jurídicas (investigação criminal, identificação, determinação de causa da morte, avaliação de lesões). O médico-legista atua como perito para auxiliar a Justiça e a atividade policial.",
+    "legal_basis": "Genival Veloso de França, Medicina Legal; Arts. 158-184, CPP (prova pericial)",
+    "alternatives": [
+      {"letter": "A", "text": "Tratar das doenças dos presos e internos em estabelecimentos penais.", "is_correct": false, "explanation": "Assistência médica a presos é atribuição da saúde prisional (sistema penitenciário), não da medicina legal, que é ciência forense voltada a auxiliar a Justiça."},
+      {"letter": "B", "text": "Aplicar conhecimentos médicos e biológicos ao esclarecimento de questões jurídicas.", "is_correct": true, "explanation": "Correto. A medicina legal (ou medicina forense) é a aplicação sistemática das ciências médicas e biológicas para responder questões levantadas pelo Direito: causa da morte, natureza de lesões, identificação de vítimas, toxicologia forense."},
+      {"letter": "C", "text": "Elaborar laudos psiquiátricos exclusivamente para internação compulsória de doentes mentais.", "is_correct": false, "explanation": "A psiquiatria forense é subdivisão da medicina legal, não seu objeto completo. A medicina legal abrange muito mais: traumatologia, tanatologia, sexologia, toxicologia, etc."},
+      {"letter": "D", "text": "Regulamentar a prática da medicina e punir infrações éticas dos médicos.", "is_correct": false, "explanation": "A regulamentação da medicina e a ética médica são atribuição dos Conselhos de Medicina (CFM e CRMs). A medicina legal é ciência auxiliar da justiça, não regulatória."},
+      {"letter": "E", "text": "Realizar necropsias exclusivamente em mortes por causas naturais.", "is_correct": false, "explanation": "A necropsia (autopsia) é procedimento da medicina legal especialmente relevante em mortes violentas ou suspeitas. Causas naturais sem suspeita geralmente não requerem necropsia médico-legal."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "context_text": "A tanatologia forense estuda os fenômenos relacionados à morte para auxiliar na investigação criminal.",
+    "text": "O rigor mortis (rigidez cadavérica) é fenômeno abiótico transformativo que auxilia na estimativa do tempo de morte. Qual é o intervalo aproximado de tempo após a morte em que o rigor mortis atinge sua máxima intensidade em condições normais?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O rigor mortis inicia-se 1-2 horas após a morte, progride cefalocaudalmente (da cabeça para os pés — lei de Nysten), atinge intensidade máxima entre 12-24 horas e começa a ceder após 24-48 horas, desaparecendo em 48-72 horas. Temperatura ambiente e atividade muscular pré-mortal alteram esse cronograma.",
+    "legal_basis": "Genival Veloso de França, Medicina Legal; Hélio Gomes, Medicina Legal",
+    "alternatives": [
+      {"letter": "A", "text": "1 a 2 horas após a morte.", "is_correct": false, "explanation": "1-2 horas é quando o rigor mortis começa (fase inicial), não quando atinge máxima intensidade."},
+      {"letter": "B", "text": "6 a 8 horas após a morte.", "is_correct": false, "explanation": "6-8 horas é fase de progressão do rigor mortis, ainda não o pico. A intensidade máxima ocorre mais tarde."},
+      {"letter": "C", "text": "12 a 24 horas após a morte.", "is_correct": true, "explanation": "Correto. Em condições normais de temperatura (±20°C), o rigor mortis atinge intensidade máxima entre 12 e 24 horas após a morte, progredindo no sentido cefalocaudal (lei de Nysten)."},
+      {"letter": "D", "text": "48 a 72 horas após a morte.", "is_correct": false, "explanation": "48-72 horas é quando o rigor mortis começa a ceder e desaparecer, não seu pico."},
+      {"letter": "E", "text": "Imediatamente após a morte, nos primeiros 30 minutos.", "is_correct": false, "explanation": "Imediatamente após a morte há flacidez muscular primária (relaxamento). O rigor mortis só começa após 1-2 horas, com a depleção de ATP muscular."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "context_text": "As manchas de hipóstase (livor mortis) são fenômenos abióticos transformativos que se formam após a morte.",
+    "text": "As manchas de hipóstase cadavérica (livor mortis) formam-se porque:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Com a parada circulatória, o sangue, por ação da gravidade, acumula-se nas regiões declives (inferiores) do corpo, colorindo a pele de roxo-violáceo (cor da desoxiemoglobina). Inicialmente fixas nas áreas de declive, as manchas podem ser deslocadas se o corpo for movido nas primeiras horas. Após 8-12h, tornam-se fixas (imobilizadas pela coagulação). O padrão das manchas indica a posição em que o cadáver permaneceu após a morte — importante para investigação da cena do crime.",
+    "legal_basis": "Genival Veloso de França, Medicina Legal; Hercules, Medicina Legal",
+    "alternatives": [
+      {"letter": "A", "text": "O sangue coagula rapidamente e forma hematomas em toda a extensão do corpo.", "is_correct": false, "explanation": "Hematomas são extravasamentos por trauma. Hipóstase é acúmulo intravascular de sangue nas regiões declives por ação da gravidade, não coagulação generalizada."},
+      {"letter": "B", "text": "O sangue se acumula nas regiões declives por ação da gravidade após a parada circulatória.", "is_correct": true, "explanation": "Correto. Com a parada circulatória, o sangue cai por gravidade para as regiões inferiores do corpo, colorindo-as de roxo-violáceo. A localização das manchas indica a posição do cadáver."},
+      {"letter": "C", "text": "Bactérias produzem pigmentos que mancham a pele durante o processo de decomposição.", "is_correct": false, "explanation": "As manchas de putrefação têm origem bacteriana (gases, sulfatos), mas as hipóstases são fenômeno físico precoce (gravitacional/sanguíneo), anterior à decomposição."},
+      {"letter": "D", "text": "O monóxido de carbono liberado pelos tecidos reage com a hemoglobina, corando a pele.", "is_correct": false, "explanation": "Monóxido de carbono exógeno (intoxicação) causa a pele rósea-cereja (carboxiemoglobina). As hipóstases normais são roxo-violáceas por desoxiemoglobina. São fenômenos distintos."},
+      {"letter": "E", "text": "O sistema nervoso autônomo libera catecolaminas que causam vasodilatação periférica após a morte.", "is_correct": false, "explanation": "Não há função do sistema nervoso autônomo após a morte. As hipóstases são fenômeno físico-gravitacional, não neuroendócrino."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "traumatologia-forense",
+    "question_type": "multipla_escolha",
+    "context_text": "A traumatologia forense estuda as lesões corporais decorrentes de agentes mecânicos, físicos e químicos.",
+    "text": "Na traumatologia forense, as lesões produzidas por instrumento cortante (como faca) distinguem-se das produzidas por instrumento contundente (como bastão) principalmente por:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Instrumentos cortantes (lâmina afiada) produzem feridas incisas: bordas regulares, lisas e lineares, com pouca ou nenhuma contusão ao redor, sangramento abundante, maior comprimento que profundidade. Instrumentos contundentes produzem feridas contusas (lacerações): bordas irregulares, contundidas, com equimoses adjacentes, maior profundidade proporcional.",
+    "legal_basis": "Genival Veloso de França, Medicina Legal; Código Penal, art. 129 (lesão corporal)",
+    "alternatives": [
+      {"letter": "A", "text": "Produzir fraturas ósseas e laceração dos tecidos moles profundos.", "is_correct": false, "explanation": "Fraturas são típicas de instrumentos contundentes de alta energia. Instrumentos cortantes raramente fraturm ossos."},
+      {"letter": "B", "text": "Apresentar bordas regulares, lisas e lineares, com pouca contusão adjacente.", "is_correct": true, "explanation": "Correto. A ferida incisa (por instrumento cortante) tem bordas regulares e lisas, pois a lâmina secciona com precisão sem esmagar os tecidos. O instrumento contundente produz bordas irregulares, com contusão."},
+      {"letter": "C", "text": "Causar queimaduras nos tecidos ao redor pela fricção do instrumento.", "is_correct": false, "explanation": "Queimaduras por fricção são produzidas por instrumentos de superfície áspera em movimento (abrasão), não por instrumentos cortantes."},
+      {"letter": "D", "text": "Não deixar marcas externas, pois a lesão ocorre exclusivamente nos órgãos internos.", "is_correct": false, "explanation": "Instrumentos cortantes produzem feridas externas visíveis (feridas incisas). Apenas projéteis de arma de fogo e alguns instrumentos perfurantes podem causar lesão interna com abertura externa mínima."},
+      {"letter": "E", "text": "Produzir lesões exclusivamente na cabeça e no pescoço.", "is_correct": false, "explanation": "Instrumentos cortantes e contundentes podem atingir qualquer região do corpo. A localização da lesão depende da circunstância do evento, não do tipo de instrumento."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "traumatologia-forense",
+    "question_type": "multipla_escolha",
+    "context_text": "O exame de corpo de delito é exigência do Código de Processo Penal para infrações que deixam vestígios.",
+    "text": "Segundo o Código de Processo Penal (art. 158), o exame de corpo de delito nas infrações que deixam vestígios é:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 158 do CPP estabelece que o exame de corpo de delito é indispensável nas infrações que deixam vestígios, não podendo ser substituído pela confissão do acusado. Se os vestígios desaparecem, o corpo de delito pode ser suprido pela prova testemunhal (art. 167, CPP). A indispensabilidade protege contra condenações baseadas exclusivamente em confissão.",
+    "legal_basis": "Arts. 158-184, CPP (prova pericial); Art. 167, CPP",
+    "alternatives": [
+      {"letter": "A", "text": "Facultativo, podendo ser substituído pela confissão do acusado perante a autoridade policial.", "is_correct": false, "explanation": "O art. 158, CPP é claro: o exame de corpo de delito não pode ser substituído pela confissão. É indispensável quando há vestígios."},
+      {"letter": "B", "text": "Indispensável e não pode ser substituído pela confissão do acusado.", "is_correct": true, "explanation": "Correto. Art. 158, CPP: 'Quando a infração deixar vestígios, será indispensável o exame de corpo de delito, direto ou indireto, não podendo supri-lo a confissão do acusado.' Confissão sem laudo não é suficiente para comprovar a materialidade."},
+      {"letter": "C", "text": "Dispensável quando há confissão qualificada do acusado acompanhada de duas testemunhas.", "is_correct": false, "explanation": "Confissão acompanhada de testemunhas não substitui o exame de corpo de delito. Apenas o desaparecimento dos vestígios (impossibilidade de exame direto) permite o indireto ou prova testemunhal."},
+      {"letter": "D", "text": "Realizado exclusivamente por médico legista vinculado ao Instituto Médico-Legal.", "is_correct": false, "explanation": "O art. 159, CPP permite que o exame seja feito por perito oficial, ou na falta deste, por duas pessoas idôneas com habilitação técnica. Não exige exclusivamente médico-legista do IML."},
+      {"letter": "E", "text": "Válido apenas quando realizado antes de 24 horas do cometimento do crime.", "is_correct": false, "explanation": "O CPP não impõe prazo de 24 horas para o exame. O ideal é a brevidade possível para preservar vestígios, mas não há nulidade por simples decurso de tempo."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "identificacao-humana",
+    "question_type": "multipla_escolha",
+    "context_text": "A identificação humana é fundamental na investigação criminal, especialmente em casos de corpos em decomposição ou vítimas desconhecidas.",
+    "text": "O sistema datiloscópico de identificação humana baseia-se nos seguintes princípios fundamentais:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A datiloscopia baseia-se em três princípios: (1) perenidade — as digitais formam-se no 6° mês fetal e persistem até a decomposição cadavérica; (2) imutabilidade — não se modificam ao longo da vida (salvo destruição tecidual); (3) unicidade (variabilidade) — nenhum indivíduo apresenta digitais idênticas às de outro. Esses princípios foram sistematizados por Francis Galton.",
+    "legal_basis": "Sistema Galton; Vucetich (dactiloscopia sul-americana); Lei 12.037/2009 (identificação criminal)",
+    "alternatives": [
+      {"letter": "A", "text": "Temporalidade, plasticidade e similaridade entre parentes próximos.", "is_correct": false, "explanation": "As digitais são perenes (não temporárias), imutáveis (não plásticas no sentido de se alterarem) e únicas mesmo entre gêmeos idênticos (sem similaridade identificadora entre parentes)."},
+      {"letter": "B", "text": "Perenidade, imutabilidade e unicidade (variabilidade).", "is_correct": true, "explanation": "Correto. Os três princípios clássicos da datiloscopia: (1) perenidade — as digitais persistem da vida fetal à decomposição; (2) imutabilidade — não se alteram; (3) unicidade — cada indivíduo tem padrão único, inconfundível."},
+      {"letter": "C", "text": "Hereditariedade, simetria e correspondência genética.", "is_correct": false, "explanation": "As digitais têm componente hereditário parcial, mas a correspondência genética não é precisa o suficiente para identificação. A datiloscopia não usa genética, usa morfologia das cristas papilares."},
+      {"letter": "D", "text": "Bilateralidade, progressão etária e resistência ao calor.", "is_correct": false, "explanation": "As digitais são bilaterais, mas cada dedo é único (identificação por dedo específico). Resistência ao calor é propriedade física parcial, não princípio científico da datiloscopia."},
+      {"letter": "E", "text": "Universalidade racial, precisão métrica e invariância química.", "is_correct": false, "explanation": "Esses não são os princípios clássicos da datiloscopia. A universalidade racial existe (todas as etnias têm digitais), mas o sistema é baseado em perenidade, imutabilidade e unicidade."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "toxicologia-forense",
+    "question_type": "multipla_escolha",
+    "context_text": "A toxicologia forense investiga a presença de substâncias tóxicas em corpos ou em amostras biológicas.",
+    "text": "Na toxicologia forense, qual é a amostra biológica mais comumente coletada para detecção de substâncias psicoativas em investigação de motoristas suspeitos de embriaguez ao volante?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Código de Trânsito Brasileiro (Lei 9.503/1997, art. 277) prevê que o motorista suspeito seja submetido a testes (bafômetro/etilômetro ou exame clínico). Para drogas além do álcool, a urina é a amostra de triagem mais usada (imunoensaios) pela janela de detecção maior. O sangue é mais específico (confirmatório) mas mais invasivo. A saliva (swab oral) é usada em kits rápidos de triagem.",
+    "legal_basis": "Art. 277, CTB; Resolução CONTRAN 432/2013",
+    "alternatives": [
+      {"letter": "A", "text": "Cabelo, por permitir detecção de uso crônico nos últimos meses.", "is_correct": false, "explanation": "O cabelo é amostra para detecção de uso crônico histórico (meses), não para situação aguda de trânsito. Não é a amostra primária para abordagem de motoristas."},
+      {"letter": "B", "text": "Urina, pela janela de detecção maior e facilidade de coleta.", "is_correct": true, "explanation": "Correto. A urina é a amostra mais usada em triagem toxicológica de trânsito: maior janela de detecção (ex: cannabis urinária detectável até 30 dias no uso crônico), facilidade de coleta e custo acessível dos imunoensaios de triagem."},
+      {"letter": "C", "text": "Líquido cefalorraquidiano (LCR), por ser a forma mais precisa de detectar substâncias no SNC.", "is_correct": false, "explanation": "Punção lombar para LCR é procedimento invasivo, inadequado para rotina de fiscalização de trânsito. É usado em investigações clínicas específicas, não em abordagem policial."},
+      {"letter": "D", "text": "Unhas, pois retêm substâncias tóxicas por mais tempo que outras amostras.", "is_correct": false, "explanation": "Unhas têm janela de detecção longa (semanas/meses) e são usadas em investigações especiais. Não são a amostra padrão para verificação de embriaguez aguda no trânsito."},
+      {"letter": "E", "text": "Bile, por ter a maior concentração de metabólitos de drogas.", "is_correct": false, "explanation": "A bile é coletada em necropsias (cadáveres), não em abordagem de motoristas vivos. Tem uso em tanatoquímica forense, não em fiscalização de trânsito."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "sexologia-forense",
+    "question_type": "multipla_escolha",
+    "context_text": "A sexologia forense analisa os crimes sexuais e suas evidências para auxiliar a investigação criminal.",
+    "text": "No exame pericial de vítima de violência sexual, qual é o procedimento correto em relação à coleta de vestígios?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O exame deve ser realizado o mais brevemente possível após o evento, pois material biológico do agressor (espermatozoides, células epiteliais, DNA) pode ser destruído em horas. A vítima não deve banhar-se ou urinar antes do exame. A coleta inclui swabs de múltiplos sítios, roupas, material subungueal. O atendimento deve ser humanizado para evitar vitimização secundária.",
+    "legal_basis": "Lei 12.845/2013 (atendimento vítimas violência sexual); Protocolo de atenção à violência sexual do MS",
+    "alternatives": [
+      {"letter": "A", "text": "Aguardar 72 horas para o exame, período em que os vestígios biológicos estão mais concentrados.", "is_correct": false, "explanation": "Ao contrário: quanto mais tempo passa, menos vestígios. Espermatozoides degradam-se em horas. O ideal é exame imediato (golden hour). 72h é o prazo máximo, não o ideal."},
+      {"letter": "B", "text": "Orientar a vítima a tomar banho antes do exame para evitar contaminação da amostra.", "is_correct": false, "explanation": "O banho destrói vestígios biológicos do agressor (DNA, esperma, células). A vítima deve ser orientada a NÃO tomar banho antes do exame."},
+      {"letter": "C", "text": "Realizar o exame o mais brevemente possível, com coleta de swabs de múltiplos sítios e preservação das roupas.", "is_correct": true, "explanation": "Correto. Urgência na coleta de vestígios (DNA, espermatozoides degradam-se rapidamente), swabs de mucosa oral/vaginal/anal conforme o caso, preservação das roupas como evidência, e atendimento humanizado para evitar vitimização secundária."},
+      {"letter": "D", "text": "Realizar o exame somente após boletim de ocorrência registrado e autorização judicial.", "is_correct": false, "explanation": "A Lei 12.845/2013 garante atendimento imediato às vítimas de violência sexual na rede pública, independentemente de BO ou autorização judicial. O exame não deve aguardar formalidades."},
+      {"letter": "E", "text": "Limitar a coleta de vestígios à região genital, descartando outras amostras como irrelevantes.", "is_correct": false, "explanation": "A coleta deve abranger todos os sítios relevantes conforme o tipo de violência: oral, anal, genital, subungueal, pele (mordidas, arranhões). Limitar à região genital pode perder evidências essenciais."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "tanatologia",
+    "question_type": "multipla_escolha",
+    "context_text": "As mortes violentas são classificadas em homicídio, suicídio e acidente. A distinção é fundamental para a investigação criminal.",
+    "text": "Em uma cena de morte por arma de fogo, qual achado é mais sugestivo de suicídio em comparação com homicídio?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "No suicídio por arma de fogo, a zona de tatuagem (pólvora incrustada na pele) e chamuscamento indicam tiro de curta distância ou contato, pois o suicida segura a arma próxima ao próprio corpo. Além disso: localização típica (têmpora, testa, boca), halo de esfumaçamento ao redor do orifício, zona de contusão em anel, sem lesões defensivas. No homicídio, o tiro pode ser a distância (sem tatuagem), com lesões defensivas, e em local atípico.",
+    "legal_basis": "Genival Veloso de França, Medicina Legal; Protocolo RESOLVE n° 5/2021 (Perícia)",
+    "alternatives": [
+      {"letter": "A", "text": "Presença de múltiplos ferimentos por projétil em diferentes partes do corpo.", "is_correct": false, "explanation": "Múltiplos ferimentos por arma de fogo são mais típicos de homicídio (em que o atirador pode disparar várias vezes). Suicídio geralmente envolve único disparo (especialmente se fatal)."},
+      {"letter": "B", "text": "Ausência de resíduo de pólvora nas mãos da vítima.", "is_correct": false, "explanation": "A ausência de resíduo de pólvora (GSR) nas mãos sugere que a vítima não segurou a arma — mais sugestivo de homicídio. Presença de GSR aponta para o suicídio (ou que a vítima estava próxima ao disparo)."},
+      {"letter": "C", "text": "Zona de tatuagem e chamuscamento ao redor do orifício de entrada, em localização de acesso fácil.", "is_correct": true, "explanation": "Correto. Tatuagem (pólvora incrustada) e chamuscamento indicam disparo de curta distância ou contato — o suicida aproxima a arma do próprio corpo. Associada a localização de fácil acesso (têmpora, boca) e presença de GSR nas mãos, é fortemente sugestivo de suicídio."},
+      {"letter": "D", "text": "Lesões defensivas nas mãos e antebraços da vítima.", "is_correct": false, "explanation": "Lesões defensivas (tentativa de se proteger) são típicas de homicídio, quando a vítima tenta se defender do agressor. No suicídio, não há agressor externo."},
+      {"letter": "E", "text": "Projétil encontrado a grande distância do corpo, indicando tiro de longa distância.", "is_correct": false, "explanation": "Tiro de longa distância (ausência de tatuagem e chamuscamento) é mais típico de homicídio por terceiro. No suicídio, o disparo é tipicamente próximo ou em contato."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "alcoolemia",
+    "question_type": "multipla_escolha",
+    "context_text": "O Código de Trânsito Brasileiro estabelece limites de alcoolemia para motoristas.",
+    "text": "Segundo o Código de Trânsito Brasileiro (Lei 9.503/1997, com as alterações da Lei 12.760/2012), qual é o limite de concentração de álcool no sangue a partir do qual o motorista comete INFRAÇÃO ADMINISTRATIVA (não crime)?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 12.760/2012 ('lei seca' reforçada) reduziu o limite: qualquer concentração ≥ 0,05 g/L (50 mg/L) de sangue caracteriza infração administrativa (art. 165, CTB). Crime (art. 306) configura-se com ≥ 0,30 g/L (300 mg/L) ou sinais de alteração da capacidade psicomotora. No bafômetro: ≥ 0,05 mg/L de ar alveolar (infração) e ≥ 0,30 mg/L (crime).",
+    "legal_basis": "Arts. 165 e 306, CTB; Resolução CONTRAN 432/2013; Lei 12.760/2012",
+    "alternatives": [
+      {"letter": "A", "text": "0,00 g/L — tolerância zero para qualquer concentração de álcool.", "is_correct": false, "explanation": "Tolerância zero (0,00) seria ideal mas não é o texto legal vigente. A lei estabelece 0,05 g/L como limiar administrativo, não zero (variações analíticas mínimas são toleradas metodologicamente)."},
+      {"letter": "B", "text": "0,05 g/L (50 mg/dL) de sangue ou superior.", "is_correct": true, "explanation": "Correto. Art. 165 do CTB: concentração de álcool ≥ 0,05 g/L (equivalente a 0,05 mg/L no ar alveolar pelo bafômetro) configura infração administrativa gravíssima. Concentração ≥ 0,30 g/L configura crime (art. 306 CTB)."},
+      {"letter": "C", "text": "0,30 g/L (300 mg/dL) de sangue ou superior.", "is_correct": false, "explanation": "0,30 g/L é o limiar para o CRIME de embriaguez ao volante (art. 306, CTB). A infração administrativa já se configura em 0,05 g/L, bem abaixo desse valor."},
+      {"letter": "D", "text": "0,80 g/L (800 mg/dL), padrão internacional adotado pelo Brasil.", "is_correct": false, "explanation": "0,80 g/L era o limite anterior (até 2012, lei 11.705/2008 usava 0,60 g/L). A lei atual (12.760/2012) reduziu drasticamente os limites."},
+      {"letter": "E", "text": "1,00 g/L (1.000 mg/dL), pois abaixo disso não há comprometimento da capacidade de dirigir.", "is_correct": false, "explanation": "1,00 g/L representa embriaguez grave. O Brasil adota limites muito menores (0,05 para infração, 0,30 para crime) porque qualquer nível de álcool compromete capacidades cognitivas e motoras."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "psiquiatria-forense",
+    "question_type": "multipla_escolha",
+    "context_text": "A psiquiatria forense avalia a capacidade mental do acusado para fins de imputabilidade penal.",
+    "text": "No Direito Penal brasileiro, o inimputável por doença mental recebe como resposta penal:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O inimputável (art. 26, caput, CP) é isento de pena, mas sujeito a medida de segurança (internação ou tratamento ambulatorial), pois representa periculosidade social. A medida de segurança não é pena, mas medida terapêutica de duração indeterminada (até cessação da periculosidade), com prazo mínimo de 1 a 3 anos. O semi-imputável (art. 26, parágrafo único) tem pena reduzida ou medida de segurança.",
+    "legal_basis": "Arts. 26-28 e 96-99, CP; Súmula 527, STJ (prazo máximo de medida de segurança)",
+    "alternatives": [
+      {"letter": "A", "text": "Pena privativa de liberdade cumprida em ala especial do presídio comum.", "is_correct": false, "explanation": "O inimputável não cumpre pena — é isento de pena. Recebe medida de segurança, cumprida em Hospital de Custódia e Tratamento Psiquiátrico (HCTP), não em presídio comum."},
+      {"letter": "B", "text": "Medida de segurança (internação ou tratamento ambulatorial), pois é isento de pena.", "is_correct": true, "explanation": "Correto. O art. 26, caput, CP declara o inimputável isento de pena. Como resposta, aplica-se medida de segurança: internação em HCTP (crimes com pena de reclusão) ou tratamento ambulatorial (crimes com pena de detenção), com duração até cessação da periculosidade."},
+      {"letter": "C", "text": "Absolvição plena, sem qualquer consequência jurídica.", "is_correct": false, "explanation": "A absolvição do inimputável é imprópria (absolvição por inimputabilidade) e acompanha a aplicação de medida de segurança. Não há absolvição 'plena sem consequências'."},
+      {"letter": "D", "text": "Pena reduzida de um a dois terços por ausência de culpabilidade plena.", "is_correct": false, "explanation": "A redução de pena de 1/3 a 2/3 é aplicada ao semi-imputável (art. 26, parágrafo único), que tem culpabilidade diminuída. O inimputável é completamente isento de pena."},
+      {"letter": "E", "text": "Prisão preventiva por tempo indeterminado para proteção da sociedade.", "is_correct": false, "explanation": "Prisão preventiva é medida cautelar de natureza processual, aplicável antes da sentença. O inimputável absolvido recebe medida de segurança (não prisão preventiva) por decisão judicial fundamentada."}
+    ]
+  },
+  {
+    "subject_slug": "medicina-legal",
+    "topic_slug": "traumatologia-forense",
+    "question_type": "multipla_escolha",
+    "context_text": "A asfixia mecânica é causa de morte frequente em investigações criminais.",
+    "text": "Qual das seguintes características distingue a enforcamento (asfixia por constrição cervical por laço suspenso) do estrangulamento (constrição por mãos ou objeto sem suspensão)?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "No enforcamento: sulco cervical oblíquo ou transverso dependendo do ponto de fixação (geralmente oblíquo, de baixo para cima no ponto oposto ao laço), interrompido no ponto do nó, com maior marca acima. No estrangulamento: sulco horizontal contínuo ao redor do pescoço, sem interrupção. Petéquias conjuntivais e equimoses faciais são mais marcantes no estrangulamento. Hiperestensão cervical e fratura da hioides ocorrem em ambos.",
+    "legal_basis": "Genival Veloso de França, Medicina Legal; Persio de Oliveira Araújo, Medicina Legal",
+    "alternatives": [
+      {"letter": "A", "text": "O enforcamento produz sulco cervical horizontal e contínuo, enquanto o estrangulamento produz sulco oblíquo.", "is_correct": false, "explanation": "Ao contrário: o enforcamento produz sulco oblíquo (ascende em direção ao ponto de fixação do laço). O estrangulamento por laço produz sulco horizontal e contínuo."},
+      {"letter": "B", "text": "O enforcamento geralmente apresenta sulco cervical oblíquo e interrompido na região do nó, enquanto o estrangulamento tem sulco horizontal contínuo.", "is_correct": true, "explanation": "Correto. No enforcamento típico (suspensão pelo pescoço), o sulco é oblíquo (o laço sobe para o ponto de fixação) e tem interrupção na região do nó. No estrangulamento, o laço circunda o pescoço horizontalmente sem interrupção."},
+      {"letter": "C", "text": "O enforcamento sempre causa morte imediata, enquanto o estrangulamento pode ser sobrevivido sem sequelas.", "is_correct": false, "explanation": "Ambos podem ser letais ou não letais dependendo da duração e intensidade. O enforcamento pode causar morte rápida por compressão de carótidas/jugulares ou fratura cervical, mas não há regra absoluta de imediatidade."},
+      {"letter": "D", "text": "O estrangulamento é sempre suicídio, enquanto o enforcamento é sempre homicídio.", "is_correct": false, "explanation": "Ao contrário: o enforcamento é mais frequentemente suicídio (pois requer apenas suspensão do próprio corpo). O estrangulamento manual (por mãos) é geralmente homicídio (requer força de terceiro). Mas exceções existem."},
+      {"letter": "E", "text": "Apenas o estrangulamento causa petéquias conjuntivais, pois o enforcamento causa morte por compressão arterial sem congestão venosa.", "is_correct": false, "explanation": "Petéquias conjuntivais podem ocorrer em ambos, especialmente quando há compressão venosa com preservação arterial parcial (congestão). No enforcamento, a compressão das jugulares sem oclusão total das carótidas pode gerar petéquias."}
+    ]
+  }
+]

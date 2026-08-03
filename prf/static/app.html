@@ -56,6 +56,35 @@
   --shadow-sm:0 1px 2px rgba(0,0,0,.25); --shadow-md:0 4px 16px rgba(0,0,0,.35);
   --shadow-lg:0 12px 40px rgba(0,0,0,.5);
 }
+
+/* ── PMGO exam theme (teal/blue-green identity — Instituto AOCP) ─────── */
+:root[data-exam="PMGO"] {
+  --primary: #0D7A6B; --primary-hover: #096059;
+  --primary-soft: rgba(13,122,107,.08); --primary-tint: rgba(13,122,107,.14);
+  --accent: #2A9D6E; --accent-soft: rgba(42,157,110,.12);
+  --gold: #1A7A5A; --gold-soft: rgba(26,122,90,.14);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-exam="PMGO"]:not([data-theme="light"]) {
+    --primary: #4ECDB4; --primary-hover: #6DD9C4;
+    --primary-soft: rgba(78,205,180,.10); --primary-tint: rgba(78,205,180,.18);
+    --accent: #56D4A0; --accent-soft: rgba(86,212,160,.14);
+    --gold: #40C898; --gold-soft: rgba(64,200,152,.14);
+  }
+}
+:root[data-exam="PMGO"][data-theme="dark"] {
+  --primary: #4ECDB4; --primary-hover: #6DD9C4;
+  --primary-soft: rgba(78,205,180,.10); --primary-tint: rgba(78,205,180,.18);
+  --accent: #56D4A0; --accent-soft: rgba(86,212,160,.14);
+  --gold: #40C898; --gold-soft: rgba(64,200,152,.14);
+}
+:root[data-exam="PMGO"][data-theme="light"] {
+  --primary: #0D7A6B; --primary-hover: #096059;
+  --primary-soft: rgba(13,122,107,.08); --primary-tint: rgba(13,122,107,.14);
+  --accent: #2A9D6E; --accent-soft: rgba(42,157,110,.12);
+  --gold: #1A7A5A; --gold-soft: rgba(26,122,90,.14);
+}
+
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 html,body { height:100%; overflow:hidden; }
 body {
@@ -814,6 +843,14 @@ let timerInterval = null;
 const audioEl = document.getElementById('audio-el');
 
 // ===== THEME =====
+function applyExamTheme(exam) {
+  const root = document.documentElement;
+  if (exam && exam.startsWith('PM')) {
+    root.setAttribute('data-exam', 'PMGO');
+  } else {
+    root.removeAttribute('data-exam');
+  }
+}
 function applyTheme() {
   const root = document.documentElement;
   if (S.theme === 'auto') root.removeAttribute('data-theme');
@@ -2232,6 +2269,7 @@ function viewSettings() {
 async function setExam(exam) {
   S.targetExam = exam;
   localStorage.setItem('prf_target_exam', exam);
+  applyExamTheme(exam);
   S.trilha = null;
   S.subjects = null;
   render();
@@ -2286,6 +2324,7 @@ function resetEssay() { S.essayResult = null; S.subView = 'essays'; S.essayText 
 
 // ===== INIT =====
 applyTheme();
+applyExamTheme(S.targetExam);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   if (S.theme === 'auto') applyTheme();
 });

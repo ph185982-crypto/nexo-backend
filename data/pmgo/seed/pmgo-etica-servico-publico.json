@@ -1,0 +1,302 @@
+[
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "codigo-etica-servidor",
+    "question_type": "multipla_escolha",
+    "context_text": "O Código de Ética Profissional do Servidor Público Civil do Poder Executivo Federal foi estabelecido pelo Decreto nº 1.171, de 22 de junho de 1994.",
+    "text": "Segundo o Decreto nº 1.171/1994, que aprova o Código de Ética do Servidor Público Civil, qual é a missão institucional do servidor público civil?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Código de Ética estabelece que a missão do servidor público é servir a sociedade, buscando o bem comum, a honestidade, a lealdade às instituições e o cumprimento da lei. O servidor existe para atender a cidadania, não para servir ao governo do momento ou a interesses particulares.",
+    "legal_basis": "Decreto 1.171/1994; Art. 37, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Servir exclusivamente ao chefe imediato e ao governo eleito, cumprindo ordens sem questionamento.", "is_correct": false, "explanation": "O servidor deve obediência à lei e ao interesse público, não cegamente ao superior hierárquico ou ao governo eleito quando contrários à lei."},
+      {"letter": "B", "text": "Servir a sociedade com honestidade, lealdade às instituições e busca do bem comum.", "is_correct": true, "explanation": "Correto. O Código de Ética (Decreto 1.171/94) define a missão do servidor como servir à sociedade com honestidade, lealdade às instituições e comprometimento com o bem comum."},
+      {"letter": "C", "text": "Maximizar a arrecadação do Estado para financiar políticas públicas do governo federal.", "is_correct": false, "explanation": "Arrecadação máxima não é a missão geral do servidor público; cada cargo tem sua função específica, sempre subordinada ao interesse público."},
+      {"letter": "D", "text": "Proteger os interesses do funcionalismo público em negociações com o poder político.", "is_correct": false, "explanation": "A defesa corporativa dos interesses do funcionalismo não é a missão ética do servidor; a missão é servir ao cidadão."},
+      {"letter": "E", "text": "Executar tarefas burocráticas com eficiência, independentemente do impacto na sociedade.", "is_correct": false, "explanation": "A eficiência é um princípio constitucional (art. 37), mas a missão do servidor vai além: deve ter comprometimento com o resultado e o impacto social."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "deveres-proibicoes",
+    "question_type": "multipla_escolha",
+    "context_text": "O Código de Ética (Decreto 1.171/1994) estabelece deveres, proibições e vedações ao servidor público civil do Poder Executivo Federal.",
+    "text": "É vedado ao servidor público, conforme o Código de Ética do Servidor Público (Decreto 1.171/1994):",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Entre as proibições do Código de Ética está o uso do cargo ou função pública para obter vantagens pessoais, praticar nepotismo, atuar movido por interesses pessoais em detrimento do interesse público, e o recebimento de presentes que possam influenciar decisões oficiais.",
+    "legal_basis": "Decreto 1.171/1994, Seção II (Das Vedações)",
+    "alternatives": [
+      {"letter": "A", "text": "Recusar pedidos manifestamente ilegais de autoridade superior e documentar a recusa.", "is_correct": false, "explanation": "Recusar ordem manifestamente ilegal é um DEVER ético do servidor, não uma vedação."},
+      {"letter": "B", "text": "Comunicar irregularidades ao superior hierárquico ou às autoridades competentes.", "is_correct": false, "explanation": "Comunicar irregularidades é um DEVER do servidor, não uma vedação."},
+      {"letter": "C", "text": "Usar o cargo para obter vantagens pessoais ou facilitar vantagens a terceiros.", "is_correct": true, "explanation": "Correto. O Código de Ética veda expressamente o uso do cargo para auferir vantagens pessoais ou facilitar vantagens ilícitas a terceiros, configurando improbidade e violação ética."},
+      {"letter": "D", "text": "Manter sigilo sobre assuntos de natureza sigilosa que tenha tomado conhecimento em razão do cargo.", "is_correct": false, "explanation": "Guardar sigilo é um DEVER ético, não uma vedação; o servidor deve preservar informações sigilosas a que tiver acesso."},
+      {"letter": "E", "text": "Agir com cortesia, boa vontade e transparência no atendimento ao cidadão.", "is_correct": false, "explanation": "Tratar o cidadão com cortesia e transparência é um dever, não uma vedação."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "moralidade-administrativa",
+    "question_type": "multipla_escolha",
+    "context_text": "O princípio da moralidade administrativa está consagrado no art. 37, caput, da CF/88 e permeia todo o Código de Ética do Servidor Público.",
+    "text": "O princípio da moralidade administrativa, previsto no art. 37 da CF/88, significa que a Administração Pública deve:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O princípio da moralidade exige que a Administração atue com boa-fé, lealdade, probidade e sem intenções desonestas. Não basta agir dentro da legalidade formal; o ato deve ser moralmente aceito segundo os padrões éticos prevalecentes na sociedade.",
+    "legal_basis": "Art. 37, caput, CF/88; Súmula Vinculante 13 (nepotismo); Lei 9.784/1999",
+    "alternatives": [
+      {"letter": "A", "text": "Agir apenas dentro da estrita legalidade formal, sem considerar aspectos éticos ou de probidade.", "is_correct": false, "explanation": "A moralidade vai além da legalidade formal; exige boa-fé, honestidade e probidade, mesmo quando o ato seja formalmente legal."},
+      {"letter": "B", "text": "Agir com boa-fé, lealdade, probidade e respeito aos padrões éticos da sociedade.", "is_correct": true, "explanation": "Correto. O princípio da moralidade exige que a Administração atue com honestidade, boa-fé e lealdade, vedando atos imorais ainda que formalmente legais."},
+      {"letter": "C", "text": "Divulgar todos os atos administrativos, independentemente de sua natureza ou sigilo.", "is_correct": false, "explanation": "Esse é o conteúdo do princípio da publicidade, não da moralidade. Existem exceções para atos sigilosos."},
+      {"letter": "D", "text": "Maximizar a eficiência dos serviços públicos por meio de métricas de desempenho quantitativo.", "is_correct": false, "explanation": "Maximização de desempenho por métricas é relacionada ao princípio da eficiência, não ao da moralidade."},
+      {"letter": "E", "text": "Tratar igualmente todos os administrados, sem distinção de qualquer natureza.", "is_correct": false, "explanation": "Tratamento igual é o conteúdo do princípio da impessoalidade/isonomia, não especificamente da moralidade."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "improbidade-administrativa",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei de Improbidade Administrativa (Lei 8.429/1992, alterada pela Lei 14.230/2021) estabelece as sanções aplicáveis aos agentes públicos que praticam atos desonestos.",
+    "text": "Segundo a Lei de Improbidade Administrativa (Lei 8.429/1992, com redação da Lei 14.230/2021), para que um ato seja considerado ato de improbidade é necessário:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 14.230/2021 alterou substancialmente a Lei 8.429/1992, exigindo agora o elemento doloso para configuração de improbidade administrativa. Antes da reforma, o STJ já sinalizava essa exigência, mas a lei positiva a tornou expressa. Atos meramente culposos (negligência, imprudência, imperícia) não configuram mais improbidade.",
+    "legal_basis": "Lei 8.429/1992, art. 1º, § 1º, com redação da Lei 14.230/2021",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas o elemento culposo (negligência, imprudência ou imperícia) do agente público.", "is_correct": false, "explanation": "Após a Lei 14.230/2021, a culpa simples não basta; exige-se dolo para configuração de improbidade."},
+      {"letter": "B", "text": "O elemento doloso (vontade livre e consciente de praticar o ato ilícito), não bastando a culpa.", "is_correct": true, "explanation": "Correto. A Lei 14.230/2021 expressamente exige dolo para configuração de improbidade (art. 1º, § 1º), afastando a responsabilidade por mera culpa."},
+      {"letter": "C", "text": "Apenas o enriquecimento ilícito, sendo irrelevante a modalidade de conduta do agente.", "is_correct": false, "explanation": "Improbidade abrange outras condutas além do enriquecimento ilícito, e a modalidade de conduta (dolo) é relevante após a reforma."},
+      {"letter": "D", "text": "Qualquer violação de norma legal pelo agente público, independentemente de culpa ou dolo.", "is_correct": false, "explanation": "Mera ilegalidade não configura improbidade; exige-se desonestidade (dolo) como elemento subjetivo especial."},
+      {"letter": "E", "text": "A presença de prejuízo ao erário como condição indispensável à configuração do ato.", "is_correct": false, "explanation": "O enriquecimento ilícito e os atos contra princípios não exigem comprovação de prejuízo; o dano ao erário é uma das modalidades, não condição geral."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "codigo-etica-servidor",
+    "question_type": "multipla_escolha",
+    "context_text": "A Comissão de Ética Pública (CEP) foi criada pelo Decreto 1.171/1994 e é responsável pela aplicação do Código de Ética do Servidor Público.",
+    "text": "A Comissão de Ética Pública (CEP), criada pelo Decreto 6.029/2007, tem competência para:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A CEP é o órgão central do Sistema de Gestão da Ética do Poder Executivo Federal. Tem competência para orientar e coordenar as Comissões de Ética dos órgãos, investigar condutas antiéticas de agentes públicos de alto escalão e aplicar sanções (censura ética).",
+    "legal_basis": "Decreto 6.029/2007; Decreto 1.171/1994",
+    "alternatives": [
+      {"letter": "A", "text": "Julgar crimes de responsabilidade praticados pelo Presidente da República.", "is_correct": false, "explanation": "Crimes de responsabilidade presidenciais são julgados pelo Senado Federal, não pela CEP."},
+      {"letter": "B", "text": "Orientar e coordenar as comissões de ética dos órgãos e investigar condutas antiéticas de altos funcionários.", "is_correct": true, "explanation": "Correto. A CEP é o órgão central do Sistema de Gestão da Ética, orientando as comissões de ética dos órgãos e investigando condutas de ministros, secretários e outros altos funcionários."},
+      {"letter": "C", "text": "Aplicar multas administrativas e penas de reclusão aos servidores infratores.", "is_correct": false, "explanation": "A CEP pode aplicar censura ética (sanção não criminal), mas não multas nem penas de reclusão; essas são sanções disciplinares e penais aplicadas por outras autoridades."},
+      {"letter": "D", "text": "Elaborar e aprovar contratos administrativos com empresas prestadoras de serviços públicos.", "is_correct": false, "explanation": "Contratos administrativos não são competência da CEP; ela cuida de ética, não de licitações."},
+      {"letter": "E", "text": "Investigar condutas de servidores municipais e estaduais ligados a convênios federais.", "is_correct": false, "explanation": "A CEP tem competência restrita ao Poder Executivo Federal; servidores estaduais e municipais estão sujeitos a comissões de ética próprias."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "conduta-policial",
+    "question_type": "multipla_escolha",
+    "context_text": "O policial militar, como agente do Estado, está sujeito a normas éticas específicas além das normas gerais do servidor público.",
+    "text": "Segundo os princípios éticos da função policial, o uso da força pelo policial deve ser:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O uso da força pelo policial deve observar os princípios da legalidade, necessidade, proporcionalidade e humanidade (Princípios Básicos sobre o Uso da Força e Armas de Fogo da ONU, 1990). A força só pode ser usada quando necessária, na medida mínima para atingir o objetivo legítimo.",
+    "legal_basis": "Princípios Básicos sobre o Uso da Força e Armas de Fogo (ONU, 1990); Código de Conduta para Funcionários Responsáveis pela Aplicação da Lei (ONU, 1979)",
+    "alternatives": [
+      {"letter": "A", "text": "Ilimitado sempre que o policial perceber perigo potencial ao seu bem-estar.", "is_correct": false, "explanation": "O uso da força tem limitações; percepção subjetiva de perigo potencial não autoriza força ilimitada."},
+      {"letter": "B", "text": "Proporcional, necessário e limitado ao estritamente indispensável para atingir objetivo legítimo.", "is_correct": true, "explanation": "Correto. Os padrões internacionais (ONU, 1990) e nacionais exigem que o uso da força policial seja necessário, proporcional e limitado ao mínimo indispensável."},
+      {"letter": "C", "text": "Decidido exclusivamente pelo superior hierárquico presente na ocorrência.", "is_correct": false, "explanation": "O policial tem responsabilidade individual pelo uso da força, não podendo se escudar em ordens superiores para justificar uso ilegal da força."},
+      {"letter": "D", "text": "Precedido sempre de autorização judicial específica para cada intervenção.", "is_correct": false, "explanation": "Autorização judicial prévia para uso da força em cada ocorrência é inviável operacionalmente; os limites estão na lei e nos princípios de proporcionalidade."},
+      {"letter": "E", "text": "Registrado apenas quando resultar em morte ou lesão grave, dispensando-se os demais registros.", "is_correct": false, "explanation": "Todo uso da força deve ser documentado, independentemente da gravidade do resultado; a transparência é princípio ético fundamental."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "deveres-proibicoes",
+    "question_type": "multipla_escolha",
+    "context_text": "O nepotismo na administração pública é vedado pela Súmula Vinculante 13 do STF e pelos princípios constitucionais.",
+    "text": "A Súmula Vinculante 13 do STF vedou o nepotismo na administração pública. A referida súmula proíbe a nomeação de cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o terceiro grau, para:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A SV 13 veda a nomeação de parentes até 3º grau para cargos em comissão, funções gratificadas e empregos de confiança em órgão ou entidade da Administração Pública direta e indireta de qualquer dos Poderes da União, dos Estados, do DF e dos Municípios, se o nomeante for autoridade da mesma esfera ou subordinada.",
+    "legal_basis": "Súmula Vinculante 13 do STF; Art. 37, caput, CF/88 (impessoalidade e moralidade)",
+    "alternatives": [
+      {"letter": "A", "text": "Cargos efetivos, preenchidos mediante concurso público, de qualquer natureza.", "is_correct": false, "explanation": "A SV 13 não se aplica a cargos efetivos providos por concurso; o concurso é justamente o mecanismo impessoal que afasta o nepotismo."},
+      {"letter": "B", "text": "Cargos em comissão, funções gratificadas e empregos de confiança na Administração Pública.", "is_correct": true, "explanation": "Correto. A SV 13 veda o nepotismo especificamente para cargos em comissão, funções de confiança e empregos de confiança, pois esses são de livre nomeação e dispensam concurso."},
+      {"letter": "C", "text": "Apenas cargos de ministros e secretários de Estado, excluídas funções de menor hierarquia.", "is_correct": false, "explanation": "A vedação abrange qualquer cargo em comissão ou função de confiança, não apenas os mais elevados na hierarquia."},
+      {"letter": "D", "text": "Cargos no Poder Judiciário exclusivamente, não se aplicando ao Executivo e Legislativo.", "is_correct": false, "explanation": "A SV 13 se aplica aos três Poderes (Executivo, Legislativo e Judiciário) em todas as esferas federativas."},
+      {"letter": "E", "text": "Qualquer contratação pública, inclusive empreitadas e compras realizadas pela Administração.", "is_correct": false, "explanation": "A SV 13 trata de nomeações de pessoas (nepotismo), não de contratos administrativos com empresas."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "improbidade-administrativa",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei de Improbidade Administrativa (Lei 8.429/1992) define três categorias principais de atos de improbidade.",
+    "text": "Os atos de improbidade administrativa que causam lesão ao erário são aqueles que:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os atos que causam lesão ao erário (art. 10 da Lei 8.429/1992) são aqueles que, por ação ou omissão dolosa do agente público, resultam em perda patrimonial, desvio, malversação, dilapidação ou dilapidação dos bens do ente público. A reforma de 2021 exige dolo também para esta categoria.",
+    "legal_basis": "Art. 10 da Lei 8.429/1992, com redação da Lei 14.230/2021",
+    "alternatives": [
+      {"letter": "A", "text": "Importam enriquecimento ilícito do agente público às custas do patrimônio da entidade.", "is_correct": false, "explanation": "O enriquecimento ilícito (art. 9º) é uma categoria distinta; lesão ao erário (art. 10) não exige enriquecimento do agente."},
+      {"letter": "B", "text": "Por ação ou omissão dolosa resultam em perda patrimonial, desvio ou malversação dos bens públicos.", "is_correct": true, "explanation": "Correto. O art. 10 define lesão ao erário como ação ou omissão dolosa que cause perda patrimonial, desvio, malversação, dilapidação ou dilapidação dos recursos públicos."},
+      {"letter": "C", "text": "Atentam contra os princípios da Administração Pública sem causar prejuízo financeiro direto.", "is_correct": false, "explanation": "Atos que violam apenas princípios sem dano patrimonial se enquadram no art. 11 (atos contra princípios), não no art. 10."},
+      {"letter": "D", "text": "Concedem vantagens fiscais indevidas a empresas sem contrapartida de serviços ao Estado.", "is_correct": false, "explanation": "Embora essa conduta possa causar lesão ao erário em alguns casos, a descrição é incompleta e não abrange toda a categoria do art. 10."},
+      {"letter": "E", "text": "Envolvem a prática de qualquer ato administrativo irregular, independentemente de dolo ou culpa.", "is_correct": false, "explanation": "Após a Lei 14.230/2021, exige-se dolo; irregularidades meramente culposas não configuram mais improbidade."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "conduta-policial",
+    "question_type": "multipla_escolha",
+    "context_text": "O Código de Conduta para Funcionários Responsáveis pela Aplicação da Lei, adotado pela ONU em 1979, estabelece padrões éticos internacionais para a atividade policial.",
+    "text": "Segundo o Código de Conduta da ONU para Funcionários Responsáveis pela Aplicação da Lei (1979), o uso de arma de fogo pelos agentes policiais deve ser:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Código da ONU (1979) e os Princípios Básicos de 1990 estabelecem que o uso de arma de fogo é medida extrema, autorizada apenas quando outros meios forem insuficientes para proteger a vida ou a integridade física, nunca para dispersar multidões não violentas ou prender suspeitos por crimes não violentos.",
+    "legal_basis": "Código de Conduta para Funcionários Responsáveis pela Aplicação da Lei (ONU, 1979); Princípios Básicos sobre o Uso da Força e Armas de Fogo (ONU, 1990)",
+    "alternatives": [
+      {"letter": "A", "text": "Usado preventivamente em qualquer situação de risco percebido, para inibir a ação criminosa.", "is_correct": false, "explanation": "O uso preventivo de arma de fogo sem ameaça concreta e iminente é proibido pelos padrões internacionais."},
+      {"letter": "B", "text": "Medida extrema, utilizada apenas quando outros meios não forem suficientes para proteger vidas.", "is_correct": true, "explanation": "Correto. O Código da ONU e os Princípios Básicos de 1990 definem o uso de arma de fogo como medida extrema (last resort), acionada somente quando outros meios sejam insuficientes para proteger a vida."},
+      {"letter": "C", "text": "Autorizado sempre que o suspeito tentar fugir, independentemente da gravidade do crime.", "is_correct": false, "explanation": "O uso de arma de fogo para impedir fuga não é autorizado pelos padrões internacionais, salvo se o fugitivo representar ameaça à vida de terceiros."},
+      {"letter": "D", "text": "Decidido exclusivamente pelo superior hierárquico presente na cena, sem responsabilidade do policial executor.", "is_correct": false, "explanation": "O policial tem responsabilidade pessoal pelo uso da força; a obediência a ordens superiores não elimina sua responsabilidade por atos ilegais."},
+      {"letter": "E", "text": "Proibido em qualquer circunstância por organizações policiais que sigam padrões internacionais.", "is_correct": false, "explanation": "O uso de arma de fogo não é absolutamente proibido; é permitido como medida extrema para proteger vidas em situações de perigo grave e iminente."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "moralidade-administrativa",
+    "question_type": "multipla_escolha",
+    "context_text": "A moralidade administrativa e o princípio da probidade são fundamentais para a atuação do servidor público em Goiás e em todo o país.",
+    "text": "Qual é a consequência prevista na CF/88 para atos de improbidade administrativa?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 37, § 4º, da CF/88 prevê que os atos de improbidade importarão suspensão dos direitos políticos, perda da função pública, indisponibilidade de bens e ressarcimento ao erário, sem prejuízo da ação penal cabível. Essas sanções independem de processo criminal.",
+    "legal_basis": "Art. 37, § 4º, CF/88; Lei 8.429/1992",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas advertência disciplinar e desconto remuneratório proporcionalmente ao dano causado.", "is_correct": false, "explanation": "As consequências constitucionais são mais graves: suspensão de direitos políticos, perda do cargo, indisponibilidade de bens e ressarcimento."},
+      {"letter": "B", "text": "Suspensão dos direitos políticos, perda da função pública, indisponibilidade de bens e ressarcimento ao erário.", "is_correct": true, "explanation": "Correto. O art. 37, § 4º, da CF/88 lista expressamente essas quatro consequências dos atos de improbidade, sem prejuízo da ação penal."},
+      {"letter": "C", "text": "Cancelamento automático do registro civil e perda da nacionalidade brasileira.", "is_correct": false, "explanation": "A CF/88 não prevê essas consequências para improbidade; perda de nacionalidade tem hipóteses específicas no art. 12, § 4º."},
+      {"letter": "D", "text": "Exclusivamente a responsabilidade penal, por ser a mais grave das sanções aplicáveis.", "is_correct": false, "explanation": "As sanções de improbidade são independentes da responsabilidade penal; podem existir sem que haja crime correspondente."},
+      {"letter": "E", "text": "Responsabilidade civil para ressarcimento, mas não político-administrativa, respeitando a separação de poderes.", "is_correct": false, "explanation": "A CF/88 prevê explicitamente sanções político-administrativas (suspensão de direitos políticos, perda do cargo), não apenas ressarcimento civil."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "codigo-etica-servidor",
+    "question_type": "multipla_escolha",
+    "context_text": "O Decreto 1.171/1994 (Código de Ética) define deveres éticos do servidor público civil do Poder Executivo Federal.",
+    "text": "Segundo o Código de Ética do Servidor Público (Decreto 1.171/1994), o servidor é obrigado a:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Entre os deveres do servidor no Código de Ética estão: atender com presteza ao público, manter sigilo sobre assuntos sigilosos, exercer com dedicação as atribuições do cargo, e ser leal às instituições democráticas. O servidor deve sempre servir ao cidadão com respeito e boa vontade.",
+    "legal_basis": "Decreto 1.171/1994, Seção I (Dos Deveres)",
+    "alternatives": [
+      {"letter": "A", "text": "Priorizar o atendimento de familiares e amigos do superior hierárquico como forma de lealdade institucional.", "is_correct": false, "explanation": "Priorizar atendimento a pessoas vinculadas a superiores configura nepotismo e violação da impessoalidade, não lealdade institucional."},
+      {"letter": "B", "text": "Atender com presteza ao público, mantendo sigilo sobre informações confidenciais a que teve acesso.", "is_correct": true, "explanation": "Correto. O Código de Ética determina que o servidor deve atender com presteza, boa vontade e de modo eficiente o público, e guardar sigilo sobre assuntos de natureza sigilosa."},
+      {"letter": "C", "text": "Reportar diretamente à imprensa qualquer irregularidade que detectar no exercício do cargo.", "is_correct": false, "explanation": "O servidor deve comunicar irregularidades às autoridades competentes dentro da hierarquia (ou às controladorias), não necessariamente à imprensa, especialmente se os fatos são sigilosos."},
+      {"letter": "D", "text": "Cobrar taxa de urgência para dar prioridade a pedidos de serviço mais complexos.", "is_correct": false, "explanation": "Cobrar valores não previstos em lei é vedado e configura violação ética e possivelmente criminal (concussão ou corrupção passiva)."},
+      {"letter": "E", "text": "Recusar qualquer solicitação do cidadão que não esteja expressa em lei, para garantir a legalidade.", "is_correct": false, "explanation": "A legalidade não impede atender solicitações legítimas; o servidor deve ser proativo dentro dos limites legais, não ultrapassar a lei, não ser omisso por excesso de formalismo."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "deveres-proibicoes",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei 8.112/1990 (Estatuto dos Servidores Federais) e o Código de Ética estabelecem deveres e proibições aos servidores públicos.",
+    "text": "Configura infração ética grave e pode resultar em processo administrativo disciplinar o servidor que:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Aceitar presentes que possam influenciar decisões no exercício do cargo, receber comissões de terceiros, usar o cargo para obter vantagens ou atrasar deliberadamente o atendimento ao cidadão são exemplos de infrações éticas graves previstas no Código de Ética.",
+    "legal_basis": "Decreto 1.171/1994; Lei 8.112/1990, arts. 116-117",
+    "alternatives": [
+      {"letter": "A", "text": "Solicitar licença para tratar de assuntos particulares prevista no Estatuto dos Servidores.", "is_correct": false, "explanation": "Licenças previstas em lei são direitos do servidor; utilizá-las não configura infração ética."},
+      {"letter": "B", "text": "Aceitar presentes ou brindes que possam influenciar sua atuação no cargo.", "is_correct": true, "explanation": "Correto. O Código de Ética veda expressamente o recebimento de presentes, benefícios ou regalias que possam influenciar a atuação do servidor no exercício do cargo."},
+      {"letter": "C", "text": "Exercer atividade profissional compatível com o horário e as atribuições do cargo, se autorizado.", "is_correct": false, "explanation": "O exercício de atividade profissional compatível e autorizado é permitido; não configura infração ética."},
+      {"letter": "D", "text": "Comunicar ao superior hierárquico fato que possa causar dano ao interesse público.", "is_correct": false, "explanation": "Comunicar irregularidades ao superior é um dever, não uma infração."},
+      {"letter": "E", "text": "Participar de curso de capacitação profissional custeado pelo Estado durante o horário de trabalho.", "is_correct": false, "explanation": "A capacitação profissional é incentivada pela Administração Pública e não constitui infração ética quando devidamente autorizada."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "moralidade-administrativa",
+    "question_type": "multipla_escolha",
+    "context_text": "O controle da moralidade administrativa é exercido pelo Poder Judiciário por meio da ação popular e da ação civil pública.",
+    "text": "Qualquer cidadão é parte legítima para propor ação popular visando a anular ato lesivo ao patrimônio público. Esse instrumento está previsto em qual artigo da CF/88?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5º, LXXIII, da CF/88 prevê a ação popular como instrumento de controle da administração pública pelos cidadãos. Qualquer cidadão em pleno gozo dos seus direitos políticos pode ajuizá-la contra ato lesivo ao patrimônio público, à moralidade administrativa, ao meio ambiente ou ao patrimônio histórico e cultural.",
+    "legal_basis": "Art. 5º, LXXIII, CF/88; Lei 4.717/1965",
+    "alternatives": [
+      {"letter": "A", "text": "Art. 5º, LXXI — mandado de injunção para garantir direito previsto em norma constitucional não regulamentada.", "is_correct": false, "explanation": "O art. 5º, LXXI, trata do mandado de injunção, não da ação popular."},
+      {"letter": "B", "text": "Art. 5º, LXXIII — ação popular para anular ato lesivo ao patrimônio público ou à moralidade administrativa.", "is_correct": true, "explanation": "Correto. O art. 5º, LXXIII, da CF/88 consagra a ação popular como instrumento de controle da administração pelo cidadão."},
+      {"letter": "C", "text": "Art. 129, III — ação civil pública promovida pelo Ministério Público.", "is_correct": false, "explanation": "O art. 129, III, trata da ação civil pública, de titularidade do Ministério Público, não da ação popular, de titularidade do cidadão."},
+      {"letter": "D", "text": "Art. 102, I, a — ação direta de inconstitucionalidade perante o STF.", "is_correct": false, "explanation": "A ADI é instrumento de controle abstrato de constitucionalidade, não de controle de atos administrativos concretos."},
+      {"letter": "E", "text": "Art. 37, § 4º — improbidade administrativa, que prevê sanções automáticas aos responsáveis.", "is_correct": false, "explanation": "O art. 37, § 4º, prevê as sanções por improbidade; a ação popular está no art. 5º, LXXIII."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "conduta-policial",
+    "question_type": "multipla_escolha",
+    "context_text": "O policial militar deve pautar sua conduta pela ética profissional e pelo respeito aos direitos humanos em toda e qualquer circunstância.",
+    "text": "O princípio da proporcionalidade no uso da força policial determina que:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A proporcionalidade exige que a força utilizada seja adequada, necessária e proporcional em sentido estrito (que o benefício da intervenção supere o custo). No uso da força policial, significa usar o nível mínimo de força suficiente para controlar a situação, não mais.",
+    "legal_basis": "Art. 5º, LIV, CF/88 (due process); Princípios Básicos sobre Uso da Força (ONU, 1990)",
+    "alternatives": [
+      {"letter": "A", "text": "A força usada deve ser sempre máxima para garantir a efetividade da intervenção policial.", "is_correct": false, "explanation": "Força máxima viola a proporcionalidade; deve-se usar o mínimo necessário, não o máximo disponível."},
+      {"letter": "B", "text": "A força usada deve ser suficiente para controlar a situação, sem excessos em relação ao necessário.", "is_correct": true, "explanation": "Correto. A proporcionalidade no uso da força policial determina que o agente use o nível mínimo necessário para atingir o objetivo legítimo, evitando excessos."},
+      {"letter": "C", "text": "A força pode ser decidida discricionariamente pelo policial em campo, sem parâmetros objetivos.", "is_correct": false, "explanation": "Embora haja discricionariedade situacional, existem parâmetros objetivos legais e deontológicos que limitam o uso da força."},
+      {"letter": "D", "text": "A proporcionalidade exige que o suspeito seja tratado da mesma forma que ele tratou a vítima.", "is_correct": false, "explanation": "Proporcionalidade não é retaliação simétrica; é adequação entre a intervenção policial e o objetivo legítimo a atingir."},
+      {"letter": "E", "text": "A força mínima só se aplica a cidadãos com deficiência ou em situação de vulnerabilidade.", "is_correct": false, "explanation": "A proporcionalidade aplica-se a qualquer pessoa; todos têm direito a não sofrer uso excessivo de força policial."}
+    ]
+  },
+  {
+    "subject_slug": "etica-servico-publico",
+    "topic_slug": "deveres-proibicoes",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei 12.813/2013 dispõe sobre conflito de interesses no exercício de cargo ou emprego do Poder Executivo Federal.",
+    "text": "Configura situação de conflito de interesses, nos termos da Lei 12.813/2013:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O conflito de interesses ocorre quando o agente público usa informações privilegiadas obtidas no exercício do cargo para beneficiar a si ou a terceiros, ou quando seus interesses privados podem influenciar indevidamente o desempenho de suas funções públicas.",
+    "legal_basis": "Lei 12.813/2013, arts. 4º e 5º",
+    "alternatives": [
+      {"letter": "A", "text": "O servidor que possui parentes em qualquer empresa privada que tenha sede no mesmo município.", "is_correct": false, "explanation": "Mera presença de parentes em empresas privadas não configura conflito de interesses sem vínculo funcional com a decisão pública."},
+      {"letter": "B", "text": "O agente público que usa informação privilegiada do cargo para beneficiar empresa de que é sócio.", "is_correct": true, "explanation": "Correto. Usar informação privilegiada obtida no exercício do cargo para benefício próprio ou de terceiros é conflito de interesses grave, previsto na Lei 12.813/2013."},
+      {"letter": "C", "text": "O servidor que discorda politicamente das políticas do governo em exercício e as expressa nas redes sociais.", "is_correct": false, "explanation": "Liberdade de expressão política não configura conflito de interesses nos termos da lei."},
+      {"letter": "D", "text": "O servidor que realiza horas extras remuneradas autorizadas pela chefia para cumprir meta de produção.", "is_correct": false, "explanation": "Horas extras autorizadas dentro da legalidade não configuram conflito de interesses."},
+      {"letter": "E", "text": "O servidor que mantém conta bancária em banco público sujeito à fiscalização do órgão em que trabalha.", "is_correct": false, "explanation": "Manter conta em banco fiscalizado pelo órgão onde trabalha, por si só, não configura conflito de interesses se não houver influência nas decisões de fiscalização."}
+    ]
+  }
+]

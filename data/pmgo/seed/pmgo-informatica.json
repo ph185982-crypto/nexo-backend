@@ -1,0 +1,282 @@
+[
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "multipla_escolha",
+    "context_text": "O Windows 10 e o Windows 11 são sistemas operacionais da Microsoft amplamente utilizados em ambientes corporativos e de segurança pública.",
+    "text": "No Windows 10, qual atalho de teclado abre o Gerenciador de Tarefas diretamente (sem passar pelo menu de opções)?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O atalho Ctrl+Shift+Esc abre o Gerenciador de Tarefas diretamente. O atalho Ctrl+Alt+Del abre o menu de opções de segurança do Windows, de onde é possível acessar o Gerenciador de Tarefas, entre outras opções. Ctrl+Shift+Esc é o caminho direto.",
+    "legal_basis": "Documentação Microsoft Windows 10/11",
+    "alternatives": [
+      {"letter": "A", "text": "Ctrl + Alt + Del", "is_correct": false, "explanation": "Ctrl+Alt+Del abre o menu de segurança do Windows com várias opções (incluindo Gerenciador de Tarefas), mas não abre o Gerenciador diretamente."},
+      {"letter": "B", "text": "Ctrl + Shift + Esc", "is_correct": true, "explanation": "Correto. Ctrl+Shift+Esc abre o Gerenciador de Tarefas diretamente no Windows, sem passar pelo menu intermediário."},
+      {"letter": "C", "text": "Alt + F4", "is_correct": false, "explanation": "Alt+F4 fecha a janela ativa ou, na área de trabalho, abre o menu de desligamento do Windows. Não abre o Gerenciador de Tarefas."},
+      {"letter": "D", "text": "Windows + R", "is_correct": false, "explanation": "Windows+R abre a caixa de diálogo Executar, onde se pode digitar comandos como 'taskmgr' para abrir o Gerenciador. Mas não é o atalho direto."},
+      {"letter": "E", "text": "Ctrl + Alt + Esc", "is_correct": false, "explanation": "Ctrl+Alt+Esc não é um atalho padrão do Windows para nenhuma função específica."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "multipla_escolha",
+    "context_text": "O sistema de arquivos NTFS (New Technology File System) é utilizado pelo Windows para organizar arquivos em disco.",
+    "text": "Qual é a principal vantagem do sistema de arquivos NTFS em relação ao FAT32?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O NTFS suporta arquivos maiores que 4 GB (o FAT32 tem esse limite), oferece permissões de segurança granulares por arquivo/pasta, journaling (recuperação após falhas), compressão nativa e criptografia (EFS). O FAT32 é mais simples e compatível com mais sistemas, mas carece dessas funcionalidades.",
+    "legal_basis": "Documentação Microsoft; Tanenbaum, Sistemas Operacionais Modernos",
+    "alternatives": [
+      {"letter": "A", "text": "Maior compatibilidade com dispositivos USB e cartões de memória.", "is_correct": false, "explanation": "Na prática, FAT32 tem maior compatibilidade com dispositivos como câmeras e TVs. NTFS é padrão Windows, mas menos suportado nativamente em outros sistemas."},
+      {"letter": "B", "text": "Suporte a arquivos maiores que 4 GB e permissões de segurança por arquivo.", "is_correct": true, "explanation": "Correto. O NTFS permite arquivos de tamanho virtualmente ilimitado (limitado pelo volume), enquanto o FAT32 tem limite de 4 GB por arquivo. Além disso, o NTFS suporta ACLs (permissões de acesso), journaling e criptografia EFS."},
+      {"letter": "C", "text": "Maior velocidade de leitura em dispositivos com pouca memória RAM.", "is_correct": false, "explanation": "NTFS tem overhead maior que FAT32 devido ao journaling e metadados mais complexos. Em dispositivos com pouca RAM, FAT32 pode ser mais leve."},
+      {"letter": "D", "text": "Compatibilidade nativa com sistemas Linux sem necessidade de drivers.", "is_correct": false, "explanation": "NTFS no Linux requer driver (ntfs-3g). O FAT32/exFAT têm melhor suporte nativo multiplataforma."},
+      {"letter": "E", "text": "Menor consumo de espaço em disco para armazenar metadados de arquivos.", "is_correct": false, "explanation": "NTFS tem MFT (Master File Table) que consome mais espaço de metadados que FAT32. A vantagem do NTFS não é economia de espaço."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office-writer",
+    "question_type": "multipla_escolha",
+    "context_text": "O Microsoft Word é o processador de texto mais utilizado no ambiente corporativo e em concursos públicos.",
+    "text": "No Microsoft Word, qual é a função do atalho de teclado Ctrl + Z?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Ctrl+Z desfaz a última ação realizada (Undo). É um atalho universal presente na maioria dos aplicativos. Ctrl+Y ou Ctrl+Shift+Z refaz a ação desfeita (Redo). Ctrl+S salva o documento. Ctrl+C copia e Ctrl+V cola.",
+    "legal_basis": "Documentação Microsoft Office",
+    "alternatives": [
+      {"letter": "A", "text": "Salvar o documento atual.", "is_correct": false, "explanation": "Salvar é Ctrl+S (de Save). Ctrl+Z é desfazer."},
+      {"letter": "B", "text": "Desfazer a última ação realizada.", "is_correct": true, "explanation": "Correto. Ctrl+Z é o atalho universal de Undo (desfazer), presente no Word e na grande maioria dos aplicativos Windows e outros sistemas."},
+      {"letter": "C", "text": "Recortar o texto selecionado.", "is_correct": false, "explanation": "Recortar é Ctrl+X. Ctrl+Z é desfazer."},
+      {"letter": "D", "text": "Localizar e substituir texto no documento.", "is_correct": false, "explanation": "Localizar é Ctrl+F (Find) e Localizar/Substituir é Ctrl+H. Ctrl+Z é desfazer."},
+      {"letter": "E", "text": "Fechar o documento sem salvar.", "is_correct": false, "explanation": "Fechar é Ctrl+W ou Alt+F4. Ctrl+Z é desfazer a última ação."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office-writer",
+    "question_type": "multipla_escolha",
+    "context_text": "O Microsoft Excel é uma planilha eletrônica utilizada para cálculos, análise de dados e criação de gráficos.",
+    "text": "Em uma planilha Microsoft Excel, qual fórmula calcula corretamente a média aritmética dos valores nas células A1, A2, A3, A4 e A5?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A função MÉDIA (AVERAGE em inglês) calcula a média aritmética de um intervalo de células. =MÉDIA(A1:A5) calcula a média dos cinco valores. =SOMA(A1:A5)/5 também está correto matematicamente, mas a função MÉDIA é a forma canônica e mais usada.",
+    "legal_basis": "Documentação Microsoft Excel",
+    "alternatives": [
+      {"letter": "A", "text": "=SOMA(A1:A5)/5", "is_correct": false, "explanation": "Matematicamente correto (divide a soma por 5), mas não é a forma canônica. A função MÉDIA é mais adequada e robusta."},
+      {"letter": "B", "text": "=MÉDIA(A1:A5)", "is_correct": true, "explanation": "Correto. =MÉDIA(A1:A5) é a fórmula padrão do Excel para calcular a média aritmética do intervalo de A1 a A5. É a forma correta e mais utilizada."},
+      {"letter": "C", "text": "=AVERAGE(A1,A5)", "is_correct": false, "explanation": "AVERAGE é o nome em inglês; no Excel em português é MÉDIA. Além disso, =AVERAGE(A1,A5) calcularia a média apenas de A1 e A5 (dois valores), não do intervalo completo."},
+      {"letter": "D", "text": "=CALC(A1:A5)", "is_correct": false, "explanation": "CALC não é uma função do Excel. No LibreOffice Calc é o nome do aplicativo, não de uma função."},
+      {"letter": "E", "text": "=MED(A1:A5)", "is_correct": false, "explanation": "MED é a função de mediana no Excel (valor central de um conjunto), não de média aritmética. São estatísticas diferentes."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "internet-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "A segurança da informação é área crítica tanto para organizações públicas quanto para a segurança pessoal dos servidores.",
+    "text": "O ataque cibernético denominado 'phishing' caracteriza-se por:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Phishing é técnica de engenharia social em que o atacante se passa por entidade legítima (banco, empresa, órgão público) para induzir a vítima a revelar informações confidenciais (senhas, dados bancários, CPF) ou executar ações prejudiciais. O nome é derivado de 'fishing' (pescar) — o atacante lança iscas e espera as vítimas mordirem.",
+    "legal_basis": "Lei 14.155/2021 (crime de phishing); Marco Civil da Internet (Lei 12.965/2014)",
+    "alternatives": [
+      {"letter": "A", "text": "Sobrecarga de um servidor com milhares de requisições simultâneas para derrubá-lo.", "is_correct": false, "explanation": "A sobrecarga de servidor é ataque DDoS (Distributed Denial of Service), não phishing."},
+      {"letter": "B", "text": "Engenharia social que usa comunicações falsas para obter dados confidenciais da vítima.", "is_correct": true, "explanation": "Correto. Phishing é ataque de engenharia social: o atacante se disfarça de entidade confiável (banco, governo) por e-mail, SMS ou site falso para obter credenciais ou dados pessoais da vítima."},
+      {"letter": "C", "text": "Interceptação de comunicações em redes Wi-Fi públicas para roubar dados.", "is_correct": false, "explanation": "A interceptação em Wi-Fi público é ataque Man-in-the-Middle (MITM) ou sniffing, não phishing."},
+      {"letter": "D", "text": "Programa malicioso que criptografa arquivos e exige resgate para liberá-los.", "is_correct": false, "explanation": "Isso é ransomware (sequestro de dados). Phishing pode ser o vetor de entrega do ransomware, mas são conceitos distintos."},
+      {"letter": "E", "text": "Exploração de vulnerabilidade em software para obter acesso não autorizado ao sistema.", "is_correct": false, "explanation": "A exploração de vulnerabilidades técnicas de software é exploit. Phishing não explora vulnerabilidades técnicas — explora vulnerabilidades humanas (engenharia social)."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "internet-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "O HTTPS (HyperText Transfer Protocol Secure) é o protocolo padrão para comunicação segura na web.",
+    "text": "O protocolo HTTPS garante a segurança das comunicações web por meio de:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "HTTPS usa TLS (Transport Layer Security), que garante: (1) criptografia do canal (confidencialidade), (2) autenticação do servidor via certificado digital (integridade de identidade), e (3) integridade dos dados (detecta alterações). O certificado é emitido por Autoridade Certificadora confiável. O HTTP simples transmite tudo em texto claro.",
+    "legal_basis": "RFC 2818 (HTTP over TLS); ICP-Brasil (Infraestrutura de Chaves Públicas Brasileira)",
+    "alternatives": [
+      {"letter": "A", "text": "Compressão dos dados transmitidos para reduzir o tráfego de rede.", "is_correct": false, "explanation": "Compressão é feature opcional e separada, não o mecanismo de segurança do HTTPS. O HTTPS protege por criptografia, não por compressão."},
+      {"letter": "B", "text": "Criptografia TLS, autenticação por certificado digital e integridade dos dados.", "is_correct": true, "explanation": "Correto. O HTTPS usa TLS para criptografar o canal (confidencialidade), autenticar o servidor via certificado digital emitido por CA confiável, e garantir a integridade dos dados transmitidos."},
+      {"letter": "C", "text": "Firewall embutido que bloqueia tentativas de acesso não autorizado ao servidor.", "is_correct": false, "explanation": "Firewall é mecanismo de controle de acesso à rede, separado do HTTPS. O HTTPS não inclui firewall."},
+      {"letter": "D", "text": "Exigência de login e senha para acessar qualquer página web protegida.", "is_correct": false, "explanation": "HTTPS protege o canal de comunicação, mas não exige autenticação de usuário. Muitos sites HTTPS são públicos (não requerem login)."},
+      {"letter": "E", "text": "Verificação do endereço IP de origem para bloquear acessos de países estrangeiros.", "is_correct": false, "explanation": "Geo-bloqueio por IP é funcionalidade de aplicação ou firewall, não do protocolo HTTPS."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-computadores",
+    "question_type": "multipla_escolha",
+    "context_text": "As redes de computadores são classificadas por abrangência geográfica: LAN, MAN e WAN.",
+    "text": "Uma rede LAN (Local Area Network) distingue-se de uma WAN (Wide Area Network) principalmente por:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "LAN é rede local de curto alcance (mesmo edifício, campus), alta velocidade e infraestrutura própria (sem custo de enlace externo). WAN cobre grandes distâncias geográficas (países, continentes), usa infraestrutura de terceiros (operadoras), velocidade menor e custo de enlace. A internet é a maior WAN.",
+    "legal_basis": "Tanenbaum, Redes de Computadores; Forouzan, Comunicação de Dados e Redes",
+    "alternatives": [
+      {"letter": "A", "text": "Usar o protocolo TCP/IP, enquanto WAN usa outros protocolos.", "is_correct": false, "explanation": "TCP/IP é usado em ambos — LAN e WAN. O protocolo não é o critério diferenciador."},
+      {"letter": "B", "text": "Abranger área geográfica limitada (mesmo edifício/campus) com alta velocidade e infraestrutura própria.", "is_correct": true, "explanation": "Correto. LAN cobre curtas distâncias (sala, andar, prédio, campus), tem alta velocidade de transmissão (1 Gbps a 10+ Gbps) e infraestrutura pertencente à organização. WAN cobre longas distâncias com infraestrutura de operadoras."},
+      {"letter": "C", "text": "Conectar exclusivamente computadores com fio, sem suporte a conexões sem fio.", "is_correct": false, "explanation": "LAN pode ser cabeada (Ethernet) ou sem fio (Wi-Fi). O critério de LAN é a abrangência geográfica, não o meio físico."},
+      {"letter": "D", "text": "Ser exclusivamente usada por empresas privadas, enquanto WAN é de uso governamental.", "is_correct": false, "explanation": "Tanto LAN quanto WAN podem ser usadas por empresas, governos ou usuários domésticos. A internet (maior WAN) é pública e de uso universal."},
+      {"letter": "E", "text": "Transmitir dados apenas por fibra óptica, enquanto WAN usa satélites.", "is_correct": false, "explanation": "LAN usa Ethernet (par trançado, fibra) e Wi-Fi. WAN usa fibra, satélite, cabo coaxial, etc. O meio físico não define LAN ou WAN."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "internet-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei nº 12.965/2014 (Marco Civil da Internet) estabelece princípios, garantias, direitos e deveres para o uso da internet no Brasil.",
+    "text": "Segundo o Marco Civil da Internet (Lei 12.965/2014), qual é o princípio fundamental relacionado ao tratamento de dados pessoais dos usuários?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Marco Civil da Internet estabelece como princípio a proteção da privacidade e dos dados pessoais dos usuários (art. 3°, II e III). Exige consentimento para coleta de dados, finalidade específica e limitação de uso. Foi complementado pela LGPD (Lei 13.709/2018), que detalhou o regime de proteção de dados pessoais.",
+    "legal_basis": "Art. 3°, II e III, Lei 12.965/2014 (Marco Civil); Lei 13.709/2018 (LGPD)",
+    "alternatives": [
+      {"letter": "A", "text": "Liberdade irrestrita para provedores coletarem dados de usuários sem consentimento.", "is_correct": false, "explanation": "O Marco Civil proíbe isso: exige consentimento para coleta de dados e estabelece finalidade e uso limitado. A coleta sem consentimento viola o art. 7°."},
+      {"letter": "B", "text": "Proteção da privacidade e dos dados pessoais como princípio fundamental do uso da internet.", "is_correct": true, "explanation": "Correto. O art. 3°, II e III do Marco Civil elenca a proteção da privacidade e dos dados pessoais como princípio fundante do uso da internet no Brasil, exigindo consentimento, finalidade e transparência no tratamento de dados."},
+      {"letter": "C", "text": "Obrigatoriedade de identificação real de todos os usuários em qualquer acesso à internet.", "is_correct": false, "explanation": "O Marco Civil não impõe identificação obrigatória em qualquer acesso. Garante a liberdade de expressão inclusive de forma anônima, salvo nas situações previstas em lei."},
+      {"letter": "D", "text": "Proibição total de monitoramento de comunicações, mesmo com ordem judicial.", "is_correct": false, "explanation": "O Marco Civil veda a interceptação sem autorização judicial, mas permite mediante ordem judicial (art. 7°, III). A proibição não é total."},
+      {"letter": "E", "text": "Gratuidade obrigatória de todos os serviços de internet prestados no Brasil.", "is_correct": false, "explanation": "O Marco Civil não estabelece gratuidade dos serviços. Trata de princípios de uso, não de modelo de negócio dos provedores."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "sistemas-operacionais",
+    "question_type": "multipla_escolha",
+    "context_text": "O armazenamento em nuvem (cloud storage) revolucionou a forma como arquivos e dados são guardados e compartilhados.",
+    "text": "Uma das principais vantagens do armazenamento em nuvem (cloud storage) em relação ao armazenamento local é:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O armazenamento em nuvem permite acesso aos dados de qualquer lugar com internet (mobilidade), não depende de um dispositivo físico específico, facilita compartilhamento e colaboração, e oferece backup automático. Contrapartidas: dependência de internet, preocupações com privacidade e possível custo mensal.",
+    "legal_basis": "LGPD (Lei 13.709/2018) — transferência internacional de dados; Marco Civil da Internet",
+    "alternatives": [
+      {"letter": "A", "text": "Maior velocidade de acesso aos arquivos, independentemente da conexão de internet.", "is_correct": false, "explanation": "O acesso à nuvem depende da velocidade da conexão de internet. O armazenamento local é mais rápido para acesso direto (sem latência de rede)."},
+      {"letter": "B", "text": "Acesso aos dados de qualquer dispositivo com internet e backup automático.", "is_correct": true, "explanation": "Correto. A nuvem permite acesso ubíquo (de qualquer lugar com internet) e geralmente inclui backup automático, eliminando risco de perda por falha física do dispositivo local."},
+      {"letter": "C", "text": "Eliminação do risco de ataques cibernéticos e vazamento de dados.", "is_correct": false, "explanation": "A nuvem não elimina riscos cibernéticos — pode ser alvo de ataques aos servidores do provedor, credenciais comprometidas, etc. A segurança depende das práticas do provedor e do usuário."},
+      {"letter": "D", "text": "Armazenamento ilimitado e gratuito sem restrições de uso.", "is_correct": false, "explanation": "Provedores de nuvem oferecem cotas gratuitas limitadas (ex: Google Drive 15 GB, OneDrive 5 GB) e cobram por armazenamento adicional."},
+      {"letter": "E", "text": "Funcionamento sem necessidade de conexão à internet para qualquer operação.", "is_correct": false, "explanation": "O acesso à nuvem requer internet. Alguns aplicativos oferecem sincronização offline, mas os dados ficam na nuvem e a sincronia depende de conexão."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "internet-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "O e-mail institucional é ferramenta essencial na comunicação da Polícia Militar de Goiás.",
+    "text": "Qual das seguintes práticas contribui MAIS para a segurança de uma conta de e-mail institucional?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A autenticação de dois fatores (2FA/MFA) adiciona uma segunda camada de segurança além da senha. Mesmo que a senha seja comprometida, o atacante não consegue acesso sem o segundo fator (código no celular, app autenticador). É a medida mais eficaz contra acessos não autorizados.",
+    "legal_basis": "NIST SP 800-63B (Digital Identity Guidelines); boas práticas de segurança da informação",
+    "alternatives": [
+      {"letter": "A", "text": "Usar a mesma senha forte em todas as contas para facilitar a memorização.", "is_correct": false, "explanation": "Reutilizar senhas é prática insegura: se uma conta for comprometida, todas as demais ficam vulneráveis (credential stuffing). Cada conta deve ter senha única."},
+      {"letter": "B", "text": "Ativar autenticação de dois fatores (2FA) para exigir verificação adicional no login.", "is_correct": true, "explanation": "Correto. A autenticação de dois fatores (algo que você sabe + algo que você tem) é a medida mais eficaz. Mesmo com a senha comprometida, o atacante não acessa a conta sem o segundo fator."},
+      {"letter": "C", "text": "Abrir todos os anexos recebidos para verificar se contêm vírus antes de salvá-los.", "is_correct": false, "explanation": "Abrir anexos para 'verificar' é perigoso — a abertura já pode executar malware. Deve-se verificar remetente, contexto e usar antivírus antes de abrir."},
+      {"letter": "D", "text": "Compartilhar a senha com um colega de confiança para garantir acesso em caso de ausência.", "is_correct": false, "explanation": "Compartilhar senhas viola o princípio de responsabilidade individual e rastreabilidade de ações. Em caso de ausência, devem-se usar delegações ou permissões específicas do sistema."},
+      {"letter": "E", "text": "Nunca fazer logout para evitar perda de e-mails não lidos.", "is_correct": false, "explanation": "Permanecer logado em estações compartilhadas é grave risco de segurança. Logout e bloqueio de tela são práticas obrigatórias em ambientes de segurança."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "office-writer",
+    "question_type": "multipla_escolha",
+    "context_text": "O Microsoft PowerPoint é o software de apresentações mais utilizado em treinamentos e briefings policiais.",
+    "text": "No Microsoft PowerPoint, qual recurso permite definir a sequência e o efeito visual de aparição dos elementos em um slide?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A 'Animação' (ou painel de animações) define como os elementos de um slide surgem, desaparecem ou se movem durante a apresentação. 'Transição' define como um slide inteiro substitui o anterior. 'Design' controla o tema visual. 'Layout' define a disposição de espaços reservados no slide.",
+    "legal_basis": "Documentação Microsoft PowerPoint",
+    "alternatives": [
+      {"letter": "A", "text": "Transição de slides.", "is_correct": false, "explanation": "Transição define o efeito visual entre um slide e o próximo (slide inteiro), não a aparição de elementos individuais dentro de um slide."},
+      {"letter": "B", "text": "Animação de objetos.", "is_correct": true, "explanation": "Correto. O recurso Animação (guia Animações no PowerPoint) permite definir efeitos de entrada, saída e ênfase para cada elemento individual de um slide, além da ordem de aparição."},
+      {"letter": "C", "text": "Design de tema.", "is_correct": false, "explanation": "Design de tema controla cores, fontes e efeitos visuais gerais da apresentação, não a sequência de aparição de elementos."},
+      {"letter": "D", "text": "Layout de slide.", "is_correct": false, "explanation": "Layout define a estrutura do slide (disposição de espaços para título, conteúdo, imagem), não os efeitos de aparição dos elementos."},
+      {"letter": "E", "text": "Modo de exibição de apresentador.", "is_correct": false, "explanation": "O modo de apresentador mostra anotações e controles para o palestrante durante a apresentação. Não configura animações."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "internet-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "A Lei Geral de Proteção de Dados Pessoais (LGPD — Lei nº 13.709/2018) estabelece regras para o tratamento de dados pessoais no Brasil.",
+    "text": "Segundo a LGPD (Lei 13.709/2018), o que são 'dados pessoais sensíveis'?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5°, II da LGPD define dados sensíveis como aqueles sobre origem racial ou étnica, convicção religiosa, opinião política, filiação a sindicato/organização religiosa/filosófica, dado referente à saúde ou à vida sexual, dado genético ou biométrico vinculado à pessoa natural. Recebem proteção reforçada por seu maior potencial de causar discriminação.",
+    "legal_basis": "Art. 5°, II, Lei 13.709/2018 (LGPD)",
+    "alternatives": [
+      {"letter": "A", "text": "Qualquer dado que permita identificar uma pessoa, como nome e CPF.", "is_correct": false, "explanation": "Dados que identificam uma pessoa (nome, CPF, endereço) são 'dados pessoais' (art. 5°, I, LGPD), categoria geral. 'Dados sensíveis' é categoria específica com proteção reforçada."},
+      {"letter": "B", "text": "Dados sobre saúde, origem racial/étnica, convicção religiosa, biometria, vida sexual e outros elencados no art. 5°, II da LGPD.", "is_correct": true, "explanation": "Correto. O art. 5°, II da LGPD lista taxativamente os dados sensíveis: origem racial/étnica, convicção religiosa, opinião política, filiação sindical/religiosa/filosófica, saúde, vida sexual, dados genéticos e biométricos. Exigem bases legais mais restritas para tratamento."},
+      {"letter": "C", "text": "Dados armazenados em sistemas protegidos por senha ou criptografia.", "is_correct": false, "explanation": "A proteção técnica (senha, criptografia) é medida de segurança, não critério para classificar dados como sensíveis. A sensibilidade decorre do conteúdo, não do armazenamento."},
+      {"letter": "D", "text": "Dados financeiros e bancários de pessoas físicas.", "is_correct": false, "explanation": "Dados financeiros (conta bancária, renda) são dados pessoais comuns, não necessariamente 'sensíveis' no conceito da LGPD. O sigilo bancário é protegido por outra legislação (Lei Complementar 105/2001)."},
+      {"letter": "E", "text": "Dados de menores de 12 anos, que exigem consentimento parental.", "is_correct": false, "explanation": "Dados de crianças (menores de 12 anos) têm proteção especial na LGPD (art. 14), mas essa é categoria de titular vulnerável, não 'dados sensíveis' no sentido do art. 5°, II."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "redes-computadores",
+    "question_type": "multipla_escolha",
+    "context_text": "O endereço IP é identificador fundamental em redes de computadores, existindo nas versões IPv4 e IPv6.",
+    "text": "Qual é o formato correto de um endereço IPv4?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "IPv4 usa 32 bits divididos em 4 octetos (grupos de 8 bits), separados por pontos, cada um com valor de 0 a 255. Exemplo: 192.168.1.1. O IPv6 usa 128 bits em 8 grupos de 4 dígitos hexadecimais separados por dois-pontos (ex: 2001:0db8:85a3:0000:0000:8a2e:0370:7334).",
+    "legal_basis": "RFC 791 (IPv4); RFC 2460 (IPv6)",
+    "alternatives": [
+      {"letter": "A", "text": "Oito grupos de quatro dígitos hexadecimais separados por dois-pontos (ex: 2001:0db8:85a3::1).", "is_correct": false, "explanation": "Esse é o formato IPv6 (128 bits, 8 grupos hexadecimais). O IPv4 usa quatro grupos decimais."},
+      {"letter": "B", "text": "Quatro grupos de números decimais (0–255) separados por pontos (ex: 192.168.0.1).", "is_correct": true, "explanation": "Correto. IPv4 tem 32 bits organizados em 4 octetos decimais (0-255) separados por pontos. 192.168.0.1 é exemplo típico de endereço de rede local."},
+      {"letter": "C", "text": "Doze dígitos hexadecimais separados por hifens (ex: 00-1A-2B-3C-4D-5E).", "is_correct": false, "explanation": "Esse é o formato do endereço MAC (Media Access Control), identificador físico de interface de rede. Não é endereço IP."},
+      {"letter": "D", "text": "Sequência de letras e números separados por barras (ex: AS/255.0.0.0).", "is_correct": false, "explanation": "Notação de sistema autônomo (AS) e máscara de rede são conceitos distintos. Não há formato de endereço IPv4 com letras e barras como descrito."},
+      {"letter": "E", "text": "Dois grupos de oito dígitos binários separados por vírgulas (ex: 11000000,10101000).", "is_correct": false, "explanation": "IPv4 internamente é binário (32 bits), mas sua representação legível é decimal pontilhada. A notação binária com vírgulas não é padrão."}
+    ]
+  },
+  {
+    "subject_slug": "informatica",
+    "topic_slug": "internet-seguranca",
+    "question_type": "multipla_escolha",
+    "context_text": "O backup de dados é prática fundamental de segurança da informação para proteger contra perda de dados.",
+    "text": "Qual estratégia de backup é conhecida como regra '3-2-1' e é considerada boa prática de segurança da informação?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A regra 3-2-1 estabelece: manter 3 cópias dos dados, em 2 mídias diferentes (ex: HD interno + HD externo), sendo 1 cópia armazenada off-site (local fisicamente separado — nuvem, outra instalação). Isso protege contra falha de hardware, desastre local (incêndio, alagamento) e ataques como ransomware.",
+    "legal_basis": "NIST SP 800-34 (Contingency Planning); boas práticas CERT.br",
+    "alternatives": [
+      {"letter": "A", "text": "Realizar backup 3 vezes ao dia, 2 vezes na semana e 1 vez por mês.", "is_correct": false, "explanation": "Essa é uma política de frequência de backup, não a regra 3-2-1, que trata de quantidade de cópias e localização."},
+      {"letter": "B", "text": "Manter 3 cópias dos dados, em 2 mídias distintas, com 1 cópia armazenada em local externo.", "is_correct": true, "explanation": "Correto. A regra 3-2-1: 3 cópias totais (original + 2 backups), 2 tipos de mídia diferentes, 1 cópia off-site (nuvem ou local fisicamente separado). Protege contra múltiplos tipos de falha."},
+      {"letter": "C", "text": "Usar 3 sistemas antivírus, 2 firewalls e 1 VPN simultaneamente.", "is_correct": false, "explanation": "Isso descreve redundância de segurança de rede, não a regra 3-2-1 de backup."},
+      {"letter": "D", "text": "Fazer backup apenas em 3 dias da semana, em 2 turnos diários, com 1 hora de duração.", "is_correct": false, "explanation": "Isso é uma programação de backup, não a regra 3-2-1."},
+      {"letter": "E", "text": "Compactar backups em 3 formatos, salvar em 2 pastas e manter por 1 ano.", "is_correct": false, "explanation": "Compactação e retenção são aspectos do gerenciamento de backups, mas não definem a regra 3-2-1, que trata de cópias, mídias e localização geográfica."}
+    ]
+  }
+]

@@ -232,6 +232,17 @@ class PRFRepository:
         q["alternatives"] = alts
         return q
 
+    async def get_questions_for_coverage(self) -> list[dict]:
+        """Return minimal question data (subject_slug, topic_slug) for coverage analysis."""
+        rows = await self._fetch(
+            """SELECT s.slug AS subject_slug, t.slug AS topic_slug
+               FROM questions q
+               JOIN subjects s ON s.id = q.subject_id
+               LEFT JOIN topics t ON t.id = q.topic_id
+               WHERE q.is_active = TRUE"""
+        )
+        return [dict(r) for r in rows]
+
     async def get_question_ids_by_subject(self, subject_id: UUID, limit: int = 20) -> list[UUID]:
         rows = await self._fetch(
             "SELECT id FROM questions WHERE subject_id = $1 AND is_active = TRUE ORDER BY RANDOM() LIMIT $2",

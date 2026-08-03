@@ -1,0 +1,282 @@
+[
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "conceito-objeto-criminologia",
+    "question_type": "multipla_escolha",
+    "context_text": "A criminologia é ciência empírica e interdisciplinar que estuda o crime, o criminoso, a vítima e o controle social do comportamento desviante.",
+    "text": "Segundo a criminologia contemporânea, qual é o objeto de estudo desta ciência?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A criminologia moderna tem quatro objetos: crime (fenômeno social), criminoso (agente), vítima (sujeito passivo) e controle social (resposta institucional ao desvio). Autores como García-Pablos de Molina sistematizaram esse campo quadripartite.",
+    "legal_basis": "García-Pablos de Molina, Criminologia; Zaffaroni, Manual de Derecho Penal",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas o crime e o criminoso, excluindo a vítima e o controle social.", "is_correct": false, "explanation": "A criminologia clássica se concentrava no crime e no criminoso, mas a criminologia contemporânea ampliou o objeto para incluir vítima e controle social."},
+      {"letter": "B", "text": "O crime, o criminoso, a vítima e o controle social.", "is_correct": true, "explanation": "Correto. Os quatro objetos tradicionais da criminologia moderna são: crime (fenômeno), criminoso (agente), vítima (sujeito passivo) e controle social (resposta institucional)."},
+      {"letter": "C", "text": "Somente as causas biológicas do comportamento criminoso.", "is_correct": false, "explanation": "Esta visão reducionista pertence ao positivismo criminológico do século XIX (Lombroso). A criminologia atual é interdisciplinar e não reduz o crime a causas biológicas."},
+      {"letter": "D", "text": "A legislação penal e sua efetividade na redução de crimes.", "is_correct": false, "explanation": "A efetividade da legislação é objeto da política criminal, não propriamente da criminologia, embora haja interface entre os dois campos."},
+      {"letter": "E", "text": "Apenas o controle social formal exercido pelo Estado.", "is_correct": false, "explanation": "O controle social inclui tanto o formal (Estado/Direito) quanto o informal (família, escola, mídia). A criminologia estuda ambos."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "escolas-criminologicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A Escola Clássica e a Escola Positiva representam os dois grandes paradigmas fundadores da criminologia moderna.",
+    "text": "A Escola Positiva de criminologia, representada por Lombroso, Ferri e Garofalo, distingue-se da Escola Clássica principalmente por:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Escola Positiva baseia-se no método científico empírico (observação, mensuração) e afirma que o criminoso possui características identificáveis (determinismo). A Escola Clássica (Beccaria, Bentham) baseia-se no livre-arbítrio e na racionalidade do agente. O positivismo nega o livre-arbítrio.",
+    "legal_basis": "Lombroso, L'Uomo Delinquente (1876); Ferri, Sociologia Criminale; Beccaria, Dei Delitti e delle Pene",
+    "alternatives": [
+      {"letter": "A", "text": "Defender o livre-arbítrio do criminoso e a pena como retribuição justa.", "is_correct": false, "explanation": "O livre-arbítrio e a pena retributiva são premissas da Escola Clássica (Beccaria), não da Escola Positiva."},
+      {"letter": "B", "text": "Adotar método empírico e defender o determinismo (biológico, social ou psíquico) do comportamento criminoso.", "is_correct": true, "explanation": "Correto. O positivismo criminológico rejeita o livre-arbítrio e busca causas determináveis do crime pelo método científico empírico (observação, estatística, experimento)."},
+      {"letter": "C", "text": "Propor a abolição das penas corporais e a proporcionalidade entre crime e pena.", "is_correct": false, "explanation": "A abolição de penas cruéis e a proporcionalidade são conquistas da Escola Clássica (Beccaria, Dei Delitti e delle Pene, 1764)."},
+      {"letter": "D", "text": "Concentrar-se exclusivamente nos fatores socioeconômicos do crime, ignorando a biologia.", "is_correct": false, "explanation": "Lombroso enfatizou os fatores biológicos; Ferri incluiu os sociais. O positivismo não ignora a biologia — ela foi central para Lombroso."},
+      {"letter": "E", "text": "Rejeitar o estudo científico do crime e basear-se apenas em princípios filosóficos.", "is_correct": false, "explanation": "Ao contrário: a Escola Positiva valorizava o método científico; era a Escola Clássica que tinha base mais filosófica e contratualista."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "teorias-criminologicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A Teoria da Anomia foi desenvolvida por Émile Durkheim e posteriormente elaborada por Robert Merton para explicar a criminalidade nas sociedades modernas.",
+    "text": "Segundo a Teoria da Anomia de Merton, qual é a causa principal da criminalidade?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Merton argumenta que a anomia resulta da tensão entre as metas culturalmente valorizadas (sucesso econômico) e os meios legítimos disponíveis para alcançá-las. Quando os meios são escassos, indivíduos podem optar por meios ilegítimos (inovação/crime). A criminalidade reflete essa contradição estrutural da sociedade.",
+    "legal_basis": "Merton, Social Structure and Anomie (1938); Durkheim, As Regras do Método Sociológico",
+    "alternatives": [
+      {"letter": "A", "text": "Deficiências genéticas e biológicas do criminoso que o predispõem ao crime.", "is_correct": false, "explanation": "A explicação biológica pertence ao positivismo lombrosiano, não à teoria da anomia, que é sociológica e estrutural."},
+      {"letter": "B", "text": "A associação do indivíduo com grupos delinquentes que ensinam técnicas e valores criminosos.", "is_correct": false, "explanation": "Essa é a Teoria da Associação Diferencial de Sutherland, não a anomia de Merton."},
+      {"letter": "C", "text": "A tensão entre metas culturais valorizadas e a falta de meios legítimos para alcançá-las.", "is_correct": true, "explanation": "Correto. Merton identificou que a criminalidade emerge quando a sociedade valoriza metas (riqueza, sucesso) mas não oferece meios legítimos suficientes, gerando tensão que pode levar ao crime como 'inovação' adaptativa."},
+      {"letter": "D", "text": "A ausência de vínculos afetivos entre o indivíduo e a sociedade (teoria do controle).", "is_correct": false, "explanation": "A ausência de vínculos é a base da Teoria do Controle Social de Hirschi (commitment, attachment, involvement, belief), distinta da anomia."},
+      {"letter": "E", "text": "A rotulação do indivíduo como criminoso pelo sistema de justiça, gerando estigma.", "is_correct": false, "explanation": "A rotulação (labeling) é a teoria do etiquetamento/interacionismo simbólico (Becker, Lemert), não a teoria da anomia."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "teorias-criminologicas",
+    "question_type": "multipla_escolha",
+    "context_text": "A Teoria do Etiquetamento (Labeling Theory) representa uma virada paradigmática na criminologia ao questionar a própria definição de crime e criminoso.",
+    "text": "De acordo com a Teoria do Etiquetamento (Labeling Theory), o que torna alguém um criminoso?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Howard Becker e Edwin Lemert demonstraram que a criminalidade não é qualidade intrínseca do ato, mas resultado de um processo de rotulação social e institucional. A reação social (policial, judicial, prisional) etiqueta o indivíduo, que pode incorporar o rótulo como identidade (desvio secundário), gerando carreira criminosa.",
+    "legal_basis": "Becker, Outsiders (1963); Lemert, Human Deviance, Social Problems and Social Control",
+    "alternatives": [
+      {"letter": "A", "text": "Fatores hereditários transmitidos geneticamente que determinam a propensão ao crime.", "is_correct": false, "explanation": "O determinismo genético é do positivismo lombrosiano. A teoria do etiquetamento é construtivista e foca na reação social, não em fatores internos."},
+      {"letter": "B", "text": "A reação social que rotula o indivíduo como desviante, gerando o estigma de criminoso.", "is_correct": true, "explanation": "Correto. Para o labeling theory, o desvio não é qualidade intrínseca do ato, mas construção social: é criminoso quem recebe com sucesso essa etiqueta da sociedade e das agências de controle."},
+      {"letter": "C", "text": "A pobreza extrema que priva o indivíduo de alternativas lícitas de subsistência.", "is_correct": false, "explanation": "A pobreza como causa é central na criminologia crítica marxista e na anomia de Merton. A teoria do etiquetamento não nega a pobreza, mas foca no processo de rotulação, não nas causas do ato inicial."},
+      {"letter": "D", "text": "A falta de autocontrole desenvolvida na infância por falhas na socialização familiar.", "is_correct": false, "explanation": "A falta de autocontrole como fator criminogênico é de Gottfredson e Hirschi (Teoria Geral do Crime, 1990), não do etiquetamento."},
+      {"letter": "E", "text": "A racionalidade que leva o indivíduo a calcular custos e benefícios do crime.", "is_correct": false, "explanation": "O cálculo racional pertence à teoria da escolha racional e à Escola Clássica. O etiquetamento questiona essa racionalidade ao mostrar que a seleção de quem é rotulado como criminoso não é neutra."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "vitimologia",
+    "question_type": "multipla_escolha",
+    "context_text": "A vitimologia é o ramo da criminologia que estuda a vítima do crime: suas características, relação com o vitimizador e papel no processo criminal.",
+    "text": "Conforme a classificação de Hans von Hentig, a vítima que, por suas próprias atitudes ou condutas, contribui para a eclosão do fato criminoso é denominada:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Von Hentig (The Criminal and His Victim, 1948) classificou as vítimas em várias categorias. A vítima precipitadora é aquela cujo comportamento contribui de alguma forma para o delito. Essa classificação é controversa pois pode levar à culpabilização da vítima, o que a vitimologia moderna critica severamente. A tipologia deve ser usada analiticamente, não para responsabilizar a vítima.",
+    "legal_basis": "Von Hentig, The Criminal and His Victim (1948); Mendelsohn, victimologia",
+    "alternatives": [
+      {"letter": "A", "text": "Vítima resistente.", "is_correct": false, "explanation": "Vítima resistente não é categoria canônica de Von Hentig. Resistência é comportamento da vítima no momento do crime, não tipologia vitimológica."},
+      {"letter": "B", "text": "Vítima latente.", "is_correct": false, "explanation": "Vítima latente é conceito de Mendelsohn, referindo-se a pessoas com predisposição a ser vitimizadas por fatores internos (psíquicos ou biológicos). É diferente da precipitadora de Von Hentig."},
+      {"letter": "C", "text": "Vítima precipitadora.", "is_correct": true, "explanation": "Correto. Von Hentig identificou a vítima precipitadora como aquela cujo comportamento, voluntário ou não, contribui para desencadear o fato criminoso. Isso não implica responsabilidade jurídica da vítima."},
+      {"letter": "D", "text": "Vítima inocente.", "is_correct": false, "explanation": "Vítima completamente inocente é categoria de Mendelsohn — aquela que não tem nenhuma contribuição para o evento criminoso. É oposta à precipitadora."},
+      {"letter": "E", "text": "Vítima fungível.", "is_correct": false, "explanation": "Vítima fungível refere-se àquela que poderia ser substituída por qualquer outra (crime de oportunidade). Não é categoria de Von Hentig no sentido aqui discutido."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "vitimologia",
+    "question_type": "multipla_escolha",
+    "context_text": "A vitimização secundária ocorre quando a vítima de um crime sofre novo dano em decorrência do atendimento inadequado pelas instituições (polícia, saúde, justiça).",
+    "text": "O fenômeno da vitimização secundária refere-se a:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A vitimização secundária (ou revitimização institucional) ocorre quando a vítima sofre dano adicional ao ser atendida pelas instituições: perguntas inapropriadas, falta de acolhimento, procedimentos humilhantes, prazos excessivos. É fenômeno amplamente estudado em casos de violência sexual. Políticas de atendimento humanizado buscam evitá-la.",
+    "legal_basis": "Lei 13.931/2019 (atendimento vítimas violência); Lei 11.340/2006 (Lei Maria da Penha)",
+    "alternatives": [
+      {"letter": "A", "text": "A reincidência da vítima em situações de risco que a expõem a novos crimes.", "is_correct": false, "explanation": "Essa seria a cifra negra ou revitimização, mas no sentido de nova vitimização pelo mesmo tipo de crime — fenômeno distinto da vitimização secundária institucional."},
+      {"letter": "B", "text": "O dano adicional sofrido pela vítima em decorrência do atendimento inadequado pelas instituições.", "is_correct": true, "explanation": "Correto. A vitimização secundária é o sofrimento causado à vítima pelo próprio sistema de justiça criminal ou saúde, por meio de procedimentos inadequados, perguntas humilhantes ou falta de acolhimento."},
+      {"letter": "C", "text": "A vitimização sofrida por familiares próximos da vítima direta do crime.", "is_correct": false, "explanation": "O sofrimento dos familiares é chamado de vitimização terciária ou coletiva por alguns autores. A secundária refere-se à vítima direta no contato com instituições."},
+      {"letter": "D", "text": "A segunda agressão física sofrida pela mesma vítima pelo mesmo criminoso.", "is_correct": false, "explanation": "Uma segunda agressão pelo mesmo autor seria reincidência criminosa ou continuação delitiva. A vitimização secundária é o dano causado pelas instituições, não pelo criminoso."},
+      {"letter": "E", "text": "O processo pelo qual a vítima desenvolve comportamento criminoso após o trauma.", "is_correct": false, "explanation": "O desenvolvimento de comportamento desviante pela vítima seria um fenômeno de socialização criminal. A vitimização secundária é específica ao mau atendimento institucional."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "controle-social",
+    "question_type": "multipla_escolha",
+    "context_text": "O controle social pode ser formal (exercido pelo Estado) ou informal (exercido pela família, escola, religião, comunidade).",
+    "text": "Na perspectiva criminológica, distinguem-se controle social formal e informal. São exemplos de controle social informal:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O controle social informal engloba mecanismos não estatais de conformidade social: família (socialização primária), escola, religião, mídia, comunidade. O controle formal é exercido pelo aparato do Estado: polícia, judiciário, Ministério Público, sistema prisional. Ambos atuam sobre o comportamento, mas com instrumentos diferentes.",
+    "legal_basis": "García-Pablos de Molina, Criminologia; Foucault, Vigiar e Punir",
+    "alternatives": [
+      {"letter": "A", "text": "Polícia Militar, Ministério Público e poder judiciário.", "is_correct": false, "explanation": "Polícia, MP e judiciário são agências de controle social formal, pois integram o aparato coercitivo do Estado."},
+      {"letter": "B", "text": "Família, escola, religião e comunidade.", "is_correct": true, "explanation": "Correto. Família, escola, religião e vínculos comunitários são mecanismos de controle social informal: exercem conformidade sem poder coercitivo estatal, por meio de valores, normas sociais e expectativas."},
+      {"letter": "C", "text": "Sistema penitenciário, forças armadas e agências de inteligência.", "is_correct": false, "explanation": "Sistema penitenciário, forças armadas e serviços de inteligência são mecanismos formais de controle social, pois são instituições do Estado com poder coercitivo legal."},
+      {"letter": "D", "text": "Legislação penal, prisão preventiva e medidas cautelares.", "is_correct": false, "explanation": "Legislação penal, prisão preventiva e cautelares são instrumentos jurídicos de controle formal do Estado."},
+      {"letter": "E", "text": "Delegacia de polícia, vara criminal e conselho tutelar.", "is_correct": false, "explanation": "Delegacia e vara criminal são controle formal. O conselho tutelar, embora não penal, é órgão do poder público (controle formal), conforme ECA (Lei 8.069/90)."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "prevencao-crime",
+    "question_type": "multipla_escolha",
+    "context_text": "A prevenção do crime pode ser classificada em primária, secundária e terciária, com intervenções voltadas para diferentes públicos-alvo.",
+    "text": "Qual das alternativas descreve corretamente a prevenção primária do crime?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A prevenção primária atua sobre a população em geral, antes de qualquer manifestação de delinquência, por meio de políticas sociais: educação, saúde, emprego, habitação. A secundária foca em grupos de risco (prevenção situacional e social direcionada). A terciária intervém sobre quem já delinquiu (reabilitação, penas alternativas).",
+    "legal_basis": "OMS, Prevenção da Violência; SUSP (Lei 13.675/2018)",
+    "alternatives": [
+      {"letter": "A", "text": "Reabilitação de detentos por meio de programas educacionais dentro do sistema prisional.", "is_correct": false, "explanation": "Reabilitação de quem já cometeu crime é prevenção terciária, pois visa evitar a reincidência."},
+      {"letter": "B", "text": "Ações direcionadas a grupos de risco identificados, como jovens em vulnerabilidade social.", "is_correct": false, "explanation": "Intervenções em grupos de risco são prevenção secundária: ainda não há delito, mas há fatores de risco identificados."},
+      {"letter": "C", "text": "Políticas sociais amplas (educação, saúde, emprego) voltadas para a população em geral.", "is_correct": true, "explanation": "Correto. A prevenção primária atua sobre toda a população antes de qualquer comportamento desviante, atacando fatores estruturais do crime: desigualdade, falta de oportunidades, exclusão social."},
+      {"letter": "D", "text": "Monitoramento eletrônico de condenados em regime semiaberto.", "is_correct": false, "explanation": "O monitoramento eletrônico de condenados é prevenção terciária: intervém sobre pessoas que já cometeram crimes para reduzir reincidência e controlar cumprimento de pena."},
+      {"letter": "E", "text": "Instalação de câmeras de vigilância em áreas com alta incidência criminal.", "is_correct": false, "explanation": "Câmeras de vigilância em hotspots criminais é prevenção situacional/secundária: foca em locais e situações específicas de risco, não na população em geral."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-critica",
+    "question_type": "multipla_escolha",
+    "context_text": "A criminologia crítica (ou radical) surgiu na década de 1970 questionando os fundamentos do sistema de justiça criminal e sua relação com as estruturas de poder.",
+    "text": "A criminologia crítica, representada por autores como Alessandro Baratta, distingue-se da criminologia tradicional principalmente por:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A criminologia crítica (Baratta, Taylor, Walton, Young) questiona não apenas as causas do crime, mas a própria construção social do que é crime e criminoso, revelando como o sistema penal seleciona preferencialmente os pobres e reproduz desigualdades de classe, raça e gênero. Propõe a criminologia como instrumento de transformação social.",
+    "legal_basis": "Baratta, Criminologia Crítica e Crítica do Direito Penal; Zaffaroni, Em Busca das Penas Perdidas",
+    "alternatives": [
+      {"letter": "A", "text": "Defender o endurecimento das penas como solução para a criminalidade.", "is_correct": false, "explanation": "O endurecimento penal é posição do punitivismo e da criminologia conservadora. A criminologia crítica questiona a pena de prisão como instrumento de reprodução da desigualdade."},
+      {"letter": "B", "text": "Questionar a seletividade do sistema penal e sua função de reprodução das desigualdades sociais.", "is_correct": true, "explanation": "Correto. Baratta e a criminologia crítica revelam que o sistema penal não é neutro: seleciona preferencialmente populações marginalizadas, funcionando como mecanismo de controle das classes subalternas."},
+      {"letter": "C", "text": "Buscar as causas do crime exclusivamente em fatores psicológicos individuais.", "is_correct": false, "explanation": "O psicologismo individual pertence à criminologia clínica tradicional. A criminologia crítica é estrutural e social, não psicologizante."},
+      {"letter": "D", "text": "Aperfeiçoar as técnicas de identificação e classificação de criminosos habituais.", "is_correct": false, "explanation": "A classificação de criminosos é herança do positivismo lombrosiano. A criminologia crítica rejeita esse projeto como forma de controle e estigmatização dos pobres."},
+      {"letter": "E", "text": "Desenvolver estatísticas criminais mais precisas para orientar políticas de segurança pública.", "is_correct": false, "explanation": "Embora a criminologia crítica use estatísticas, ela questiona a validade das cifras oficiais (que refletem a seletividade policial). Seu projeto não é aprimorar estatísticas oficiais, mas questionar o sistema."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "cifra-negra",
+    "question_type": "multipla_escolha",
+    "context_text": "Nem todos os crimes praticados chegam ao conhecimento das autoridades e constam das estatísticas oficiais. Esse fenômeno é estudado pela criminologia.",
+    "text": "Em criminologia, 'cifra negra' (dark number) refere-se a:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A cifra negra (Dunkelziffer) é a diferença entre os crimes efetivamente praticados e os registrados oficialmente. Inclui crimes não denunciados (por medo, desconfiança, vergonha), não investigados, não descobertos. As pesquisas de vitimização (surveys) permitem estimar a cifra negra. É fundamental para a política criminal real.",
+    "legal_basis": "Sutherland e Cressey, Criminology; Kerner, Dunkelfeld",
+    "alternatives": [
+      {"letter": "A", "text": "O total de crimes registrados nas estatísticas policiais em determinado período.", "is_correct": false, "explanation": "As estatísticas oficiais representam apenas a criminalidade aparente — a ponta visível do iceberg. A cifra negra é justamente o que não aparece."},
+      {"letter": "B", "text": "A diferença entre os crimes efetivamente cometidos e os registrados oficialmente.", "is_correct": true, "explanation": "Correto. A cifra negra é o volume de crimes que não chega ao conhecimento das autoridades: delitos não denunciados, não investigados, ou descobertos mas não formalizados. Sua existência distorce a percepção real da criminalidade."},
+      {"letter": "C", "text": "O número de crimes cometidos por agentes do Estado (crimes de colarinho branco).", "is_correct": false, "explanation": "Crimes do colarinho branco (Sutherland) são delitos de pessoas de alto status social, que também integram a cifra negra por sua subnotificação. Mas a cifra negra engloba todos os crimes não registrados, não apenas os estatais."},
+      {"letter": "D", "text": "A taxa de reincidência criminal entre egressos do sistema penitenciário.", "is_correct": false, "explanation": "A reincidência é indicador de ressocialização (ou fracasso dela). Tem relação com a cifra negra mas são conceitos distintos."},
+      {"letter": "E", "text": "O número de investigações policiais arquivadas sem indiciamento.", "is_correct": false, "explanation": "Inquéritos arquivados são cifra negra parcialmente: crimes registrados que não avançam. Mas a cifra negra engloba também crimes que nunca chegam a nenhum registro policial."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-ambiental",
+    "question_type": "multipla_escolha",
+    "context_text": "A criminologia ambiental estuda a distribuição espacial e temporal do crime e a relação entre lugar, rotina e oportunidade criminal.",
+    "text": "A Teoria das Atividades Rotineiras (Routine Activity Theory), de Cohen e Felson, aponta como condições necessárias para a ocorrência de um crime:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Cohen e Felson (1979) demonstraram que um crime ocorre quando há convergência no espaço-tempo de três elementos: ofensor motivado (que quer e pode cometer o crime), alvo adequado (pessoa ou bem vulnerável) e ausência de guardião capaz (quem poderia prevenir: polícia, vizinho, câmera). A teoria orienta estratégias de prevenção situacional.",
+    "legal_basis": "Cohen e Felson, Social Change and Crime Rate Trends: A Routine Activity Approach (1979)",
+    "alternatives": [
+      {"letter": "A", "text": "Pobreza extrema, desemprego e baixa escolaridade do agressor.", "is_correct": false, "explanation": "Esses são fatores de motivação, mas a teoria das atividades rotineiras não exige pobreza: ofensores motivados existem em todos os estratos sociais. A teoria foca na convergência situacional, não nos fatores socioeconômicos."},
+      {"letter": "B", "text": "Ofensor motivado, alvo adequado e ausência de guardião capaz.", "is_correct": true, "explanation": "Correto. A tríade da teoria de Cohen e Felson: (1) offender motivado, (2) suitable target (alvo vulnerável) e (3) absence of capable guardian. A remoção de qualquer um dos três elementos previne o crime."},
+      {"letter": "C", "text": "Impunidade, lentidão judicial e superpopulação carcerária.", "is_correct": false, "explanation": "Esses fatores influenciam o sistema criminal, mas não são os elementos da teoria das atividades rotineiras, que é situacional e foca na convergência espaço-temporal."},
+      {"letter": "D", "text": "Família desestruturada, ausência de vínculos afetivos e falta de autocontrole.", "is_correct": false, "explanation": "Família desestruturada e falta de autocontrole são fatores da Teoria do Controle Social (Hirschi) e da Teoria Geral do Crime (Gottfredson & Hirschi). A teoria das atividades rotineiras é situacional, não psicológica."},
+      {"letter": "E", "text": "Rejeição social, estigma criminal e carreira delinquente.", "is_correct": false, "explanation": "Rejeição social e estigma pertencem ao labeling theory. A teoria das atividades rotineiras não pressupõe carreira delinquente — foca na oportunidade situacional."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "politica-criminal",
+    "question_type": "multipla_escolha",
+    "context_text": "A política criminal é o conjunto de medidas adotadas pelo Estado para prevenir e controlar a criminalidade.",
+    "text": "A Política Nacional de Segurança Pública e Defesa Social (PNSPDS), instituída pela Lei nº 13.675/2018, criou o:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Lei 13.675/2018 criou o Sistema Único de Segurança Pública (SUSP) e a Política Nacional de Segurança Pública e Defesa Social (PNSPDS). O SUSP integra as ações de segurança pública da União, estados e municípios, com coordenação do Ministério da Justiça e Segurança Pública.",
+    "legal_basis": "Lei 13.675/2018 (SUSP/PNSPDS)",
+    "alternatives": [
+      {"letter": "A", "text": "Sistema Nacional de Prevenção à Violência (SNPV).", "is_correct": false, "explanation": "Não existe o SNPV como criação da Lei 13.675/2018. Confundir com o SUSP."},
+      {"letter": "B", "text": "Sistema Único de Segurança Pública (SUSP).", "is_correct": true, "explanation": "Correto. A Lei 13.675/2018 criou o SUSP — Sistema Único de Segurança Pública — integrando as ações federais, estaduais e municipais em segurança pública sob coordenação do MJSP."},
+      {"letter": "C", "text": "Conselho Nacional de Segurança Pública (CONASP).", "is_correct": false, "explanation": "O CONASP existia antes da Lei 13.675/2018. A lei reorganizou o sistema, mas o ponto central de criação foi o SUSP, não o conselho."},
+      {"letter": "D", "text": "Fundo Nacional de Segurança Pública (FNSP).", "is_correct": false, "explanation": "O FNSP foi criado pela Lei 10.201/2001, muito anterior à Lei 13.675/2018. A lei do SUSP prevê fontes de financiamento, mas não criou o fundo."},
+      {"letter": "E", "text": "Sistema Nacional de Inteligência Policial (SNIP).", "is_correct": false, "explanation": "O SNIP não é criação da Lei 13.675/2018. A inteligência policial tem outros marcos normativos específicos."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "violencia-genero",
+    "question_type": "multipla_escolha",
+    "context_text": "O feminicídio foi incluído no Código Penal brasileiro como qualificadora do homicídio pela Lei nº 13.104/2015.",
+    "text": "Segundo a Lei nº 13.104/2015, caracteriza feminicídio o homicídio praticado:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 121, §2°-A do CP define que o feminicídio ocorre quando o crime envolve violência doméstica e familiar (Lei Maria da Penha) ou menosprezo/discriminação à condição de mulher. A qualificadora é de natureza objetiva (circunstâncias), não dependendo de motivação subjetiva específica do agente.",
+    "legal_basis": "Art. 121, §2°, VI e §2°-A, CP (incluído pela Lei 13.104/2015); Lei 11.340/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Contra mulher grávida ou com filho menor de 14 anos.", "is_correct": false, "explanation": "Gravidez e filho menor são causas de aumento de pena do feminicídio (§7°, II e III, CP), não o que o caracteriza. O feminicídio se caracteriza pela violência de gênero, não pela condição de grávida."},
+      {"letter": "B", "text": "Por razões da condição de sexo feminino: violência doméstica/familiar ou menosprezo/discriminação à condição de mulher.", "is_correct": true, "explanation": "Correto. O §2°-A do art. 121 do CP define que há razões de condição de sexo feminino quando o crime é cometido com violência doméstica e familiar (contexto da Lei Maria da Penha) ou com menosprezo ou discriminação à condição de mulher."},
+      {"letter": "C", "text": "Exclusivamente dentro do ambiente doméstico ou familiar, independente da motivação.", "is_correct": false, "explanation": "O feminicídio não exige que o crime ocorra dentro de casa. A violência doméstica e familiar (um dos contextos) pode ocorrer em qualquer lugar. Além disso, o menosprezo à condição de mulher é segunda hipótese independente."},
+      {"letter": "D", "text": "Com emprego de violência física grave ou tortura, independentemente do gênero da vítima.", "is_correct": false, "explanation": "Violência grave e tortura são qualificadoras gerais do homicídio (art. 121, §2°, III e IV). O feminicídio é específico da condição de mulher da vítima."},
+      {"letter": "E", "text": "Quando a vítima e o agressor têm ou tiveram relação afetiva, independente do gênero.", "is_correct": false, "explanation": "A relação afetiva é elemento da violência doméstica (Lei Maria da Penha), mas o feminicídio exige que a vítima seja mulher e que o crime ocorra por razões de condição de sexo feminino."}
+    ]
+  },
+  {
+    "subject_slug": "criminologia",
+    "topic_slug": "criminologia-classica",
+    "question_type": "multipla_escolha",
+    "context_text": "Cesare Beccaria publicou 'Dos Delitos e das Penas' em 1764, obra fundadora do Direito Penal moderno e da Escola Clássica.",
+    "text": "Segundo Cesare Beccaria, em 'Dos Delitos e das Penas', para que a pena cumpra sua função preventiva, ela deve ser:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Beccaria pregava que a efetividade preventiva da pena não depende de sua severidade, mas de sua certeza e prontidão. Uma pena inevitável, ainda que branda, é mais dissuasora do que uma pena severa mas improvável. Também defendia a proporcionalidade entre crime e pena e a abolição da tortura e da pena de morte.",
+    "legal_basis": "Beccaria, Dos Delitos e das Penas (1764)",
+    "alternatives": [
+      {"letter": "A", "text": "Severa e exemplar, para que o medo iniba a criminalidade.", "is_correct": false, "explanation": "Beccaria se opôs à severidade excessiva das penas. Para ele, severidade não é o que previne — é a certeza da punição. A crueldade embrutece a sociedade sem reduzir crimes."},
+      {"letter": "B", "text": "Certa, pronta e proporcional ao delito.", "is_correct": true, "explanation": "Correto. Para Beccaria, a prevenção depende da certeza (inevitabilidade), da prontidão (rapidez da resposta) e da proporcionalidade (adequação ao crime). Uma pena certa e rápida, mesmo que moderada, é mais eficaz que uma severa e improvável."},
+      {"letter": "C", "text": "Perpétua, para neutralizar definitivamente o criminoso perigoso.", "is_correct": false, "explanation": "Beccaria se opôs à prisão perpétua, considerando-a cruel. Defendia que uma série de pequenas penas ao longo do tempo produz mais sofrimento preventivo do que uma pena severa única."},
+      {"letter": "D", "text": "Aflitiva e pública, para demonstrar o poder do soberano sobre os súditos.", "is_correct": false, "explanation": "A pena aflitiava e pública como demonstração de poder soberano era o modelo que Beccaria criticava (suplício medieval). Foucault analisa essa transformação em 'Vigiar e Punir'."},
+      {"letter": "E", "text": "Arbitrada pelo juiz conforme a periculosidade do réu, sem limites legais prévios.", "is_correct": false, "explanation": "Beccaria foi um dos primeiros a defender a legalidade e a taxatividade da pena: o legislador deve fixar penas em lei, e o juiz não pode ultrapassar esses limites. O princípio da legalidade penal tem raízes nele."}
+    ]
+  }
+]

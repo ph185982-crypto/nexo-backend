@@ -1,0 +1,382 @@
+[
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "declaracao-universal",
+    "question_type": "multipla_escolha",
+    "context_text": "A Declaração Universal dos Direitos Humanos (DUDH), proclamada pela Assembleia Geral das Nações Unidas em 1948, representa um marco histórico na proteção internacional dos direitos humanos.",
+    "text": "Qual é o documento internacional de direitos humanos aprovado pela ONU em 1948 e que consagra, pela primeira vez, um conjunto universal de direitos inerentes a todos os seres humanos?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Declaração Universal dos Direitos Humanos foi proclamada pela Resolução 217 A (III) da Assembleia Geral da ONU em 10 de dezembro de 1948, em Paris. É o documento fundacional do sistema internacional de proteção dos direitos humanos.",
+    "legal_basis": "Resolução 217 A (III) da ONU, 1948",
+    "alternatives": [
+      {"letter": "A", "text": "Convenção Americana sobre Direitos Humanos (Pacto de San José da Costa Rica).", "is_correct": false, "explanation": "O Pacto de San José é regional (OEA) e foi adotado em 1969, não em 1948."},
+      {"letter": "B", "text": "Pacto Internacional sobre Direitos Civis e Políticos.", "is_correct": false, "explanation": "Esse pacto foi adotado em 1966, não em 1948, e é um tratado com força vinculante, diferente da DUDH."},
+      {"letter": "C", "text": "Declaração Universal dos Direitos Humanos.", "is_correct": true, "explanation": "Correto. A DUDH foi proclamada em 10 de dezembro de 1948 pela Assembleia Geral da ONU, em Paris."},
+      {"letter": "D", "text": "Convenção contra a Tortura e outros Tratamentos Cruéis, Desumanos ou Degradantes.", "is_correct": false, "explanation": "Essa convenção foi adotada pela ONU em 1984, muito posterior a 1948."},
+      {"letter": "E", "text": "Convenção sobre os Direitos da Criança.", "is_correct": false, "explanation": "A Convenção sobre os Direitos da Criança foi adotada pela ONU em 1989."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "declaracao-universal",
+    "question_type": "multipla_escolha",
+    "context_text": "A Declaração Universal dos Direitos Humanos consagra direitos civis, políticos, econômicos, sociais e culturais.",
+    "text": "Segundo a DUDH, em qual de seus artigos está prevista a proibição da tortura e de tratamentos ou punições cruéis, desumanos ou degradantes?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5º da DUDH estabelece que ninguém será submetido à tortura, nem a tratamento ou castigo cruel, desumano ou degradante. Essa previsão é reiterada na Convenção contra a Tortura de 1984 e no art. 5º, III, da CF/88.",
+    "legal_basis": "Art. 5º da DUDH; Art. 5º, III, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Artigo 3º — direito à vida, à liberdade e à segurança pessoal.", "is_correct": false, "explanation": "O art. 3º trata do direito à vida, liberdade e segurança, não especificamente da proibição de tortura."},
+      {"letter": "B", "text": "Artigo 4º — proibição da escravidão e servidão.", "is_correct": false, "explanation": "O art. 4º proíbe a escravidão, não a tortura."},
+      {"letter": "C", "text": "Artigo 5º — proibição da tortura e tratamentos cruéis, desumanos ou degradantes.", "is_correct": true, "explanation": "Correto. O art. 5º da DUDH proíbe expressamente a tortura e tratamentos ou punições cruéis, desumanos ou degradantes."},
+      {"letter": "D", "text": "Artigo 9º — proibição da prisão arbitrária.", "is_correct": false, "explanation": "O art. 9º trata da proibição de prisão, detenção ou exílio arbitrários."},
+      {"letter": "E", "text": "Artigo 12º — proteção da privacidade.", "is_correct": false, "explanation": "O art. 12 trata da proteção da vida privada e da honra."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "question_type": "multipla_escolha",
+    "context_text": "A Convenção Americana sobre Direitos Humanos, conhecida como Pacto de San José da Costa Rica, foi adotada em 1969 e entrou em vigor em 1978.",
+    "text": "O Brasil ratificou a Convenção Americana sobre Direitos Humanos (Pacto de San José) e reconheceu a competência jurisdicional da Corte Interamericana de Direitos Humanos. Qual é o órgão de supervisão da Convenção que recebe petições individuais em caso de violações?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Comissão Interamericana de Direitos Humanos (CIDH) recebe petições individuais em caso de violações. A Corte Interamericana é o órgão judicial que julga casos contenciosos, mas a CIDH atua como filtro, podendo também encaminhar casos à Corte.",
+    "legal_basis": "Arts. 34-51 e 61-69 da Convenção Americana sobre Direitos Humanos",
+    "alternatives": [
+      {"letter": "A", "text": "Corte Internacional de Justiça, órgão judicial da ONU sediado em Haia.", "is_correct": false, "explanation": "A CIJ julga litígios entre Estados soberanos, não petições individuais sobre direitos humanos regionais."},
+      {"letter": "B", "text": "Conselho de Direitos Humanos da ONU, órgão subsidiário da Assembleia Geral.", "is_correct": false, "explanation": "O CDH é um órgão da ONU e não é o mecanismo de petições da Convenção Americana."},
+      {"letter": "C", "text": "Comissão Interamericana de Direitos Humanos (CIDH), órgão da OEA.", "is_correct": true, "explanation": "Correto. A CIDH recebe petições individuais de violações da Convenção Americana, promove investigações e pode encaminhar casos à Corte Interamericana."},
+      {"letter": "D", "text": "Tribunal Europeu de Direitos Humanos, sediado em Estrasburgo.", "is_correct": false, "explanation": "O TEDH pertence ao sistema europeu (Conselho da Europa), não ao sistema interamericano."},
+      {"letter": "E", "text": "Conselho de Segurança da ONU, responsável por crises internacionais.", "is_correct": false, "explanation": "O Conselho de Segurança trata de paz e segurança internacionais, não de petições individuais de direitos humanos."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "direitos-humanos-cf88",
+    "question_type": "multipla_escolha",
+    "context_text": "A Constituição Federal de 1988 incorporou ao ordenamento jurídico brasileiro um extenso rol de direitos fundamentais, em consonância com os documentos internacionais de direitos humanos.",
+    "text": "Nos termos do art. 5º, § 3º, da CF/88, incluído pela EC 45/2004, os tratados internacionais de direitos humanos aprovados em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, serão equivalentes a:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5º, § 3º, CF/88, introduzido pela EC 45/2004 (Reforma do Judiciário), estabelece que tratados de direitos humanos aprovados com quórum de emenda constitucional (3/5, dois turnos, duas Casas) terão status de emenda constitucional. O STF firmou que tratados anteriores a essa emenda têm status supralegal.",
+    "legal_basis": "Art. 5º, §§ 2º e 3º, CF/88; EC 45/2004; RE 466.343/SP (STF)",
+    "alternatives": [
+      {"letter": "A", "text": "Leis ordinárias, aplicáveis ao ordenamento interno com força de lei federal.", "is_correct": false, "explanation": "A posição de lei ordinária era a mais antiga e já foi superada pelo STF, que reconhece status supralegal ou constitucional dependendo do rito de aprovação."},
+      {"letter": "B", "text": "Leis complementares, com hierarquia superior às leis ordinárias.", "is_correct": false, "explanation": "A CF/88 não prevê equiparação de tratados a leis complementares."},
+      {"letter": "C", "text": "Emendas constitucionais, com hierarquia equivalente à Constituição.", "is_correct": true, "explanation": "Correto. Aprovados com o quórum qualificado do art. 5º, § 3º, os tratados de direitos humanos equivalem a emendas constitucionais."},
+      {"letter": "D", "text": "Normas supralegais, situadas abaixo da Constituição mas acima das leis.", "is_correct": false, "explanation": "O status supralegal (posição intermediária) é reconhecido pelo STF para tratados aprovados sem o rito qualificado, não para os aprovados nos termos do § 3º."},
+      {"letter": "E", "text": "Decretos legislativos, com eficácia no plano externo apenas.", "is_correct": false, "explanation": "Decretos legislativos são atos do Congresso para aprovação de tratados, não o resultado final da incorporação."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "tortura",
+    "question_type": "multipla_escolha",
+    "context_text": "O combate à tortura é uma das prioridades do direito internacional dos direitos humanos. O Brasil ratificou a Convenção contra a Tortura da ONU (1984) e a Convenção Interamericana para Prevenir e Punir a Tortura (1985).",
+    "text": "Segundo a definição da Convenção da ONU contra a Tortura (1984), ratificada pelo Brasil, o ato de tortura é definido como:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 1º da Convenção contra a Tortura define tortura como qualquer ato pelo qual dores ou sofrimentos agudos, físicos ou mentais, são infligidos intencionalmente a uma pessoa por um funcionário público ou outra pessoa no exercício de funções públicas, com finalidades específicas (obtenção de informações, punição, intimidação etc.).",
+    "legal_basis": "Art. 1º da Convenção contra a Tortura da ONU; Lei 9.455/1997 (Lei de Tortura, Brasil)",
+    "alternatives": [
+      {"letter": "A", "text": "Qualquer tratamento cruel, desumano ou degradante, independentemente da intenção do agente.", "is_correct": false, "explanation": "O conceito de tortura exige elemento intencional e finalidade específica. Tratamentos cruéis sem esses elementos são vedados pelo art. 16 da Convenção, mas não se enquadram na definição estrita de tortura."},
+      {"letter": "B", "text": "Qualquer ato de violência física praticado por particular contra outra pessoa.", "is_correct": false, "explanation": "A Convenção exige que o ato seja praticado por funcionário público ou pessoa no exercício de funções públicas, ou com sua aquiescência."},
+      {"letter": "C", "text": "Dores ou sofrimentos agudos infligidos intencionalmente por agente público com finalidade específica (obtenção de informações, punição ou discriminação).", "is_correct": true, "explanation": "Correto. A definição do art. 1º da Convenção inclui: (1) sofrimento físico ou mental agudo; (2) intencionalidade; (3) agente público ou anuência do Estado; (4) finalidade específica."},
+      {"letter": "D", "text": "Apenas sofrimento físico extremo, excluindo o sofrimento psicológico do âmbito da convenção.", "is_correct": false, "explanation": "A Convenção expressamente abrange tanto dores físicas quanto mentais (sofrimento psicológico)."},
+      {"letter": "E", "text": "Sofrimento infligido durante conflitos armados, regido exclusivamente pelo Direito Internacional Humanitário.", "is_correct": false, "explanation": "A proibição da tortura é absoluta e não admite derrogações, inclusive em conflitos armados. A Convenção não restringe sua aplicação a tempos de paz."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-onu",
+    "question_type": "multipla_escolha",
+    "context_text": "O sistema ONU de proteção dos direitos humanos é composto por órgãos criados pela Carta da ONU (órgãos de carta) e por órgãos criados por tratados específicos (órgãos de tratados).",
+    "text": "O Conselho de Direitos Humanos da ONU, criado pela Resolução 60/251 da Assembleia Geral em 2006, substituiu qual organismo anterior?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Conselho de Direitos Humanos (CDH) substituiu a Comissão de Direitos Humanos da ONU, criada em 1946. A substituição ocorreu por pressão da comunidade internacional, que criticava a politização e a ineficácia da Comissão.",
+    "legal_basis": "Resolução 60/251 da Assembleia Geral da ONU (2006)",
+    "alternatives": [
+      {"letter": "A", "text": "Comitê de Direitos Humanos, órgão de tratado do Pacto Internacional de Direitos Civis e Políticos.", "is_correct": false, "explanation": "O Comitê de Direitos Humanos é um órgão de tratado e não foi substituído pelo CDH. Ainda existe e funciona."},
+      {"letter": "B", "text": "Tribunal Penal Internacional (TPI), sediado em Haia.", "is_correct": false, "explanation": "O TPI é um tribunal de responsabilidade penal individual, criado pelo Estatuto de Roma (2002), não substituído pelo CDH."},
+      {"letter": "C", "text": "Comissão de Direitos Humanos da ONU, criada em 1946.", "is_correct": true, "explanation": "Correto. O CDH foi criado em 2006 para substituir a Comissão de Direitos Humanos, que enfrentava críticas por permitir que países violadores de direitos humanos integrassem seus membros."},
+      {"letter": "D", "text": "Alto Comissariado das Nações Unidas para Refugiados (ACNUR).", "is_correct": false, "explanation": "O ACNUR é um órgão subsidiário da ONU para proteção de refugiados, não foi substituído pelo CDH."},
+      {"letter": "E", "text": "Assembleia Geral da ONU em sua função de proteção de direitos humanos.", "is_correct": false, "explanation": "A Assembleia Geral não foi substituída; é o principal órgão deliberativo da ONU e continua existindo."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "dignidade-humana",
+    "question_type": "multipla_escolha",
+    "context_text": "A dignidade da pessoa humana é o valor central e fundamento de todo o sistema de direitos humanos, tanto no plano internacional quanto no constitucional brasileiro.",
+    "text": "Nos termos da Constituição Federal de 1988, a dignidade da pessoa humana é elencada como:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 1º, III, da CF/88 consagra a dignidade da pessoa humana como um dos fundamentos da República Federativa do Brasil. Não é apenas um princípio, mas um fundamento estruturante de toda a ordem jurídica constitucional.",
+    "legal_basis": "Art. 1º, III, CF/88",
+    "alternatives": [
+      {"letter": "A", "text": "Objetivo fundamental da República, previsto no art. 3º da CF/88.", "is_correct": false, "explanation": "Os objetivos fundamentais estão no art. 3º (construir sociedade livre, garantir desenvolvimento nacional, erradicar pobreza, promover bem de todos). Dignidade é fundamento, não objetivo."},
+      {"letter": "B", "text": "Direito individual previsto no caput do art. 5º da CF/88.", "is_correct": false, "explanation": "O caput do art. 5º garante igualdade e inviolabilidade de direitos, não elenca a dignidade como item específico do caput."},
+      {"letter": "C", "text": "Fundamento da República Federativa do Brasil, previsto no art. 1º, III, da CF/88.", "is_correct": true, "explanation": "Correto. O art. 1º, III, da CF/88 estabelece a dignidade da pessoa humana como um dos cinco fundamentos da República Federativa do Brasil."},
+      {"letter": "D", "text": "Garantia constitucional inserida no Título II (Dos Direitos e Garantias Fundamentais).", "is_correct": false, "explanation": "A dignidade como fundamento está no Título I (Dos Princípios Fundamentais), não no Título II."},
+      {"letter": "E", "text": "Princípio geral da administração pública, previsto no art. 37 da CF/88.", "is_correct": false, "explanation": "Os princípios da administração pública são legalidade, impessoalidade, moralidade, publicidade e eficiência (LIMPE), previstos no art. 37."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "pacto-san-jose",
+    "question_type": "multipla_escolha",
+    "context_text": "A Convenção Americana sobre Direitos Humanos (Pacto de San José da Costa Rica) prevê uma série de direitos civis e políticos e cria mecanismos de supervisão regionais.",
+    "text": "O Brasil reconheceu a competência contenciosa da Corte Interamericana de Direitos Humanos (Corte IDH) em qual ano?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Brasil reconheceu a competência contenciosa da Corte IDH em 10 de dezembro de 1998, por meio do Decreto Legislativo 89/1998. O reconhecimento ocorreu de forma plena e sem reservas, o que significa que a Corte pode julgar casos contenciosos envolvendo o Brasil.",
+    "legal_basis": "Decreto Legislativo 89/1998; Decreto 4.463/2002",
+    "alternatives": [
+      {"letter": "A", "text": "1948, quando o Brasil assinou a Declaração Universal dos Direitos Humanos.", "is_correct": false, "explanation": "1948 refere-se à DUDH, não ao reconhecimento da Corte IDH. O Brasil aderiu à Convenção Americana em 1992."},
+      {"letter": "B", "text": "1988, com a promulgação da Constituição Federal.", "is_correct": false, "explanation": "A CF/88 foi promulgada em 1988, mas o reconhecimento da Corte IDH veio dez anos depois."},
+      {"letter": "C", "text": "1992, quando o Brasil ratificou a Convenção Americana sobre Direitos Humanos.", "is_correct": false, "explanation": "O Brasil ratificou a Convenção Americana em 1992, mas o reconhecimento específico da competência contenciosa da Corte IDH ocorreu em 1998."},
+      {"letter": "D", "text": "1998, por meio do Decreto Legislativo 89/1998.", "is_correct": true, "explanation": "Correto. Em 10 de dezembro de 1998, o Brasil reconheceu a competência contenciosa da Corte IDH sem reservas, por meio do Decreto Legislativo 89/1998."},
+      {"letter": "E", "text": "2004, após a Emenda Constitucional 45 (Reforma do Judiciário).", "is_correct": false, "explanation": "A EC 45/2004 introduziu o § 3º no art. 5º da CF/88 sobre o status de tratados, mas o reconhecimento da Corte IDH já havia ocorrido em 1998."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "direitos-humanos-cf88",
+    "question_type": "multipla_escolha",
+    "context_text": "O art. 5º da Constituição Federal de 1988 consagra extenso rol de direitos e garantias fundamentais individuais e coletivos.",
+    "text": "A prática de racismo, nos termos do art. 5º, XLII, da CF/88, é considerada crime:",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5º, XLII, da CF/88 define o racismo como crime inafiançável e imprescritível, sujeito à pena de reclusão. Essa norma foi regulamentada pela Lei 7.716/1989 e alterada pelo Supremo Tribunal Federal, que equiparou a homofobia e transfobia ao racismo.",
+    "legal_basis": "Art. 5º, XLII, CF/88; Lei 7.716/1989",
+    "alternatives": [
+      {"letter": "A", "text": "Afiançável e prescritível, podendo ser extinto pela prescrição em até 20 anos.", "is_correct": false, "explanation": "A CF/88 prevê exatamente o oposto: o racismo é inafiançável e imprescritível."},
+      {"letter": "B", "text": "Inafiançável e imprescritível, sujeito à pena de reclusão.", "is_correct": true, "explanation": "Correto. O art. 5º, XLII, CF/88 define o racismo como crime inafiançável, insuscetível de graça ou anistia, imprescritível e punível com pena de reclusão."},
+      {"letter": "C", "text": "Hediondo, com pena em dobro em relação ao mesmo crime cometido sem motivação racial.", "is_correct": false, "explanation": "O racismo não está na lista dos crimes hediondos da Lei 8.072/1990, embora seja tratado como crime grave pela CF/88."},
+      {"letter": "D", "text": "Afiançável, mas imprescritível, admitindo liberdade provisória mediante pagamento de fiança.", "is_correct": false, "explanation": "O racismo é inafiançável, portanto não admite liberdade provisória mediante fiança."},
+      {"letter": "E", "text": "Passível de anistia por lei federal, mas insuscetível de graça presidencial.", "is_correct": false, "explanation": "O racismo é insuscetível tanto de graça quanto de anistia, além de ser inafiançável e imprescritível."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "protecao-grupos-vulneraveis",
+    "question_type": "multipla_escolha",
+    "context_text": "A proteção de grupos vulneráveis é uma das vertentes mais importantes do direito internacional dos direitos humanos. A Convenção sobre os Direitos da Criança (1989) é o tratado mais ratificado da história da ONU.",
+    "text": "A Convenção sobre os Direitos da Criança estabelece como princípio central que orienta toda a interpretação das disposições relativas à criança:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O princípio do melhor interesse da criança (best interest of the child) é o vetor central da Convenção sobre os Direitos da Criança (art. 3º). Esse princípio está também consagrado no Estatuto da Criança e do Adolescente (ECA), no art. 4º e ao longo de todo o diploma.",
+    "legal_basis": "Art. 3º da Convenção sobre os Direitos da Criança; Arts. 4º e 6º do ECA (Lei 8.069/1990)",
+    "alternatives": [
+      {"letter": "A", "text": "Princípio da autoridade parental absoluta, que subordina os interesses da criança aos dos pais.", "is_correct": false, "explanation": "A Convenção não consagra autoridade parental absoluta; os direitos dos pais são limitados pelo interesse superior da criança."},
+      {"letter": "B", "text": "Princípio da soberania estatal, que permite aos Estados definirem a proteção mínima adequada.", "is_correct": false, "explanation": "A soberania estatal é limitada pelas obrigações convencionais. O Estado não pode invocar soberania para negar direitos convencionados."},
+      {"letter": "C", "text": "Princípio do melhor interesse da criança (best interest of the child).", "is_correct": true, "explanation": "Correto. O art. 3º da Convenção sobre os Direitos da Criança consagra o princípio do melhor interesse da criança como vetor de toda decisão que afete crianças, seja por instituições públicas ou privadas."},
+      {"letter": "D", "text": "Princípio da reciprocidade, que concede direitos às crianças em contrapartida a seus deveres.", "is_correct": false, "explanation": "Os direitos humanos não são condicionados à reciprocidade ou ao cumprimento de deveres, especialmente no caso de crianças."},
+      {"letter": "E", "text": "Princípio da proporcionalidade, que limita os direitos da criança em situações de necessidade pública.", "is_correct": false, "explanation": "O princípio da proporcionalidade pode limitar direitos fundamentais em certas situações, mas não é o princípio central da Convenção sobre os Direitos da Criança."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "question_type": "multipla_escolha",
+    "context_text": "O caso Damião Ximenes Lopes v. Brasil foi o primeiro caso em que o Brasil foi condenado pela Corte Interamericana de Direitos Humanos.",
+    "text": "O caso Damião Ximenes Lopes vs. Brasil (2006) envolveu violação de quais direitos previstos na Convenção Americana?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Damião Ximenes Lopes, portador de transtorno mental, faleceu em 1999 em uma clínica psiquiátrica pública no Ceará após sofrer maus-tratos. A Corte IDH condenou o Brasil em 2006 por violação do direito à vida (art. 4), integridade pessoal (art. 5) e garantias judiciais/proteção judicial (arts. 8 e 25) da Convenção Americana.",
+    "legal_basis": "Arts. 4, 5, 8 e 25 da Convenção Americana; Sentença da Corte IDH, 04/07/2006",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas o direito à propriedade, pois o caso envolvia bens confiscados.", "is_correct": false, "explanation": "O caso não envolveu direito à propriedade; versou sobre maus-tratos e morte de pessoa com transtorno mental."},
+      {"letter": "B", "text": "Direito à vida, integridade pessoal e garantias judiciais.", "is_correct": true, "explanation": "Correto. A Corte IDH condenou o Brasil pela violação dos arts. 4 (vida), 5 (integridade pessoal) e 8/25 (garantias e proteção judiciais) da Convenção Americana."},
+      {"letter": "C", "text": "Apenas a liberdade de expressão, pois a família foi impedida de falar à imprensa.", "is_correct": false, "explanation": "O caso não girava em torno da liberdade de expressão, mas de maus-tratos, morte e impunidade dos responsáveis."},
+      {"letter": "D", "text": "Direito à educação e ao trabalho, pois a vítima era estudante universitário.", "is_correct": false, "explanation": "A Convenção Americana trata principalmente de direitos civis e políticos; direitos econômicos, sociais e culturais são abordados no Protocolo de San Salvador."},
+      {"letter": "E", "text": "Somente o direito de petição individual, pois a família não pôde apresentar queixa internamente.", "is_correct": false, "explanation": "O direito de petição é um mecanismo processual, não um direito substantivo violado. A violação foi dos direitos materiais à vida e integridade."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "declaracao-universal",
+    "question_type": "multipla_escolha",
+    "context_text": "A DUDH reconhece a universalidade, indivisibilidade e interdependência dos direitos humanos.",
+    "text": "Qual das seguintes características NÃO é inerente aos direitos humanos segundo a doutrina internacionalista consolidada?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Os direitos humanos são universais, indivisíveis, interdependentes, inter-relacionados e inalienáveis. A 'relatividade cultural absoluta' (culturalismo radical) é uma CRÍTICA ou perspectiva oposta ao universalismo dos direitos humanos, não uma característica reconhecida pela doutrina internacionalista dominante.",
+    "legal_basis": "Declaração de Viena (1993); DUDH (1948)",
+    "alternatives": [
+      {"letter": "A", "text": "Universalidade — aplicam-se a todos os seres humanos sem distinção.", "is_correct": false, "explanation": "Universalidade é uma das características fundamentais dos direitos humanos, reconhecida pela DUDH e pela Declaração de Viena."},
+      {"letter": "B", "text": "Indivisibilidade — direitos civis, políticos, econômicos, sociais e culturais formam um conjunto único.", "is_correct": false, "explanation": "Indivisibilidade é uma característica fundamental, afirmada na Declaração de Viena (1993)."},
+      {"letter": "C", "text": "Relatividade cultural absoluta — cada cultura define seus próprios padrões de direitos humanos soberanamente.", "is_correct": true, "explanation": "Correto. A relatividade cultural absoluta é uma CRÍTICA ao universalismo, não uma característica reconhecida. A doutrina dominante adota universalismo temperado pela diversidade cultural, mas não aceita que cada cultura defina soberanamente e absolutamente seus padrões."},
+      {"letter": "D", "text": "Inalienabilidade — não podem ser renunciados ou transferidos pelo titular.", "is_correct": false, "explanation": "Inalienabilidade é uma característica reconhecida: os direitos humanos não podem ser alienados, transferidos ou renunciados."},
+      {"letter": "E", "text": "Interdependência — a efetividade de um direito depende da realização dos demais.", "is_correct": false, "explanation": "Interdependência é uma característica fundamental, reconhecida pela Declaração de Viena de 1993."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "protecao-grupos-vulneraveis",
+    "question_type": "multipla_escolha",
+    "context_text": "O Estatuto do Desarmamento (Lei 10.826/2003) e a proteção a grupos vulneráveis são temas que se intersecionam com os direitos humanos no contexto da segurança pública.",
+    "text": "A Convenção Internacional sobre a Eliminação de todas as Formas de Discriminação Racial, adotada pela ONU em 1965 e ratificada pelo Brasil, obriga os Estados a:",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Convenção sobre Eliminação da Discriminação Racial (CERD) obriga os Estados a tomar medidas efetivas para combater a discriminação racial em todas as suas formas, proibir organizações racistas e punir a incitação à discriminação. Prevê o Comitê para a Eliminação da Discriminação Racial como órgão de supervisão.",
+    "legal_basis": "Convenção Internacional sobre a Eliminação de todas as Formas de Discriminação Racial (ONU, 1965)",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas condenar em discursos internacionais a discriminação racial, sem obrigação de adotar legislação interna.", "is_correct": false, "explanation": "A Convenção impõe obrigações concretas de legislação e políticas públicas, não apenas condenações retóricas."},
+      {"letter": "B", "text": "Proibir e eliminar a discriminação racial em todas as suas formas e garantir igualdade perante a lei.", "is_correct": true, "explanation": "Correto. O art. 2º da Convenção obriga os Estados a proibir e eliminar a discriminação racial, adotar medidas especiais, revisar legislação e garantir igualdade."},
+      {"letter": "C", "text": "Permitir a discriminação racial positiva sem qualquer limite, como compensação histórica.", "is_correct": false, "explanation": "A Convenção permite ações afirmativas temporárias, mas não as impõe sem limites; essas medidas não podem criar privilégios permanentes para grupos raciais."},
+      {"letter": "D", "text": "Somente ratificar o combate ao racismo sem criminalizar condutas discriminatórias.", "is_correct": false, "explanation": "O art. 4º da Convenção exige que os Estados declarem crime punível a difusão de ideias de superioridade racial e a incitação à discriminação."},
+      {"letter": "E", "text": "Criar zonas geográficas de proteção racial, separando grupos étnicos para evitar conflitos.", "is_correct": false, "explanation": "A criação de zonas separadas por raça seria, em si, uma forma de segregação racial, proibida pela Convenção."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "direitos-humanos-cf88",
+    "question_type": "multipla_escolha",
+    "context_text": "O art. 5º da CF/88 prevê um extenso catálogo de direitos individuais e coletivos. Entre eles está a vedação à pena de morte.",
+    "text": "Em quais situações a pena de morte é admitida pela Constituição Federal de 1988?",
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 5º, XLVII, a, da CF/88 veda a pena de morte, salvo em caso de guerra declarada nos termos do art. 84, XIX, da CF. Portanto, apenas na hipótese de guerra declarada o ordenamento brasileiro admite a pena de morte, e ainda assim conforme o Código Penal Militar.",
+    "legal_basis": "Art. 5º, XLVII, a, CF/88; Art. 84, XIX, CF/88; Código Penal Militar",
+    "alternatives": [
+      {"letter": "A", "text": "Nunca, pois a CF/88 aboliu a pena de morte em caráter absoluto.", "is_correct": false, "explanation": "A CF/88 veda a pena de morte, mas abre uma exceção para crime militar em caso de guerra declarada."},
+      {"letter": "B", "text": "Somente para crimes hediondos, mediante aprovação pelo Tribunal do Júri.", "is_correct": false, "explanation": "A CF/88 não admite pena de morte para crimes hediondos, mesmo com aprovação do Júri."},
+      {"letter": "C", "text": "Em caso de guerra declarada, nos termos do art. 84, XIX, da CF/88.", "is_correct": true, "explanation": "Correto. O art. 5º, XLVII, a, da CF/88 veda a pena de morte, salvo em caso de guerra declarada, hipótese prevista no Código Penal Militar."},
+      {"letter": "D", "text": "Para crimes de terrorismo e tráfico internacional de drogas, por serem considerados crimes contra a humanidade.", "is_correct": false, "explanation": "Não há exceção à proibição da pena de morte para terrorismo ou tráfico na CF/88."},
+      {"letter": "E", "text": "Mediante emenda constitucional, que pode ampliar as hipóteses de pena de morte.", "is_correct": false, "explanation": "A abolição da pena de morte (exceto em guerra declarada) é cláusula pétrea implícita, ligada à dignidade humana; não pode ser suprimida por emenda constitucional."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-onu",
+    "question_type": "multipla_escolha",
+    "context_text": "O Alto Comissariado das Nações Unidas para os Direitos Humanos (ACNUDH) foi criado pela Resolução 48/141 da Assembleia Geral da ONU em 1993.",
+    "text": "Qual é a principal função do Alto Comissariado das Nações Unidas para os Direitos Humanos (ACNUDH)?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O ACNUDH tem a função de promover e proteger os direitos humanos no plano universal, coordenar as atividades de direitos humanos do sistema ONU e assessorar o Secretário-Geral. Não tem função jurisdicional; essa cabe à Corte Internacional de Justiça ou, no plano regional, às cortes regionais.",
+    "legal_basis": "Resolução 48/141 da Assembleia Geral da ONU (1993)",
+    "alternatives": [
+      {"letter": "A", "text": "Julgar Estados por violações de direitos humanos internacionalmente.", "is_correct": false, "explanation": "O ACNUDH não tem função jurisdicional; promoção e proteção são suas funções, não julgamento."},
+      {"letter": "B", "text": "Promover e proteger o gozo efetivo dos direitos humanos por todos e coordenar as atividades do sistema ONU.", "is_correct": true, "explanation": "Correto. O ACNUDH foi criado para promover e proteger os direitos humanos universalmente, apoiar o trabalho dos órgãos da ONU nessa área e prestar assistência técnica a Estados."},
+      {"letter": "C", "text": "Emitir passaportes e documentos de viagem para refugiados e apátridas em nome da ONU.", "is_correct": false, "explanation": "Essa é uma função do ACNUR (Alto Comissariado para Refugiados), não do ACNUDH (para Direitos Humanos)."},
+      {"letter": "D", "text": "Elaborar e aprovar tratados internacionais de direitos humanos vinculantes para todos os Estados.", "is_correct": false, "explanation": "Tratados são elaborados e adotados pela Assembleia Geral da ONU; o ACNUDH pode influenciar o processo, mas não tem poder de aprovação."},
+      {"letter": "E", "text": "Impor sanções econômicas a Estados violadores de direitos humanos.", "is_correct": false, "explanation": "Sanções econômicas são competência do Conselho de Segurança da ONU, não do ACNUDH."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "protecao-grupos-vulneraveis",
+    "question_type": "multipla_escolha",
+    "context_text": "A Convenção sobre os Direitos das Pessoas com Deficiência (CDPD), adotada pela ONU em 2006 e ratificada pelo Brasil pelo Decreto 6.949/2009, é um tratado inovador.",
+    "text": "A Convenção sobre os Direitos das Pessoas com Deficiência adotou qual modelo para compreender a deficiência?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A CDPD adotou o modelo social da deficiência, que considera a deficiência como resultado da interação entre pessoas com limitações e as barreiras impostas pela sociedade. Isso se contrapõe ao modelo médico, que via a deficiência como condição intrínseca da pessoa a ser tratada ou curada.",
+    "legal_basis": "Art. 1º e Preâmbulo da CDPD; Decreto 6.949/2009",
+    "alternatives": [
+      {"letter": "A", "text": "Modelo médico, que define a deficiência como doença a ser tratada e curada pela medicina.", "is_correct": false, "explanation": "O modelo médico é justamente o que a CDPD supera; a Convenção adotou o modelo social."},
+      {"letter": "B", "text": "Modelo caritativo, que trata as pessoas com deficiência como objetos de caridade pública.", "is_correct": false, "explanation": "O modelo caritativo é o mais antigo e foi superado pelos modelos médico e social. A CDPD adotou o modelo social, baseado em direitos."},
+      {"letter": "C", "text": "Modelo social, que entende a deficiência como resultado da interação entre limitações e barreiras sociais.", "is_correct": true, "explanation": "Correto. A CDPD adotou o modelo social, que considera que a deficiência não é condição intrinsecamente limitante, mas resulta da interação entre as características da pessoa e as barreiras físicas, comunicacionais e atitudinais da sociedade."},
+      {"letter": "D", "text": "Modelo trabalhista, que define a deficiência exclusivamente pela capacidade laboral reduzida.", "is_correct": false, "explanation": "A Convenção não adota um modelo trabalhista; seu enfoque é mais amplo, abrangendo todos os aspectos da vida social."},
+      {"letter": "E", "text": "Modelo estatal, pelo qual a deficiência é definida por lei de cada país soberanamente.", "is_correct": false, "explanation": "A CDPD estabelece um conceito mínimo internacional de deficiência, baseado no modelo social, não delegando a definição exclusivamente ao direito interno de cada Estado."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "question_type": "multipla_escolha",
+    "context_text": "A Comissão Interamericana de Direitos Humanos (CIDH) pode adotar medidas cautelares urgentes antes mesmo de encaminhar um caso à Corte IDH.",
+    "text": "As medidas cautelares emitidas pela CIDH têm como objetivo:",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "As medidas cautelares da CIDH têm caráter preventivo e urgente, visando evitar danos irreparáveis a pessoas ou ao objeto de uma petição pendente. Não têm caráter condenatório; servem para preservar a situação até que o caso seja examinado no mérito.",
+    "legal_basis": "Art. 25 do Regulamento da CIDH",
+    "alternatives": [
+      {"letter": "A", "text": "Condenar o Estado e fixar indenização compensatória às vítimas de violações.", "is_correct": false, "explanation": "Condenação e indenização são efeitos de uma sentença da Corte IDH no mérito, não de medidas cautelares da CIDH."},
+      {"letter": "B", "text": "Prevenir danos irreparáveis às pessoas em situação de risco grave e urgente.", "is_correct": true, "explanation": "Correto. As medidas cautelares da CIDH visam a proteção urgente de pessoas em situação de risco grave e iminente, evitando danos irreparáveis até que o caso seja analisado."},
+      {"letter": "C", "text": "Solicitar ao Conselho de Segurança da ONU autorização para intervenção militar no Estado infrator.", "is_correct": false, "explanation": "A CIDH não tem acesso ao Conselho de Segurança da ONU e não pode solicitar intervenção militar."},
+      {"letter": "D", "text": "Suspender a soberania do Estado acusado e assumir a administração do território afetado.", "is_correct": false, "explanation": "A CIDH não tem poder de suspender soberania estatal ou assumir funções administrativas territoriais."},
+      {"letter": "E", "text": "Determinar a prisão preventiva de agentes públicos responsáveis pelas violações.", "is_correct": false, "explanation": "A CIDH não tem poder coercitivo de determinar prisão de agentes públicos; essa é uma medida de direito interno."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "tortura",
+    "question_type": "multipla_escolha",
+    "context_text": "A proibição da tortura é considerada norma de jus cogens no direito internacional, o que lhe confere status especial.",
+    "text": "O que significa dizer que a proibição da tortura é uma norma de jus cogens no direito internacional?",
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Normas de jus cogens são normas imperativas do direito internacional geral aceitas e reconhecidas pela comunidade internacional como um todo, das quais não é permitida derrogação por tratado ou costume particular. A proibição da tortura tem esse status, sendo considerada absoluta e não derrogável mesmo em estado de emergência.",
+    "legal_basis": "Art. 53 da Convenção de Viena sobre o Direito dos Tratados (1969); Convenção contra a Tortura, art. 2º",
+    "alternatives": [
+      {"letter": "A", "text": "Significa que a norma pode ser derrogada por tratados bilaterais entre Estados que assim convencionem.", "is_correct": false, "explanation": "Normas de jus cogens são inderrogáveis por tratados, sejam bilaterais ou multilaterais."},
+      {"letter": "B", "text": "Significa que é uma norma imperativa, não derrogável por acordo entre Estados e aplicável a todos.", "is_correct": true, "explanation": "Correto. Jus cogens designa as normas imperativas do direito internacional geral, das quais não se admite derrogação por tratado. Todo tratado que contrarie norma de jus cogens é nulo."},
+      {"letter": "C", "text": "Significa que a norma é de aplicação facultativa, dependendo da vontade de cada Estado signatário.", "is_correct": false, "explanation": "O oposto: jus cogens é imperativo e obrigatório, independentemente da vontade particular dos Estados."},
+      {"letter": "D", "text": "Significa que somente organizações internacionais podem invocar a norma, não indivíduos.", "is_correct": false, "explanation": "Indivíduos também podem invocar a proibição da tortura, inclusive perante mecanismos internacionais de petição individual."},
+      {"letter": "E", "text": "Significa que a norma é hierarquicamente inferior aos tratados bilaterais, mas superior aos costumes internacionais.", "is_correct": false, "explanation": "Normas de jus cogens são hierarquicamente superiores a todos os outros tratados e costumes; tratados que as contrariem são nulos."}
+    ]
+  },
+  {
+    "subject_slug": "direitos-humanos",
+    "topic_slug": "sistema-interamericano",
+    "question_type": "multipla_escolha",
+    "context_text": "O Protocolo de San Salvador (1988) é o Protocolo Adicional à Convenção Americana sobre Direitos Humanos em matéria de Direitos Econômicos, Sociais e Culturais.",
+    "text": "Quais direitos são objeto do Protocolo de San Salvador (1988), vinculado à Convenção Americana?",
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Protocolo de San Salvador trata de direitos econômicos, sociais e culturais no âmbito do sistema interamericano, complementando a Convenção Americana que foca em direitos civis e políticos. Abrange direitos como saúde, educação, trabalho, previdência social, alimentação e cultura.",
+    "legal_basis": "Protocolo Adicional à Convenção Americana em Matéria de Direitos Econômicos, Sociais e Culturais (1988)",
+    "alternatives": [
+      {"letter": "A", "text": "Direitos civis e políticos (liberdade de expressão, devido processo legal, propriedade).", "is_correct": false, "explanation": "Direitos civis e políticos são objeto da Convenção Americana, não do Protocolo de San Salvador."},
+      {"letter": "B", "text": "Direitos econômicos, sociais e culturais (saúde, educação, trabalho, alimentação).", "is_correct": true, "explanation": "Correto. O Protocolo de San Salvador versa sobre direitos econômicos, sociais e culturais, complementando a Convenção Americana que foca em direitos civis e políticos."},
+      {"letter": "C", "text": "Direitos dos povos indígenas e proteção do patrimônio cultural latino-americano.", "is_correct": false, "explanation": "Direitos indígenas são tratados por instrumentos específicos (ex.: Declaração Americana sobre Direitos dos Povos Indígenas), não pelo Protocolo de San Salvador."},
+      {"letter": "D", "text": "Proibição da pena de morte e eliminação da tortura na América Latina.", "is_correct": false, "explanation": "Esses temas são tratados por outros instrumentos (Protocolo à Convenção Americana relativo à Abolição da Pena de Morte; Convenção Interamericana para Prevenir e Punir a Tortura)."},
+      {"letter": "E", "text": "Proteção do meio ambiente e desenvolvimento sustentável na região.", "is_correct": false, "explanation": "O Protocolo de San Salvador não aborda especificamente meio ambiente, embora mencione direito ao meio ambiente sadio como direito transversal."}
+    ]
+  }
+]
