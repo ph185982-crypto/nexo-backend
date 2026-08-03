@@ -69,7 +69,9 @@ async def startup():
         # Seed asynchronously — doesn't block the first request
         _seed_task = asyncio.create_task(_run_seed_in_background(_prf_pool))
     except Exception as e:
-        _startup_error = f"{type(e).__name__}: {e}"
+        import traceback
+        tb = traceback.format_exc()
+        _startup_error = f"{type(e).__name__}: {e} | TRACE: {tb[-600:]}"
         logger.error(f"[PRF] Startup error: {_startup_error}")
 
 
