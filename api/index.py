@@ -35,9 +35,22 @@ _prf_ready = False
 _prf_pool = None
 
 
+_seed_task = None
+
+
+async def _run_seed_in_background(pool):
+    """Seed the database in the background so cold start finishes fast."""
+    try:
+        from prf.seeds.seeder import seed_prf_database
+        await seed_prf_database(pool)
+        logger.info("[PRF] Background seed complete")
+    except Exception as e:
+        logger.error(f"[PRF] Background seed error: {e}")
+
+
 @app.on_event("startup")
 async def startup():
-    global _prf_ready, _prf_pool
+    global _prf_ready, _prf_pool, _seed_task
     if _prf_ready:
         return
 
@@ -48,10 +61,13 @@ async def startup():
 
     try:
         from prf.app import register_prf_routers, init_prf_database
+        import asyncio
         register_prf_routers(app)
         _prf_pool = await init_prf_database(db_url)
         _prf_ready = True
         logger.info("[PRF] Initialized on Vercel")
+        # Seed asynchronously — doesn't block the first request
+        _seed_task = asyncio.create_task(_run_seed_in_background(_prf_pool))
     except Exception as e:
         logger.error(f"[PRF] Startup error: {e}")
 

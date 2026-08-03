@@ -105,14 +105,9 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     except Exception as e:
         logger.warning(f"[PRF] Migration note: {e}")
 
-    # Seed data
-    try:
-        from prf.seeds.seeder import seed_prf_database
-        await seed_prf_database(pool)
-    except Exception as e:
-        logger.warning(f"[PRF] Seed note: {e}")
-
-    # Wire up repository
+    # Wire up repository before seeding so requests can be served immediately.
+    # Seeding runs as a background task on the first request to avoid blocking
+    # the cold start beyond Vercel's 60-second function limit.
     repo = PRFRepository(pool)
     deps.set_repo(repo)
     logger.info("[PRF] Repository initialized")
