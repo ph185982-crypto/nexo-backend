@@ -75,13 +75,16 @@ async def _init_connection(conn: asyncpg.Connection):
         )
 
 
-async def init_prf_database(database_url: str) -> asyncpg.Pool:
-    """Create connection pool, run schema, seed data, wire up the repository."""
+async def init_prf_database(database_url: str, ssl_ctx=True) -> asyncpg.Pool:
+    """Create connection pool, run schema, seed data, wire up the repository.
+
+    ssl_ctx — passed straight to asyncpg's ssl= parameter. When the caller
+    pre-resolved the hostname to an IP, this should be an SSLContext with
+    check_hostname=False so certificate validation still works.
+    """
     import asyncio
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
 
-    # EBUSY (errno 16) on getaddrinfo can occur on Lambda cold start if the
-    # DNS resolver races with the network stack initialization; retry resolves it.
     pool = None
     for attempt in range(3):
         try:
@@ -91,10 +94,11 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
                 max_size=5,
                 statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
                 init=_init_connection,
+                ssl=ssl_ctx,
             )
             break
         except OSError as e:
-            if e.errno == 16 and attempt < 2:
+            if e.errno == 16 and attempt < 2:  # EBUSY retry
                 wait = 2 ** attempt
                 logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/3 in {wait}s…")
                 await asyncio.sleep(wait)
