@@ -33,8 +33,7 @@ app.add_middleware(
 
 _prf_ready = False
 _prf_pool = None
-
-
+_startup_error = None
 _seed_task = None
 
 
@@ -50,13 +49,14 @@ async def _run_seed_in_background(pool):
 
 @app.on_event("startup")
 async def startup():
-    global _prf_ready, _prf_pool, _seed_task
+    global _prf_ready, _prf_pool, _seed_task, _startup_error
     if _prf_ready:
         return
 
     db_url = os.getenv("DATABASE_URL")
     if not db_url:
-        logger.warning("[PRF] DATABASE_URL not set — running without database")
+        _startup_error = "DATABASE_URL not set"
+        logger.warning(f"[PRF] {_startup_error}")
         return
 
     try:
@@ -69,7 +69,8 @@ async def startup():
         # Seed asynchronously — doesn't block the first request
         _seed_task = asyncio.create_task(_run_seed_in_background(_prf_pool))
     except Exception as e:
-        logger.error(f"[PRF] Startup error: {e}")
+        _startup_error = f"{type(e).__name__}: {e}"
+        logger.error(f"[PRF] Startup error: {_startup_error}")
 
 
 @app.on_event("shutdown")
@@ -116,7 +117,10 @@ async def status(check_ai: bool = False):
 
 @app.get("/health", tags=["Health"])
 async def health():
-    return {"status": "online", "prf_ready": _prf_ready}
+    payload = {"status": "online", "prf_ready": _prf_ready}
+    if _startup_error:
+        payload["startup_error"] = _startup_error
+    return payload
 
 
 _html_cache = None
