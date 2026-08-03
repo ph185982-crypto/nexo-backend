@@ -69,37 +69,56 @@ async def _run_seed_in_background(pool):
         logger.error(f"[PRF] Background seed error: {e}")
 
 
-def _resolve_db_url(database_url: str) -> tuple[str, object]:
-    """
-    Pre-resolve DB hostname synchronously in the calling thread.
+_RENDER_REGIONS = ["oregon", "ohio", "frankfurt", "singapore", "virginia"]
 
-    Vercel's Lambda environment throws EBUSY from getaddrinfo() when called via
-    asyncio's ThreadPoolExecutor (the default path asyncpg takes). Resolving the
-    IP in the main coroutine thread — which does have full network access — lets
-    us pass a numeric host directly to asyncpg, skipping the thread-executor
-    DNS call entirely.
 
-    Returns (resolved_url, ssl_context | True).
-    asyncpg needs ssl=SSLContext with check_hostname=False when the host is an IP.
+def _resolve_db_url(database_url: str) -> str:
     """
+    Fix unresolvable DB hostnames before asyncpg touches them.
+
+    Render internal hostnames (dpg-XXX-a) exist only on Render's private network.
+    From Vercel Lambda they can't resolve, which causes asyncio's mDNS fallback to
+    raise EBUSY.  We detect this pattern and swap in the correct external hostname
+    (dpg-XXX-a.REGION-postgres.render.com) whose public DNS record exists.
+
+    Returns the corrected URL (unchanged if the hostname already resolves).
+    """
+    import re
     try:
         parsed = urllib.parse.urlparse(database_url)
         host = parsed.hostname
-        port = parsed.port or 5432
-        addrs = socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
-        if addrs:
-            ip = addrs[0][4][0]
-            # Replace only the host part so credentials/dbname stay intact
-            resolved = database_url.replace(f"@{host}", f"@{ip}", 1)
-            import ssl as _ssl
-            ctx = _ssl.create_default_context()
-            ctx.check_hostname = False   # cert is for hostname, not the IP we resolved
-            ctx.verify_mode = _ssl.CERT_REQUIRED
-            logger.info(f"[PRF] DNS pre-resolved {host} → {ip}")
-            return resolved, ctx
+        if not host:
+            return database_url
+
+        # Quick check: does the hostname resolve as-is?
+        try:
+            socket.getaddrinfo(host, parsed.port or 5432, socket.AF_INET, socket.SOCK_STREAM)
+            logger.info(f"[PRF] DB host {host} resolves OK")
+            return database_url
+        except (socket.gaierror, OSError):
+            pass
+
+        # Render internal hostname pattern: dpg-{id}-a (no dots, no TLD)
+        if re.fullmatch(r"dpg-[a-z0-9]+-a", host):
+            for region in _RENDER_REGIONS:
+                ext = f"{host}.{region}-postgres.render.com"
+                try:
+                    socket.getaddrinfo(ext, 5432, socket.AF_INET, socket.SOCK_STREAM)
+                    # Found the right region — rebuild URL with external host + port
+                    new_url = database_url.replace(f"@{host}", f"@{ext}", 1)
+                    if not parsed.port:
+                        new_url = new_url.replace(f"@{ext}/", f"@{ext}:5432/", 1)
+                    if "sslmode" not in new_url:
+                        sep = "&" if "?" in new_url else "?"
+                        new_url += f"{sep}sslmode=require"
+                    logger.info(f"[PRF] Render internal→external: {host} → {ext}")
+                    return new_url
+                except (socket.gaierror, OSError):
+                    continue
+            logger.warning(f"[PRF] Could not resolve Render external host for {host}")
     except Exception as e:
-        logger.warning(f"[PRF] DNS pre-resolve failed ({e}), will let asyncpg resolve")
-    return database_url, True
+        logger.warning(f"[PRF] _resolve_db_url error: {e}")
+    return database_url
 
 
 async def _init_prf():
@@ -131,8 +150,8 @@ async def _init_prf():
         loop = asyncio.get_event_loop()
         loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
-        # Pre-resolve hostname → IP in the coroutine thread (no thread executor).
-        resolved_url, ssl_ctx = _resolve_db_url(db_url)
+        # Fix internal/unresolvable DB hostname before asyncpg touches it.
+        resolved_url = _resolve_db_url(db_url)
 
         from prf.app import register_prf_routers, init_prf_database
 
@@ -140,7 +159,7 @@ async def _init_prf():
             register_prf_routers(app)
             _routers_registered = True
 
-        _prf_pool = await init_prf_database(resolved_url, ssl_ctx=ssl_ctx)
+        _prf_pool = await init_prf_database(resolved_url)
         _prf_ready = True
         logger.info("[PRF] Initialized (lazy, on first request)")
         _seed_task = asyncio.create_task(_run_seed_in_background(_prf_pool))

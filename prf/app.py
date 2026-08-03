@@ -75,13 +75,8 @@ async def _init_connection(conn: asyncpg.Connection):
         )
 
 
-async def init_prf_database(database_url: str, ssl_ctx=True) -> asyncpg.Pool:
-    """Create connection pool, run schema, seed data, wire up the repository.
-
-    ssl_ctx — passed straight to asyncpg's ssl= parameter. When the caller
-    pre-resolved the hostname to an IP, this should be an SSLContext with
-    check_hostname=False so certificate validation still works.
-    """
+async def init_prf_database(database_url: str) -> asyncpg.Pool:
+    """Create connection pool, run schema, seed data, wire up the repository."""
     import asyncio
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
 
@@ -94,7 +89,6 @@ async def init_prf_database(database_url: str, ssl_ctx=True) -> asyncpg.Pool:
                 max_size=5,
                 statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
                 init=_init_connection,
-                ssl=ssl_ctx,
             )
             break
         except OSError as e:
