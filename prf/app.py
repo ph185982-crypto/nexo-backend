@@ -77,14 +77,30 @@ async def _init_connection(conn: asyncpg.Connection):
 
 async def init_prf_database(database_url: str) -> asyncpg.Pool:
     """Create connection pool, run schema, seed data, wire up the repository."""
+    import asyncio
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
-    pool = await asyncpg.create_pool(
-        database_url,
-        min_size=1,
-        max_size=5,
-        statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
-        init=_init_connection,
-    )
+
+    # EBUSY (errno 16) on getaddrinfo can occur on Lambda cold start if the
+    # DNS resolver races with the network stack initialization; retry resolves it.
+    pool = None
+    for attempt in range(3):
+        try:
+            pool = await asyncpg.create_pool(
+                database_url,
+                min_size=1,
+                max_size=5,
+                statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
+                init=_init_connection,
+            )
+            break
+        except OSError as e:
+            if e.errno == 16 and attempt < 2:
+                wait = 2 ** attempt
+                logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/3 in {wait}s…")
+                await asyncio.sleep(wait)
+            else:
+                raise
+
     logger.info("[PRF] DB pool created")
 
     # Run schema

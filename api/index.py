@@ -8,7 +8,7 @@ import json
 # Make repo root importable inside Vercel's function sandbox
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -35,6 +35,8 @@ _prf_ready = False
 _prf_pool = None
 _startup_error = None
 _seed_task = None
+_initializing = False
+_routers_registered = False
 
 
 async def _run_seed_in_background(pool):
@@ -47,32 +49,53 @@ async def _run_seed_in_background(pool):
         logger.error(f"[PRF] Background seed error: {e}")
 
 
-@app.on_event("startup")
-async def startup():
-    global _prf_ready, _prf_pool, _seed_task, _startup_error
-    if _prf_ready:
+async def _init_prf():
+    """
+    Lazy initializer — called on the first HTTP request so that the Lambda
+    network stack is fully available (getaddrinfo EBUSY on startup is a known
+    AWS Lambda / Vercel cold-start race: the DNS resolver isn't ready yet
+    during the INIT phase, but is always ready by the time the first request
+    arrives).
+    """
+    global _prf_ready, _prf_pool, _seed_task, _startup_error, _initializing, _routers_registered
+    if _prf_ready or _initializing:
         return
 
+    _initializing = True
     db_url = os.getenv("DATABASE_URL")
     if not db_url:
         _startup_error = "DATABASE_URL not set"
+        _initializing = False
         logger.warning(f"[PRF] {_startup_error}")
         return
 
     try:
-        from prf.app import register_prf_routers, init_prf_database
         import asyncio
-        register_prf_routers(app)
+        from prf.app import register_prf_routers, init_prf_database
+
+        if not _routers_registered:
+            register_prf_routers(app)
+            _routers_registered = True
+
         _prf_pool = await init_prf_database(db_url)
         _prf_ready = True
-        logger.info("[PRF] Initialized on Vercel")
-        # Seed asynchronously — doesn't block the first request
+        logger.info("[PRF] Initialized (lazy, on first request)")
         _seed_task = asyncio.create_task(_run_seed_in_background(_prf_pool))
     except Exception as e:
         import traceback
         tb = traceback.format_exc()
         _startup_error = f"{type(e).__name__}: {e} | TRACE: {tb[-600:]}"
-        logger.error(f"[PRF] Startup error: {_startup_error}")
+        logger.error(f"[PRF] Init error: {_startup_error}")
+    finally:
+        _initializing = False
+
+
+@app.middleware("http")
+async def lazy_init_middleware(request: Request, call_next):
+    """Initialize DB on the very first request, not at startup."""
+    if not _prf_ready and not _initializing:
+        await _init_prf()
+    return await call_next(request)
 
 
 @app.on_event("shutdown")
