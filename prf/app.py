@@ -77,17 +77,13 @@ async def _init_connection(conn: asyncpg.Connection):
 
 async def init_prf_database(database_url: str) -> asyncpg.Pool:
     """Create connection pool, run schema, seed data, wire up the repository."""
-    import asyncio
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
-    pool = await asyncio.wait_for(
-        asyncpg.create_pool(
-            database_url,
-            min_size=1,
-            max_size=5,
-            statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
-            init=_init_connection,
-        ),
-        timeout=20,
+    pool = await asyncpg.create_pool(
+        database_url,
+        min_size=1,
+        max_size=5,
+        statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
+        init=_init_connection,
     )
     logger.info("[PRF] DB pool created")
 
