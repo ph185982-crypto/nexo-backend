@@ -203,6 +203,41 @@ async def status(check_ai: bool = False):
     return payload
 
 
+@app.get("/debug/net", tags=["Debug"])
+async def debug_net():
+    """Diagnose network/DNS in Lambda — temporary endpoint."""
+    import socket, urllib.parse
+    results = {}
+    # Test basic DNS (Google)
+    for label, host in [("google", "google.com"), ("cloudflare", "1.1.1.1")]:
+        try:
+            ip = socket.gethostbyname(host)
+            results[label] = ip
+        except Exception as e:
+            results[label] = f"{type(e).__name__}: {e}"
+    # Test DB host
+    db_url = os.getenv("DATABASE_URL", "")
+    if db_url:
+        try:
+            host = urllib.parse.urlparse(db_url).hostname
+            results["db_host"] = host
+            ip = socket.gethostbyname(host)
+            results["db_ip"] = ip
+        except Exception as e:
+            results["db_resolve"] = f"{type(e).__name__}: {e}"
+    # Try a TCP connect to the resolved IP (bypass DNS in asyncio)
+    if db_url:
+        try:
+            host = urllib.parse.urlparse(db_url).hostname
+            port = urllib.parse.urlparse(db_url).port or 5432
+            sock = socket.create_connection((host, port), timeout=5)
+            results["tcp_connect"] = "ok"
+            sock.close()
+        except Exception as e:
+            results["tcp_connect"] = f"{type(e).__name__}: {e}"
+    return results
+
+
 @app.get("/health", tags=["Health"])
 async def health():
     payload = {"status": "online", "prf_ready": _prf_ready}
