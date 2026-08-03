@@ -72,18 +72,27 @@ async def _run_seed_in_background(pool):
 _RENDER_REGIONS = ["oregon", "ohio", "frankfurt", "singapore", "virginia"]
 
 
-def _probe_render_region(host: str) -> str | None:
+def _probe_render_region(host: str, user: str = "postgres", dbname: str = "postgres") -> str | None:
     """
-    Find the correct Render region by probing each one with a real PostgreSQL
-    SSL handshake.  All Render external hostnames resolve in public DNS, so
-    DNS-resolution alone cannot distinguish the active region.  We send the
-    8-byte SSLRequest packet and complete the TLS handshake — only the region
-    that actually hosts the database will accept the connection.
+    Find the Render region that actually hosts this database.
+
+    All five Render external hostnames resolve in DNS and accept TLS — so a
+    TLS-only probe always picks oregon (the first in the list).
+
+    The real discriminator: send a PostgreSQL startup message after SSL.
+    pgBouncer on wrong regions drops the connection silently (no byte received).
+    The correct region routes to the real database and responds with 'R'
+    (AuthenticationRequest) or 'E' (ErrorResponse) — either confirms a live
+    PostgreSQL server and is the right region.
     """
-    import ssl as _ssl
+    import ssl as _ssl, struct
+
+    params = f"user\x00{user}\x00database\x00{dbname}\x00\x00".encode("utf-8")
+    startup_msg = struct.pack(">I", 8 + len(params)) + struct.pack(">I", 196608) + params
+
     for region in _RENDER_REGIONS:
         ext = f"{host}.{region}-postgres.render.com"
-        raw = None
+        raw = ssl_sock = None
         try:
             raw = socket.create_connection((ext, 5432), timeout=4)
             raw.sendall(b"\x00\x00\x00\x08\x04\xd2\x16/")
@@ -96,16 +105,25 @@ def _probe_render_region(host: str) -> str | None:
             ctx.check_hostname = False
             ctx.verify_mode = _ssl.CERT_NONE
             ssl_sock = ctx.wrap_socket(raw, server_hostname=ext)
+            raw = None
+            ssl_sock.settimeout(4.0)
+            ssl_sock.sendall(startup_msg)
+            tag = ssl_sock.recv(1)
             ssl_sock.close()
-            logger.info(f"[PRF] Render region found via probe: {region} ({ext})")
-            return ext
+            ssl_sock = None
+            if tag:  # any byte = real PG response = this is the correct region
+                logger.info(f"[PRF] Render region confirmed (PG tag={tag!r}): {region} ({ext})")
+                return ext
+            logger.debug(f"[PRF] Region {region}: no PG response after startup (wrong region)")
         except Exception as exc:
             logger.debug(f"[PRF] Region {region} probe failed: {exc}")
-            try:
-                if raw:
-                    raw.close()
-            except Exception:
-                pass
+        finally:
+            for s in (ssl_sock, raw):
+                try:
+                    if s:
+                        s.close()
+                except Exception:
+                    pass
     return None
 
 
@@ -138,7 +156,9 @@ def _resolve_db_url(database_url: str) -> str:
 
         # Render internal hostname pattern: dpg-{id}-a (no dots, no TLD)
         if re.fullmatch(r"dpg-[a-z0-9]+-a", host):
-            ext = _probe_render_region(host)
+            u = parsed.username or "postgres"
+            db = (parsed.path or "/postgres").lstrip("/") or "postgres"
+            ext = _probe_render_region(host, user=u, dbname=db)
             if ext:
                 new_url = database_url.replace(f"@{host}", f"@{ext}", 1)
                 if not parsed.port:
