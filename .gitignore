@@ -16,3 +16,4 @@ venv/
 # TTS audio cache
 prf/audio_cache/*.mp3
 .vercel
+.env*
