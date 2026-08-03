@@ -1,0 +1,11 @@
+vendedoria/
+node_modules/
+.git/
+scrapers/
+docs/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local
+data/pmgo/imports/

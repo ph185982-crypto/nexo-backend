@@ -1,0 +1,458 @@
+[
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a criação da Polícia Militar de Goiás, é correto afirmar que:",
+    "alternatives": [
+      {"letter": "A", "text": "A PMGO foi criada diretamente pelo Governo Federal em 1822, com a independência do Brasil.", "is_correct": false},
+      {"letter": "B", "text": "A PMGO tem sua origem na Força Pública do Estado de Goiás, criada no século XIX como força policial estadual.", "is_correct": true},
+      {"letter": "C", "text": "A PMGO foi criada em 1889, após a Proclamação da República, como substituta da Guarda Nacional.", "is_correct": false},
+      {"letter": "D", "text": "A PMGO foi criada em 1964, durante o regime militar, com estrutura organizacional federal.", "is_correct": false},
+      {"letter": "E", "text": "A PMGO surgiu em 1988 com a promulgação da Constituição Federal, que criou as polícias militares estaduais.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A PMGO tem suas raízes na Força Pública do Estado de Goiás, criada no século XIX. A Polícia Militar como instituição tem longa tradição histórica em Goiás, sendo reorganizada ao longo do tempo pelas Constituições estaduais e legislação específica.",
+    "legal_basis": "Lei Complementar estadual nº 144/2010 — Lei de Organização da PMGO"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "geografia",
+    "question_type": "multipla_escolha",
+    "text": "Goiás é o estado com maior número de municípios no Brasil Central. Sua capital, Goiânia, foi fundada em:",
+    "alternatives": [
+      {"letter": "A", "text": "1889, após a Proclamação da República.", "is_correct": false},
+      {"letter": "B", "text": "1933, como nova capital planejada para substituir Goiás Velho.", "is_correct": true},
+      {"letter": "C", "text": "1960, ao mesmo tempo em que Brasília foi inaugurada.", "is_correct": false},
+      {"letter": "D", "text": "1922, durante as comemorações do Centenário da Independência.", "is_correct": false},
+      {"letter": "E", "text": "1945, ao final da Segunda Guerra Mundial.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiânia foi fundada em 1933 pelo interventor Pedro Ludovico Teixeira, como nova capital planejada do estado de Goiás, substituindo a cidade histórica de Goiás (Goiás Velho). A transferência da capital foi efetivada em 1937.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "bioma",
+    "question_type": "multipla_escolha",
+    "text": "O bioma predominante no estado de Goiás é o:",
+    "alternatives": [
+      {"letter": "A", "text": "Amazônia, que cobre o norte do estado.", "is_correct": false},
+      {"letter": "B", "text": "Cerrado, com algumas faixas de Mata Atlântica no sul.", "is_correct": false},
+      {"letter": "C", "text": "Cerrado, bioma que cobre a maior parte do estado.", "is_correct": true},
+      {"letter": "D", "text": "Pantanal, predominante nas áreas alagáveis do sudoeste goiano.", "is_correct": false},
+      {"letter": "E", "text": "Caatinga, que penetra pelo nordeste do estado.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Cerrado é o bioma dominante em Goiás, cobrindo a maior parte do território estadual. É um bioma brasileiro de grande biodiversidade, considerado um dos 'hotspots' mundiais de biodiversidade. Goiás é um dos estados com maior extensão de Cerrado.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "economia",
+    "question_type": "multipla_escolha",
+    "text": "A economia goiana destaca-se, entre outros setores, especialmente pela produção de:",
+    "alternatives": [
+      {"letter": "A", "text": "Petróleo e gás natural, sendo o maior produtor terrestre do Brasil.", "is_correct": false},
+      {"letter": "B", "text": "Agropecuária (soja, milho, cana-de-açúcar, pecuária bovina), agronegócio e mineração.", "is_correct": true},
+      {"letter": "C", "text": "Produtos industriais de alta tecnologia (eletrônicos e automóveis).", "is_correct": false},
+      {"letter": "D", "text": "Pesca industrial e aquicultura, em razão da grande malha hídrica.", "is_correct": false},
+      {"letter": "E", "text": "Exclusivamente serviços financeiros e turismo de negócios.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiás é um dos maiores produtores agropecuários do Brasil, com destaque para soja, milho, cana-de-açúcar e pecuária bovina. O estado também se destaca na mineração (calcário, nióbio, cobre) e na produção de etanol. Anápolis é um polo industrial e farmacêutico.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "constituicao-estadual",
+    "question_type": "multipla_escolha",
+    "text": "A Constituição do Estado de Goiás em vigor foi promulgada em:",
+    "alternatives": [
+      {"letter": "A", "text": "1946, após o fim do Estado Novo.", "is_correct": false},
+      {"letter": "B", "text": "1967, durante o regime militar.", "is_correct": false},
+      {"letter": "C", "text": "1988, juntamente com a Constituição Federal.", "is_correct": false},
+      {"letter": "D", "text": "1989, logo após a promulgação da Constituição Federal de 1988.", "is_correct": true},
+      {"letter": "E", "text": "2000, após revisão constitucional estadual.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Constituição do Estado de Goiás foi promulgada em 5 de outubro de 1989, seguindo o prazo estabelecido pela Constituição Federal de 1988, que determinou que os estados promulgassem suas constituições estaduais no prazo de 18 meses.",
+    "legal_basis": "CE-GO, promulgada em 05/10/1989"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "seguranca-publica",
+    "question_type": "multipla_escolha",
+    "text": "Conforme a Constituição do Estado de Goiás, são órgãos de segurança pública no estado:",
+    "alternatives": [
+      {"letter": "A", "text": "Polícia Militar, Polícia Civil, Polícia Técnico-Científica e Corpo de Bombeiros.", "is_correct": false},
+      {"letter": "B", "text": "Polícia Militar, Polícia Civil, Corpo de Bombeiros e Polícia Penal.", "is_correct": true},
+      {"letter": "C", "text": "Apenas Polícia Militar e Polícia Civil.", "is_correct": false},
+      {"letter": "D", "text": "Polícia Militar, Polícia Civil e Guarda Civil Metropolitana.", "is_correct": false},
+      {"letter": "E", "text": "Polícia Militar, Polícia Civil, Corpo de Bombeiros e Polícia Rodoviária Estadual.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A CE-GO prevê como órgãos de segurança pública a Polícia Militar, Polícia Civil (incluindo a Polícia Técnico-Científica como área da Polícia Civil), Corpo de Bombeiros e Polícia Penal (antiga Polícia Penitenciária), seguindo a estrutura da CF/88 adaptada ao estado.",
+    "legal_basis": "CE-GO; CF/88, art. 144"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "regioes-administrativa",
+    "question_type": "multipla_escolha",
+    "text": "A Região Metropolitana de Goiânia, instituída pela Lei Complementar Estadual nº 27/1999, inclui como núcleo central:",
+    "alternatives": [
+      {"letter": "A", "text": "Anápolis, polo industrial e comercial do estado.", "is_correct": false},
+      {"letter": "B", "text": "Aparecida de Goiânia, segunda maior cidade do estado.", "is_correct": false},
+      {"letter": "C", "text": "Goiânia, capital do estado.", "is_correct": true},
+      {"letter": "D", "text": "Trindade, município com forte centralidade religiosa.", "is_correct": false},
+      {"letter": "E", "text": "Senador Canedo, maior área industrial da região.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Região Metropolitana de Goiânia tem Goiânia como núcleo central. É composta por diversos municípios do entorno, como Aparecida de Goiânia, Trindade, Senador Canedo, Goianira, entre outros. Anápolis pertence a uma região específica (aglomerado urbano).",
+    "legal_basis": "Lei Complementar Estadual nº 27/1999"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia",
+    "question_type": "multipla_escolha",
+    "text": "A cidade de Goiás (Goiás Velho) é reconhecida como Patrimônio Mundial pela UNESCO desde 2001. Seu conjunto arquitetônico é do período:",
+    "alternatives": [
+      {"letter": "A", "text": "Colonial (séculos XVII-XIX), com arquitetura barroca luso-brasileira.", "is_correct": true},
+      {"letter": "B", "text": "Art déco, dos anos 1920-1940, influenciado pela arquitetura de Goiânia.", "is_correct": false},
+      {"letter": "C", "text": "Modernista, projetado por Oscar Niemeyer no século XX.", "is_correct": false},
+      {"letter": "D", "text": "Republicano, da Proclamação da República até a fundação de Goiânia.", "is_correct": false},
+      {"letter": "E", "text": "Pré-colombiano, com influência indígena Kayapó.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiás (Goiás Velho) foi capital do estado de Goiás até 1937 e tem seu conjunto urbanístico e arquitetônico do período colonial (séculos XVII-XIX) reconhecido como Patrimônio Cultural da Humanidade pela UNESCO desde 2001. O estilo é barroco luso-brasileiro.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "hidrografia",
+    "question_type": "multipla_escolha",
+    "text": "O principal rio do estado de Goiás, que nasce no Parque Nacional das Emas e deságua no rio Paraná, é o:",
+    "alternatives": [
+      {"letter": "A", "text": "Rio Araguaia.", "is_correct": false},
+      {"letter": "B", "text": "Rio Tocantins.", "is_correct": false},
+      {"letter": "C", "text": "Rio Paranaíba.", "is_correct": false},
+      {"letter": "D", "text": "Rio Paranaíba, que junto com o Grande forma o Paraná.", "is_correct": false},
+      {"letter": "E", "text": "Rio das Almas, afluente do Rio Tocantins, e o Rio Paranaíba, que forma o Rio Paraná.", "is_correct": true}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiás tem dois principais sistemas hidrográficos: a Bacia do Araguaia-Tocantins (norte) e a Bacia do Paraná (sul), com o Rio Paranaíba como principal formador do Rio Paraná. O Rio Araguaia forma parte da fronteira com Mato Grosso.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "fronteiras",
+    "question_type": "multipla_escolha",
+    "text": "O estado de Goiás faz fronteira com TODOS os estados abaixo, EXCETO:",
+    "alternatives": [
+      {"letter": "A", "text": "Mato Grosso.", "is_correct": false},
+      {"letter": "B", "text": "Minas Gerais.", "is_correct": false},
+      {"letter": "C", "text": "Bahia.", "is_correct": false},
+      {"letter": "D", "text": "Pará.", "is_correct": true},
+      {"letter": "E", "text": "Tocantins.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiás faz fronteira com: Mato Grosso, Mato Grosso do Sul, Minas Gerais, Bahia, Tocantins, Pará (não — com o Tocantins que faz fronteira com o Pará), Maranhão (pelo norte, via Tocantins), Piauí (não diretamente). Goiás NÃO faz fronteira com o Pará diretamente — o Tocantins é o estado intermediário. Também faz fronteira com o Distrito Federal.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "politica",
+    "question_type": "multipla_escolha",
+    "text": "O Poder Legislativo do Estado de Goiás é exercido pela:",
+    "alternatives": [
+      {"letter": "A", "text": "Câmara dos Deputados Estaduais de Goiás.", "is_correct": false},
+      {"letter": "B", "text": "Assembleia Legislativa do Estado de Goiás (ALEGO).", "is_correct": true},
+      {"letter": "C", "text": "Câmara Municipal de Goiânia, como sede da capital.", "is_correct": false},
+      {"letter": "D", "text": "Congresso Estadual de Goiás.", "is_correct": false},
+      {"letter": "E", "text": "Senado Estadual de Goiás.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Poder Legislativo estadual goiano é exercido pela Assembleia Legislativa do Estado de Goiás (ALEGO), composta por deputados estaduais eleitos pelo voto popular. A ALEGO tem sede em Goiânia.",
+    "legal_basis": "CE-GO, art. 13"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "cultura",
+    "question_type": "multipla_escolha",
+    "text": "A Romaria de Trindade, considerada uma das maiores procissões religiosas do Brasil, celebra a:",
+    "alternatives": [
+      {"letter": "A", "text": "Nossa Senhora Aparecida, padroeira do Brasil.", "is_correct": false},
+      {"letter": "B", "text": "Divino Pai Eterno, manifestação do Deus Pai na doutrina católica.", "is_correct": true},
+      {"letter": "C", "text": "São João Batista, padroeiro da cidade de Trindade.", "is_correct": false},
+      {"letter": "D", "text": "Nossa Senhora do Rosário, padroeira do estado de Goiás.", "is_correct": false},
+      {"letter": "E", "text": "Santo Antônio de Pádua, protetor dos pobres.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Romaria do Divino Pai Eterno de Trindade (GO) é uma das maiores manifestações religiosas do Brasil, reunindo milhões de fiéis. A Basílica Santuário do Divino Pai Eterno é o principal ponto de peregrinação, especialmente no período de festas (Pentecostes).",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "pmgo-estrutura",
+    "question_type": "multipla_escolha",
+    "text": "Conforme a Lei Complementar nº 144/2010 (Lei de Organização da PMGO), a Polícia Militar de Goiás é instituição:",
+    "alternatives": [
+      {"letter": "A", "text": "Federal, subordinada ao Ministério da Justiça.", "is_correct": false},
+      {"letter": "B", "text": "Estadual, permanente, organizada com base na hierarquia e disciplina, subordinada ao Governador do Estado.", "is_correct": true},
+      {"letter": "C", "text": "Municipal, com atuação restrita ao município de Goiânia.", "is_correct": false},
+      {"letter": "D", "text": "Autarquia especial, com autonomia financeira e administrativa.", "is_correct": false},
+      {"letter": "E", "text": "Órgão auxiliar das Forças Armadas, sendo reserva do Exército Brasileiro.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A PMGO é uma instituição estadual permanente, organizada com base na hierarquia e na disciplina militares, subordinada ao Governador do Estado como Chefe do Poder Executivo. É força auxiliar e reserva do Exército Brasileiro (CF/88, art. 144, §6º).",
+    "legal_basis": "LC Estadual nº 144/2010; CF/88, art. 144, §6º"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "historia",
+    "question_type": "multipla_escolha",
+    "text": "A construção de Brasília impactou profundamente Goiás, especialmente porque:",
+    "alternatives": [
+      {"letter": "A", "text": "Resultou na anexação do sudeste goiano ao Distrito Federal.", "is_correct": false},
+      {"letter": "B", "text": "Levou à criação do Distrito Federal dentro do território goiano, com cessão de terras pelo estado.", "is_correct": true},
+      {"letter": "C", "text": "Causou o esvaziamento demográfico de Goiânia para Brasília.", "is_correct": false},
+      {"letter": "D", "text": "Obrigou a transferência da capital do estado de Goiânia para Anápolis.", "is_correct": false},
+      {"letter": "E", "text": "Criou tensões limítrofes com Minas Gerais sobre o território do entorno de Brasília.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A criação de Brasília implicou a cessão de parte do território goiano para a formação do Distrito Federal (DF). A área do DF foi desmembrada de Goiás e de Minas Gerais, com predominância da cessão goiana. Isso gerou o chamado 'Entorno do DF', com municípios goianos que passaram a ter forte dependência funcional de Brasília.",
+    "legal_basis": "CF/1946; Lei nº 2.874/1956; CF/1988, art. 18, §1º"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "populacao",
+    "question_type": "multipla_escolha",
+    "text": "De acordo com o Censo de 2022 do IBGE, Goiás é o estado mais populoso da Região Centro-Oeste, com população estimada superior a:",
+    "alternatives": [
+      {"letter": "A", "text": "4 milhões de habitantes.", "is_correct": false},
+      {"letter": "B", "text": "7 milhões de habitantes.", "is_correct": true},
+      {"letter": "C", "text": "10 milhões de habitantes.", "is_correct": false},
+      {"letter": "D", "text": "12 milhões de habitantes.", "is_correct": false},
+      {"letter": "E", "text": "2 milhões de habitantes.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiás é o estado mais populoso do Centro-Oeste brasileiro, com população superior a 7 milhões de habitantes segundo dados do Censo 2022 do IBGE. Goiânia e Aparecida de Goiânia são os municípios mais populosos.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "direitos-humanos-pmgo",
+    "question_type": "multipla_escolha",
+    "text": "No âmbito da PMGO, o órgão responsável pelo controle interno das atividades policiais e apuração de infrações disciplinares é:",
+    "alternatives": [
+      {"letter": "A", "text": "O Ministério Público Estadual, por meio da Promotoria Especializada.", "is_correct": false},
+      {"letter": "B", "text": "A Corregedoria da Polícia Militar de Goiás (COR-PM).", "is_correct": true},
+      {"letter": "C", "text": "A Secretaria de Segurança Pública do Estado.", "is_correct": false},
+      {"letter": "D", "text": "O Tribunal de Justiça Militar de Goiás.", "is_correct": false},
+      {"letter": "E", "text": "A Ouvidoria de Polícia, com autonomia funcional.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Corregedoria da Polícia Militar de Goiás (COR-PM) é o órgão de controle interno responsável pela apuração de transgressões disciplinares e crimes militares praticados por policiais militares. É parte integrante da estrutura organizacional da PMGO.",
+    "legal_basis": "LC Estadual nº 144/2010; Regulamento Disciplinar"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "infraestrutura",
+    "question_type": "multipla_escolha",
+    "text": "O Aeroporto Internacional de Goiânia, um dos mais movimentados do Centro-Oeste, denomina-se:",
+    "alternatives": [
+      {"letter": "A", "text": "Aeroporto Internacional Marechal Rondon.", "is_correct": false},
+      {"letter": "B", "text": "Aeroporto Internacional Santa Genoveva.", "is_correct": true},
+      {"letter": "C", "text": "Aeroporto Internacional Pedro Ludovico Teixeira.", "is_correct": false},
+      {"letter": "D", "text": "Aeroporto Internacional Anhanguera.", "is_correct": false},
+      {"letter": "E", "text": "Aeroporto Internacional Caiapó.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Aeroporto Internacional de Goiânia chama-se Santa Genoveva, em homenagem à padroeira de Paris (patrona da aviação). É um importante hub do Centro-Oeste, com voos domésticos e internacionais.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "turismo",
+    "question_type": "multipla_escolha",
+    "text": "A Chapada dos Veadeiros, localizada no norte de Goiás, é um importante destino ecológico por ser:",
+    "alternatives": [
+      {"letter": "A", "text": "Patrimônio Nacional apenas, protegido pelo IBAMA.", "is_correct": false},
+      {"letter": "B", "text": "Patrimônio Mundial da Humanidade pela UNESCO desde 2001, área de Cerrado.", "is_correct": true},
+      {"letter": "C", "text": "Reserva Biosférica da Mata Atlântica.", "is_correct": false},
+      {"letter": "D", "text": "Parque Industrial de turismo ecológico administrado pelo governo estadual.", "is_correct": false},
+      {"letter": "E", "text": "Sítio arqueológico pré-histórico, sem proteção ambiental formal.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Chapada dos Veadeiros foi declarada Patrimônio Mundial da Humanidade pela UNESCO em 2001 (junto com outras áreas do Cerrado). O Parque Nacional da Chapada dos Veadeiros abriga cerrado nativo, cachoeiras e rica biodiversidade, sendo um dos principais destinos ecológicos do Brasil.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "agronegocio",
+    "question_type": "multipla_escolha",
+    "text": "Em termos de produção agrícola, Goiás se destaca como um dos maiores produtores nacionais de:",
+    "alternatives": [
+      {"letter": "A", "text": "Café, sendo o segundo maior produtor nacional.", "is_correct": false},
+      {"letter": "B", "text": "Cana-de-açúcar, com grande capacidade instalada de usinas sucroalcooleiras.", "is_correct": true},
+      {"letter": "C", "text": "Cacau, em razão das condições climáticas do sul do estado.", "is_correct": false},
+      {"letter": "D", "text": "Fumo/tabaco, principal cultura de exportação.", "is_correct": false},
+      {"letter": "E", "text": "Borracha natural, com extensa área de seringais.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiás é um dos maiores produtores de cana-de-açúcar do Brasil, com forte parque sucroalcooleiro. Também se destaca em soja, milho, algodão, sorgo e pecuária. A produção de etanol é uma das principais fontes de receita do agronegócio goiano.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "judiciario",
+    "question_type": "multipla_escolha",
+    "text": "O órgão máximo do Poder Judiciário do Estado de Goiás é:",
+    "alternatives": [
+      {"letter": "A", "text": "O Tribunal Regional Federal da 1ª Região, sediado em Brasília.", "is_correct": false},
+      {"letter": "B", "text": "O Tribunal de Justiça do Estado de Goiás (TJGO), com sede em Goiânia.", "is_correct": true},
+      {"letter": "C", "text": "O Superior Tribunal de Justiça, como instância recursal superior.", "is_correct": false},
+      {"letter": "D", "text": "O Tribunal de Justiça Militar de Goiás (TJM-GO), para todos os crimes.", "is_correct": false},
+      {"letter": "E", "text": "O Conselho Nacional de Justiça (CNJ), como órgão de controle externo.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Tribunal de Justiça do Estado de Goiás (TJGO), sediado em Goiânia, é o órgão máximo do Poder Judiciário estadual. O TJM-GO é órgão específico para crimes militares, mas de esfera mais restrita. O CNJ é órgão de controle externo do Judiciário, não instância judicial.",
+    "legal_basis": "CE-GO; CF/88, art. 125"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "policiamento",
+    "question_type": "multipla_escolha",
+    "text": "O policiamento ostensivo fardado em Goiás é de responsabilidade exclusiva da:",
+    "alternatives": [
+      {"letter": "A", "text": "Polícia Civil do Estado de Goiás.", "is_correct": false},
+      {"letter": "B", "text": "Polícia Militar de Goiás, conforme a Constituição Federal.", "is_correct": true},
+      {"letter": "C", "text": "Guarda Municipal dos municípios goianos.", "is_correct": false},
+      {"letter": "D", "text": "Polícia Rodoviária Federal, nas rodovias, e Polícia Militar, nas cidades.", "is_correct": false},
+      {"letter": "E", "text": "Secretaria de Segurança Pública, que coordena todas as forças policiais.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A CF/88, art. 144, §5º, atribui às Polícias Militares a competência para o policiamento ostensivo e a preservação da ordem pública. Em Goiás, esse papel é da PMGO, enquanto a Polícia Civil realiza o policiamento investigativo.",
+    "legal_basis": "CF/88, art. 144, §5º"
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "patrimonio-historico",
+    "question_type": "multipla_escolha",
+    "text": "A Catedral Metropolitana de Goiânia, projetada pelo arquiteto Irmão Manoel, é um exemplo da arquitetura:",
+    "alternatives": [
+      {"letter": "A", "text": "Barroca colonial, semelhante às igrejas históricas de Goiás Velho.", "is_correct": false},
+      {"letter": "B", "text": "Modernista, em harmonia com o estilo art déco do Plano de Goiânia.", "is_correct": true},
+      {"letter": "C", "text": "Neogótica, com influência europeia medieval.", "is_correct": false},
+      {"letter": "D", "text": "Neoclássica, com colunas gregas e frontão romano.", "is_correct": false},
+      {"letter": "E", "text": "Contemporânea, construída no século XXI com vidro e aço.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Goiânia foi projetada nos anos 1930 pelo urbanista Attílio Corrêa Lima com forte influência do Art Déco. A Catedral Metropolitana e outros marcos arquitetônicos de Goiânia refletem esse estilo modernista-art déco que caracteriza o centro histórico da cidade.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "mineracao",
+    "question_type": "multipla_escolha",
+    "text": "O município goiano que abriga a maior reserva de nióbio do mundo e é um importante polo de mineração é:",
+    "alternatives": [
+      {"letter": "A", "text": "Catalão, no sul de Goiás.", "is_correct": true},
+      {"letter": "B", "text": "Cristalina, no centro-sul do estado.", "is_correct": false},
+      {"letter": "C", "text": "Formosa, no Entorno do Distrito Federal.", "is_correct": false},
+      {"letter": "D", "text": "Rio Verde, no sudoeste goiano.", "is_correct": false},
+      {"letter": "E", "text": "Ceres, no vale do Rio das Almas.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Catalão é um importante polo industrial e de mineração do sul de Goiás, com exploração de nióbio, cobre e fosfato. O município é sede de grandes complexos minerais e industriais, como a Companhia Brasileira de Metalurgia e Mineração (CBMM) no contexto do nióbio.",
+    "legal_basis": null
+  },
+  {
+    "subject_slug": "realidade-goias",
+    "topic_slug": "esporte",
+    "question_type": "multipla_escolha",
+    "text": "Goiânia sediou jogos da Copa do Mundo FIFA de 2014. O estádio utilizado, modernizado para o evento, chama-se:",
+    "alternatives": [
+      {"letter": "A", "text": "Estádio Olímpico Pedro Ludovico Teixeira.", "is_correct": false},
+      {"letter": "B", "text": "Estádio Serra Dourada, o maior do estado.", "is_correct": false},
+      {"letter": "C", "text": "Estádio Olímpico Pedro Ludovico Teixeira, reformado.", "is_correct": false},
+      {"letter": "D", "text": "Estádio da Serrinha, do Goiás Esporte Clube.", "is_correct": false},
+      {"letter": "E", "text": "Estádio Serra Dourada (Estádio Olímpico Pedro Ludovico Teixeira), reformado para a Copa.", "is_correct": true}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Estádio Serra Dourada (também conhecido como Estádio Olímpico Pedro Ludovico Teixeira), em Goiânia, foi a sede dos jogos da Copa do Mundo 2014 realizados em Goiás. O estádio passou por modernização para atender aos requisitos da FIFA.",
+    "legal_basis": null
+  }
+]

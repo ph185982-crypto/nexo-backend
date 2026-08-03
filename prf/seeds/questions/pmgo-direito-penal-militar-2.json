@@ -1,0 +1,420 @@
+[
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crime-militar-conceito",
+    "question_type": "multipla_escolha",
+    "text": "De acordo com o Código Penal Militar, considera-se crime militar em tempo de paz AQUELE praticado:",
+    "alternatives": [
+      {"letter": "A", "text": "Por qualquer pessoa, em qualquer lugar, desde que prejudique a hierarquia ou a disciplina militar.", "is_correct": false},
+      {"letter": "B", "text": "Por militar em situação de atividade, contra militar na mesma situação, nas condições do art. 9º do CPM.", "is_correct": true},
+      {"letter": "C", "text": "Exclusivamente por militar durante o serviço e dentro das instalações militares.", "is_correct": false},
+      {"letter": "D", "text": "Por civil, apenas quando em coautoria com militar em atividade.", "is_correct": false},
+      {"letter": "E", "text": "Por militar da reserva remunerada, ainda que fora do serviço e sem relação com a função.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O art. 9º do CPM define crime militar em tempo de paz. Entre os casos previstos está o crime cometido por militar em situação de atividade ou assemelhado, contra militar na mesma situação (inciso II, 'a'). A definição envolve critério ratione personae e ratione loci ou ratione materiae.",
+    "legal_basis": "CPM, art. 9º"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "aplicacao-lei",
+    "question_type": "multipla_escolha",
+    "text": "Quanto à aplicação da lei penal militar no espaço, o CPM adota como regra principal o princípio:",
+    "alternatives": [
+      {"letter": "A", "text": "Da personalidade ativa, pelo qual a lei militar brasileira é aplicada ao militar independentemente do local do crime.", "is_correct": false},
+      {"letter": "B", "text": "Da territorialidade, aplicando-se a lei penal militar ao crime cometido em território nacional.", "is_correct": true},
+      {"letter": "C", "text": "Da universalidade, aplicando-se a lei penal militar a qualquer crime em qualquer lugar.", "is_correct": false},
+      {"letter": "D", "text": "Do pavilhão, pelo qual a lei militar é aplicada apenas em navios e aeronaves militares.", "is_correct": false},
+      {"letter": "E", "text": "Da defesa real, exclusivamente quando o crime atingir bens jurídicos militares.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 7º, adota o princípio da territorialidade como regra: aplica-se a lei penal militar brasileira ao crime cometido no território nacional. O CPM também admite exceções extraterritoriais (arts. 8º-11).",
+    "legal_basis": "CPM, arts. 7º-11"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-hierarquia",
+    "question_type": "multipla_escolha",
+    "text": "O crime de DESACATO A SUPERIOR, previsto no CPM, é caracterizado quando o militar:",
+    "alternatives": [
+      {"letter": "A", "text": "Desobedece a ordem do superior hierárquico durante missão operacional.", "is_correct": false},
+      {"letter": "B", "text": "Desacata superior hierárquico na presença de outros militares ou em razão da função, por ato, palavra ou voz.", "is_correct": true},
+      {"letter": "C", "text": "Agride fisicamente o superior, sendo esse crime absorvido pela lesão corporal.", "is_correct": false},
+      {"letter": "D", "text": "Critica publicamente o superior em redes sociais fora do horário de serviço.", "is_correct": false},
+      {"letter": "E", "text": "Recusa-se a cumprir escala de serviço determinada pelo superior.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O desacato a superior (CPM, art. 298) ocorre quando o inferior desacata superior na presença de outros militares ou em razão da função. Difere da recusa de obediência (desobediência) e da agressão física (violência contra superior).",
+    "legal_basis": "CPM, art. 298"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "insubordinacao",
+    "question_type": "multipla_escolha",
+    "text": "O crime de INSUBORDINAÇÃO, previsto no CPM, distingue-se da RECUSA DE OBEDIÊNCIA porque:",
+    "alternatives": [
+      {"letter": "A", "text": "A insubordinação envolve recusa de obediência coletiva (três ou mais militares), enquanto a recusa de obediência é individual.", "is_correct": true},
+      {"letter": "B", "text": "A insubordinação é crime exclusivo de praças, e a recusa de obediência pode ser praticada por oficiais.", "is_correct": false},
+      {"letter": "C", "text": "Na insubordinação, o militar desobedece ordem verbal; na recusa de obediência, a ordem é escrita.", "is_correct": false},
+      {"letter": "D", "text": "A insubordinação ocorre durante o combate; a recusa de obediência ocorre em situação de paz.", "is_correct": false},
+      {"letter": "E", "text": "São sinônimos no CPM, tendo a mesma definição e pena.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O crime de insubordinação (CPM, art. 293) é modalidade coletiva: recusa de obediência praticada por três ou mais militares em conjunto. A recusa de obediência (CPM, art. 301) é individual. Essa diferença é crucial para a classificação do crime.",
+    "legal_basis": "CPM, arts. 293 e 301"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-pessoa",
+    "question_type": "multipla_escolha",
+    "text": "No CPM, o homicídio simples é punido com reclusão de 6 a 20 anos. O homicídio qualificado, quando praticado com emprego de veneno, fogo, explosivo ou asfixia, é punido com:",
+    "alternatives": [
+      {"letter": "A", "text": "Reclusão de 12 a 30 anos.", "is_correct": true},
+      {"letter": "B", "text": "Reclusão de 15 a 40 anos, sem direito a progressão de regime.", "is_correct": false},
+      {"letter": "C", "text": "A mesma pena do homicídio simples, agravada pelo abuso de confiança.", "is_correct": false},
+      {"letter": "D", "text": "Pena de morte em tempo de paz, por expressa previsão do CPM.", "is_correct": false},
+      {"letter": "E", "text": "Reclusão de 8 a 25 anos, com redução da metade se o militar se arrepender.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O homicídio qualificado no CPM (art. 205, §2º) prevê reclusão de 12 a 30 anos. A pena de morte no CPM é prevista apenas em tempo de guerra (art. 55).",
+    "legal_basis": "CPM, art. 205, §2º"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "penas",
+    "question_type": "multipla_escolha",
+    "text": "As penas principais previstas no CPM são:",
+    "alternatives": [
+      {"letter": "A", "text": "Morte, reclusão, detenção, prisão, impedimento, suspensão do exercício do posto, graduação, cargo ou função e reforma.", "is_correct": true},
+      {"letter": "B", "text": "Apenas reclusão e detenção, como no Código Penal comum.", "is_correct": false},
+      {"letter": "C", "text": "Morte, reclusão, detenção e multa, em tempo de paz.", "is_correct": false},
+      {"letter": "D", "text": "Reclusão, detenção, suspensão e expulsão da corporação.", "is_correct": false},
+      {"letter": "E", "text": "Morte, reclusão, detenção e trabalho forçado, vedado o pagamento de multa.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 55, lista as penas principais: morte (só em tempo de guerra), reclusão, detenção, prisão, impedimento, suspensão do exercício do posto/graduação/cargo/função, e reforma. São distintas das penas do CP, especialmente pela inclusão de penas militares específicas.",
+    "legal_basis": "CPM, art. 55"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "exclusao-ilicitude",
+    "question_type": "multipla_escolha",
+    "text": "O CPM prevê, como causa excludente de ilicitude específica do direito penal militar, além das comuns (legítima defesa, estado de necessidade):",
+    "alternatives": [
+      {"letter": "A", "text": "O exercício regular de autoridade militar e o dever legal do comandante.", "is_correct": false},
+      {"letter": "B", "text": "O estrito cumprimento do dever legal e o exercício regular de direito reconhecido em lei.", "is_correct": false},
+      {"letter": "C", "text": "A obediência hierárquica a ordem não manifestamente ilegal e o estrito cumprimento do dever legal.", "is_correct": true},
+      {"letter": "D", "text": "O estado de necessidade exculpante e a inexigibilidade de conduta diversa.", "is_correct": false},
+      {"letter": "E", "text": "A legítima defesa da honra militar e o estado de guerra declarado.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 42, elenca como causas de exclusão de crime: estado de necessidade, legítima defesa, estrito cumprimento do dever legal, exercício regular de direito, e obediência hierárquica (a ordem não manifestamente ilegal). Esta última é específica do direito penal militar.",
+    "legal_basis": "CPM, art. 42"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "obediencia-hierarquica",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a obediência hierárquica como excludente de ilicitude no CPM, é correto afirmar que:",
+    "alternatives": [
+      {"letter": "A", "text": "Qualquer ordem do superior hierárquico, mesmo manifestamente ilegal, exclui a responsabilidade penal do subordinado.", "is_correct": false},
+      {"letter": "B", "text": "A obediência hierárquica só exclui a responsabilidade do subordinado quando a ordem não for manifestamente ilegal.", "is_correct": true},
+      {"letter": "C", "text": "O subordinado é sempre responsável pelos crimes praticados em cumprimento de ordens superiores.", "is_correct": false},
+      {"letter": "D", "text": "A ordem deve ser escrita e assinada pelo superior para ter validade como excludente.", "is_correct": false},
+      {"letter": "E", "text": "Apenas ordens de oficiais generais têm o condão de excluir a ilicitude da conduta do subordinado.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 42, IV, prevê a obediência hierárquica como excludente, mas com o limite: a ordem não pode ser manifestamente ilegal. Se a ilegalidade for evidente, o subordinado responde pelo crime, mesmo tendo cumprido a ordem.",
+    "legal_basis": "CPM, art. 42, IV"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-propriedade",
+    "question_type": "multipla_escolha",
+    "text": "O crime de PECULATO MILITAR é caracterizado quando o militar:",
+    "alternatives": [
+      {"letter": "A", "text": "Subtrai bem pertencente a civil em proveito próprio, usando uniforme militar.", "is_correct": false},
+      {"letter": "B", "text": "Apropria-se de dinheiro, valor ou qualquer outro bem móvel público ou particular de que tem a posse em razão do cargo ou desvia em proveito próprio ou alheio.", "is_correct": true},
+      {"letter": "C", "text": "Utiliza viatura militar para transporte pessoal sem autorização do superior.", "is_correct": false},
+      {"letter": "D", "text": "Aceita vantagem indevida para praticar ato de ofício ou se abster de praticá-lo.", "is_correct": false},
+      {"letter": "E", "text": "Recebe qualquer bem de terceiro em agradecimento por serviço militar prestado.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O peculato militar (CPM, art. 303) equivale ao peculato do CP (art. 312): o militar apropria-se de bens públicos ou particulares de que tem a posse em razão do cargo, ou os desvia. É crime funcional militar.",
+    "legal_basis": "CPM, art. 303"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-administracao",
+    "question_type": "multipla_escolha",
+    "text": "O crime de PREVARICAÇÃO MILITAR é caracterizado quando o militar:",
+    "alternatives": [
+      {"letter": "A", "text": "Deixa de praticar ou retarda ato de ofício, ou o pratica contra disposição expressa de lei, para satisfazer interesse pessoal.", "is_correct": true},
+      {"letter": "B", "text": "Recebe qualquer bem de valor de subordinado para beneficiá-lo em escalas de serviço.", "is_correct": false},
+      {"letter": "C", "text": "Usa de violência ou grave ameaça para que outro militar pratique ato ilegal.", "is_correct": false},
+      {"letter": "D", "text": "Divulga informação sigilosa a pessoa não autorizada por interesse pessoal.", "is_correct": false},
+      {"letter": "E", "text": "Pratica ato em benefício próprio durante o expediente de trabalho.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A prevaricação militar (CPM, art. 319) equivale à prevaricação do CP: o militar deixa de cumprir ou retarda ato funcional, ou o pratica em desacordo com a lei, para satisfazer interesse ou sentimento pessoal.",
+    "legal_basis": "CPM, art. 319"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-ordem-administrativa",
+    "question_type": "multipla_escolha",
+    "text": "O crime de MOTIM, previsto no CPM, caracteriza-se por:",
+    "alternatives": [
+      {"letter": "A", "text": "Resistência individual de um militar a ordem de superior.", "is_correct": false},
+      {"letter": "B", "text": "Reunião de militares (dois ou mais) que, agindo em concerto, constrangem ou tentam constranger superior hierárquico.", "is_correct": true},
+      {"letter": "C", "text": "Manifestação pública de militares contra políticas governamentais.", "is_correct": false},
+      {"letter": "D", "text": "Desobediência coletiva de praças a ordem de oficial, em número superior a dez.", "is_correct": false},
+      {"letter": "E", "text": "Abandono do posto por dois ou mais militares durante missão de combate.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O motim (CPM, art. 149) é praticado por dois ou mais militares que, agindo em concerto, constrangem ou tentam constranger o superior, usando violência, vias de fato ou ameaça. Difere da insubordinação, que é recusa coletiva de obediência (art. 149 vs. art. 293).",
+    "legal_basis": "CPM, arts. 149 e 293"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "prescricao",
+    "question_type": "multipla_escolha",
+    "text": "Nos termos do CPM, a prescrição da pretensão punitiva começa a correr:",
+    "alternatives": [
+      {"letter": "A", "text": "Do dia em que a autoridade tomou conhecimento do fato criminoso.", "is_correct": false},
+      {"letter": "B", "text": "Do dia em que o crime se consumou, ou, no caso de tentativa, do dia em que cessou a atividade criminosa.", "is_correct": true},
+      {"letter": "C", "text": "Do dia em que foi instaurado o IPM.", "is_correct": false},
+      {"letter": "D", "text": "Do dia em que foi oferecida a denúncia pelo Ministério Público.", "is_correct": false},
+      {"letter": "E", "text": "Do dia em que a sentença condenatória transitou em julgado para o réu.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 125, estabelece que a prescrição começa a correr do dia em que o crime se consumou, ou, no caso de tentativa, do dia em que cessou a atividade criminosa. Para crimes permanentes, do dia em que cessou a permanência.",
+    "legal_basis": "CPM, art. 125"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-seguranca-nacional",
+    "question_type": "multipla_escolha",
+    "text": "O crime de TRAIÇÃO, previsto no CPM, em tempo de guerra, consiste em:",
+    "alternatives": [
+      {"letter": "A", "text": "O militar divulgar segredos militares a qualquer pessoa não autorizada.", "is_correct": false},
+      {"letter": "B", "text": "O militar tomar armas contra o Brasil ou aderir ao inimigo, prestar-lhe auxílio, ou de qualquer modo atuar em seu favor.", "is_correct": true},
+      {"letter": "C", "text": "O militar abandonar seu posto durante operação militar em tempo de paz.", "is_correct": false},
+      {"letter": "D", "text": "O militar divulgar a posição de tropas nacionais a jornalistas estrangeiros.", "is_correct": false},
+      {"letter": "E", "text": "O militar recusar-se a participar de combate contra forças inimigas.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A traição (CPM, art. 355) é o crime mais grave do direito penal militar e consiste em tomar armas contra o Brasil, aderir ao inimigo, ou prestar-lhe qualquer auxílio em tempo de guerra. É punível com a pena de morte.",
+    "legal_basis": "CPM, art. 355"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "aplicacao-lei",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a analogia no Direito Penal Militar, é correto afirmar que:",
+    "alternatives": [
+      {"letter": "A", "text": "É vedada em qualquer hipótese, pois no direito penal vigoram os princípios da legalidade e tipicidade estrita.", "is_correct": false},
+      {"letter": "B", "text": "É permitida apenas in bonam partem (em favor do réu), sendo vedada in malam partem.", "is_correct": true},
+      {"letter": "C", "text": "É livremente admitida para todos os casos não previstos expressamente no CPM.", "is_correct": false},
+      {"letter": "D", "text": "Só é permitida para crimes praticados em tempo de guerra.", "is_correct": false},
+      {"letter": "E", "text": "É substituída pela interpretação extensiva, que abrange as lacunas do CPM.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "No direito penal (incluindo militar), a analogia in malam partem (para prejudicar o réu) é proibida, pois viola o princípio da legalidade (nullum crimen, nulla poena sine lege). A analogia in bonam partem é permitida quando favorece o acusado.",
+    "legal_basis": "CPM, art. 2º; CF/88, art. 5º, XXXIX"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-servico",
+    "question_type": "multipla_escolha",
+    "text": "O crime de ABANDONO DE POSTO, previsto no CPM, é cometido quando o militar:",
+    "alternatives": [
+      {"letter": "A", "text": "Se atrasa para assumir o serviço mais de 30 minutos.", "is_correct": false},
+      {"letter": "B", "text": "Abandona o posto ou lugar de serviço antes de ser rendido, salvo caso de força maior.", "is_correct": true},
+      {"letter": "C", "text": "Não comparece ao quartel sem comunicar ao superior dentro de 24 horas.", "is_correct": false},
+      {"letter": "D", "text": "Se ausenta do município sem autorização do comandante.", "is_correct": false},
+      {"letter": "E", "text": "Não cumpre escala de serviço por motivo de doença, sem apresentar atestado médico.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O abandono de posto (CPM, art. 195) ocorre quando o militar abandona o lugar onde deve permanecer em serviço, antes de ser regularmente rendido. Exige que o militar esteja no posto; a ausência ao serviço configura outra infração.",
+    "legal_basis": "CPM, art. 195"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-ordem",
+    "question_type": "multipla_escolha",
+    "text": "A DESERÇÃO, crime militar previsto no CPM, é caracterizada quando o militar:",
+    "alternatives": [
+      {"letter": "A", "text": "Se ausenta sem licença por mais de 8 dias da unidade militar.", "is_correct": true},
+      {"letter": "B", "text": "Se recusa a executar missão determinada pelo superior.", "is_correct": false},
+      {"letter": "C", "text": "Abandona o posto durante missão de risco.", "is_correct": false},
+      {"letter": "D", "text": "Foge do quartel durante o repouso noturno.", "is_correct": false},
+      {"letter": "E", "text": "Se ausenta do serviço por mais de 3 dias consecutivos sem comunicação.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A deserção (CPM, art. 187) ocorre quando o militar ausenta-se sem licença, por mais de 8 dias, da unidade em que serve ou do lugar em que deve permanecer. O prazo de 8 dias é o elemento temporal objetivo do tipo.",
+    "legal_basis": "CPM, art. 187"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "responsabilidade-penal",
+    "question_type": "multipla_escolha",
+    "text": "Em relação à imputabilidade no CPM, é inimputável o agente que:",
+    "alternatives": [
+      {"letter": "A", "text": "Era menor de 18 anos à época do fato, sendo julgado pelo ECA.", "is_correct": false},
+      {"letter": "B", "text": "Ao tempo do fato, em razão de doença mental ou desenvolvimento mental incompleto ou retardado, era inteiramente incapaz de entender o caráter criminoso do fato.", "is_correct": true},
+      {"letter": "C", "text": "Agiu sob influência de embriaguez voluntária por bebida alcoólica.", "is_correct": false},
+      {"letter": "D", "text": "Estava em estado de necessidade ao tempo da conduta.", "is_correct": false},
+      {"letter": "E", "text": "Encontrava-se em situação de perturbação dos sentidos provocada por estresse de combate.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 48, prevê inimputabilidade por doença mental ou desenvolvimento mental incompleto/retardado, quando o agente era inteiramente incapaz de entender o caráter criminoso do fato ao tempo da ação. A embriaguez voluntária não exclui a imputabilidade.",
+    "legal_basis": "CPM, art. 48"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-pessoa",
+    "question_type": "multipla_escolha",
+    "text": "No CPM, o crime de LESÃO CORPORAL LEVE em contexto militar tem pena de:",
+    "alternatives": [
+      {"letter": "A", "text": "Detenção de 3 meses a 1 ano, se praticada entre militares.", "is_correct": true},
+      {"letter": "B", "text": "Reclusão de 2 a 5 anos, em qualquer hipótese.", "is_correct": false},
+      {"letter": "C", "text": "Pena de multa, quando praticada fora do serviço.", "is_correct": false},
+      {"letter": "D", "text": "Detenção de 1 a 3 anos, agravada quando cometida contra superior.", "is_correct": false},
+      {"letter": "E", "text": "Reclusão de 6 meses a 2 anos, com possibilidade de substituição por serviços comunitários.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A lesão corporal leve no CPM (art. 209) tem pena de detenção de 3 meses a 1 ano. A pena é agravada nas formas qualificadas: grave (reclusão 1-5 anos), gravíssima (reclusão 2-8 anos). O contexto militar pode agravar a pena pelas formas qualificadas (art. 209, §1º).",
+    "legal_basis": "CPM, art. 209"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-honra",
+    "question_type": "multipla_escolha",
+    "text": "O crime de INJÚRIA MILITAR distingue-se da DIFAMAÇÃO MILITAR porque:",
+    "alternatives": [
+      {"letter": "A", "text": "A injúria ofende a honra objetiva (reputação), e a difamação ofende a honra subjetiva (dignidade).", "is_correct": false},
+      {"letter": "B", "text": "A difamação imputa fato determinado ofensivo à reputação, enquanto a injúria ofende a dignidade ou decoro sem imputar fato.", "is_correct": true},
+      {"letter": "C", "text": "A injúria é crime de menor potencial ofensivo; a difamação é crime hediondo.", "is_correct": false},
+      {"letter": "D", "text": "A difamação só pode ser praticada por escrito; a injúria pode ser verbal.", "is_correct": false},
+      {"letter": "E", "text": "São sinônimos no CPM, com as mesmas penas.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A difamação (CPM, art. 215) imputa fato determinado ofensivo à reputação da vítima (honra objetiva). A injúria (CPM, art. 216) ofende a dignidade ou decoro, sem imputar fato específico (honra subjetiva). A calúnia (art. 214) imputa fato falso e definido como crime.",
+    "legal_basis": "CPM, arts. 214-216"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "tentativa",
+    "question_type": "multipla_escolha",
+    "text": "No CPM, a tentativa de crime:",
+    "alternatives": [
+      {"letter": "A", "text": "Tem a mesma pena do crime consumado, pois no direito penal militar não há distinção.", "is_correct": false},
+      {"letter": "B", "text": "É punida com a pena correspondente ao crime consumado, diminuída de um a dois terços.", "is_correct": true},
+      {"letter": "C", "text": "Só é punível quando a lei expressamente a mencionar.", "is_correct": false},
+      {"letter": "D", "text": "Não é punível se o resultado não ocorreu por circunstância alheia à vontade do agente.", "is_correct": false},
+      {"letter": "E", "text": "É punida com a pena do crime consumado, reduzida pela metade em todos os casos.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 30, prevê que a tentativa é punida com a pena do crime consumado, diminuída de um a dois terços. O quantum da redução varia conforme o iter criminis percorrido pelo agente.",
+    "legal_basis": "CPM, art. 30"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "concurso-pessoas",
+    "question_type": "multipla_escolha",
+    "text": "No CPM, o partícipe (aquele que concorre para o crime sem ser o executor) responde:",
+    "alternatives": [
+      {"letter": "A", "text": "Pela mesma pena do executor, não se admitindo distinção entre participação e autoria.", "is_correct": false},
+      {"letter": "B", "text": "Por pena reduzida de 1/6 a 1/3 em relação ao executor, sempre.", "is_correct": false},
+      {"letter": "C", "text": "Na medida de sua culpabilidade, podendo sua pena ser diminuída se de menor importância a participação.", "is_correct": true},
+      {"letter": "D", "text": "Apenas pelos atos preparatórios, não sendo responsável pelo crime consumado.", "is_correct": false},
+      {"letter": "E", "text": "Com pena em dobro quando induziu ou instigou o executor ao crime.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPM, art. 53, adota a teoria unitária: todos os coautores e partícipes respondem pelo mesmo crime. No entanto, a pena do partícipe de menor importância pode ser reduzida de 1/6 a 1/3 (art. 53, §1º). A pena é fixada individualmente de acordo com a culpabilidade de cada um.",
+    "legal_basis": "CPM, arts. 53 e 53, §1º"
+  },
+  {
+    "subject_slug": "direito-penal-militar",
+    "topic_slug": "crimes-contra-administracao",
+    "question_type": "multipla_escolha",
+    "text": "O crime de CORRUPÇÃO PASSIVA MILITAR (concussão vs. corrupção) diferencia-se porque na concussão:",
+    "alternatives": [
+      {"letter": "A", "text": "O militar aceita vantagem indevida ofertada espontaneamente pelo particular.", "is_correct": false},
+      {"letter": "B", "text": "O militar exige ou coage o particular a entregar vantagem indevida, valendo-se da função.", "is_correct": true},
+      {"letter": "C", "text": "O militar solicita propina em valor superior a 10 salários mínimos.", "is_correct": false},
+      {"letter": "D", "text": "A vantagem é recebida antes da prática do ato, e na corrupção passiva é recebida depois.", "is_correct": false},
+      {"letter": "E", "text": "O militar age em concurso com civil para fraudar licitação militar.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A concussão (CPM, art. 305) envolve exigência ou coação pelo militar (iniciativa do agente público). A corrupção passiva (CPM, art. 308) envolve solicitação ou aceitação de vantagem. Na concussão, o particular não age voluntariamente; na corrupção passiva, há um acordo (ou ao menos a iniciativa pode ser do particular).",
+    "legal_basis": "CPM, arts. 305 e 308"
+  }
+]

@@ -1,0 +1,458 @@
+[
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "jurisdicao-competencia",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a competência da Justiça Militar estadual, de acordo com a Constituição Federal e o entendimento sumulado do STJ, é correto afirmar:",
+    "alternatives": [
+      {"letter": "A", "text": "A Justiça Militar estadual é competente para processar e julgar civis que praticam crimes contra as instituições militares estaduais.", "is_correct": false},
+      {"letter": "B", "text": "O policial militar que pratica crime doloso contra a vida de civil será julgado pelo Tribunal do Júri, não pela Justiça Militar estadual.", "is_correct": true},
+      {"letter": "C", "text": "A Justiça Militar estadual possui competência universal para julgar todos os crimes praticados por militares estaduais, inclusive os dolosos contra a vida.", "is_correct": false},
+      {"letter": "D", "text": "O foro especial da Justiça Militar estadual se estende aos crimes praticados por militares fora de serviço, mesmo sem qualquer relação com a função.", "is_correct": false},
+      {"letter": "E", "text": "A competência da Justiça Militar estadual é exclusivamente para crimes comuns praticados por militares durante o serviço.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Conforme art. 125, §4º da CF/88 (redação da EC 45/2004) e Súmula 53 do STJ, o policial militar que pratica crime doloso contra a vida de civil, ainda que em serviço, é julgado pelo Tribunal do Júri.",
+    "legal_basis": "CF/88, art. 125, §4º; EC 45/2004; Súmula 53/STJ"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "ipm",
+    "question_type": "multipla_escolha",
+    "text": "Nos termos do Código de Processo Penal Militar, o Inquérito Policial Militar (IPM) será presidido por:",
+    "alternatives": [
+      {"letter": "A", "text": "Oficial de qualquer posto, desde que da mesma arma do indiciado.", "is_correct": false},
+      {"letter": "B", "text": "Oficial de posto ou graduação superior ao do indiciado, ou de posto igual quando não houver superior disponível.", "is_correct": true},
+      {"letter": "C", "text": "Delegado de Polícia Civil, quando o crime for praticado fora das instalações militares.", "is_correct": false},
+      {"letter": "D", "text": "Promotor de Justiça Militar, que preside pessoalmente as investigações.", "is_correct": false},
+      {"letter": "E", "text": "Juiz-Auditor, que designa o encarregado do inquérito após receber a notícia-crime.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM, art. 7º, estabelece que o IPM é presidido por oficial, devendo ser de posto superior ao do indiciado. Trata-se de garantia hierárquica do processo penal militar.",
+    "legal_basis": "CPPM, art. 7º"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "ipm",
+    "question_type": "multipla_escolha",
+    "text": "Conforme o CPPM, o prazo para conclusão do IPM, quando o indiciado estiver SOLTO, é de:",
+    "alternatives": [
+      {"letter": "A", "text": "20 dias, prorrogável por mais 20 dias.", "is_correct": false},
+      {"letter": "B", "text": "30 dias, podendo ser prorrogado pelo comandante competente.", "is_correct": false},
+      {"letter": "C", "text": "40 dias, prorrogáveis por mais 20 dias quando o fato for de difícil elucidação.", "is_correct": true},
+      {"letter": "D", "text": "60 dias, improrrogáveis, sob pena de responsabilização do encarregado.", "is_correct": false},
+      {"letter": "E", "text": "Não há prazo definido quando o indiciado está solto.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM, art. 20, caput, estabelece 40 dias (preso: 20 dias) para conclusão do IPM. Quando o fato for de difícil elucidação e o indiciado solto, pode ser prorrogado por mais 20 dias.",
+    "legal_basis": "CPPM, art. 20"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "prisao-flagrante",
+    "question_type": "multipla_escolha",
+    "text": "No processo penal militar, sobre a prisão em flagrante, é correto afirmar que:",
+    "alternatives": [
+      {"letter": "A", "text": "Somente o superior hierárquico pode efetuar a prisão em flagrante de militar.", "is_correct": false},
+      {"letter": "B", "text": "Qualquer pessoa pode prender em flagrante delito, sendo obrigatório para as autoridades e seus agentes.", "is_correct": true},
+      {"letter": "C", "text": "A prisão em flagrante de oficial só pode ser realizada por outro oficial.", "is_correct": false},
+      {"letter": "D", "text": "O flagrante no âmbito militar dispensa a lavratura do auto de prisão em flagrante.", "is_correct": false},
+      {"letter": "E", "text": "A prisão em flagrante de militar é sempre convertida automaticamente em prisão preventiva.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM, art. 243, segue a mesma lógica do CPP: qualquer pessoa poderá e as autoridades deverão prender quem se encontre em flagrante delito.",
+    "legal_basis": "CPPM, art. 243"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "prisao-preventiva",
+    "question_type": "multipla_escolha",
+    "text": "São pressupostos da prisão preventiva no processo penal militar, de acordo com o CPPM:",
+    "alternatives": [
+      {"letter": "A", "text": "Prova da materialidade do crime e indícios suficientes de autoria, aliados à necessidade para garantia da ordem pública, da instrução criminal ou para assegurar a aplicação da lei penal.", "is_correct": true},
+      {"letter": "B", "text": "Apenas a gravidade do crime e a periculosidade do agente, independentemente de prova da materialidade.", "is_correct": false},
+      {"letter": "C", "text": "Confissão do indiciado e indícios suficientes de autoria, com a concordância do Ministério Público Militar.", "is_correct": false},
+      {"letter": "D", "text": "Somente a garantia da instrução criminal, vedada a prisão preventiva para garantia da ordem pública.", "is_correct": false},
+      {"letter": "E", "text": "Prova cabal da autoria e da materialidade, não se admitindo indícios como fundamento.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM, art. 254, estabelece como pressupostos: prova da existência do crime (materialidade) e indícios suficientes de autoria, mais um dos fundamentos: garantia da ordem pública, conveniência da instrução criminal ou assegurar a aplicação da lei penal.",
+    "legal_basis": "CPPM, art. 254"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "conselho-justica",
+    "question_type": "multipla_escolha",
+    "text": "Quanto ao Conselho de Justiça Militar estadual, é correto afirmar que:",
+    "alternatives": [
+      {"letter": "A", "text": "O Conselho Permanente de Justiça é competente para julgar oficiais.", "is_correct": false},
+      {"letter": "B", "text": "O Conselho Especial de Justiça é constituído para cada processo e é competente para julgar oficiais até o posto de coronel.", "is_correct": true},
+      {"letter": "C", "text": "Tanto oficiais quanto praças são julgados pelo Conselho Permanente de Justiça.", "is_correct": false},
+      {"letter": "D", "text": "O julgamento de praças compete ao Conselho Especial de Justiça.", "is_correct": false},
+      {"letter": "E", "text": "O Tribunal de Justiça Militar julga, em primeira instância, todos os crimes militares de qualquer natureza.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O Conselho Especial de Justiça (CEJ) é formado para cada processo e julga oficiais (até coronel). O Conselho Permanente de Justiça (CPJ) julga praças. Ambos são presididos pelo Juiz-Auditor.",
+    "legal_basis": "CPPM, arts. 118-128; Lei 6.880/1980"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "ipm",
+    "question_type": "multipla_escolha",
+    "text": "O encarregado do IPM, ao concluir as investigações, elaborará relatório e enviará os autos à autoridade que determinou a instauração. Desta, qual a providência correta em relação ao indiciado?",
+    "alternatives": [
+      {"letter": "A", "text": "Ordenar diretamente a prisão do indiciado se convencida de sua culpa.", "is_correct": false},
+      {"letter": "B", "text": "Remeter os autos ao Ministério Público Militar, que providenciará o ajuizamento da ação penal ou o arquivamento.", "is_correct": true},
+      {"letter": "C", "text": "Arquivar sumariamente o IPM se entender que os indícios são insuficientes.", "is_correct": false},
+      {"letter": "D", "text": "Aplicar punição disciplinar ao indiciado enquanto aguarda a decisão judicial.", "is_correct": false},
+      {"letter": "E", "text": "Encaminhar os autos diretamente ao Juiz-Auditor, que decidirá pelo recebimento ou rejeição.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O IPM é encaminhado ao MP Militar (CPPM, art. 22 e ss.), que é o titular da ação penal militar pública, podendo oferecer denúncia, pedir diligências ou requerer o arquivamento (que só pode ser determinado pelo Juiz-Auditor).",
+    "legal_basis": "CPPM, arts. 22, 25, 26; CF/88, art. 129, I"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "acao-penal",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a titularidade da ação penal no âmbito da Justiça Militar estadual, é correto afirmar:",
+    "alternatives": [
+      {"letter": "A", "text": "A ação penal militar pública é de titularidade exclusiva do Ministério Público Militar Federal.", "is_correct": false},
+      {"letter": "B", "text": "Compete ao Ministério Público estadual a titularidade da ação penal perante a Justiça Militar estadual.", "is_correct": true},
+      {"letter": "C", "text": "O encarregado do IPM pode oferecer diretamente a denúncia no caso de crimes militares flagrantes.", "is_correct": false},
+      {"letter": "D", "text": "A ação penal nos crimes militares é sempre de iniciativa privada, cabendo à vítima a denúncia.", "is_correct": false},
+      {"letter": "E", "text": "A ação penal militar compete ao Ministério Público Militar, vinculado às Forças Armadas.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Perante a Justiça Militar estadual, a ação penal pública é promovida pelo Ministério Público estadual (não pelo MPM, que atua na Justiça Militar da União). O MPM é órgão federal e atua perante o STM e Conselhos de Justiça das Forças Armadas.",
+    "legal_basis": "CF/88, art. 125, §§3º e 4º; LC 75/1993"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "revisao-criminal",
+    "question_type": "multipla_escolha",
+    "text": "A revisão criminal no âmbito da Justiça Militar estadual pode ser requerida nos seguintes casos, EXCETO:",
+    "alternatives": [
+      {"letter": "A", "text": "Quando a sentença condenatória for contrária ao texto expresso da lei penal ou à evidência dos autos.", "is_correct": false},
+      {"letter": "B", "text": "Quando a sentença condenatória se fundar em depoimentos, exames ou documentos comprovadamente falsos.", "is_correct": false},
+      {"letter": "C", "text": "Quando houver necessidade de reforma da sentença para agravamento da pena do condenado.", "is_correct": true},
+      {"letter": "D", "text": "Quando, após a sentença, se descobrirem novas provas de inocência do condenado.", "is_correct": false},
+      {"letter": "E", "text": "Quando a sentença condenatória for contrária à evidência dos autos.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A revisão criminal é ação exclusiva da defesa (pro reo), não podendo ser usada para agravar a pena do condenado. É cabível apenas em favor do réu.",
+    "legal_basis": "CPPM, art. 593"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "habeas-corpus",
+    "question_type": "multipla_escolha",
+    "text": "O habeas corpus no processo penal militar:",
+    "alternatives": [
+      {"letter": "A", "text": "Somente pode ser impetrado pelo próprio paciente que sofre a coação ilegal.", "is_correct": false},
+      {"letter": "B", "text": "Pode ser impetrado por qualquer pessoa em favor de quem sofra ou esteja na iminência de sofrer violência ou coação ilegal em sua liberdade de locomoção.", "is_correct": true},
+      {"letter": "C", "text": "É vedado o habeas corpus preventivo (salvo-conduto) no âmbito da Justiça Militar.", "is_correct": false},
+      {"letter": "D", "text": "Só é admissível após o esgotamento dos recursos ordinários previstos no CPPM.", "is_correct": false},
+      {"letter": "E", "text": "Não pode ser impetrado contra ato de autoridade militar de posto superior a coronel.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O habeas corpus pode ser impetrado por qualquer pessoa (CPPM, art. 466), em favor do paciente que sofre violência ou coação ilegal, inclusive na forma preventiva (salvo-conduto), independentemente de esgotamento dos recursos ordinários.",
+    "legal_basis": "CPPM, art. 466; CF/88, art. 5º, LXVIII"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "rito-processual",
+    "question_type": "multipla_escolha",
+    "text": "Após o recebimento da denúncia na Justiça Militar estadual, o Juiz-Auditor determinará a citação do réu para:",
+    "alternatives": [
+      {"letter": "A", "text": "Apresentar contestação escrita no prazo de 10 dias.", "is_correct": false},
+      {"letter": "B", "text": "Responder à acusação no prazo de 10 dias, na fase de defesa prévia.", "is_correct": false},
+      {"letter": "C", "text": "Comparecer à audiência de instrução e julgamento, que será designada imediatamente.", "is_correct": false},
+      {"letter": "D", "text": "Apresentar resposta à acusação no prazo de 5 dias, sendo esse prazo contado da citação.", "is_correct": true},
+      {"letter": "E", "text": "Oferecer contrarrazões ao recurso de ofício interposto pelo Ministério Público.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Recebida a denúncia, o réu é citado para apresentar resposta escrita no prazo de 5 dias (CPPM, art. 368). A defesa prévia ou resposta à acusação é apresentada nesse prazo, antes da audiência de instrução.",
+    "legal_basis": "CPPM, art. 368"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "recursos",
+    "question_type": "multipla_escolha",
+    "text": "O recurso cabível contra sentença absolutória do Conselho Permanente de Justiça é:",
+    "alternatives": [
+      {"letter": "A", "text": "Embargos declaratórios, no prazo de 5 dias.", "is_correct": false},
+      {"letter": "B", "text": "Apelação, interposta pelo Ministério Público, no prazo de 5 dias.", "is_correct": true},
+      {"letter": "C", "text": "Recurso em sentido estrito, no prazo de 3 dias.", "is_correct": false},
+      {"letter": "D", "text": "Recurso especial ao Superior Tribunal de Justiça, no prazo de 15 dias.", "is_correct": false},
+      {"letter": "E", "text": "Reexame necessário, sem necessidade de recurso voluntário do MP.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O recurso cabível contra sentença condenatória ou absolutória do Conselho de Justiça é a apelação (CPPM, art. 516), interposta no prazo de 5 dias. O MP pode apelar de sentença absolutória.",
+    "legal_basis": "CPPM, art. 516"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "absolvicao-sumaria",
+    "question_type": "multipla_escolha",
+    "text": "O Juiz-Auditor poderá absolver sumariamente o réu quando:",
+    "alternatives": [
+      {"letter": "A", "text": "Verificar que a conduta não constitui crime militar, sendo atípica.", "is_correct": true},
+      {"letter": "B", "text": "O Ministério Público se manifestar pela absolvição na fase do art. 427 do CPPM.", "is_correct": false},
+      {"letter": "C", "text": "O réu confessar a prática do crime, mas alegar arrependimento.", "is_correct": false},
+      {"letter": "D", "text": "A pena máxima abstrata for inferior a 2 anos de detenção.", "is_correct": false},
+      {"letter": "E", "text": "A prova for exclusivamente testemunhal, sem exame de corpo de delito.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A absolvição sumária ocorre quando o Juiz-Auditor verifica que o fato não constitui crime militar (atipicidade) ou que o réu está acobertado por causa excludente de ilicitude ou culpabilidade manifesta.",
+    "legal_basis": "CPPM, art. 439"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "execucao-penal",
+    "question_type": "multipla_escolha",
+    "text": "Na execução da pena privativa de liberdade no âmbito militar, o militar condenado será recolhido:",
+    "alternatives": [
+      {"letter": "A", "text": "Sempre ao estabelecimento penal comum (penitenciária estadual), em igualdade com os civis.", "is_correct": false},
+      {"letter": "B", "text": "Em estabelecimento militar adequado, separado de presos comuns, enquanto mantiver o posto ou graduação.", "is_correct": true},
+      {"letter": "C", "text": "Em prisão domiciliar, por força das prerrogativas da função militar.", "is_correct": false},
+      {"letter": "D", "text": "No quartel de sua unidade, sob custódia do oficial de serviço.", "is_correct": false},
+      {"letter": "E", "text": "Na Casa de Custódia da Polícia Civil, por falta de estabelecimento militar.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O militar condenado cumpre pena em estabelecimento militar (penitenciária militar ou prisão do quartel), separado dos presos comuns, enquanto não for excluído da corporação. Após a exclusão, pode ser transferido para estabelecimento penal comum.",
+    "legal_basis": "CPM, art. 59; CPPM, art. 589"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "provas",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a prova pericial no processo penal militar, o exame de corpo de delito:",
+    "alternatives": [
+      {"letter": "A", "text": "Pode ser dispensado quando o crime não deixar vestígios materiais.", "is_correct": true},
+      {"letter": "B", "text": "É sempre obrigatório, mesmo que o crime não deixe vestígios.", "is_correct": false},
+      {"letter": "C", "text": "Pode ser suprido pela confissão do acusado, sem necessidade de laudo.", "is_correct": false},
+      {"letter": "D", "text": "Deve ser realizado exclusivamente por peritos militares da área de medicina.", "is_correct": false},
+      {"letter": "E", "text": "É dispensado quando houver testemunhas presenciais suficientes.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O exame de corpo de delito é obrigatório nos crimes que deixam vestígios, mas pode ser dispensado quando não existirem vestígios materiais do crime (crimes que não deixam marcas físicas). Não pode ser suprido apenas pela confissão.",
+    "legal_basis": "CPPM, art. 316"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "exclusao-ilicitude",
+    "question_type": "multipla_escolha",
+    "text": "Um policial militar, diante de resistência violenta durante uma abordagem, utiliza força necessária para imobilizar o suspeito, causando lesões. No âmbito do processo penal militar, essa situação configura:",
+    "alternatives": [
+      {"letter": "A", "text": "Crime militar de lesão corporal, com atenuante de estado emocional.", "is_correct": false},
+      {"letter": "B", "text": "Excludente de ilicitude pelo estrito cumprimento do dever legal, afastando a tipicidade.", "is_correct": false},
+      {"letter": "C", "text": "Excludente de ilicitude pelo estrito cumprimento do dever legal, desde que a força empregada seja proporcional à resistência.", "is_correct": true},
+      {"letter": "D", "text": "Infração disciplinar, mas não crime militar.", "is_correct": false},
+      {"letter": "E", "text": "Crime militar com possibilidade de suspensão condicional do processo.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O estrito cumprimento do dever legal (CPM, art. 42, III) exclui a ilicitude da conduta do militar que age nos limites da lei. A proporcionalidade é requisito: o uso de força desproporcional afasta a excludente.",
+    "legal_basis": "CPM, art. 42, III"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "ipm",
+    "question_type": "multipla_escolha",
+    "text": "A autoridade militar que tiver conhecimento de crime militar, nos termos do CPPM, deve:",
+    "alternatives": [
+      {"letter": "A", "text": "Comunicar imediatamente ao Ministério Público Militar, que presidirá as investigações.", "is_correct": false},
+      {"letter": "B", "text": "Instaurar de ofício o IPM ou representar à autoridade competente para que o faça.", "is_correct": true},
+      {"letter": "C", "text": "Aguardar a provocação da vítima antes de instaurar qualquer procedimento investigativo.", "is_correct": false},
+      {"letter": "D", "text": "Encaminhar diretamente ao Juiz-Auditor para que decida sobre a instauração do IPM.", "is_correct": false},
+      {"letter": "E", "text": "Aplicar sanção disciplinar ao suspeito enquanto aguarda autorização para abrir o IPM.", "is_correct": false}
+    ],
+    "difficulty": "easy",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "Ao tomar conhecimento de crime militar, a autoridade militar deve instaurar de ofício o IPM (CPPM, art. 10), agindo sem necessidade de provocação da vítima, pois a ação penal militar é pública incondicionada na maioria dos casos.",
+    "legal_basis": "CPPM, art. 10"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "nulidades",
+    "question_type": "multipla_escolha",
+    "text": "No processo penal militar, a nulidade de um ato processual:",
+    "alternatives": [
+      {"letter": "A", "text": "Sempre contamina todos os atos subsequentes, independentemente de seu conteúdo.", "is_correct": false},
+      {"letter": "B", "text": "Só pode ser declarada mediante requerimento expresso da parte prejudicada.", "is_correct": false},
+      {"letter": "C", "text": "Pode ser absoluta (declarada de ofício, a qualquer tempo) ou relativa (deve ser arguida no momento oportuno).", "is_correct": true},
+      {"letter": "D", "text": "É insanável em qualquer hipótese, devendo o processo ser reiniciado do zero.", "is_correct": false},
+      {"letter": "E", "text": "Não existe no processo penal militar, pois o princípio da celeridade prevalece sobre as formalidades.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "As nulidades no processo penal militar seguem a mesma classificação do processo penal comum: absolutas (violam normas de ordem pública, podem ser declaradas de ofício) e relativas (afetam interesse da parte, devem ser arguidas no momento processual adequado).",
+    "legal_basis": "CPPM, arts. 499-502"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "competencia-stm",
+    "question_type": "multipla_escolha",
+    "text": "O Superior Tribunal Militar (STM) tem competência ORIGINÁRIA para:",
+    "alternatives": [
+      {"letter": "A", "text": "Julgar crimes militares praticados por oficiais generais.", "is_correct": true},
+      {"letter": "B", "text": "Julgar todos os militares estaduais em segunda instância.", "is_correct": false},
+      {"letter": "C", "text": "Rever decisões dos Tribunais de Justiça Militar estaduais.", "is_correct": false},
+      {"letter": "D", "text": "Julgar habeas corpus em favor de qualquer militar, independentemente da instância.", "is_correct": false},
+      {"letter": "E", "text": "Processar e julgar militares estaduais que cometam crimes durante missões federais.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O STM tem competência originária para julgar oficiais generais das Forças Armadas (CF/88, art. 124; CPPM, art. 96). Não tem competência sobre militares estaduais, que são julgados pela Justiça Militar estadual.",
+    "legal_basis": "CF/88, art. 124; RISTM"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "extincao-punibilidade",
+    "question_type": "multipla_escolha",
+    "text": "Em relação à prescrição no âmbito do Direito Penal Militar, é correto afirmar:",
+    "alternatives": [
+      {"letter": "A", "text": "A prescrição da pretensão executória começa a correr do dia em que a sentença transitou em julgado para o réu.", "is_correct": false},
+      {"letter": "B", "text": "A anistia, a graça e o indulto são causas extintivas da punibilidade, mas não interrompem a prescrição.", "is_correct": false},
+      {"letter": "C", "text": "Os prazos prescricionais no CPM são contados em dobro quando o réu for reincidente.", "is_correct": false},
+      {"letter": "D", "text": "Os crimes militares imprescritíveis incluem o racismo e a ação de grupos armados contra o Estado.", "is_correct": true},
+      {"letter": "E", "text": "A prescrição do crime militar corre normalmente durante o período de guerra.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A CF/88, art. 5º, XLII e XLIV, declara imprescritíveis a prática de racismo e as ações de grupos armados civis ou militares contra a ordem constitucional e o Estado Democrático de Direito. Essas regras aplicam-se também na seara militar.",
+    "legal_basis": "CF/88, art. 5º, XLII e XLIV; CPM, arts. 125-128"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "apelacao",
+    "question_type": "multipla_escolha",
+    "text": "No Tribunal de Justiça Militar, o julgamento da apelação de sentença condenatória obedece ao quórum mínimo de:",
+    "alternatives": [
+      {"letter": "A", "text": "Maioria absoluta dos membros do Tribunal.", "is_correct": false},
+      {"letter": "B", "text": "Dois terços dos membros, para garantir representatividade militar.", "is_correct": false},
+      {"letter": "C", "text": "Maioria simples (metade mais um) dos membros presentes à sessão.", "is_correct": true},
+      {"letter": "D", "text": "Unanimidade, para prevalecer a condenação.", "is_correct": false},
+      {"letter": "E", "text": "Três membros, sendo pelo menos dois militares.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O quórum para deliberação dos órgãos colegiados dos Tribunais de Justiça Militar segue a regra geral de maioria dos presentes. O Tribunal de Justiça Militar de Goiás (TJM-GO) segue seu Regimento Interno nessa matéria.",
+    "legal_basis": "Lei Complementar Estadual; Regimento Interno do TJM"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "ipm",
+    "question_type": "multipla_escolha",
+    "text": "Sobre a condução coercitiva de testemunha no IPM, é correto afirmar que:",
+    "alternatives": [
+      {"letter": "A", "text": "É vedada no processo penal militar, pois viola o direito fundamental à liberdade de locomoção.", "is_correct": false},
+      {"letter": "B", "text": "É cabível quando a testemunha, regularmente intimada, deixar de comparecer sem motivo justificado.", "is_correct": true},
+      {"letter": "C", "text": "Depende de autorização judicial prévia do Juiz-Auditor.", "is_correct": false},
+      {"letter": "D", "text": "Só pode ser determinada pelo Ministério Público Militar.", "is_correct": false},
+      {"letter": "E", "text": "É reservada apenas para testemunhas civis, nunca para militares.", "is_correct": false}
+    ],
+    "difficulty": "medium",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM, art. 325, permite a condução coercitiva de testemunha que, regularmente notificada, não comparece sem motivo legítimo. O encarregado do IPM pode determiná-la, sem necessidade de autorização judicial prévia.",
+    "legal_basis": "CPPM, art. 325"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "liberdade-provisoria",
+    "question_type": "multipla_escolha",
+    "text": "No processo penal militar, a liberdade provisória SEM fiança pode ser concedida:",
+    "alternatives": [
+      {"letter": "A", "text": "Apenas para crimes de menor potencial ofensivo.", "is_correct": false},
+      {"letter": "B", "text": "Quando o militar for preso em flagrante por crime que admite fiança, mas não tiver condições financeiras de prestá-la.", "is_correct": false},
+      {"letter": "C", "text": "Quando presentes as excludentes de ilicitude (legítima defesa, estado de necessidade, estrito cumprimento do dever legal).", "is_correct": true},
+      {"letter": "D", "text": "Somente quando o Ministério Público concordar expressamente.", "is_correct": false},
+      {"letter": "E", "text": "Em qualquer hipótese, pois a fiança foi abolida no processo penal militar.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "O CPPM, art. 253, prevê liberdade provisória sem fiança quando o agente tiver praticado o fato nas condições do art. 42 do CPM (excludentes de ilicitude), pois nessas hipóteses presume-se que não há razão para manter a prisão.",
+    "legal_basis": "CPPM, art. 253; CPM, art. 42"
+  },
+  {
+    "subject_slug": "direito-processual-penal-militar",
+    "topic_slug": "competencia",
+    "question_type": "multipla_escolha",
+    "text": "Crime praticado por civil contra militar das Forças Armadas em local sujeito à administração militar é julgado pela:",
+    "alternatives": [
+      {"letter": "A", "text": "Justiça Comum Estadual.", "is_correct": false},
+      {"letter": "B", "text": "Justiça Militar da União.", "is_correct": true},
+      {"letter": "C", "text": "Justiça Militar Estadual.", "is_correct": false},
+      {"letter": "D", "text": "Justiça Federal Comum.", "is_correct": false},
+      {"letter": "E", "text": "Tribunal do Júri Federal, por se tratar de crime doloso contra a vida.", "is_correct": false}
+    ],
+    "difficulty": "hard",
+    "source": "AOCP/PMGO",
+    "year": 2022,
+    "examiner": "Instituto AOCP",
+    "explanation": "A Justiça Militar da União tem competência para julgar civis que praticam crimes contra as instituições militares federais ou em locais sujeitos à administração militar federal (CF/88, art. 124; CPM, art. 9º, III). Apenas militares estaduais são julgados pela JME.",
+    "legal_basis": "CF/88, art. 124; CPM, art. 9º, III"
+  }
+]
