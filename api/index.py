@@ -72,14 +72,52 @@ async def _run_seed_in_background(pool):
 _RENDER_REGIONS = ["oregon", "ohio", "frankfurt", "singapore", "virginia"]
 
 
+def _probe_render_region(host: str) -> str | None:
+    """
+    Find the correct Render region by probing each one with a real PostgreSQL
+    SSL handshake.  All Render external hostnames resolve in public DNS, so
+    DNS-resolution alone cannot distinguish the active region.  We send the
+    8-byte SSLRequest packet and complete the TLS handshake — only the region
+    that actually hosts the database will accept the connection.
+    """
+    import ssl as _ssl
+    for region in _RENDER_REGIONS:
+        ext = f"{host}.{region}-postgres.render.com"
+        raw = None
+        try:
+            raw = socket.create_connection((ext, 5432), timeout=4)
+            raw.sendall(b"\x00\x00\x00\x08\x04\xd2\x16/")
+            resp = raw.recv(1)
+            if resp != b"S":
+                raw.close()
+                raw = None
+                continue
+            ctx = _ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = _ssl.CERT_NONE
+            ssl_sock = ctx.wrap_socket(raw, server_hostname=ext)
+            ssl_sock.close()
+            logger.info(f"[PRF] Render region found via probe: {region} ({ext})")
+            return ext
+        except Exception as exc:
+            logger.debug(f"[PRF] Region {region} probe failed: {exc}")
+            try:
+                if raw:
+                    raw.close()
+            except Exception:
+                pass
+    return None
+
+
 def _resolve_db_url(database_url: str) -> str:
     """
     Fix unresolvable DB hostnames before asyncpg touches them.
 
     Render internal hostnames (dpg-XXX-a) exist only on Render's private network.
     From Vercel Lambda they can't resolve, which causes asyncio's mDNS fallback to
-    raise EBUSY.  We detect this pattern and swap in the correct external hostname
-    (dpg-XXX-a.REGION-postgres.render.com) whose public DNS record exists.
+    raise EBUSY.  We detect this pattern and probe each external hostname with a
+    real PostgreSQL SSL handshake to find the correct region, then swap in that
+    hostname so asyncpg never needs to resolve the internal address.
 
     Returns the corrected URL (unchanged if the hostname already resolves).
     """
@@ -100,22 +138,17 @@ def _resolve_db_url(database_url: str) -> str:
 
         # Render internal hostname pattern: dpg-{id}-a (no dots, no TLD)
         if re.fullmatch(r"dpg-[a-z0-9]+-a", host):
-            for region in _RENDER_REGIONS:
-                ext = f"{host}.{region}-postgres.render.com"
-                try:
-                    socket.getaddrinfo(ext, 5432, socket.AF_INET, socket.SOCK_STREAM)
-                    # Found the right region — rebuild URL with external host + port
-                    new_url = database_url.replace(f"@{host}", f"@{ext}", 1)
-                    if not parsed.port:
-                        new_url = new_url.replace(f"@{ext}/", f"@{ext}:5432/", 1)
-                    if "sslmode" not in new_url:
-                        sep = "&" if "?" in new_url else "?"
-                        new_url += f"{sep}sslmode=require"
-                    logger.info(f"[PRF] Render internal→external: {host} → {ext}")
-                    return new_url
-                except (socket.gaierror, OSError):
-                    continue
-            logger.warning(f"[PRF] Could not resolve Render external host for {host}")
+            ext = _probe_render_region(host)
+            if ext:
+                new_url = database_url.replace(f"@{host}", f"@{ext}", 1)
+                if not parsed.port:
+                    new_url = new_url.replace(f"@{ext}/", f"@{ext}:5432/", 1)
+                if "sslmode" not in new_url:
+                    sep = "&" if "?" in new_url else "?"
+                    new_url += f"{sep}sslmode=require"
+                logger.info(f"[PRF] Render internal→external: {host} → {ext}")
+                return new_url
+            logger.warning(f"[PRF] Could not find active Render region for {host}")
     except Exception as e:
         logger.warning(f"[PRF] _resolve_db_url error: {e}")
     return database_url
