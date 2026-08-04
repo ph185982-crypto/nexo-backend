@@ -134,6 +134,7 @@ class StudyService:
             commute_lesson_ids=commute_lesson_ids,
             question_pool=question_pool,
             legal_article_ids=legal_pool,
+            is_pm=is_pm,
         )
 
         db_mission = await self.repo.create_mission(user_id, {

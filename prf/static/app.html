@@ -569,6 +569,46 @@ button { font-family:inherit; }
 .legal-article .art-listen { font-size:12px; color:var(--accent); font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
 .legal-article .art-listen svg { width:13px; height:13px; }
 
+/* ── MISSION LEGAL FOCUSED READER ── */
+.legal-focus { padding:20px; }
+.lf-header { margin-bottom:20px; }
+.lf-doc { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--primary); margin-bottom:4px; }
+.lf-art { font-family:var(--serif); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:6px; }
+.lf-title { font-family:var(--serif); font-size:14px; color:var(--ink-2); font-style:italic; line-height:1.4; }
+.lf-official-label, .lf-simple-label, .lf-highlights-label {
+  font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-3); margin-bottom:8px; margin-top:20px;
+}
+.lf-official {
+  font-family:var(--serif); font-size:15px; line-height:1.75; color:var(--ink);
+  border-left:3px solid var(--border-strong); padding-left:14px;
+}
+.lf-simple {
+  font-size:14px; line-height:1.7; color:var(--ink-2);
+  background:var(--primary-soft); border-radius:var(--r-md);
+  padding:14px 16px;
+}
+.lf-highlights { display:flex; flex-direction:column; gap:6px; }
+.lf-hl {
+  font-size:13px; padding:8px 12px; background:var(--gold-soft);
+  border-radius:var(--r-sm); color:var(--ink);
+  border-left:3px solid var(--gold);
+}
+
+/* ── MISSION REVIEW QUALITY ── */
+.quality-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 20px 24px; }
+.quality-btn-3 {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:14px 8px; border-radius:var(--r-md); border:1.5px solid var(--border-strong);
+  background:var(--surface); cursor:pointer; gap:4px; transition:background .15s;
+}
+.quality-btn-3:active { background:var(--surface-2); }
+.quality-btn-3.q-wrong { border-color:var(--error); background:var(--error-soft); }
+.quality-btn-3.q-hard  { border-color:var(--gold);  background:var(--gold-soft); }
+.quality-btn-3.q-easy  { border-color:var(--success); background:var(--success-soft); }
+.qb3-label { font-size:14px; font-weight:600; color:var(--ink); }
+.qb3-hint  { font-size:11px; color:var(--ink-3); }
+
 /* ── TRILHA ── */
 .trilha-subject { border-bottom:1px solid var(--border); }
 .trilha-subject-header {
@@ -875,6 +915,8 @@ const S = {
   themes: null, selTheme: null, essayText: '', essayResult: null,
   lessons: null, playingId: null, audioPos: 0, audioDur: 0, audioPlaying: false,
   reviews: null, reviewIdx: 0, reviewSummary: null, reviewRevealed: false,
+  reviewQuestion: null, reviewAnswered: null,
+  missionLegalArticles: null, missionLegalIdx: 0,
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
   pushOn: false,
   targetExam: localStorage.getItem('prf_target_exam') || 'PMGO',
@@ -1249,15 +1291,15 @@ function viewDashboard() {
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
       mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => {
         const done = b.is_completed;
+        const isAudio = b.block_type === 'audio' || b.block_type === 'audio_lesson';
+        if (isAudio) return ''; // sem conteúdo de áudio para PMGO
         const icon = b.block_type === 'questions' ? I.book :
           b.block_type === 'review' ? I.refresh :
           b.block_type === 'legal_reading' ? I.scale :
-          (b.block_type === 'audio' || b.block_type === 'audio_lesson') ? I.headphones :
           b.block_type === 'error_review' ? I.brain : I.target;
         const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
           b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
           b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
-          (b.block_type === 'audio' || b.block_type === 'audio_lesson') ? `startMissionBlock(${i},'audio')` :
           b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
           `startMissionBlock(${i},'practice')`;
         return `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">
@@ -1658,6 +1700,106 @@ function viewReviews() {
     </div>`;
 }
 
+// ===== MISSION LEGAL READER =====
+function viewMissionLegalReader() {
+  const articles = S.missionLegalArticles;
+  const idx = S.missionLegalIdx || 0;
+  const block = S.mission?.blocks?.[S.activeMissionIdx];
+  const head = `<div class="topbar-sub">
+    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <span class="title-sub">${esc(block?.subject_name || 'Lei seca')}</span>
+    ${articles && articles.length > 1 ? `<span class="meta-sub">${idx+1}/${articles.length}</span>` : ''}
+  </div>`;
+  if (!articles) return head + skeletonBlock(3, 90);
+  if (!articles.length) return head + `<div class="empty">${I.scale}<h3>Sem artigos</h3><p>Nenhum artigo encontrado para esse bloco.</p></div>`;
+  const a = articles[idx];
+  const isLast = idx >= articles.length - 1;
+  return head + `<div class="legal-focus fade-in">
+    <div class="lf-header">
+      <div class="lf-doc">${esc(a.document_name || '')}</div>
+      <div class="lf-art">Art. ${esc(a.article_number || '')}</div>
+      ${a.title ? `<div class="lf-title">${esc(a.title)}</div>` : ''}
+    </div>
+    <div class="lf-official-label">Texto oficial</div>
+    <div class="lf-official">${esc(a.official_text || '')}</div>
+    ${a.simple_text ? `
+      <div class="lf-simple-label">Entendendo o artigo</div>
+      <div class="lf-simple">${esc(a.simple_text)}</div>
+    ` : ''}
+    ${a.highlights?.length ? `
+      <div class="lf-highlights-label">Pontos-chave</div>
+      <div class="lf-highlights">${a.highlights.map(h => `<div class="lf-hl">${esc(h)}</div>`).join('')}</div>
+    ` : ''}
+    <button class="btn btn-primary btn-full btn-lg mt-24" onclick="${isLast ? 'concludeLegalReading()' : 'nextLegalArticle()'}">
+      ${isLast ? 'Concluir leitura' : 'Próximo artigo'}
+    </button>
+  </div>`;
+}
+
+// ===== MISSION REVIEW =====
+function viewMissionReview() {
+  const reviews = S.reviews;
+  const idx = S.reviewIdx || 0;
+  const head = `<div class="topbar-sub">
+    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <span class="title-sub">Revisão</span>
+    ${reviews?.length ? `<span class="meta-sub">${idx+1}/${reviews.length}</span>` : ''}
+  </div>`;
+  if (!reviews) return head + skeletonBlock(2, 120);
+  if (!reviews.length) return head + `<div class="empty">${I.refresh}<h3>Sem revisões</h3><p>Nenhuma revisão pendente no momento.</p></div>`;
+  const card = reviews[idx];
+  if (!card) return head + `<div class="empty">${I.refresh}<h3>Concluído</h3><p>Todas as revisões feitas.</p></div>`;
+  const q = S.reviewQuestion;
+  const ar = S.reviewAnswered;
+  const answered = ar !== null && ar !== undefined;
+  const QUALS = [
+    {q:'wrong', label:'Errei', hint:'Respondi errado', cls:'q-wrong'},
+    {q:'hard',  label:'Difícil', hint:'Acertei com esforço', cls:'q-hard'},
+    {q:'easy',  label:'Bom', hint:'Lembrei bem', cls:'q-easy'},
+  ];
+  if (!q) {
+    // Fallback: sem dados completos da questão
+    return head + `<div class="q-container fade-in">
+      <div class="review-card">
+        <div class="rc-subject">${esc(card.subject_name || 'Revisão')}</div>
+        <div class="rc-content">${esc(card.content_preview || '')}</div>
+        <div class="rc-meta">Intervalo ${Math.round(card.interval_days||0)}d · ${card.repetitions||0} repetições</div>
+      </div>
+      <div class="section-eyebrow" style="padding:12px 20px 8px">Como foi lembrar?</div>
+      <div class="quality-grid-3">
+        ${QUALS.map(x => `<button class="quality-btn-3 ${x.cls}" onclick="submitMissionReview('${card.id}','${x.q}')">
+          <span class="qb3-label">${x.label}</span><span class="qb3-hint">${x.hint}</span></button>`).join('')}
+      </div>
+    </div>`;
+  }
+  return head + `<div class="q-container fade-in">
+    <div class="q-context">Revisão · ${esc(q.subject_name || card.subject_name || '')}</div>
+    <div class="q-text">${esc(q.text)}</div>
+    <div class="q-choices">${(q.alternatives||[]).map(a => {
+      let cls = 'q-choice';
+      if (answered) {
+        if (a.id === ar?.selected_alternative?.id && ar.is_correct) cls += ' correct';
+        else if (a.id === ar?.selected_alternative?.id && !ar.is_correct) cls += ' wrong';
+        else if (a.id === ar?.correct_alternative?.id) cls += ' correct-highlight';
+      }
+      return `<button class="${cls}" ${answered?'disabled':''} onclick="answerMissionReview('${q.id}','${a.id}')">
+        <span class="letter">${esc(a.letter)}</span><span>${esc(a.text)}</span></button>`;
+    }).join('')}</div>
+    ${answered ? `
+      <div class="q-feedback ${ar.is_correct ? 'correct' : 'wrong'}">
+        <div class="fb-title">${ar.is_correct ? 'Correto' : 'Incorreto'}</div>
+        ${ar.explanation ? `<div class="fb-body">${esc(ar.explanation)}</div>` : ''}
+        ${ar.legal_basis ? `<div class="fb-legal"><strong>Base:</strong> ${esc(ar.legal_basis)}</div>` : ''}
+      </div>
+      <div class="section-eyebrow" style="padding:12px 20px 8px">Como foi?</div>
+      <div class="quality-grid-3">
+        ${QUALS.map(x => `<button class="quality-btn-3 ${x.cls}" onclick="submitMissionReview('${card.id}','${x.q}')">
+          <span class="qb3-label">${x.label}</span><span class="qb3-hint">${x.hint}</span></button>`).join('')}
+      </div>
+    ` : ''}
+  </div>`;
+}
+
 // ===== LEGAL =====
 function viewLegal() {
   if (S.subView === 'articles') return viewLegalArticles();
@@ -1793,6 +1935,8 @@ function viewEssayResult() {
 
 // ===== MORE =====
 function viewMore() {
+  if (S.subView === 'missionLegal') return viewMissionLegalReader();
+  if (S.subView === 'missionReview') return viewMissionReview();
   if (S.subView === 'legal' || S.subView === 'articles' || S.subView === 'search') return viewLegal();
   if (S.subView === 'essays' || S.subView === 'essay-write') return viewEssays();
   if (S.subView === 'reviews') return viewReviews();
@@ -1943,11 +2087,11 @@ async function startMissionBlock(blockIdx, type) {
     } catch (e) { toast('Erro ao carregar questões', 'error'); }
     S.loading.questions = false; render(); scrollTop();
   } else if (type === 'review') {
-    switchTab('more'); openReviews();
+    await openMissionReview(blockIdx);
+    return;
   } else if (type === 'legal') {
-    switchTab('more'); openLegal();
-  } else if (type === 'audio') {
-    switchTab('audio');
+    await openMissionLegalReader(blockIdx);
+    return;
   } else {
     switchTab('practice');
   }
@@ -1980,7 +2124,6 @@ function advanceToNextMissionBlock() {
   const type = next.block_type === 'questions' ? 'practice' :
     next.block_type === 'review' ? 'review' :
     next.block_type === 'legal_reading' ? 'legal' :
-    (next.block_type === 'audio' || next.block_type === 'audio_lesson') ? 'audio' :
     next.block_type === 'error_review' ? 'review' : 'practice';
   toast(`Próxima etapa: ${next.title}`, 'info');
   setTimeout(() => startMissionBlock(nextIdx, type), 1500);
@@ -2237,6 +2380,88 @@ async function submitReview(cardId, quality) {
     if (r.xp_earned) toast(`+${r.xp_earned} XP`, 'xp');
   } catch (e) { toast('Erro ao registrar revisão', 'error'); }
   S.reviewIdx++;
+  render(); scrollTop();
+}
+
+// Mission Legal Reader
+async function openMissionLegalReader(blockIdx) {
+  const b = S.mission?.blocks?.[blockIdx];
+  if (!b) return;
+  S.activeMissionIdx = blockIdx;
+  S.missionBlockId = b.id;
+  S.missionLegalArticles = null;
+  S.missionLegalIdx = 0;
+  S.subView = 'missionLegal';
+  S.tab = 'more';
+  render();
+  const ids = b.content_ids || [];
+  if (!ids.length) { await finishMissionBlock(); return; }
+  const articles = [];
+  for (const id of ids) {
+    try { articles.push(await api(`/api/prf/legal/articles/${id}`)); } catch (e) {}
+  }
+  S.missionLegalArticles = articles.length ? articles : [];
+  if (!articles.length) { await finishMissionBlock(); return; }
+  render(); scrollTop();
+}
+function nextLegalArticle() {
+  S.missionLegalIdx = (S.missionLegalIdx || 0) + 1;
+  render(); scrollTop();
+}
+async function concludeLegalReading() {
+  await finishMissionBlock();
+}
+
+// Mission Review (question-based)
+async function openMissionReview(blockIdx) {
+  const b = S.mission?.blocks?.[blockIdx];
+  if (!b) return;
+  S.activeMissionIdx = blockIdx;
+  S.missionBlockId = b.id;
+  S.reviews = null;
+  S.reviewIdx = 0;
+  S.reviewQuestion = null;
+  S.reviewAnswered = null;
+  S.subView = 'missionReview';
+  S.tab = 'more';
+  render();
+  try { S.reviews = await api('/api/prf/reviews/due?limit=20'); }
+  catch (e) { S.reviews = []; }
+  if (!S.reviews?.length) { await finishMissionBlock(); return; }
+  await loadMissionReviewQuestion();
+  render(); scrollTop();
+}
+async function loadMissionReviewQuestion() {
+  const card = S.reviews?.[S.reviewIdx];
+  if (!card) return;
+  S.reviewAnswered = null;
+  S.reviewQuestion = null;
+  if (card.question_id) {
+    try { S.reviewQuestion = await api(`/api/prf/questions/${card.question_id}`); } catch (e) {}
+  }
+}
+async function answerMissionReview(questionId, altId) {
+  if (S.reviewAnswered) return;
+  try {
+    S.reviewAnswered = await api('/api/prf/questions/answer', {
+      method: 'POST', json: { question_id: questionId, selected_alternative_id: altId },
+    });
+  } catch (e) { toast('Erro ao registrar resposta', 'error'); }
+  render(); scrollTop();
+}
+async function submitMissionReview(cardId, quality) {
+  try {
+    const r = await api('/api/prf/reviews/submit', { method:'POST', json:{ card_id: cardId, quality } });
+    if (r?.xp_earned) toast(`+${r.xp_earned} XP`, 'xp');
+  } catch (e) {}
+  S.reviewIdx++;
+  S.reviewAnswered = null;
+  S.reviewQuestion = null;
+  if (S.reviewIdx >= (S.reviews?.length || 0)) {
+    await finishMissionBlock();
+    return;
+  }
+  await loadMissionReviewQuestion();
   render(); scrollTop();
 }
 

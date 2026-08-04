@@ -90,6 +90,7 @@ def build_mission(
     commute_lesson_ids: list[UUID] | None = None,
     question_pool: dict[UUID, list[UUID]] | None = None,
     legal_article_ids: dict[UUID, list[UUID]] | None = None,
+    is_pm: bool = False,
 ) -> Mission:
     """
     Build a complete daily mission from priority results and available content.
@@ -211,7 +212,7 @@ def build_mission(
             remaining_mins -= min(block_mins, 10)
             subjects_used += 1
 
-        elif fmt == "audio" and commute_lesson_ids:
+        elif fmt == "audio" and commute_lesson_ids and not is_pm:
             blocks.append(MissionBlock(
                 block_type="audio_lesson",
                 subject_id=p.subject_id,
@@ -243,8 +244,8 @@ def build_mission(
         order += 1
         remaining_mins -= err_mins
 
-    # 4. COMMUTE AUDIO — added separately if user has commute time
-    if mode != StudyMode.COMMUTE and commute_lesson_ids and context.available_minutes >= 30:
+    # 4. COMMUTE AUDIO — added separately if user has commute time (not for PM exams)
+    if not is_pm and mode != StudyMode.COMMUTE and commute_lesson_ids and context.available_minutes >= 30:
         blocks.append(MissionBlock(
             block_type="audio_lesson",
             title="Áudio para o deslocamento",
