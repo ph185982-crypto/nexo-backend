@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.0.6",  # Impact Score (peso x risco x esquecimento x urgência) + ordem lei seca -> validação + expected lost points
+    version="1.0.7",  # fix critico: missao duplicava blocos a cada regeneracao; botao "gerar nova missao" p/ testar
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",

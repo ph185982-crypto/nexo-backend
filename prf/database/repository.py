@@ -520,6 +520,16 @@ class PRFRepository:
         )
         return mission
 
+    async def delete_mission_blocks(self, mission_id: UUID) -> None:
+        """Limpa os blocos de uma missão antes de regerar.
+
+        create_mission faz upsert e devolve o MESMO mission_id em dias já
+        existentes; sem isso, cada regeneração (todo bloco concluído chama
+        generate_daily_mission de novo, já que status só vira 'completed'
+        no fim) empilhava blocos duplicados por cima dos antigos.
+        """
+        await self._execute("DELETE FROM mission_blocks WHERE mission_id = $1", mission_id)
+
     async def create_mission_block(self, mission_id: UUID, block: dict) -> dict:
         return await self._fetchrow(
             """INSERT INTO mission_blocks (mission_id, block_type, subject_id, topic_id,

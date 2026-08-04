@@ -16,11 +16,12 @@ router = APIRouter()
 async def get_today_mission(
     energy: Optional[EnergyLevel] = None,
     mode: Optional[StudyMode] = None,
+    force: bool = False,
     user_id: UUID = Depends(get_current_user_id),
     study: StudyService = Depends(get_study_service),
 ):
-    """Get or generate today's mission."""
-    mission = await study.generate_daily_mission(user_id, energy=energy, mode=mode)
+    """Get or generate today's mission. force=true descarta a missão de hoje e gera outra."""
+    mission = await study.generate_daily_mission(user_id, energy=energy, mode=mode, force=force)
     if not mission:
         raise HTTPException(404, "Could not generate mission")
 

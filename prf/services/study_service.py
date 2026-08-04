@@ -37,10 +37,20 @@ class StudyService:
 
     async def generate_daily_mission(
         self, user_id: UUID, energy: EnergyLevel | None = None, mode: StudyMode | None = None,
+        force: bool = False,
     ) -> dict:
-        """Generate or retrieve today's mission."""
+        """Generate or retrieve today's mission.
+
+        Bug corrigido: a checagem antiga só pulava a regeneração quando
+        status != 'pending', mas status só vira 'completed' ao fim da
+        missão inteira — ou seja, toda vez que um bloco era concluído e o
+        frontend recarregava a missão, essa função rodava de novo e
+        empilhava um novo conjunto de blocos por cima dos antigos (sem
+        nunca apagar os anteriores). Regra correta: se já existe missão
+        hoje com blocos, é a missão do dia — só se regenera com force=True.
+        """
         existing = await self.repo.get_todays_mission(user_id)
-        if existing and existing["status"] not in ("pending",):
+        if existing and existing.get("blocks") and not force:
             return existing
 
         profile = await self.repo.get_profile(user_id)
@@ -147,6 +157,8 @@ class StudyService:
             "greeting": mission.greeting,
             "blocks_total": len(mission.blocks),
         })
+        if force:
+            await self.repo.delete_mission_blocks(db_mission["id"])
 
         for block in mission.blocks:
             await self.repo.create_mission_block(db_mission["id"], {
