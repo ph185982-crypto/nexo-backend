@@ -20,18 +20,66 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Vercel Lambda EBUSY workaround
-# asyncio's loop.getaddrinfo() runs socket.getaddrinfo() via ThreadPoolExecutor.
-# In Vercel's Lambda sandbox that raises OSError EBUSY (errno 16).
-# The identical call succeeds when made directly in the coroutine thread.
-# We monkey-patch BaseEventLoop.getaddrinfo() to skip the executor entirely.
-# Brief blocking (<1 ms for an IP, <100 ms for DNS) is fine in a serverless
-# environment where at most one request is in flight per cold-start.
+#
+# Problem: asyncio.getaddrinfo() runs socket.getaddrinfo() via a
+# ThreadPoolExecutor. In Vercel's Lambda sandbox those threads raise
+# OSError EBUSY (errno 16). The monkey-patch below makes DNS synchronous
+# in the coroutine thread to avoid the executor.
+#
+# Secondary problem: socket.getaddrinfo() itself fails with EBUSY for any
+# hostname that triggers the mDNS fallback (unresolvable names, and
+# sometimes even valid public hostnames after a prior mDNS failure).
+#
+# Solution: DNS-over-HTTPS (DoH) fallback via Cloudflare's 1.1.1.1.
+# httpx connects to 1.1.1.1 by its LITERAL IP ADDRESS (no OS DNS needed),
+# so no EBUSY is triggered for the DoH query itself. If socket.getaddrinfo
+# fails, we fall back to DoH and return the same [(family,type,proto,
+# canonname, sockaddr)] list that asyncpg/asyncio expect.
 # ---------------------------------------------------------------------------
 import asyncio as _asyncio
 import socket as _socket
 
+_doh_cache: dict = {}   # hostname → list of IPv4 strings
+
+
+async def _doh_resolve(host: str, port: int) -> list:
+    """Resolve host via Cloudflare DoH at 1.1.1.1 (literal IP — no OS DNS)."""
+    import httpx
+
+    if host in _doh_cache:
+        ips = _doh_cache[host]
+    else:
+        ips = []
+        try:
+            async with httpx.AsyncClient(base_url="https://1.1.1.1", verify=False, timeout=5.0) as cli:
+                r = await cli.get("/dns-query",
+                                  params={"name": host, "type": "A"},
+                                  headers={"Accept": "application/dns-json"})
+                data = r.json()
+                ips = [rec["data"] for rec in data.get("Answer", []) if rec.get("type") == 1]
+                if ips:
+                    _doh_cache[host] = ips
+                    logger.info(f"[PRF] DoH {host!r} → {ips}")
+        except Exception as doh_err:
+            logger.debug(f"[PRF] DoH failed for {host!r}: {doh_err}")
+
+    if not ips:
+        raise OSError(f"DoH: no A record for {host!r}")
+
+    p = int(port) if isinstance(port, (int, str)) and str(port).isdigit() else 0
+    return [(_socket.AF_INET, _socket.SOCK_STREAM, 6, "", (ip, p)) for ip in ips]
+
+
 async def _sync_getaddrinfo(self, host, port, *args, **kwargs):
-    return _socket.getaddrinfo(host, port, *args, **kwargs)
+    """Synchronous getaddrinfo with DoH fallback — replaces asyncio's thread executor."""
+    try:
+        result = _socket.getaddrinfo(host, port, *args, **kwargs)
+        if result:
+            return result
+    except OSError:
+        pass
+    return await _doh_resolve(host, port)
+
 
 _asyncio.base_events.BaseEventLoop.getaddrinfo = _sync_getaddrinfo
 
