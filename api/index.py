@@ -18,22 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Vercel Lambda EBUSY workaround
-# asyncio's loop.getaddrinfo() runs socket.getaddrinfo() via ThreadPoolExecutor.
-# In Vercel's Lambda sandbox that raises OSError EBUSY (errno 16).
-# The identical call succeeds when made directly in the coroutine thread.
-# We monkey-patch BaseEventLoop.getaddrinfo() to skip the executor entirely.
-# Brief blocking (<1 ms for an IP, <100 ms for DNS) is fine in a serverless
-# environment where at most one request is in flight per cold-start.
-# ---------------------------------------------------------------------------
-import asyncio as _asyncio
-import socket as _socket
-
-async def _sync_getaddrinfo(self, host, port, *args, **kwargs):
-    return _socket.getaddrinfo(host, port, *args, **kwargs)
-
-_asyncio.base_events.BaseEventLoop.getaddrinfo = _sync_getaddrinfo
+# No DNS monkey-patch — let asyncio handle it normally with timeouts in pool creation.
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
