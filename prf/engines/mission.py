@@ -80,6 +80,13 @@ COMMUTE_GREETINGS = [
     "Modo deslocamento ativado. Ouvir é estudar.",
 ]
 
+_RISK_LABELS = {
+    "muito_alto": "Risco muito alto",
+    "alto": "Risco alto",
+    "medio": "Risco médio",
+    "baixo": "Risco baixo",
+}
+
 
 def build_mission(
     priorities: list[PriorityResult],
@@ -158,6 +165,7 @@ def build_mission(
         if fmt == "legal_reading" and legal_reading_used >= MAX_LEGAL_READING:
             fmt = "questions"
         block_mins = _clamp_block_mins(p.recommended_mins, remaining_mins, mode)
+        risk_tag = _RISK_LABELS.get(p.risk_level, "Risco médio")
 
         if fmt == "questions" and p.subject_id in question_pool:
             q_count = max(3, block_mins // 3)
@@ -168,7 +176,7 @@ def build_mission(
                     subject_id=p.subject_id,
                     subject_name=p.subject_name,
                     title=f"Questões — {p.subject_name}",
-                    description=p.reason,
+                    description=f"{risk_tag} · {p.reason}",
                     estimated_mins=block_mins,
                     display_order=order,
                     content_ids=q_ids,
@@ -189,7 +197,7 @@ def build_mission(
                     subject_id=p.subject_id,
                     subject_name=p.subject_name,
                     title=f"Lei seca — {p.subject_name} ({len(a_ids)} artigos)",
-                    description="Artigo oficial + explicação simplificada antes das questões.",
+                    description=f"{risk_tag} · leia antes de validar com questões.",
                     estimated_mins=block_mins,
                     display_order=order,
                     content_ids=a_ids,
@@ -199,6 +207,27 @@ def build_mission(
                 remaining_mins -= block_mins
                 subjects_used += 1
                 legal_reading_used += 1
+
+                # Validação imediata: ler a lei sem praticar não fixa nada —
+                # logo depois da teoria entra um bloco curto de questões da
+                # MESMA matéria, ciclo diagnóstico → teoria → validação.
+                if remaining_mins >= 5 and p.subject_id in question_pool:
+                    val_mins = min(10, remaining_mins)
+                    val_ids = question_pool[p.subject_id][:5]
+                    if val_ids:
+                        blocks.append(MissionBlock(
+                            block_type="questions",
+                            subject_id=p.subject_id,
+                            subject_name=p.subject_name,
+                            title=f"Validação — {p.subject_name}",
+                            description="Pratique agora o que acabou de ler, enquanto está fresco.",
+                            estimated_mins=val_mins,
+                            display_order=order,
+                            content_ids=val_ids,
+                            mode=mode.value,
+                        ))
+                        order += 1
+                        remaining_mins -= val_mins
 
         elif fmt == "flashcards":
             blocks.append(MissionBlock(

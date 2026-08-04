@@ -196,6 +196,20 @@ button { font-family:inherit; }
 }
 .approval-foot { display:flex; justify-content:space-between; margin-top:10px; font-size:12px; color:var(--ink-3); }
 
+.risk-block { padding:20px; border-bottom:1px solid var(--border); background:var(--error-soft); }
+.risk-head { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px; }
+.risk-head .lbl { font-size:13px; color:var(--ink-2); max-width:60%; line-height:1.4; }
+.risk-val { font-family:var(--serif); font-size:28px; color:var(--error); font-variant-numeric:tabular-nums; }
+.risk-val .risk-unit { font-size:13px; color:var(--ink-3); font-family:var(--sans); }
+.risk-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.risk-chip {
+  display:flex; align-items:center; gap:6px; padding:6px 10px;
+  background:var(--surface); border-radius:var(--r-full); border:1px solid var(--border);
+  font-size:12px;
+}
+.risk-chip .rc-pts { font-weight:700; color:var(--error); font-variant-numeric:tabular-nums; }
+.risk-chip .rc-name { color:var(--ink-2); }
+
 .week-block { padding:24px 20px; border-bottom:1px solid var(--border); }
 .week-chart { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; align-items:end; height:90px; margin-top:20px; }
 .week-col { display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end; }
@@ -1326,6 +1340,15 @@ function viewDashboard() {
         <span>${apr < 40 ? 'Continue estudando' : apr < 70 ? 'No caminho certo' : 'Excelente'}</span>
       </div>
     </div>
+    ${(d.expected_lost_points||0) > 0 ? `<div class="risk-block">
+      <div class="risk-head">
+        <span class="lbl">Se a prova fosse hoje, você perderia</span>
+        <span class="risk-val">${Math.round(d.expected_lost_points)}<span class="risk-unit"> de ${d.exam_total_items||50} pontos</span></span>
+      </div>
+      ${(d.top_risks||[]).length ? `<div class="risk-chips">
+        ${d.top_risks.map(r => `<div class="risk-chip"><span class="rc-pts">${r.points_at_risk}pt</span><span class="rc-name">${esc(r.subject_name)}</span></div>`).join('')}
+      </div>` : ''}
+    </div>` : ''}
     ${wp.length ? `<div class="week-block">
       <div class="section-eyebrow">Últimos 7 dias</div>
       <div class="section-title">Seu ritmo</div>

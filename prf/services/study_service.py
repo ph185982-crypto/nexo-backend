@@ -106,6 +106,7 @@ class StudyService:
             days_until_exam=days_until_exam,
             today=date.today(),
             study_level=(profile or {}).get("study_level", "intermediate"),
+            exam_total_items=50 if is_pm else 120,
         )
 
         priorities = compute_priorities(subject_states, ctx)
@@ -296,6 +297,25 @@ class StudyService:
         weakest = min(mastery, key=_mastery_of) if mastery else None
         strongest = max(mastery, key=_mastery_of) if mastery else None
 
+        # Expected lost score — em vez de só "82% aprovação" solto, mostra
+        # quantos pontos da prova estariam sendo perdidos hoje e onde.
+        is_pm_dash = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
+        weight_key_dash = "weight_pm" if is_pm_dash else "weight_prf"
+        exam_items_dash = 50 if is_pm_dash else 120
+        risk_subjects = [m for m in mastery if (m.get(weight_key_dash) or 0) > 0]
+        total_w = sum(m.get(weight_key_dash) or 0 for m in risk_subjects) or 1.0
+        risk_rows = []
+        for m in risk_subjects:
+            gap = max(0.0, 1.0 - (m.get("mastery_level") or 0))
+            norm_w = (m.get(weight_key_dash) or 0) / total_w
+            risk_rows.append({
+                "subject_name": m["subject_name"],
+                "points_at_risk": round(norm_w * gap * exam_items_dash, 1),
+            })
+        risk_rows.sort(key=lambda r: r["points_at_risk"], reverse=True)
+        expected_lost_points = round(sum(r["points_at_risk"] for r in risk_rows), 1)
+        top_risks = [r for r in risk_rows if r["points_at_risk"] > 0][:3]
+
         mission_status = "pending"
         mission_pct = 0
         if mission:
@@ -341,6 +361,9 @@ class StudyService:
             ),
             "next_review_in": _next_review_label(reviews_due),
             "target_exam": (profile or {}).get("target_exam", "PMGO"),
+            "expected_lost_points": expected_lost_points,
+            "exam_total_items": exam_items_dash,
+            "top_risks": top_risks,
         }
 
     # ── Approval Estimate ─────────────────────────────────────────────────────
