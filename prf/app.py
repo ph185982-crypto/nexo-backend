@@ -81,7 +81,10 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     import re
     import urllib.parse
 
-    logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
+    # Log sanitized URL for debugging (hide credentials)
+    parsed = urllib.parse.urlparse(database_url)
+    safe_url = f"{parsed.scheme}://user@{parsed.hostname}:{parsed.port or 5432}/{parsed.path}?..."
+    logger.info(f"[PRF] Connecting to DB: {safe_url} (full url length={len(database_url)})")
 
     # Skip region retry logic — use the resolved URL directly (Oregon by default from _resolve_db_url).
     # pgBouncer will drop connection if region is wrong, and we can't reliably detect region
