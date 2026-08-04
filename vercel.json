@@ -1,6 +1,6 @@
 {
-  "buildCommand": null,
-  "installCommand": null,
+  "buildCommand": "bash build.sh",
+  "installCommand": "pip install -r requirements.txt",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
   ],
