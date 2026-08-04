@@ -47,7 +47,12 @@ class StudyService:
         routine = await self.repo.get_routine_for_day(user_id, date.today().weekday())
         behavior = await self.repo.get_behavior_metrics(user_id)
 
-        available_mins = routine["study_minutes"] if routine else 60
+        if routine:
+            available_mins = routine["study_minutes"]
+        elif profile and profile.get("weekly_goal_hours"):
+            available_mins = round(profile["weekly_goal_hours"] * 60 / 7)
+        else:
+            available_mins = 60
         if not energy and routine:
             energy = EnergyLevel(routine["typical_energy"])
         energy = energy or EnergyLevel.MEDIUM
@@ -100,6 +105,7 @@ class StudyService:
             hour_of_day=datetime.now().hour,
             days_until_exam=days_until_exam,
             today=date.today(),
+            study_level=(profile or {}).get("study_level", "intermediate"),
         )
 
         priorities = compute_priorities(subject_states, ctx)

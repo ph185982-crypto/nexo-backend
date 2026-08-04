@@ -54,6 +54,7 @@ class PriorityContext:
     hour_of_day: int = 12
     days_until_exam: Optional[int] = None
     today: date = field(default_factory=date.today)
+    study_level: str = "intermediate"   # beginner, intermediate, advanced
 
 
 def compute_priorities(
@@ -150,11 +151,25 @@ def _recommend_format(s: SubjectState, ctx: PriorityContext) -> str:
         return "flashcards" if s.reviews_due > 0 else "legal_reading"
     if s.reviews_due > 0:
         return "flashcards"
+
     # Jornada da matéria: lei seca primeiro (teoria), depois questão (prática),
     # revisão de erro reforça de novo com lei seca antes de nova rodada de questão.
+    # O nível de estudo desloca quanto tempo cada matéria fica na fase de teoria:
+    # iniciante precisa de mais contato com o texto antes de treinar; avançado
+    # já pula pra prática e só volta pra lei seca se estiver de fato errando.
     if s.total_attempts == 0:
         return "legal_reading"
-    if s.accuracy < 0.5 and s.total_attempts >= 3:
+
+    if ctx.study_level == "beginner":
+        theory_window, error_threshold = 5, 0.55
+    elif ctx.study_level == "advanced":
+        theory_window, error_threshold = 0, 0.35
+    else:
+        theory_window, error_threshold = 2, 0.5
+
+    if s.total_attempts <= theory_window:
+        return "legal_reading"
+    if s.accuracy < error_threshold and s.total_attempts >= 3:
         return "legal_reading"
     return "questions"
 
