@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.0.1",  # Updated: direct Oregon connection, no region loop
+    version="1.0.2",  # Railway deployment version
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -236,11 +236,7 @@ async def debug_net():
 
 @app.get("/health", tags=["Health"])
 async def health():
-    payload = {
-        "status": "online",
-        "prf_ready": _prf_ready,
-        "deployment_test": "vercel-2026-08-04-01-05"  # Verification timestamp
-    }
+    payload = {"status": "online", "prf_ready": _prf_ready}
     if _startup_error:
         payload["startup_error"] = _startup_error
     return payload
