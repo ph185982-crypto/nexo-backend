@@ -80,48 +80,80 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     import asyncio
     import re
     import urllib.parse
+    import socket
+
+    # Pre-resolve hostname to IP to avoid DNS issues in Lambda
+    # Lambda's mDNS fallback can cause EBUSY errors, so we resolve early
+    parsed = urllib.parse.urlparse(database_url)
+    hostname = parsed.hostname
+    resolved_ip = None
+
+    if hostname:
+        try:
+            # Use simple gethostbyname instead of getaddrinfo to minimize DNS overhead
+            socket.setdefaulttimeout(5.0)
+            resolved_ip = socket.gethostbyname(hostname)
+            logger.info(f"[PRF] Pre-resolved {hostname} → {resolved_ip}")
+
+            # Replace hostname with IP in connection string to avoid future DNS lookups
+            database_url = database_url.replace(f"@{hostname}", f"@{resolved_ip}", 1)
+            logger.info(f"[PRF] Using IP-based connection URL")
+        except Exception as e:
+            logger.warning(f"[PRF] Failed to pre-resolve {hostname}: {e}, will attempt with hostname")
 
     # Log sanitized URL for debugging (hide credentials)
     parsed = urllib.parse.urlparse(database_url)
     safe_url = f"{parsed.scheme}://user@{parsed.hostname}:{parsed.port or 5432}/{parsed.path}?..."
     logger.info(f"[PRF] Connecting to DB: {safe_url} (full url length={len(database_url)})")
 
-    # Skip region retry logic — use the resolved URL directly (Oregon by default from _resolve_db_url).
-    # pgBouncer will drop connection if region is wrong, and we can't reliably detect region
-    # before connecting anyway due to DNS issues in Vercel Lambda. User/ops can set correct
-    # region via environment variable if needed.
-
+    # Aggressive retry loop for transient DNS/network issues in Lambda
     pool = None
     last_error = None
 
-    # Single attempt to connect (no region retry loop — Lambda timeout too aggressive)
-    for attempt in range(3):  # 3 quick retries for transient network issues
+    for attempt in range(10):  # 10 attempts with exponential backoff (up to 60s total)
         try:
-            pool = await asyncpg.create_pool(
-                database_url,
-                min_size=1,
-                max_size=5,
-                statement_cache_size=0,  # required for pgBouncer (transaction mode)
-                init=_init_connection,
-                command_timeout=12.0,  # Give DNS/network time but respect Lambda limit
+            logger.info(f"[PRF] Connection attempt {attempt + 1}/10…")
+
+            # Wrap connection in timeout to fail fast on DNS hangs
+            pool = await asyncio.wait_for(
+                asyncpg.create_pool(
+                    database_url,
+                    min_size=1,
+                    max_size=5,
+                    statement_cache_size=0,
+                    init=_init_connection,
+                    command_timeout=10.0,
+                ),
+                timeout=15.0  # Total timeout per attempt: 15 seconds
             )
-            logger.info(f"[PRF] Connected to database")
+            logger.info(f"[PRF] Connected to database on attempt {attempt + 1}")
             break
-        except OSError as e:
-            if e.errno == 16 and attempt < 2:  # EBUSY retry
-                wait = 2 ** (attempt + 1)  # 2, 4 seconds
-                logger.warning(f"[PRF] EBUSY retry {attempt + 1}/3 in {wait}s…")
+        except asyncio.TimeoutError:
+            logger.warning(f"[PRF] Connection timeout on attempt {attempt + 1}/10")
+            last_error = asyncio.TimeoutError("Connection timeout")
+            if attempt < 9:
+                wait = min(2 ** attempt, 32)  # Exponential backoff: 1,2,4,8,16,32
+                logger.info(f"[PRF] Retrying in {wait}s…")
                 await asyncio.sleep(wait)
+        except OSError as e:
+            if e.errno == 16:  # EBUSY
+                logger.warning(f"[PRF] EBUSY on attempt {attempt + 1}/10 (DNS resolver busy)")
             else:
-                last_error = e
-                break
-        except Exception as e:
+                logger.warning(f"[PRF] OSError on attempt {attempt + 1}/10: {e}")
             last_error = e
-            logger.warning(f"[PRF] Connection error: {type(e).__name__}: {e}")
-            break
+            if attempt < 9:
+                wait = min(2 ** attempt, 32)
+                logger.info(f"[PRF] Retrying in {wait}s…")
+                await asyncio.sleep(wait)
+        except Exception as e:
+            logger.error(f"[PRF] Unexpected error on attempt {attempt + 1}/10: {type(e).__name__}: {e}")
+            last_error = e
+            if attempt < 9:
+                wait = min(2 ** attempt, 32)
+                await asyncio.sleep(wait)
 
     if not pool:
-        raise last_error or Exception("Failed to connect to database")
+        raise last_error or Exception("Failed to connect to database after 10 attempts")
 
     logger.info("[PRF] DB pool created")
 
