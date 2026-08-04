@@ -150,7 +150,11 @@ def _recommend_format(s: SubjectState, ctx: PriorityContext) -> str:
         return "flashcards" if s.reviews_due > 0 else "legal_reading"
     if s.reviews_due > 0:
         return "flashcards"
-    if s.accuracy < 0.5 and s.total_attempts > 5:
+    # Jornada da matéria: lei seca primeiro (teoria), depois questão (prática),
+    # revisão de erro reforça de novo com lei seca antes de nova rodada de questão.
+    if s.total_attempts == 0:
+        return "legal_reading"
+    if s.accuracy < 0.5 and s.total_attempts >= 3:
         return "legal_reading"
     return "questions"
 
@@ -168,6 +172,8 @@ def _recommend_duration(s: SubjectState, ctx: PriorityContext) -> int:
 
 def _explain_priority(s: SubjectState, ctx: PriorityContext, score: float) -> str:
     parts = []
+    if s.total_attempts == 0:
+        parts.append("primeiro contato — comece pela lei seca")
     if s.reviews_due > 0:
         parts.append(f"{s.reviews_due} revisões pendentes")
     if s.accuracy < 0.5 and s.total_attempts > 3:

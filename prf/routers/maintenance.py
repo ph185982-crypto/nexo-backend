@@ -445,3 +445,84 @@ async def seed_questions_now(
         "total_active": total,
         "by_type": {r["question_type"]: r["cnt"] for r in by_type},
     }
+
+
+@router.post("/legal/explain-pmgo")
+async def explain_pmgo_articles(
+    limit: int = Query(30, ge=1, le=60),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Gera texto explicativo (simple_text) para artigos de matérias PMGO sem
+    explicação, para a missão de lei seca sempre vir acompanhada de texto simples.
+
+    Roda em lotes pequenos por causa do limite de tempo da função — chame de novo
+    para continuar de onde parou (a ordem por frequency_score garante progresso).
+    """
+    _require_admin(x_maintenance_token)
+
+    from prf.routers.legal_library import EXPLAIN_SYSTEM
+    from prf.services import llm_service
+    import asyncio
+
+    rows = await repo._fetch(
+        """SELECT la.id, la.article_number, la.official_text, ld.name AS document_name
+             FROM legal_articles la
+             JOIN subjects s ON s.id = la.subject_id
+             JOIN legal_documents ld ON ld.id = la.document_id
+            WHERE s.weight_pm > 0 AND (la.simple_text IS NULL OR la.simple_text = '')
+            ORDER BY la.frequency_score DESC
+            LIMIT $1""",
+        limit,
+    )
+
+    async def _explain_one(article: dict) -> tuple[UUID, bool]:
+        prompt = f"""Explique este dispositivo legal para um candidato de concurso policial.
+
+DOCUMENTO: {article['document_name']}
+{article['article_number']}
+TEXTO OFICIAL:
+{article['official_text'][:4000]}
+
+Responda em JSON:
+{{"simple_text": "explicação de 3 a 6 linhas, em linguagem direta, dizendo o que o dispositivo determina na prática e qual a pegadinha que a banca costuma fazer com ele",
+  "highlights": ["3 a 6 expressões-chave copiadas literalmente do texto oficial, as que a banca troca para tornar o item errado"]}}"""
+        try:
+            data = await llm_service.chat_json(
+                [
+                    {"role": "system", "content": EXPLAIN_SYSTEM},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.3,
+                max_tokens=900,
+            )
+        except llm_service.LLMUnavailable:
+            return article["id"], False
+
+        simple = (data.get("simple_text") or "").strip()
+        if not simple:
+            return article["id"], False
+        highlights = [h for h in (data.get("highlights") or []) if isinstance(h, str) and h.strip()]
+        await repo._execute(
+            "UPDATE legal_articles SET simple_text = $1, highlights = $2 WHERE id = $3",
+            simple, highlights[:6], article["id"],
+        )
+        return article["id"], True
+
+    generated = 0
+    failed = 0
+    # Lotes de 5 em paralelo — rápido o bastante sem estourar rate limit do provedor.
+    for start in range(0, len(rows), 5):
+        chunk = [dict(r) for r in rows[start:start + 5]]
+        results = await asyncio.gather(*[_explain_one(a) for a in chunk])
+        for _id, ok in results:
+            generated += 1 if ok else 0
+            failed += 0 if ok else 1
+
+    remaining = await repo._fetchval(
+        """SELECT COUNT(*) FROM legal_articles la
+             JOIN subjects s ON s.id = la.subject_id
+            WHERE s.weight_pm > 0 AND (la.simple_text IS NULL OR la.simple_text = '')"""
+    )
+
+    return {"generated": generated, "failed": failed, "remaining": remaining}

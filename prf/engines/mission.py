@@ -143,13 +143,19 @@ def build_mission(
 
     # 2. MAIN SUBJECT BLOCKS — interleaved from top priorities
     subjects_used = 0
+    legal_reading_used = 0
     max_subjects = 3 if remaining_mins >= 30 else 2 if remaining_mins >= 15 else 1
+    # Tampa lei seca em 2 por missão — matéria nova não pode engolir o tempo
+    # todo só com teoria, questão sempre entra na jornada do dia.
+    MAX_LEGAL_READING = 2
 
     for p in priorities[:max_subjects]:
         if remaining_mins < 5:
             break
 
         fmt = p.recommended_format
+        if fmt == "legal_reading" and legal_reading_used >= MAX_LEGAL_READING:
+            fmt = "questions"
         block_mins = _clamp_block_mins(p.recommended_mins, remaining_mins, mode)
 
         if fmt == "questions" and p.subject_id in question_pool:
@@ -179,7 +185,7 @@ def build_mission(
                     subject_id=p.subject_id,
                     subject_name=p.subject_name,
                     title=f"Lei seca — {p.subject_name}",
-                    description="Leitura dos dispositivos mais cobrados.",
+                    description="Artigo oficial + explicação simplificada antes das questões.",
                     estimated_mins=block_mins,
                     display_order=order,
                     content_ids=a_ids,
@@ -188,6 +194,7 @@ def build_mission(
                 order += 1
                 remaining_mins -= block_mins
                 subjects_used += 1
+                legal_reading_used += 1
 
         elif fmt == "flashcards":
             blocks.append(MissionBlock(

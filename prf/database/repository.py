@@ -663,7 +663,10 @@ class PRFRepository:
     async def get_legal_article_ids_by_subject(self, subject_id: UUID, limit: int = 5) -> list[UUID]:
         rows = await self._fetch(
             """SELECT id FROM legal_articles
-               WHERE subject_id = $1 ORDER BY frequency_score DESC LIMIT $2""",
+               WHERE subject_id = $1
+               ORDER BY (simple_text IS NOT NULL AND simple_text != '') DESC,
+                        frequency_score DESC
+               LIMIT $2""",
             subject_id, limit,
         )
         return [r["id"] for r in rows]
