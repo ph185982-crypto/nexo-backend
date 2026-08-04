@@ -83,71 +83,39 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
 
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
 
-    # Detect if we're trying to connect to a Render external hostname
-    # and need to retry with different regions if the first one fails
-    parsed = urllib.parse.urlparse(database_url)
-    host = parsed.hostname or ""
-    regions_to_try = ["oregon"]  # default
-    if "-postgres.render.com" in host:
-        # Extract region from hostname: dpg-...-{region}-postgres.render.com
-        match = re.search(r"-([a-z]+)-postgres\.render\.com$", host)
-        if match:
-            current_region = match.group(1)
-            all_regions = ["oregon", "ohio", "frankfurt", "singapore", "virginia"]
-            # Rotate: try current first, then others
-            regions_to_try = ([r for r in all_regions if r == current_region] +
-                             [r for r in all_regions if r != current_region])
+    # Skip region retry logic — use the resolved URL directly (Oregon by default from _resolve_db_url).
+    # pgBouncer will drop connection if region is wrong, and we can't reliably detect region
+    # before connecting anyway due to DNS issues in Vercel Lambda. User/ops can set correct
+    # region via environment variable if needed.
 
     pool = None
     last_error = None
 
-    for region_idx, region in enumerate(regions_to_try):
-        # Build URL for this region attempt
-        test_url = database_url
-        if region_idx > 0:  # Only swap on retry attempts
-            test_url = re.sub(
-                r"([a-z]+-postgres\.render\.com)",
-                lambda m: m.group(1).replace(m.group(1).split("-")[0] + "-", region + "-"),
-                test_url
+    # Single attempt to connect (no region retry loop — Lambda timeout too aggressive)
+    for attempt in range(3):  # 3 quick retries for transient network issues
+        try:
+            pool = await asyncpg.create_pool(
+                database_url,
+                min_size=1,
+                max_size=5,
+                statement_cache_size=0,  # required for pgBouncer (transaction mode)
+                init=_init_connection,
+                command_timeout=12.0,  # Give DNS/network time but respect Lambda limit
             )
-            logger.info(f"[PRF] Retrying with region {region}: {test_url[:80]}")
-
-        for attempt in range(4):  # 4 attempts per region: fits in Lambda 60s timeout
-            try:
-                pool = await asyncpg.create_pool(
-                    test_url,
-                    min_size=1,
-                    max_size=5,
-                    statement_cache_size=0,  # required for pgBouncer (transaction mode)
-                    init=_init_connection,
-                    command_timeout=10.0,  # Timeout for individual pool creation
-                )
-                logger.info(f"[PRF] Connected to region {region}")
-                break
-            except (asyncpg.exceptions.ConnectionDoesNotExistError,
-                    asyncpg.exceptions.PostgresError) as pge:
-                # Connection error — likely wrong region or auth failure
-                last_error = pge
-                logger.info(f"[PRF] Region {region} attempt {attempt+1}: {type(pge).__name__}")
-                if attempt < 3:
-                    wait = 2 ** attempt  # 1, 2, 4 seconds
-                    await asyncio.sleep(wait)
-                continue
-            except OSError as e:
-                if e.errno == 16 and attempt < 3:  # EBUSY retry
-                    wait = 2 ** attempt  # 1, 2, 4 seconds
-                    logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/4 in {wait}s…")
-                    await asyncio.sleep(wait)
-                else:
-                    last_error = e
-                    break
-            except Exception as e:
+            logger.info(f"[PRF] Connected to database")
+            break
+        except OSError as e:
+            if e.errno == 16 and attempt < 2:  # EBUSY retry
+                wait = 2 ** (attempt + 1)  # 2, 4 seconds
+                logger.warning(f"[PRF] EBUSY retry {attempt + 1}/3 in {wait}s…")
+                await asyncio.sleep(wait)
+            else:
                 last_error = e
-                logger.warning(f"[PRF] Unexpected error: {type(e).__name__}: {e}")
                 break
-
-        if pool:
-            break  # Success — stop trying regions
+        except Exception as e:
+            last_error = e
+            logger.warning(f"[PRF] Connection error: {type(e).__name__}: {e}")
+            break
 
     if not pool:
         raise last_error or Exception("Failed to connect to database")
