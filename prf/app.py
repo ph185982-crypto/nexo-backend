@@ -78,30 +78,79 @@ async def _init_connection(conn: asyncpg.Connection):
 async def init_prf_database(database_url: str) -> asyncpg.Pool:
     """Create connection pool, run schema, seed data, wire up the repository."""
     import asyncio
+    import re
+    import urllib.parse
+
     logger.info(f"[PRF] Connecting to DB (url length={len(database_url)})...")
 
-    # Do NOT pass ssl= explicitly — let asyncpg read sslmode from the DSN URL.
-    # _resolve_db_url() appends ?sslmode=require which in asyncpg means
-    # "use SSL but do not verify the certificate", avoiding cert/hostname
-    # validation failures while still encrypting the connection.
+    # Detect if we're trying to connect to a Render external hostname
+    # and need to retry with different regions if the first one fails
+    parsed = urllib.parse.urlparse(database_url)
+    host = parsed.hostname or ""
+    regions_to_try = ["oregon"]  # default
+    if "-postgres.render.com" in host:
+        # Extract region from hostname: dpg-...-{region}-postgres.render.com
+        match = re.search(r"-([a-z]+)-postgres\.render\.com$", host)
+        if match:
+            current_region = match.group(1)
+            all_regions = ["oregon", "ohio", "frankfurt", "singapore", "virginia"]
+            # Rotate: try current first, then others
+            regions_to_try = ([r for r in all_regions if r == current_region] +
+                             [r for r in all_regions if r != current_region])
+
     pool = None
-    for attempt in range(3):
-        try:
-            pool = await asyncpg.create_pool(
-                database_url,
-                min_size=1,
-                max_size=5,
-                statement_cache_size=0,  # required for Supabase pgBouncer (transaction mode)
-                init=_init_connection,
+    last_error = None
+
+    for region_idx, region in enumerate(regions_to_try):
+        # Build URL for this region attempt
+        test_url = database_url
+        if region_idx > 0:  # Only swap on retry attempts
+            test_url = re.sub(
+                r"([a-z]+-postgres\.render\.com)",
+                lambda m: m.group(1).replace(m.group(1).split("-")[0] + "-", region + "-"),
+                test_url
             )
-            break
-        except OSError as e:
-            if e.errno == 16 and attempt < 2:  # EBUSY retry
-                wait = 2 ** attempt
-                logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/3 in {wait}s…")
-                await asyncio.sleep(wait)
-            else:
-                raise
+            logger.info(f"[PRF] Retrying with region {region}: {test_url[:80]}")
+
+        for attempt in range(3):
+            try:
+                pool = await asyncpg.create_pool(
+                    test_url,
+                    min_size=1,
+                    max_size=5,
+                    statement_cache_size=0,  # required for pgBouncer (transaction mode)
+                    init=_init_connection,
+                    command_timeout=8.0,
+                )
+                logger.info(f"[PRF] Connected to region {region}")
+                break
+            except (asyncpg.exceptions.ConnectionDoesNotExistError,
+                    asyncpg.exceptions.PostgresError) as pge:
+                # Connection error — likely wrong region or auth failure
+                last_error = pge
+                logger.info(f"[PRF] Region {region} attempt {attempt+1}: {type(pge).__name__}")
+                if attempt < 2:
+                    wait = 2 ** attempt
+                    await asyncio.sleep(wait)
+                continue
+            except OSError as e:
+                if e.errno == 16 and attempt < 2:  # EBUSY retry
+                    wait = 2 ** attempt
+                    logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/3 in {wait}s…")
+                    await asyncio.sleep(wait)
+                else:
+                    last_error = e
+                    break
+            except Exception as e:
+                last_error = e
+                logger.warning(f"[PRF] Unexpected error: {type(e).__name__}: {e}")
+                break
+
+        if pool:
+            break  # Success — stop trying regions
+
+    if not pool:
+        raise last_error or Exception("Failed to connect to database")
 
     logger.info("[PRF] DB pool created")
 
