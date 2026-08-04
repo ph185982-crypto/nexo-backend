@@ -81,7 +81,7 @@ class DashboardResponse(BaseModel):
     level: int = 1
     xp_progress_pct: float = 0
     next_review_in: Optional[str] = None
-    target_exam: str = "PRF"
+    target_exam: str = "PMGO"
 
 
 class CommuteStats(BaseModel):

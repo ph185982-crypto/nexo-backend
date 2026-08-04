@@ -39,7 +39,7 @@ CREATE TABLE prf_users (
 CREATE TABLE user_profiles (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id             UUID UNIQUE NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
-    target_exam         TEXT DEFAULT 'PRF',
+    target_exam         TEXT DEFAULT 'PMGO',
     exam_date           DATE,
     weekly_goal_hours   REAL DEFAULT 10.0,
     preferred_format    content_format DEFAULT 'text',

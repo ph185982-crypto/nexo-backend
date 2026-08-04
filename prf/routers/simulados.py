@@ -22,7 +22,7 @@ async def generate_simulado(
     profile = await repo._fetchrow(
         "SELECT target_exam FROM user_profiles WHERE user_id = $1", user_id,
     ) or {}
-    target = (profile.get("target_exam") or "PRF").upper()
+    target = (profile.get("target_exam") or "PMGO").upper()
     is_pm = target.startswith("PM")
 
     exam_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS

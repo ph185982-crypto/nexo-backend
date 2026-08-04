@@ -82,7 +82,7 @@ class DayRoutine(BaseModel):
 
 
 class OnboardingRequest(BaseModel):
-    target_exam: str = "PRF"
+    target_exam: str = "PMGO"
     exam_date: Optional[date] = None
     weekly_goal_hours: float = Field(default=10.0, ge=1, le=40)
     preferred_format: ContentFormat = ContentFormat.TEXT

@@ -42,7 +42,7 @@ async def get_trilha(
         "SELECT target_exam, exam_date, weekly_goal_hours FROM user_profiles WHERE user_id = $1",
         user_id,
     ) or {}
-    target = (exam or profile.get("target_exam") or "PRF").upper()
+    target = (exam or profile.get("target_exam") or "PMGO").upper()
     is_pm = target.startswith("PM")
     weight_col = "s.weight_pm" if is_pm else "s.weight_prf"
 
@@ -305,7 +305,7 @@ async def proximo_passo(
     profile = await repo._fetchrow(
         "SELECT target_exam FROM user_profiles WHERE user_id = $1", user_id,
     ) or {}
-    target = (profile.get("target_exam") or "PRF").upper()
+    target = (profile.get("target_exam") or "PMGO").upper()
     weight_col = "s.weight_pm" if target.startswith("PM") else "s.weight_prf"
 
     row = await repo._fetchrow(

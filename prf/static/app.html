@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F0E0C" media="(prefers-color-scheme: dark)">
-<title>Estudo PRF</title>
+<title>Estudo PMGO</title>
 <style>
 :root {
   --bg: #FBFAF7; --surface: #FFFFFF; --surface-2: #F3F0E9; --surface-3: #E9E5DC;
@@ -839,7 +839,7 @@ button { font-family:inherit; }
 <body>
 
 <div id="splash" class="splash">
-  <div class="splash-brand">Estudo <em>PRF</em></div>
+  <div class="splash-brand">Estudo <em>PMGO</em></div>
   <div class="splash-sub">Plataforma adaptativa</div>
   <div class="spinner"></div>
 </div>
@@ -868,7 +868,7 @@ const S = {
   reviews: null, reviewIdx: 0, reviewSummary: null, reviewRevealed: false,
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
   pushOn: false,
-  targetExam: localStorage.getItem('prf_target_exam') || 'PRF',
+  targetExam: localStorage.getItem('prf_target_exam') || 'PMGO',
   trilha: null,
   mission: null,
   activeMissionIdx: null,
@@ -925,7 +925,7 @@ async function ensureAuth() {
   const creds = {
     email: `estudante-${deviceId}@prfestudo.app`,
     password: `PRF#${deviceId.slice(0, 16)}`,
-    name: 'Estudante PRF',
+    name: 'Estudante PMGO',
   };
   let r = await fetch(`${API}/api/prf/auth/register`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1119,7 +1119,7 @@ function attr(v) { return esc(JSON.stringify(String(v))).replace(/&quot;/g, '&qu
 function appbar() {
   const ti = S.theme === 'dark' ? I.moon : S.theme === 'light' ? I.sun : I.auto;
   const isPM = S.targetExam && S.targetExam.startsWith('PM');
-  const examLabel = isPM ? 'PMGO' : 'PRF';
+  const examLabel = 'PMGO';
   const badge = isPM
     ? `<span class="pmgo-badge">PMGO</span>`
     : '';
@@ -1136,7 +1136,7 @@ function skeletonBlock(n = 3, h = 70) {
 
 // ===== COVERAGE HEATMAP =====
 async function loadCoverage() {
-  const exam = S.targetExam || 'PRF';
+  const exam = S.targetExam || 'PMGO';
   const path = exam.startsWith('PM') ? '/api/prf/coverage/pmgo' : '/api/prf/coverage/prf';
   try {
     S.coverage = await api(path);
@@ -1213,7 +1213,7 @@ function viewDashboard() {
       <div class="chip-row">
         <span class="level-chip">Nível ${d.level || 1}</span>
         ${d.streak > 0 ? `<span class="streak-inline">${I.fire} ${d.streak} ${d.streak === 1 ? 'dia' : 'dias'}</span>` : ''}
-        <span class="level-chip">${S.targetExam || 'PRF'}</span>
+        <span class="level-chip">${S.targetExam || 'PMGO'}</span>
       </div>
     </div>
     <div class="stat-row">
@@ -1295,7 +1295,7 @@ function viewDashboard() {
         </div>` : ''}
         <div class="shortcut" onclick="switchTab('simulado')">
           <div class="badge-icon accent">${I.target}</div>
-          <div class="info"><h3>Simulado ${S.targetExam||'PRF'}</h3><p>${(S.targetExam||'').startsWith('PM') ? 'Prova completa · 2 blocos' : 'Prova completa · 3 blocos'}</p></div>
+          <div class="info"><h3>Simulado ${S.targetExam||'PMGO'}</h3><p>${(S.targetExam||'').startsWith('PM') ? 'Prova completa · 2 blocos' : 'Prova completa · 3 blocos'}</p></div>
           <div class="chev">${I.chev}</div>
         </div>
         <div class="shortcut" onclick="switchTab('practice')">
@@ -1324,7 +1324,7 @@ function viewPractice() {
     .sort((a,b) => (b[wKey]||0) - (a[wKey]||0));
   return `${appbar()}
     <div class="hero-block fade-in">
-      <div class="section-eyebrow">Estudar · ${S.targetExam || 'PRF'}</div>
+      <div class="section-eyebrow">Estudar · ${S.targetExam || 'PMGO'}</div>
       <div class="display-hero">Escolha uma <em>matéria</em></div>
       <div class="chip-row mt-12"><span class="level-chip">${active.length} disciplinas</span></div>
     </div>
@@ -1433,7 +1433,7 @@ function viewSimulado() {
     : `${totalItens} itens Certo ou Errado, três blocos, correção oficial. Você é eliminado se a nota de qualquer bloco ficar negativa.`;
   return `${appbar()}
     <div class="sim-intro fade-in">
-      <div class="section-eyebrow">Simulado ${S.targetExam || 'PRF'} · ${banca}</div>
+      <div class="section-eyebrow">Simulado ${S.targetExam || 'PMGO'} · ${banca}</div>
       <div class="sim-headline">Prova completa,<br><em>como no dia D</em>.</div>
       <div class="sim-desc">${formatDesc}</div>
       <div class="sim-spec">
@@ -1725,7 +1725,7 @@ function viewEssays() {
     <div class="fade-in">${S.themes.map(t => `
       <div class="theme-card" onclick="selectTheme('${t.id}')">
         <h3>${esc(t.title)}</h3><p>${esc(t.description || '')}</p>
-        <span class="tag">${esc(t.subject_area || 'PRF')}</span>
+        <span class="tag">${esc(t.subject_area || 'PMGO')}</span>
       </div>`).join('')}</div>`;
 }
 
@@ -1824,7 +1824,7 @@ function viewMore() {
       </div>
       <div class="shortcut" onclick="openSettings()">
         <div class="badge-icon">${I.grid}</div>
-        <div class="info"><h3>Meu concurso</h3><p>Estudando para ${S.targetExam}</p></div>
+        <div class="info"><h3>Meu concurso</h3><p>Soldado PMGO · Instituto AOCP</p></div>
         <div class="chev">${I.chev}</div>
       </div>
     </div>`;
@@ -1889,11 +1889,6 @@ function goBack() {
 async function loadDashboard() {
   try {
     S.dashboard = await api('/api/prf/dashboard/');
-    if (S.dashboard.target_exam && S.dashboard.target_exam !== S.targetExam) {
-      S.targetExam = S.dashboard.target_exam;
-      localStorage.setItem('prf_target_exam', S.targetExam);
-      S.subjects = null; // force reload with correct exam filter
-    }
   } catch (e) {
     S.dashboard = { greeting:'Bem-vindo', streak:0, questions_today:0, accuracy_today:0,
       time_studied_today:0, reviews_due:0, approval_estimate:0, level:1, weekly_progress:[] };
@@ -1982,7 +1977,7 @@ function advanceToNextMissionBlock() {
 }
 async function loadSubjects() {
   try {
-    const exam = S.targetExam || 'PRF';
+    const exam = S.targetExam || 'PMGO';
     const d = await api(`/api/prf/onboarding/subjects?exam=${encodeURIComponent(exam)}`);
     S.subjects = d.subjects || d;
   }
@@ -2348,34 +2343,13 @@ function openSettings() {
 function viewSettings() {
   return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Meu concurso</span></div>
     <div class="settings-section fade-in">
-      <div class="section-eyebrow">Qual concurso você estuda?</div>
-      <div class="exam-toggle">
-        <button class="${S.targetExam==='PRF'?'active':''}" onclick="setExam('PRF')">PRF</button>
-        <button class="${S.targetExam==='PMGO'?'active':''}" onclick="setExam('PMGO')">PMGO</button>
-      </div>
+      <div class="section-eyebrow">Concurso Soldado PMGO</div>
       <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
-        ${S.targetExam === 'PMGO'
-          ? 'Banca: Instituto AOCP (2022). Inclui Dir. Penal Militar, Processual Penal Militar, Legislação Institucional PM, Criminologia e Medicina Legal. Exclui matérias exclusivas PRF.'
-          : 'Banca: CEBRASPE. Trilha focada nas matérias do edital da PRF, com pesos do certame.'}
+        Banca: Instituto AOCP (2022). Trilha com Dir. Penal Militar, Processual Penal Militar,
+        Legislação Institucional PM, Criminologia, Medicina Legal e demais matérias do edital.
+        Questões no formato múltipla escolha (A a E).
       </p>
     </div>`;
-}
-async function setExam(exam) {
-  S.targetExam = exam;
-  localStorage.setItem('prf_target_exam', exam);
-  applyExamTheme(exam);
-  S.trilha = null;
-  S.subjects = null;
-  S.coverage = null;
-  render();
-  try {
-    await api('/api/prf/onboarding/target-exam', {
-      method:'PATCH', json:{ target_exam: exam },
-    });
-  } catch (e) {}
-  loadSubjects();
-  loadCoverage();
-  toast(exam === 'PMGO' ? 'Trilha PMGO ativada — banca Instituto AOCP' : 'Trilha PRF ativada — banca CEBRASPE', 'success');
 }
 
 // Essays
@@ -2431,6 +2405,14 @@ async function init() {
     toast('Erro de conexão. Tentando novamente...', 'error');
     setTimeout(init, 3000); return;
   }
+  // App agora atende só ao concurso PMGO — força o perfil, mesmo que o
+  // dispositivo tenha um target_exam='PRF' salvo de uma versão anterior.
+  if (S.targetExam !== 'PMGO') {
+    S.targetExam = 'PMGO';
+    localStorage.setItem('prf_target_exam', 'PMGO');
+  }
+  applyExamTheme('PMGO');
+  api('/api/prf/onboarding/target-exam', { method:'PATCH', json:{ target_exam:'PMGO' } }).catch(() => {});
   document.getElementById('splash').classList.add('hide');
   setTimeout(() => document.getElementById('splash')?.remove(), 400);
   render();

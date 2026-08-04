@@ -64,7 +64,7 @@ class StudyService:
         mastery_list = await self.repo.get_subject_mastery(user_id)
         mastery_map = {m["subject_id"]: m for m in mastery_list}
 
-        is_pm = (profile or {}).get("target_exam", "PRF").upper().startswith("PM")
+        is_pm = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
         weight_key = "weight_pm" if is_pm else "weight_prf"
 
         subject_states = []
@@ -331,7 +331,7 @@ class StudyService:
                 if xp else 0, 1
             ),
             "next_review_in": _next_review_label(reviews_due),
-            "target_exam": (profile or {}).get("target_exam", "PRF"),
+            "target_exam": (profile or {}).get("target_exam", "PMGO"),
         }
 
     # ── Approval Estimate ─────────────────────────────────────────────────────
@@ -341,7 +341,7 @@ class StudyService:
         profile = await self.repo.get_profile(user_id)
         behavior = await self.repo.get_behavior_metrics(user_id)
 
-        is_pm = (profile or {}).get("target_exam", "PRF").upper().startswith("PM")
+        is_pm = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
         weight_key = "weight_pm" if is_pm else "weight_prf"
 
         subjects = []
