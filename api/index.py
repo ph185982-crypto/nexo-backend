@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.0.0",
+    version="1.0.1",  # Updated: direct Oregon connection, no region loop
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",
