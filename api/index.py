@@ -236,7 +236,11 @@ async def debug_net():
 
 @app.get("/health", tags=["Health"])
 async def health():
-    payload = {"status": "online", "prf_ready": _prf_ready}
+    payload = {
+        "status": "online",
+        "prf_ready": _prf_ready,
+        "deployment_test": "vercel-2026-08-04-01-05"  # Verification timestamp
+    }
     if _startup_error:
         payload["startup_error"] = _startup_error
     return payload
