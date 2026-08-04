@@ -1892,6 +1892,7 @@ async function loadDashboard() {
     if (S.dashboard.target_exam && S.dashboard.target_exam !== S.targetExam) {
       S.targetExam = S.dashboard.target_exam;
       localStorage.setItem('prf_target_exam', S.targetExam);
+      S.subjects = null; // force reload with correct exam filter
     }
   } catch (e) {
     S.dashboard = { greeting:'Bem-vindo', streak:0, questions_today:0, accuracy_today:0,
@@ -1920,10 +1921,12 @@ async function startMissionBlock(blockIdx, type) {
     S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
     S.loading.questions = true; S.tab = 'practice'; render();
     try {
-      const qtype = (S.targetExam && S.targetExam.startsWith('PM')) ? 'multipla_escolha' : 'certo_errado';
+      const isPM = S.targetExam && S.targetExam.startsWith('PM');
+      const qtype = isPM ? 'multipla_escolha' : 'certo_errado';
       let d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
       S.questions = d.questions || [];
-      if (!S.questions.length) {
+      // For PRF only: fall back to any question type if no typed questions found
+      if (!S.questions.length && !isPM) {
         d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15`);
         S.questions = d.questions || [];
       }
@@ -1978,7 +1981,11 @@ function advanceToNextMissionBlock() {
   setTimeout(() => startMissionBlock(nextIdx, type), 1500);
 }
 async function loadSubjects() {
-  try { const d = await api('/api/prf/onboarding/subjects'); S.subjects = d.subjects || d; }
+  try {
+    const exam = S.targetExam || 'PRF';
+    const d = await api(`/api/prf/onboarding/subjects?exam=${encodeURIComponent(exam)}`);
+    S.subjects = d.subjects || d;
+  }
   catch (e) { toast('Erro ao carregar matérias', 'error'); S.subjects = []; }
   render();
 }
@@ -1989,10 +1996,15 @@ async function selectSubject(id, name) {
   S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
   S.loading.questions = true; render();
   try {
-    const qtype = (S.targetExam && S.targetExam.startsWith('PM')) ? 'multipla_escolha' : 'certo_errado';
+    const isPM = S.targetExam && S.targetExam.startsWith('PM');
+    const qtype = isPM ? 'multipla_escolha' : 'certo_errado';
     let d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20&question_type=${qtype}`);
-    if (!(d.questions || []).length) d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
     S.questions = d.questions || [];
+    // For PMGO: only fall back if truly no multipla_escolha questions exist anywhere for this subject
+    if (!S.questions.length && !isPM) {
+      d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
+      S.questions = d.questions || [];
+    }
   } catch (e) { toast('Erro ao carregar questões', 'error'); }
   S.loading.questions = false; render(); scrollTop();
 }

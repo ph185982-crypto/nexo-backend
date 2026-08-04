@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.0.2",  # Railway deployment version
+    version="1.0.3",  # PMGO fixes: mission count, question filter, A-E format
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",

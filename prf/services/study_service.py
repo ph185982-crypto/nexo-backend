@@ -135,7 +135,7 @@ class StudyService:
             "mode_suggested": mission.mode_suggested,
             "energy_detected": mission.energy_detected,
             "greeting": mission.greeting,
-            "blocks_total": len([b for b in mission.blocks if not b.is_optional]),
+            "blocks_total": len(mission.blocks),
         })
 
         for block in mission.blocks:

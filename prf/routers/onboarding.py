@@ -111,6 +111,14 @@ async def set_target_exam(
 
 
 @router.get("/subjects")
-async def list_subjects(repo: PRFRepository = Depends(get_repo)):
+async def list_subjects(
+    exam: str = "ALL",
+    repo: PRFRepository = Depends(get_repo),
+):
     subjects = await repo.get_subjects()
+    exam = exam.upper()
+    if exam == "PMGO":
+        subjects = [s for s in subjects if (s.get("weight_pm") or 0) > 0]
+    elif exam == "PRF":
+        subjects = [s for s in subjects if (s.get("weight_prf") or 0) > 0]
     return {"subjects": subjects}
