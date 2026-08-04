@@ -112,7 +112,7 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
             )
             logger.info(f"[PRF] Retrying with region {region}: {test_url[:80]}")
 
-        for attempt in range(3):
+        for attempt in range(6):  # Increased from 3 to 6 attempts per region
             try:
                 pool = await asyncpg.create_pool(
                     test_url,
@@ -120,7 +120,7 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
                     max_size=5,
                     statement_cache_size=0,  # required for pgBouncer (transaction mode)
                     init=_init_connection,
-                    command_timeout=8.0,
+                    command_timeout=15.0,  # Increased from 8.0 to give DNS more time
                 )
                 logger.info(f"[PRF] Connected to region {region}")
                 break
@@ -129,14 +129,14 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
                 # Connection error — likely wrong region or auth failure
                 last_error = pge
                 logger.info(f"[PRF] Region {region} attempt {attempt+1}: {type(pge).__name__}")
-                if attempt < 2:
-                    wait = 2 ** attempt
+                if attempt < 5:
+                    wait = min(2 ** (attempt + 1), 64)  # Cap at 64s: 2, 4, 8, 16, 32, 64
                     await asyncio.sleep(wait)
                 continue
             except OSError as e:
-                if e.errno == 16 and attempt < 2:  # EBUSY retry
-                    wait = 2 ** attempt
-                    logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/3 in {wait}s…")
+                if e.errno == 16 and attempt < 5:  # EBUSY retry (up to 6 attempts now)
+                    wait = min(2 ** (attempt + 1), 64)  # 2, 4, 8, 16, 32, 64 seconds
+                    logger.warning(f"[PRF] Pool EBUSY retry {attempt + 1}/6 in {wait}s…")
                     await asyncio.sleep(wait)
                 else:
                     last_error = e
