@@ -179,13 +179,16 @@ def build_mission(
                 subjects_used += 1
 
         elif fmt == "legal_reading" and p.subject_id in legal_article_ids:
-            a_ids = legal_article_ids[p.subject_id][:3]
+            # ~2 min por artigo (texto oficial + explicação); mínimo de 5 para
+            # a sessão render valer a pena, sem exceder o pool disponível.
+            a_count = max(5, block_mins // 2)
+            a_ids = legal_article_ids[p.subject_id][:a_count]
             if a_ids:
                 blocks.append(MissionBlock(
                     block_type="legal_reading",
                     subject_id=p.subject_id,
                     subject_name=p.subject_name,
-                    title=f"Lei seca — {p.subject_name}",
+                    title=f"Lei seca — {p.subject_name} ({len(a_ids)} artigos)",
                     description="Artigo oficial + explicação simplificada antes das questões.",
                     estimated_mins=block_mins,
                     display_order=order,

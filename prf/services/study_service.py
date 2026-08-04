@@ -121,7 +121,9 @@ class StudyService:
             q_ids = await self.repo.get_question_ids_by_subject(p.subject_id)
             if q_ids:
                 question_pool[p.subject_id] = q_ids
-            a_ids = await self.repo.get_legal_article_ids_by_subject(p.subject_id)
+            a_ids = await self.repo.get_legal_article_ids_by_subject(
+                p.subject_id, limit=15, user_id=user_id,
+            )
             if a_ids:
                 legal_pool[p.subject_id] = a_ids
 

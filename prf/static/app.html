@@ -2405,10 +2405,14 @@ async function openMissionLegalReader(blockIdx) {
   render(); scrollTop();
 }
 function nextLegalArticle() {
+  const a = S.missionLegalArticles?.[S.missionLegalIdx];
+  if (a?.id) api(`/api/prf/legal/articles/${a.id}/read`, { method: 'POST' }).catch(() => {});
   S.missionLegalIdx = (S.missionLegalIdx || 0) + 1;
   render(); scrollTop();
 }
 async function concludeLegalReading() {
+  const a = S.missionLegalArticles?.[S.missionLegalIdx];
+  if (a?.id) api(`/api/prf/legal/articles/${a.id}/read`, { method: 'POST' }).catch(() => {});
   await finishMissionBlock();
 }
 

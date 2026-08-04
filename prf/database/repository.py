@@ -660,7 +660,30 @@ class PRFRepository:
             article_id,
         )
 
-    async def get_legal_article_ids_by_subject(self, subject_id: UUID, limit: int = 5) -> list[UUID]:
+    async def get_legal_article_ids_by_subject(
+        self, subject_id: UUID, limit: int = 5, user_id: UUID | None = None,
+    ) -> list[UUID]:
+        """Artigos de uma matéria para lei seca, priorizando cobertura.
+
+        Sem isso a mesma dúzia de artigos de maior frequência era servida
+        todo dia e o candidato nunca avançava pela lei — artigos ainda não
+        lidos vêm primeiro; só volta a repetir os já lidos depois de
+        esgotar os novos.
+        """
+        if user_id is not None:
+            rows = await self._fetch(
+                """SELECT la.id FROM legal_articles la
+                   LEFT JOIN user_article_progress uap
+                     ON uap.article_id = la.id AND uap.user_id = $3
+                   WHERE la.subject_id = $1
+                   ORDER BY (uap.read_count IS NULL OR uap.read_count = 0) DESC,
+                            (la.simple_text IS NOT NULL AND la.simple_text != '') DESC,
+                            COALESCE(uap.read_count, 0) ASC,
+                            la.frequency_score DESC
+                   LIMIT $2""",
+                subject_id, limit, user_id,
+            )
+            return [r["id"] for r in rows]
         rows = await self._fetch(
             """SELECT id FROM legal_articles
                WHERE subject_id = $1
