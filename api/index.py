@@ -72,105 +72,66 @@ async def _run_seed_in_background(pool):
 _RENDER_REGIONS = ["oregon", "ohio", "frankfurt", "singapore", "virginia"]
 
 
-def _probe_render_region(host: str, user: str = "postgres", dbname: str = "postgres") -> str | None:
+async def _resolve_render_url(database_url: str) -> str:
     """
-    Find the Render region that actually hosts this database.
+    Swap Render internal hostname for the correct external hostname.
 
-    All five Render external hostnames resolve in DNS and accept TLS — so a
-    TLS-only probe always picks oregon (the first in the list).
+    All five Render external hostnames resolve in DNS and accept TLS connections,
+    so a TLS-only or startup-message probe cannot distinguish regions — pgBouncer
+    on the wrong regions silently drops the TCP connection without sending any
+    PostgreSQL bytes.
 
-    The real discriminator: send a PostgreSQL startup message after SSL.
-    pgBouncer on wrong regions drops the connection silently (no byte received).
-    The correct region routes to the real database and responds with 'R'
-    (AuthenticationRequest) or 'E' (ErrorResponse) — either confirms a live
-    PostgreSQL server and is the right region.
+    The only reliable discriminator is a real asyncpg.connect() attempt:
+    - Wrong region → pgBouncer drops → ConnectionDoesNotExistError
+    - Correct region → real PostgreSQL → success or a real PG error (auth, etc.)
     """
-    import ssl as _ssl, struct
+    import re
+    import asyncpg as _apg
 
-    params = f"user\x00{user}\x00database\x00{dbname}\x00\x00".encode("utf-8")
-    startup_msg = struct.pack(">I", 8 + len(params)) + struct.pack(">I", 196608) + params
+    parsed = urllib.parse.urlparse(database_url)
+    host = parsed.hostname or ""
+
+    # Only applies to Render internal pattern: dpg-{id}-a (no dots, no TLD)
+    if not re.fullmatch(r"dpg-[a-z0-9]+-a", host):
+        return database_url
+
+    # Quick check: does the hostname already resolve (e.g. running on Render)?
+    try:
+        _socket.getaddrinfo(host, parsed.port or 5432, _socket.AF_INET, _socket.SOCK_STREAM)
+        logger.info(f"[PRF] DB host {host} resolves OK (internal network)")
+        return database_url
+    except (socket.gaierror, OSError):
+        pass
+
+    logger.info(f"[PRF] Render internal host {host!r} unresolvable — probing regions via asyncpg")
 
     for region in _RENDER_REGIONS:
         ext = f"{host}.{region}-postgres.render.com"
-        raw = ssl_sock = None
+        # Build a candidate URL with explicit port and SSL
+        test_url = database_url.replace(f"@{host}", f"@{ext}:5432", 1)
+        if parsed.port:
+            # If original URL had a port, the replace above may double-port; normalise
+            test_url = test_url.replace(f"@{ext}:5432:{parsed.port}", f"@{ext}:5432", 1)
+        if "sslmode" not in test_url:
+            sep = "&" if "?" in test_url else "?"
+            test_url += f"{sep}sslmode=require"
+
+        logger.info(f"[PRF] Probing region {region} ({ext})…")
         try:
-            raw = socket.create_connection((ext, 5432), timeout=4)
-            raw.sendall(b"\x00\x00\x00\x08\x04\xd2\x16/")
-            resp = raw.recv(1)
-            if resp != b"S":
-                raw.close()
-                raw = None
-                continue
-            ctx = _ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = _ssl.CERT_NONE
-            ssl_sock = ctx.wrap_socket(raw, server_hostname=ext)
-            raw = None
-            ssl_sock.settimeout(4.0)
-            ssl_sock.sendall(startup_msg)
-            tag = ssl_sock.recv(1)
-            ssl_sock.close()
-            ssl_sock = None
-            if tag:  # any byte = real PG response = this is the correct region
-                logger.info(f"[PRF] Render region confirmed (PG tag={tag!r}): {region} ({ext})")
-                return ext
-            logger.debug(f"[PRF] Region {region}: no PG response after startup (wrong region)")
-        except Exception as exc:
-            logger.debug(f"[PRF] Region {region} probe failed: {exc}")
-        finally:
-            for s in (ssl_sock, raw):
-                try:
-                    if s:
-                        s.close()
-                except Exception:
-                    pass
-    return None
+            conn = await _apg.connect(test_url, statement_cache_size=0, timeout=10.0)
+            await conn.close()
+            logger.info(f"[PRF] Region {region}: connected — using {ext}")
+            return test_url
+        except _apg.exceptions.ConnectionDoesNotExistError:
+            logger.info(f"[PRF] Region {region}: pgBouncer dropped (wrong region)")
+        except _apg.exceptions.PostgresError as pg_e:
+            # Real PostgreSQL error (auth, db-not-found, etc.) — correct region
+            logger.info(f"[PRF] Region {region}: real PG response ({type(pg_e).__name__}) — using {ext}")
+            return test_url
+        except Exception as e:
+            logger.info(f"[PRF] Region {region}: {type(e).__name__}: {e}")
 
-
-def _resolve_db_url(database_url: str) -> str:
-    """
-    Fix unresolvable DB hostnames before asyncpg touches them.
-
-    Render internal hostnames (dpg-XXX-a) exist only on Render's private network.
-    From Vercel Lambda they can't resolve, which causes asyncio's mDNS fallback to
-    raise EBUSY.  We detect this pattern and probe each external hostname with a
-    real PostgreSQL SSL handshake to find the correct region, then swap in that
-    hostname so asyncpg never needs to resolve the internal address.
-
-    Returns the corrected URL (unchanged if the hostname already resolves).
-    """
-    import re
-    try:
-        parsed = urllib.parse.urlparse(database_url)
-        host = parsed.hostname
-        if not host:
-            return database_url
-
-        # Quick check: does the hostname resolve as-is?
-        try:
-            socket.getaddrinfo(host, parsed.port or 5432, socket.AF_INET, socket.SOCK_STREAM)
-            logger.info(f"[PRF] DB host {host} resolves OK")
-            return database_url
-        except (socket.gaierror, OSError):
-            pass
-
-        # Render internal hostname pattern: dpg-{id}-a (no dots, no TLD)
-        if re.fullmatch(r"dpg-[a-z0-9]+-a", host):
-            u = parsed.username or "postgres"
-            db = (parsed.path or "/postgres").lstrip("/") or "postgres"
-            ext = _probe_render_region(host, user=u, dbname=db)
-            if ext:
-                new_url = database_url.replace(f"@{host}", f"@{ext}", 1)
-                if not parsed.port:
-                    new_url = new_url.replace(f"@{ext}/", f"@{ext}:5432/", 1)
-                if "sslmode" not in new_url:
-                    sep = "&" if "?" in new_url else "?"
-                    new_url += f"{sep}sslmode=require"
-                logger.info(f"[PRF] Render internal→external: {host} → {ext}")
-                return new_url
-            logger.warning(f"[PRF] Could not find active Render region for {host}")
-    except Exception as e:
-        logger.warning(f"[PRF] _resolve_db_url error: {e}")
+    logger.warning(f"[PRF] No Render region confirmed — falling back to original URL")
     return database_url
 
 
@@ -204,7 +165,7 @@ async def _init_prf():
         loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
         # Fix internal/unresolvable DB hostname before asyncpg touches it.
-        resolved_url = _resolve_db_url(db_url)
+        resolved_url = await _resolve_render_url(db_url)
 
         from prf.app import register_prf_routers, init_prf_database
 
