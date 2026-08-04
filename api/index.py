@@ -18,7 +18,8 @@ from fastapi.middleware.cors import CORSMiddleware
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# No DNS monkey-patch — let asyncio handle it normally with timeouts in pool creation.
+# No DNS monkey-patch — let asyncio handle it normally with extended timeouts in pool creation.
+# All 6 EBUSY retries + region failover enabled.
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
