@@ -728,6 +728,73 @@ async def generate_podcast_drill(
     }
 
 
+@router.post("/podcast/backfill-units")
+async def backfill_podcast_units(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Encaixa as aulas antigas no plano de unidades e partes.
+
+    Elas foram geradas antes do plano existir: cobrem um tópico inteiro, sem
+    numeração de parte. Como os artigos já vinham ordenados por incidência,
+    o que cada uma cobriu equivale à parte 1 da sua unidade — então em vez de
+    descartar o conteúdo, marcamos como parte 1 e o gerador segue da 2 em
+    diante.
+
+    Exceção: aula de tópico que virou cluster é aposentada, porque a parte 1
+    do cluster precisa cobrir os tópicos agrupados, e não só um deles.
+    """
+    _require_admin(x_maintenance_token)
+
+    from prf.services import podcast_service
+    from prf.seeds.topic_clusters import cluster_for_topic
+
+    topics = await repo.get_topics_for_podcast(is_pm=True)
+    units = _build_units([dict(t) for t in topics])
+    por_topico = {t["id"]: dict(t) for t in topics}
+
+    antigas = await repo._fetch(
+        """SELECT id, topic_id, title FROM podcast_episodes
+            WHERE is_active AND kind = 'aula' AND unit_slug IS NULL
+              AND topic_id IS NOT NULL"""
+    )
+
+    encaixadas, aposentadas = 0, 0
+    for ep in antigas:
+        t = por_topico.get(ep["topic_id"])
+        if not t:
+            await repo._execute(
+                "UPDATE podcast_episodes SET is_active = FALSE WHERE id = $1", ep["id"])
+            aposentadas += 1
+            continue
+
+        if cluster_for_topic(t["subject_slug"], t["slug"]):
+            await repo._execute(
+                "UPDATE podcast_episodes SET is_active = FALSE WHERE id = $1", ep["id"])
+            aposentadas += 1
+            continue
+
+        u = next((x for x in units if ep["topic_id"] in x["topic_ids"]), None)
+        if not u:
+            await repo._execute(
+                "UPDATE podcast_episodes SET is_active = FALSE WHERE id = $1", ep["id"])
+            aposentadas += 1
+            continue
+
+        artigos = await repo.get_articles_for_topics(u["topic_ids"], limit=300)
+        total = max(1, len(podcast_service.plan_parts([dict(a) for a in artigos])))
+        titulo = u["name"] if total == 1 else f"{u['name']} — Parte 1 de {total}"
+        await repo._execute(
+            """UPDATE podcast_episodes
+                  SET unit_slug = $1, part = 1, total_parts = $2, title = $3
+                WHERE id = $4""",
+            u["unit_slug"], total, titulo, ep["id"],
+        )
+        encaixadas += 1
+
+    return {"encaixadas": encaixadas, "aposentadas": aposentadas}
+
+
 @router.get("/podcast/plan")
 async def podcast_plan(
     x_maintenance_token: str | None = Header(default=None),
