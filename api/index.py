@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.6.0",  # flashcards sem IA (lacunas dos highlights) + limpeza de escopo do edital
+    version="1.6.1",  # fix: Licitacoes esta no edital PMGO, sai da lista de fora de escopo
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",

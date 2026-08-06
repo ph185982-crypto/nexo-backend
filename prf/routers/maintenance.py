@@ -1013,15 +1013,18 @@ async def generate_flashcards(
 
 # Leis que aparecem no banco mas NÃO estão no edital da PMGO. Estudar isso
 # não é neutro: consome o tempo que deveria ir para o que cai.
+# Conferido contra os tópicos seeded de cada matéria PMGO. Licitações saiu
+# desta lista depois da auditoria: é tópico de Direito Administrativo com
+# peso 2,0 no edital, e desativá-la teria tirado 32 questões legítimas do
+# banco. Auditar antes de desativar existe por isso.
 FORA_DO_EDITAL = [
     ("Código de Defesa do Consumidor", "8.078"),
-    ("CDC", "consumidor"),
-    ("Consolidação das Leis do Trabalho", "CLT"),
-    ("Código Tributário", "5.172"),
+    ("Código de Defesa do Consumidor", "Defesa do Consumidor"),
+    ("Consolidação das Leis do Trabalho", "Consolidação das Leis do Trabalho"),
+    ("Código Tributário Nacional", "5.172"),
     ("Código Civil", "10.406"),
     ("Código de Processo Civil", "13.105"),
     ("Estatuto do Idoso", "10.741"),
-    ("Lei de Licitações", "14.133"),
 ]
 
 
