@@ -7,6 +7,7 @@ import json
 import socket
 import urllib.parse
 import concurrent.futures
+import re
 
 # Make repo root importable inside Vercel's function sandbox
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.4.0",  # lei seca interativa: ler, completar as lacunas da banca, entender
+    version="1.5.0",  # PWA para iOS: icones PNG, apple-touch-icon, guia de instalacao e push
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -254,6 +255,28 @@ async def serve_manifest():
     )
     with open(manifest_path, encoding="utf-8") as f:
         return json.loads(f.read())
+
+
+@app.get("/icons/{name}", tags=["PWA"])
+async def serve_icon(name: str):
+    """Ícones do app.
+
+    O iOS ignora os ícones do manifest e usa o apple-touch-icon do HTML, que
+    precisa ser PNG — daí os arquivos existirem em disco em vez de irem
+    embutidos como data URI no manifest.
+    """
+    from fastapi.responses import FileResponse
+    from fastapi import HTTPException as _HTTPException
+    if not re.fullmatch(r"[a-z0-9\-]+\.png", name):
+        raise _HTTPException(404, "Not found")
+    path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "prf", "static", "icons", name,
+    )
+    if not os.path.isfile(path):
+        raise _HTTPException(404, "Not found")
+    return FileResponse(path, media_type="image/png",
+                        headers={"Cache-Control": "public, max-age=604800"})
 
 
 @app.get("/sw.js", tags=["PWA"])

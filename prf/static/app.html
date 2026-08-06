@@ -7,6 +7,14 @@
 <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F0E0C" media="(prefers-color-scheme: dark)">
 <title>Estudo PMGO</title>
+<link rel="manifest" href="/manifest.json">
+<!-- O iOS ignora os ícones do manifest: quem manda no ícone da tela de
+     início é o apple-touch-icon, e ele precisa ser PNG. -->
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Estudo PMGO">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 :root {
   --bg: #FBFAF7; --surface: #FFFFFF; --surface-2: #F3F0E9; --surface-3: #E9E5DC;
@@ -690,6 +698,50 @@ button { font-family:inherit; }
 }
 .lf-official.lf-muted { font-size:14px; color:var(--ink-3); border-left-color:var(--border); }
 
+/* Guia de instalação (PWA) */
+.sheet-backdrop {
+  position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:80;
+  animation:fadeIn .2s ease;
+}
+.sheet {
+  position:fixed; left:0; right:0; bottom:0; z-index:81;
+  background:var(--surface); border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:12px 20px calc(24px + var(--safe-b));
+  box-shadow:var(--shadow-lg); max-height:86vh; overflow-y:auto;
+  animation:sheetUp .28s cubic-bezier(.22,1,.36,1);
+}
+.sheet-handle {
+  width:38px; height:4px; border-radius:2px; background:var(--border-strong);
+  margin:0 auto 18px;
+}
+.sheet-title { font-family:var(--serif); font-size:22px; font-weight:600; }
+.sheet-sub { font-size:14px; color:var(--ink-2); line-height:1.55; margin-top:8px; }
+.inst-steps { display:flex; flex-direction:column; gap:14px; margin-top:20px; }
+.inst-step { display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:1.5; color:var(--ink); }
+.inst-num {
+  width:24px; height:24px; flex-shrink:0; border-radius:var(--r-full);
+  background:var(--primary); color:#fff; font-size:12px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.inst-icon { display:inline-block; vertical-align:-3px; color:var(--primary); }
+.inst-icon svg { width:15px; height:15px; }
+.inst-note {
+  margin-top:18px; font-size:12px; line-height:1.5; color:var(--ink-3);
+  padding:10px 12px; background:var(--surface-2); border-radius:var(--r-sm);
+}
+.install-banner {
+  display:flex; align-items:center; gap:12px; margin:0 20px 4px;
+  padding:12px 14px; background:var(--primary-soft);
+  border:1px solid var(--primary-tint); border-radius:var(--r-md); cursor:pointer;
+}
+.ib-icon { color:var(--primary); flex-shrink:0; display:flex; }
+.ib-icon svg { width:20px; height:20px; }
+.ib-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.ib-text strong { font-size:13px; color:var(--ink); }
+.ib-text span { font-size:11px; color:var(--ink-3); }
+.ib-close { background:none; border:none; color:var(--ink-3); padding:4px; cursor:pointer; display:flex; }
+.ib-close svg { width:14px; height:14px; }
+
 /* ── MISSION REVIEW QUALITY ── */
 .quality-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 20px 24px; }
 .quality-btn-3 {
@@ -860,6 +912,7 @@ button { font-family:inherit; }
 .fade-in { animation:fadeIn .35s cubic-bezier(.22,1,.36,1); }
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes sheetUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
 @keyframes toastIn { from { opacity:0; transform:translateY(-10px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
 
@@ -1021,7 +1074,7 @@ const S = {
   missionLegalArticles: null, missionLegalIdx: 0,
   lfStep: 'ler', lfRevealed: [],
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
-  pushOn: false,
+  pushOn: false, showInstall: false,
   targetExam: localStorage.getItem('prf_target_exam') || 'PMGO',
   trilha: null,
   mission: null,
@@ -1149,8 +1202,65 @@ async function sincronizarPush() {
   } catch (e) { S.pushOn = false; }
 }
 
+// No iOS o Web Push só existe depois que o app foi adicionado à tela de
+// início: em aba do Safari, window.PushManager sequer é definido. Sem essa
+// distinção o app dizia "seu navegador não suporta", que é falso e deixa o
+// usuário sem saber que basta instalar.
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isStandalone() {
+  return window.navigator.standalone === true
+      || window.matchMedia('(display-mode: standalone)').matches;
+}
+function abrirGuiaInstalacao() { S.showInstall = true; render(); }
+function dispensarInstalacao() {
+  try { localStorage.setItem('install_dismissed', '1'); } catch (e) {}
+  render();
+}
+function fecharGuiaInstalacao() { S.showInstall = false; render(); }
+
+function viewInstallGuide() {
+  if (!S.showInstall) return '';
+  const ios = isIOS();
+  return `<div class="sheet-backdrop" onclick="fecharGuiaInstalacao()"></div>
+    <div class="sheet fade-in">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Instalar o app</div>
+      <div class="sheet-sub">${ios
+        ? 'No iPhone, os alertas só funcionam com o app instalado na tela de início. São três toques:'
+        : 'Instale para abrir direto da tela de início e receber os alertas.'}</div>
+      ${ios ? `
+        <div class="inst-steps">
+          <div class="inst-step"><span class="inst-num">1</span>
+            <div>Toque em <strong>Compartilhar</strong> na barra do Safari
+              <span class="inst-icon">${I.share || '&#8593;'}</span></div></div>
+          <div class="inst-step"><span class="inst-num">2</span>
+            <div>Role e toque em <strong>Adicionar à Tela de Início</strong></div></div>
+          <div class="inst-step"><span class="inst-num">3</span>
+            <div>Abra o app pelo ícone e volte aqui para ativar os alertas</div></div>
+        </div>
+        <div class="inst-note">Precisa ser pelo <strong>Safari</strong>. Chrome e Firefox no iPhone não conseguem instalar.</div>
+      ` : `
+        <div class="inst-steps">
+          <div class="inst-step"><span class="inst-num">1</span>
+            <div>Abra o menu do navegador</div></div>
+          <div class="inst-step"><span class="inst-num">2</span>
+            <div>Toque em <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong></div></div>
+        </div>
+      `}
+      <button class="btn btn-primary btn-full btn-lg mt-16" onclick="fecharGuiaInstalacao()">Entendi</button>
+    </div>`;
+}
+
 async function toggleLembretes() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  if (!('serviceWorker' in navigator)) {
+    return toast('Este navegador não suporta lembretes', 'error');
+  }
+  // iOS fora da tela de início: não é falta de suporte, é falta de instalação.
+  if (!('PushManager' in window)) {
+    if (isIOS() && !isStandalone()) return abrirGuiaInstalacao();
     return toast('Este navegador não suporta lembretes', 'error');
   }
 
@@ -1234,6 +1344,7 @@ const I = {
   target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
   scale: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M6 8l6-5 6 5M4 21l3-9 3 9M14 21l3-9 3 9"/></svg>`,
   pen: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5z"/></svg>`,
+  share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3"/><path d="m8 7 4-4 4 4"/><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/></svg>',
   headphones: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>`,
   grid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>`,
   refresh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 019-9 9 9 0 016.36 2.64L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 01-9 9 9 9 0 01-6.36-2.64L3 16"/><polyline points="3 21 3 16 8 16"/></svg>`,
@@ -1361,7 +1472,14 @@ function viewDashboard() {
     d.questions_today > 0 ? 'bom progresso' :
     'hora de começar';
 
+  const podeInstalar = isIOS() && !isStandalone() && !localStorage.getItem('install_dismissed');
   return `${appbar()}
+    ${podeInstalar ? `<div class="install-banner" onclick="abrirGuiaInstalacao()">
+      <div class="ib-icon">${I.headphones}</div>
+      <div class="ib-text"><strong>Instale na tela de início</strong>
+        <span>Necessário para receber os alertas de estudo</span></div>
+      <button class="ib-close" onclick="event.stopPropagation();dispensarInstalacao()">${I.close}</button>
+    </div>` : ''}
     <div class="hero-block fade-in">
       <div class="greeting-eyebrow">${dateStr}</div>
       <div class="greeting-line">${esc(greeting)},<br><em>${motivational}</em>.</div>
@@ -2300,6 +2418,7 @@ function render() {
     <div class="content" id="main-content">${(views[S.tab] || viewDashboard)()}</div>
     ${inTutor ? '' : playerBar()}
     ${inSim ? '' : renderNav()}
+    ${viewInstallGuide()}
   `;
   const mc = document.getElementById('main-content');
   if (mc) mc.addEventListener('scroll', () => {
