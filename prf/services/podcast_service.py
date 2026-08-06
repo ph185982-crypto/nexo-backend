@@ -54,7 +54,7 @@ MAX_PARTS = 4
 # Duração alvo do drill da volta. Recuperar não precisa do mesmo tempo que
 # aprender — o que conta é a quantidade de tentativas de recuperação.
 DRILL_WORDS_PER_BLOCK = 950
-DRILL_BLOCKS = 4
+DRILL_BLOCKS = 8
 
 HOST_A = "MARCOS"
 HOST_B = "JULIA"
@@ -449,12 +449,19 @@ espera e cobra. Não explica.
 {HOST_B} — professora. É ela quem CONFIRMA, em uma ou duas frases, depois que o
 ouvinte já teve a chance de responder. Curta e direta.
 
-A MECÂNICA OBRIGATÓRIA DE CADA ITEM, NESTA ORDEM:
-1. {HOST_A} faz a pergunta, de forma fechada e específica.
-2. Uma fala curta de espera, para o ouvinte responder em voz alta ou de cabeça
-   ("pensa aí", "responde antes de eu falar", "isso, mais três segundos").
+A MECÂNICA OBRIGATÓRIA DE CADA ITEM, NESTA ORDEM EXATA — SÃO TRÊS FALAS:
+1. {HOST_A} faz a pergunta, fechada e específica.
+2. {HOST_A} fala DE NOVO, numa fala SEPARADA e curta, só para dar o tempo de
+   resposta. Essa fala é o silêncio do drill: é ela que segura o ouvinte
+   respondendo antes de ouvir o gabarito. Varie entre contagem regressiva
+   ("pensa... três... dois... um"), cobrança ("responde antes de mim") e
+   provocação ("tá na ponta da língua, né"). NUNCA pule esta fala.
 3. {HOST_B} dá a resposta em UMA ou DUAS frases. Só isso.
 4. Só se a resposta tiver pegadinha, {HOST_A} acrescenta uma frase de alerta.
+
+O erro mais grave possível aqui é {HOST_B} responder logo depois da pergunta,
+sem a fala de espera no meio. Se isso acontecer, o item não treina recuperação
+nenhuma — o ouvinte só escuta a resposta pronta.
 
 REGRAS DURAS:
 - PROIBIDO reexplicar a matéria do zero. Nada de "vamos relembrar o conceito
@@ -473,46 +480,85 @@ Responda SEMPRE em JSON válido."""
 
 
 def _drill_briefs(topic: str) -> list[dict]:
-    """Os quatro blocos do drill, do recall mais fácil ao mais exigente."""
+    """Os oito blocos do drill, do recall mais fácil ao mais exigente.
+
+    Foram quatro na primeira versão e o drill saiu com 11 min: as falas são
+    naturalmente curtas (pergunta, espera, resposta de duas frases), então
+    cada bloco rende menos da metade de um bloco de aula. O que leva aos ~22
+    min é o número de blocos, e mais blocos também significam mais tentativas
+    de recuperação — que é o que faz o drill funcionar.
+    """
     return [
         {
             "title": "Aquecimento",
             "brief": (
-                f"Comecem retomando o conteúdo de '{topic}' com perguntas diretas de "
-                "definição e conceito — o que é, para que serve, quem se aplica. São "
-                "as mais fáceis, para o ouvinte entrar no ritmo e ganhar confiança. "
-                "No mínimo seis itens, cada um com pergunta, espera e confirmação "
-                "curta. Nada de explicação longa."
+                f"Perguntas diretas de definição e conceito sobre '{topic}' — o que "
+                "é, para que serve, a quem se aplica. São as mais fáceis, para o "
+                "ouvinte entrar no ritmo. No mínimo seis itens."
             ),
         },
         {
-            "title": "Complete a lei",
+            "title": "Complete a lei — parte 1",
             "brief": (
-                f"Agora a recuperação da letra da lei de '{topic}'. {HOST_A} começa a "
-                "ler um dispositivo e PARA no meio, para o ouvinte completar de "
-                f"cabeça; depois {HOST_B} completa e confirma. Cubram prazos, "
-                "requisitos, hipóteses e as palavras exatas que mudam o sentido. No "
-                "mínimo seis itens."
+                f"{HOST_A} começa a ler um dispositivo de '{topic}' e PARA no meio "
+                f"para o ouvinte completar de cabeça; depois {HOST_B} completa. "
+                "Foquem nas cabeças de artigo e nas definições legais. No mínimo "
+                "seis itens."
             ),
         },
         {
-            "title": "Certo ou errado",
+            "title": "Complete a lei — parte 2",
             "brief": (
-                f"Rodada de assertivas no estilo do Instituto AOCP sobre '{topic}'. "
-                f"{HOST_A} lê a assertiva inteira, manda o ouvinte decidir certo ou "
-                f"errado, dá a espera, e {HOST_B} revela o gabarito e aponta em uma "
-                "frase a palavra que decide. Misturem assertivas certas e erradas, e "
-                "usem as trocas clássicas da banca. No mínimo oito assertivas."
+                f"Mesma mecânica, agora nos prazos, requisitos cumulativos, "
+                f"hipóteses e exceções de '{topic}' — os números e as condições que "
+                "o candidato esquece primeiro. No mínimo seis itens, diferentes dos "
+                "do bloco anterior."
             ),
         },
         {
-            "title": "Decisão na rua e fechamento",
+            "title": "Certo ou errado — rodada 1",
+            "brief": (
+                f"Assertivas no estilo do Instituto AOCP sobre '{topic}'. {HOST_A} lê "
+                f"a assertiva inteira, dá a espera, e {HOST_B} revela o gabarito e "
+                "aponta em uma frase o que decide. Misturem certas e erradas. No "
+                "mínimo sete assertivas."
+            ),
+        },
+        {
+            "title": "Certo ou errado — rodada 2, as pegadinhas",
+            "brief": (
+                f"Segunda rodada de assertivas sobre '{topic}', agora só com as "
+                "trocas clássicas da banca: 'poderá' virando 'deverá', prazo trocado, "
+                "hipótese ampliada, requisito suprimido. A cada gabarito, {HOST_B} diz "
+                "exatamente qual palavra entrega o erro. No mínimo sete assertivas."
+            ),
+        },
+        {
+            "title": "Diferencie",
+            "brief": (
+                f"Pares de institutos de '{topic}' que o candidato confunde. {HOST_A} "
+                "dá os dois nomes e pergunta qual é o critério que separa um do "
+                f"outro; espera; {HOST_B} responde em uma frase. Depois {HOST_A} dá um "
+                "caso curto e pergunta em qual dos dois se encaixa. No mínimo cinco "
+                "pares."
+            ),
+        },
+        {
+            "title": "Decisão na rua",
             "brief": (
                 f"Casos curtos de ocorrência envolvendo '{topic}': {HOST_A} narra a "
-                "situação em duas ou três frases e pergunta qual a conduta correta e "
-                f"o fundamento; espera; {HOST_B} confirma em duas frases. No mínimo "
-                "quatro casos. Fechem o drill com três frases-gatilho curtas que o "
-                "ouvinte consiga repetir de memória e uma despedida rápida."
+                "situação em duas ou três frases e pergunta a conduta correta e o "
+                f"fundamento; espera; {HOST_B} confirma em duas frases. No mínimo "
+                "cinco casos, diferentes entre si."
+            ),
+        },
+        {
+            "title": "Recall final",
+            "brief": (
+                f"Última passada em '{topic}', puxando os pontos que mais caem, com "
+                "perguntas rápidas e encadeadas. Fechem com três frases-gatilho "
+                "curtas que o ouvinte consiga repetir de memória no trânsito e uma "
+                "despedida rápida. No mínimo seis itens antes do fechamento."
             ),
         },
     ]
