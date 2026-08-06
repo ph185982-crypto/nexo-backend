@@ -140,6 +140,13 @@ MIGRATIONS: list[tuple[str, str]] = [
         "CREATE INDEX IF NOT EXISTS idx_podcast_episodes_topic "
         "ON podcast_episodes(topic_id)",
     ),
+    (
+        # block_type é ENUM: sem este valor, gravar a etapa de aula em áudio
+        # da missão estoura com InvalidTextRepresentation e derruba a
+        # geração inteira da missão.
+        "block_type_podcast",
+        "ALTER TYPE block_type ADD VALUE IF NOT EXISTS 'podcast'",
+    ),
 ]
 
 

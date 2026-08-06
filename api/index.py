@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.2.0",  # aulas por topico do edital + missao encadeia audio, lei seca e questoes do mesmo topico
+    version="1.2.1",  # fix: block_type ENUM precisa do valor podcast p/ a missao gravar a etapa de audio
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",
