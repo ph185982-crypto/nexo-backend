@@ -1013,6 +1013,113 @@ class PRFRepository:
 
     # ── Flashcards ────────────────────────────────────────────────────────────
 
+    async def get_articles_full_for_topic(self, topic_id: UUID, limit: int = 200) -> list[dict]:
+        """Artigos completos de um tópico, com highlights — insumo dos cartões."""
+        return await self._fetch(
+            """SELECT la.id, la.article_number, la.official_text, la.simple_text,
+                      la.highlights, la.subject_id, la.topic_id,
+                      ld.name AS document_name
+                 FROM legal_articles la
+                 JOIN legal_documents ld ON ld.id = la.document_id
+                WHERE la.topic_id = $1 AND la.official_text IS NOT NULL
+                ORDER BY la.frequency_score DESC, la.display_order
+                LIMIT $2""",
+            topic_id, limit,
+        )
+
+    async def bulk_insert_flashcards(self, cards: list[dict]) -> int:
+        """Grava cartões do sistema, ignorando os que já existem.
+
+        A chave de unicidade é (article_id, front): regerar o mesmo artigo
+        não pode duplicar cartão, senão a repetição espaçada devolve o mesmo
+        conteúdo várias vezes no mesmo dia.
+        """
+        if not cards:
+            return 0
+        gravados = 0
+        for c in cards:
+            row = await self._fetchrow(
+                """INSERT INTO flashcards
+                       (subject_id, topic_id, article_id, question_id,
+                        front, back, source, tags)
+                   SELECT $1, $2, $3, $4, $5, $6, $7, $8::jsonb
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM flashcards f
+                         WHERE f.front = $5 AND f.is_active
+                           AND (f.article_id = $3 OR ($3 IS NULL AND f.article_id IS NULL)))
+                   RETURNING id""",
+                c.get("subject_id"), c.get("topic_id"), c.get("article_id"),
+                c.get("question_id"), c["front"], c["back"],
+                c.get("source", "system"), json.dumps(c.get("tags", [])),
+            )
+            if row:
+                gravados += 1
+        return gravados
+
+    async def count_flashcards_for_topic(self, topic_id: UUID) -> int:
+        return await self._fetchval(
+            "SELECT COUNT(*) FROM flashcards WHERE topic_id = $1 AND is_active",
+            topic_id,
+        ) or 0
+
+    async def get_flashcard_ids_for_topic(
+        self, topic_id: UUID, user_id: UUID | None = None, limit: int = 12,
+    ) -> list[UUID]:
+        """Cartões do tópico, priorizando o que ainda não foi visto.
+
+        Sem isso a mesma dúzia de cartões volta todo dia — o mesmo problema
+        que a lei seca tinha antes de olhar o histórico de leitura.
+        """
+        if user_id is None:
+            rows = await self._fetch(
+                """SELECT id FROM flashcards
+                    WHERE topic_id = $1 AND is_active
+                    ORDER BY random() LIMIT $2""",
+                topic_id, limit,
+            )
+            return [r["id"] for r in rows]
+        rows = await self._fetch(
+            """SELECT f.id FROM flashcards f
+                LEFT JOIN review_cards rc
+                       ON rc.flashcard_id = f.id AND rc.user_id = $2
+               WHERE f.topic_id = $1 AND f.is_active
+               ORDER BY (rc.id IS NULL) DESC,
+                        rc.next_review NULLS FIRST
+               LIMIT $3""",
+            topic_id, user_id, limit,
+        )
+        return [r["id"] for r in rows]
+
+    async def get_flashcards_by_ids(self, ids: list[UUID]) -> list[dict]:
+        if not ids:
+            return []
+        return await self._fetch(
+            """SELECT f.id, f.front, f.back, f.tags, f.source,
+                      s.name AS subject_name
+                 FROM flashcards f
+                 LEFT JOIN subjects s ON s.id = f.subject_id
+                WHERE f.id = ANY($1::uuid[]) AND f.is_active""",
+            ids,
+        )
+
+    async def ensure_review_card_for_flashcard(
+        self, user_id: UUID, flashcard_id: UUID
+    ) -> dict:
+        """Cartão de revisão do flashcard, criando na primeira vez que ele é
+        estudado — é o que liga o flashcard à repetição espaçada."""
+        existing = await self._fetchrow(
+            "SELECT * FROM review_cards WHERE user_id = $1 AND flashcard_id = $2",
+            user_id, flashcard_id,
+        )
+        if existing:
+            return existing
+        return await self._fetchrow(
+            """INSERT INTO review_cards (user_id, flashcard_id, next_review)
+               VALUES ($1, $2, NOW())
+               RETURNING *""",
+            user_id, flashcard_id,
+        )
+
     async def get_error_flashcard_ids(self, user_id: UUID, limit: int = 10) -> list[UUID]:
         rows = await self._fetch(
             """SELECT f.id FROM flashcards f

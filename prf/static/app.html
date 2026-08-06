@@ -742,6 +742,30 @@ button { font-family:inherit; }
 .ib-close { background:none; border:none; color:var(--ink-3); padding:4px; cursor:pointer; display:flex; }
 .ib-close svg { width:14px; height:14px; }
 
+/* Flashcards */
+.fc-wrap { padding:0 0 24px; }
+.fc-progress { height:3px; background:var(--surface-2); margin-bottom:24px; }
+.fc-progress-fill { height:100%; background:var(--primary); transition:width .4s cubic-bezier(.22,1,.36,1); }
+.fc-card {
+  margin:0 20px; min-height:280px; display:flex;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); box-shadow:var(--shadow-md);
+  cursor:pointer; transition:border-color .2s;
+}
+.fc-card.flipped { border-color:var(--primary); cursor:default; box-shadow:var(--shadow-lg); }
+.fc-face { padding:26px 22px; display:flex; flex-direction:column; gap:14px; width:100%; }
+.fc-label {
+  font-size:10px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.fc-card.flipped .fc-label { color:var(--primary); }
+.fc-content {
+  font-family:var(--serif); font-size:17px; line-height:1.6;
+  white-space:pre-wrap; flex:1; color:var(--ink);
+}
+.fc-card.flipped .fc-content { font-size:16px; }
+.fc-tap { font-size:12px; color:var(--ink-3); text-align:center; padding-top:8px; }
+
 /* ── MISSION REVIEW QUALITY ── */
 .quality-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 20px 24px; }
 .quality-btn-3 {
@@ -1073,6 +1097,7 @@ const S = {
   reviewQuestion: null, reviewAnswered: null,
   missionLegalArticles: null, missionLegalIdx: 0,
   lfStep: 'ler', lfRevealed: [],
+  fcCards: null, fcIdx: 0, fcFlipped: false,
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
   pushOn: false, showInstall: false,
   targetExam: localStorage.getItem('prf_target_exam') || 'PMGO',
@@ -1519,11 +1544,13 @@ function viewDashboard() {
         const icon = b.block_type === 'questions' ? I.book :
           b.block_type === 'review' ? I.refresh :
           b.block_type === 'legal_reading' ? I.scale :
+          b.block_type === 'flashcards' ? I.brain :
           (b.block_type === 'podcast' || b.block_type === 'podcast_drill') ? I.headphones :
           b.block_type === 'error_review' ? I.brain : I.target;
         const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
           b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
           b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
+          b.block_type === 'flashcards' ? `startMissionBlock(${i},'flashcards')` :
           (b.block_type === 'podcast' || b.block_type === 'podcast_drill') ? `startMissionBlock(${i},'podcast')` :
           b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
           `startMissionBlock(${i},'practice')`;
@@ -2145,6 +2172,83 @@ function viewMissionLegalReader() {
   </div>`;
 }
 
+// ===== FLASHCARDS =====
+function viewFlashcards() {
+  const cards = S.fcCards;
+  const i = S.fcIdx || 0;
+  const head = `<div class="topbar-sub">
+    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <span class="title-sub">Flashcards</span>
+    ${cards?.length ? `<span class="meta-sub">${Math.min(i+1, cards.length)}/${cards.length}</span>` : ''}
+  </div>`;
+  if (!cards) return head + skeletonBlock(2, 140);
+  if (!cards.length) return head + `<div class="empty">${I.brain}<h3>Sem cartões</h3><p>Nenhum flashcard para esse bloco.</p></div>`;
+
+  const c = cards[i];
+  if (!c) return head + `<div class="empty">${I.brain}<h3>Sessão concluída</h3>
+    <p>Você revisou todos os cartões.</p>
+    <button class="btn btn-primary mt-16" onclick="concludeFlashcards()">Concluir etapa</button></div>`;
+
+  const QUALS = [
+    {q:'wrong', label:'Não lembrei', cls:'q-wrong'},
+    {q:'hard',  label:'Difícil',     cls:'q-hard'},
+    {q:'good',  label:'Lembrei',     cls:'q-easy'},
+  ];
+  const virado = S.fcFlipped;
+
+  return head + `<div class="fc-wrap fade-in">
+    <div class="fc-progress"><div class="fc-progress-fill" style="width:${(i/cards.length)*100}%"></div></div>
+    <div class="fc-card ${virado?'flipped':''}" onclick="${virado?'':'flipFlashcard()'}">
+      <div class="fc-face">
+        <div class="fc-label">${virado ? 'Resposta' : 'Complete de cabeça'}</div>
+        <div class="fc-content">${esc(virado ? c.back : c.front)}</div>
+        ${virado ? '' : '<div class="fc-tap">Toque para ver a resposta</div>'}
+      </div>
+    </div>
+    ${virado ? `
+      <div class="section-eyebrow" style="padding:16px 20px 8px">Como foi lembrar?</div>
+      <div class="quality-grid-3">
+        ${QUALS.map(x => `<button class="quality-btn-3 ${x.cls}" onclick="answerFlashcard('${c.id}','${x.q}')">
+          <span class="qb3-label">${x.label}</span></button>`).join('')}
+      </div>` : ''}
+  </div>`;
+}
+
+function flipFlashcard() { S.fcFlipped = true; render(); }
+
+async function answerFlashcard(cardId, quality) {
+  try {
+    const r = await api(`/api/prf/reviews/flashcards/${cardId}/answer?quality=${quality}`, { method:'POST' });
+    if (r?.xp_earned) toast(`+${r.xp_earned} XP`, 'xp');
+  } catch (e) {}
+  S.fcIdx = (S.fcIdx || 0) + 1;
+  S.fcFlipped = false;
+  if (S.fcIdx >= (S.fcCards?.length || 0)) { await concludeFlashcards(); return; }
+  render(); scrollTop();
+}
+
+async function openMissionFlashcards(blockIdx) {
+  const b = S.mission?.blocks?.[blockIdx];
+  if (!b) return;
+  S.activeMissionIdx = blockIdx;
+  S.missionBlockId = b.id;
+  S.fcCards = null; S.fcIdx = 0; S.fcFlipped = false;
+  S.subView = 'flashcards'; S.tab = 'more';
+  render();
+  const ids = (b.content_ids || []).join(',');
+  if (!ids) { await finishMissionBlock(); return; }
+  try {
+    const d = await api(`/api/prf/reviews/flashcards/study?ids=${encodeURIComponent(ids)}`);
+    S.fcCards = d.cards || [];
+  } catch (e) { S.fcCards = []; }
+  if (!S.fcCards.length) { await finishMissionBlock(); return; }
+  render(); scrollTop();
+}
+
+async function concludeFlashcards() {
+  await finishMissionBlock();
+}
+
 // ===== MISSION REVIEW =====
 function viewMissionReview() {
   const reviews = S.reviews;
@@ -2344,6 +2448,7 @@ function viewEssayResult() {
 
 // ===== MORE =====
 function viewMore() {
+  if (S.subView === 'flashcards') return viewFlashcards();
   if (S.subView === 'missionLegal') return viewMissionLegalReader();
   if (S.subView === 'missionReview') return viewMissionReview();
   if (S.subView === 'legal' || S.subView === 'articles' || S.subView === 'search') return viewLegal();
@@ -2510,6 +2615,9 @@ async function startMissionBlock(blockIdx, type) {
   } else if (type === 'legal') {
     await openMissionLegalReader(blockIdx);
     return;
+  } else if (type === 'flashcards') {
+    await openMissionFlashcards(blockIdx);
+    return;
   } else if (type === 'podcast') {
     const epId = b.content_ids?.[0];
     if (!epId) { toast('Episódio indisponível', 'error'); return; }
@@ -2551,6 +2659,7 @@ function advanceToNextMissionBlock() {
   const type = next.block_type === 'questions' ? 'practice' :
     next.block_type === 'review' ? 'review' :
     next.block_type === 'legal_reading' ? 'legal' :
+    next.block_type === 'flashcards' ? 'flashcards' :
     next.block_type === 'error_review' ? 'review' : 'practice';
   toast(`Próxima etapa: ${next.title}`, 'info');
   setTimeout(() => startMissionBlock(nextIdx, type), 1500);

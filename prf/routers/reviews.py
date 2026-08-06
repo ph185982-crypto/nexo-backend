@@ -10,6 +10,7 @@ from prf.models.study import (
 from prf.routers.deps import get_repo, get_current_user_id, get_study_service
 from prf.database.repository import PRFRepository
 from prf.services.study_service import StudyService
+from prf.engines.spaced_review import QUALITY_MAP
 
 router = APIRouter()
 
@@ -106,3 +107,44 @@ async def create_flashcard(
         back=card["back"],
         source="user",
     )
+
+
+# ── Flashcards do sistema ───────────────────────────────────────────────────
+
+@router.get("/flashcards/study")
+async def get_flashcards_for_study(
+    ids: str = Query(..., description="ids dos cartões, separados por vírgula"),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Cartões de um bloco de flashcards da missão."""
+    try:
+        id_list = [UUID(x.strip()) for x in ids.split(",") if x.strip()]
+    except ValueError:
+        raise HTTPException(400, "Lista de ids inválida")
+    cards = await repo.get_flashcards_by_ids(id_list)
+    ordem = {str(i): n for n, i in enumerate(id_list)}
+    cards.sort(key=lambda c: ordem.get(str(c["id"]), 999))
+    return {"cards": cards}
+
+
+@router.post("/flashcards/{flashcard_id}/answer")
+async def answer_flashcard(
+    flashcard_id: UUID,
+    quality: str = Query(..., description="blackout, wrong, hard, good ou easy"),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+    study: StudyService = Depends(get_study_service),
+):
+    """Registra o resultado de um flashcard e agenda a próxima revisão.
+
+    O cartão de revisão é criado na primeira vez que o flashcard é estudado —
+    é isso que liga os flashcards à repetição espaçada, que já existia mas só
+    era alimentada por questões.
+    """
+    if quality not in QUALITY_MAP:
+        raise HTTPException(400, f"Qualidade inválida: {quality}")
+
+    rc = await repo.ensure_review_card_for_flashcard(user_id, flashcard_id)
+    result = await study.process_review(user_id, rc["id"], quality)
+    return result

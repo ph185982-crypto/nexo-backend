@@ -156,6 +156,9 @@ class StudyService:
             topic_question_ids = await self.repo.get_question_ids_by_topic(
                 topic["id"], subject_id=p.subject_id, limit=12, question_type=qtype,
             )
+            flashcard_ids = await self.repo.get_flashcard_ids_for_topic(
+                topic["id"], user_id=user_id, limit=12,
+            )
             if not (episode_ids or article_ids):
                 continue
             topic_plan[p.subject_id] = {
@@ -166,6 +169,7 @@ class StudyService:
                 "drill_ids": [drill_id] if drill_id else [],
                 "article_ids": article_ids,
                 "question_ids": topic_question_ids,
+                "flashcard_ids": flashcard_ids,
             }
 
         mission = build_mission(

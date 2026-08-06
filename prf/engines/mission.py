@@ -300,19 +300,42 @@ def build_mission(
             order += 1
             remaining_mins -= block_mins
 
-        elif fmt == "flashcards":
+        elif fmt == "flashcards" and plan.get("flashcard_ids"):
             blocks.append(MissionBlock(
                 block_type="flashcards",
                 subject_id=p.subject_id,
                 subject_name=p.subject_name,
-                title=f"Flashcards — {p.subject_name}",
-                description="Revisão rápida dos pontos-chave.",
+                topic_id=plan.get("topic_id"),
+                title=f"Flashcards — {topic_label}",
+                description="Complete a lacuna de memória: as palavras que a banca troca.",
                 estimated_mins=min(block_mins, 10),
                 display_order=order,
+                content_ids=plan["flashcard_ids"][:12],
                 mode=mode.value,
             ))
             order += 1
             remaining_mins -= min(block_mins, 10)
+
+    # 3b. FLASHCARDS DO TÓPICO — fecham o ciclo do dia com memorização das
+    # expressões que a banca troca, depois de ouvir, ler e praticar.
+    if audio_plan and remaining_mins >= 5:
+        _p, _plan = audio_plan
+        if _plan.get("flashcard_ids"):
+            fc_mins = min(10, remaining_mins)
+            blocks.append(MissionBlock(
+                block_type="flashcards",
+                subject_id=_p.subject_id,
+                subject_name=_p.subject_name,
+                topic_id=_plan.get("topic_id"),
+                title=f"Flashcards — {_plan.get('topic_name') or _p.subject_name}",
+                description="Fixe as expressões que a banca troca nesse tópico.",
+                estimated_mins=fc_mins,
+                display_order=order,
+                content_ids=_plan["flashcard_ids"][:12],
+                mode=mode.value,
+            ))
+            order += 1
+            remaining_mins -= fc_mins
 
     # 4. FLASHCARDS DE ERRO — se sobrar tempo
     if error_flashcard_ids and remaining_mins >= 5:

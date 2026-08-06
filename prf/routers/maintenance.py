@@ -949,3 +949,168 @@ async def diagnose_topic_volume(
             ORDER BY s.weight_pm DESC, s.name, t.display_order"""
     )
     return {"topics": [dict(r) for r in rows]}
+
+
+# ── Flashcards ──────────────────────────────────────────────────────────────
+
+@router.post("/flashcards/generate")
+async def generate_flashcards(
+    limit_topics: int = Query(6, ge=1, le=40, description="tópicos por chamada"),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Gera os flashcards do sistema a partir dos artigos de lei.
+
+    Não usa IA: os cartões saem dos highlights (as expressões que a banca
+    troca) e do simple_text que já estão gravados em cada artigo. Além de
+    não custar nada, um cartão feito do texto oficial é mais fiel à prova do
+    que um parafraseado por modelo, e não corre risco de inventar conteúdo.
+
+    Roda por lotes de tópicos porque o tempo da função não comporta os 38 de
+    uma vez; chame de novo até `remaining` zerar.
+    """
+    _require_admin(x_maintenance_token)
+
+    from prf.services import flashcard_service
+
+    topicos = await repo._fetch(
+        """SELECT t.id, t.name, s.name AS subject_name
+             FROM topics t
+             JOIN subjects s ON s.id = t.subject_id
+            WHERE t.is_active AND s.weight_pm > 0
+              AND EXISTS (SELECT 1 FROM legal_articles la WHERE la.topic_id = t.id)
+              AND NOT EXISTS (SELECT 1 FROM flashcards f
+                               WHERE f.topic_id = t.id AND f.is_active)
+            ORDER BY s.weight_pm DESC, t.display_order
+            LIMIT $1""",
+        limit_topics,
+    )
+
+    feitos = []
+    for t in topicos:
+        artigos = await repo.get_articles_full_for_topic(t["id"], limit=200)
+        cartoes = []
+        for a in artigos:
+            cartoes.extend(flashcard_service.cards_for_article(dict(a)))
+        n = await repo.bulk_insert_flashcards(cartoes)
+        feitos.append({"topico": t["name"], "materia": t["subject_name"],
+                       "artigos": len(artigos), "cartoes": n})
+
+    restantes = await repo._fetchval(
+        """SELECT COUNT(*) FROM topics t
+             JOIN subjects s ON s.id = t.subject_id
+            WHERE t.is_active AND s.weight_pm > 0
+              AND EXISTS (SELECT 1 FROM legal_articles la WHERE la.topic_id = t.id)
+              AND NOT EXISTS (SELECT 1 FROM flashcards f
+                               WHERE f.topic_id = t.id AND f.is_active)"""
+    )
+    total = await repo._fetchval("SELECT COUNT(*) FROM flashcards WHERE is_active")
+
+    return {"topicos_processados": feitos, "remaining": restantes, "total_no_banco": total}
+
+
+# ── Escopo do edital ────────────────────────────────────────────────────────
+
+# Leis que aparecem no banco mas NÃO estão no edital da PMGO. Estudar isso
+# não é neutro: consome o tempo que deveria ir para o que cai.
+FORA_DO_EDITAL = [
+    ("Código de Defesa do Consumidor", "8.078"),
+    ("CDC", "consumidor"),
+    ("Consolidação das Leis do Trabalho", "CLT"),
+    ("Código Tributário", "5.172"),
+    ("Código Civil", "10.406"),
+    ("Código de Processo Civil", "13.105"),
+    ("Estatuto do Idoso", "10.741"),
+    ("Lei de Licitações", "14.133"),
+]
+
+
+@router.get("/scope/audit")
+async def audit_scope(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Questões ativas que citam lei fora do edital da PMGO.
+
+    Checagem determinística sobre o texto e a base legal — não usa IA, então
+    funciona mesmo com o provedor fora do ar, e o resultado é auditável:
+    cada item vem com o termo que o marcou.
+    """
+    _require_admin(x_maintenance_token)
+
+    achados = []
+    for rotulo, termo in FORA_DO_EDITAL:
+        rows = await repo._fetch(
+            """SELECT q.id, q.text, q.legal_basis, s.name AS subject_name
+                 FROM questions q
+                 JOIN subjects s ON s.id = q.subject_id
+                WHERE q.is_active AND s.weight_pm > 0
+                  AND (q.text ILIKE '%' || $1 || '%'
+                       OR COALESCE(q.legal_basis, '') ILIKE '%' || $1 || '%')
+                LIMIT 60""",
+            termo,
+        )
+        for r in rows:
+            achados.append({
+                "id": str(r["id"]), "materia": r["subject_name"],
+                "marcado_por": rotulo, "termo": termo,
+                "trecho": (r["text"] or "")[:130],
+            })
+
+    vistos, unicos = set(), []
+    for a in achados:
+        if a["id"] in vistos:
+            continue
+        vistos.add(a["id"])
+        unicos.append(a)
+    return {"total": len(unicos), "questoes": unicos}
+
+
+@router.post("/scope/deactivate")
+async def deactivate_out_of_scope(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Desativa as questões fora do edital encontradas pela auditoria."""
+    _require_admin(x_maintenance_token)
+
+    total = 0
+    for _rotulo, termo in FORA_DO_EDITAL:
+        n = await repo._fetchval(
+            """WITH r AS (
+                   UPDATE questions q SET is_active = FALSE
+                     FROM subjects s
+                    WHERE s.id = q.subject_id AND s.weight_pm > 0 AND q.is_active
+                      AND (q.text ILIKE '%' || $1 || '%'
+                           OR COALESCE(q.legal_basis, '') ILIKE '%' || $1 || '%')
+                    RETURNING 1)
+               SELECT COUNT(*) FROM r""",
+            termo,
+        )
+        total += n or 0
+    return {"desativadas": total}
+
+
+@router.post("/fragments/deactivate")
+async def deactivate_fragments(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Tira de circulação os itens que são fragmento de alternativa.
+
+    A reescrita depende de IA e o provedor está sem crédito. Servir um item
+    que não dá para julgar é pior que não servir: o candidato erra por falta
+    de enunciado e o erro entra na estatística como se fosse dele. Ficam
+    inativos até a reescrita poder rodar — nada é apagado.
+    """
+    _require_admin(x_maintenance_token)
+    n = await repo._fetchval(
+        """WITH r AS (
+               UPDATE questions SET is_active = FALSE
+                WHERE is_active AND length(text) < $1
+                RETURNING 1)
+           SELECT COUNT(*) FROM r""",
+        FRAGMENT_MAX_CHARS,
+    )
+    return {"desativadas": n or 0,
+            "obs": "Reative com /fragments/rewrite quando houver crédito de IA"}
