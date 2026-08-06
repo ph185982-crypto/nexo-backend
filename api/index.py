@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.3.3",  # fix: BlockType do Pydantic sem podcast + retomada da aula onde parou
+    version="1.4.0",  # lei seca interativa: ler, completar as lacunas da banca, entender
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",

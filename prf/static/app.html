@@ -639,6 +639,57 @@ button { font-family:inherit; }
   border-left:3px solid var(--gold);
 }
 
+/* Passos da leitura de lei */
+.lf-progress { height:3px; background:var(--surface-2); }
+.lf-progress-fill { height:100%; background:var(--primary); transition:width .4s cubic-bezier(.22,1,.36,1); }
+.lf-steps { display:flex; align-items:center; gap:8px; margin:0 0 22px; }
+.lf-step { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-3); font-weight:600; }
+.lf-step.on { color:var(--primary); }
+.lf-step.done { color:var(--success); }
+.lf-step-dot {
+  width:20px; height:20px; border-radius:var(--r-full); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700;
+  background:var(--surface-2); color:var(--ink-3);
+}
+.lf-step.on .lf-step-dot { background:var(--primary); color:#fff; }
+.lf-step.done .lf-step-dot { background:var(--success); color:#fff; }
+.lf-step-line { flex:1; height:1px; background:var(--border-strong); }
+
+/* Expressões que a banca troca, marcadas na leitura */
+.lf-key {
+  background:var(--gold-soft); color:var(--ink);
+  padding:1px 3px; border-radius:3px;
+  box-shadow:inset 0 -2px 0 var(--gold);
+}
+
+/* Lacunas tocáveis */
+.lf-blank {
+  display:inline-block; vertical-align:baseline;
+  font-family:inherit; font-size:inherit; line-height:1.2;
+  padding:2px 8px; margin:0 1px;
+  border:none; border-bottom:2px dashed var(--primary);
+  background:var(--primary-soft); color:var(--primary);
+  border-radius:4px 4px 0 0; cursor:pointer; font-weight:700;
+  transition:background .15s;
+}
+.lf-blank:active { background:var(--primary-tint); }
+.lf-blank.on {
+  background:var(--success-soft); color:var(--success);
+  border-bottom:2px solid var(--success); cursor:default;
+  padding:1px 4px; font-weight:600;
+  animation:slideUp .25s ease;
+}
+.lf-counter {
+  margin-top:14px; font-size:12px; font-weight:600; color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+.lf-hint {
+  margin-top:14px; font-size:12px; line-height:1.5; color:var(--ink-3);
+  padding:10px 12px; background:var(--gold-soft); border-radius:var(--r-sm);
+}
+.lf-official.lf-muted { font-size:14px; color:var(--ink-3); border-left-color:var(--border); }
+
 /* ── MISSION REVIEW QUALITY ── */
 .quality-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 20px 24px; }
 .quality-btn-3 {
@@ -968,6 +1019,7 @@ const S = {
   reviews: null, reviewIdx: 0, reviewSummary: null, reviewRevealed: false,
   reviewQuestion: null, reviewAnswered: null,
   missionLegalArticles: null, missionLegalIdx: 0,
+  lfStep: 'ler', lfRevealed: [],
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
   pushOn: false,
   targetExam: localStorage.getItem('prf_target_exam') || 'PMGO',
@@ -1830,6 +1882,60 @@ function viewReviews() {
 }
 
 // ===== MISSION LEGAL READER =====
+// Monta o texto do artigo com as expressões-chave viradas em lacuna.
+// Os highlights foram gerados como "as expressões que a banca troca para
+// tornar o item errado", então apagar justamente essas palavras transforma
+// a leitura passiva em recuperação do que decide a questão.
+function buildCloze(text, highlights) {
+  const src = text || '';
+  const low = src.toLowerCase();
+  const marcas = [];
+  // Do mais longo para o mais curto: evita que um highlight curto consuma
+  // um pedaço de outro maior e quebre as duas lacunas.
+  const cands = (highlights || [])
+    .map(h => (h || '').trim())
+    .filter(h => h.length >= 3)
+    .sort((x, y) => y.length - x.length);
+
+  for (const h of cands) {
+    const at = low.indexOf(h.toLowerCase());
+    if (at < 0) continue;                        // paráfrase, não casa literal
+    if (marcas.some(m => at < m.fim && at + h.length > m.ini)) continue;  // sobreposição
+    marcas.push({ ini: at, fim: at + h.length, texto: src.slice(at, at + h.length) });
+  }
+  marcas.sort((a, b) => a.ini - b.ini);
+
+  const partes = [];
+  let cur = 0;
+  marcas.forEach((m, i) => {
+    if (m.ini > cur) partes.push({ tipo: 'texto', valor: src.slice(cur, m.ini) });
+    partes.push({ tipo: 'lacuna', valor: m.texto, idx: i });
+    cur = m.fim;
+  });
+  if (cur < src.length) partes.push({ tipo: 'texto', valor: src.slice(cur) });
+  return { partes, total: marcas.length };
+}
+
+function lfCloze() {
+  const a = S.missionLegalArticles?.[S.missionLegalIdx];
+  if (!a) return { partes: [], total: 0 };
+  return buildCloze(a.official_text, a.highlights);
+}
+
+function revealBlank(i) {
+  if (!S.lfRevealed.includes(i)) S.lfRevealed = S.lfRevealed.concat([i]);
+  render();
+}
+function revealAllBlanks() {
+  S.lfRevealed = lfCloze().partes.filter(p => p.tipo === 'lacuna').map(p => p.idx);
+  render();
+}
+function lfGoStep(step) {
+  S.lfStep = step;
+  if (step === 'lacuna') S.lfRevealed = [];
+  render(); scrollTop();
+}
+
 function viewMissionLegalReader() {
   const articles = S.missionLegalArticles;
   const idx = S.missionLegalIdx || 0;
@@ -1841,27 +1947,83 @@ function viewMissionLegalReader() {
   </div>`;
   if (!articles) return head + skeletonBlock(3, 90);
   if (!articles.length) return head + `<div class="empty">${I.scale}<h3>Sem artigos</h3><p>Nenhum artigo encontrado para esse bloco.</p></div>`;
+
   const a = articles[idx];
   const isLast = idx >= articles.length - 1;
-  return head + `<div class="legal-focus fade-in">
+  const cloze = lfCloze();
+  // Com menos de duas lacunas o passo de recuperação não tem o que treinar.
+  const temLacuna = cloze.total >= 2;
+  const step = temLacuna ? (S.lfStep || 'ler') : 'ler';
+  const revelados = S.lfRevealed.length;
+  const faltam = cloze.total - revelados;
+
+  const passos = temLacuna
+    ? [['ler','Ler'], ['lacuna','Completar'], ['explicar','Entender']]
+    : [['ler','Ler'], ['explicar','Entender']];
+  const stepper = `<div class="lf-steps">${passos.map(([k, label], i) => {
+    const atual = k === step;
+    const feito = passos.findIndex(p => p[0] === step) > i;
+    return `<div class="lf-step ${atual?'on':''} ${feito?'done':''}">
+      <span class="lf-step-dot">${feito ? '&#10003;' : i+1}</span><span>${label}</span></div>`;
+  }).join('<div class="lf-step-line"></div>')}</div>`;
+
+  const barra = `<div class="lf-progress"><div class="lf-progress-fill" style="width:${((idx)/articles.length)*100}%"></div></div>`;
+
+  let corpo = '';
+  let acao = '';
+
+  if (step === 'ler') {
+    // Leitura com as expressões que a banca troca já marcadas: o olho passa
+    // por elas sabendo que são elas que decidem a questão.
+    corpo = `
+      <div class="lf-official-label">Texto oficial</div>
+      <div class="lf-official">${cloze.partes.map(p =>
+        p.tipo === 'lacuna' ? `<mark class="lf-key">${esc(p.valor)}</mark>` : esc(p.valor)
+      ).join('')}</div>
+      ${temLacuna ? `<div class="lf-hint">As expressões marcadas são as que a banca troca para tornar o item errado.</div>` : ''}`;
+    acao = temLacuna
+      ? `<button class="btn btn-primary btn-full btn-lg mt-24" onclick="lfGoStep('lacuna')">Agora sem as palavras-chave</button>`
+      : `<button class="btn btn-primary btn-full btn-lg mt-24" onclick="lfGoStep('explicar')">Entender o artigo</button>`;
+
+  } else if (step === 'lacuna') {
+    corpo = `
+      <div class="lf-official-label">Complete de cabeça — toque para conferir</div>
+      <div class="lf-official">${cloze.partes.map(p => {
+        if (p.tipo !== 'lacuna') return esc(p.valor);
+        const on = S.lfRevealed.includes(p.idx);
+        const w = Math.max(3, Math.min(p.valor.length, 22));
+        return on
+          ? `<span class="lf-blank on">${esc(p.valor)}</span>`
+          : `<button class="lf-blank" style="min-width:${w*0.62}em" onclick="revealBlank(${p.idx})">?</button>`;
+      }).join('')}</div>
+      <div class="lf-counter">${revelados} de ${cloze.total} conferidos${faltam ? '' : ' — todas!'}</div>`;
+    acao = faltam
+      ? `<button class="btn btn-outline btn-full mt-16" onclick="revealAllBlanks()">Revelar todas</button>`
+      : `<button class="btn btn-primary btn-full btn-lg mt-16" onclick="lfGoStep('explicar')">Entender o artigo</button>`;
+
+  } else {
+    corpo = `
+      ${a.simple_text ? `
+        <div class="lf-simple-label">Entendendo o artigo</div>
+        <div class="lf-simple">${esc(a.simple_text)}</div>` : ''}
+      ${a.highlights?.length ? `
+        <div class="lf-highlights-label">O que a banca troca</div>
+        <div class="lf-highlights">${a.highlights.map(h => `<div class="lf-hl">${esc(h)}</div>`).join('')}</div>` : ''}
+      <div class="lf-official-label">Texto oficial</div>
+      <div class="lf-official lf-muted">${esc(a.official_text || '')}</div>`;
+    acao = `<button class="btn btn-primary btn-full btn-lg mt-24" onclick="${isLast ? 'concludeLegalReading()' : 'nextLegalArticle()'}">
+      ${isLast ? 'Concluir leitura' : 'Próximo artigo'}</button>`;
+  }
+
+  return head + barra + `<div class="legal-focus fade-in">
     <div class="lf-header">
       <div class="lf-doc">${esc(a.document_name || '')}</div>
       <div class="lf-art">Art. ${esc(a.article_number || '')}</div>
       ${a.title ? `<div class="lf-title">${esc(a.title)}</div>` : ''}
     </div>
-    <div class="lf-official-label">Texto oficial</div>
-    <div class="lf-official">${esc(a.official_text || '')}</div>
-    ${a.simple_text ? `
-      <div class="lf-simple-label">Entendendo o artigo</div>
-      <div class="lf-simple">${esc(a.simple_text)}</div>
-    ` : ''}
-    ${a.highlights?.length ? `
-      <div class="lf-highlights-label">Pontos-chave</div>
-      <div class="lf-highlights">${a.highlights.map(h => `<div class="lf-hl">${esc(h)}</div>`).join('')}</div>
-    ` : ''}
-    <button class="btn btn-primary btn-full btn-lg mt-24" onclick="${isLast ? 'concludeLegalReading()' : 'nextLegalArticle()'}">
-      ${isLast ? 'Concluir leitura' : 'Próximo artigo'}
-    </button>
+    ${stepper}
+    ${corpo}
+    ${acao}
   </div>`;
 }
 
@@ -2652,6 +2814,7 @@ async function openMissionLegalReader(blockIdx) {
   S.missionBlockId = b.id;
   S.missionLegalArticles = null;
   S.missionLegalIdx = 0;
+  S.lfStep = 'ler'; S.lfRevealed = [];
   S.subView = 'missionLegal';
   S.tab = 'more';
   render();
@@ -2669,6 +2832,7 @@ function nextLegalArticle() {
   const a = S.missionLegalArticles?.[S.missionLegalIdx];
   if (a?.id) api(`/api/prf/legal/articles/${a.id}/read`, { method: 'POST' }).catch(() => {});
   S.missionLegalIdx = (S.missionLegalIdx || 0) + 1;
+  S.lfStep = 'ler'; S.lfRevealed = [];
   render(); scrollTop();
 }
 async function concludeLegalReading() {
