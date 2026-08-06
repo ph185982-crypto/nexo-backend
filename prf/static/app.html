@@ -1702,7 +1702,8 @@ function viewAudio() {
                 <span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span>
                 <span>·</span><span>${p.segment_count||0} partes</span>
               </div>
-              ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>` : ''}
+              ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>`
+                : (loadPodProgress(p.id) > 0 ? `<div class="pod-progress">Retomar na parte ${loadPodProgress(p.id)+1}</div>` : '')}
             </div>
           </div>`;
         }).join('')}</div>
@@ -2487,6 +2488,7 @@ audioEl.addEventListener('ended', () => {
       playPodSegment(S.podSeq + 1);
     } else {
       toast('Aula concluída', 'success');
+      clearPodProgress(S.podId);
       stopPodcast();
       // Etapa da missão fecha aqui, mas sem puxar a próxima: a segunda
       // aula é da volta e a lei seca é da noite.
@@ -2550,11 +2552,27 @@ async function playPodSegment(seq) {
   }
   S.podLoading = false;
   S.podSeq = seq;
+  savePodProgress();
   audioEl.src = url;
   try { await audioEl.play(); S.audioPlaying = true; }
   catch (e) { S.audioPlaying = false; }
   prefetchPodSegment(seq + 1);
   render();
+}
+
+// Retomada. Uma aula pode passar dos 40 min do trajeto, então sem isso o
+// ouvinte recomeça do zero todo dia e nunca chega ao fim do episódio.
+function podProgressKey(id) { return `pod_seg_${id}`; }
+function savePodProgress() {
+  if (!S.podId) return;
+  try { localStorage.setItem(podProgressKey(S.podId), String(S.podSeq)); } catch (e) {}
+}
+function loadPodProgress(id) {
+  try { return parseInt(localStorage.getItem(podProgressKey(id)) || '0', 10) || 0; }
+  catch (e) { return 0; }
+}
+function clearPodProgress(id) {
+  try { localStorage.removeItem(podProgressKey(id)); } catch (e) {}
 }
 
 async function playPodcast(id) {
@@ -2572,8 +2590,10 @@ async function playPodcast(id) {
     S.podId = null; S.podLoading = false;
     toast('Episódio sem áudio disponível', 'error'); render(); return;
   }
-  toast('Preparando o áudio...', 'info');
-  await playPodSegment(0);
+  const saved = loadPodProgress(id);
+  const start = (saved > 0 && saved < S.pod.segment_count) ? saved : 0;
+  toast(start > 0 ? `Retomando na parte ${start + 1}` : 'Preparando o áudio...', 'info');
+  await playPodSegment(start);
 }
 
 function podNext() { if (S.pod && S.podSeq < S.pod.segment_count - 1) playPodSegment(S.podSeq + 1); }

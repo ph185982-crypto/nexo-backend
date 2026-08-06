@@ -24,6 +24,9 @@ class BlockType(str, Enum):
     FLASHCARDS = "flashcards"
     AUDIO_LESSON = "audio_lesson"
     SIMULATED = "simulated"
+    # Aulas em diálogo do deslocamento: a da ida e o drill de recall da volta.
+    PODCAST = "podcast"
+    PODCAST_DRILL = "podcast_drill"
 
 
 class MissionBlockOut(BaseModel):
