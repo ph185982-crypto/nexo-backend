@@ -28,10 +28,12 @@ logger = logging.getLogger(__name__)
 # palavras rendeu 185s, ou seja ~175 palavras por minuto (o palpite inicial
 # de 150 inflava a duração estimada em quase 20%).
 WORDS_PER_MINUTE = 175
-# Para passar dos 30 min pedidos são necessárias ~5250 palavras. O modelo
-# entrega em torno de 85% do que se pede, então pedimos 6600 (1100 x 6)
-# para pousar com folga acima do mínimo.
-WORDS_PER_BLOCK = 1100
+# Para passar dos 30 min pedidos são necessárias ~5250 palavras. Pedir
+# blocos maiores não funciona: o modelo satura perto de 800 palavras por
+# resposta e ignora o resto do pedido (com alvo de 1100 entregou 800). O
+# que escala de verdade é o número de blocos — oito blocos de ~800 dão
+# ~6400 palavras, ou ~36 min, com folga confortável sobre o mínimo.
+WORDS_PER_BLOCK = 1000
 TARGET_MIN_MINUTES = 30
 
 HOST_A = "MARCOS"
@@ -106,6 +108,17 @@ def _block_briefs(topic: str) -> list[dict]:
             ),
         },
         {
+            "title": "O que parece mas não é",
+            "brief": (
+                f"Ataquem as confusões clássicas de '{topic}': os institutos que se "
+                f"parecem e que o candidato troca na hora da prova. {HOST_B} coloca "
+                f"os pares lado a lado e mostra o critério que separa um do outro. "
+                f"{HOST_A} confunde os dois de propósito, do jeito que o aluno "
+                "confundiria, e ela desfaz mostrando um caso onde a diferença muda "
+                "completamente a conduta do policial."
+            ),
+        },
+        {
             "title": "Na rua",
             "brief": (
                 f"Levem '{topic}' para a prática. {HOST_A} narra duas ou três "
@@ -113,6 +126,17 @@ def _block_briefs(topic: str) -> list[dict]:
                 f"para {HOST_B} qual seria a conduta correta e o fundamento. Ela "
                 "responde ligando o caso ao dispositivo. Mostrem também um caso de "
                 "conduta errada e a consequência disso para o policial."
+            ),
+        },
+        {
+            "title": "Exceções que derrubam candidato",
+            "brief": (
+                f"Aprofundem as exceções e os detalhes finos de '{topic}' — as "
+                "hipóteses em que a regra geral não se aplica, os prazos e os "
+                f"requisitos cumulativos. {HOST_B} conduz e {HOST_A} pergunta "
+                "sempre 'e se faltar um desses requisitos, o que acontece?'. "
+                "Mostrem por que é justamente aqui que o candidato mediano perde "
+                "ponto mesmo tendo estudado o tema."
             ),
         },
         {
