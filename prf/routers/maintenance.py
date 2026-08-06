@@ -698,3 +698,32 @@ async def diagnose_mission_build(
     except Exception as e:
         return {"ok": False, "error": f"{type(e).__name__}: {e}",
                 "trace": traceback.format_exc()[-2000:]}
+
+
+@router.get("/diag/topic-volume")
+async def diagnose_topic_volume(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Volume de material por tópico do edital.
+
+    A duração da aula é ditada pelo volume de texto legal a ler e comentar,
+    não pelo número de artigos: um único artigo com 78 incisos rende mais
+    que dez artigos curtos. Este mapa é o insumo para decidir quais tópicos
+    se agrupam e quais precisam virar duas partes.
+    """
+    _require_admin(x_maintenance_token)
+
+    rows = await repo._fetch(
+        """SELECT s.name AS subject, s.slug AS subject_slug, s.weight_pm,
+                  t.name AS topic, t.slug AS topic_slug, t.id AS topic_id,
+                  COUNT(la.id) AS artigos,
+                  COALESCE(SUM(length(la.official_text)), 0) AS chars
+             FROM topics t
+             JOIN subjects s ON s.id = t.subject_id
+             LEFT JOIN legal_articles la ON la.topic_id = t.id
+            WHERE t.is_active AND s.weight_pm > 0
+            GROUP BY s.name, s.slug, s.weight_pm, t.name, t.slug, t.id
+            ORDER BY s.weight_pm DESC, s.name, t.display_order"""
+    )
+    return {"topics": [dict(r) for r in rows]}
