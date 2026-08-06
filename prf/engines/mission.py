@@ -166,34 +166,52 @@ def build_mission(
         order += 1
         remaining_mins -= review_mins
 
-    # 2. AULAS EM ÁUDIO — duas por dia, uma para cada trecho do deslocamento.
-    # Não descontam de remaining_mins: são ouvidas no carro, não roubam o
+    # 2. ÁUDIO DO DESLOCAMENTO — a aula na ida e o drill do MESMO conteúdo
+    # na volta. Duas aulas novas por dia dariam mais cobertura e menos
+    # retenção: o que fixa é recuperar o conteúdo algumas horas depois da
+    # primeira exposição, não ouvir o dobro de matéria nova.
+    # Não descontam de remaining_mins: são ouvidos no carro e não roubam o
     # tempo de estudo da noite, que é o que esse orçamento representa.
-    audio_topics: list[tuple[PriorityResult, dict]] = []
+    audio_plan = None
     for p in priorities:
-        if len(audio_topics) >= MAX_AUDIO_LESSONS:
-            break
         plan = topic_plan.get(p.subject_id)
         if plan and plan.get("episode_ids"):
-            audio_topics.append((p, plan))
+            audio_plan = (p, plan)
+            break
 
-    for i, (p, plan) in enumerate(audio_topics):
-        trecho = "ida para o trabalho" if i == 0 else "volta para casa"
+    if audio_plan:
+        p, plan = audio_plan
+        rotulo = plan.get("topic_name") or p.subject_name
         blocks.append(MissionBlock(
             block_type="podcast",
             subject_id=p.subject_id,
             subject_name=p.subject_name,
             topic_id=plan.get("topic_id"),
-            title=f"Aula em áudio — {plan.get('topic_name') or p.subject_name}",
-            description=f"Ouça na {trecho}. À noite você lê a lei desse mesmo tópico.",
-            estimated_mins=plan.get("episode_mins") or 35,
+            title=f"Aula em áudio — {rotulo}",
+            description="Ouça na ida. É a primeira passagem do conteúdo de hoje.",
+            estimated_mins=plan.get("episode_mins") or 40,
             display_order=order,
             content_ids=plan["episode_ids"][:1],
             mode="commute",
         ))
         order += 1
 
-    audio_subject_ids = {p.subject_id for p, _ in audio_topics}
+        if plan.get("drill_ids"):
+            blocks.append(MissionBlock(
+                block_type="podcast_drill",
+                subject_id=p.subject_id,
+                subject_name=p.subject_name,
+                topic_id=plan.get("topic_id"),
+                title=f"Drill de recall — {rotulo}",
+                description="Ouça na volta. Responda antes deles: recuperar é o que fixa.",
+                estimated_mins=plan.get("drill_mins") or 22,
+                display_order=order,
+                content_ids=plan["drill_ids"][:1],
+                mode="commute",
+            ))
+            order += 1
+
+    audio_subject_ids = {audio_plan[0].subject_id} if audio_plan else set()
 
     # 3. ESTUDO DA NOITE — lei seca e questões do MESMO tópico do áudio.
     # As matérias que tiveram áudio vêm primeiro e sempre nesse par, porque

@@ -40,6 +40,22 @@ WORDS_PER_MINUTE = 175
 WORDS_PER_BLOCK = 1000
 TARGET_MIN_MINUTES = 30
 
+# Dimensionamento das partes. Medido: o tópico "Crime" tem 4,2 kchars de lei
+# e os oito blocos renderam 43 min cobrindo os 14 artigos com folga. Acima de
+# ~7 kchars os oito blocos deixam de dar conta e o roteiro começa a resumir —
+# que é justamente o que não pode acontecer. Daí o material ser fatiado em
+# partes numeradas em vez de comprimido.
+CHARS_PER_PART = 7000
+# Teto de partes por unidade. Sem ele o edital inteiro daria 139 h de aula:
+# Processo penal militar sozinho pediria 33 partes. O áudio cobre o núcleo de
+# maior incidência; a cauda longa fica para a lei seca e as questões, que o
+# candidato faz lendo, não dirigindo.
+MAX_PARTS = 4
+# Duração alvo do drill da volta. Recuperar não precisa do mesmo tempo que
+# aprender — o que conta é a quantidade de tentativas de recuperação.
+DRILL_WORDS_PER_BLOCK = 950
+DRILL_BLOCKS = 4
+
 HOST_A = "MARCOS"
 HOST_B = "JULIA"
 
@@ -374,3 +390,203 @@ async def synthesize_segment(turns: list[dict]) -> bytes:
         parts.extend(a for a in audios if a)
 
     return b"".join(parts)
+
+
+# ── Planejamento de partes ──────────────────────────────────────────────────
+
+def plan_parts(articles: list[dict]) -> list[list[dict]]:
+    """Fatia o material de uma unidade em partes de ~40 min de aula.
+
+    A regra é nunca comprimir: se o material não cabe em oito blocos, ele
+    vira Parte 1, Parte 2 e assim por diante, cada uma com o arco pedagógico
+    completo sobre a sua fatia. Comprimir para caber foi o que produziu o
+    "geralzão" da primeira versão.
+
+    Os artigos chegam ordenados por incidência na prova, então o corte em
+    MAX_PARTS não é arbitrário: as partes que sobrevivem são as do material
+    mais cobrado, e o que fica de fora é a cauda longa — coberta pela lei
+    seca e pelas questões, que o candidato faz lendo, não dirigindo.
+    """
+    if not articles:
+        return []
+
+    parts: list[list[dict]] = []
+    current: list[dict] = []
+    current_chars = 0
+
+    for a in articles:
+        size = len(a.get("official_text") or "")
+        # Artigo gigante sozinho já fecha a parte: dividir o texto de um
+        # mesmo dispositivo entre duas aulas quebraria a leitura comentada.
+        if current and current_chars + size > CHARS_PER_PART:
+            parts.append(current)
+            current, current_chars = [], 0
+            if len(parts) >= MAX_PARTS:
+                return parts[:MAX_PARTS]
+        current.append(a)
+        current_chars += size
+
+    if current:
+        parts.append(current)
+    return parts[:MAX_PARTS]
+
+
+# ── Drill de recuperação (o áudio da volta) ─────────────────────────────────
+
+DRILL_SYSTEM = f"""Você escreve roteiros de DRILL DE RECUPERAÇÃO em áudio para candidatos ao concurso da Polícia Militar de Goiás (banca Instituto AOCP).
+
+ISTO NÃO É UMA AULA. O ouvinte já assistiu a aula completa sobre este conteúdo
+algumas horas atrás, na ida para o trabalho. Agora ele está voltando para casa
+e o objetivo é UM SÓ: fazer ele PUXAR DA MEMÓRIA o que aprendeu. Recuperar é o
+que fixa — reexplicar não fixa quase nada, e é o erro que este roteiro não pode
+cometer.
+
+OS DOIS APRESENTADORES:
+
+{HOST_A} — instrutor. É ele quem PERGUNTA. Dispara a pergunta, dá o tempo de
+espera e cobra. Não explica.
+
+{HOST_B} — professora. É ela quem CONFIRMA, em uma ou duas frases, depois que o
+ouvinte já teve a chance de responder. Curta e direta.
+
+A MECÂNICA OBRIGATÓRIA DE CADA ITEM, NESTA ORDEM:
+1. {HOST_A} faz a pergunta, de forma fechada e específica.
+2. Uma fala curta de espera, para o ouvinte responder em voz alta ou de cabeça
+   ("pensa aí", "responde antes de eu falar", "isso, mais três segundos").
+3. {HOST_B} dá a resposta em UMA ou DUAS frases. Só isso.
+4. Só se a resposta tiver pegadinha, {HOST_A} acrescenta uma frase de alerta.
+
+REGRAS DURAS:
+- PROIBIDO reexplicar a matéria do zero. Nada de "vamos relembrar o conceito
+  de..." seguido de parágrafo expositivo. Se você se pegar ensinando, você
+  errou o formato.
+- PROIBIDO resposta longa. A confirmação tem no máximo duas frases.
+- Ritmo alto: muitos itens curtos, não poucos itens longos. Isto é um treino
+  de repetições, e o número de tentativas de recuperação é o que importa.
+- Varie o TIPO de pergunta: definição, completar a letra da lei, julgar
+  assertiva certo/errado, decidir a conduta num caso curto, apontar a
+  diferença entre dois institutos, dizer o prazo ou o requisito exato.
+- É ÁUDIO, ouvido no trânsito: nada de "veja", "na tabela", "anote".
+- Não escreva efeitos sonoros nem rubricas. Só o que deve ser falado.
+
+Responda SEMPRE em JSON válido."""
+
+
+def _drill_briefs(topic: str) -> list[dict]:
+    """Os quatro blocos do drill, do recall mais fácil ao mais exigente."""
+    return [
+        {
+            "title": "Aquecimento",
+            "brief": (
+                f"Comecem retomando o conteúdo de '{topic}' com perguntas diretas de "
+                "definição e conceito — o que é, para que serve, quem se aplica. São "
+                "as mais fáceis, para o ouvinte entrar no ritmo e ganhar confiança. "
+                "No mínimo seis itens, cada um com pergunta, espera e confirmação "
+                "curta. Nada de explicação longa."
+            ),
+        },
+        {
+            "title": "Complete a lei",
+            "brief": (
+                f"Agora a recuperação da letra da lei de '{topic}'. {HOST_A} começa a "
+                "ler um dispositivo e PARA no meio, para o ouvinte completar de "
+                f"cabeça; depois {HOST_B} completa e confirma. Cubram prazos, "
+                "requisitos, hipóteses e as palavras exatas que mudam o sentido. No "
+                "mínimo seis itens."
+            ),
+        },
+        {
+            "title": "Certo ou errado",
+            "brief": (
+                f"Rodada de assertivas no estilo do Instituto AOCP sobre '{topic}'. "
+                f"{HOST_A} lê a assertiva inteira, manda o ouvinte decidir certo ou "
+                f"errado, dá a espera, e {HOST_B} revela o gabarito e aponta em uma "
+                "frase a palavra que decide. Misturem assertivas certas e erradas, e "
+                "usem as trocas clássicas da banca. No mínimo oito assertivas."
+            ),
+        },
+        {
+            "title": "Decisão na rua e fechamento",
+            "brief": (
+                f"Casos curtos de ocorrência envolvendo '{topic}': {HOST_A} narra a "
+                "situação em duas ou três frases e pergunta qual a conduta correta e "
+                f"o fundamento; espera; {HOST_B} confirma em duas frases. No mínimo "
+                "quatro casos. Fechem o drill com três frases-gatilho curtas que o "
+                "ouvinte consiga repetir de memória e uma despedida rápida."
+            ),
+        },
+    ]
+
+
+async def _generate_drill_block(
+    topic: str, subject: str, block_index: int, block: dict, material: str,
+) -> list[dict]:
+    from prf.services import llm_service
+
+    prompt = f"""MATÉRIA: {subject}
+CONTEÚDO JÁ ESTUDADO PELO OUVINTE: {topic}
+
+VOCÊ ESTÁ ESCREVENDO O BLOCO {block_index + 1} DO DRILL: {block['title']}
+
+O QUE ESTE BLOCO PRECISA FAZER:
+{block['brief']}
+
+BASE LEGAL (a mesma da aula que ele já ouviu — use para formular as perguntas,
+NÃO para reexplicar):
+{material[:9000]}
+
+Escreva no mínimo {DRILL_WORDS_PER_BLOCK} palavras. Lembre: pergunta, espera,
+confirmação curta. Se você começar a ensinar, você errou o formato.
+
+Responda em JSON:
+{{"turns": [{{"speaker": "{HOST_A}", "text": "fala"}}, {{"speaker": "{HOST_B}", "text": "fala"}}]}}"""
+
+    try:
+        data = await llm_service.chat_json(
+            [
+                {"role": "system", "content": DRILL_SYSTEM},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.8,
+            max_tokens=4000,
+        )
+    except Exception as e:
+        logger.error(f"[DRILL] Bloco {block_index} de '{topic}' falhou: {e}")
+        return []
+
+    turns = []
+    for t in data.get("turns") or []:
+        if not isinstance(t, dict):
+            continue
+        text = (t.get("text") or "").strip()
+        if not text:
+            continue
+        speaker = (t.get("speaker") or "").strip().upper()
+        speaker = HOST_B if speaker.startswith(HOST_B[:3]) else HOST_A
+        turns.append({"speaker": speaker, "text": text, "block": block_index})
+    return turns
+
+
+async def generate_drill(topic: str, subject: str, articles: list[dict]) -> dict:
+    """Gera o drill de recuperação da volta, sobre o material da aula da ida."""
+    material = _format_articles(articles, full_text=False)
+    blocks = _drill_briefs(topic)
+
+    results = await asyncio.gather(*[
+        _generate_drill_block(topic, subject, i, b, material)
+        for i, b in enumerate(blocks)
+    ])
+
+    turns: list[dict] = []
+    for block_turns in results:
+        turns.extend(block_turns)
+
+    filled = sorted({t["block"] for t in turns})
+    return {
+        "topic": topic,
+        "turns": turns,
+        "blocks": filled,
+        "segment_count": len(filled),
+        "duration_secs": estimate_duration_secs(turns),
+        "word_count": sum(len(t["text"].split()) for t in turns),
+    }

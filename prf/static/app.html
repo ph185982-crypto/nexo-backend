@@ -1349,12 +1349,12 @@ function viewDashboard() {
         const icon = b.block_type === 'questions' ? I.book :
           b.block_type === 'review' ? I.refresh :
           b.block_type === 'legal_reading' ? I.scale :
-          b.block_type === 'podcast' ? I.headphones :
+          (b.block_type === 'podcast' || b.block_type === 'podcast_drill') ? I.headphones :
           b.block_type === 'error_review' ? I.brain : I.target;
         const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
           b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
           b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
-          b.block_type === 'podcast' ? `startMissionBlock(${i},'podcast')` :
+          (b.block_type === 'podcast' || b.block_type === 'podcast_drill') ? `startMissionBlock(${i},'podcast')` :
           b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
           `startMissionBlock(${i},'practice')`;
         return `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">

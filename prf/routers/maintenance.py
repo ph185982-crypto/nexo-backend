@@ -530,86 +530,241 @@ Responda em JSON:
 
 # ── Podcast (episódios em diálogo para o deslocamento) ──────────────────────
 
+def _build_units(topics: list[dict]) -> list[dict]:
+    """Agrupa os tópicos em unidades de aula.
+
+    Tópico magro entra no agrupamento curado (TOPIC_CLUSTERS); os demais
+    viram unidade sozinhos. A unidade é a coisa que vira uma série de aulas.
+    """
+    from prf.seeds.topic_clusters import cluster_for_topic
+
+    by_slug = {(t["subject_slug"], t["slug"]): t for t in topics}
+    units: dict[str, dict] = {}
+
+    for t in topics:
+        cluster = cluster_for_topic(t["subject_slug"], t["slug"])
+        if cluster:
+            name, slugs = cluster
+            key = f"{t['subject_slug']}:{name}"
+            membros = [by_slug[(t["subject_slug"], sl)] for sl in slugs
+                       if (t["subject_slug"], sl) in by_slug]
+        else:
+            name = t["name"]
+            key = f"{t['subject_slug']}:{t['slug']}"
+            membros = [t]
+
+        if key in units:
+            continue
+        units[key] = {
+            "unit_slug": key,
+            "name": name,
+            "subject_id": membros[0]["subject_id"],
+            "subject_name": membros[0]["subject_name"],
+            "topic_id": membros[0]["id"],          # tópico âncora
+            "topic_ids": [m["id"] for m in membros],
+            "peso": membros[0]["peso"],
+            "chars": sum(m["chars"] for m in membros),
+        }
+
+    return sorted(units.values(), key=lambda u: (-u["peso"], -u["chars"]))
+
+
 @router.post("/podcast/generate")
 async def generate_podcast_episode(
-    topic_id: UUID | None = Query(None, description="Tópico; se omitido, pega o próximo sem episódio"),
-    replace: bool = Query(False, description="Desativa episódio anterior do tópico antes de gerar"),
+    unit_slug: str | None = Query(None, description="Unidade; se omitido, pega a próxima pendente"),
     x_maintenance_token: str | None = Header(default=None),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Gera uma aula de ~35 min em diálogo sobre UM tópico do edital.
+    """Gera a próxima AULA pendente (a da ida, ~40 min).
 
-    Um episódio por chamada: são oito blocos de roteiro via LLM e o tempo da
-    função não comporta mais. Sem topic_id escolhe sozinho o próximo tópico
-    pendente, do mais pesado para o mais leve, então dá para chamar em loop
-    até cobrir a grade inteira.
+    Uma parte por chamada: são oito blocos de roteiro via LLM e o tempo da
+    função não comporta mais. Chame em loop até `remaining` zerar.
     """
     _require_admin(x_maintenance_token)
 
     from prf.services import podcast_service
 
-    if topic_id:
-        topic = await repo._fetchrow(
-            """SELECT t.id, t.name, t.slug, t.subject_id, s.name AS subject_name
-                 FROM topics t JOIN subjects s ON s.id = t.subject_id
-                WHERE t.id = $1""",
-            topic_id,
-        )
-    else:
-        topic = await repo.get_next_topic_without_episode(is_pm=True)
+    topics = await repo.get_topics_for_podcast(is_pm=True)
+    units = _build_units([dict(t) for t in topics])
+    if unit_slug:
+        units = [u for u in units if u["unit_slug"] == unit_slug]
+    if not units:
+        return {"generated": False, "reason": "Unidade não encontrada"}
 
-    if not topic:
-        return {"generated": False, "reason": "Nenhum tópico pendente de episódio"}
+    existing = await repo.get_existing_episode_units()
+    feitas = {(e["unit_slug"], e["part"]) for e in existing if e["kind"] == "aula"}
 
-    if replace:
-        await repo._execute(
-            "UPDATE podcast_episodes SET is_active = FALSE WHERE topic_id = $1",
-            topic["id"],
-        )
+    alvo = None
+    pendentes = 0
+    for u in units:
+        artigos = await repo.get_articles_for_topics(u["topic_ids"], limit=300)
+        partes = podcast_service.plan_parts([dict(a) for a in artigos])
+        u["partes"] = partes
+        for i in range(len(partes)):
+            if (u["unit_slug"], i + 1) not in feitas:
+                pendentes += 1
+                if alvo is None:
+                    alvo = (u, i + 1, partes[i], len(partes))
 
-    articles = await repo.get_articles_for_topic(topic["id"], limit=22)
-    if not articles:
-        return {
-            "generated": False,
-            "reason": "Tópico sem artigos de lei mapeados",
-            "topic": topic["name"],
-        }
+    if alvo is None:
+        return {"generated": False, "reason": "Nenhuma aula pendente", "remaining": 0}
+
+    u, part, artigos_da_parte, total_parts = alvo
+    titulo = u["name"] if total_parts == 1 else f"{u['name']} — Parte {part} de {total_parts}"
 
     episode = await podcast_service.generate_episode(
-        topic["name"], topic["subject_name"], [dict(a) for a in articles]
+        titulo, u["subject_name"], artigos_da_parte
     )
-
     if not episode["turns"]:
         raise HTTPException(503, "Geração de roteiro falhou — verifique a chave do provedor de IA")
 
     mins = round(episode["duration_secs"] / 60)
     saved = await repo.create_podcast_episode({
-        "subject_id": topic["subject_id"],
-        "topic_id": topic["id"],
-        "title": topic["name"],
-        "topic": topic["name"],
+        "subject_id": u["subject_id"],
+        "topic_id": u["topic_id"],
+        "title": titulo,
+        "topic": u["name"],
         "description": (
-            f"{topic['subject_name']} · aula de {mins} min com leitura comentada "
-            f"da lei, casos de rua e revisão por perguntas."
+            f"{u['subject_name']} · aula de {mins} min com leitura comentada da "
+            f"lei, casos de rua e revisão por perguntas."
         ),
         "turns": episode["turns"],
         "segment_count": episode["segment_count"],
         "duration_secs": episode["duration_secs"],
         "word_count": episode["word_count"],
+        "kind": "aula",
+        "part": part,
+        "total_parts": total_parts,
+        "unit_slug": u["unit_slug"],
     })
-
-    remaining = await repo.count_topics_without_episode(is_pm=True)
 
     return {
         "generated": True,
+        "kind": "aula",
         "episode_id": str(saved.get("id")),
-        "subject": topic["subject_name"],
-        "topic": topic["name"],
-        "segments": episode["segment_count"],
+        "subject": u["subject_name"],
+        "unit": u["name"],
+        "part": f"{part}/{total_parts}",
         "duration_mins": mins,
         "words": episode["word_count"],
-        "articles_used": len(articles),
-        "remaining_topics": remaining,
+        "articles_used": len(artigos_da_parte),
+        "remaining": pendentes - 1,
+    }
+
+
+@router.post("/podcast/generate-drill")
+async def generate_podcast_drill(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Gera o DRILL da volta (~22 min) para a próxima aula que ainda não tem.
+
+    Vai em chamada separada da aula porque, juntas, as doze chamadas ao LLM
+    (oito da aula + quatro do drill) passam do tempo limite da função.
+    """
+    _require_admin(x_maintenance_token)
+
+    from prf.services import podcast_service
+
+    aula = await repo.get_aula_without_drill()
+    if not aula:
+        return {"generated": False, "reason": "Nenhuma aula sem drill", "remaining": 0}
+
+    topics = await repo.get_topics_for_podcast(is_pm=True)
+    units = _build_units([dict(t) for t in topics])
+    unidade = next((u for u in units if u["unit_slug"] == aula["unit_slug"]), None)
+    if not unidade:
+        raise HTTPException(404, f"Unidade '{aula['unit_slug']}' não encontrada")
+
+    artigos = await repo.get_articles_for_topics(unidade["topic_ids"], limit=300)
+    partes = podcast_service.plan_parts([dict(a) for a in artigos])
+    idx = (aula["part"] or 1) - 1
+    if idx >= len(partes):
+        raise HTTPException(400, "Parte da aula não existe mais no plano atual")
+
+    drill = await podcast_service.generate_drill(
+        aula["title"], aula.get("subject_name") or unidade["subject_name"], partes[idx]
+    )
+    if not drill["turns"]:
+        raise HTTPException(503, "Geração do drill falhou — verifique a chave do provedor de IA")
+
+    mins = round(drill["duration_secs"] / 60)
+    saved = await repo.create_podcast_episode({
+        "subject_id": aula["subject_id"],
+        "topic_id": aula["topic_id"],
+        "title": f"Drill — {aula['title']}",
+        "topic": aula["topic"],
+        "description": (
+            f"Recuperação de {mins} min sobre a aula da ida: perguntas, pausa "
+            f"para você responder e confirmação curta."
+        ),
+        "turns": drill["turns"],
+        "segment_count": drill["segment_count"],
+        "duration_secs": drill["duration_secs"],
+        "word_count": drill["word_count"],
+        "kind": "drill",
+        "part": aula["part"],
+        "total_parts": aula["total_parts"],
+        "parent_episode_id": aula["id"],
+        "unit_slug": aula["unit_slug"],
+    })
+
+    restantes = await repo._fetchval(
+        """SELECT COUNT(*) FROM podcast_episodes pe
+            WHERE pe.is_active AND pe.kind = 'aula'
+              AND NOT EXISTS (SELECT 1 FROM podcast_episodes d
+                               WHERE d.parent_episode_id = pe.id
+                                 AND d.kind = 'drill' AND d.is_active)"""
+    )
+
+    return {
+        "generated": True,
+        "kind": "drill",
+        "episode_id": str(saved.get("id")),
+        "for_aula": aula["title"],
+        "duration_mins": mins,
+        "words": drill["word_count"],
+        "remaining": restantes,
+    }
+
+
+@router.get("/podcast/plan")
+async def podcast_plan(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """O plano completo: unidades, quantas partes cada uma e o que já existe."""
+    _require_admin(x_maintenance_token)
+
+    from prf.services import podcast_service
+
+    topics = await repo.get_topics_for_podcast(is_pm=True)
+    units = _build_units([dict(t) for t in topics])
+    existing = await repo.get_existing_episode_units()
+    feitas = {(e["unit_slug"], e["part"]) for e in existing if e["kind"] == "aula"}
+
+    linhas, total_partes, total_mins = [], 0, 0
+    for u in units:
+        artigos = await repo.get_articles_for_topics(u["topic_ids"], limit=300)
+        partes = podcast_service.plan_parts([dict(a) for a in artigos])
+        prontas = sum(1 for i in range(len(partes)) if (u["unit_slug"], i + 1) in feitas)
+        total_partes += len(partes)
+        total_mins += len(partes) * 40
+        linhas.append({
+            "subject": u["subject_name"],
+            "unit": u["name"],
+            "topics": len(u["topic_ids"]),
+            "kchars": round(u["chars"] / 1000, 1),
+            "parts": len(partes),
+            "done": prontas,
+        })
+
+    return {
+        "units": linhas,
+        "total_units": len(units),
+        "total_parts": total_partes,
+        "estimated_hours_aula": round(total_mins / 60, 1),
+        "estimated_hours_drill": round(total_partes * 22 / 60, 1),
     }
 
 

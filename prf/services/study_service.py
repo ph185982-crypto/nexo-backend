@@ -147,7 +147,9 @@ class StudyService:
             topic = await self.repo.pick_study_topic(user_id, p.subject_id)
             if not topic:
                 continue
-            episode_ids = await self.repo.get_episode_ids_for_topic(topic["id"], limit=1)
+            aula = await self.repo.get_next_aula_for_topic(topic["id"])
+            episode_ids = [aula["id"]] if aula else []
+            drill_id = await self.repo.get_drill_for_aula(aula["id"]) if aula else None
             article_ids = await self.repo.get_legal_article_ids_by_topic(
                 topic["id"], limit=15, user_id=user_id,
             )
@@ -160,6 +162,8 @@ class StudyService:
                 "topic_id": topic["id"],
                 "topic_name": topic["name"],
                 "episode_ids": episode_ids,
+                "episode_mins": round((aula or {}).get("duration_secs", 2400) / 60) or 40,
+                "drill_ids": [drill_id] if drill_id else [],
                 "article_ids": article_ids,
                 "question_ids": topic_question_ids,
             }

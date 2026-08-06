@@ -141,6 +141,36 @@ MIGRATIONS: list[tuple[str, str]] = [
         "ON podcast_episodes(topic_id)",
     ),
     (
+        "podcast_episode_kind",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS kind TEXT DEFAULT 'aula'",
+    ),
+    (
+        "podcast_episode_part",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS part INTEGER DEFAULT 1",
+    ),
+    (
+        "podcast_episode_total_parts",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS total_parts INTEGER DEFAULT 1",
+    ),
+    (
+        # O drill da volta aponta para a aula da ida: é o mesmo conteúdo em
+        # outro formato, e a missão precisa do par para montar o dia.
+        "podcast_episode_parent",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS parent_episode_id "
+        "UUID REFERENCES podcast_episodes(id) ON DELETE CASCADE",
+    ),
+    (
+        # Unidade de aula: um tópico sozinho ou um agrupamento de tópicos
+        # (TOPIC_CLUSTERS). topic_id continua sendo o tópico âncora.
+        "podcast_episode_unit",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS unit_slug TEXT",
+    ),
+    (
+        "idx_podcast_episodes_unit",
+        "CREATE INDEX IF NOT EXISTS idx_podcast_episodes_unit "
+        "ON podcast_episodes(unit_slug, part, kind)",
+    ),
+    (
         # block_type era um ENUM do Postgres e a etapa de aula em áudio não
         # cabia nele. Adicionar o valor não basta: o asyncpg introspecta e
         # guarda os valores do enum por conexão, então as conexões que já

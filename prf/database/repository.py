@@ -1055,14 +1055,19 @@ class PRFRepository:
         row = await self._fetchrow(
             """INSERT INTO podcast_episodes
                    (subject_id, topic_id, title, topic, description, turns,
-                    segment_count, duration_secs, word_count)
-               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9)
-               RETURNING id, subject_id, topic_id, title, topic, description,
-                         segment_count, duration_secs, word_count, created_at""",
+                    segment_count, duration_secs, word_count,
+                    kind, part, total_parts, parent_episode_id, unit_slug)
+               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9,
+                       $10, $11, $12, $13, $14)
+               RETURNING id, subject_id, topic_id, title, topic, kind, part,
+                         total_parts, segment_count, duration_secs, word_count""",
             data.get("subject_id"), data.get("topic_id"), data["title"], data["topic"],
             data.get("description"), json.dumps(data.get("turns", [])),
             data.get("segment_count", 0), data.get("duration_secs", 0),
             data.get("word_count", 0),
+            data.get("kind", "aula"), data.get("part", 1),
+            data.get("total_parts", 1), data.get("parent_episode_id"),
+            data.get("unit_slug"),
         )
         return dict(row) if row else {}
 
@@ -1111,6 +1116,99 @@ class PRFRepository:
                 ORDER BY la.frequency_score DESC, la.display_order
                 LIMIT $2""",
             topic_id, limit,
+        )
+
+    async def get_topics_for_podcast(self, is_pm: bool = True) -> list[dict]:
+        """Tópicos com lei mapeada, com volume de material e slug da matéria.
+
+        O volume é o insumo do plano de partes: quem decide a duração da aula
+        é a quantidade de texto legal a ler e comentar, não o número de artigos.
+        """
+        weight_col = "weight_pm" if is_pm else "weight_prf"
+        return await self._fetch(
+            f"""SELECT t.id, t.name, t.slug, t.subject_id,
+                       s.name AS subject_name, s.slug AS subject_slug,
+                       s.{weight_col} AS peso,
+                       COUNT(la.id) AS artigos,
+                       COALESCE(SUM(length(la.official_text)), 0) AS chars
+                  FROM topics t
+                  JOIN subjects s ON s.id = t.subject_id
+                  JOIN legal_articles la ON la.topic_id = t.id
+                 WHERE t.is_active AND s.{weight_col} > 0
+                 GROUP BY t.id, t.name, t.slug, t.subject_id, s.name, s.slug, s.{weight_col}
+                 ORDER BY s.{weight_col} DESC, t.display_order"""
+        )
+
+    async def get_articles_for_topics(
+        self, topic_ids: list[UUID], limit: int = 200
+    ) -> list[dict]:
+        """Artigos de uma unidade de aula, ordenados por incidência na prova.
+
+        A ordem importa porque o plano de partes corta no teto: o que fica
+        dentro das primeiras partes tem de ser o material mais cobrado. A
+        contagem de questões que citam o artigo entra junto do
+        frequency_score porque este último nem sempre está preenchido.
+        """
+        return await self._fetch(
+            """SELECT la.id, la.article_number, la.title, la.official_text,
+                      la.simple_text, la.frequency_score, ld.name AS document_name,
+                      (SELECT COUNT(*) FROM questions q
+                        WHERE q.legal_article_id = la.id AND q.is_active) AS n_questoes
+                 FROM legal_articles la
+                 JOIN legal_documents ld ON ld.id = la.document_id
+                WHERE la.topic_id = ANY($1::uuid[])
+                  AND la.official_text IS NOT NULL AND length(la.official_text) > 40
+                ORDER BY (SELECT COUNT(*) FROM questions q
+                           WHERE q.legal_article_id = la.id AND q.is_active) DESC,
+                         la.frequency_score DESC,
+                         la.display_order
+                LIMIT $2""",
+            topic_ids, limit,
+        )
+
+    async def get_existing_episode_units(self) -> list[dict]:
+        return await self._fetch(
+            """SELECT unit_slug, part, kind, id, topic_id
+                 FROM podcast_episodes
+                WHERE is_active = TRUE AND unit_slug IS NOT NULL"""
+        )
+
+    async def get_aula_without_drill(self) -> Optional[dict]:
+        """Próxima aula que ainda não tem o drill da volta."""
+        return await self._fetchrow(
+            """SELECT pe.id, pe.title, pe.topic, pe.subject_id, pe.topic_id,
+                      pe.unit_slug, pe.part, pe.total_parts,
+                      s.name AS subject_name
+                 FROM podcast_episodes pe
+                 LEFT JOIN subjects s ON s.id = pe.subject_id
+                WHERE pe.is_active AND pe.kind = 'aula'
+                  AND NOT EXISTS (
+                      SELECT 1 FROM podcast_episodes d
+                       WHERE d.parent_episode_id = pe.id
+                         AND d.kind = 'drill' AND d.is_active)
+                ORDER BY pe.created_at
+                LIMIT 1"""
+        )
+
+    async def get_drill_for_aula(self, aula_id: UUID) -> Optional[UUID]:
+        return await self._fetchval(
+            """SELECT id FROM podcast_episodes
+                WHERE parent_episode_id = $1 AND kind = 'drill' AND is_active
+                LIMIT 1""",
+            aula_id,
+        )
+
+    async def get_next_aula_for_topic(
+        self, topic_id: UUID, user_id: UUID | None = None
+    ) -> Optional[dict]:
+        """Próxima aula do tópico na ordem das partes."""
+        return await self._fetchrow(
+            """SELECT id, title, part, total_parts, duration_secs
+                 FROM podcast_episodes
+                WHERE topic_id = $1 AND kind = 'aula' AND is_active
+                ORDER BY part
+                LIMIT 1""",
+            topic_id,
         )
 
     async def get_episode_ids_for_topic(self, topic_id: UUID, limit: int = 2) -> list[UUID]:
