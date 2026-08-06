@@ -141,11 +141,15 @@ MIGRATIONS: list[tuple[str, str]] = [
         "ON podcast_episodes(topic_id)",
     ),
     (
-        # block_type é ENUM: sem este valor, gravar a etapa de aula em áudio
-        # da missão estoura com InvalidTextRepresentation e derruba a
-        # geração inteira da missão.
-        "block_type_podcast",
-        "ALTER TYPE block_type ADD VALUE IF NOT EXISTS 'podcast'",
+        # block_type era um ENUM do Postgres e a etapa de aula em áudio não
+        # cabia nele. Adicionar o valor não basta: o asyncpg introspecta e
+        # guarda os valores do enum por conexão, então as conexões que já
+        # estavam no pool continuam recusando o valor novo até reciclarem.
+        # Virar TEXT resolve o caso de hoje e tira a necessidade de migração
+        # (e de reciclar pool) a cada novo tipo de bloco.
+        "block_type_to_text",
+        "ALTER TABLE mission_blocks ALTER COLUMN block_type TYPE TEXT "
+        "USING block_type::text",
     ),
 ]
 

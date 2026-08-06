@@ -14,7 +14,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Header, Query
 
-from prf.routers.deps import get_repo
+from prf.routers.deps import get_repo, get_study_service
 from prf.database.repository import PRFRepository
 from prf.services import llm_service
 
@@ -633,3 +633,68 @@ async def retire_subject_level_episodes(
            SELECT COUNT(*) FROM r"""
     )
     return {"retired": n or 0}
+
+
+@router.get("/diag/mission")
+async def diagnose_mission_schema(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Diagnóstico do schema que a missão grava.
+
+    Existe porque um 500 na geração da missão não diz qual coluna recusou o
+    valor — e a resposta de erro do serverless não carrega o traceback.
+    """
+    _require_admin(x_maintenance_token)
+
+    col = await repo._fetchrow(
+        """SELECT data_type, udt_name FROM information_schema.columns
+            WHERE table_name = 'mission_blocks' AND column_name = 'block_type'"""
+    )
+    enum_vals = await repo._fetch(
+        """SELECT e.enumlabel FROM pg_enum e
+             JOIN pg_type t ON t.oid = e.enumtypid
+            WHERE t.typname = 'block_type' ORDER BY e.enumsortorder"""
+    )
+    episodes = await repo._fetchval(
+        "SELECT COUNT(*) FROM podcast_episodes WHERE is_active AND topic_id IS NOT NULL"
+    )
+    topics_with_audio = await repo._fetchval(
+        """SELECT COUNT(DISTINCT topic_id) FROM podcast_episodes
+            WHERE is_active AND topic_id IS NOT NULL"""
+    )
+    return {
+        "block_type_column": dict(col) if col else None,
+        "block_type_enum_values": [r["enumlabel"] for r in enum_vals],
+        "topic_episodes_active": episodes,
+        "topics_with_audio": topics_with_audio,
+    }
+
+
+@router.post("/diag/mission-build")
+async def diagnose_mission_build(
+    user_email: str = Query(..., description="E-mail do usuário para simular a geração"),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+    study=Depends(get_study_service),
+):
+    """Roda a geração da missão devolvendo o traceback em caso de erro."""
+    _require_admin(x_maintenance_token)
+
+    user = await repo._fetchrow("SELECT id FROM prf_users WHERE email = $1", user_email)
+    if not user:
+        raise HTTPException(404, "Usuário não encontrado")
+
+    import traceback
+    try:
+        mission = await study.generate_daily_mission(user["id"], force=True)
+        return {
+            "ok": True,
+            "blocks": [
+                {"type": b["block_type"], "title": b["title"]}
+                for b in (mission or {}).get("blocks", [])
+            ],
+        }
+    except Exception as e:
+        return {"ok": False, "error": f"{type(e).__name__}: {e}",
+                "trace": traceback.format_exc()[-2000:]}
