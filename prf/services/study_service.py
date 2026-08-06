@@ -138,6 +138,32 @@ class StudyService:
             if a_ids:
                 legal_pool[p.subject_id] = a_ids
 
+        # Tópico do dia por matéria: é ele que amarra a aula em áudio do
+        # deslocamento à lei seca e às questões da noite. Sem isso cada
+        # etapa da missão caía num assunto diferente.
+        qtype = "multipla_escolha" if is_pm else "certo_errado"
+        topic_plan: dict = {}
+        for p in priorities[:4]:
+            topic = await self.repo.pick_study_topic(user_id, p.subject_id)
+            if not topic:
+                continue
+            episode_ids = await self.repo.get_episode_ids_for_topic(topic["id"], limit=1)
+            article_ids = await self.repo.get_legal_article_ids_by_topic(
+                topic["id"], limit=15, user_id=user_id,
+            )
+            topic_question_ids = await self.repo.get_question_ids_by_topic(
+                topic["id"], subject_id=p.subject_id, limit=12, question_type=qtype,
+            )
+            if not (episode_ids or article_ids):
+                continue
+            topic_plan[p.subject_id] = {
+                "topic_id": topic["id"],
+                "topic_name": topic["name"],
+                "episode_ids": episode_ids,
+                "article_ids": article_ids,
+                "question_ids": topic_question_ids,
+            }
+
         mission = build_mission(
             priorities=priorities,
             context=ctx,
@@ -148,6 +174,7 @@ class StudyService:
             question_pool=question_pool,
             legal_article_ids=legal_pool,
             is_pm=is_pm,
+            topic_plan=topic_plan,
         )
 
         db_mission = await self.repo.create_mission(user_id, {

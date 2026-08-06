@@ -87,6 +87,12 @@ _RISK_LABELS = {
     "baixo": "Risco baixo",
 }
 
+# Duas aulas por dia, uma para cada trecho do deslocamento (ida e volta).
+MAX_AUDIO_LESSONS = 2
+# Teto de lei seca por missão: matéria nova não pode engolir a noite toda
+# em teoria, questão sempre precisa entrar na jornada do dia.
+MAX_LEGAL_READING = 2
+
 
 def build_mission(
     priorities: list[PriorityResult],
@@ -98,25 +104,37 @@ def build_mission(
     question_pool: dict[UUID, list[UUID]] | None = None,
     legal_article_ids: dict[UUID, list[UUID]] | None = None,
     is_pm: bool = False,
+    topic_plan: dict[UUID, dict] | None = None,
 ) -> Mission:
     """
-    Build a complete daily mission from priority results and available content.
+    Monta a missão do dia a partir das prioridades e do conteúdo disponível.
+
+    A missão segue o dia real do candidato: as aulas em áudio vão na frente
+    porque são ouvidas no deslocamento, e a lei seca e as questões daquele
+    MESMO tópico vêm depois, para a noite. Ouvir, ler e praticar o mesmo
+    assunto no mesmo dia é o que fixa — antes disso cada etapa caía num
+    assunto diferente e o dia não fechava em lugar nenhum.
 
     Args:
-        priorities: ranked subjects from the priority engine
-        context: user's current study context
-        reviews_due: number of review cards due
-        review_card_ids: IDs of due review cards
-        error_flashcard_ids: IDs of flashcards generated from errors
-        commute_lesson_ids: IDs of audio lessons for commute
-        question_pool: {subject_id: [question_ids]} available questions
-        legal_article_ids: {subject_id: [article_ids]} articles to read
+        priorities: matérias ranqueadas pelo Impact Score
+        context: contexto de estudo do usuário
+        reviews_due: quantidade de cartões de revisão vencidos
+        review_card_ids: ids dos cartões vencidos
+        error_flashcard_ids: flashcards gerados a partir dos erros
+        commute_lesson_ids: aulas de áudio antigas (formato locução única)
+        question_pool: {subject_id: [question_ids]} fallback por matéria
+        legal_article_ids: {subject_id: [article_ids]} fallback por matéria
+        is_pm: certame da PM, muda o formato das questões e o simulado
+        topic_plan: {subject_id: {topic_id, topic_name, episode_ids,
+                    article_ids, question_ids}} — o tópico do dia de cada
+                    matéria, que amarra áudio, lei seca e questões
     """
     review_card_ids = review_card_ids or []
     error_flashcard_ids = error_flashcard_ids or []
     commute_lesson_ids = commute_lesson_ids or []
     question_pool = question_pool or {}
     legal_article_ids = legal_article_ids or {}
+    topic_plan = topic_plan or {}
 
     blocks: list[MissionBlock] = []
     remaining_mins = context.available_minutes
@@ -125,7 +143,6 @@ def build_mission(
     energy = context.energy
     mode = context.mode
 
-    # Determine greeting
     import random
     if mode == StudyMode.COMMUTE:
         greeting = random.choice(COMMUTE_GREETINGS)
@@ -133,7 +150,7 @@ def build_mission(
         pool = GREETINGS_BY_ENERGY.get(energy, GREETINGS_BY_ENERGY[EnergyLevel.MEDIUM])
         greeting = random.choice(pool)
 
-    # 1. REVIEWS — always come first
+    # 1. REVISÕES — sempre primeiro
     if reviews_due > 0 and remaining_mins >= 5:
         review_mins = _clamp_block_mins(min(reviews_due * 2, 15), remaining_mins, mode)
         count = min(reviews_due, review_mins * 2)
@@ -149,85 +166,121 @@ def build_mission(
         order += 1
         remaining_mins -= review_mins
 
-    # 2. MAIN SUBJECT BLOCKS — interleaved from top priorities
-    subjects_used = 0
+    # 2. AULAS EM ÁUDIO — duas por dia, uma para cada trecho do deslocamento.
+    # Não descontam de remaining_mins: são ouvidas no carro, não roubam o
+    # tempo de estudo da noite, que é o que esse orçamento representa.
+    audio_topics: list[tuple[PriorityResult, dict]] = []
+    for p in priorities:
+        if len(audio_topics) >= MAX_AUDIO_LESSONS:
+            break
+        plan = topic_plan.get(p.subject_id)
+        if plan and plan.get("episode_ids"):
+            audio_topics.append((p, plan))
+
+    for i, (p, plan) in enumerate(audio_topics):
+        trecho = "ida para o trabalho" if i == 0 else "volta para casa"
+        blocks.append(MissionBlock(
+            block_type="podcast",
+            subject_id=p.subject_id,
+            subject_name=p.subject_name,
+            topic_id=plan.get("topic_id"),
+            title=f"Aula em áudio — {plan.get('topic_name') or p.subject_name}",
+            description=f"Ouça na {trecho}. À noite você lê a lei desse mesmo tópico.",
+            estimated_mins=plan.get("episode_mins") or 35,
+            display_order=order,
+            content_ids=plan["episode_ids"][:1],
+            mode="commute",
+        ))
+        order += 1
+
+    audio_subject_ids = {p.subject_id for p, _ in audio_topics}
+
+    # 3. ESTUDO DA NOITE — lei seca e questões do MESMO tópico do áudio.
+    # As matérias que tiveram áudio vêm primeiro e sempre nesse par, porque
+    # é o encadeamento que o dia inteiro está construindo.
     legal_reading_used = 0
     max_subjects = 3 if remaining_mins >= 30 else 2 if remaining_mins >= 15 else 1
-    # Tampa lei seca em 2 por missão — matéria nova não pode engolir o tempo
-    # todo só com teoria, questão sempre entra na jornada do dia.
-    MAX_LEGAL_READING = 2
 
-    for p in priorities[:max_subjects]:
+    ordered = [p for p in priorities if p.subject_id in audio_subject_ids]
+    ordered += [p for p in priorities if p.subject_id not in audio_subject_ids]
+
+    for p in ordered[:max_subjects]:
         if remaining_mins < 5:
             break
 
-        fmt = p.recommended_format
+        plan = topic_plan.get(p.subject_id) or {}
+        topic_label = plan.get("topic_name") or p.subject_name
+        heard = p.subject_id in audio_subject_ids
+        risk_tag = _RISK_LABELS.get(p.risk_level, "Risco médio")
+
+        a_ids = plan.get("article_ids") or legal_article_ids.get(p.subject_id) or []
+        q_ids = plan.get("question_ids") or question_pool.get(p.subject_id) or []
+
+        # Matéria que teve áudio hoje sempre fecha o ciclo com lei seca +
+        # questões; nas demais, o formato continua sendo decidido pelo motor
+        # de prioridade.
+        fmt = "legal_reading" if heard else p.recommended_format
         if fmt == "legal_reading" and legal_reading_used >= MAX_LEGAL_READING:
             fmt = "questions"
         block_mins = _clamp_block_mins(p.recommended_mins, remaining_mins, mode)
-        risk_tag = _RISK_LABELS.get(p.risk_level, "Risco médio")
 
-        if fmt == "questions" and p.subject_id in question_pool:
-            q_count = max(3, block_mins // 3)
-            q_ids = question_pool[p.subject_id][:q_count]
-            if q_ids:
+        if fmt == "legal_reading" and a_ids:
+            a_count = max(5, block_mins // 2)
+            picked = a_ids[:a_count]
+            blocks.append(MissionBlock(
+                block_type="legal_reading",
+                subject_id=p.subject_id,
+                subject_name=p.subject_name,
+                topic_id=plan.get("topic_id"),
+                title=f"Lei seca — {topic_label} ({len(picked)} artigos)",
+                description=(
+                    "Leia a lei do tópico que você ouviu hoje de manhã."
+                    if heard else f"{risk_tag} · leia antes de validar com questões."
+                ),
+                estimated_mins=block_mins,
+                display_order=order,
+                content_ids=picked,
+                mode=mode.value,
+            ))
+            order += 1
+            remaining_mins -= block_mins
+            legal_reading_used += 1
+
+            # Validação imediata: ler sem praticar não fixa. Entra um bloco
+            # curto de questões do MESMO tópico, enquanto está fresco.
+            if remaining_mins >= 5 and q_ids:
+                val_mins = min(12, remaining_mins)
                 blocks.append(MissionBlock(
                     block_type="questions",
                     subject_id=p.subject_id,
                     subject_name=p.subject_name,
-                    title=f"Questões — {p.subject_name}",
-                    description=f"{risk_tag} · {p.reason}",
-                    estimated_mins=block_mins,
+                    topic_id=plan.get("topic_id"),
+                    title=f"Questões — {topic_label}",
+                    description="Pratique agora o que acabou de ouvir e ler.",
+                    estimated_mins=val_mins,
                     display_order=order,
-                    content_ids=q_ids,
+                    content_ids=q_ids[:8],
                     mode=mode.value,
                 ))
                 order += 1
-                remaining_mins -= block_mins
-                subjects_used += 1
+                remaining_mins -= val_mins
 
-        elif fmt == "legal_reading" and p.subject_id in legal_article_ids:
-            # ~2 min por artigo (texto oficial + explicação); mínimo de 5 para
-            # a sessão render valer a pena, sem exceder o pool disponível.
-            a_count = max(5, block_mins // 2)
-            a_ids = legal_article_ids[p.subject_id][:a_count]
-            if a_ids:
-                blocks.append(MissionBlock(
-                    block_type="legal_reading",
-                    subject_id=p.subject_id,
-                    subject_name=p.subject_name,
-                    title=f"Lei seca — {p.subject_name} ({len(a_ids)} artigos)",
-                    description=f"{risk_tag} · leia antes de validar com questões.",
-                    estimated_mins=block_mins,
-                    display_order=order,
-                    content_ids=a_ids,
-                    mode=mode.value,
-                ))
-                order += 1
-                remaining_mins -= block_mins
-                subjects_used += 1
-                legal_reading_used += 1
-
-                # Validação imediata: ler a lei sem praticar não fixa nada —
-                # logo depois da teoria entra um bloco curto de questões da
-                # MESMA matéria, ciclo diagnóstico → teoria → validação.
-                if remaining_mins >= 5 and p.subject_id in question_pool:
-                    val_mins = min(10, remaining_mins)
-                    val_ids = question_pool[p.subject_id][:5]
-                    if val_ids:
-                        blocks.append(MissionBlock(
-                            block_type="questions",
-                            subject_id=p.subject_id,
-                            subject_name=p.subject_name,
-                            title=f"Validação — {p.subject_name}",
-                            description="Pratique agora o que acabou de ler, enquanto está fresco.",
-                            estimated_mins=val_mins,
-                            display_order=order,
-                            content_ids=val_ids,
-                            mode=mode.value,
-                        ))
-                        order += 1
-                        remaining_mins -= val_mins
+        elif fmt == "questions" and q_ids:
+            q_count = max(3, block_mins // 3)
+            blocks.append(MissionBlock(
+                block_type="questions",
+                subject_id=p.subject_id,
+                subject_name=p.subject_name,
+                topic_id=plan.get("topic_id"),
+                title=f"Questões — {topic_label}",
+                description=f"{risk_tag} · {p.reason}",
+                estimated_mins=block_mins,
+                display_order=order,
+                content_ids=q_ids[:q_count],
+                mode=mode.value,
+            ))
+            order += 1
+            remaining_mins -= block_mins
 
         elif fmt == "flashcards":
             blocks.append(MissionBlock(
@@ -242,25 +295,8 @@ def build_mission(
             ))
             order += 1
             remaining_mins -= min(block_mins, 10)
-            subjects_used += 1
 
-        elif fmt == "audio" and commute_lesson_ids and not is_pm:
-            blocks.append(MissionBlock(
-                block_type="audio_lesson",
-                subject_id=p.subject_id,
-                subject_name=p.subject_name,
-                title=f"Áudio — {p.subject_name}",
-                description="Ouça e aprenda no deslocamento.",
-                estimated_mins=block_mins,
-                display_order=order,
-                content_ids=commute_lesson_ids[:2],
-                mode="commute",
-                is_optional=False,
-            ))
-            order += 1
-            remaining_mins -= block_mins
-
-    # 3. ERROR FLASHCARDS — if time remains
+    # 4. FLASHCARDS DE ERRO — se sobrar tempo
     if error_flashcard_ids and remaining_mins >= 5:
         err_mins = min(10, remaining_mins)
         blocks.append(MissionBlock(
@@ -276,21 +312,12 @@ def build_mission(
         order += 1
         remaining_mins -= err_mins
 
-    # 4. COMMUTE AUDIO — added separately if user has commute time (not for PM exams)
-    if not is_pm and mode != StudyMode.COMMUTE and commute_lesson_ids and context.available_minutes >= 30:
-        blocks.append(MissionBlock(
-            block_type="audio_lesson",
-            title="Áudio para o deslocamento",
-            description="Conteúdo preparado para ouvir no trânsito.",
-            estimated_mins=45,
-            display_order=order,
-            content_ids=commute_lesson_ids[:3],
-            is_optional=True,
-            mode="commute",
-        ))
-        order += 1
-
-    total_mins = sum(b.estimated_mins for b in blocks if not b.is_optional)
+    # O tempo estimado é o do estudo sentado; o áudio do deslocamento fica
+    # de fora para não inflar o que o candidato precisa reservar à noite.
+    total_mins = sum(
+        b.estimated_mins for b in blocks
+        if not b.is_optional and b.block_type != "podcast"
+    )
 
     return Mission(
         date=context.today,

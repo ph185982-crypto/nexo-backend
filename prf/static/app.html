@@ -453,7 +453,17 @@ button { font-family:inherit; }
 /* ── AUDIO ── */
 .audio-hero { padding:24px 20px 20px; }
 .pod-sub { font-size:13px; color:var(--ink-3); line-height:1.5; margin-top:8px; max-width:46ch; }
-.pod-list { padding:4px 20px 20px; display:flex; flex-direction:column; gap:10px; }
+.pod-list { padding:0 20px 8px; display:flex; flex-direction:column; gap:10px; }
+.pod-group { margin-bottom:18px; }
+.pod-group-head {
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:0 20px 10px; gap:10px;
+}
+.pod-group-name {
+  font-size:11px; font-weight:700; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--primary);
+}
+.pod-group-count { font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
 .pod-card {
   display:flex; align-items:center; gap:14px; padding:16px;
   background:var(--surface); border:1px solid var(--border);
@@ -1333,15 +1343,18 @@ function viewDashboard() {
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
       mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => {
         const done = b.is_completed;
-        const isAudio = b.block_type === 'audio' || b.block_type === 'audio_lesson';
-        if (isAudio) return ''; // sem conteúdo de áudio para PMGO
+        // Formato antigo de áudio (locução única) foi substituído pelas aulas
+        // em diálogo; só o bloco 'podcast' aparece.
+        if (b.block_type === 'audio' || b.block_type === 'audio_lesson') return '';
         const icon = b.block_type === 'questions' ? I.book :
           b.block_type === 'review' ? I.refresh :
           b.block_type === 'legal_reading' ? I.scale :
+          b.block_type === 'podcast' ? I.headphones :
           b.block_type === 'error_review' ? I.brain : I.target;
         const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
           b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
           b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
+          b.block_type === 'podcast' ? `startMissionBlock(${i},'podcast')` :
           b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
           `startMissionBlock(${i},'practice')`;
         return `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">
@@ -1669,24 +1682,33 @@ function viewAudio() {
         <span class="level-chip">${podMin} min</span>
       </div>` : ''}
     </div>
-    ${pods.length ? `<div class="pod-list">${pods.map(p => {
-      const active = S.podId === p.id;
-      const playing = active && S.audioPlaying;
-      return `<div class="pod-card ${active?'playing':''}" onclick="playPodcast('${p.id}')">
-        <div class="pod-play">${S.podLoading && active ? I.refresh : playing ? I.pause : I.play}</div>
-        <div class="pod-info">
-          <div class="pod-title">${esc(p.title)}</div>
-          <div class="pod-meta">
-            <span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span>
-            ${p.subject_name ? `<span>·</span><span>${esc(p.subject_name)}</span>` : ''}
-            <span>·</span><span>${p.segment_count||0} partes</span>
-          </div>
-          ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>` : ''}
+    ${pods.length ? Object.entries(pods.reduce((g, p) => {
+      const k = p.subject_name || 'Outros';
+      (g[k] = g[k] || []).push(p); return g;
+    }, {})).map(([subj, items]) => `
+      <div class="pod-group">
+        <div class="pod-group-head">
+          <span class="pod-group-name">${esc(subj)}</span>
+          <span class="pod-group-count">${items.length} aula${items.length===1?'':'s'}</span>
         </div>
-      </div>`;
-    }).join('')}</div>` : `<div class="empty" style="padding:24px 20px">${I.headphones}
-      <h3>Nenhum episódio ainda</h3>
-      <p>Os episódios de 30 min são gerados por matéria e aparecem aqui assim que ficam prontos.</p>
+        <div class="pod-list">${items.map(p => {
+          const active = S.podId === p.id;
+          const playing = active && S.audioPlaying;
+          return `<div class="pod-card ${active?'playing':''}" onclick="playPodcast('${p.id}')">
+            <div class="pod-play">${S.podLoading && active ? I.refresh : playing ? I.pause : I.play}</div>
+            <div class="pod-info">
+              <div class="pod-title">${esc(p.title)}</div>
+              <div class="pod-meta">
+                <span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span>
+                <span>·</span><span>${p.segment_count||0} partes</span>
+              </div>
+              ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')}</div>
+      </div>`).join('') : `<div class="empty" style="padding:24px 20px">${I.headphones}
+      <h3>Nenhuma aula ainda</h3>
+      <p>As aulas de 30 a 40 min são geradas por tópico do edital e aparecem aqui assim que ficam prontas.</p>
     </div>`}`;
 
   if (!lessons.length) return appbar() + missionContextBar() + podSection;
@@ -2206,11 +2228,17 @@ async function startMissionBlock(blockIdx, type) {
   } else if (type === 'legal') {
     await openMissionLegalReader(blockIdx);
     return;
+  } else if (type === 'podcast') {
+    const epId = b.content_ids?.[0];
+    if (!epId) { toast('Episódio indisponível', 'error'); return; }
+    switchTab('audio');
+    await playPodcast(epId);
+    return;
   } else {
     switchTab('practice');
   }
 }
-async function finishMissionBlock() {
+async function finishMissionBlock(advance = true) {
   const bid = S.missionBlockId;
   if (!bid) return;
   S.missionBlockId = null;
@@ -2221,7 +2249,10 @@ async function finishMissionBlock() {
   } catch (e) {}
   S.mission = null;
   await loadMission();
-  advanceToNextMissionBlock();
+  // A aula em áudio não encadeia na etapa seguinte: a segunda é para a
+  // volta do trabalho e a lei seca é para a noite, não para agora.
+  if (advance) advanceToNextMissionBlock();
+  else { S.activeMissionIdx = null; render(); }
 }
 function advanceToNextMissionBlock() {
   if (!S.mission || !S.mission.blocks) return;
@@ -2455,8 +2486,11 @@ audioEl.addEventListener('ended', () => {
     if (S.podSeq < S.pod.segment_count - 1) {
       playPodSegment(S.podSeq + 1);
     } else {
-      toast('Episódio concluído', 'success');
+      toast('Aula concluída', 'success');
       stopPodcast();
+      // Etapa da missão fecha aqui, mas sem puxar a próxima: a segunda
+      // aula é da volta e a lei seca é da noite.
+      if (S.missionBlockId) finishMissionBlock(false);
     }
     return;
   }

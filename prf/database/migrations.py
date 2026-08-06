@@ -130,6 +130,16 @@ MIGRATIONS: list[tuple[str, str]] = [
         "CREATE INDEX IF NOT EXISTS idx_podcast_episodes_subject "
         "ON podcast_episodes(subject_id)",
     ),
+    (
+        "podcast_episodes_topic_id",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS topic_id "
+        "UUID REFERENCES topics(id) ON DELETE SET NULL",
+    ),
+    (
+        "idx_podcast_episodes_topic",
+        "CREATE INDEX IF NOT EXISTS idx_podcast_episodes_topic "
+        "ON podcast_episodes(topic_id)",
+    ),
 ]
 
 

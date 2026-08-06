@@ -270,6 +270,34 @@ class PRFRepository:
         )
         return [r["id"] for r in rows]
 
+    async def get_question_ids_by_topic(
+        self, topic_id: UUID, subject_id: UUID | None = None,
+        limit: int = 20, question_type: str | None = None,
+    ) -> list[UUID]:
+        """Questões do tópico. Cai para a matéria inteira quando o tópico não
+        tem questões suficientes, porque a missão não pode ficar sem prática
+        só porque um recorte do edital está pouco povoado."""
+        rows = await self._fetch(
+            """SELECT id FROM questions
+                WHERE topic_id = $1 AND is_active = TRUE
+                  AND ($2::text IS NULL OR question_type = $2)
+                ORDER BY RANDOM() LIMIT $3""",
+            topic_id, question_type, limit,
+        )
+        ids = [r["id"] for r in rows]
+        if len(ids) >= 3 or subject_id is None:
+            return ids
+
+        extra = await self._fetch(
+            """SELECT id FROM questions
+                WHERE subject_id = $1 AND is_active = TRUE
+                  AND ($2::text IS NULL OR question_type = $2)
+                  AND NOT (id = ANY($3::uuid[]))
+                ORDER BY RANDOM() LIMIT $4""",
+            subject_id, question_type, ids, limit - len(ids),
+        )
+        return ids + [r["id"] for r in extra]
+
     # ── Question Attempts ─────────────────────────────────────────────────────
 
     async def record_attempt(self, user_id: UUID, data: dict) -> dict:
@@ -705,6 +733,64 @@ class PRFRepository:
         )
         return [r["id"] for r in rows]
 
+    async def get_legal_article_ids_by_topic(
+        self, topic_id: UUID, limit: int = 15, user_id: UUID | None = None,
+    ) -> list[UUID]:
+        """Artigos de um tópico para a lei seca, na mesma lógica de cobertura
+        usada por matéria: o que ainda não foi lido vem primeiro."""
+        if user_id is not None:
+            rows = await self._fetch(
+                """SELECT la.id FROM legal_articles la
+                   LEFT JOIN user_article_progress uap
+                     ON uap.article_id = la.id AND uap.user_id = $3
+                   WHERE la.topic_id = $1
+                   ORDER BY (uap.read_count IS NULL OR uap.read_count = 0) DESC,
+                            (la.simple_text IS NOT NULL AND la.simple_text != '') DESC,
+                            COALESCE(uap.read_count, 0) ASC,
+                            la.frequency_score DESC
+                   LIMIT $2""",
+                topic_id, limit, user_id,
+            )
+            return [r["id"] for r in rows]
+        rows = await self._fetch(
+            """SELECT id FROM legal_articles
+                WHERE topic_id = $1
+                ORDER BY (simple_text IS NOT NULL AND simple_text != '') DESC,
+                         frequency_score DESC
+                LIMIT $2""",
+            topic_id, limit,
+        )
+        return [r["id"] for r in rows]
+
+    async def pick_study_topic(self, user_id: UUID, subject_id: UUID) -> Optional[dict]:
+        """Escolhe o tópico do dia dentro de uma matéria.
+
+        Prioriza tópico que já tem episódio de áudio pronto e cujo material
+        ainda não foi lido — é o que permite a missão encadear o mesmo
+        assunto no áudio da ida, na lei seca da noite e nas questões
+        seguintes, em vez de pular de tema a cada etapa.
+        """
+        return await self._fetchrow(
+            """SELECT t.id, t.name, t.slug,
+                      COALESCE(SUM(CASE WHEN uap.read_count > 0 THEN 1 ELSE 0 END), 0) AS lidos,
+                      COUNT(la.id) AS total,
+                      EXISTS (SELECT 1 FROM podcast_episodes pe
+                               WHERE pe.topic_id = t.id AND pe.is_active = TRUE) AS tem_audio
+                 FROM topics t
+                 JOIN legal_articles la ON la.topic_id = t.id
+                 LEFT JOIN user_article_progress uap
+                        ON uap.article_id = la.id AND uap.user_id = $1
+                WHERE t.subject_id = $2 AND t.is_active
+                GROUP BY t.id, t.name, t.slug, t.weight, t.display_order
+               HAVING COUNT(la.id) > 0
+                ORDER BY tem_audio DESC,
+                         (COALESCE(SUM(CASE WHEN uap.read_count > 0 THEN 1 ELSE 0 END), 0)::real
+                          / GREATEST(COUNT(la.id), 1)) ASC,
+                         t.weight DESC, t.display_order
+                LIMIT 1""",
+            user_id, subject_id,
+        )
+
     async def toggle_bookmark(self, user_id: UUID, article_id: UUID, note: str | None = None) -> bool:
         existing = await self._fetchrow(
             "SELECT id FROM user_legal_bookmarks WHERE user_id = $1 AND article_id = $2",
@@ -968,17 +1054,73 @@ class PRFRepository:
         converte list/dict de Python para jsonb sozinho."""
         row = await self._fetchrow(
             """INSERT INTO podcast_episodes
-                   (subject_id, title, topic, description, turns,
+                   (subject_id, topic_id, title, topic, description, turns,
                     segment_count, duration_secs, word_count)
-               VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8)
-               RETURNING id, subject_id, title, topic, description,
+               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9)
+               RETURNING id, subject_id, topic_id, title, topic, description,
                          segment_count, duration_secs, word_count, created_at""",
-            data.get("subject_id"), data["title"], data["topic"],
+            data.get("subject_id"), data.get("topic_id"), data["title"], data["topic"],
             data.get("description"), json.dumps(data.get("turns", [])),
             data.get("segment_count", 0), data.get("duration_secs", 0),
             data.get("word_count", 0),
         )
         return dict(row) if row else {}
+
+    async def get_next_topic_without_episode(self, is_pm: bool = True) -> Optional[dict]:
+        """Próximo tópico do edital sem episódio, do mais pesado para o mais
+        leve. O peso do tópico entra multiplicado pelo peso da matéria: um
+        tópico forte de uma matéria fraca não deve passar na frente de um
+        tópico forte da matéria que vale mais pontos na prova."""
+        weight_col = "weight_pm" if is_pm else "weight_prf"
+        return await self._fetchrow(
+            f"""SELECT t.id, t.name, t.slug, t.subject_id, s.name AS subject_name
+                  FROM topics t
+                  JOIN subjects s ON s.id = t.subject_id
+                 WHERE t.is_active AND s.{weight_col} > 0
+                   AND EXISTS (
+                       SELECT 1 FROM legal_articles la WHERE la.topic_id = t.id)
+                   AND NOT EXISTS (
+                       SELECT 1 FROM podcast_episodes pe
+                        WHERE pe.topic_id = t.id AND pe.is_active = TRUE)
+                 ORDER BY (t.weight * s.{weight_col}) DESC, t.display_order
+                 LIMIT 1"""
+        )
+
+    async def count_topics_without_episode(self, is_pm: bool = True) -> int:
+        weight_col = "weight_pm" if is_pm else "weight_prf"
+        return await self._fetchval(
+            f"""SELECT COUNT(*) FROM topics t
+                  JOIN subjects s ON s.id = t.subject_id
+                 WHERE t.is_active AND s.{weight_col} > 0
+                   AND EXISTS (
+                       SELECT 1 FROM legal_articles la WHERE la.topic_id = t.id)
+                   AND NOT EXISTS (
+                       SELECT 1 FROM podcast_episodes pe
+                        WHERE pe.topic_id = t.id AND pe.is_active = TRUE)"""
+        ) or 0
+
+    async def get_articles_for_topic(self, topic_id: UUID, limit: int = 22) -> list[dict]:
+        """Artigos de um tópico para servir de base à aula, os mais cobrados
+        primeiro. A aula lê o texto oficial, então ele vem junto."""
+        return await self._fetch(
+            """SELECT la.id, la.article_number, la.title, la.official_text,
+                      la.simple_text, ld.name AS document_name
+                 FROM legal_articles la
+                 JOIN legal_documents ld ON ld.id = la.document_id
+                WHERE la.topic_id = $1 AND la.official_text IS NOT NULL
+                ORDER BY la.frequency_score DESC, la.display_order
+                LIMIT $2""",
+            topic_id, limit,
+        )
+
+    async def get_episode_ids_for_topic(self, topic_id: UUID, limit: int = 2) -> list[UUID]:
+        rows = await self._fetch(
+            """SELECT id FROM podcast_episodes
+                WHERE topic_id = $1 AND is_active = TRUE
+                ORDER BY created_at LIMIT $2""",
+            topic_id, limit,
+        )
+        return [r["id"] for r in rows]
 
     async def get_podcast_episodes(
         self, subject_id: UUID | None = None, limit: int = 50

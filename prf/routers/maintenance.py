@@ -532,98 +532,104 @@ Responda em JSON:
 
 @router.post("/podcast/generate")
 async def generate_podcast_episode(
-    subject_id: UUID | None = Query(None, description="Matéria; se omitido, pega a próxima sem episódio"),
-    topic: str | None = Query(None, description="Tema do episódio; padrão é o nome da matéria"),
-    replace: bool = Query(False, description="Desativa episódios anteriores da matéria antes de gerar"),
+    topic_id: UUID | None = Query(None, description="Tópico; se omitido, pega o próximo sem episódio"),
+    replace: bool = Query(False, description="Desativa episódio anterior do tópico antes de gerar"),
     x_maintenance_token: str | None = Header(default=None),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Gera um episódio de ~30 min em diálogo entre dois apresentadores.
+    """Gera uma aula de ~35 min em diálogo sobre UM tópico do edital.
 
-    Um episódio por chamada: são seis blocos de roteiro via LLM e o tempo
-    da função não comporta mais que isso. Sem subject_id, escolhe sozinho a
-    matéria PMGO de maior peso que ainda não tem episódio, então dá para
-    chamar repetidamente até cobrir a grade.
+    Um episódio por chamada: são oito blocos de roteiro via LLM e o tempo da
+    função não comporta mais. Sem topic_id escolhe sozinho o próximo tópico
+    pendente, do mais pesado para o mais leve, então dá para chamar em loop
+    até cobrir a grade inteira.
     """
     _require_admin(x_maintenance_token)
 
     from prf.services import podcast_service
 
-    if subject_id:
-        subject = await repo._fetchrow(
-            "SELECT id, name FROM subjects WHERE id = $1", subject_id
+    if topic_id:
+        topic = await repo._fetchrow(
+            """SELECT t.id, t.name, t.slug, t.subject_id, s.name AS subject_name
+                 FROM topics t JOIN subjects s ON s.id = t.subject_id
+                WHERE t.id = $1""",
+            topic_id,
         )
     else:
-        subject = await repo._fetchrow(
-            """SELECT s.id, s.name FROM subjects s
-                WHERE s.weight_pm > 0
-                  AND EXISTS (SELECT 1 FROM legal_articles la WHERE la.subject_id = s.id)
-                  AND NOT EXISTS (
-                      SELECT 1 FROM podcast_episodes pe
-                       WHERE pe.subject_id = s.id AND pe.is_active = TRUE)
-                ORDER BY s.weight_pm DESC
-                LIMIT 1"""
-        )
+        topic = await repo.get_next_topic_without_episode(is_pm=True)
 
-    if not subject:
-        return {"generated": False, "reason": "Nenhuma matéria pendente de episódio"}
-
-    ep_topic = topic or subject["name"]
+    if not topic:
+        return {"generated": False, "reason": "Nenhum tópico pendente de episódio"}
 
     if replace:
         await repo._execute(
-            "UPDATE podcast_episodes SET is_active = FALSE WHERE subject_id = $1",
-            subject["id"],
+            "UPDATE podcast_episodes SET is_active = FALSE WHERE topic_id = $1",
+            topic["id"],
         )
 
-    if not replace and await repo.podcast_topic_exists(subject["id"], ep_topic):
-        return {
-            "generated": False,
-            "reason": f"Já existe episódio de '{ep_topic}'",
-            "subject": subject["name"],
-        }
-
-    articles = await repo.get_legal_articles(subject_id=subject["id"], limit=12)
+    articles = await repo.get_articles_for_topic(topic["id"], limit=22)
     if not articles:
         return {
             "generated": False,
-            "reason": "Matéria sem artigos de lei para servir de base",
-            "subject": subject["name"],
+            "reason": "Tópico sem artigos de lei mapeados",
+            "topic": topic["name"],
         }
 
-    episode = await podcast_service.generate_episode(ep_topic, [dict(a) for a in articles])
+    episode = await podcast_service.generate_episode(
+        topic["name"], topic["subject_name"], [dict(a) for a in articles]
+    )
 
     if not episode["turns"]:
         raise HTTPException(503, "Geração de roteiro falhou — verifique a chave do provedor de IA")
 
     mins = round(episode["duration_secs"] / 60)
     saved = await repo.create_podcast_episode({
-        "subject_id": subject["id"],
-        "title": f"{ep_topic} — episódio completo",
-        "topic": ep_topic,
-        "description": f"Marcos e Júlia discutem {ep_topic} em {mins} min: teoria, casos de rua e como a banca cobra.",
+        "subject_id": topic["subject_id"],
+        "topic_id": topic["id"],
+        "title": topic["name"],
+        "topic": topic["name"],
+        "description": (
+            f"{topic['subject_name']} · aula de {mins} min com leitura comentada "
+            f"da lei, casos de rua e revisão por perguntas."
+        ),
         "turns": episode["turns"],
         "segment_count": episode["segment_count"],
         "duration_secs": episode["duration_secs"],
         "word_count": episode["word_count"],
     })
 
-    remaining = await repo._fetchval(
-        """SELECT COUNT(*) FROM subjects s
-            WHERE s.weight_pm > 0
-              AND EXISTS (SELECT 1 FROM legal_articles la WHERE la.subject_id = s.id)
-              AND NOT EXISTS (
-                  SELECT 1 FROM podcast_episodes pe
-                   WHERE pe.subject_id = s.id AND pe.is_active = TRUE)"""
-    )
+    remaining = await repo.count_topics_without_episode(is_pm=True)
 
     return {
         "generated": True,
         "episode_id": str(saved.get("id")),
-        "subject": subject["name"],
-        "topic": ep_topic,
+        "subject": topic["subject_name"],
+        "topic": topic["name"],
         "segments": episode["segment_count"],
         "duration_mins": mins,
         "words": episode["word_count"],
-        "remaining_subjects": remaining,
+        "articles_used": len(articles),
+        "remaining_topics": remaining,
     }
+
+
+@router.post("/podcast/retire-subject-episodes")
+async def retire_subject_level_episodes(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Desativa os episódios antigos de matéria inteira.
+
+    Eles foram substituídos pelas aulas por tópico: cobriam uma matéria toda
+    em 35 min, o que só dava para sobrevoar o assunto sem ler a lei nem
+    esgotar nenhum ponto.
+    """
+    _require_admin(x_maintenance_token)
+    n = await repo._fetchval(
+        """WITH r AS (
+               UPDATE podcast_episodes SET is_active = FALSE
+                WHERE topic_id IS NULL AND is_active = TRUE
+                RETURNING 1)
+           SELECT COUNT(*) FROM r"""
+    )
+    return {"retired": n or 0}
