@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.0.8",  # podcast: episodios de ~30 min em dialogo (2 apresentadores) para o deslocamento
+    version="1.0.9",  # podcast: calibra duracao pelo ritmo real do TTS (175 wpm) p/ garantir 30+ min
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",

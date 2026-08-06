@@ -534,6 +534,7 @@ Responda em JSON:
 async def generate_podcast_episode(
     subject_id: UUID | None = Query(None, description="Matéria; se omitido, pega a próxima sem episódio"),
     topic: str | None = Query(None, description="Tema do episódio; padrão é o nome da matéria"),
+    replace: bool = Query(False, description="Desativa episódios anteriores da matéria antes de gerar"),
     x_maintenance_token: str | None = Header(default=None),
     repo: PRFRepository = Depends(get_repo),
 ):
@@ -569,7 +570,13 @@ async def generate_podcast_episode(
 
     ep_topic = topic or subject["name"]
 
-    if await repo.podcast_topic_exists(subject["id"], ep_topic):
+    if replace:
+        await repo._execute(
+            "UPDATE podcast_episodes SET is_active = FALSE WHERE subject_id = $1",
+            subject["id"],
+        )
+
+    if not replace and await repo.podcast_topic_exists(subject["id"], ep_topic):
         return {
             "generated": False,
             "reason": f"Já existe episódio de '{ep_topic}'",

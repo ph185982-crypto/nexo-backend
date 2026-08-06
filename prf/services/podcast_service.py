@@ -24,10 +24,14 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# ~150 palavras por minuto é o ritmo do TTS em pt-BR. Seis blocos de 800
-# palavras dão ~32 min, com folga sobre o mínimo de 30 pedido.
-WORDS_PER_MINUTE = 150
-WORDS_PER_BLOCK = 800
+# Ritmo medido no áudio real gerado pelo TTS em pt-BR: um segmento de 541
+# palavras rendeu 185s, ou seja ~175 palavras por minuto (o palpite inicial
+# de 150 inflava a duração estimada em quase 20%).
+WORDS_PER_MINUTE = 175
+# Para passar dos 30 min pedidos são necessárias ~5250 palavras. O modelo
+# entrega em torno de 85% do que se pede, então pedimos 6600 (1100 x 6)
+# para pousar com folga acima do mínimo.
+WORDS_PER_BLOCK = 1100
 TARGET_MIN_MINUTES = 30
 
 HOST_A = "MARCOS"
