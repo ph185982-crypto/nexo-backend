@@ -742,6 +742,48 @@ button { font-family:inherit; }
 .ib-close { background:none; border:none; color:var(--ink-3); padding:4px; cursor:pointer; display:flex; }
 .ib-close svg { width:14px; height:14px; }
 
+/* Tela do episódio */
+.pn-wrap { padding:28px 20px 32px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.pn-art {
+  width:96px; height:96px; border-radius:var(--r-xl); margin-bottom:22px;
+  background:var(--primary-soft); color:var(--primary);
+  display:flex; align-items:center; justify-content:center;
+}
+.pn-art svg { width:40px; height:40px; }
+.pn-title { font-family:var(--serif); font-size:22px; font-weight:600; line-height:1.3; }
+.pn-desc { font-size:13px; color:var(--ink-3); line-height:1.55; margin-top:10px; max-width:34ch; }
+.pn-chips { display:flex; gap:8px; margin-top:14px; }
+.pn-loading { margin-top:38px; display:flex; flex-direction:column; align-items:center; gap:10px; font-size:14px; color:var(--ink-2); }
+.pn-loading-sub { font-size:12px; color:var(--ink-3); max-width:30ch; line-height:1.5; }
+.pn-spin {
+  width:30px; height:30px; border-radius:var(--r-full);
+  border:3px solid var(--surface-2); border-top-color:var(--primary);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.pn-controls { display:flex; align-items:center; gap:22px; margin-top:34px; }
+.pn-play {
+  width:68px; height:68px; border-radius:var(--r-full); border:none;
+  background:var(--primary); color:#fff; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.pn-play svg { width:26px; height:26px; }
+.pn-btn {
+  width:44px; height:44px; border-radius:var(--r-full);
+  border:1px solid var(--border-strong); background:var(--surface);
+  color:var(--ink-2); cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.pn-btn svg { width:17px; height:17px; }
+.pn-btn.ghost { opacity:.3; }
+.pn-track-row { display:flex; align-items:center; gap:10px; width:100%; margin-top:26px; }
+.pn-time { font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums; min-width:38px; }
+.pn-track { flex:1; height:5px; background:var(--surface-2); border-radius:var(--r-full); cursor:pointer; }
+.pn-fill { height:100%; background:var(--primary); border-radius:var(--r-full); }
+.pn-parts { display:flex; gap:5px; margin-top:20px; }
+.pn-part { width:26px; height:5px; border-radius:3px; background:var(--surface-2); cursor:pointer; }
+.pn-part.done { background:var(--success); }
+.pn-part.on { background:var(--primary); }
+
 /* Flashcards */
 .fc-wrap { padding:0 0 24px; }
 .fc-progress { height:3px; background:var(--surface-2); margin-bottom:24px; }
@@ -1098,6 +1140,7 @@ const S = {
   missionLegalArticles: null, missionLegalIdx: 0,
   lfStep: 'ler', lfRevealed: [],
   fcCards: null, fcIdx: 0, fcFlipped: false,
+  podKind: 'aula',
   tutorConv: null, tutorMsgs: [], tutorTyping: false,
   pushOn: false, showInstall: false,
   targetExam: localStorage.getItem('prf_target_exam') || 'PMGO',
@@ -1863,6 +1906,7 @@ function missionContextBar() {
 
 // ===== AUDIO =====
 function viewAudio() {
+  if (S.subView === 'podcastNow') return viewPodcastNow();
   if (!S.lessons && !S.podcasts) return appbar() + skeletonBlock(4, 76);
   const pods = S.podcasts || [];
   const lessons = S.lessons || [];
@@ -1891,7 +1935,7 @@ function viewAudio() {
         <div class="pod-list">${items.map(p => {
           const active = S.podId === p.id;
           const playing = active && S.audioPlaying;
-          return `<div class="pod-card ${active?'playing':''}" onclick="playPodcast('${p.id}')">
+          return `<div class="pod-card ${active?'playing':''}" onclick="playPodcast('${p.id}', {tela:true})">
             <div class="pod-play">${S.podLoading && active ? I.refresh : playing ? I.pause : I.play}</div>
             <div class="pod-info">
               <div class="pod-title">${esc(p.title)}</div>
@@ -2172,6 +2216,57 @@ function viewMissionLegalReader() {
   </div>`;
 }
 
+// Tela do episódio. Antes, o bloco de áudio da missão chamava
+// switchTab('audio'), que zera a subView e joga o usuário na lista geral —
+// o episódio até tocava, mas ele ficava olhando a lista sem saber qual era
+// o dele. Agora a etapa abre a tela DAQUELE episódio e já começa a
+// preparar o áudio.
+function viewPodcastNow() {
+  const ep = S.pod;
+  const carregando = S.podLoading;
+  const head = `<div class="topbar-sub">
+    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <span class="title-sub">${esc(S.podKind === 'drill' ? 'Drill de recall' : 'Aula em áudio')}</span>
+  </div>`;
+  if (!ep && carregando) return head + skeletonBlock(2, 120);
+  if (!ep) return head + `<div class="empty">${I.headphones}<h3>Episódio indisponível</h3></div>`;
+
+  const total = ep.segment_count || 1;
+  const parte = (S.podSeq || 0) + 1;
+  const pct = S.audioDur > 0 ? (S.audioPos / S.audioDur) * 100 : 0;
+  const tocando = S.audioPlaying;
+
+  return head + `<div class="pn-wrap fade-in">
+    <div class="pn-art">${I.headphones}</div>
+    <div class="pn-title">${esc(ep.title || '')}</div>
+    ${ep.description ? `<div class="pn-desc">${esc(ep.description)}</div>` : ''}
+    <div class="pn-chips">
+      <span class="level-chip">${Math.round((ep.duration_secs||0)/60)} min</span>
+      <span class="level-chip">Parte ${parte} de ${total}</span>
+    </div>
+
+    ${carregando ? `<div class="pn-loading">
+      <div class="pn-spin"></div>
+      <div>Preparando o áudio da parte ${parte}...</div>
+      <div class="pn-loading-sub">A primeira vez leva alguns segundos. Depois toca na hora.</div>
+    </div>` : `
+      <div class="pn-controls">
+        <button class="pn-btn ${parte > 1 ? '' : 'ghost'}" onclick="podPrev()" ${parte>1?'':'disabled'}>${I.back}</button>
+        <button class="pn-play" onclick="togglePlayPause()">${tocando ? I.pause : I.play}</button>
+        <button class="pn-btn ${parte < total ? '' : 'ghost'}" onclick="podNext()" ${parte<total?'':'disabled'}>${I.chev}</button>
+      </div>
+      <div class="pn-track-row">
+        <span class="pn-time">${fmtTime(S.audioPos)}</span>
+        <div class="pn-track" onclick="seekAudio(event)"><div class="pn-fill" style="width:${pct}%"></div></div>
+        <span class="pn-time">${fmtTime(S.audioDur)}</span>
+      </div>
+      <div class="pn-parts">${Array.from({length: total}, (_, i) =>
+        `<div class="pn-part ${i < S.podSeq ? 'done' : ''} ${i === S.podSeq ? 'on' : ''}"
+              onclick="playPodSegment(${i})" title="Parte ${i+1}"></div>`).join('')}</div>
+    `}
+  </div>`;
+}
+
 // ===== FLASHCARDS =====
 function viewFlashcards() {
   const cards = S.fcCards;
@@ -2448,6 +2543,7 @@ function viewEssayResult() {
 
 // ===== MORE =====
 function viewMore() {
+  if (S.subView === 'podcastNow') return viewPodcastNow();
   if (S.subView === 'flashcards') return viewFlashcards();
   if (S.subView === 'missionLegal') return viewMissionLegalReader();
   if (S.subView === 'missionReview') return viewMissionReview();
@@ -2519,9 +2615,10 @@ function render() {
   };
   const inSim = S.tab === 'simulado' && S.sim && !S.simResult;
   const inTutor = S.subView === 'tutor';
+  const inPodTela = S.subView === 'podcastNow';
   document.getElementById('app').innerHTML = `
     <div class="content" id="main-content">${(views[S.tab] || viewDashboard)()}</div>
-    ${inTutor ? '' : playerBar()}
+    ${(inTutor || inPodTela) ? '' : playerBar()}
     ${inSim ? '' : renderNav()}
     ${viewInstallGuide()}
   `;
@@ -2621,8 +2718,8 @@ async function startMissionBlock(blockIdx, type) {
   } else if (type === 'podcast') {
     const epId = b.content_ids?.[0];
     if (!epId) { toast('Episódio indisponível', 'error'); return; }
-    switchTab('audio');
-    await playPodcast(epId);
+    S.podKind = b.block_type === 'podcast_drill' ? 'drill' : 'aula';
+    await playPodcast(epId, { tela: true });
     return;
   } else {
     switchTab('practice');
@@ -2965,11 +3062,14 @@ function clearPodProgress(id) {
   try { localStorage.removeItem(podProgressKey(id)); } catch (e) {}
 }
 
-async function playPodcast(id) {
-  if (S.podId === id) { togglePlayPause(); return; }
+async function playPodcast(id, opts) {
+  const tela = !!(opts && opts.tela);
+  if (S.podId === id && !tela) { togglePlayPause(); return; }
+  if (S.podId === id && tela) { S.subView = 'podcastNow'; S.tab = 'audio'; render(); return; }
   stopAudio();
   S.podId = id; S.pod = null; S.podSeq = 0;
   S.podNextUrl = null; S.podNextSeq = null; S.podLoading = true;
+  if (tela) { S.subView = 'podcastNow'; S.tab = 'audio'; }
   render();
   try { S.pod = await api(`/api/prf/commute/podcast/${id}`); }
   catch (e) {
