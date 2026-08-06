@@ -146,3 +146,126 @@ async def end_commute_session(
         "duration_mins": duration_mins,
         "xp_earned": max(5, int(duration_mins)),
     }
+
+
+# ── Podcast (episódios em diálogo, dois apresentadores) ─────────────────────
+
+@router.get("/podcast")
+async def list_podcast_episodes(
+    subject_id: Optional[UUID] = None,
+    limit: int = Query(default=50, ge=1, le=100),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Lista os episódios disponíveis (sem o roteiro, que é pesado)."""
+    episodes = await repo.get_podcast_episodes(subject_id=subject_id, limit=limit)
+    return {"episodes": episodes}
+
+
+@router.get("/podcast/{episode_id}")
+async def get_podcast_episode(
+    episode_id: UUID,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Detalhe de um episódio: metadados e a divisão em segmentos."""
+    from fastapi import HTTPException
+
+    ep = await repo.get_podcast_episode(episode_id)
+    if not ep:
+        raise HTTPException(404, "Episódio não encontrado")
+
+    turns = ep.get("turns") or []
+    blocks = sorted({t.get("block", 0) for t in turns})
+    segments = [
+        {
+            "seq": b,
+            "turn_count": sum(1 for t in turns if t.get("block") == b),
+            "words": sum(len((t.get("text") or "").split())
+                         for t in turns if t.get("block") == b),
+        }
+        for b in blocks
+    ]
+    return {
+        "id": ep["id"],
+        "title": ep["title"],
+        "topic": ep["topic"],
+        "description": ep.get("description"),
+        "subject_id": ep.get("subject_id"),
+        "duration_secs": ep.get("duration_secs", 0),
+        "segment_count": len(segments),
+        "segments": segments,
+    }
+
+
+@router.get("/podcast/{episode_id}/segment/{seq}")
+async def stream_podcast_segment(
+    episode_id: UUID,
+    seq: int,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Áudio de um segmento do episódio.
+
+    O áudio é sintetizado na primeira vez que alguém pede o segmento e
+    gravado no banco: o /tmp do serverless morre entre invocações, então
+    sem persistir aqui todo replay pagaria TTS de novo. Fatiar por segmento
+    é o que mantém cada requisição dentro do tempo limite da função.
+    """
+    from fastapi import HTTPException
+    import io
+
+    cached = await repo.get_podcast_segment_audio(episode_id, seq)
+    if cached:
+        return StreamingResponse(
+            io.BytesIO(cached),
+            media_type="audio/mpeg",
+            headers={
+                "Content-Length": str(len(cached)),
+                "Cache-Control": "public, max-age=604800",
+                "Accept-Ranges": "bytes",
+            },
+        )
+
+    ep = await repo.get_podcast_episode(episode_id)
+    if not ep:
+        raise HTTPException(404, "Episódio não encontrado")
+
+    turns = [t for t in (ep.get("turns") or []) if t.get("block") == seq]
+    if not turns:
+        raise HTTPException(404, "Segmento não encontrado")
+
+    from prf.services import podcast_service
+
+    audio = await podcast_service.synthesize_segment(turns)
+    if not audio:
+        raise HTTPException(503, "Síntese de áudio indisponível — configure OPENAI_API_KEY")
+
+    await repo.save_podcast_segment_audio(
+        episode_id, seq, audio, podcast_service.estimate_duration_secs(turns)
+    )
+
+    return StreamingResponse(
+        io.BytesIO(audio),
+        media_type="audio/mpeg",
+        headers={
+            "Content-Length": str(len(audio)),
+            "Cache-Control": "public, max-age=604800",
+            "Accept-Ranges": "bytes",
+        },
+    )
+
+
+@router.get("/podcast/{episode_id}/transcript")
+async def get_podcast_transcript(
+    episode_id: UUID,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Roteiro do episódio, para acompanhar ou revisar sem áudio."""
+    from fastapi import HTTPException
+
+    ep = await repo.get_podcast_episode(episode_id)
+    if not ep:
+        raise HTTPException(404, "Episódio não encontrado")
+    return {"title": ep["title"], "turns": ep.get("turns") or []}

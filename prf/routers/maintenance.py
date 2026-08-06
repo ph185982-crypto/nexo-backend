@@ -526,3 +526,97 @@ Responda em JSON:
     )
 
     return {"generated": generated, "failed": failed, "remaining": remaining}
+
+
+# ── Podcast (episódios em diálogo para o deslocamento) ──────────────────────
+
+@router.post("/podcast/generate")
+async def generate_podcast_episode(
+    subject_id: UUID | None = Query(None, description="Matéria; se omitido, pega a próxima sem episódio"),
+    topic: str | None = Query(None, description="Tema do episódio; padrão é o nome da matéria"),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Gera um episódio de ~30 min em diálogo entre dois apresentadores.
+
+    Um episódio por chamada: são seis blocos de roteiro via LLM e o tempo
+    da função não comporta mais que isso. Sem subject_id, escolhe sozinho a
+    matéria PMGO de maior peso que ainda não tem episódio, então dá para
+    chamar repetidamente até cobrir a grade.
+    """
+    _require_admin(x_maintenance_token)
+
+    from prf.services import podcast_service
+
+    if subject_id:
+        subject = await repo._fetchrow(
+            "SELECT id, name FROM subjects WHERE id = $1", subject_id
+        )
+    else:
+        subject = await repo._fetchrow(
+            """SELECT s.id, s.name FROM subjects s
+                WHERE s.weight_pm > 0
+                  AND EXISTS (SELECT 1 FROM legal_articles la WHERE la.subject_id = s.id)
+                  AND NOT EXISTS (
+                      SELECT 1 FROM podcast_episodes pe
+                       WHERE pe.subject_id = s.id AND pe.is_active = TRUE)
+                ORDER BY s.weight_pm DESC
+                LIMIT 1"""
+        )
+
+    if not subject:
+        return {"generated": False, "reason": "Nenhuma matéria pendente de episódio"}
+
+    ep_topic = topic or subject["name"]
+
+    if await repo.podcast_topic_exists(subject["id"], ep_topic):
+        return {
+            "generated": False,
+            "reason": f"Já existe episódio de '{ep_topic}'",
+            "subject": subject["name"],
+        }
+
+    articles = await repo.get_legal_articles(subject_id=subject["id"], limit=12)
+    if not articles:
+        return {
+            "generated": False,
+            "reason": "Matéria sem artigos de lei para servir de base",
+            "subject": subject["name"],
+        }
+
+    episode = await podcast_service.generate_episode(ep_topic, [dict(a) for a in articles])
+
+    if not episode["turns"]:
+        raise HTTPException(503, "Geração de roteiro falhou — verifique a chave do provedor de IA")
+
+    mins = round(episode["duration_secs"] / 60)
+    saved = await repo.create_podcast_episode({
+        "subject_id": subject["id"],
+        "title": f"{ep_topic} — episódio completo",
+        "topic": ep_topic,
+        "description": f"Marcos e Júlia discutem {ep_topic} em {mins} min: teoria, casos de rua e como a banca cobra.",
+        "turns": episode["turns"],
+        "segment_count": episode["segment_count"],
+        "duration_secs": episode["duration_secs"],
+        "word_count": episode["word_count"],
+    })
+
+    remaining = await repo._fetchval(
+        """SELECT COUNT(*) FROM subjects s
+            WHERE s.weight_pm > 0
+              AND EXISTS (SELECT 1 FROM legal_articles la WHERE la.subject_id = s.id)
+              AND NOT EXISTS (
+                  SELECT 1 FROM podcast_episodes pe
+                   WHERE pe.subject_id = s.id AND pe.is_active = TRUE)"""
+    )
+
+    return {
+        "generated": True,
+        "episode_id": str(saved.get("id")),
+        "subject": subject["name"],
+        "topic": ep_topic,
+        "segments": episode["segment_count"],
+        "duration_mins": mins,
+        "words": episode["word_count"],
+        "remaining_subjects": remaining,
+    }

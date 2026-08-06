@@ -452,6 +452,26 @@ button { font-family:inherit; }
 
 /* ── AUDIO ── */
 .audio-hero { padding:24px 20px 20px; }
+.pod-sub { font-size:13px; color:var(--ink-3); line-height:1.5; margin-top:8px; max-width:46ch; }
+.pod-list { padding:4px 20px 20px; display:flex; flex-direction:column; gap:10px; }
+.pod-card {
+  display:flex; align-items:center; gap:14px; padding:16px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); cursor:pointer; transition:border-color .15s, transform .1s;
+}
+.pod-card:active { transform:scale(.98); }
+.pod-card.playing { border-color:var(--primary); background:var(--primary-soft); }
+.pod-play {
+  width:42px; height:42px; flex-shrink:0; border-radius:var(--r-full);
+  display:flex; align-items:center; justify-content:center;
+  background:var(--primary); color:#fff;
+}
+.pod-play svg { width:18px; height:18px; }
+.pod-info { min-width:0; flex:1; }
+.pod-title { font-family:var(--serif); font-size:16px; font-weight:500; line-height:1.35; }
+.pod-meta { display:flex; flex-wrap:wrap; gap:5px; align-items:center; font-size:12px; color:var(--ink-3); margin-top:5px; }
+.pod-meta .pod-dur { font-variant-numeric:tabular-nums; font-weight:600; color:var(--primary); }
+.pod-progress { font-size:11px; color:var(--primary); font-weight:600; margin-top:6px; }
 .audio-list { padding:8px 20px 20px; display:flex; flex-direction:column; gap:10px; }
 .audio-item {
   display:flex; align-items:center; gap:14px; padding:16px;
@@ -933,6 +953,8 @@ const S = {
   searchQ: '', searchResults: null,
   themes: null, selTheme: null, essayText: '', essayResult: null,
   lessons: null, playingId: null, audioPos: 0, audioDur: 0, audioPlaying: false,
+  podcasts: null, pod: null, podId: null, podSeq: 0,
+  podNextUrl: null, podNextSeq: null, podLoading: false,
   reviews: null, reviewIdx: 0, reviewSummary: null, reviewRevealed: false,
   reviewQuestion: null, reviewAnswered: null,
   missionLegalArticles: null, missionLegalIdx: 0,
@@ -1631,20 +1653,56 @@ function missionContextBar() {
 
 // ===== AUDIO =====
 function viewAudio() {
-  if (!S.lessons) return appbar() + skeletonBlock(4, 76);
-  if (!S.lessons.length) return appbar() + `<div class="empty">${I.headphones}<h3>Sem audiobooks</h3><p>As aulas em áudio ainda não foram carregadas.</p></div>`;
-  const totalMin = Math.round(S.lessons.reduce((s,l) => s + (l.duration_secs||0), 0) / 60);
+  if (!S.lessons && !S.podcasts) return appbar() + skeletonBlock(4, 76);
+  const pods = S.podcasts || [];
+  const lessons = S.lessons || [];
+  const podMin = Math.round(pods.reduce((s,p) => s + (p.duration_secs||0), 0) / 60);
+  const totalMin = Math.round(lessons.reduce((s,l) => s + (l.duration_secs||0), 0) / 60);
+
+  const podSection = `
+    <div class="audio-hero fade-in">
+      <div class="section-eyebrow">Episódios</div>
+      <div class="display-hero">Dois no <em>estúdio</em></div>
+      <div class="pod-sub">Marcos e Júlia debatem a matéria com caso de rua, letra da lei e pegadinha de banca.</div>
+      ${pods.length ? `<div class="chip-row mt-12">
+        <span class="level-chip">${pods.length} episódio${pods.length===1?'':'s'}</span>
+        <span class="level-chip">${podMin} min</span>
+      </div>` : ''}
+    </div>
+    ${pods.length ? `<div class="pod-list">${pods.map(p => {
+      const active = S.podId === p.id;
+      const playing = active && S.audioPlaying;
+      return `<div class="pod-card ${active?'playing':''}" onclick="playPodcast('${p.id}')">
+        <div class="pod-play">${S.podLoading && active ? I.refresh : playing ? I.pause : I.play}</div>
+        <div class="pod-info">
+          <div class="pod-title">${esc(p.title)}</div>
+          <div class="pod-meta">
+            <span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span>
+            ${p.subject_name ? `<span>·</span><span>${esc(p.subject_name)}</span>` : ''}
+            <span>·</span><span>${p.segment_count||0} partes</span>
+          </div>
+          ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('')}</div>` : `<div class="empty" style="padding:24px 20px">${I.headphones}
+      <h3>Nenhum episódio ainda</h3>
+      <p>Os episódios de 30 min são gerados por matéria e aparecem aqui assim que ficam prontos.</p>
+    </div>`}`;
+
+  if (!lessons.length) return appbar() + missionContextBar() + podSection;
+
   return `${appbar()}
     ${missionContextBar()}
-    <div class="audio-hero fade-in">
+    ${podSection}
+    <div class="audio-hero" style="padding-top:8px">
       <div class="section-eyebrow">Audiobooks</div>
       <div class="display-hero">Estude <em>ouvindo</em></div>
       <div class="chip-row mt-12">
-        <span class="level-chip">${S.lessons.length} aulas</span>
+        <span class="level-chip">${lessons.length} aulas</span>
         <span class="level-chip">${totalMin} min</span>
       </div>
     </div>
-    <div class="audio-list">${S.lessons.map(l => {
+    <div class="audio-list">${lessons.map(l => {
       const isPlaying = S.playingId === l.id && S.audioPlaying;
       const isCurrent = S.playingId === l.id;
       return `<div class="audio-item ${isCurrent?'playing':''}" onclick="toggleLesson('${l.id}')">
@@ -1661,6 +1719,25 @@ function viewAudio() {
 }
 
 function playerBar() {
+  if (S.podId && S.pod) {
+    const pct = S.audioDur > 0 ? (S.audioPos / S.audioDur) * 100 : 0;
+    const hasPrev = S.podSeq > 0;
+    const hasNext = S.podSeq < S.pod.segment_count - 1;
+    return `<div class="player-bar">
+      <div class="pb-top">
+        <button class="pb-btn ${hasPrev?'':'ghost'}" onclick="podPrev()" ${hasPrev?'':'disabled'}>${I.back}</button>
+        <button class="pb-btn" onclick="togglePlayPause()">${S.audioPlaying ? I.pause : I.play}</button>
+        <button class="pb-btn ${hasNext?'':'ghost'}" onclick="podNext()" ${hasNext?'':'disabled'}>${I.chev}</button>
+        <div class="pb-title">${esc(S.pod.title)}<span class="pb-pos">Parte ${S.podSeq+1}/${S.pod.segment_count}</span></div>
+        <button class="pb-btn ghost" onclick="stopPodcast()">${I.close}</button>
+      </div>
+      <div class="pb-progress">
+        <span class="pb-time">${fmtTime(S.audioPos)}</span>
+        <div class="pb-track" onclick="seekAudio(event)"><div class="pb-fill" style="width:${pct}%"></div></div>
+        <span class="pb-time">${fmtTime(S.audioDur)}</span>
+      </div>
+    </div>`;
+  }
   if (!S.playingId) return '';
   const lessons = S.lessons || [];
   const l = lessons.find(x => x.id === S.playingId);
@@ -2059,6 +2136,7 @@ function switchTab(tab) {
   if (tab === 'dashboard') loadDashboard();
   if (tab === 'practice' && !S.subjects) loadSubjects();
   if (tab === 'audio' && !S.lessons) loadLessons();
+  if (tab === 'audio' && !S.podcasts) loadPodcasts();
   if (tab === 'more' && !S.reviewSummary) loadReviewSummary();
   if (tab === 'more' && !S.trilha) loadTrilha();
 }
@@ -2315,6 +2393,7 @@ async function loadLessons() {
 }
 async function toggleLesson(id) {
   if (S.playingId === id) { togglePlayPause(); return; }
+  if (S.podId) stopPodcast();   // um só elemento de áudio para os dois modos
   S.playingId = id; S.audioPlaying = false; S.audioPos = 0; S.audioDur = 0;
   render();
   toast('Gerando áudio...', 'info');
@@ -2334,7 +2413,7 @@ async function toggleLesson(id) {
   render();
 }
 function togglePlayPause() {
-  if (!S.playingId) return;
+  if (!S.playingId && !S.podId) return;
   if (audioEl.paused) { audioEl.play(); S.audioPlaying = true; }
   else { audioEl.pause(); S.audioPlaying = false; }
   render();
@@ -2370,6 +2449,17 @@ audioEl.addEventListener('timeupdate', () => {
 });
 audioEl.addEventListener('ended', () => {
   S.audioPlaying = false;
+  // Episódio de podcast: emenda no próximo segmento, que já foi buscado
+  // enquanto este tocava.
+  if (S.podId && S.pod) {
+    if (S.podSeq < S.pod.segment_count - 1) {
+      playPodSegment(S.podSeq + 1);
+    } else {
+      toast('Episódio concluído', 'success');
+      stopPodcast();
+    }
+    return;
+  }
   const lessons = S.lessons || [];
   const idx = lessons.findIndex(l => l.id === S.playingId);
   if (idx >= 0 && idx < lessons.length - 1) {
@@ -2381,6 +2471,87 @@ audioEl.addEventListener('ended', () => {
     render();
   }
 });
+
+// ===== PODCAST (episódios em diálogo) =====
+async function loadPodcasts() {
+  try { const d = await api('/api/prf/commute/podcast?limit=50'); S.podcasts = d.episodes || []; }
+  catch (e) { S.podcasts = []; }
+  render();
+}
+
+async function fetchPodSegment(seq) {
+  const r = await fetch(`${API}/api/prf/commute/podcast/${S.podId}/segment/${seq}`, {
+    headers: { 'Authorization': `Bearer ${S.token}` },
+  });
+  if (!r.ok) throw new Error('segment fetch failed');
+  return URL.createObjectURL(await r.blob());
+}
+
+// Busca o próximo segmento enquanto o atual toca. Sem isso haveria um
+// silêncio de vários segundos na virada, já que o segmento só é
+// sintetizado na primeira vez que alguém pede.
+function prefetchPodSegment(seq) {
+  if (!S.pod || seq >= S.pod.segment_count) return;
+  if (S.podNextSeq === seq && S.podNextUrl) return;
+  S.podNextSeq = seq; S.podNextUrl = null;
+  fetchPodSegment(seq)
+    .then(url => { if (S.podNextSeq === seq) S.podNextUrl = url; })
+    .catch(() => { if (S.podNextSeq === seq) S.podNextSeq = null; });
+}
+
+async function playPodSegment(seq) {
+  if (!S.pod || seq < 0 || seq >= S.pod.segment_count) return;
+  let url = null;
+  if (S.podNextSeq === seq && S.podNextUrl) {
+    url = S.podNextUrl;
+    S.podNextUrl = null; S.podNextSeq = null;
+  } else {
+    S.podLoading = true; render();
+    try { url = await fetchPodSegment(seq); }
+    catch (e) {
+      S.podLoading = false;
+      toast('Não foi possível carregar essa parte', 'error');
+      render(); return;
+    }
+  }
+  S.podLoading = false;
+  S.podSeq = seq;
+  audioEl.src = url;
+  try { await audioEl.play(); S.audioPlaying = true; }
+  catch (e) { S.audioPlaying = false; }
+  prefetchPodSegment(seq + 1);
+  render();
+}
+
+async function playPodcast(id) {
+  if (S.podId === id) { togglePlayPause(); return; }
+  stopAudio();
+  S.podId = id; S.pod = null; S.podSeq = 0;
+  S.podNextUrl = null; S.podNextSeq = null; S.podLoading = true;
+  render();
+  try { S.pod = await api(`/api/prf/commute/podcast/${id}`); }
+  catch (e) {
+    S.podId = null; S.podLoading = false;
+    toast('Erro ao abrir episódio', 'error'); render(); return;
+  }
+  if (!S.pod.segment_count) {
+    S.podId = null; S.podLoading = false;
+    toast('Episódio sem áudio disponível', 'error'); render(); return;
+  }
+  toast('Preparando o áudio...', 'info');
+  await playPodSegment(0);
+}
+
+function podNext() { if (S.pod && S.podSeq < S.pod.segment_count - 1) playPodSegment(S.podSeq + 1); }
+function podPrev() { if (S.pod && S.podSeq > 0) playPodSegment(S.podSeq - 1); }
+
+function stopPodcast() {
+  audioEl.pause(); audioEl.currentTime = 0;
+  S.podId = null; S.pod = null; S.podSeq = 0;
+  S.podNextUrl = null; S.podNextSeq = null; S.podLoading = false;
+  S.audioPlaying = false; S.audioPos = 0; S.audioDur = 0;
+  render();
+}
 
 async function listenArticle(text) {
   if (!text) return;

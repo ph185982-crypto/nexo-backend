@@ -8,6 +8,7 @@ from typing import Optional, Any
 from uuid import UUID
 
 import asyncpg
+import json
 
 
 class PRFRepository:
@@ -959,6 +960,90 @@ class PRFRepository:
             limit,
         )
         return [r["id"] for r in rows]
+
+    # ── Podcast (episódios em diálogo) ────────────────────────────────────────
+
+    async def create_podcast_episode(self, data: dict) -> dict:
+        """Grava um episódio. `turns` vai como JSON string — asyncpg não
+        converte list/dict de Python para jsonb sozinho."""
+        row = await self._fetchrow(
+            """INSERT INTO podcast_episodes
+                   (subject_id, title, topic, description, turns,
+                    segment_count, duration_secs, word_count)
+               VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8)
+               RETURNING id, subject_id, title, topic, description,
+                         segment_count, duration_secs, word_count, created_at""",
+            data.get("subject_id"), data["title"], data["topic"],
+            data.get("description"), json.dumps(data.get("turns", [])),
+            data.get("segment_count", 0), data.get("duration_secs", 0),
+            data.get("word_count", 0),
+        )
+        return dict(row) if row else {}
+
+    async def get_podcast_episodes(
+        self, subject_id: UUID | None = None, limit: int = 50
+    ) -> list[dict]:
+        """Lista episódios sem o campo `turns` — o roteiro inteiro é pesado
+        e a listagem só precisa dos metadados."""
+        if subject_id:
+            return await self._fetch(
+                """SELECT pe.id, pe.subject_id, pe.title, pe.topic, pe.description,
+                          pe.segment_count, pe.duration_secs, pe.created_at,
+                          s.name AS subject_name
+                     FROM podcast_episodes pe
+                     LEFT JOIN subjects s ON s.id = pe.subject_id
+                    WHERE pe.is_active = TRUE AND pe.subject_id = $1
+                    ORDER BY pe.created_at DESC LIMIT $2""",
+                subject_id, limit,
+            )
+        return await self._fetch(
+            """SELECT pe.id, pe.subject_id, pe.title, pe.topic, pe.description,
+                      pe.segment_count, pe.duration_secs, pe.created_at,
+                      s.name AS subject_name
+                 FROM podcast_episodes pe
+                 LEFT JOIN subjects s ON s.id = pe.subject_id
+                WHERE pe.is_active = TRUE
+                ORDER BY pe.created_at DESC LIMIT $1""",
+            limit,
+        )
+
+    async def get_podcast_episode(self, episode_id: UUID) -> Optional[dict]:
+        row = await self._fetchrow(
+            "SELECT * FROM podcast_episodes WHERE id = $1", episode_id
+        )
+        if not row:
+            return None
+        ep = dict(row)
+        turns = ep.get("turns")
+        if isinstance(turns, str):
+            ep["turns"] = json.loads(turns)
+        return ep
+
+    async def get_podcast_segment_audio(self, episode_id: UUID, seq: int) -> Optional[bytes]:
+        return await self._fetchval(
+            "SELECT audio FROM podcast_segments WHERE episode_id = $1 AND seq = $2",
+            episode_id, seq,
+        )
+
+    async def save_podcast_segment_audio(
+        self, episode_id: UUID, seq: int, audio: bytes, duration_secs: int = 0
+    ) -> None:
+        await self._execute(
+            """INSERT INTO podcast_segments (episode_id, seq, audio, duration_secs)
+               VALUES ($1, $2, $3, $4)
+               ON CONFLICT (episode_id, seq) DO UPDATE
+                 SET audio = $3, duration_secs = $4""",
+            episode_id, seq, audio, duration_secs,
+        )
+
+    async def podcast_topic_exists(self, subject_id: UUID | None, topic: str) -> bool:
+        return bool(await self._fetchval(
+            """SELECT 1 FROM podcast_episodes
+                WHERE is_active = TRUE AND topic = $1
+                  AND (subject_id = $2 OR ($2 IS NULL AND subject_id IS NULL))
+                LIMIT 1""",
+            topic, subject_id,
+        ))
 
     # ── Notifications ─────────────────────────────────────────────────────────
 

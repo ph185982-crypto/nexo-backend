@@ -97,6 +97,39 @@ MIGRATIONS: list[tuple[str, str]] = [
         "CREATE INDEX IF NOT EXISTS idx_user_article_progress_article "
         "ON user_article_progress(article_id)",
     ),
+    (
+        "podcast_episodes",
+        """CREATE TABLE IF NOT EXISTS podcast_episodes (
+               id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+               subject_id      UUID REFERENCES subjects(id) ON DELETE SET NULL,
+               title           TEXT NOT NULL,
+               topic           TEXT NOT NULL,
+               description     TEXT,
+               turns           JSONB NOT NULL DEFAULT '[]'::jsonb,
+               segment_count   INTEGER DEFAULT 0,
+               duration_secs   INTEGER DEFAULT 0,
+               word_count      INTEGER DEFAULT 0,
+               is_active       BOOLEAN DEFAULT TRUE,
+               created_at      TIMESTAMPTZ DEFAULT NOW()
+           )""",
+    ),
+    (
+        "podcast_segments",
+        """CREATE TABLE IF NOT EXISTS podcast_segments (
+               id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+               episode_id      UUID NOT NULL REFERENCES podcast_episodes(id) ON DELETE CASCADE,
+               seq             INTEGER NOT NULL,
+               audio           BYTEA,
+               duration_secs   INTEGER DEFAULT 0,
+               created_at      TIMESTAMPTZ DEFAULT NOW(),
+               UNIQUE (episode_id, seq)
+           )""",
+    ),
+    (
+        "idx_podcast_episodes_subject",
+        "CREATE INDEX IF NOT EXISTS idx_podcast_episodes_subject "
+        "ON podcast_episodes(subject_id)",
+    ),
 ]
 
 
