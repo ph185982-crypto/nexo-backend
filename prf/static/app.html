@@ -1134,7 +1134,7 @@ const S = {
   themes: null, selTheme: null, essayText: '', essayResult: null,
   lessons: null, playingId: null, audioPos: 0, audioDur: 0, audioPlaying: false,
   podcasts: null, pod: null, podId: null, podSeq: 0,
-  podNextUrl: null, podNextSeq: null, podLoading: false,
+  podBoundaries: null, podLoading: false,
   reviews: null, reviewIdx: 0, reviewSummary: null, reviewRevealed: false,
   reviewQuestion: null, reviewAnswered: null,
   missionLegalArticles: null, missionLegalIdx: 0,
@@ -2142,7 +2142,9 @@ function viewMissionLegalReader() {
   const cloze = lfCloze();
   // Com menos de duas lacunas o passo de recuperação não tem o que treinar.
   const temLacuna = cloze.total >= 2;
-  const step = temLacuna ? (S.lfStep || 'ler') : 'ler';
+  // S.lfStep é a fonte da verdade; só cai pra 'explicar' se o artigo não tem
+  // lacuna suficiente para o passo 'lacuna' que o usuário tentou abrir.
+  const step = (!temLacuna && S.lfStep === 'lacuna') ? 'explicar' : (S.lfStep || 'ler');
   const revelados = S.lfRevealed.length;
   const faltam = cloze.total - revelados;
 
@@ -2207,7 +2209,7 @@ function viewMissionLegalReader() {
   return head + barra + `<div class="legal-focus fade-in">
     <div class="lf-header">
       <div class="lf-doc">${esc(a.document_name || '')}</div>
-      <div class="lf-art">Art. ${esc(a.article_number || '')}</div>
+      <div class="lf-art">Art. ${esc((a.article_number || '').replace(/^art\.?\s*/i, ''))}</div>
       ${a.title ? `<div class="lf-title">${esc(a.title)}</div>` : ''}
     </div>
     ${stepper}
@@ -2247,8 +2249,8 @@ function viewPodcastNow() {
 
     ${carregando ? `<div class="pn-loading">
       <div class="pn-spin"></div>
-      <div>Preparando o áudio da parte ${parte}...</div>
-      <div class="pn-loading-sub">A primeira vez leva alguns segundos. Depois toca na hora.</div>
+      <div>Preparando o áudio do episódio...</div>
+      <div class="pn-loading-sub">A primeira vez leva alguns segundos. Depois toca sem pausas.</div>
     </div>` : `
       <div class="pn-controls">
         <button class="pn-btn ${parte > 1 ? '' : 'ghost'}" onclick="podPrev()" ${parte>1?'':'disabled'}>${I.back}</button>
@@ -2686,14 +2688,24 @@ async function startMissionBlock(blockIdx, type) {
   if (type === 'practice') {
     const sid = b.subject_id || (b.content_ids?.length ? b.content_ids[0] : null);
     if (!sid) { toast('Sem matéria para questões — avançando', 'info'); await finishMissionBlock(); return; }
+    // A missão já escolheu o tópico do dia (o mesmo da aula em áudio e da
+    // lei seca); sem passar topic_id aqui o bloco caía num sorteio da
+    // matéria inteira, desligado do que a missão de fato montou.
+    const tid = b.topic_id || '';
     S.selSubject = sid; S.selSubjectName = b.subject_name || b.title;
     S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
     S.loading.questions = true; S.tab = 'practice'; render();
     try {
       const isPM = S.targetExam && S.targetExam.startsWith('PM');
       const qtype = isPM ? 'multipla_escolha' : 'certo_errado';
-      let d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
+      const topicQs = tid ? `&topic_id=${tid}` : '';
+      let d = await api(`/api/prf/questions/list?subject_id=${sid}${topicQs}&limit=15&question_type=${qtype}`);
       S.questions = d.questions || [];
+      // Tópico do dia pode não ter estoque suficiente: cai pra matéria inteira.
+      if (!S.questions.length && tid) {
+        d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
+        S.questions = d.questions || [];
+      }
       // For PRF only: fall back to any question type if no typed questions found
       if (!S.questions.length && !isPM) {
         d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15`);
@@ -2958,6 +2970,7 @@ function seekAudio(ev) {
   const pct = (ev.clientX - rect.left) / rect.width;
   if (isFinite(audioEl.duration)) audioEl.currentTime = pct * audioEl.duration;
 }
+let _podLastSave = 0;
 audioEl.addEventListener('timeupdate', () => {
   S.audioPos = audioEl.currentTime; S.audioDur = audioEl.duration || 0;
   const fill = document.querySelector('.pb-fill');
@@ -2965,22 +2978,25 @@ audioEl.addEventListener('timeupdate', () => {
   if (fill && S.audioDur > 0) fill.style.width = `${(S.audioPos / S.audioDur) * 100}%`;
   if (times[0]) times[0].textContent = fmtTime(S.audioPos);
   if (times[1]) times[1].textContent = fmtTime(S.audioDur);
+
+  // Episódio de podcast: o arquivo é um só, então "segmento atual" é só
+  // uma leitura de posição contra os limites, não mais um arquivo à parte.
+  if (S.podId && S.pod && S.podBoundaries?.length) {
+    if (S.audioPos - _podLastSave >= 3) { _podLastSave = S.audioPos; savePodProgress(); }
+    const idx = S.podBoundaries.findIndex(b => S.audioPos < b);
+    const newSeq = idx === -1 ? S.pod.segment_count - 1 : idx;
+    if (newSeq !== S.podSeq) { S.podSeq = newSeq; render(); }
+  }
 });
 audioEl.addEventListener('ended', () => {
   S.audioPlaying = false;
-  // Episódio de podcast: emenda no próximo segmento, que já foi buscado
-  // enquanto este tocava.
   if (S.podId && S.pod) {
-    if (S.podSeq < S.pod.segment_count - 1) {
-      playPodSegment(S.podSeq + 1);
-    } else {
-      toast('Aula concluída', 'success');
-      clearPodProgress(S.podId);
-      stopPodcast();
-      // Etapa da missão fecha aqui, mas sem puxar a próxima: a segunda
-      // aula é da volta e a lei seca é da noite.
-      if (S.missionBlockId) finishMissionBlock(false);
-    }
+    toast('Aula concluída', 'success');
+    clearPodProgress(S.podId);
+    stopPodcast();
+    // Etapa da missão fecha aqui, mas sem puxar a próxima: a segunda
+    // aula é da volta e a lei seca é da noite.
+    if (S.missionBlockId) finishMissionBlock(false);
     return;
   }
   const lessons = S.lessons || [];
@@ -3002,64 +3018,43 @@ async function loadPodcasts() {
   render();
 }
 
-async function fetchPodSegment(seq) {
-  const r = await fetch(`${API}/api/prf/commute/podcast/${S.podId}/segment/${seq}`, {
-    headers: { 'Authorization': `Bearer ${S.token}` },
-  });
-  if (!r.ok) throw new Error('segment fetch failed');
-  return URL.createObjectURL(await r.blob());
-}
-
-// Busca o próximo segmento enquanto o atual toca. Sem isso haveria um
-// silêncio de vários segundos na virada, já que o segmento só é
-// sintetizado na primeira vez que alguém pede.
-function prefetchPodSegment(seq) {
-  if (!S.pod || seq >= S.pod.segment_count) return;
-  if (S.podNextSeq === seq && S.podNextUrl) return;
-  S.podNextSeq = seq; S.podNextUrl = null;
-  fetchPodSegment(seq)
-    .then(url => { if (S.podNextSeq === seq) S.podNextUrl = url; })
-    .catch(() => { if (S.podNextSeq === seq) S.podNextSeq = null; });
-}
-
-async function playPodSegment(seq) {
-  if (!S.pod || seq < 0 || seq >= S.pod.segment_count) return;
-  let url = null;
-  if (S.podNextSeq === seq && S.podNextUrl) {
-    url = S.podNextUrl;
-    S.podNextUrl = null; S.podNextSeq = null;
-  } else {
-    S.podLoading = true; render();
-    try { url = await fetchPodSegment(seq); }
-    catch (e) {
-      S.podLoading = false;
-      toast('Não foi possível carregar essa parte', 'error');
-      render(); return;
-    }
-  }
-  S.podLoading = false;
+// Pula pra um trecho do episódio. Antes cada "parte" era um arquivo de
+// áudio separado buscado sob demanda — o toque em "próxima" (ou o fim
+// natural de uma parte) dependia do JS acordar pra buscar a próxima, e no
+// celular com a tela bloqueada durante o trajeto esse acordar não era
+// garantido: o áudio simplesmente parava. Agora o episódio inteiro já
+// tocou como um arquivo só (playPodcast), e aqui é só um seek.
+function playPodSegment(seq) {
+  if (!S.pod || !S.podBoundaries?.length || seq < 0 || seq >= S.pod.segment_count) return;
+  audioEl.currentTime = seq > 0 ? S.podBoundaries[seq - 1] : 0;
   S.podSeq = seq;
   savePodProgress();
-  audioEl.src = url;
-  try { await audioEl.play(); S.audioPlaying = true; }
-  catch (e) { S.audioPlaying = false; }
-  prefetchPodSegment(seq + 1);
+  if (audioEl.paused) { audioEl.play().catch(() => {}); S.audioPlaying = true; }
   render();
 }
 
 // Retomada. Uma aula pode passar dos 40 min do trajeto, então sem isso o
 // ouvinte recomeça do zero todo dia e nunca chega ao fim do episódio.
+// Guarda o tempo exato (não só a parte) porque agora é um arquivo só.
 function podProgressKey(id) { return `pod_seg_${id}`; }
+function podTimeKey(id) { return `pod_time_${id}`; }
 function savePodProgress() {
   if (!S.podId) return;
-  try { localStorage.setItem(podProgressKey(S.podId), String(S.podSeq)); } catch (e) {}
+  try {
+    localStorage.setItem(podProgressKey(S.podId), String(S.podSeq));
+    localStorage.setItem(podTimeKey(S.podId), String(audioEl.currentTime || 0));
+  } catch (e) {}
 }
 function loadPodProgress(id) {
   try { return parseInt(localStorage.getItem(podProgressKey(id)) || '0', 10) || 0; }
   catch (e) { return 0; }
 }
+function loadPodTime(id) {
+  try { return parseFloat(localStorage.getItem(podTimeKey(id)) || '0') || 0; }
+  catch (e) { return 0; }
+}
 function clearPodProgress(id) {
-  try { localStorage.removeItem(podProgressKey(id)); } catch (e) {}
+  try { localStorage.removeItem(podProgressKey(id)); localStorage.removeItem(podTimeKey(id)); } catch (e) {}
 }
 
 async function playPodcast(id, opts) {
@@ -3067,8 +3062,8 @@ async function playPodcast(id, opts) {
   if (S.podId === id && !tela) { togglePlayPause(); return; }
   if (S.podId === id && tela) { S.subView = 'podcastNow'; S.tab = 'audio'; render(); return; }
   stopAudio();
-  S.podId = id; S.pod = null; S.podSeq = 0;
-  S.podNextUrl = null; S.podNextSeq = null; S.podLoading = true;
+  S.podId = id; S.pod = null; S.podSeq = 0; S.podBoundaries = null;
+  S.podLoading = true;
   if (tela) { S.subView = 'podcastNow'; S.tab = 'audio'; }
   render();
   try { S.pod = await api(`/api/prf/commute/podcast/${id}`); }
@@ -3080,10 +3075,37 @@ async function playPodcast(id, opts) {
     S.podId = null; S.podLoading = false;
     toast('Episódio sem áudio disponível', 'error'); render(); return;
   }
-  const saved = loadPodProgress(id);
-  const start = (saved > 0 && saved < S.pod.segment_count) ? saved : 0;
-  toast(start > 0 ? `Retomando na parte ${start + 1}` : 'Preparando o áudio...', 'info');
-  await playPodSegment(start);
+  const savedTime = loadPodTime(id);
+  toast(savedTime > 0 ? 'Retomando de onde parou' : 'Preparando o áudio...', 'info');
+  try {
+    const r = await fetch(`${API}/api/prf/commute/podcast/${id}/full`, {
+      headers: { 'Authorization': `Bearer ${S.token}` },
+    });
+    if (!r.ok) throw new Error('full fetch failed');
+    const header = r.headers.get('X-Segment-Boundaries') || '';
+    S.podBoundaries = header.split(',').filter(Boolean).map(Number);
+    const blob = await r.blob();
+    if (S.podId !== id) return; // usuário trocou de episódio enquanto isso baixava
+    S.podLoading = false;
+    audioEl.src = URL.createObjectURL(blob);
+    const resume = () => {
+      const dur = audioEl.duration || 0;
+      if (savedTime > 0 && savedTime < dur) audioEl.currentTime = savedTime;
+      audioEl.removeEventListener('loadedmetadata', resume);
+    };
+    audioEl.addEventListener('loadedmetadata', resume);
+    if (S.podBoundaries.length) {
+      const idx = S.podBoundaries.findIndex(b => savedTime < b);
+      S.podSeq = idx === -1 ? 0 : idx;
+    }
+    try { await audioEl.play(); S.audioPlaying = true; }
+    catch (e) { S.audioPlaying = false; }
+    render();
+  } catch (e) {
+    S.podLoading = false;
+    toast('Não foi possível carregar o áudio', 'error');
+    render();
+  }
 }
 
 function podNext() { if (S.pod && S.podSeq < S.pod.segment_count - 1) playPodSegment(S.podSeq + 1); }
@@ -3091,8 +3113,8 @@ function podPrev() { if (S.pod && S.podSeq > 0) playPodSegment(S.podSeq - 1); }
 
 function stopPodcast() {
   audioEl.pause(); audioEl.currentTime = 0;
-  S.podId = null; S.pod = null; S.podSeq = 0;
-  S.podNextUrl = null; S.podNextSeq = null; S.podLoading = false;
+  S.podId = null; S.pod = null; S.podSeq = 0; S.podBoundaries = null;
+  S.podLoading = false;
   S.audioPlaying = false; S.audioPos = 0; S.audioDur = 0;
   render();
 }

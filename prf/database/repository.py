@@ -1383,6 +1383,19 @@ class PRFRepository:
             episode_id, seq, audio, duration_secs,
         )
 
+    async def get_podcast_segments_cached(self, episode_id: UUID) -> dict[int, dict]:
+        """Segmentos já sintetizados de um episódio, por seq.
+
+        Usado para montar o episódio inteiro num arquivo só: o player não
+        deve depender de o JS acordar no fim de cada parte pra buscar a
+        próxima, porque a tela pode estar bloqueada nesse instante."""
+        rows = await self._fetch(
+            """SELECT seq, audio, duration_secs FROM podcast_segments
+               WHERE episode_id = $1 ORDER BY seq""",
+            episode_id,
+        )
+        return {r["seq"]: {"audio": r["audio"], "duration_secs": r["duration_secs"]} for r in rows}
+
     async def podcast_topic_exists(self, subject_id: UUID | None, topic: str) -> bool:
         return bool(await self._fetchval(
             """SELECT 1 FROM podcast_episodes

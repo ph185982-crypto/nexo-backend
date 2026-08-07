@@ -1,4 +1,6 @@
 """Commute/audio mode router — audio lessons, playlists, commute sessions, TTS streaming."""
+import asyncio
+
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from typing import Optional
@@ -252,6 +254,68 @@ async def stream_podcast_segment(
             "Content-Length": str(len(audio)),
             "Cache-Control": "public, max-age=604800",
             "Accept-Ranges": "bytes",
+        },
+    )
+
+
+@router.get("/podcast/{episode_id}/full")
+async def stream_podcast_full(
+    episode_id: UUID,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Episódio inteiro num arquivo só, para tocar sem interrupção.
+
+    Tocar segmento a segmento dependia do JS acordar exatamente no fim de
+    cada parte pra buscar a próxima — no celular, com a tela bloqueada
+    durante o trajeto, esse acordar não é garantido, e o áudio parava no
+    meio. Concatenar os segmentos já sintetizados resolve isso: o telefone
+    só precisa tocar um <audio> só, do início ao fim.
+    """
+    from fastapi import HTTPException
+    import io
+
+    ep = await repo.get_podcast_episode(episode_id)
+    if not ep:
+        raise HTTPException(404, "Episódio não encontrado")
+
+    turns = ep.get("turns") or []
+    blocks = sorted({t.get("block", 0) for t in turns})
+    if not blocks:
+        raise HTTPException(404, "Episódio sem conteúdo")
+
+    cached = await repo.get_podcast_segments_cached(episode_id)
+    missing = [b for b in blocks if b not in cached or not cached[b]["audio"]]
+
+    if missing:
+        from prf.services import podcast_service
+
+        async def _synth(seq: int) -> tuple[int, bytes, int]:
+            seg_turns = [t for t in turns if t.get("block") == seq]
+            audio = await podcast_service.synthesize_segment(seg_turns)
+            return seq, audio, podcast_service.estimate_duration_secs(seg_turns)
+
+        results = await asyncio.gather(*[_synth(seq) for seq in missing])
+        for seq, audio, dur in results:
+            if not audio:
+                raise HTTPException(503, "Síntese de áudio indisponível — configure OPENAI_API_KEY")
+            await repo.save_podcast_segment_audio(episode_id, seq, audio, dur)
+            cached[seq] = {"audio": audio, "duration_secs": dur}
+
+    full_audio = b"".join(cached[b]["audio"] for b in blocks)
+    boundaries = []
+    acc = 0
+    for b in blocks:
+        acc += cached[b]["duration_secs"] or 0
+        boundaries.append(acc)
+
+    return StreamingResponse(
+        io.BytesIO(full_audio),
+        media_type="audio/mpeg",
+        headers={
+            "Content-Length": str(len(full_audio)),
+            "Cache-Control": "public, max-age=604800",
+            "X-Segment-Boundaries": ",".join(str(x) for x in boundaries),
         },
     )
 

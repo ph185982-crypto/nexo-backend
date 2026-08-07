@@ -24,14 +24,31 @@ async def list_questions(
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Get questions from the bank with optional filters."""
+    """Get questions from the bank with optional filters.
+
+    Prioriza questões que o usuário ainda não respondeu — sem isso a mesma
+    questão reaparece na missão do dia seguinte mesmo já tendo sido
+    respondida. Só reusa respondidas quando o recorte (matéria/tópico) não
+    tem estoque suficiente de inéditas, pra não deixar o bloco vazio."""
+    answered_ids = await repo.get_answered_question_ids(user_id)
     questions = await repo.get_questions(
         subject_id=subject_id,
         topic_id=topic_id,
         difficulty=difficulty,
         question_type=question_type,
         limit=limit,
+        exclude_ids=answered_ids or None,
     )
+    if len(questions) < limit:
+        seen = {q["id"] for q in questions}
+        extra = await repo.get_questions(
+            subject_id=subject_id,
+            topic_id=topic_id,
+            difficulty=difficulty,
+            question_type=question_type,
+            limit=limit - len(questions),
+        )
+        questions += [q for q in extra if q["id"] not in seen]
 
     # Batch-fetch all alternatives in one query (avoids N+1)
     q_ids = [q["id"] for q in questions]

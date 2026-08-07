@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.7.0",  # etapa de audio abre a tela do episodio e ja prepara o som
+    version="1.8.0",  # leitor lei seca corrigido, audio em arquivo unico, questoes sem repeticao
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -36,6 +36,10 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Sem isso o fetch() do player de podcast não enxerga o cabeçalho custom
+    # com os limites de cada parte (X-Segment-Boundaries) quando o front é
+    # servido de um host diferente do da API.
+    expose_headers=["X-Segment-Boundaries"],
 )
 
 _prf_ready = False
