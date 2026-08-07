@@ -122,3 +122,12 @@ async def list_subjects(
     elif exam == "PRF":
         subjects = [s for s in subjects if (s.get("weight_prf") or 0) > 0]
     return {"subjects": subjects}
+
+
+@router.get("/resources")
+async def list_resources(subject_slug: str | None = None):
+    """Curated external study resources (videos, PDFs, articles) by subject."""
+    from prf.seeds.external_resources import EXTERNAL_RESOURCES
+    if subject_slug:
+        return [r for r in EXTERNAL_RESOURCES if r["subject_slug"] == subject_slug]
+    return EXTERNAL_RESOURCES

@@ -1111,6 +1111,22 @@ button { font-family:inherit; }
    produtividade) e o conteúdo ganha uma coluna de leitura confortável,
    centralizada no espaço restante — sem tocar em nenhuma view do JS,
    porque tudo isso é reposicionamento do mesmo HTML. */
+.res-link { text-align:center; font-size:13px; color:var(--primary); cursor:pointer; padding:10px; border-radius:var(--r-md); }
+.res-link:hover { background:var(--surface-2); }
+.resource-card {
+  display:block; padding:16px; margin-bottom:12px; border-radius:var(--r-md);
+  background:var(--surface); border:1px solid var(--border); transition:border-color .15s;
+}
+.resource-card:hover { border-color:var(--primary); }
+.res-type-badge {
+  display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.5px; color:var(--primary);
+  background:var(--primary-soft); padding:3px 8px; border-radius:4px; margin-bottom:8px;
+}
+.res-title { font-family:var(--serif); font-size:15px; font-weight:500; margin-bottom:6px; }
+.res-reason { font-size:13px; color:var(--ink-3); margin-bottom:4px; }
+.res-source { font-size:11px; color:var(--muted); }
+
 @media (min-width: 860px) {
   .nav {
     top: 0; bottom: 0; left: 0; right: auto; width: 232px; height: 100vh;
@@ -1160,7 +1176,7 @@ const S = {
   token: localStorage.getItem('prf_token'),
   loading: {},
   dashboard: null, subjects: null,
-  selSubject: null, selSubjectName: '',
+  selSubject: null, selSubjectName: '', resources: null,
   questions: [], qIndex: 0, answerResult: null, answered: {},
   sim: null, simQuestions: {}, simBlock: 1, simIndex: {}, simAnswers: {},
   simResult: null, simSeconds: 0,
@@ -1708,26 +1724,32 @@ function viewDashboard() {
 function viewPractice() {
   if (S.subView === 'tutor') return viewTutor();
   if (S.subView === 'questions') return viewPracticeQuestions();
+  if (S.subView === 'resources') return viewResources();
   if (!S.subjects) return appbar() + skeletonBlock();
   const isPM = S.targetExam && S.targetExam.startsWith('PM');
   const wKey = isPM ? 'weight_pm' : 'weight_prf';
   const active = S.subjects.filter(s => s.is_active !== false && (s[wKey] || 0) > 0)
     .sort((a,b) => (b[wKey]||0) - (a[wKey]||0));
+  const resMap = {};
+  (S.resources || []).forEach(r => { resMap[r.subject_slug] = (resMap[r.subject_slug] || 0) + 1; });
   return `${appbar()}
     <div class="hero-block fade-in">
       <div class="section-eyebrow">Estudar · ${S.targetExam || 'PMGO'}</div>
       <div class="display-hero">Escolha uma <em>matéria</em></div>
       <div class="chip-row mt-12"><span class="level-chip">${active.length} disciplinas</span></div>
     </div>
-    <div class="subject-list">${active.map(s => `
+    <div class="subject-list">${active.map(s => {
+      const rc = resMap[s.slug] || 0;
+      return `
       <div class="subject-item" onclick='selectSubject("${s.id}", ${attr(s.name)})'>
         <div class="subj-color" style="background:${esc(s.color) || 'var(--primary)'}"></div>
         <div class="subj-info">
           <div class="subj-name">${esc(s.name)}</div>
-          <div class="subj-desc">${esc(s.description || '')}</div>
+          <div class="subj-desc">${esc(s.description || '')}${rc ? ` · <span style="color:var(--primary)">${rc} recursos</span>` : ''}</div>
         </div>
         <div class="subj-weight">${s[wKey] || 0}×</div>
-      </div>`).join('')}
+      </div>`;
+    }).join('')}
     </div>`;
 }
 
@@ -1782,6 +1804,50 @@ function viewPracticeQuestions() {
         <button class="btn btn-primary btn-full btn-lg mt-12" onclick="nextQuestion()">
           ${S.qIndex < S.questions.length - 1 ? 'Próxima questão' : 'Voltar às matérias'}</button>
       ` : ''}
+      ${_subjectHasResources() ? `<div class="res-link mt-16" onclick="openResources()">
+        ${I.book} Material complementar (${_subjectResourceCount()} recursos)</div>` : ''}
+    </div>`;
+}
+function _subjectSlugForSelected() {
+  if (!S.selSubject || !S.subjects) return '';
+  const s = S.subjects.find(x => x.id === S.selSubject);
+  return s ? s.slug : '';
+}
+function _subjectHasResources() {
+  const slug = _subjectSlugForSelected();
+  return slug && (S.resources || []).some(r => r.subject_slug === slug);
+}
+function _subjectResourceCount() {
+  const slug = _subjectSlugForSelected();
+  return (S.resources || []).filter(r => r.subject_slug === slug).length;
+}
+function openResources() {
+  S._prevSubView = S.subView;
+  S.subView = 'resources'; render(); scrollTop();
+}
+function backFromResources() {
+  S.subView = S._prevSubView || 'questions'; S._prevSubView = null; render(); scrollTop();
+}
+function viewResources() {
+  const slug = _subjectSlugForSelected();
+  const items = (S.resources || []).filter(r => r.subject_slug === slug);
+  const typeIcon = t => t === 'video' ? I.play : t === 'pdf' ? I.book : I.search;
+  const typeLabel = t => t === 'video' ? 'Vídeo' : t === 'pdf' ? 'PDF' : 'Artigo';
+  return `<div class="topbar-sub"><button class="back-btn" onclick="backFromResources()">${I.back}</button>
+    <span class="title-sub">Material · ${esc(S.selSubjectName)}</span></div>
+    <div class="fade-in">
+      <div class="hero-block">
+        <div class="section-eyebrow">Material Complementar</div>
+        <div class="display-hero" style="font-size:20px">Vídeos, PDFs e artigos <em>curados</em></div>
+        <p class="mt-8" style="color:var(--muted);font-size:13px">Recursos externos verificados para aprofundar o estudo</p>
+      </div>
+      ${items.map(r => `
+        <a href="${esc(r.url)}" target="_blank" rel="noopener" class="resource-card" style="text-decoration:none;color:inherit">
+          <div class="res-type-badge">${typeIcon(r.resource_type)} ${typeLabel(r.resource_type)}</div>
+          <div class="res-title">${esc(r.title)}</div>
+          <div class="res-reason">${esc(r.reason)}</div>
+          <div class="res-source">${esc(r.source)}</div>
+        </a>`).join('')}
     </div>`;
 }
 
@@ -2811,10 +2877,14 @@ function advanceToNextMissionBlock() {
 async function loadSubjects() {
   try {
     const exam = S.targetExam || 'PMGO';
-    const d = await api(`/api/prf/onboarding/subjects?exam=${encodeURIComponent(exam)}`);
+    const [d, res] = await Promise.all([
+      api(`/api/prf/onboarding/subjects?exam=${encodeURIComponent(exam)}`),
+      api('/api/prf/onboarding/resources').catch(() => []),
+    ]);
     S.subjects = d.subjects || d;
+    S.resources = Array.isArray(res) ? res : [];
   }
-  catch (e) { toast('Erro ao carregar matérias', 'error'); S.subjects = []; }
+  catch (e) { toast('Erro ao carregar matérias', 'error'); S.subjects = []; S.resources = []; }
   render();
 }
 

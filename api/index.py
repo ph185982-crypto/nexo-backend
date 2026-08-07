@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="PRF Adaptive Study Platform",
-    version="1.9.0",  # layout adaptavel para notebook/desktop (sidebar + coluna centralizada)
+    version="1.10.0",  # recursos externos + topic classifier + CTB removido
     description="Plataforma adaptativa para aprovação na PRF — questões CEBRASPE C/E, simulados por blocos e scanner de redação.",
     docs_url="/docs",
     redoc_url="/redoc",
