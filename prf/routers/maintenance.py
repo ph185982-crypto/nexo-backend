@@ -1232,9 +1232,9 @@ async def classify_topics(
     x_maintenance_token: str | None = Header(default=None),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Assign topic_id to questions with no topic using keyword rules.
+    """Assign topic_id to questions with _unknown topic or NULL using keyword rules.
 
-    Safe to run multiple times — only touches rows where topic_id IS NULL.
+    Safe to run multiple times — only reclassifies _unknown/NULL rows.
     """
     _require_admin(x_maintenance_token)
 
@@ -1249,8 +1249,11 @@ async def classify_topics(
         slugs,
     )
     topic_map: dict[str, dict[str, str]] = {}
+    unknown_ids: dict[str, str] = {}
     for r in topic_rows:
         topic_map.setdefault(r["subject_slug"], {})[r["slug"]] = str(r["id"])
+        if r["slug"] == "_unknown":
+            unknown_ids[r["subject_slug"]] = str(r["id"])
 
     results = {}
     for subj_slug in slugs:
@@ -1259,18 +1262,20 @@ async def classify_topics(
             results[subj_slug] = {"error": "no topics found in db"}
             continue
 
+        unk_id = unknown_ids.get(subj_slug)
         rows = await repo._fetch(
             """SELECT q.id, q.text
                  FROM questions q
                  JOIN subjects s ON s.id = q.subject_id
-                WHERE s.slug = $1 AND q.topic_id IS NULL AND q.is_active""",
-            subj_slug,
+                WHERE s.slug = $1 AND q.is_active
+                  AND (q.topic_id IS NULL OR q.topic_id = $2::uuid)""",
+            subj_slug, unk_id,
         )
         updated = 0
         skipped = 0
         for r in rows:
             assigned_slug = _classify_topic(r["text"], subj_slug)
-            if not assigned_slug or assigned_slug not in t_map:
+            if not assigned_slug or assigned_slug not in t_map or assigned_slug == "_unknown":
                 skipped += 1
                 continue
             if not dry_run:
