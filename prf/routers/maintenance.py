@@ -1117,3 +1117,173 @@ async def deactivate_fragments(
     )
     return {"desativadas": n or 0,
             "obs": "Reative com /fragments/rewrite quando houver crédito de IA"}
+
+
+# ── Topic classification (keyword-based) ────────────────────────────────────
+
+_TOPIC_KEYWORDS: dict[str, list[tuple[str, list[str]]]] = {
+    # (subject_slug) → list of (topic_slug, keywords_lower)
+    "direito-penal-militar": [
+        ("aplicacao-lei-penal-militar", [
+            "aplicação", "lei penal", "retroativid", "irretroativid",
+            "analogia", "extraterritorial", "territorial", "lei mais benigna",
+        ]),
+        ("penas-militares", [
+            "pena ", "reclusão", "detenção", "impedimento", "reforma",
+            "perda do posto", "suspensão do exercício", "sanção", "excludente",
+        ]),
+        ("crime-militar", [
+            "crime militar", "crime próprio", "crime impróprio",
+            "militar da ativa", "sujeito ativo", "dolo", "culpa",
+            "elemento subjetivo", "tipicidade", "antijuridicidade",
+        ]),
+        ("crimes-militares-especie", []),  # default / fallback
+    ],
+    "direito-processual-penal-militar": [
+        ("ipm", [
+            "inquérito", "ipm", "investigação", "instauração",
+            "encarregado", "relatório", "diligência", "indiciamento",
+        ]),
+        ("processo-penal-militar-geral", []),  # default
+    ],
+    "legislacao-institucional-pm": [
+        ("regulamento-disciplinar-pmgo", [
+            "disciplin", "regulamento", "transgressão", "punição", "sanção",
+            "falta disciplinar", "prisão disciplinar",
+        ]),
+        ("organizacao-pmgo", [
+            "organização da pmgo", "estrutura", "batalhão", "companhia",
+            "corporação", "lei de organização",
+        ]),
+        ("hierarquia-disciplina", [
+            "hierarquia", "subordinação", "obediência",
+            "superior hierárquico", "inferior hierárquico",
+        ]),
+        ("estatuto-militares-go", []),  # default
+    ],
+    "criminologia": [
+        ("vitimologia", [
+            "vítima", "vitimolog", "dano", "reparação à vítima",
+        ]),
+        ("prevencao-criminal", [
+            "prevenção", "prevenc", "política criminal",
+        ]),
+        ("sociologia-criminal", [
+            "sociolog", "subculturas", "reintegração social",
+            "meio social", "desvio social",
+        ]),
+        ("teorias-criminologicas", []),  # default
+    ],
+    "medicina-legal": [
+        ("tanatologia", [
+            "morte", "cadáver", "óbito", "cadavéric", "tanat",
+            "necropsia", "autópsia", "livor", "rigor", "putrefação", "fenômeno",
+        ]),
+        ("toxicologia-forense", [
+            "tóxico", "veneno", "intoxicação", "álcool", "etanol",
+            "toxicolog", "substância psicoativ",
+        ]),
+        ("documentos-medico-legais", [
+            "laudo", "certidão de óbito", "atestado", "documento médico",
+            "perícia médico", "perito médico",
+        ]),
+        ("traumatologia-forense", []),  # default
+    ],
+    "realidade-goias": [
+        ("historia-goias", [
+            "história", "históric", "bandeirante", "colonial", "república",
+            "revolução", "século", "formação histórica", "descobrimento",
+        ]),
+        ("economia-goias", [
+            "econom", "pib", "agropecuária", "indústria", "exportação",
+            "mineração", "produção", "renda", "crescimento econôm",
+        ]),
+        ("cultura-sociedade-goiana", [
+            "cultura", "festa", "tradição", "patrimônio", "folklore",
+            "folclore", "gastronomia", "religião", "artesanato",
+        ]),
+        ("politica-organizacao-go", [
+            "governo de goiás", "assembleia legislativa", "poder executivo estadual",
+            "constituição estadual", "administração estadual",
+        ]),
+        ("geografia-goias", []),  # default
+    ],
+}
+
+
+def _classify_topic(text: str, subject_slug: str) -> str | None:
+    rules = _TOPIC_KEYWORDS.get(subject_slug)
+    if not rules:
+        return None
+    low = text.lower()
+    for topic_slug, keywords in rules:
+        if not keywords:
+            continue
+        if any(kw in low for kw in keywords):
+            return topic_slug
+    # Use last entry as default
+    return rules[-1][0]
+
+
+@router.post("/topics/classify")
+async def classify_topics(
+    subject_slug: str | None = Query(None, description="Classify only this subject; omit for all"),
+    dry_run: bool = Query(False),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Assign topic_id to questions with no topic using keyword rules.
+
+    Safe to run multiple times — only touches rows where topic_id IS NULL.
+    """
+    _require_admin(x_maintenance_token)
+
+    slugs = list(_TOPIC_KEYWORDS.keys()) if not subject_slug else [subject_slug]
+
+    # Build topic slug → id map
+    topic_rows = await repo._fetch(
+        """SELECT t.id, t.slug, s.slug AS subject_slug
+             FROM topics t
+             JOIN subjects s ON s.id = t.subject_id
+            WHERE s.slug = ANY($1::text[])""",
+        slugs,
+    )
+    topic_map: dict[str, dict[str, str]] = {}
+    for r in topic_rows:
+        topic_map.setdefault(r["subject_slug"], {})[r["slug"]] = str(r["id"])
+
+    results = {}
+    for subj_slug in slugs:
+        t_map = topic_map.get(subj_slug, {})
+        if not t_map:
+            results[subj_slug] = {"error": "no topics found in db"}
+            continue
+
+        rows = await repo._fetch(
+            """SELECT q.id, q.text
+                 FROM questions q
+                 JOIN subjects s ON s.id = q.subject_id
+                WHERE s.slug = $1 AND q.topic_id IS NULL AND q.is_active""",
+            subj_slug,
+        )
+        updated = 0
+        skipped = 0
+        for r in rows:
+            assigned_slug = _classify_topic(r["text"], subj_slug)
+            if not assigned_slug or assigned_slug not in t_map:
+                skipped += 1
+                continue
+            if not dry_run:
+                await repo._execute(
+                    "UPDATE questions SET topic_id = $1 WHERE id = $2",
+                    t_map[assigned_slug], r["id"],
+                )
+            updated += 1
+        results[subj_slug] = {
+            "total_unclassified": len(rows),
+            "updated": updated,
+            "skipped": skipped,
+            "dry_run": dry_run,
+        }
+
+    return {"classified": results}

@@ -3288,7 +3288,11 @@ function backToLegalDocs() {
   S.subView = 'legal'; S.searchResults = null; S.searchQ = ''; render(); scrollTop();
 }
 async function loadLegalDocs() {
-  try { S.legalDocs = await api('/api/prf/legal/documents'); }
+  try {
+    const docs = await api('/api/prf/legal/documents');
+    // CTB is PRF-era content — exclude from PMGO library
+    S.legalDocs = Array.isArray(docs) ? docs.filter(d => d.slug !== 'ctb') : [];
+  }
   catch (e) { S.legalDocs = []; }
   render();
 }
