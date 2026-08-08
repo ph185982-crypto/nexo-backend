@@ -3,9 +3,9 @@
  * Enables offline-first PWA experience with cache-first strategy
  */
 
-const CACHE_NAME = 'prf-estudo-v1';
-const API_CACHE = 'prf-api-v1';
-const ASSETS_CACHE = 'prf-assets-v1';
+const CACHE_NAME = 'prf-estudo-v2';
+const API_CACHE = 'prf-api-v2';
+const ASSETS_CACHE = 'prf-assets-v2';
 
 const CRITICAL_ASSETS = [
   '/',
@@ -96,36 +96,31 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets: cache-first
+  // Navigation requests (HTML pages): network-first so deploys take effect immediately
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).then((response) => {
+        if (response && response.status === 200) {
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, cloned));
+        }
+        return response;
+      }).catch(() => caches.match(request).then((c) => c || caches.match('/')))
+    );
+    return;
+  }
+
+  // Other static assets (icons, manifest): cache-first with background refresh
   event.respondWith(
     caches.match(request).then((cached) => {
-      if (cached) {
-        // Refresh in background
-        fetch(request).then((response) => {
-          if (response && response.status === 200) {
-            caches.open(ASSETS_CACHE).then((cache) => {
-              cache.put(request, response);
-            });
-          }
-        }).catch(() => {});
-        return cached;
-      }
-      return fetch(request).then((response) => {
-        if (!response || response.status !== 200) {
-          return response;
+      const networkFetch = fetch(request).then((response) => {
+        if (response && response.status === 200) {
+          const cloned = response.clone();
+          caches.open(ASSETS_CACHE).then((cache) => cache.put(request, cloned));
         }
-        const cloned = response.clone();
-        caches.open(ASSETS_CACHE).then((cache) => {
-          cache.put(request, cloned);
-        });
         return response;
-      }).catch(() => {
-        // Fallback for critical pages
-        if (request.mode === 'navigate') {
-          return caches.match('/');
-        }
-        return null;
       });
+      return cached || networkFetch.catch(() => null);
     })
   );
 });

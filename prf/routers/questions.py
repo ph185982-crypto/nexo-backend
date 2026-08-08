@@ -79,6 +79,31 @@ async def list_questions(
     return {"questions": results, "total": len(results)}
 
 
+@router.get("/history")
+async def get_history(
+    limit: int = Query(default=50, ge=1, le=200),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Return the user's recent question attempts with question text and result."""
+    rows = await repo._fetch(
+        """SELECT qa.id, qa.question_id, qa.is_correct, qa.time_spent_secs,
+                  qa.created_at, q.text, q.context_text, q.question_type,
+                  s.name AS subject_name,
+                  ca.letter AS selected_letter, ca.text AS selected_text,
+                  cr.letter AS correct_letter, cr.text AS correct_text
+           FROM question_attempts qa
+           JOIN questions q ON q.id = qa.question_id
+           LEFT JOIN subjects s ON s.id = q.subject_id
+           LEFT JOIN question_alternatives ca ON ca.id = qa.selected_alt_id
+           LEFT JOIN question_alternatives cr ON cr.question_id = q.id AND cr.is_correct = TRUE
+           WHERE qa.user_id = $1
+           ORDER BY qa.created_at DESC LIMIT $2""",
+        user_id, limit,
+    )
+    return {"history": [dict(r) for r in rows], "total": len(rows)}
+
+
 @router.get("/{question_id}")
 async def get_question(
     question_id: UUID,
