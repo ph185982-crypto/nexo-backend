@@ -291,7 +291,8 @@ async def serve_sw():
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
         "prf", "static", "sw.js",
     )
-    return FileResponse(sw_path, media_type="application/javascript")
+    return FileResponse(sw_path, media_type="application/javascript",
+                        headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
 
 @app.get("/app", response_class=HTMLResponse, tags=["Frontend"])
@@ -305,4 +306,5 @@ async def serve_app():
         )
         with open(html_path, encoding="utf-8") as f:
             _html_cache = f.read()
-    return HTMLResponse(content=_html_cache)
+    return HTMLResponse(content=_html_cache,
+                        headers={"Cache-Control": "no-cache, must-revalidate"})

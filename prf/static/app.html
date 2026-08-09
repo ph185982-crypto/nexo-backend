@@ -1330,7 +1330,9 @@ async function api(path, opts = {}) {
 async function registrarSW() {
   if (!('serviceWorker' in navigator)) return null;
   try {
-    return await navigator.serviceWorker.register('/sw.js');
+    const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+    reg.update();
+    return reg;
   } catch (e) {
     console.warn('[PRF] service worker não registrou:', e);
     return null;
