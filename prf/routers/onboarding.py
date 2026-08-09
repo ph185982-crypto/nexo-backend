@@ -91,6 +91,48 @@ async def get_routines(
     ) for r in routines]
 
 
+@router.patch("/profile")
+async def update_profile(
+    body: dict,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Update exam_date/weekly_goal_hours/study_level without touching XP/streak/mission.
+
+    Existia um bug em que salvar o perfil em Configurações reusava
+    /onboarding/complete, que dá +50 XP de bônus a cada chamada — usuário
+    ganhava XP de graça só de ajustar a rotina de estudo.
+    """
+    fields = {}
+    for key in ("exam_date", "weekly_goal_hours", "study_level"):
+        if key in body:
+            fields[key] = body[key]
+    if not fields:
+        return {"updated": False}
+    set_clause = ", ".join(f"{k} = ${i+2}" for i, k in enumerate(fields))
+    await repo._execute(
+        f"UPDATE user_profiles SET {set_clause}, updated_at = NOW() WHERE user_id = $1",
+        user_id, *fields.values(),
+    )
+    return {"updated": True}
+
+
+@router.patch("/routines")
+async def update_routines(
+    body: dict,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Bulk update the weekly routine (7 days) without touching profile/XP/mission.
+
+    day_of_week segue o padrão Python weekday(): 0=segunda ... 6=domingo.
+    """
+    routines = body.get("routines", [])
+    for day in routines:
+        await repo.upsert_routine(user_id, day)
+    return {"saved": len(routines)}
+
+
 @router.patch("/target-exam")
 async def set_target_exam(
     body: dict,

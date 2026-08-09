@@ -1134,6 +1134,15 @@ button { font-family:inherit; }
 .hist-meta { font-size:12px; color:var(--muted); margin-top:3px; }
 .hist-row.correct { border-left:3px solid var(--success); }
 .hist-row.wrong { border-left:3px solid var(--error); }
+.routine-table { display:flex; flex-direction:column; gap:8px; }
+.routine-row { padding:12px 14px; border-radius:var(--r-md); background:var(--surface); border:1px solid var(--border); }
+.routine-row.rest { opacity:.7; }
+.routine-day { font-size:13px; font-weight:600; margin-bottom:8px; }
+.routine-fields { display:flex; flex-direction:column; gap:8px; }
+.routine-rest-toggle { display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-2); cursor:pointer; }
+.routine-rest-toggle input { width:16px; height:16px; }
+.routine-inline { display:flex; gap:8px; }
+.routine-inline select { flex:1; min-width:0; }
 .mission-resources { margin-top:20px; }
 .vid-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
 .vid-scroll::-webkit-scrollbar { height:4px; }
@@ -3613,49 +3622,76 @@ function viewHistory() {
 }
 
 // Settings
+// day_of_week: 0=segunda ... 6=domingo (padrão Python weekday(), igual ao schema).
+const DIAS_SEMANA = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+function _defaultRoutine() {
+  // Sugestão inicial — usuário com expediente 08h-18h seg-sex, 40min de
+  // deslocamento cada trecho, futebol seg à noite, culto ter e dom,
+  // ensaio quinta (alternado), sáb livre. Tudo editável antes de salvar.
+  return [
+    { day_of_week:0, study_minutes:30,  commute_minutes:40, typical_energy:'low',    is_rest_day:false }, // seg — futebol à noite
+    { day_of_week:1, study_minutes:60,  commute_minutes:40, typical_energy:'medium', is_rest_day:false }, // ter — culto
+    { day_of_week:2, study_minutes:120, commute_minutes:40, typical_energy:'high',   is_rest_day:false }, // qua — livre
+    { day_of_week:3, study_minutes:75,  commute_minutes:40, typical_energy:'medium', is_rest_day:false }, // qui — ensaio às vezes
+    { day_of_week:4, study_minutes:90,  commute_minutes:40, typical_energy:'medium', is_rest_day:false }, // sex — livre
+    { day_of_week:5, study_minutes:150, commute_minutes:0,  typical_energy:'high',   is_rest_day:false }, // sáb — dia livre
+    { day_of_week:6, study_minutes:45,  commute_minutes:0,  typical_energy:'low',    is_rest_day:false }, // dom — culto
+  ];
+}
 function openSettings() {
   S.tab = 'more'; S.subView = 'settings'; render(); scrollTop();
   if (!S.studyProfile) loadStudyProfile();
 }
 async function loadStudyProfile() {
+  let profileData = { exam_date:'', study_level:'beginner' };
+  let routines = null;
   try {
     const p = await api('/api/prf/onboarding/profile');
-    S.studyProfile = {
-      exam_date: p.exam_date || '',
-      daily_minutes: Math.round((p.weekly_goal_hours || 10) * 60 / 7),
-      study_level: p.study_level || 'beginner',
-    };
-  } catch (e) {
-    S.studyProfile = { exam_date: '', daily_minutes: 90, study_level: 'beginner' };
-  }
+    profileData = { exam_date: p.exam_date || '', study_level: p.study_level || 'beginner' };
+  } catch (e) {}
+  try {
+    const r = await api('/api/prf/onboarding/routines');
+    if (Array.isArray(r) && r.length) {
+      routines = _defaultRoutine().map(d => {
+        const found = r.find(x => x.day_of_week === d.day_of_week);
+        return found ? { day_of_week: d.day_of_week, study_minutes: found.study_minutes,
+          commute_minutes: found.commute_minutes || 0, typical_energy: found.typical_energy || 'medium',
+          is_rest_day: !!found.is_rest_day } : d;
+      });
+    }
+  } catch (e) {}
+  S.studyProfile = { ...profileData, routines: routines || _defaultRoutine(), isDefaultRoutine: !routines };
   render();
 }
 async function saveStudyProfile() {
   const p = S.studyProfile;
   S.savingProfile = true; render();
-  const routines = [0, 1, 2, 3, 4, 5, 6].map(day => ({
-    day_of_week: day,
-    study_minutes: p.daily_minutes,
-    is_rest_day: false,
-  }));
+  const totalMin = p.routines.reduce((s,d) => s + (d.is_rest_day ? 0 : d.study_minutes), 0);
   try {
-    await api('/api/prf/onboarding/complete', {
-      method: 'POST',
+    await api('/api/prf/onboarding/profile', {
+      method: 'PATCH',
       json: {
-        target_exam: 'PMGO',
         exam_date: p.exam_date || null,
-        weekly_goal_hours: Math.max(1, Math.round(p.daily_minutes * 7 / 60)),
+        weekly_goal_hours: Math.max(1, Math.round(totalMin / 60)),
         study_level: p.study_level,
-        routines,
       },
     });
-    S.mission = null; // força a missão de hoje a recalcular com o novo perfil
-    toast('Perfil de estudo salvo — sua missão vai se ajustar', 'success');
-  } catch (e) { toast('Erro ao salvar perfil', 'error'); }
+    await api('/api/prf/onboarding/routines', { method: 'PATCH', json: { routines: p.routines } });
+    S.studyProfile.isDefaultRoutine = false;
+    S.mission = null; // força a missão de hoje a recalcular com a nova rotina
+    toast('Rotina salva — sua missão vai se ajustar', 'success');
+  } catch (e) { toast('Erro ao salvar rotina', 'error'); }
   S.savingProfile = false; render();
+}
+function _updateRoutineDay(idx, field, value) {
+  const d = S.studyProfile.routines[idx];
+  if (field === 'study_minutes' || field === 'commute_minutes') d[field] = parseInt(value) || 0;
+  else if (field === 'is_rest_day') d[field] = value;
+  else d[field] = value;
 }
 function viewSettings() {
   const p = S.studyProfile;
+  const totalH = p ? (p.routines.reduce((s,d) => s + (d.is_rest_day ? 0 : d.study_minutes), 0) / 60).toFixed(1) : 0;
   return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Meu concurso</span></div>
     <div class="settings-section fade-in">
       <div class="section-eyebrow">Concurso Soldado PMGO</div>
@@ -3674,16 +3710,6 @@ function viewSettings() {
         <div class="settings-hint">Sem edital ainda? Deixe em branco — a trilha foca em construir base sólida sem pressão de prazo.</div>
       </div>
       <div class="settings-field">
-        <label>Quanto tempo você estuda por dia?</label>
-        <select onchange="S.studyProfile.daily_minutes=parseInt(this.value)">
-          <option value="45" ${p.daily_minutes<=45?'selected':''}>Menos de 1h</option>
-          <option value="90" ${p.daily_minutes>45&&p.daily_minutes<=90?'selected':''}>1 a 2h</option>
-          <option value="180" ${p.daily_minutes>90&&p.daily_minutes<=180?'selected':''}>2 a 4h</option>
-          <option value="300" ${p.daily_minutes>180?'selected':''}>4h ou mais</option>
-        </select>
-        <div class="settings-hint">Define o tamanho da missão diária.</div>
-      </div>
-      <div class="settings-field">
         <label>Onde você está na preparação?</label>
         <select onchange="S.studyProfile.study_level=this.value">
           <option value="beginner" ${p.study_level==='beginner'?'selected':''}>Começando do zero / básico</option>
@@ -3691,9 +3717,50 @@ function viewSettings() {
           <option value="advanced" ${p.study_level==='advanced'?'selected':''}>Avançado — já fiz essa prova antes</option>
         </select>
         <div class="settings-hint">Iniciante recebe mais lei seca com explicação antes de cada bloco de questões; avançado vai direto pra prática.</div>
+      </div>`}
+    </div>
+    <div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">Sua rotina semanal</div>
+      ${!p ? skeletonBlock(4, 56) : `
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5;margin-bottom:12px">
+        ${p.isDefaultRoutine ? 'Sugestão automática com base numa rotina típica de trabalho 8h-18h — ajuste cada dia antes de salvar.' : 'A missão diária usa isso pra definir quantos minutos e o formato de cada bloco.'}
+        Total: <strong>${totalH}h/semana</strong>.
+      </p>
+      <div class="routine-table">
+        ${p.routines.map((d, i) => `
+          <div class="routine-row ${d.is_rest_day?'rest':''}">
+            <div class="routine-day">${DIAS_SEMANA[d.day_of_week]}</div>
+            <div class="routine-fields">
+              <label class="routine-rest-toggle">
+                <input type="checkbox" ${d.is_rest_day?'checked':''} onchange="_updateRoutineDay(${i},'is_rest_day',this.checked);render()">
+                Dia de descanso
+              </label>
+              ${!d.is_rest_day ? `
+              <div class="routine-inline">
+                <select onchange="_updateRoutineDay(${i},'study_minutes',this.value)">
+                  <option value="20" ${d.study_minutes<=20?'selected':''}>20 min</option>
+                  <option value="30" ${d.study_minutes>20&&d.study_minutes<=30?'selected':''}>30 min</option>
+                  <option value="45" ${d.study_minutes>30&&d.study_minutes<=45?'selected':''}>45 min</option>
+                  <option value="60" ${d.study_minutes>45&&d.study_minutes<=60?'selected':''}>1h</option>
+                  <option value="75" ${d.study_minutes>60&&d.study_minutes<=75?'selected':''}>1h15</option>
+                  <option value="90" ${d.study_minutes>75&&d.study_minutes<=90?'selected':''}>1h30</option>
+                  <option value="120" ${d.study_minutes>90&&d.study_minutes<=120?'selected':''}>2h</option>
+                  <option value="150" ${d.study_minutes>120&&d.study_minutes<=150?'selected':''}>2h30</option>
+                  <option value="180" ${d.study_minutes>150?'selected':''}>3h+</option>
+                </select>
+                <select onchange="_updateRoutineDay(${i},'commute_minutes',this.value)">
+                  <option value="0" ${d.commute_minutes===0?'selected':''}>Sem deslocamento</option>
+                  <option value="20" ${d.commute_minutes>0&&d.commute_minutes<=20?'selected':''}>20 min de ida</option>
+                  <option value="40" ${d.commute_minutes>20&&d.commute_minutes<=40?'selected':''}>40 min de ida</option>
+                  <option value="60" ${d.commute_minutes>40?'selected':''}>60 min+ de ida</option>
+                </select>
+              </div>` : ''}
+            </div>
+          </div>`).join('')}
       </div>
-      <button class="btn btn-primary btn-full" onclick="saveStudyProfile()" ${S.savingProfile?'disabled':''}>
-        ${S.savingProfile ? 'Salvando...' : 'Salvar perfil de estudo'}</button>
+      <div class="settings-hint mt-8">Deslocamento vira aula em áudio automaticamente — nada de tela no trânsito.</div>
+      <button class="btn btn-primary btn-full mt-16" onclick="saveStudyProfile()" ${S.savingProfile?'disabled':''}>
+        ${S.savingProfile ? 'Salvando...' : 'Salvar rotina'}</button>
       `}
     </div>`;
 }
