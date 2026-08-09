@@ -1706,13 +1706,16 @@ function viewDashboard() {
     </div>
 
     ${(() => {
-      if (!mission || !mBlocks.length || !S.subjects || !S.resources) return '';
+      if (!mission || !mBlocks.length || !S.resources || !S.resources.length) return '';
       const sIds = [...new Set(mBlocks.map(b => b.subject_id).filter(Boolean))];
       const slugMap = {};
-      S.subjects.forEach(s => { slugMap[String(s.id)] = s.slug; });
+      (S.subjects || []).forEach(s => { slugMap[String(s.id)] = s.slug; });
       const slugs = sIds.map(id => slugMap[String(id)]).filter(Boolean);
-      const allRes = S.resources.filter(r => slugs.includes(r.subject_slug));
-      if (!allRes.length) return '';
+      const related = { 'direito-penal': ['direito-penal-militar','criminologia'], 'direito-processual-penal': ['direito-processual-penal-militar'], 'direito-constitucional': ['legislacao-institucional-pm'], 'legislacao-especial': ['legislacao-institucional-pm'] };
+      const expanded = new Set(slugs);
+      slugs.forEach(s => { (related[s] || []).forEach(r => expanded.add(r)); });
+      let allRes = S.resources.filter(r => expanded.has(r.subject_slug));
+      if (!allRes.length) allRes = S.resources.slice(0, 6);
       const vids = allRes.filter(r => r.resource_type === 'video');
       const docs = allRes.filter(r => r.resource_type !== 'video');
       return `<div class="mission-resources fade-in">
