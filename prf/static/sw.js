@@ -125,28 +125,10 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Background sync (not critical for MVP, but future enhancement)
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-answers') {
-    event.waitUntil(syncAnswers());
-  }
-});
-
-async function syncAnswers() {
-  try {
-    const db = await openIndexedDB();
-    const pending = await getPendingAnswers(db);
-    for (const answer of pending) {
-      await fetch('/api/prf/questions/answer', {
-        method: 'POST',
-        body: JSON.stringify(answer)
-      });
-    }
-    await clearPendingAnswers(db);
-  } catch (error) {
-    console.log('[SW] Background sync failed:', error);
-  }
-}
+// A fila de respostas offline vive no app (localStorage), não aqui — o
+// listener 'sync' chamava funções (openIndexedDB, getPendingAnswers,
+// clearPendingAnswers) que nunca existiram neste arquivo, então nunca
+// rodava de verdade. Removido em vez de manter código morto.
 
 // ─── Notificações push ──────────────────────────────────────────────────────
 // O servidor manda o lembrete cifrado; aqui ele vira notificação na tela.

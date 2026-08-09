@@ -43,6 +43,7 @@ class SubjectState:
     last_studied: Optional[datetime] = None
     study_time_mins: float = 0
     recurring_errors: int = 0
+    is_priority: bool = False
 
 
 @dataclass
@@ -168,6 +169,11 @@ def _compute_subject_score(s: SubjectState, ctx: PriorityContext) -> float:
     # Energia do usuário — casa dificuldade do conteúdo com a energia.
     impact *= _energy_multiplier(ctx.energy, s.mastery)
 
+    # Prioridade manual do usuário — ele marcou essa matéria como fraca e
+    # quer que ela suba na fila, independente do que o Impact Score sozinho diria.
+    if s.is_priority:
+        impact *= 1.3
+
     return impact
 
 
@@ -228,6 +234,8 @@ def _recommend_duration(s: SubjectState, ctx: PriorityContext) -> int:
 
 def _explain_priority(s: SubjectState, ctx: PriorityContext, score: float) -> str:
     parts = []
+    if s.is_priority:
+        parts.append("você marcou como prioridade")
     if s.total_attempts == 0:
         parts.append("primeiro contato — comece pela lei seca")
     if s.reviews_due > 0:

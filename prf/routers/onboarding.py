@@ -104,7 +104,7 @@ async def update_profile(
     ganhava XP de graça só de ajustar a rotina de estudo.
     """
     fields = {}
-    for key in ("exam_date", "weekly_goal_hours", "study_level"):
+    for key in ("exam_date", "weekly_goal_hours", "study_level", "priority_subjects"):
         if key in body:
             fields[key] = body[key]
     if not fields:

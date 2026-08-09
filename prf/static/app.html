@@ -94,6 +94,10 @@
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
 html,body { height:100%; overflow:hidden; }
 body {
   font-family:var(--sans); background:var(--bg); color:var(--ink);
@@ -1134,6 +1138,16 @@ button { font-family:inherit; }
 .hist-meta { font-size:12px; color:var(--muted); margin-top:3px; }
 .hist-row.correct { border-left:3px solid var(--success); }
 .hist-row.wrong { border-left:3px solid var(--error); }
+.consistency-block { margin-bottom:20px; }
+.consistency-row { display:flex; gap:10px; margin-top:10px; }
+.consistency-cell { flex:1; text-align:center; padding:14px 8px; border-radius:var(--r-md); background:var(--surface); border:1px solid var(--border); }
+.cc-num { font-family:var(--serif); font-size:22px; font-weight:500; font-variant-numeric:tabular-nums; }
+.cc-unit { font-size:14px; color:var(--ink-3); }
+.cc-label { font-size:11px; color:var(--ink-3); margin-top:2px; }
+.priority-subject-list { display:flex; flex-direction:column; gap:2px; }
+.priority-subject-item { display:flex; align-items:center; gap:10px; padding:10px 4px; font-size:14px; cursor:pointer; border-bottom:1px solid var(--border); }
+.priority-subject-item:last-child { border-bottom:none; }
+.priority-subject-item input { width:18px; height:18px; flex-shrink:0; }
 .routine-table { display:flex; flex-direction:column; gap:8px; }
 .routine-row { padding:12px 14px; border-radius:var(--r-md); background:var(--surface); border:1px solid var(--border); }
 .routine-row.rest { opacity:.7; }
@@ -1203,7 +1217,7 @@ button { font-family:inherit; }
   <div class="spinner"></div>
 </div>
 
-<div id="toast-wrap" class="toast-wrap"></div>
+<div id="toast-wrap" class="toast-wrap" aria-live="polite" aria-atomic="true"></div>
 <div id="app"></div>
 <audio id="audio-el" preload="none"></audio>
 
@@ -1240,7 +1254,7 @@ const S = {
   activeMissionIdx: null,
   coverage: null,
   studyProfile: null, savingProfile: false,
-  history: null,
+  history: null, consistency: null,
 };
 
 let timerInterval = null;
@@ -1320,7 +1334,15 @@ async function api(path, opts = {}) {
     opts.body = JSON.stringify(opts.json);
     delete opts.json;
   }
-  const r = await fetch(`${API}${path}`, { ...opts, headers });
+  let r;
+  try {
+    r = await fetch(`${API}${path}`, { ...opts, headers });
+  } catch (networkErr) {
+    // Falha de rede de verdade (sem sinal), não erro HTTP — enfileira POSTs
+    // pra reenviar quando a conexão voltar, em vez de perder o registro.
+    if ((opts.method || 'GET').toUpperCase() === 'POST') _queueOfflineRequest(path, opts);
+    throw networkErr;
+  }
   if (r.status === 401) {
     S.token = null; localStorage.removeItem('prf_token');
     await ensureAuth();
@@ -1332,6 +1354,36 @@ async function api(path, opts = {}) {
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
+
+// ===== FILA OFFLINE =====
+// Resposta de questão/simulado dada sem sinal (comute, elevador, túnel) não
+// pode simplesmente sumir — guarda no localStorage e reenvia sozinho quando
+// a conexão volta, sem exigir que o usuário perceba e refaça manualmente.
+const OFFLINE_QUEUE_KEY = 'prf_offline_queue';
+function _queueOfflineRequest(path, opts) {
+  try {
+    const q = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    q.push({ path, method: (opts.method || 'POST').toUpperCase(), body: opts.body || null });
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(q.slice(-50)));
+  } catch (e) {}
+}
+async function flushOfflineQueue() {
+  let q;
+  try { q = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]'); } catch (e) { return; }
+  if (!q.length) return;
+  const remaining = [];
+  for (const item of q) {
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (S.token) headers['Authorization'] = `Bearer ${S.token}`;
+      const r = await fetch(`${API}${item.path}`, { method: item.method, headers, body: item.body });
+      if (!r.ok && r.status !== 400 && r.status !== 404) remaining.push(item);
+    } catch (e) { remaining.push(item); }
+  }
+  localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(remaining));
+  if (remaining.length < q.length) toast('Respostas offline sincronizadas', 'success');
+}
+window.addEventListener('online', flushOfflineQueue);
 // ===== LEMBRETES (WEB PUSH) =====
 // O agendador no servidor decide quando cobrar; sem o service worker inscrito
 // essa cobrança não sai do banco. É este trecho que fecha o caminho até a tela.
@@ -1565,7 +1617,7 @@ function appbar() {
     : '';
   return `<div class="appbar" id="appbar">
     <div class="brand" style="display:flex;align-items:center;gap:8px">Estudo ${badge || `<em>${examLabel}</em>`}</div>
-    <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema">${ti}</button>
+    <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema">${ti}</button>
   </div>`;
 }
 function skeletonBlock(n = 3, h = 70) {
@@ -1652,7 +1704,7 @@ function viewDashboard() {
       <div class="ib-icon">${I.headphones}</div>
       <div class="ib-text"><strong>Instale na tela de início</strong>
         <span>Necessário para receber os alertas de estudo</span></div>
-      <button class="ib-close" onclick="event.stopPropagation();dispensarInstalacao()">${I.close}</button>
+      <button class="ib-close" onclick="event.stopPropagation();dispensarInstalacao()" aria-label="Fechar">${I.close}</button>
     </div>` : ''}
     <div class="hero-block fade-in">
       <div class="greeting-eyebrow">${dateStr}</div>
@@ -1851,17 +1903,17 @@ function viewPractice() {
 
 function viewPracticeQuestions() {
   if (S.loading.questions) {
-    return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Carregando</span></div>` + skeletonBlock(3, 90);
+    return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Carregando</span></div>` + skeletonBlock(3, 90);
   }
   const q = S.questions[S.qIndex];
-  if (!q) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">${esc(S.selSubjectName)}</span></div>
+  if (!q) return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">${esc(S.selSubjectName)}</span></div>
     <div class="empty">${I.book}<h3>Sem questões</h3><p>Não encontramos questões para essa matéria.</p></div>`;
 
   const answered = S.answerResult !== null;
   const ar = S.answerResult;
 
   return `<div class="topbar-sub">
-      <button class="back-btn" onclick="goBack()">${I.back}</button>
+      <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
       <span class="title-sub">${esc(S.selSubjectName)}</span>
       <span class="meta-sub">${S.qIndex + 1}/${S.questions.length}</span>
     </div>
@@ -1929,7 +1981,7 @@ function viewResources() {
   const items = (S.resources || []).filter(r => r.subject_slug === slug);
   const vids = items.filter(r => r.resource_type === 'video');
   const docs = items.filter(r => r.resource_type !== 'video');
-  return `<div class="topbar-sub"><button class="back-btn" onclick="backFromResources()">${I.back}</button>
+  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="backFromResources()">${I.back}</button>
     <span class="title-sub">Material · ${esc(S.selSubjectName)}</span></div>
     <div class="fade-in">
       <div class="hero-block">
@@ -1966,7 +2018,7 @@ function viewResources() {
 // ===== TUTOR =====
 function viewTutor() {
   return `<div class="topbar-sub">
-      <button class="back-btn" onclick="closeTutor()">${I.back}</button>
+      <button class="back-btn" aria-label="Voltar" onclick="closeTutor()">${I.back}</button>
       <span class="title-sub">Tutor de IA</span>
     </div>
     <div class="chat-wrap" id="chat-wrap">
@@ -1976,7 +2028,7 @@ function viewTutor() {
     <div class="chat-input-row">
       <input id="tutor-input" placeholder="Explique seu raciocínio..." autocomplete="off"
              onkeydown="if(event.key==='Enter')sendTutorMsg()">
-      <button class="send-btn" onclick="sendTutorMsg()">${I.send}</button>
+      <button class="send-btn" onclick="sendTutorMsg()" aria-label="Enviar">${I.send}</button>
     </div>`;
 }
 
@@ -2033,7 +2085,7 @@ function viewSimuladoExam() {
     ? { 1: 'Gerais', 2: 'Específicos' }
     : { 1: 'Bloco I', 2: 'Bloco II', 3: 'Bloco III' };
   return `<div class="sim-header">
-      <button class="sim-close" onclick="confirmExitSim()">${I.close}</button>
+      <button class="sim-close" onclick="confirmExitSim()" aria-label="Sair do simulado">${I.close}</button>
       <div class="sim-timer ${S.simSeconds < 600 ? 'danger' : ''}">${I.clock}<span>${fmtTime(S.simSeconds)}</span></div>
       <div class="sim-count">${total}/${totalQ}</div>
     </div>
@@ -2078,7 +2130,7 @@ function viewSimuladoResult() {
   const blockLabels = isPM
     ? { bloco_1: 'Gerais (peso 1)', bloco_2: 'Específicos (peso 2)' }
     : { bloco_1: 'Bloco I', bloco_2: 'Bloco II', bloco_3: 'Bloco III' };
-  return `<div class="topbar-sub"><button class="back-btn" onclick="resetSimulado()">${I.back}</button><span class="title-sub">Resultado</span></div>
+  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="resetSimulado()">${I.back}</button><span class="title-sub">Resultado</span></div>
     <div class="sim-result fade-in">
       <div class="verdict ${pass?'pass':'fail'}">
         <div class="verdict-lbl">${verdictLabel}</div>
@@ -2203,7 +2255,7 @@ function playerBar() {
     return `<div class="player-bar">
       <div class="pb-top">
         <button class="pb-btn ${hasPrev?'':'ghost'}" onclick="podPrev()" ${hasPrev?'':'disabled'}>${I.back}</button>
-        <button class="pb-btn" onclick="togglePlayPause()">${S.audioPlaying ? I.pause : I.play}</button>
+        <button class="pb-btn" onclick="togglePlayPause()" aria-label="${S.audioPlaying ? 'Pausar' : 'Tocar'}">${S.audioPlaying ? I.pause : I.play}</button>
         <button class="pb-btn ${hasNext?'':'ghost'}" onclick="podNext()" ${hasNext?'':'disabled'}>${I.chev}</button>
         <div class="pb-title">${esc(S.pod.title)}<span class="pb-pos">Parte ${S.podSeq+1}/${S.pod.segment_count}</span></div>
         <button class="pb-btn ghost" onclick="stopPodcast()">${I.close}</button>
@@ -2241,17 +2293,17 @@ function playerBar() {
 
 // ===== REVIEWS =====
 function viewReviews() {
-  if (!S.reviews) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>` + skeletonBlock(2, 120);
+  if (!S.reviews) return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>` + skeletonBlock(2, 120);
   if (!S.reviews.length) {
     if (S.activeMissionIdx != null) { finishMissionBlock(); return ''; }
-    return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
+    return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
     <div class="empty">${I.refresh}<h3>Tudo em dia</h3><p>Nenhuma revisão pendente. Responda questões para alimentar a repetição espaçada.</p></div>`;
   }
 
   const card = S.reviews[S.reviewIdx];
   if (!card) {
     if (S.activeMissionIdx != null) { finishMissionBlock(); return ''; }
-    return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
+    return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Revisões</span></div>
     <div class="empty">${I.refresh}<h3>Sessão concluída</h3><p>Você revisou todos os cartões pendentes.</p>
     <button class="btn btn-primary mt-16" onclick="goBack()">Voltar</button></div>`;
   }
@@ -2265,7 +2317,7 @@ function viewReviews() {
   ];
 
   return `<div class="topbar-sub">
-      <button class="back-btn" onclick="goBack()">${I.back}</button>
+      <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
       <span class="title-sub">Revisões</span>
       <span class="meta-sub">${S.reviewIdx + 1}/${S.reviews.length}</span>
     </div>
@@ -2343,7 +2395,7 @@ function viewMissionLegalReader() {
   const idx = S.missionLegalIdx || 0;
   const block = S.mission?.blocks?.[S.activeMissionIdx];
   const head = `<div class="topbar-sub">
-    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">${esc(block?.subject_name || 'Lei seca')}</span>
     ${articles && articles.length > 1 ? `<span class="meta-sub">${idx+1}/${articles.length}</span>` : ''}
   </div>`;
@@ -2440,7 +2492,7 @@ function viewPodcastNow() {
   const ep = S.pod;
   const carregando = S.podLoading;
   const head = `<div class="topbar-sub">
-    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">${esc(S.podKind === 'drill' ? 'Drill de recall' : 'Aula em áudio')}</span>
   </div>`;
   if (!ep && carregando) return head + skeletonBlock(2, 120);
@@ -2467,7 +2519,7 @@ function viewPodcastNow() {
     </div>` : `
       <div class="pn-controls">
         <button class="pn-btn ${parte > 1 ? '' : 'ghost'}" onclick="podPrev()" ${parte>1?'':'disabled'}>${I.back}</button>
-        <button class="pn-play" onclick="togglePlayPause()">${tocando ? I.pause : I.play}</button>
+        <button class="pn-play" onclick="togglePlayPause()" aria-label="${tocando ? 'Pausar' : 'Tocar'}">${tocando ? I.pause : I.play}</button>
         <button class="pn-btn ${parte < total ? '' : 'ghost'}" onclick="podNext()" ${parte<total?'':'disabled'}>${I.chev}</button>
       </div>
       <div class="pn-track-row">
@@ -2487,7 +2539,7 @@ function viewFlashcards() {
   const cards = S.fcCards;
   const i = S.fcIdx || 0;
   const head = `<div class="topbar-sub">
-    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">Flashcards</span>
     ${cards?.length ? `<span class="meta-sub">${Math.min(i+1, cards.length)}/${cards.length}</span>` : ''}
   </div>`;
@@ -2564,7 +2616,7 @@ function viewMissionReview() {
   const reviews = S.reviews;
   const idx = S.reviewIdx || 0;
   const head = `<div class="topbar-sub">
-    <button class="back-btn" onclick="goBack()">${I.back}</button>
+    <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">Revisão</span>
     ${reviews?.length ? `<span class="meta-sub">${idx+1}/${reviews.length}</span>` : ''}
   </div>`;
@@ -2627,9 +2679,9 @@ function viewMissionReview() {
 function viewLegal() {
   if (S.subView === 'articles') return viewLegalArticles();
   if (S.subView === 'search') return viewLegalSearch();
-  if (!S.legalDocs) return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Legislação</span></div>` + skeletonBlock();
+  if (!S.legalDocs) return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Legislação</span></div>` + skeletonBlock();
   const total = S.legalDocs.reduce((s,d) => s + (d.article_count||0), 0);
-  return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Legislação</span></div>
+  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Legislação</span></div>
     ${missionContextBar()}
     <div class="legal-hero fade-in">
       <div class="display-hero">Legislação <em>essencial</em></div>
@@ -2648,7 +2700,7 @@ function viewLegal() {
 }
 
 function viewLegalArticles() {
-  const head = `<div class="topbar-sub"><button class="back-btn" onclick="backToLegalDocs()">${I.back}</button>
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="backToLegalDocs()">${I.back}</button>
     <span class="title-sub">${esc(S.selDocName)}</span>
     ${S.articles.length ? `<span class="meta-sub">${S.articles.length} artigos</span>` : ''}</div>`;
   if (S.loading.articles) return head + skeletonBlock(3, 90);
@@ -2676,7 +2728,7 @@ function toggleArt(i) {
 
 function viewLegalSearch() {
   return `<div class="topbar-sub">
-      <button class="back-btn" onclick="backToLegalDocs()">${I.back}</button>
+      <button class="back-btn" aria-label="Voltar" onclick="backToLegalDocs()">${I.back}</button>
       <div class="search-box" style="flex:1;margin:0">${I.search}
         <input id="search-input" placeholder="Buscar artigos..." autofocus
                oninput="debounceLegalSearch(this.value)" value="${esc(S.searchQ)}"></div>
@@ -2690,7 +2742,7 @@ function viewLegalSearch() {
 function viewEssays() {
   if (S.essayResult) return viewEssayResult();
   if (S.subView === 'essay-write') return viewEssayWrite();
-  const head = `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Redação</span></div>`;
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Redação</span></div>`;
   if (!S.themes) return head + skeletonBlock(3, 90);
   return head + `<div class="essay-hero fade-in">
       <div class="display-hero">Escreva. Receba <em>diagnóstico</em>.</div>
@@ -2710,7 +2762,7 @@ function viewEssayWrite() {
   const lines = (S.essayText||'').split('\n').length;
   const over = lines > 30;
   return `<div class="topbar-sub">
-      <button class="back-btn" onclick="backToThemes()">${I.back}</button>
+      <button class="back-btn" aria-label="Voltar" onclick="backToThemes()">${I.back}</button>
       <span class="title-sub">Redação</span>
       <span class="meta-sub"><span id="line-count-top" class="${over?'over':''}">${lines}</span>/30</span>
     </div>
@@ -2736,7 +2788,7 @@ function viewEssayResult() {
   const r = S.essayResult;
   const score = r.final_score || 0;
   const color = score >= 14 ? 'var(--success)' : score >= 8 ? 'var(--gold)' : 'var(--error)';
-  return `<div class="topbar-sub"><button class="back-btn" onclick="resetEssay()">${I.back}</button><span class="title-sub">Correção</span></div>
+  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="resetEssay()">${I.back}</button><span class="title-sub">Correção</span></div>
     <div class="essay-result fade-in">
       <div class="essay-score-hero">
         <div class="score-lbl">Nota final</div>
@@ -2866,6 +2918,7 @@ function switchTab(tab) {
   if (tab === 'audio' && !S.podcasts) loadPodcasts();
   if (tab === 'more' && !S.reviewSummary) loadReviewSummary();
   if (tab === 'more' && !S.trilha) loadTrilha();
+  if (tab === 'simulado' && !S.sim) resumeSimuladoIfAny();
 }
 function goBack() {
   S.subView = null; S.answerResult = null; S.searchResults = null; S.searchQ = '';
@@ -3084,10 +3137,29 @@ async function sendTutorMsg() {
 function closeTutor() { S.subView = 'questions'; render(); }
 
 // Simulado
+// O timer e o progresso antes só existiam na memória do JS — celular
+// travando a tela, aba recarregando ou o navegador matando o processo em
+// background durante as 4h30 de prova apagava a tentativa inteira, sem
+// chance de recuperar. Guarda só o exam_id no localStorage; tudo o mais
+// (perguntas, respostas, tempo restante) é reconstruído do servidor.
+const SIM_ID_KEY = 'prf_sim_active_id';
+function _startSimTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    S.simSeconds--;
+    const el = document.querySelector('.sim-timer');
+    if (el) {
+      el.innerHTML = `${I.clock}<span>${fmtTime(S.simSeconds)}</span>`;
+      if (S.simSeconds < 600) el.classList.add('danger');
+    }
+    if (S.simSeconds <= 0) { clearInterval(timerInterval); finishSimulado(); }
+  }, 1000);
+}
 async function generateSimulado() {
   S.loading.sim = true; render();
   try {
     S.sim = await api('/api/prf/simulados/generate', { method:'POST' });
+    localStorage.setItem(SIM_ID_KEY, S.sim.id);
     const blockNums = Object.keys(S.sim.blocks || {}).map(k => parseInt(k.replace('bloco_', '')));
     S.simBlock = blockNums[0] || 1; S.simAnswers = {}; S.simResult = null;
     S.simIndex = {}; blockNums.forEach(n => S.simIndex[n] = 0);
@@ -3098,18 +3170,44 @@ async function generateSimulado() {
         S.simQuestions[b] = d.questions || [];
       } catch (e) { S.simQuestions[b] = []; }
     }
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      S.simSeconds--;
-      const el = document.querySelector('.sim-timer');
-      if (el) {
-        el.innerHTML = `${I.clock}<span>${fmtTime(S.simSeconds)}</span>`;
-        if (S.simSeconds < 600) el.classList.add('danger');
-      }
-      if (S.simSeconds <= 0) { clearInterval(timerInterval); finishSimulado(); }
-    }, 1000);
+    _startSimTimer();
   } catch (e) { toast('Erro ao gerar simulado', 'error'); }
   S.loading.sim = false; render(); scrollTop();
+}
+async function resumeSimuladoIfAny() {
+  const id = localStorage.getItem(SIM_ID_KEY);
+  if (!id || S.sim) return;
+  let meta;
+  try { meta = await api(`/api/prf/simulados/${id}`); }
+  catch (e) { localStorage.removeItem(SIM_ID_KEY); return; }
+  if (meta.is_completed) { localStorage.removeItem(SIM_ID_KEY); return; }
+
+  const elapsedSecs = Math.floor((Date.now() - new Date(meta.started_at).getTime()) / 1000);
+  const secondsLeft = (meta.time_limit_mins || 270) * 60 - elapsedSecs;
+
+  S.sim = meta;
+  S.simAnswers = {};
+  Object.entries(meta.answers || {}).forEach(([qid, a]) => { S.simAnswers[qid] = a.selected; });
+  const blockNums = Object.keys(meta.blocks || {}).map(k => parseInt(k.replace('bloco_', '')));
+  S.simBlock = blockNums[0] || 1; S.simResult = null;
+  S.simIndex = {}; blockNums.forEach(n => S.simIndex[n] = 0);
+
+  if (secondsLeft <= 0) {
+    S.simSeconds = 0;
+    toast('O tempo do seu simulado esgotou enquanto você estava fora', 'info');
+    await finishSimulado();
+    return;
+  }
+  S.simSeconds = secondsLeft;
+  for (const b of blockNums) {
+    try {
+      const d = await api(`/api/prf/simulados/${id}/questions?block=${b}`);
+      S.simQuestions[b] = d.questions || [];
+    } catch (e) { S.simQuestions[b] = []; }
+  }
+  _startSimTimer();
+  toast('Simulado retomado de onde você parou', 'success');
+  S.tab = 'simulado'; render(); scrollTop();
 }
 function switchSimBlock(b) { S.simBlock = b; render(); scrollTop(); }
 function prevSimQ() { if ((S.simIndex[S.simBlock]||0) > 0) { S.simIndex[S.simBlock]--; render(); scrollTop(); } }
@@ -3125,14 +3223,19 @@ async function answerSimQ(qid, sel) {
   setTimeout(nextSimQ, 280);
 }
 function confirmFinishSim() { if (confirm('Finalizar a prova? Esta ação não pode ser desfeita.')) finishSimulado(); }
-function confirmExitSim() { if (confirm('Sair do simulado? Seu progresso será perdido.')) resetSimulado(); }
+function confirmExitSim() { if (confirm('Sair do simulado? Seu progresso já está salvo — você pode retomar depois nesta mesma tela.')) resetSimulado(); }
 async function finishSimulado() {
   clearInterval(timerInterval);
+  localStorage.removeItem(SIM_ID_KEY);
   try { S.simResult = await api(`/api/prf/simulados/${S.sim.id}/finish`, { method:'POST' }); }
   catch (e) { toast('Erro ao finalizar', 'error'); }
   render(); scrollTop();
 }
 function resetSimulado() {
+  // Só limpa o estado em memória — o exam_id no localStorage permanece,
+  // então se ainda houver simulado em aberto no servidor (saiu sem
+  // finalizar), resumeSimuladoIfAny() o retoma na próxima vez que a aba
+  // Simulado abrir. finishSimulado() é o único lugar que de fato encerra.
   clearInterval(timerInterval);
   S.sim = null; S.simQuestions = {}; S.simResult = null; S.simAnswers = {};
   S.simIndex = {}; S.simBlock = 1; S.simSeconds = 0;
@@ -3532,7 +3635,7 @@ async function loadTrilha() {
   render();
 }
 function viewTrilha() {
-  const head = `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Trilha do edital</span></div>`;
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Trilha do edital</span></div>`;
   if (!S.trilha) return head + skeletonBlock(4, 60);
   const t = S.trilha;
   const pct = (t.coverage || 0).toFixed(1);
@@ -3585,10 +3688,20 @@ function openHistory() {
 async function loadHistory() {
   try { const d = await api('/api/prf/questions/history?limit=100'); S.history = d.history || []; }
   catch (e) { S.history = []; toast('Erro ao carregar histórico', 'error'); }
+  try {
+    const m = await api('/api/prf/missions/history?days=30');
+    const rows = (m.history || []).slice().sort((a,b) => a.date.localeCompare(b.date));
+    const trackedDays = rows.length;
+    const completedDays = rows.filter(r => r.mission_completed).length;
+    let longest = 0, current = 0;
+    rows.forEach(r => { current = r.mission_completed ? current + 1 : 0; longest = Math.max(longest, current); });
+    S.consistency = { trackedDays, completedDays,
+      pct: trackedDays ? Math.round(completedDays / trackedDays * 100) : 0, longestStreak: longest };
+  } catch (e) { S.consistency = null; }
   render();
 }
 function viewHistory() {
-  const head = `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Histórico de respostas</span></div>`;
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Histórico de respostas</span></div>`;
   if (!S.history) return head + skeletonBlock(5, 60);
   if (!S.history.length) return head + `<div class="empty">${I.book}<h3>Nenhuma resposta ainda</h3><p>Responda questões para ver seu histórico aqui.</p></div>`;
   const grouped = {};
@@ -3605,6 +3718,14 @@ function viewHistory() {
         <span class="level-chip" style="background:var(--error-soft);color:var(--error)">${S.history.filter(h=>!h.is_correct).length} erradas</span>
       </div>
     </div>
+    ${S.consistency && S.consistency.trackedDays ? `<div class="consistency-block">
+      <div class="section-eyebrow">Consistência (30 dias)</div>
+      <div class="consistency-row">
+        <div class="consistency-cell"><div class="cc-num">${S.consistency.pct}<span class="cc-unit">%</span></div><div class="cc-label">missões concluídas</div></div>
+        <div class="consistency-cell"><div class="cc-num">${S.consistency.longestStreak}</div><div class="cc-label">sequência máxima</div></div>
+        <div class="consistency-cell"><div class="cc-num">${S.consistency.completedDays}/${S.consistency.trackedDays}</div><div class="cc-label">dias com registro</div></div>
+      </div>
+    </div>` : ''}
     ${Object.entries(grouped).map(([date, items]) => `
       <div class="hist-date">${date}</div>
       ${items.map(h => {
@@ -3643,11 +3764,12 @@ function openSettings() {
   if (!S.studyProfile) loadStudyProfile();
 }
 async function loadStudyProfile() {
-  let profileData = { exam_date:'', study_level:'beginner' };
+  let profileData = { exam_date:'', study_level:'beginner', prioritySubjects:[] };
   let routines = null;
   try {
     const p = await api('/api/prf/onboarding/profile');
-    profileData = { exam_date: p.exam_date || '', study_level: p.study_level || 'beginner' };
+    profileData = { exam_date: p.exam_date || '', study_level: p.study_level || 'beginner',
+      prioritySubjects: p.priority_subjects || [] };
   } catch (e) {}
   try {
     const r = await api('/api/prf/onboarding/routines');
@@ -3674,6 +3796,7 @@ async function saveStudyProfile() {
         exam_date: p.exam_date || null,
         weekly_goal_hours: Math.max(1, Math.round(totalMin / 60)),
         study_level: p.study_level,
+        priority_subjects: p.prioritySubjects || [],
       },
     });
     await api('/api/prf/onboarding/routines', { method: 'PATCH', json: { routines: p.routines } });
@@ -3689,10 +3812,17 @@ function _updateRoutineDay(idx, field, value) {
   else if (field === 'is_rest_day') d[field] = value;
   else d[field] = value;
 }
+function _togglePrioritySubject(slug, checked) {
+  const list = S.studyProfile.prioritySubjects || [];
+  S.studyProfile.prioritySubjects = checked
+    ? [...new Set([...list, slug])]
+    : list.filter(s => s !== slug);
+  render();
+}
 function viewSettings() {
   const p = S.studyProfile;
   const totalH = p ? (p.routines.reduce((s,d) => s + (d.is_rest_day ? 0 : d.study_minutes), 0) / 60).toFixed(1) : 0;
-  return `<div class="topbar-sub"><button class="back-btn" onclick="goBack()">${I.back}</button><span class="title-sub">Meu concurso</span></div>
+  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Meu concurso</span></div>
     <div class="settings-section fade-in">
       <div class="section-eyebrow">Concurso Soldado PMGO</div>
       <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
@@ -3718,6 +3848,22 @@ function viewSettings() {
         </select>
         <div class="settings-hint">Iniciante recebe mais lei seca com explicação antes de cada bloco de questões; avançado vai direto pra prática.</div>
       </div>`}
+    </div>
+    <div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">Matérias que você quer priorizar</div>
+      ${!p ? skeletonBlock(2, 44) : `
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5;margin-bottom:12px">
+        Marque onde você sabe que está mais fraco — a missão passa a puxar essas matérias com mais frequência, sem você ter que escolher todo dia.
+      </p>
+      <div class="priority-subject-list">
+        ${(S.subjects || []).filter(s => s.is_active !== false).map(s => `
+          <label class="priority-subject-item">
+            <input type="checkbox" ${(p.prioritySubjects||[]).includes(s.slug)?'checked':''}
+              onchange="_togglePrioritySubject('${s.slug}',this.checked)">
+            <span>${esc(s.name)}</span>
+          </label>`).join('')}
+      </div>
+      `}
     </div>
     <div class="settings-section fade-in" style="padding-top:0">
       <div class="section-eyebrow">Sua rotina semanal</div>
@@ -3832,6 +3978,8 @@ async function init() {
   loadDashboard();
   loadSubjects();
   loadCoverage();
+  resumeSimuladoIfAny();
+  flushOfflineQueue();
 
   // O service worker serve o app offline e recebe os lembretes. Registrar
   // depois da primeira renderização evita competir com o carregamento inicial;

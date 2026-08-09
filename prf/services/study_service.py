@@ -82,6 +82,8 @@ class StudyService:
         is_pm = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
         weight_key = "weight_pm" if is_pm else "weight_prf"
 
+        priority_slugs = set((profile or {}).get("priority_subjects") or [])
+
         subject_states = []
         for s in subjects:
             exam_weight = s.get(weight_key, 0) or 0
@@ -102,6 +104,7 @@ class StudyService:
                 last_studied=m.get("last_studied"),
                 study_time_mins=m.get("study_time_mins", 0),
                 recurring_errors=recurring,
+                is_priority=s.get("slug") in priority_slugs,
             ))
 
         days_until_exam = None

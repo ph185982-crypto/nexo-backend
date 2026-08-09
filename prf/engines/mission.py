@@ -253,7 +253,7 @@ def build_mission(
                 title=f"Lei seca — {topic_label} ({len(picked)} artigos)",
                 description=(
                     "Leia a lei do tópico que você ouviu hoje de manhã."
-                    if heard else f"{risk_tag} · leia antes de validar com questões."
+                    if heard else f"{risk_tag} · {p.reason} · leia antes de validar com questões."
                 ),
                 estimated_mins=block_mins,
                 display_order=order,

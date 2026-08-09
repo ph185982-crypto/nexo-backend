@@ -348,3 +348,71 @@ async def simulado_history(
         user_id, limit,
     )
     return {"exams": [dict(e) for e in exams], "total": len(exams)}
+
+
+@router.get("/{exam_id}")
+async def get_exam_state(
+    exam_id: UUID,
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Estado completo do simulado para retomar após reload/app fechado.
+
+    Registrado por último no arquivo de propósito: como é um path dinâmico
+    de segmento único (`/{exam_id}`), se viesse antes de `/history` ele
+    "roubaria" a rota estática — toda chamada a /simulados/history cairia
+    aqui tentando validar "history" como UUID e quebraria com 422.
+
+    O timer do simulado antes só existia na memória do JS — se a aba
+    recarregasse, o navegador matasse o processo em background, ou o
+    celular travasse a tela durante as 4h30 de prova, o candidato perdia
+    a tentativa inteira, sem chance de recuperar. Tudo que precisa pra
+    reconstruir o estado (perguntas, respostas já dadas, tempo restante)
+    já ficava salvo no banco a cada resposta — só faltava expor aqui.
+    """
+    import json
+    exam = await repo._fetchrow(
+        "SELECT * FROM simulated_exams WHERE id = $1 AND user_id = $2",
+        exam_id, user_id,
+    )
+    if not exam:
+        raise HTTPException(404, "Simulado não encontrado")
+
+    q_ids = json.loads(exam["questions"]) if isinstance(exam["questions"], str) else exam["questions"]
+    answers = json.loads(exam["answers"]) if isinstance(exam["answers"], str) else exam["answers"]
+
+    is_pm = exam.get("exam_type", "").startswith("simulado_pm")
+    active_blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
+    exam_label = "PMGO" if is_pm else "PRF"
+
+    block_counts: dict[int, int] = {bn: 0 for bn in active_blocks}
+    for qid_str in q_ids:
+        q = await repo._fetchrow(
+            "SELECT s.slug FROM questions q JOIN subjects s ON q.subject_id = s.id WHERE q.id = $1",
+            qid_str if isinstance(qid_str, UUID) else UUID(qid_str),
+        )
+        if not q:
+            continue
+        for bn, bi in active_blocks.items():
+            if q["slug"] in bi["subjects"]:
+                block_counts[bn] += 1
+                break
+
+    return {
+        "id": exam["id"],
+        "total_questions": len(q_ids),
+        "blocks": {
+            f"bloco_{bn}": {
+                "total": block_counts[bn],
+                "subjects": active_blocks[bn]["subjects"],
+                "name": active_blocks[bn].get("name", f"Bloco {bn}"),
+            }
+            for bn in sorted(active_blocks.keys()) if block_counts[bn] > 0
+        },
+        "time_limit_mins": exam["time_limit_mins"],
+        "started_at": exam["started_at"],
+        "exam_type": exam_label,
+        "question_format": "multipla_escolha" if is_pm else "certo_errado",
+        "is_completed": exam["is_completed"],
+        "answers": {str(k): v for k, v in (answers or {}).items()},
+    }
