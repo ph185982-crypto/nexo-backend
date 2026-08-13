@@ -1589,6 +1589,8 @@ const I = {
   pause: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`,
   volume: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>`,
   send: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
+  dumbbell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11M4 8l2-2 3 3-2 2zM15 17l3 3 2-2-3-3zM2 14l3-3M17 5l3 3M6.5 17.5l-3 3M17.5 6.5l3-3"/></svg>`,
+  checkCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
 };
 
 // ===== UTILS =====
@@ -1893,6 +1895,18 @@ function viewDashboard() {
         ${d.top_risks.map(r => `<div class="risk-chip"><span class="rc-pts">${r.points_at_risk}pt</span><span class="rc-name">${esc(r.subject_name)}</span></div>`).join('')}
       </div>` : ''}
     </div>` : ''}
+    ${(() => {
+      const ad = S.approvalDetail;
+      if (!ad || ad.target_cutoff == null) return '';
+      const okCutoff = ad.gap_to_cutoff <= 0;
+      return `<div class="risk-block">
+        <div class="risk-head">
+          <span class="lbl">Corte-alvo (${esc(S.studyProfile?.municipio || 'seu município')}: ${ad.target_cutoff}pt)</span>
+          <span class="risk-val" style="color:${okCutoff ? 'var(--success,#2e9e5b)' : 'var(--error)'}">
+            ${okCutoff ? 'Batendo' : `Faltam ${ad.gap_to_cutoff}`}<span class="risk-unit"> · projeta ${ad.projected_points}pt</span></span>
+        </div>
+      </div>`;
+    })()}
     ${wp.length ? `<div class="week-block">
       <div class="section-eyebrow">Últimos 7 dias</div>
       <div class="section-title">Seu ritmo</div>
@@ -2851,25 +2865,126 @@ function viewEssayWrite() {
 function viewEssayResult() {
   const r = S.essayResult;
   const score = r.final_score || 0;
-  const color = score >= 14 ? 'var(--success)' : score >= 8 ? 'var(--gold)' : 'var(--error)';
-  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="resetEssay()">${I.back}</button><span class="title-sub">Correção</span></div>
-    <div class="essay-result fade-in">
-      <div class="essay-score-hero">
-        <div class="score-lbl">Nota final</div>
-        <div class="score-num" style="color:${color}">${score.toFixed(1)}<span class="score-max">/20</span></div>
-      </div>
-      <div class="section-eyebrow">Detalhamento</div>
-      <div class="essay-breakdown mt-12">
+  const maxScore = r.max_score || 20;
+  const banca = r.banca || 'CEBRASPE';
+  const pct = score / maxScore;
+  const color = pct >= 0.7 ? 'var(--success)' : pct >= 0.4 ? 'var(--gold)' : 'var(--error)';
+  const rows = banca === 'AOCP' ? `
+        <div class="row"><span class="lbl">Banca</span><span class="val">AOCP (estimativa)</span></div>
+        <div class="row"><span class="lbl">Erros gramaticais identificados</span><span class="val">${r.ne_count||0}</span></div>
+        <div class="row"><span class="lbl"><strong>Nota final</strong></span><span class="val" style="color:${color}"><strong>${score.toFixed(1)}</strong></span></div>`
+    : `
         <div class="row"><span class="lbl">Nota de conteúdo (NC)</span><span class="val">${(r.nc_score||0).toFixed(1)}</span></div>
         <div class="row"><span class="lbl">Erros microestruturais (NE)</span><span class="val">${r.ne_count||0}</span></div>
         <div class="row"><span class="lbl">Total de linhas (TL)</span><span class="val">${r.total_lines||0}</span></div>
         <div class="row"><span class="lbl">Penalidade aplicada</span><span class="val neg">−${(r.penalty||0).toFixed(2)}</span></div>
-        <div class="row"><span class="lbl"><strong>Nota final</strong></span><span class="val" style="color:${color}"><strong>${score.toFixed(1)}</strong></span></div>
+        <div class="row"><span class="lbl"><strong>Nota final</strong></span><span class="val" style="color:${color}"><strong>${score.toFixed(1)}</strong></span></div>`;
+  return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="resetEssay()">${I.back}</button><span class="title-sub">Correção</span></div>
+    <div class="essay-result fade-in">
+      <div class="essay-score-hero">
+        <div class="score-lbl">Nota final</div>
+        <div class="score-num" style="color:${color}">${score.toFixed(1)}<span class="score-max">/${maxScore}</span></div>
       </div>
+      <div class="section-eyebrow">Detalhamento</div>
+      <div class="essay-breakdown mt-12">${rows}</div>
       ${r.feedback_text ? `<div class="section-eyebrow">Diagnóstico</div>
         <div class="essay-diagnosis mt-12">${esc(r.feedback_text)}</div>` : ''}
       <button class="btn btn-primary btn-lg btn-full mt-24" onclick="resetEssay()">Nova redação</button>
     </div>`;
+}
+
+// ===== TAF =====
+function viewTAF() {
+  const t = S.taf || { history:[], projections:[], targets:{} };
+  const f = S.tafForm || {};
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">TAF</span></div>`;
+  if (!S.taf) return head + skeletonBlock(3, 60);
+  return head + `<div class="settings-section fade-in">
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
+        Índice mínimo varia por edital/gênero e o próximo certame ainda não saiu — informe sua própria meta
+        (tirada do edital quando publicado) e acompanhe se o ritmo atual chega lá. Barra costuma ser o exercício
+        que mais reprova e o que menos se resolve em cima da hora.
+      </p>
+    </div>
+    <div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">Nova medição</div>
+      <div class="settings-field"><label>Barra fixa (repetições)</label>
+        <input type="number" min="0" value="${esc(f.barra_reps ?? '')}" oninput="S.tafForm.barra_reps=this.value"></div>
+      <div class="settings-field"><label>Flexão de braço (repetições)</label>
+        <input type="number" min="0" value="${esc(f.flexao_reps ?? '')}" oninput="S.tafForm.flexao_reps=this.value"></div>
+      <div class="settings-field"><label>Abdominal (repetições)</label>
+        <input type="number" min="0" value="${esc(f.abdominal_reps ?? '')}" oninput="S.tafForm.abdominal_reps=this.value"></div>
+      <div class="settings-field"><label>Corrida 12min (metros)</label>
+        <input type="number" min="0" value="${esc(f.corrida_12min_metros ?? '')}" oninput="S.tafForm.corrida_12min_metros=this.value"></div>
+      <button class="btn btn-primary btn-full mt-16" onclick="submitTAFRecord()" ${S.loading.taf?'disabled':''}>
+        ${S.loading.taf ? 'Salvando...' : 'Registrar medição'}</button>
+    </div>
+    <div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">Sua meta (opcional)</div>
+      <div class="settings-field"><label>Meta barra</label>
+        <input type="number" min="0" value="${esc(t.targets?.barra_reps ?? '')}" oninput="S.taf.targets.barra_reps=parseInt(this.value)||null"></div>
+      <div class="settings-field"><label>Meta flexão</label>
+        <input type="number" min="0" value="${esc(t.targets?.flexao_reps ?? '')}" oninput="S.taf.targets.flexao_reps=parseInt(this.value)||null"></div>
+      <div class="settings-field"><label>Meta abdominal</label>
+        <input type="number" min="0" value="${esc(t.targets?.abdominal_reps ?? '')}" oninput="S.taf.targets.abdominal_reps=parseInt(this.value)||null"></div>
+      <div class="settings-field"><label>Meta corrida 12min (metros)</label>
+        <input type="number" min="0" value="${esc(t.targets?.corrida_12min_metros ?? '')}" oninput="S.taf.targets.corrida_12min_metros=parseInt(this.value)||null"></div>
+      <button class="btn btn-secondary btn-full mt-12" onclick="saveTAFTargets()">Salvar meta</button>
+    </div>
+    ${t.projections.length ? `<div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">Projeção até a prova</div>
+      <div class="essay-breakdown mt-8">
+        ${t.projections.map(p => `<div class="row">
+          <span class="lbl">${esc(p.label)} <span style="color:var(--ink-3)">(${p.trend_per_week >= 0 ? '+' : ''}${p.trend_per_week}/semana)</span></span>
+          <span class="val">${p.latest_value ?? '—'}${p.target != null ? ` / meta ${p.target}` : ''}
+            ${p.on_track != null ? `<span style="color:${p.on_track ? 'var(--success)' : 'var(--error)'}"> · ${p.on_track ? 'no ritmo' : 'abaixo do ritmo'}</span>` : ''}</span>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+    ${t.history.length ? `<div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">Histórico</div>
+      <div class="essay-breakdown mt-8">
+        ${t.history.slice().reverse().map(r => `<div class="row">
+          <span class="lbl">${esc(r.measured_at)}</span>
+          <span class="val" style="font-size:12px">${[
+            r.barra_reps != null ? `Barra ${r.barra_reps}` : null,
+            r.flexao_reps != null ? `Flexão ${r.flexao_reps}` : null,
+            r.abdominal_reps != null ? `Abd ${r.abdominal_reps}` : null,
+            r.corrida_12min_metros != null ? `Corrida ${r.corrida_12min_metros}m` : null,
+          ].filter(Boolean).join(' · ')}</span>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}`;
+}
+
+// ===== CHECKLIST =====
+const CHECKLIST_CATEGORY_LABELS = {
+  investigacao_social: 'Investigação social',
+  psicotecnico: 'Exame psicotécnico',
+  medica: 'Exame médico',
+};
+function viewChecklist() {
+  const c = S.checklist;
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Fases eliminatórias</span></div>`;
+  if (!c) return head + skeletonBlock(4, 50);
+  const cats = Object.keys(c.by_category || {});
+  return head + `<div class="settings-section fade-in">
+      <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
+        Itens comuns a concursos de PM — não é a lista oficial do próximo edital PMGO (ainda não publicado).
+        Confira a lista exata e os prazos assim que o edital sair. Progresso: <strong>${c.done}/${c.total}</strong>.
+      </p>
+    </div>
+    ${cats.map(cat => `<div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">${esc(CHECKLIST_CATEGORY_LABELS[cat] || cat)}</div>
+      <div class="priority-subject-list">
+        ${c.by_category[cat].map(it => `
+          <label class="priority-subject-item" style="align-items:flex-start">
+            <input type="checkbox" ${it.is_done?'checked':''} onchange="toggleChecklistItem('${it.key}',this.checked)">
+            <span><strong style="${it.is_done?'text-decoration:line-through;color:var(--ink-3)':''}">${esc(it.title)}</strong><br>
+              <span style="font-size:12.5px;color:var(--ink-3)">${esc(it.description)}</span></span>
+          </label>`).join('')}
+      </div>
+    </div>`).join('')}`;
 }
 
 // ===== MORE =====
@@ -2880,6 +2995,8 @@ function viewMore() {
   if (S.subView === 'missionReview') return viewMissionReview();
   if (S.subView === 'legal' || S.subView === 'articles' || S.subView === 'search') return viewLegal();
   if (S.subView === 'essays' || S.subView === 'essay-write') return viewEssays();
+  if (S.subView === 'taf') return viewTAF();
+  if (S.subView === 'checklist') return viewChecklist();
   if (S.subView === 'reviews') return viewReviews();
   if (S.subView === 'trilha') return viewTrilha();
   if (S.subView === 'history') return viewHistory();
@@ -2913,9 +3030,19 @@ function viewMore() {
         <div class="info"><h3>Biblioteca jurídica</h3><p>Constituição, códigos e leis especiais</p></div>
         <div class="chev">${I.chev}</div>
       </div>
-      ${!isPM ? `<div class="shortcut" onclick="openEssays()">
+      <div class="shortcut" onclick="openEssays()">
         <div class="badge-icon accent">${I.pen}</div>
-        <div class="info"><h3>Redação discursiva</h3><p>Correção CEBRASPE com diagnóstico por IA</p></div>
+        <div class="info"><h3>Redação discursiva</h3><p>${isPM ? 'Correção AOCP (estimativa) com diagnóstico por IA' : 'Correção CEBRASPE com diagnóstico por IA'}</p></div>
+        <div class="chev">${I.chev}</div>
+      </div>
+      ${isPM ? `<div class="shortcut" onclick="openTAF()">
+        <div class="badge-icon gold">${I.dumbbell}</div>
+        <div class="info"><h3>TAF</h3><p>Registre suas medições e veja a tendência até a prova</p></div>
+        <div class="chev">${I.chev}</div>
+      </div>
+      <div class="shortcut" onclick="openChecklist()">
+        <div class="badge-icon accent">${I.checkCircle}</div>
+        <div class="info"><h3>Fases eliminatórias</h3><p>Investigação social, psicotécnico e exame médico</p></div>
         <div class="chev">${I.chev}</div>
       </div>` : ''}
       <div class="shortcut" onclick="toggleLembretes()">
@@ -3000,6 +3127,10 @@ async function loadDashboard() {
   }
   render();
   if (!S.mission) loadMission();
+  if (!S.approvalDetail) {
+    try { S.approvalDetail = await api('/api/prf/dashboard/approval-estimate'); render(); }
+    catch (e) {}
+  }
 }
 async function loadMission() {
   try {
@@ -3834,12 +3965,13 @@ function openSettings() {
   if (!S.studyProfile) loadStudyProfile();
 }
 async function loadStudyProfile() {
-  let profileData = { exam_date:'', study_level:'beginner', prioritySubjects:[] };
+  let profileData = { exam_date:'', study_level:'beginner', prioritySubjects:[], municipio:'', target_cutoff_score:'' };
   let routines = null;
   try {
     const p = await api('/api/prf/onboarding/profile');
     profileData = { exam_date: p.exam_date || '', study_level: p.study_level || 'beginner',
-      prioritySubjects: p.priority_subjects || [] };
+      prioritySubjects: p.priority_subjects || [], municipio: p.municipio || '',
+      target_cutoff_score: p.target_cutoff_score != null ? p.target_cutoff_score : '' };
   } catch (e) {}
   try {
     const r = await api('/api/prf/onboarding/routines');
@@ -3867,6 +3999,8 @@ async function saveStudyProfile() {
         weekly_goal_hours: Math.max(1, Math.round(totalMin / 60)),
         study_level: p.study_level,
         priority_subjects: p.prioritySubjects || [],
+        municipio: p.municipio || null,
+        target_cutoff_score: p.target_cutoff_score !== '' && p.target_cutoff_score != null ? Number(p.target_cutoff_score) : null,
       },
     });
     await api('/api/prf/onboarding/routines', { method: 'PATCH', json: { routines: p.routines } });
@@ -3917,6 +4051,19 @@ function viewSettings() {
           <option value="advanced" ${p.study_level==='advanced'?'selected':''}>Avançado — já fiz essa prova antes</option>
         </select>
         <div class="settings-hint">Iniciante recebe mais lei seca com explicação antes de cada bloco de questões; avançado vai direto pra prática.</div>
+      </div>
+      <div class="settings-field">
+        <label>Município que você vai concorrer</label>
+        <input type="text" placeholder="Ex: Goiânia, Anápolis..." value="${esc(p.municipio || '')}"
+          onchange="S.studyProfile.municipio=this.value">
+        <div class="settings-hint">O corte histórico varia por município (44-60 pontos no último certame). Preencha se já souber pra onde vai concorrer.</div>
+      </div>
+      <div class="settings-field">
+        <label>Corte-alvo (pontos, se você souber)</label>
+        <input type="number" min="0" max="200" step="0.5" placeholder="Ex: 55"
+          value="${p.target_cutoff_score !== '' && p.target_cutoff_score != null ? p.target_cutoff_score : ''}"
+          onchange="S.studyProfile.target_cutoff_score=this.value">
+        <div class="settings-hint">Corte histórico do seu município, se você tiver essa informação. Sem edital novo publicado ainda — use com cautela, é estimativa sua, não garantia.</div>
       </div>`}
     </div>
     <div class="settings-section fade-in" style="padding-top:0">
@@ -4020,6 +4167,68 @@ async function submitEssay() {
   S.loading.essay = false; render(); scrollTop();
 }
 function resetEssay() { S.essayResult = null; S.subView = 'essays'; S.essayText = ''; render(); scrollTop(); }
+
+// TAF
+function openTAF() {
+  S.tab = 'more'; S.subView = 'taf'; render(); scrollTop();
+  if (!S.taf) loadTAF();
+}
+async function loadTAF() {
+  S.taf = { history: [], projections: [], targets: {} };
+  try {
+    const [hist, proj] = await Promise.all([
+      api('/api/prf/taf/history'),
+      api('/api/prf/taf/projection'),
+    ]);
+    S.taf = { history: hist || [], projections: (proj && proj.projections) || [], targets: (proj && proj.targets) || {} };
+  } catch (e) {}
+  S.tafForm = { barra_reps:'', flexao_reps:'', abdominal_reps:'', corrida_12min_metros:'', notes:'' };
+  render();
+}
+async function submitTAFRecord() {
+  const f = S.tafForm || {};
+  const body = {};
+  ['barra_reps','flexao_reps','abdominal_reps','corrida_12min_metros'].forEach(k => {
+    if (f[k] !== '' && f[k] != null) body[k] = parseInt(f[k]) || 0;
+  });
+  if (f.notes) body.notes = f.notes;
+  if (!Object.keys(body).length) { toast('Preencha ao menos uma medição', 'error'); return; }
+  S.loading.taf = true; render();
+  try {
+    await api('/api/prf/taf/record', { method:'POST', json:body });
+    toast('Medição registrada', 'success');
+    await loadTAF();
+  } catch (e) { toast('Erro ao registrar medição', 'error'); }
+  S.loading.taf = false; render();
+}
+async function saveTAFTargets() {
+  const t = (S.taf && S.taf.targets) || {};
+  try {
+    await api('/api/prf/taf/targets', { method:'PATCH', json:{
+      barra_reps: t.barra_reps || null, flexao_reps: t.flexao_reps || null,
+      abdominal_reps: t.abdominal_reps || null, corrida_12min_metros: t.corrida_12min_metros || null,
+    }});
+    toast('Meta salva', 'success');
+    await loadTAF();
+  } catch (e) { toast('Erro ao salvar meta', 'error'); }
+}
+
+// Checklist
+function openChecklist() {
+  S.tab = 'more'; S.subView = 'checklist'; render(); scrollTop();
+  if (!S.checklist) loadChecklist();
+}
+async function loadChecklist() {
+  try { S.checklist = await api('/api/prf/checklist/'); }
+  catch (e) { S.checklist = { by_category:{}, total:0, done:0 }; }
+  render();
+}
+async function toggleChecklistItem(key, isDone) {
+  try {
+    await api(`/api/prf/checklist/${key}`, { method:'PATCH', json:{ is_done: isDone } });
+    await loadChecklist();
+  } catch (e) { toast('Erro ao atualizar item', 'error'); }
+}
 
 // ===== INIT =====
 applyTheme();
