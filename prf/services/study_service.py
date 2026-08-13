@@ -84,6 +84,23 @@ class StudyService:
 
         priority_slugs = set((profile or {}).get("priority_subjects") or [])
 
+        # Itens por matéria no blueprint do edital, já ponderados pelo peso do
+        # bloco. Sem isso o motor ranqueia por um peso abstrato (0-3 escrito à
+        # mão) em vez de por pontos que a matéria vale na prova.
+        from prf.seeds.seed_data import (
+            EXAM_BLOCKS_PM, ITEMS_PER_SUBJECT_SIMULADO_PM,
+            EXAM_BLOCKS, ITEMS_PER_SUBJECT_SIMULADO,
+        )
+        blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
+        items_map = ITEMS_PER_SUBJECT_SIMULADO_PM if is_pm else ITEMS_PER_SUBJECT_SIMULADO
+        block_weight = {
+            slug: bi.get("weight", 1)
+            for bi in blocks.values() for slug in bi["subjects"]
+        }
+        exam_items_map = {
+            slug: n * block_weight.get(slug, 1) for slug, n in items_map.items()
+        }
+
         subject_states = []
         for s in subjects:
             exam_weight = s.get(weight_key, 0) or 0
@@ -105,6 +122,7 @@ class StudyService:
                 study_time_mins=m.get("study_time_mins", 0),
                 recurring_errors=recurring,
                 is_priority=s.get("slug") in priority_slugs,
+                exam_items=exam_items_map.get(s.get("slug"), 0),
             ))
 
         days_until_exam = None
@@ -122,7 +140,11 @@ class StudyService:
             exam_total_items=50 if is_pm else 120,
         )
 
-        priorities = compute_priorities(subject_states, ctx)
+        # Fetch subjects studied in last 1 day to ensure rotation.
+        # Matérias que apareceram na missão de ontem recebem penalidade forte.
+        recently_studied = await self.repo.get_mission_subjects_last_days(user_id, days=1)
+
+        priorities = compute_priorities(subject_states, ctx, recently_studied)
 
         reviews_due_count = await self.repo.count_due_reviews(user_id)
         review_card_ids = await self.repo.get_due_review_card_ids(user_id)
@@ -144,7 +166,20 @@ class StudyService:
         # Tópico do dia por matéria: é ele que amarra a aula em áudio do
         # deslocamento à lei seca e às questões da noite. Sem isso cada
         # etapa da missão caía num assunto diferente.
-        qtype = "multipla_escolha" if is_pm else "certo_errado"
+        # Formato das questões da prática diária.
+        #
+        # O simulado continua 100% no formato do certame (A-E na PMGO), porque
+        # ele simula a prova. Mas a prática do dia a dia não precisa desse
+        # filtro, e pagava caro por ele: das 2.204 questões do banco, 1.736 são
+        # certo/errado e ficavam invisíveis para quem estuda PMGO — 79% do
+        # acervo trancado. Direito Penal é Direito Penal nos dois formatos, e
+        # C/E treina precisão de afirmação, que é exatamente o que a banca
+        # cobra dentro de uma alternativa A-E.
+        #
+        # Vale também como proteção: a banca do próximo certame não está
+        # definida (AOCP em 2022, CEBRASPE é candidata). Treinar nos dois
+        # formatos cobre os dois cenários.
+        qtype = None if is_pm else "certo_errado"
         topic_plan: dict = {}
         for p in priorities[:4]:
             topic = await self.repo.pick_study_topic(user_id, p.subject_id)
@@ -254,6 +289,11 @@ class StudyService:
             })
             error_recorded = True
             await self.repo.create_review_card_for_question(user_id, question_id)
+        else:
+            # Acertou o que já tinha errado: fecha o erro no caderno. É o que
+            # faz a questão sair do pool de re-drill e o caderno parar de
+            # crescer indefinidamente.
+            await self.repo.resolve_error(user_id, question_id)
 
         review_scheduled = not is_correct
 
@@ -520,6 +560,76 @@ class StudyService:
         })
 
     # ── Internal helpers ──────────────────────────────────────────────────────
+
+    async def absorb_exam_answers(self, user_id: UUID, answers: dict) -> dict:
+        """Transforma as respostas de um simulado em tentativas reais.
+
+        Até aqui `finish_exam` calculava a nota, aplicava a regra de
+        eliminação e terminava num `UPDATE simulated_exams`. Nada disso
+        chegava ao resto do sistema: dez simulados completos não moviam
+        domínio, caderno de erros, revisão nem estatística do dia. O sinal
+        mais parecido com a prova real era o único que não contava.
+
+        Args:
+            answers: {question_id_str: {"selected": "A", "correct": bool}}
+        """
+        if not answers:
+            return {"recorded": 0}
+
+        q_ids = []
+        for k in answers:
+            try:
+                q_ids.append(k if isinstance(k, UUID) else UUID(str(k)))
+            except (ValueError, AttributeError):
+                continue
+        if not q_ids:
+            return {"recorded": 0}
+
+        questions = await self.repo.get_questions_by_ids(q_ids)
+        alts_map = await self.repo.get_alternatives_batch([q["id"] for q in questions])
+
+        recorded = 0
+        subjects_touched: set[UUID] = set()
+        for q in questions:
+            ans = answers.get(str(q["id"])) or answers.get(q["id"])
+            if not ans:
+                continue
+            letter = (ans.get("selected") or "").upper()
+            selected_alt = next(
+                (a for a in alts_map.get(q["id"], []) if a["letter"] == letter), None
+            )
+            if not selected_alt:
+                continue
+
+            is_correct = bool(ans.get("correct"))
+            attempt = await self.repo.record_attempt(user_id, {
+                "question_id": q["id"],
+                "session_id": None,
+                "selected_alt_id": selected_alt["id"],
+                "is_correct": is_correct,
+                "time_spent_secs": None,
+                "confidence": None,
+            })
+            if is_correct:
+                await self.repo.resolve_error(user_id, q["id"])
+            else:
+                await self.repo.record_error(user_id, {
+                    "question_id": q["id"],
+                    "attempt_id": attempt["id"],
+                    "subject_id": q.get("subject_id"),
+                    "topic_id": q.get("topic_id"),
+                })
+                await self.repo.create_review_card_for_question(user_id, q["id"])
+
+            await self.repo.increment_daily_question(user_id, is_correct, 0)
+            if q.get("subject_id"):
+                subjects_touched.add(q["subject_id"])
+            recorded += 1
+
+        for subject_id in subjects_touched:
+            await self._update_mastery_for_question(user_id, {"subject_id": subject_id})
+
+        return {"recorded": recorded, "subjects_updated": len(subjects_touched)}
 
     async def _update_mastery_for_question(self, user_id: UUID, question: dict):
         subject_id = question.get("subject_id")

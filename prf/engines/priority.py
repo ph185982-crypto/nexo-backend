@@ -14,7 +14,8 @@ prova se ficar do jeito que está".
   6. Revisões vencidas e erros recorrentes — bumps aditivos (sinais
      discretos, não multiplicativos)
   7. Energia do usuário — casa dificuldade do conteúdo com a energia
-  8. Guarda de recência — não empilha a mesma matéria no mesmo dia
+  8. Itens no blueprint do edital — quantos pontos a matéria vale de fato
+  9. Guarda de recência — gira dentro do blueprint, não para fora dele
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
@@ -44,6 +45,10 @@ class SubjectState:
     study_time_mins: float = 0
     recurring_errors: int = 0
     is_priority: bool = False
+    # Itens que a matéria vale no blueprint do edital. É o que converte
+    # "matéria importante" em "pontos na mesa": Direito Penal com 5 itens
+    # peso 2 vale 10 dos 85 pontos; Informática, fora do blueprint, vale 0.
+    exam_items: int = 0
 
 
 @dataclass
@@ -73,15 +78,24 @@ class PriorityContext:
 def compute_priorities(
     subjects: list[SubjectState],
     context: PriorityContext,
+    recently_studied_subjects: set[UUID] | None = None,
 ) -> list[PriorityResult]:
     """
     Rank subjects by Impact Score, highest first — a matéria que mais
     ameaça pontos na prova, não a que "falta mais estudar".
+
+    Args:
+        subjects: lista de SubjectState
+        context: PriorityContext com hora, energia, tempo disponível
+        recently_studied_subjects: set de UUIDs de matérias estudadas nos
+                                   últimos dias — serão penalizadas para
+                                   forçar rotação entre matérias
     """
+    recently_studied_subjects = recently_studied_subjects or set()
     results = []
     total_weight = sum(s.weight_prf for s in subjects) or 1.0
     for s in subjects:
-        score = _compute_subject_score(s, context)
+        score = _compute_subject_score(s, context, recently_studied_subjects)
         fmt = _recommend_format(s, context)
         mins = _recommend_duration(s, context)
         reason = _explain_priority(s, context, score)
@@ -137,7 +151,13 @@ def _expected_lost_points(s: SubjectState, ctx: PriorityContext, total_weight: f
     return round(norm_weight * gap * ctx.exam_total_items, 1)
 
 
-def _compute_subject_score(s: SubjectState, ctx: PriorityContext) -> float:
+def _compute_subject_score(
+    s: SubjectState,
+    ctx: PriorityContext,
+    recently_studied_subjects: set[UUID] | None = None,
+) -> float:
+    recently_studied_subjects = recently_studied_subjects or set()
+
     # Núcleo do Impact Score: peso × risco de erro × gap de domínio × esquecimento.
     error_rate = (1.0 - s.accuracy) if s.total_attempts > 0 else 0.5
     mastery_gap = max(0.0, 1.0 - s.mastery)
@@ -158,8 +178,25 @@ def _compute_subject_score(s: SubjectState, ctx: PriorityContext) -> float:
         if s.weight_prf >= 2.0:
             impact *= urgency
 
-    # Guarda de recência — não empilhar a mesma matéria no mesmo dia.
-    if s.last_studied:
+    # Pontos que a matéria realmente vale na prova. Matéria fora do
+    # blueprint do último edital não é descartada — o edital muda e a banca
+    # muda — mas não compete de igual para igual com matéria confirmada.
+    if s.exam_items > 0:
+        impact *= 1.0 + s.exam_items / 10.0
+    else:
+        impact *= 0.5
+
+    # Rotação — dentro do blueprint, não para fora dele.
+    # O bloco de Conhecimentos Específicos é 35 dos 50 itens e 70 dos 85
+    # pontos: ele precisa aparecer praticamente todo dia. O que gira é qual
+    # matéria do bloco e qual tópico dentro dela, não a presença do bloco.
+    # Uma penalidade cega aqui (a versão anterior usava 0.2 para qualquer
+    # matéria vista ontem) empurrava justamente as matérias que mais valem
+    # pontos para fora do plano, e puxava matérias de peso 1 que sequer
+    # estão no blueprint.
+    if s.subject_id in recently_studied_subjects:
+        impact *= 0.8 if s.exam_items > 0 else 0.3
+    elif s.last_studied:
         hours_since = (datetime.utcnow() - s.last_studied.replace(tzinfo=None)).total_seconds() / 3600
         if hours_since < 4:
             impact *= 0.5

@@ -279,6 +279,48 @@ async def _fetch_question(
     }
 
 
+@router.get("/errors/drill")
+async def error_drill(
+    subject_id: Optional[UUID] = None,
+    limit: int = Query(default=10, ge=1, le=50),
+    user_id: UUID = Depends(get_current_user_id),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Refazer as questões erradas e ainda não superadas.
+
+    O caderno de erros existia só como lista de leitura: dava para ver o que
+    tinha errado, não para responder de novo. Refazer erro é a atividade de
+    maior retorno na preparação, e era exatamente a que faltava. As questões
+    saem daqui sozinhas quando forem acertadas (`resolve_error`).
+    """
+    q_ids = await repo.get_error_question_ids(user_id, limit=limit, subject_id=subject_id)
+    if not q_ids:
+        return {"questions": [], "total": 0}
+
+    alts_map = await repo.get_alternatives_batch(q_ids)
+    results = []
+    for q in await repo.get_questions_by_ids(q_ids):
+        results.append({
+            "id": q["id"],
+            "subject_id": q["subject_id"],
+            "subject_name": q.get("subject_name"),
+            "topic_id": q.get("topic_id"),
+            "question_type": q.get("question_type", "certo_errado"),
+            "context_text": q.get("context_text"),
+            "text": q["text"],
+            "difficulty": q["difficulty"],
+            "source": q.get("source"),
+            "year": q.get("year"),
+            "examiner": q.get("examiner"),
+            "alternatives": [
+                {"id": a["id"], "letter": a["letter"], "text": a["text"],
+                 "display_order": a["display_order"]}
+                for a in alts_map.get(q["id"], [])
+            ],
+        })
+    return {"questions": results, "total": len(results)}
+
+
 @router.get("/errors/notebook")
 async def error_notebook(
     subject_id: Optional[UUID] = None,

@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 from uuid import UUID
 
-from prf.routers.deps import get_repo, get_current_user_id
+from prf.routers.deps import get_repo, get_current_user_id, get_study_service
 from prf.database.repository import PRFRepository
+from prf.services.study_service import StudyService
 from prf.seeds.seed_data import (
     EXAM_BLOCKS, ITEMS_PER_SUBJECT_SIMULADO,
     EXAM_BLOCKS_PM, ITEMS_PER_SUBJECT_SIMULADO_PM,
@@ -219,6 +220,7 @@ async def finish_exam(
     exam_id: UUID,
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
+    study: StudyService = Depends(get_study_service),
 ):
     """Finish the exam and calculate scoring (CEBRASPE for PRF, AOCP for PMGO)."""
     import json
@@ -230,6 +232,8 @@ async def finish_exam(
     )
     if not exam:
         raise HTTPException(404, "Simulado não encontrado")
+
+    already_finished = bool(exam["is_completed"])
 
     q_ids = json.loads(exam["questions"]) if isinstance(exam["questions"], str) else exam["questions"]
     answers = json.loads(exam["answers"]) if isinstance(exam["answers"], str) else exam["answers"]
@@ -311,6 +315,17 @@ async def finish_exam(
         block_scores_json, eliminated, exam_id,
     )
 
+    # As respostas viram tentativas reais: domínio, caderno de erros, revisão
+    # e estatística do dia. Só na primeira finalização — o endpoint pode ser
+    # chamado de novo pelo resume, e isso duplicaria o histórico.
+    absorbed = {"recorded": 0}
+    if not already_finished:
+        try:
+            absorbed = await study.absorb_exam_answers(user_id, answers or {})
+        except Exception:
+            # Nota do simulado nunca deve ser perdida por falha na absorção.
+            pass
+
     result = {
         "score": score_liquid,
         "score_raw": score_raw,
@@ -321,6 +336,7 @@ async def finish_exam(
         "blocks": block_scores_json,
         "eliminated": eliminated,
         "percentage": percentage,
+        "answers_absorbed": absorbed.get("recorded", 0),
     }
 
     if is_pm:
