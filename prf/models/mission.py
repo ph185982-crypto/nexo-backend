@@ -34,6 +34,7 @@ class MissionBlockOut(BaseModel):
     block_type: BlockType
     subject_id: Optional[UUID] = None
     subject_name: Optional[str] = None
+    topic_id: Optional[UUID] = None
     topic_name: Optional[str] = None
     title: str
     description: Optional[str] = None
