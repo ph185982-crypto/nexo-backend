@@ -64,6 +64,12 @@ class SubjectFactor(BaseModel):
     hours_to_improve: float
 
 
+class SubjectRisk(BaseModel):
+    """Matéria e quantos pontos da prova ela ameaça hoje."""
+    subject_name: str
+    points_at_risk: float
+
+
 class DashboardResponse(BaseModel):
     greeting: str
     mission_status: str             # 'pending', 'in_progress', 'completed'
@@ -82,6 +88,12 @@ class DashboardResponse(BaseModel):
     xp_progress_pct: float = 0
     next_review_in: Optional[str] = None
     target_exam: str = "PMGO"
+    # Pontos que a prova custaria hoje e onde eles estão. O serviço já
+    # calculava isso a cada carregamento do dashboard, mas os campos não
+    # existiam aqui e o FastAPI descartava tudo na serialização.
+    expected_lost_points: float = 0
+    exam_total_items: int = 50
+    top_risks: list[SubjectRisk] = Field(default_factory=list)
 
 
 class CommuteStats(BaseModel):

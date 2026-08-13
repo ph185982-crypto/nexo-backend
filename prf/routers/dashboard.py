@@ -25,7 +25,16 @@ async def get_subject_progress(
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Get progress breakdown by subject."""
+    """Get progress breakdown by subject.
+
+    O peso mostrado tem que ser o do certame do usuário. Antes vinha
+    `weight_prf` fixo mesmo para quem faz PMGO — Legislação de Trânsito
+    aparecia com peso 3,0 para candidato da PM, sendo que o `weight_pm` dela
+    é 0,0 (nem cai na prova). A query já traz as duas colunas.
+    """
+    profile = await repo.get_profile(user_id)
+    is_pm = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
+    weight_key = "weight_pm" if is_pm else "weight_prf"
     mastery = await repo.get_subject_mastery(user_id)
     return [
         SubjectProgress(
@@ -37,10 +46,11 @@ async def get_subject_progress(
             total_correct=m.get("total_correct", 0),
             study_time_mins=m.get("study_time_mins", 0),
             error_count=m.get("error_count", 0),
-            weight_prf=m.get("weight_prf", 1.0),
+            weight_prf=m.get(weight_key) or 0.0,
             last_studied=m.get("last_studied"),
         )
         for m in mastery
+        if (m.get(weight_key) or 0) > 0
     ]
 
 

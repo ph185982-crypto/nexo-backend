@@ -2969,13 +2969,18 @@ async function startMissionBlock(blockIdx, type) {
     S.loading.questions = true; S.tab = 'practice'; render();
     try {
       const isPM = S.targetExam && S.targetExam.startsWith('PM');
-      const qtype = isPM ? 'multipla_escolha' : 'certo_errado';
+      // PMGO estuda nos dois formatos. O simulado continua 100% A-E porque
+      // simula a prova, mas travar a prática diária em multipla_escolha
+      // escondia 1.736 das 2.204 questões do banco de quem faz PMGO. O
+      // conteúdo é o mesmo, C/E treina precisão de afirmação, e a banca do
+      // próximo certame ainda não está definida.
+      const typeQs = isPM ? '' : '&question_type=certo_errado';
       const topicQs = tid ? `&topic_id=${tid}` : '';
-      let d = await api(`/api/prf/questions/list?subject_id=${sid}${topicQs}&limit=15&question_type=${qtype}`);
+      let d = await api(`/api/prf/questions/list?subject_id=${sid}${topicQs}&limit=15${typeQs}`);
       S.questions = d.questions || [];
       // Tópico do dia pode não ter estoque suficiente: cai pra matéria inteira.
       if (!S.questions.length && tid) {
-        d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15&question_type=${qtype}`);
+        d = await api(`/api/prf/questions/list?subject_id=${sid}&limit=15${typeQs}`);
         S.questions = d.questions || [];
       }
       // For PRF only: fall back to any question type if no typed questions found
@@ -3066,11 +3071,12 @@ async function selectSubject(id, name) {
   S.loading.questions = true; render();
   try {
     const isPM = S.targetExam && S.targetExam.startsWith('PM');
-    const qtype = isPM ? 'multipla_escolha' : 'certo_errado';
-    let d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20&question_type=${qtype}`);
+    // PMGO recebe os dois formatos na prática (ver comentário em
+    // startMissionBlock). Simulado segue só A-E.
+    const typeQs = isPM ? '' : '&question_type=certo_errado';
+    let d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20${typeQs}`);
     S.questions = d.questions || [];
-    // For PMGO: only fall back if truly no multipla_escolha questions exist anywhere for this subject
-    if (!S.questions.length && !isPM) {
+    if (!S.questions.length) {
       d = await api(`/api/prf/questions/list?subject_id=${id}&limit=20`);
       S.questions = d.questions || [];
     }

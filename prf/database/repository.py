@@ -215,6 +215,21 @@ class PRFRepository:
             *params,
         )
 
+    async def get_questions_by_ids(self, question_ids: list) -> list[dict]:
+        """Busca um conjunto de questões numa query só, preservando a ordem
+        pedida — o re-drill do caderno de erros vem ordenado por repetição."""
+        if not question_ids:
+            return []
+        rows = await self._fetch(
+            """SELECT q.*, s.name as subject_name
+               FROM questions q
+               JOIN subjects s ON s.id = q.subject_id
+               WHERE q.id = ANY($1::uuid[])""",
+            question_ids,
+        )
+        by_id = {r["id"]: r for r in rows}
+        return [by_id[qid] for qid in question_ids if qid in by_id]
+
     async def get_question_with_alternatives(self, question_id: UUID) -> Optional[dict]:
         q = await self._fetchrow(
             """SELECT q.*, s.name as subject_name
@@ -329,8 +344,22 @@ class PRFRepository:
         )
 
     async def get_answered_question_ids(self, user_id: UUID) -> list[UUID]:
+        """Questões que saem do sorteio — só as que o usuário já ACERTOU.
+
+        A versão anterior excluía tudo que tinha sido respondido, certo ou
+        errado, e isso tinha duas consequências ruins. A primeira: questão
+        errada nunca mais voltava, quando refazer erro é justamente a
+        atividade de maior retorno na preparação. A segunda: com o banco de
+        múltipla escolha da PMGO em 468 itens, respondendo ~30 por dia o
+        acervo se esgotava em duas semanas e a missão passava a servir
+        repetição de conteúdo já dominado.
+
+        Agora a questão errada continua no pool até ser acertada, e sai
+        sozinha quando o acerto acontece.
+        """
         rows = await self._fetch(
-            "SELECT DISTINCT question_id FROM question_attempts WHERE user_id = $1",
+            """SELECT DISTINCT question_id FROM question_attempts
+               WHERE user_id = $1 AND is_correct = TRUE""",
             user_id,
         )
         return [r["question_id"] for r in rows]
@@ -487,6 +516,40 @@ class PRFRepository:
             data.get("subject_id"), data.get("topic_id"),
             data.get("error_summary"), data.get("error_type"),
         )
+
+    async def resolve_error(self, user_id: UUID, question_id: UUID) -> None:
+        """Fecha o erro quando o usuário acerta a questão que tinha errado.
+
+        `resolved` existia no schema desde o início e nunca era escrito como
+        TRUE por ninguém — só voltava para FALSE em `record_error`. O caderno
+        de erros era append-only e crescia para sempre, sem jeito de saber o
+        que já tinha sido superado.
+        """
+        await self._execute(
+            """UPDATE error_notebook SET resolved = TRUE
+               WHERE user_id = $1 AND question_id = $2""",
+            user_id, question_id,
+        )
+
+    async def get_error_question_ids(
+        self, user_id: UUID, limit: int = 20, subject_id: UUID | None = None
+    ) -> list[UUID]:
+        """Questões erradas e ainda não superadas, mais repetidas primeiro."""
+        if subject_id:
+            rows = await self._fetch(
+                """SELECT question_id FROM error_notebook
+                   WHERE user_id = $1 AND resolved = FALSE AND subject_id = $2
+                   ORDER BY times_repeated DESC, last_error_at DESC LIMIT $3""",
+                user_id, subject_id, limit,
+            )
+        else:
+            rows = await self._fetch(
+                """SELECT question_id FROM error_notebook
+                   WHERE user_id = $1 AND resolved = FALSE
+                   ORDER BY times_repeated DESC, last_error_at DESC LIMIT $2""",
+                user_id, limit,
+            )
+        return [r["question_id"] for r in rows]
 
     async def get_error_notebook(
         self, user_id: UUID, limit: int = 50, subject_id: UUID | None = None

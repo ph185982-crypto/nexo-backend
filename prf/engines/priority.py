@@ -14,7 +14,8 @@ prova se ficar do jeito que está".
   6. Revisões vencidas e erros recorrentes — bumps aditivos (sinais
      discretos, não multiplicativos)
   7. Energia do usuário — casa dificuldade do conteúdo com a energia
-  8. Guarda de recência — não empilha a mesma matéria no mesmo dia
+  8. Itens no blueprint do edital — quantos pontos a matéria vale de fato
+  9. Guarda de recência — gira dentro do blueprint, não para fora dele
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
@@ -44,6 +45,10 @@ class SubjectState:
     study_time_mins: float = 0
     recurring_errors: int = 0
     is_priority: bool = False
+    # Itens que a matéria vale no blueprint do edital. É o que converte
+    # "matéria importante" em "pontos na mesa": Direito Penal com 5 itens
+    # peso 2 vale 10 dos 85 pontos; Informática, fora do blueprint, vale 0.
+    exam_items: int = 0
 
 
 @dataclass
@@ -173,15 +178,25 @@ def _compute_subject_score(
         if s.weight_prf >= 2.0:
             impact *= urgency
 
-    # Rotação de matérias — forçar variedade entre dias consecutivos.
-    # Matérias estudadas nos últimos dias recebem penalidade MUITO maior
-    # (0.2 em vez de 0.85) para garantir que a missão de hoje gire entre
-    # diferentes matérias, mesmo que uma tenha alta prioridade absoluta.
-    # Sem isso, matérias com score muito alto dominam por dias seguidos.
+    # Pontos que a matéria realmente vale na prova. Matéria fora do
+    # blueprint do último edital não é descartada — o edital muda e a banca
+    # muda — mas não compete de igual para igual com matéria confirmada.
+    if s.exam_items > 0:
+        impact *= 1.0 + s.exam_items / 10.0
+    else:
+        impact *= 0.5
+
+    # Rotação — dentro do blueprint, não para fora dele.
+    # O bloco de Conhecimentos Específicos é 35 dos 50 itens e 70 dos 85
+    # pontos: ele precisa aparecer praticamente todo dia. O que gira é qual
+    # matéria do bloco e qual tópico dentro dela, não a presença do bloco.
+    # Uma penalidade cega aqui (a versão anterior usava 0.2 para qualquer
+    # matéria vista ontem) empurrava justamente as matérias que mais valem
+    # pontos para fora do plano, e puxava matérias de peso 1 que sequer
+    # estão no blueprint.
     if s.subject_id in recently_studied_subjects:
-        impact *= 0.2
+        impact *= 0.8 if s.exam_items > 0 else 0.3
     elif s.last_studied:
-        # Guarda de recência padrão (menor penalidade se não foi nos últimos dias)
         hours_since = (datetime.utcnow() - s.last_studied.replace(tzinfo=None)).total_seconds() / 3600
         if hours_since < 4:
             impact *= 0.5
