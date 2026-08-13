@@ -44,6 +44,7 @@ async def get_today_mission(
                 block_type=b["block_type"],
                 subject_id=b.get("subject_id"),
                 subject_name=b.get("subject_name"),
+                topic_id=b.get("topic_id"),
                 title=b["title"],
                 description=b.get("description"),
                 estimated_mins=b.get("estimated_mins", 10),

@@ -58,7 +58,12 @@ class StudyService:
         routine = await self.repo.get_routine_for_day(user_id, date.today().weekday())
         behavior = await self.repo.get_behavior_metrics(user_id)
 
-        if routine:
+        is_rest_day = bool(routine and routine.get("is_rest_day"))
+        commute_mins = (routine or {}).get("commute_minutes", 0) or 0
+
+        if is_rest_day:
+            available_mins = 0
+        elif routine:
             available_mins = routine["study_minutes"]
         elif profile and profile.get("weekly_goal_hours"):
             available_mins = round(profile["weekly_goal_hours"] * 60 / 7)
@@ -217,6 +222,8 @@ class StudyService:
             legal_article_ids=legal_pool,
             is_pm=is_pm,
             topic_plan=topic_plan,
+            is_rest_day=is_rest_day,
+            commute_minutes=commute_mins,
         )
 
         db_mission = await self.repo.create_mission(user_id, {

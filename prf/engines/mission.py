@@ -50,6 +50,7 @@ class Mission:
     blocks: list[MissionBlock] = field(default_factory=list)
     mode_suggested: str = "focus"
     energy_detected: Optional[str] = None
+    is_rest_day: bool = False
 
 
 GREETINGS_BY_ENERGY = {
@@ -94,6 +95,13 @@ MAX_AUDIO_LESSONS = 2
 MAX_LEGAL_READING = 2
 
 
+REST_DAY_GREETINGS = [
+    "Dia de descanso. Descanse o corpo, o áudio cuida do resto.",
+    "Hoje é folga de mesa — mas o carro ainda estuda.",
+    "Nada de questão hoje. Se tiver deslocamento, a aula vai junto.",
+]
+
+
 def build_mission(
     priorities: list[PriorityResult],
     context: PriorityContext,
@@ -105,6 +113,8 @@ def build_mission(
     legal_article_ids: dict[UUID, list[UUID]] | None = None,
     is_pm: bool = False,
     topic_plan: dict[UUID, dict] | None = None,
+    is_rest_day: bool = False,
+    commute_minutes: int = 0,
 ) -> Mission:
     """
     Monta a missão do dia a partir das prioridades e do conteúdo disponível.
@@ -144,11 +154,25 @@ def build_mission(
     mode = context.mode
 
     import random
-    if mode == StudyMode.COMMUTE:
+    if is_rest_day:
+        greeting = random.choice(REST_DAY_GREETINGS)
+    elif mode == StudyMode.COMMUTE:
         greeting = random.choice(COMMUTE_GREETINGS)
     else:
         pool = GREETINGS_BY_ENERGY.get(energy, GREETINGS_BY_ENERGY[EnergyLevel.MEDIUM])
         greeting = random.choice(pool)
+
+    if is_rest_day:
+        blocks = _build_rest_day_audio(priorities, topic_plan, commute_minutes, order)
+        return Mission(
+            date=context.today,
+            greeting=greeting,
+            estimated_mins=0,
+            blocks=blocks,
+            mode_suggested="commute" if blocks else "focus",
+            energy_detected=energy.value if energy else None,
+            is_rest_day=True,
+        )
 
     # 1. REVISÕES — sempre primeiro
     if reviews_due > 0 and remaining_mins >= 5:
@@ -182,6 +206,11 @@ def build_mission(
     if audio_plan:
         p, plan = audio_plan
         rotulo = plan.get("topic_name") or p.subject_name
+        episode_actual = plan.get("episode_mins") or 40
+        drill_actual = plan.get("drill_mins") or 22
+        if commute_minutes > 0:
+            episode_actual = min(episode_actual, commute_minutes)
+            drill_actual = min(drill_actual, commute_minutes)
         blocks.append(MissionBlock(
             block_type="podcast",
             subject_id=p.subject_id,
@@ -189,7 +218,7 @@ def build_mission(
             topic_id=plan.get("topic_id"),
             title=f"Aula em áudio — {rotulo}",
             description="Ouça na ida. É a primeira passagem do conteúdo de hoje.",
-            estimated_mins=plan.get("episode_mins") or 40,
+            estimated_mins=episode_actual,
             display_order=order,
             content_ids=plan["episode_ids"][:1],
             mode="commute",
@@ -204,7 +233,7 @@ def build_mission(
                 topic_id=plan.get("topic_id"),
                 title=f"Drill de recall — {rotulo}",
                 description="Ouça na volta. Responda antes deles: recuperar é o que fixa.",
-                estimated_mins=plan.get("drill_mins") or 22,
+                estimated_mins=drill_actual,
                 display_order=order,
                 content_ids=plan["drill_ids"][:1],
                 mode="commute",
@@ -236,8 +265,11 @@ def build_mission(
 
         # Matéria que teve áudio hoje sempre fecha o ciclo com lei seca +
         # questões; nas demais, o formato continua sendo decidido pelo motor
-        # de prioridade.
+        # de prioridade. Com menos de 20 min, questões rendem mais que lei
+        # seca (o bloco "5 artigos em 5 minutos" derrubava a prática).
         fmt = "legal_reading" if heard else p.recommended_format
+        if remaining_mins < 20 and fmt == "legal_reading":
+            fmt = "questions"
         if fmt == "legal_reading" and legal_reading_used >= MAX_LEGAL_READING:
             fmt = "questions"
         block_mins = _clamp_block_mins(p.recommended_mins, remaining_mins, mode)
@@ -377,3 +409,52 @@ def _clamp_block_mins(ideal: int, remaining: int, mode: StudyMode) -> int:
     if mode == StudyMode.TIRED:
         return min(ideal, remaining, 15)
     return min(ideal, remaining)
+
+
+def _build_rest_day_audio(
+    priorities: list[PriorityResult],
+    topic_plan: dict[UUID, dict],
+    commute_minutes: int,
+    order: int,
+) -> list[MissionBlock]:
+    """Rest day: audio blocks only (commute content). No study blocks."""
+    if commute_minutes <= 0 or not topic_plan:
+        return []
+
+    blocks: list[MissionBlock] = []
+    for p in priorities:
+        plan = topic_plan.get(p.subject_id)
+        if not plan or not plan.get("episode_ids"):
+            continue
+        rotulo = plan.get("topic_name") or p.subject_name
+        ep_mins = min(plan.get("episode_mins") or 40, commute_minutes)
+        blocks.append(MissionBlock(
+            block_type="podcast",
+            subject_id=p.subject_id,
+            subject_name=p.subject_name,
+            topic_id=plan.get("topic_id"),
+            title=f"Aula em áudio — {rotulo}",
+            description="Dia de descanso — só o áudio do deslocamento.",
+            estimated_mins=ep_mins,
+            display_order=order,
+            content_ids=plan["episode_ids"][:1],
+            mode="commute",
+        ))
+        order += 1
+        if plan.get("drill_ids"):
+            drill_mins = min(plan.get("drill_mins") or 22, commute_minutes)
+            blocks.append(MissionBlock(
+                block_type="podcast_drill",
+                subject_id=p.subject_id,
+                subject_name=p.subject_name,
+                topic_id=plan.get("topic_id"),
+                title=f"Drill de recall — {rotulo}",
+                description="Ouça na volta.",
+                estimated_mins=drill_mins,
+                display_order=order,
+                content_ids=plan["drill_ids"][:1],
+                mode="commute",
+            ))
+            order += 1
+        break
+    return blocks

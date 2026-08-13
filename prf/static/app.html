@@ -1025,6 +1025,17 @@ button { font-family:inherit; }
   padding:8px; font-size:12px; font-weight:600; color:var(--primary);
   background:var(--primary-soft); border:none; border-radius:var(--r-sm); cursor:pointer;
 }
+.mission-cta {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  margin:0 20px 8px; padding:16px 20px;
+  background:var(--primary); color:#fff; border:none; border-radius:var(--r-lg);
+  cursor:pointer; width:calc(100% - 40px); box-shadow:var(--shadow-md);
+  transition:transform .15s, box-shadow .15s;
+}
+.mission-cta:active { transform:scale(.98); box-shadow:var(--shadow-sm); }
+.cta-label { font-size:16px; font-weight:700; letter-spacing:0.01em; }
+.cta-detail { font-size:12px; opacity:.85; font-weight:500; }
+.rest-day-block { border-left:3px solid var(--gold); }
 
 .mission-tasks { display:flex; flex-direction:column; gap:2px; }
 .mission-task {
@@ -1691,6 +1702,7 @@ function viewDashboard() {
   const mBlocks = mission ? (mission.blocks || []) : [];
   const mTotal = mission ? (mission.blocks_total || mBlocks.length) : 0;
   const mDone = mission ? (mission.blocks_done || 0) : 0;
+  const isRestDay = mission && mission.estimated_mins === 0 && (!mBlocks.length || mBlocks.every(b => b.block_type === 'podcast' || b.block_type === 'podcast_drill'));
   const mPct = mTotal > 0 ? Math.round(mDone / mTotal * 100) : 0;
 
   const motivational = d.streak >= 7 ? 'você é consistente' :
@@ -1721,7 +1733,61 @@ function viewDashboard() {
       <div class="stat-cell"><div class="stat-eyebrow">Tempo</div><div class="stat-num">${Math.round(d.time_studied_today||0)}<span class="stat-num-sm">min</span></div></div>
     </div>
 
-    <div class="mission-block fade-in">
+    ${(() => {
+      const isRest = mission && isRestDay;
+      const mEst = mission ? (mission.estimated_mins || 0) : 0;
+      const nextBlock = mBlocks.find(b => !b.is_completed);
+      if (isRest && !mBlocks.length) {
+        return `<div class="mission-block fade-in rest-day-block">
+          <div class="mission-header"><div>
+            <div class="section-eyebrow">Dia de descanso</div>
+            <div class="section-title">Sem estudo hoje</div>
+          </div></div>
+          <p style="color:var(--ink-3);font-size:14px;line-height:1.5;margin:8px 0 0">Descanse o corpo. Amanhã volta com tudo.</p>
+        </div>`;
+      }
+      if (isRest && mBlocks.length) {
+        return `<div class="mission-block fade-in rest-day-block">
+          <div class="mission-header"><div>
+            <div class="section-eyebrow">Dia de descanso</div>
+            <div class="section-title">Só o áudio do deslocamento</div>
+          </div></div>
+          <div class="mission-tasks">${mBlocks.map((b, i) => {
+            const done = b.is_completed;
+            return `<div class="mission-task ${done?'done':''}" onclick="${done?'':`startMissionBlock(${i},'podcast')`}">
+              <div class="task-check">${done ? '<svg viewBox="0 0 24 24" fill="var(--success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '<div class="task-circle"></div>'}</div>
+              <div class="task-icon">${I.headphones}</div>
+              <div class="task-info"><div class="task-title">${esc(b.title)}</div>
+                <div class="task-meta">${b.estimated_mins||10} min no carro</div></div>
+              ${done ? '' : `<div class="chev">${I.chev}</div>`}
+            </div>`;
+          }).join('')}</div>
+        </div>`;
+      }
+      return '';
+    })()}
+
+    ${(() => {
+      const isRest = mission && isRestDay;
+      if (isRest) return '';
+      const mEst = mission ? (mission.estimated_mins || 0) : 0;
+      const nextBlock = mBlocks.find(b => !b.is_completed);
+      const nextType = nextBlock ? (nextBlock.block_type === 'questions' ? 'practice' :
+        nextBlock.block_type === 'review' ? 'review' :
+        nextBlock.block_type === 'legal_reading' ? 'legal' :
+        nextBlock.block_type === 'flashcards' ? 'flashcards' :
+        (nextBlock.block_type === 'podcast' || nextBlock.block_type === 'podcast_drill') ? 'podcast' : 'practice') : null;
+      const nextIdx = nextBlock ? mBlocks.indexOf(nextBlock) : -1;
+      if (!missionDone && nextBlock && mTotal > 0) {
+        return `<button class="mission-cta fade-in" onclick="startMissionBlock(${nextIdx},'${nextType}')">
+          <span class="cta-label">${mDone > 0 ? 'Continuar missão' : 'Começar missão'}</span>
+          <span class="cta-detail">${esc(nextBlock.title)} · ${mEst} min no total</span>
+        </button>`;
+      }
+      return '';
+    })()}
+
+    ${!(mission && isRestDay) ? `<div class="mission-block fade-in">
       <div class="mission-header">
         <div>
           <div class="section-eyebrow">Missão do dia</div>
@@ -1739,8 +1805,6 @@ function viewDashboard() {
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
       mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => {
         const done = b.is_completed;
-        // Formato antigo de áudio (locução única) foi substituído pelas aulas
-        // em diálogo; só o bloco 'podcast' aparece.
         if (b.block_type === 'audio' || b.block_type === 'audio_lesson') return '';
         const icon = b.block_type === 'questions' ? I.book :
           b.block_type === 'review' ? I.refresh :
@@ -1766,7 +1830,7 @@ function viewDashboard() {
         </div>`;
       }).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
       ${missionDone ? `<div class="mission-complete-banner"><span>Parabéns! Volte amanhã para a próxima missão.</span></div>` : ''}
-    </div>
+    </div>` : ''}
 
     ${(() => {
       if (!mission || !mBlocks.length || !S.resources || !S.resources.length) return '';
@@ -3964,6 +4028,18 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   if (S.theme === 'auto') applyTheme();
 });
 
+async function seedRoutineIfMissing() {
+  if (localStorage.getItem('routine_seeded')) return;
+  try {
+    const r = await api('/api/prf/onboarding/routines');
+    if (Array.isArray(r) && r.length) { localStorage.setItem('routine_seeded', '1'); return; }
+  } catch (e) {}
+  try {
+    await api('/api/prf/onboarding/routines', { method: 'PATCH', json: { routines: _defaultRoutine() } });
+    localStorage.setItem('routine_seeded', '1');
+  } catch (e) {}
+}
+
 async function init() {
   try { await ensureAuth(); }
   catch (e) {
@@ -3978,6 +4054,7 @@ async function init() {
   }
   applyExamTheme('PMGO');
   api('/api/prf/onboarding/target-exam', { method:'PATCH', json:{ target_exam:'PMGO' } }).catch(() => {});
+  seedRoutineIfMissing();
   document.getElementById('splash').classList.add('hide');
   setTimeout(() => document.getElementById('splash')?.remove(), 400);
   render();
