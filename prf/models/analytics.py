@@ -46,24 +46,6 @@ class SubjectProgress(BaseModel):
     impact_score: float = 0     # how much studying this subject would impact approval
 
 
-class ApprovalEstimate(BaseModel):
-    probability: float          # 0.0 to 1.0
-    trend: str                  # 'improving', 'stable', 'declining'
-    factors: list[SubjectFactor] = Field(default_factory=list)
-    days_until_exam: Optional[int] = None
-    study_hours_needed: Optional[float] = None
-    highest_impact_subject: Optional[str] = None
-
-
-class SubjectFactor(BaseModel):
-    subject_name: str
-    weight: float
-    mastery: float
-    contribution: float
-    gap: float
-    hours_to_improve: float
-
-
 class SubjectRisk(BaseModel):
     """Matéria e quantos pontos da prova ela ameaça hoje."""
     subject_name: str
@@ -101,7 +83,3 @@ class CommuteStats(BaseModel):
     lessons_completed: int = 0
     quiz_accuracy: float = 0
     topics_covered: int = 0
-
-
-# Fix forward reference
-ApprovalEstimate.model_rebuild()

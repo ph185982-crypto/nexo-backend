@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Query
 from typing import Optional
 from uuid import UUID
 
-from prf.models.analytics import DashboardResponse, SubjectProgress, ApprovalEstimate
+from prf.models.analytics import DashboardResponse, SubjectProgress
 from prf.routers.deps import get_repo, get_current_user_id, get_study_service
 from prf.database.repository import PRFRepository
 from prf.services.study_service import StudyService

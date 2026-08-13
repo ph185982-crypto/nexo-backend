@@ -26,6 +26,7 @@ from prf.engines.behavior import (
 from prf.engines.approval import (
     SubjectMastery as ApprovalSubject, estimate_approval,
 )
+from prf.engines.exam_profile import exam_profile_for
 from prf.models.user import EnergyLevel, StudyMode
 
 
@@ -84,21 +85,15 @@ class StudyService:
 
         priority_slugs = set((profile or {}).get("priority_subjects") or [])
 
-        # Itens por matéria no blueprint do edital, já ponderados pelo peso do
-        # bloco. Sem isso o motor ranqueia por um peso abstrato (0-3 escrito à
-        # mão) em vez de por pontos que a matéria vale na prova.
-        from prf.seeds.seed_data import (
-            EXAM_BLOCKS_PM, ITEMS_PER_SUBJECT_SIMULADO_PM,
-            EXAM_BLOCKS, ITEMS_PER_SUBJECT_SIMULADO,
-        )
-        blocks = EXAM_BLOCKS_PM if is_pm else EXAM_BLOCKS
-        items_map = ITEMS_PER_SUBJECT_SIMULADO_PM if is_pm else ITEMS_PER_SUBJECT_SIMULADO
-        block_weight = {
-            slug: bi.get("weight", 1)
-            for bi in blocks.values() for slug in bi["subjects"]
-        }
+        # Itens por matéria no blueprint do edital — mesmo ExamProfile que
+        # alimenta a estimativa de aprovação, pra ranking e projeção de
+        # pontos nunca discordarem entre si. exam_items já pondera pelo peso
+        # do bloco (pontos que a matéria vale); blueprint_item_count é a
+        # contagem bruta, usada pela regra do zero.
+        exam_profile = exam_profile_for(is_pm)
         exam_items_map = {
-            slug: n * block_weight.get(slug, 1) for slug, n in items_map.items()
+            slug: n * exam_profile.block_weight_of(slug)
+            for slug, n in exam_profile.items_per_subject.items()
         }
 
         subject_states = []
@@ -123,6 +118,7 @@ class StudyService:
                 recurring_errors=recurring,
                 is_priority=s.get("slug") in priority_slugs,
                 exam_items=exam_items_map.get(s.get("slug"), 0),
+                blueprint_item_count=exam_profile.items_of(s.get("slug")),
             ))
 
         days_until_exam = None
@@ -387,24 +383,29 @@ class StudyService:
         weakest = min(mastery, key=_mastery_of) if mastery else None
         strongest = max(mastery, key=_mastery_of) if mastery else None
 
-        # Expected lost score — em vez de só "82% aprovação" solto, mostra
-        # quantos pontos da prova estariam sendo perdidos hoje e onde.
+        # Pontos em risco — mesma projeção contra o blueprint do edital que
+        # alimenta compute_approval_estimate, pra não ter dois números
+        # diferentes de "quanto você perderia hoje" em telas diferentes.
         is_pm_dash = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
-        weight_key_dash = "weight_pm" if is_pm_dash else "weight_prf"
-        exam_items_dash = 50 if is_pm_dash else 120
-        risk_subjects = [m for m in mastery if (m.get(weight_key_dash) or 0) > 0]
-        total_w = sum(m.get(weight_key_dash) or 0 for m in risk_subjects) or 1.0
-        risk_rows = []
-        for m in risk_subjects:
-            gap = max(0.0, 1.0 - (m.get("mastery_level") or 0))
-            norm_w = (m.get(weight_key_dash) or 0) / total_w
-            risk_rows.append({
-                "subject_name": m["subject_name"],
-                "points_at_risk": round(norm_w * gap * exam_items_dash, 1),
-            })
-        risk_rows.sort(key=lambda r: r["points_at_risk"], reverse=True)
-        expected_lost_points = round(sum(r["points_at_risk"] for r in risk_rows), 1)
-        top_risks = [r for r in risk_rows if r["points_at_risk"] > 0][:3]
+        exam_profile_dash = exam_profile_for(is_pm_dash)
+        dash_subjects = [
+            ApprovalSubject(
+                subject_slug=m["subject_slug"],
+                subject_name=m["subject_name"],
+                accuracy=m.get("accuracy", 0) or 0,
+                total_attempts=m.get("total_attempts", 0) or 0,
+            )
+            for m in mastery
+        ]
+        dash_prediction = estimate_approval(profile=exam_profile_dash, subjects=dash_subjects)
+        expected_lost_points = round(
+            sum(f.points_at_risk for f in dash_prediction.factors), 1,
+        )
+        top_risks = [
+            {"subject_name": f.subject_name, "points_at_risk": f.points_at_risk}
+            for f in dash_prediction.factors if f.points_at_risk > 0
+        ][:3]
+        exam_items_dash = round(dash_prediction.max_points)
 
         mission_status = "pending"
         mission_pct = 0
@@ -459,48 +460,53 @@ class StudyService:
     # ── Approval Estimate ─────────────────────────────────────────────────────
 
     async def compute_approval_estimate(self, user_id: UUID) -> dict:
+        """Projeta pontos reais contra o blueprint do edital — não mais uma
+        média de domínio comparada com um corte que ninguém lia."""
         mastery_rows = await self.repo.get_subject_mastery(user_id)
         profile = await self.repo.get_profile(user_id)
-        behavior = await self.repo.get_behavior_metrics(user_id)
 
         is_pm = (profile or {}).get("target_exam", "PMGO").upper().startswith("PM")
-        weight_key = "weight_pm" if is_pm else "weight_prf"
+        exam_profile = exam_profile_for(is_pm)
 
-        subjects = []
-        for m in mastery_rows:
-            exam_weight = m.get(weight_key, 0) or 0
-            if exam_weight <= 0:
-                continue
-            subjects.append(ApprovalSubject(
+        subjects = [
+            ApprovalSubject(
+                subject_slug=m["subject_slug"],
                 subject_name=m["subject_name"],
-                weight_prf=exam_weight,
-                mastery=m.get("mastery_level", 0),
-                accuracy=m.get("accuracy", 0),
-                total_attempts=m.get("total_attempts", 0),
-                error_count=m.get("error_count", 0),
-            ))
+                accuracy=m.get("accuracy", 0) or 0,
+                total_attempts=m.get("total_attempts", 0) or 0,
+            )
+            for m in mastery_rows
+        ]
 
-        consistency = behavior["consistency_score"] if behavior else 50
-        retention = behavior["retention_score"] if behavior else 50
         exam_date = profile.get("exam_date") if profile else None
+        target_cutoff = (profile or {}).get("target_cutoff_score")
 
         prediction = estimate_approval(
+            profile=exam_profile,
             subjects=subjects,
-            consistency_score=consistency,
-            retention_score=retention,
+            target_cutoff=target_cutoff,
             exam_date=exam_date,
         )
 
         factors_json = [
             {
                 "subject_name": f.subject_name,
-                "weight": f.weight,
-                "mastery": f.mastery,
-                "contribution": f.contribution,
-                "gap": f.gap,
-                "hours_to_improve": f.hours_to_improve,
+                "subject_slug": f.subject_slug,
+                "items_in_blueprint": f.items_in_blueprint,
+                "projected_correct": f.projected_correct,
+                "max_points": f.max_points,
+                "projected_points": f.projected_points,
+                "points_at_risk": f.points_at_risk,
+                "hours_to_close_gap": f.hours_to_close_gap,
+                "points_per_hour": f.points_per_hour,
+                "zero_risk": f.zero_risk,
             }
             for f in prediction.factors
+        ]
+        best_value_json = [
+            {"subject_name": f.subject_name, "points_per_hour": f.points_per_hour,
+             "hours_to_close_gap": f.hours_to_close_gap}
+            for f in prediction.best_value
         ]
 
         await self.repo.save_approval_estimate(user_id, {
@@ -513,8 +519,15 @@ class StudyService:
             "probability": prediction.probability,
             "trend": prediction.trend,
             "factors": factors_json,
-            "highest_impact_subject": prediction.highest_impact_subject,
-            "study_hours_needed": prediction.study_hours_needed,
+            "best_value": best_value_json,
+            "projected_points": prediction.projected_points,
+            "max_points": prediction.max_points,
+            "survive_threshold": prediction.survive_threshold,
+            "gap_to_survive": prediction.gap_to_survive,
+            "eliminated_risk": prediction.eliminated_risk,
+            "target_cutoff": prediction.target_cutoff,
+            "gap_to_cutoff": prediction.gap_to_cutoff,
+            "zero_risk_subjects": prediction.zero_risk_subjects,
             "days_until_exam": prediction.days_until_exam,
         }
 
