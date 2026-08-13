@@ -112,6 +112,8 @@ class UserProfile(BaseModel):
     onboarding_complete: bool
     study_level: str
     priority_subjects: list[str]
+    municipio: Optional[str] = None
+    target_cutoff_score: Optional[float] = None
 
 
 class RoutineOut(BaseModel):

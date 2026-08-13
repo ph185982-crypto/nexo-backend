@@ -293,10 +293,11 @@ async def _seed_essay_themes(pool: asyncpg.Pool):
             if existing:
                 continue
             await conn.execute(
-                """INSERT INTO essay_themes (title, description, context_text, subject_area, source, year)
-                   VALUES ($1, $2, $3, $4, $5, $6)""",
+                """INSERT INTO essay_themes (title, description, context_text, subject_area, source, year, exam_tag)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)""",
                 t["title"], t.get("description"), t["context_text"],
                 t.get("subject_area"), t.get("source"), t.get("year"),
+                t.get("exam_tag", "PRF"),
             )
             count += 1
     logger.info(f"[PRF] Seeded {count} essay themes")

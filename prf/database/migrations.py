@@ -181,6 +181,78 @@ MIGRATIONS: list[tuple[str, str]] = [
         "ALTER TABLE mission_blocks ALTER COLUMN block_type TYPE TEXT "
         "USING block_type::text",
     ),
+    (
+        # O corte varia por município (44-60 no último certame) e é a maior
+        # alavanca isolada de decisão do candidato. estimate_approval já
+        # aceita target_cutoff — faltava a coluna pra guardar o que o usuário
+        # informa.
+        "user_profiles_municipio",
+        "ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS municipio TEXT",
+    ),
+    (
+        "user_profiles_target_cutoff",
+        "ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS target_cutoff_score REAL",
+    ),
+    (
+        "taf_records",
+        """CREATE TABLE IF NOT EXISTS taf_records (
+               id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+               user_id             UUID NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
+               measured_at         DATE NOT NULL DEFAULT CURRENT_DATE,
+               barra_reps          INTEGER,
+               flexao_reps         INTEGER,
+               abdominal_reps      INTEGER,
+               corrida_12min_metros INTEGER,
+               notes               TEXT,
+               created_at          TIMESTAMPTZ DEFAULT NOW()
+           )""",
+    ),
+    (
+        "idx_taf_records_user",
+        "CREATE INDEX IF NOT EXISTS idx_taf_records_user ON taf_records(user_id, measured_at)",
+    ),
+    (
+        "user_checklist_status",
+        """CREATE TABLE IF NOT EXISTS user_checklist_status (
+               id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+               user_id     UUID NOT NULL REFERENCES prf_users(id) ON DELETE CASCADE,
+               item_key    TEXT NOT NULL,
+               is_done     BOOLEAN DEFAULT FALSE,
+               due_date    DATE,
+               notes       TEXT,
+               updated_at  TIMESTAMPTZ DEFAULT NOW(),
+               UNIQUE (user_id, item_key)
+           )""",
+    ),
+    (
+        "idx_user_checklist_status_user",
+        "CREATE INDEX IF NOT EXISTS idx_user_checklist_status_user "
+        "ON user_checklist_status(user_id)",
+    ),
+    (
+        # Redação passa a suportar rubrica AOCP (0-10, sem fórmula NC-NE/TL)
+        # além de CEBRASPE (0-20) — banca/max_score gravam qual foi usada.
+        "essays_banca",
+        "ALTER TABLE essays ADD COLUMN IF NOT EXISTS banca TEXT DEFAULT 'CEBRASPE'",
+    ),
+    (
+        "essays_max_score",
+        "ALTER TABLE essays ADD COLUMN IF NOT EXISTS max_score REAL DEFAULT 20",
+    ),
+    (
+        # Temas de redação eram todos PRF (rodovias, patrulhamento federal) —
+        # sem isso, candidato PMGO via tema de contexto errado ao destravar a tela.
+        "essay_themes_exam_tag",
+        "ALTER TABLE essay_themes ADD COLUMN IF NOT EXISTS exam_tag TEXT DEFAULT 'PRF'",
+    ),
+    (
+        # Índice mínimo do TAF varia por edital/gênero e o próximo edital ainda
+        # não saiu — em vez de cravar número que pode estar errado, o candidato
+        # informa a própria meta (tirada do edital dele) e o app só projeta
+        # tendência contra ela.
+        "user_profiles_taf_targets",
+        "ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS taf_targets JSONB DEFAULT '{}'::jsonb",
+    ),
 ]
 
 

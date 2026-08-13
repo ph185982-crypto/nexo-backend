@@ -472,6 +472,7 @@ ESSAY_THEMES = [
         "context_text": "O Brasil está entre os países com maior número de mortes no trânsito no mundo. Considerando que a PRF é responsável pelo patrulhamento ostensivo das rodovias federais, redija um texto dissertativo acerca do seguinte tema:",
         "subject_area": "seguranca-viaria",
         "source": "Tema provável PRF",
+        "exam_tag": "PRF",
     },
     {
         "title": "Uso da tecnologia no policiamento rodoviário",
@@ -479,6 +480,7 @@ ESSAY_THEMES = [
         "context_text": "A tecnologia tem sido aliada fundamental na modernização do policiamento rodoviário, com uso de câmeras, drones, inteligência artificial e sistemas integrados de monitoramento. Considerando esse contexto, redija um texto dissertativo acerca do seguinte tema:",
         "subject_area": "tecnologia-policiamento",
         "source": "Tema provável PRF",
+        "exam_tag": "PRF",
     },
     {
         "title": "Combate ao tráfico de drogas nas rodovias federais",
@@ -486,6 +488,7 @@ ESSAY_THEMES = [
         "context_text": "As rodovias federais são uma das principais rotas utilizadas pelo tráfico de drogas no Brasil. A PRF desempenha papel estratégico no combate a essa criminalidade. Considerando esse cenário, redija um texto dissertativo acerca do seguinte tema:",
         "subject_area": "combate-trafico",
         "source": "Tema provável PRF",
+        "exam_tag": "PRF",
     },
     {
         "title": "Direitos humanos na atividade policial",
@@ -493,6 +496,7 @@ ESSAY_THEMES = [
         "context_text": "A atuação policial deve conciliar a efetividade no combate ao crime com o respeito integral aos direitos humanos e à dignidade da pessoa humana. Redija um texto dissertativo acerca do seguinte tema:",
         "subject_area": "direitos-humanos",
         "source": "Tema provável PRF/PF",
+        "exam_tag": "ALL",
     },
     {
         "title": "Educação para o trânsito como política pública",
@@ -500,6 +504,7 @@ ESSAY_THEMES = [
         "context_text": "A educação para o trânsito é um dos pilares do Código de Trânsito Brasileiro e da Política Nacional de Trânsito. Considerando a importância dessa temática para a atuação da PRF, redija um texto dissertativo acerca do seguinte tema:",
         "subject_area": "educacao-transito",
         "source": "Tema provável PRF",
+        "exam_tag": "PRF",
     },
     {
         "title": "Segurança nas fronteiras e criminalidade transnacional",
@@ -507,6 +512,47 @@ ESSAY_THEMES = [
         "context_text": "O Brasil possui mais de 16 mil quilômetros de fronteiras terrestres com dez países. A criminalidade transnacional, incluindo tráfico de armas, drogas e contrabando, representa um desafio crescente. Redija um texto dissertativo acerca do seguinte tema:",
         "subject_area": "seguranca-fronteiras",
         "source": "Tema provável PRF/PF",
+        "exam_tag": "PRF",
+    },
+    {
+        "title": "Policiamento comunitário e proximidade com a população",
+        "description": "O papel da polícia militar na construção de confiança com a comunidade",
+        "context_text": "O policiamento comunitário propõe uma atuação da Polícia Militar próxima do cidadão, baseada em confiança mútua e prevenção, em vez de apenas resposta reativa à ocorrência. Considerando esse modelo, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "policiamento-comunitario",
+        "source": "Tema provável PM",
+        "exam_tag": "PMGO",
+    },
+    {
+        "title": "Uso proporcional da força pelo policial militar",
+        "description": "Limites legais e éticos no emprego da força em operações policiais",
+        "context_text": "A atuação da Polícia Militar exige o uso da força dentro de parâmetros de legalidade, necessidade e proporcionalidade, sob pena de responsabilização do agente. Considerando esse cenário, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "uso-da-forca",
+        "source": "Tema provável PM",
+        "exam_tag": "PMGO",
+    },
+    {
+        "title": "Saúde mental e valorização do policial militar",
+        "description": "Impactos psicológicos da atividade policial e políticas de cuidado ao efetivo",
+        "context_text": "A rotina de risco e estresse da atividade policial militar tem efeitos sobre a saúde mental do efetivo, tema cada vez mais presente nas políticas institucionais de valorização do policial. Considerando esse contexto, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "saude-mental-policial",
+        "source": "Tema provável PM",
+        "exam_tag": "PMGO",
+    },
+    {
+        "title": "O papel da Polícia Militar no enfrentamento à violência doméstica",
+        "description": "Atuação preventiva e repressiva da PM em casos de violência doméstica e familiar",
+        "context_text": "A Lei Maria da Penha atribui à polícia, entre outras, medidas de proteção urgente à vítima de violência doméstica. Considerando o papel da Polícia Militar nesse enfrentamento, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "violencia-domestica",
+        "source": "Tema provável PM",
+        "exam_tag": "PMGO",
+    },
+    {
+        "title": "Segurança pública como direito social e dever do Estado",
+        "description": "A segurança pública na Constituição Federal e a responsabilidade compartilhada",
+        "context_text": "A Constituição Federal trata a segurança pública como dever do Estado e responsabilidade de todos, exercida para a preservação da ordem pública e da incolumidade das pessoas e do patrimônio. Considerando esse dispositivo, redija um texto dissertativo acerca do seguinte tema:",
+        "subject_area": "seguranca-publica",
+        "source": "Tema provável PM",
+        "exam_tag": "ALL",
     },
 ]
 

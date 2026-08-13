@@ -27,6 +27,8 @@ from prf.routers.maintenance import router as maintenance_router
 from prf.routers.trilha import router as trilha_router
 from prf.routers.cron import router as cron_router
 from prf.routers.coverage import router as coverage_router
+from prf.routers.taf import router as taf_router
+from prf.routers.checklist import router as checklist_router
 from prf.database.repository import PRFRepository
 
 logger = logging.getLogger(__name__)
@@ -54,6 +56,8 @@ def register_prf_routers(app: FastAPI):
     app.include_router(trilha_router,        prefix=f"{PREFIX}/trilha",         tags=["PRF Trilha do Edital"])
     app.include_router(cron_router,          prefix=f"{PREFIX}/cron",           tags=["PRF Agendador"])
     app.include_router(coverage_router,      prefix=f"{PREFIX}/coverage",       tags=["PRF Coverage Audit"])
+    app.include_router(taf_router,           prefix=f"{PREFIX}/taf",            tags=["PRF TAF"])
+    app.include_router(checklist_router,     prefix=f"{PREFIX}/checklist",      tags=["PRF Checklist"])
 
     logger.info("[PRF] All routers registered under /api/prf")
 

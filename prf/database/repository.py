@@ -119,6 +119,51 @@ class PRFRepository:
             user_id, day_of_week,
         )
 
+    # ── TAF ───────────────────────────────────────────────────────────────────
+
+    async def add_taf_record(self, user_id: UUID, data: dict) -> dict:
+        return await self._fetchrow(
+            """INSERT INTO taf_records (user_id, measured_at, barra_reps, flexao_reps,
+               abdominal_reps, corrida_12min_metros, notes)
+               VALUES ($1, $2, $3, $4, $5, $6, $7)
+               RETURNING *""",
+            user_id, data.get("measured_at") or date.today(),
+            data.get("barra_reps"), data.get("flexao_reps"),
+            data.get("abdominal_reps"), data.get("corrida_12min_metros"),
+            data.get("notes"),
+        )
+
+    async def get_taf_records(self, user_id: UUID) -> list[dict]:
+        return await self._fetch(
+            "SELECT * FROM taf_records WHERE user_id = $1 ORDER BY measured_at", user_id
+        )
+
+    async def update_taf_targets(self, user_id: UUID, targets: dict) -> None:
+        await self._execute(
+            """UPDATE user_profiles SET taf_targets = $2, updated_at = NOW()
+               WHERE user_id = $1""",
+            user_id, targets,
+        )
+
+    # ── Checklist ─────────────────────────────────────────────────────────────
+
+    async def get_checklist_status(self, user_id: UUID) -> list[dict]:
+        return await self._fetch(
+            "SELECT item_key, is_done, due_date, notes FROM user_checklist_status WHERE user_id = $1",
+            user_id,
+        )
+
+    async def upsert_checklist_status(self, user_id: UUID, item_key: str, data: dict) -> dict:
+        return await self._fetchrow(
+            """INSERT INTO user_checklist_status (user_id, item_key, is_done, due_date, notes)
+               VALUES ($1, $2, $3, $4, $5)
+               ON CONFLICT (user_id, item_key) DO UPDATE SET
+                   is_done = $3, due_date = $4, notes = $5, updated_at = NOW()
+               RETURNING *""",
+            user_id, item_key, data.get("is_done", False),
+            data.get("due_date"), data.get("notes"),
+        )
+
     # ── Behavior Metrics ──────────────────────────────────────────────────────
 
     async def upsert_behavior_metrics(self, user_id: UUID, data: dict) -> dict:
