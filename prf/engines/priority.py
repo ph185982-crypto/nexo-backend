@@ -16,6 +16,8 @@ prova se ficar do jeito que está".
   7. Energia do usuário — casa dificuldade do conteúdo com a energia
   8. Itens no blueprint do edital — quantos pontos a matéria vale de fato
   9. Guarda de recência — gira dentro do blueprint, não para fora dele
+  10. Regra do zero — matéria projetando menos de 1 acerto fura a fila,
+      porque zerar uma área elimina o candidato mesmo com nota alta
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
@@ -49,6 +51,10 @@ class SubjectState:
     # "matéria importante" em "pontos na mesa": Direito Penal com 5 itens
     # peso 2 vale 10 dos 85 pontos; Informática, fora do blueprint, vale 0.
     exam_items: int = 0
+    # Contagem BRUTA de itens no blueprint (sem multiplicar pelo peso do
+    # bloco) — é o que a regra do zero usa pra saber quantos itens dessa
+    # matéria caem na prova, não quantos pontos eles valem.
+    blueprint_item_count: int = 0
 
 
 @dataclass
@@ -210,6 +216,18 @@ def _compute_subject_score(
     # quer que ela suba na fila, independente do que o Impact Score sozinho diria.
     if s.is_priority:
         impact *= 1.3
+
+    # Regra do zero — sobrevivência antes de otimização.
+    # O Impact Score sozinho sempre manda matéria de peso 1 e poucos itens
+    # (ex.: Realidade de Goiás, 5 itens) pro fim da fila. Mas zerar QUALQUER
+    # matéria do blueprint elimina o candidato, mesmo com 84 dos 85 pontos
+    # nas outras. Se a acurácia projetada nessa matéria não chega a 1 item
+    # certo (ou a matéria nunca foi tentada), ela fura a fila até sair do
+    # risco — depois volta a competir pelo Impact Score normal.
+    if s.blueprint_item_count > 0:
+        projected_correct = s.accuracy * s.blueprint_item_count if s.total_attempts > 0 else 0.0
+        if projected_correct < 1.0:
+            impact = max(impact, 500.0 + s.weight_prf * 10.0)
 
     return impact
 
