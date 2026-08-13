@@ -73,15 +73,24 @@ class PriorityContext:
 def compute_priorities(
     subjects: list[SubjectState],
     context: PriorityContext,
+    recently_studied_subjects: set[UUID] | None = None,
 ) -> list[PriorityResult]:
     """
     Rank subjects by Impact Score, highest first — a matéria que mais
     ameaça pontos na prova, não a que "falta mais estudar".
+
+    Args:
+        subjects: lista de SubjectState
+        context: PriorityContext com hora, energia, tempo disponível
+        recently_studied_subjects: set de UUIDs de matérias estudadas nos
+                                   últimos dias — serão penalizadas para
+                                   forçar rotação entre matérias
     """
+    recently_studied_subjects = recently_studied_subjects or set()
     results = []
     total_weight = sum(s.weight_prf for s in subjects) or 1.0
     for s in subjects:
-        score = _compute_subject_score(s, context)
+        score = _compute_subject_score(s, context, recently_studied_subjects)
         fmt = _recommend_format(s, context)
         mins = _recommend_duration(s, context)
         reason = _explain_priority(s, context, score)
@@ -137,7 +146,13 @@ def _expected_lost_points(s: SubjectState, ctx: PriorityContext, total_weight: f
     return round(norm_weight * gap * ctx.exam_total_items, 1)
 
 
-def _compute_subject_score(s: SubjectState, ctx: PriorityContext) -> float:
+def _compute_subject_score(
+    s: SubjectState,
+    ctx: PriorityContext,
+    recently_studied_subjects: set[UUID] | None = None,
+) -> float:
+    recently_studied_subjects = recently_studied_subjects or set()
+
     # Núcleo do Impact Score: peso × risco de erro × gap de domínio × esquecimento.
     error_rate = (1.0 - s.accuracy) if s.total_attempts > 0 else 0.5
     mastery_gap = max(0.0, 1.0 - s.mastery)
@@ -158,8 +173,15 @@ def _compute_subject_score(s: SubjectState, ctx: PriorityContext) -> float:
         if s.weight_prf >= 2.0:
             impact *= urgency
 
-    # Guarda de recência — não empilhar a mesma matéria no mesmo dia.
-    if s.last_studied:
+    # Rotação de matérias — forçar variedade entre dias consecutivos.
+    # Matérias estudadas nos últimos dias recebem penalidade MUITO maior
+    # (0.2 em vez de 0.85) para garantir que a missão de hoje gire entre
+    # diferentes matérias, mesmo que uma tenha alta prioridade absoluta.
+    # Sem isso, matérias com score muito alto dominam por dias seguidos.
+    if s.subject_id in recently_studied_subjects:
+        impact *= 0.2
+    elif s.last_studied:
+        # Guarda de recência padrão (menor penalidade se não foi nos últimos dias)
         hours_since = (datetime.utcnow() - s.last_studied.replace(tzinfo=None)).total_seconds() / 3600
         if hours_since < 4:
             impact *= 0.5

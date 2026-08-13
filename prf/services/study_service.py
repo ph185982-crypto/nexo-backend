@@ -122,7 +122,11 @@ class StudyService:
             exam_total_items=50 if is_pm else 120,
         )
 
-        priorities = compute_priorities(subject_states, ctx)
+        # Fetch subjects studied in last 1 day to ensure rotation.
+        # Matérias que apareceram na missão de ontem recebem penalidade forte.
+        recently_studied = await self.repo.get_mission_subjects_last_days(user_id, days=1)
+
+        priorities = compute_priorities(subject_states, ctx, recently_studied)
 
         reviews_due_count = await self.repo.count_due_reviews(user_id)
         review_card_ids = await self.repo.get_due_review_card_ids(user_id)

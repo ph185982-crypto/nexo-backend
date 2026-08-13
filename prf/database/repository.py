@@ -535,6 +535,23 @@ class PRFRepository:
             )
         return mission
 
+    async def get_mission_subjects_last_days(self, user_id: UUID, days: int = 1) -> set[UUID]:
+        """Get subjects that appeared in missions over the last N days.
+
+        Returns a set of subject IDs to help rotate daily missions and avoid
+        repetition of the same subject on consecutive days.
+        """
+        cutoff_date = f"(NOW() AT TIME ZONE 'America/Sao_Paulo')::date - INTERVAL '{days} days'"
+        rows = await self._fetch(
+            f"""SELECT DISTINCT mb.subject_id
+               FROM mission_blocks mb
+               JOIN daily_missions dm ON dm.id = mb.mission_id
+               WHERE dm.user_id = $1 AND dm.date >= {cutoff_date}
+                 AND mb.subject_id IS NOT NULL""",
+            user_id,
+        )
+        return {row["subject_id"] for row in rows if row["subject_id"]}
+
     async def create_mission(self, user_id: UUID, data: dict) -> dict:
         mission = await self._fetchrow(
             f"""INSERT INTO daily_missions (user_id, date, estimated_mins, mode_suggested,
