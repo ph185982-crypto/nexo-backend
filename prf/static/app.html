@@ -1036,6 +1036,59 @@ button { font-family:inherit; }
 .cta-label { font-size:16px; font-weight:700; letter-spacing:0.01em; }
 .cta-detail { font-size:12px; opacity:.85; font-weight:500; }
 .rest-day-block { border-left:3px solid var(--gold); }
+.carry-warn {
+  display:flex; align-items:flex-start; gap:8px; margin-bottom:12px;
+  padding:10px 12px; border-radius:10px;
+  background:var(--gold-soft); color:var(--gold);
+  font-size:12.5px; line-height:1.45; font-weight:600;
+}
+.carry-warn svg { width:16px; height:16px; flex-shrink:0; margin-top:1px; }
+
+/* Videoaula toca dentro da própria etapa da missão. */
+.task-embed { padding:0 0 14px 34px; display:flex; flex-direction:column; gap:10px; }
+.task-embed .vid-card { margin:0; }
+
+/* ── Trajetória ── */
+.plano-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+.pl-stat {
+  display:flex; flex-direction:column; gap:2px; padding:10px 12px;
+  border:1px solid var(--border); border-radius:10px;
+}
+.pl-num { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+.pl-lbl { font-size:11.5px; color:var(--ink-3); line-height:1.3; }
+.plano-list { display:flex; flex-direction:column; }
+.plano-day {
+  display:flex; align-items:center; gap:12px; padding:11px 0;
+  border-top:1px solid var(--border);
+}
+.plano-day:first-child { border-top:none; }
+.plano-day.pl-future { opacity:.82; }
+.plano-day.pl-missed .pl-title { color:var(--ink-3); }
+.plano-day.is-today {
+  border-left:3px solid var(--primary); padding-left:10px;
+  background:var(--primary-soft, transparent); border-radius:8px;
+}
+.pl-date {
+  width:34px; flex-shrink:0; display:flex; flex-direction:column;
+  align-items:center; line-height:1.05;
+}
+.pl-dnum { font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
+.pl-dweek { font-size:10px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.04em; }
+.pl-kind { flex-shrink:0; color:var(--ink-3); }
+.pl-kind svg { width:17px; height:17px; }
+.pl-info { flex:1; min-width:0; }
+.pl-title { font-size:13.5px; font-weight:600; line-height:1.3; }
+.pl-sub {
+  font-size:12px; color:var(--ink-3); line-height:1.35; margin-top:1px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.pl-check { color:var(--success); flex-shrink:0; }
+.pl-check svg { width:20px; height:20px; }
+.pl-frac {
+  font-size:11.5px; font-weight:700; color:var(--gold);
+  font-variant-numeric:tabular-nums; flex-shrink:0;
+}
+.pl-miss { color:var(--ink-3); font-size:16px; flex-shrink:0; }
 
 .mission-tasks { display:flex; flex-direction:column; gap:2px; }
 .mission-task {
@@ -1266,6 +1319,7 @@ const S = {
   coverage: null,
   studyProfile: null, savingProfile: false,
   history: null, consistency: null,
+  plano: null, planoHistorico: false, pendingSimBlockId: null,
 };
 
 let timerInterval = null;
@@ -1591,7 +1645,13 @@ const I = {
   send: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
   dumbbell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11M4 8l2-2 3 3-2 2zM15 17l3 3 2-2-3-3zM2 14l3-3M17 5l3 3M6.5 17.5l-3 3M17.5 6.5l3-3"/></svg>`,
   checkCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+  video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`,
 };
+
+// Rótulos do calendário fixo — espelham prf/engines/schedule.py.
+const DAY_KIND_LABEL = { conteudo: 'Conteúdo novo', simulado: 'Simulado', revisao: 'Revisão' };
+const WEEKDAY_SHORT = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 
 // ===== UTILS =====
 function fmtTime(sec) {
@@ -1687,6 +1747,62 @@ function localGreeting() {
   if (h < 18) return 'Boa tarde';
   return 'Boa noite';
 }
+// A missão do dia é UMA unidade: revisão, áudio da ida, áudio da volta,
+// videoaula, lei seca e questões do mesmo tópico, em ordem. Cada linha abaixo é
+// uma etapa dessa unidade — o vídeo é a única que renderiza o conteúdo dentro
+// do próprio cartão, porque assistir é o ato, não há tela para onde navegar.
+const BLOCK_ICON = {
+  questions: 'book', review: 'refresh', legal_reading: 'scale',
+  flashcards: 'brain', podcast: 'headphones', podcast_drill: 'headphones',
+  error_review: 'brain', video_lesson: 'video', simulado: 'timer',
+};
+const BLOCK_ACTION = {
+  questions: 'practice', review: 'review', legal_reading: 'legal',
+  flashcards: 'flashcards', podcast: 'podcast', podcast_drill: 'podcast',
+  error_review: 'review', video_lesson: 'video', simulado: 'simulado',
+};
+
+function blockActionType(b) { return BLOCK_ACTION[b.block_type] || 'practice'; }
+
+function missionTaskRow(b, i) {
+  if (b.block_type === 'audio' || b.block_type === 'audio_lesson') return '';
+  const done = b.is_completed;
+  const icon = I[BLOCK_ICON[b.block_type] || 'target'];
+  const action = `startMissionBlock(${i},'${blockActionType(b)}')`;
+  const check = done
+    ? '<svg viewBox="0 0 24 24" fill="var(--success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'
+    : '<div class="task-circle"></div>';
+
+  const row = `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">
+    <div class="task-check">${check}</div>
+    <div class="task-icon">${icon}</div>
+    <div class="task-info">
+      <div class="task-title">${esc(b.title)}</div>
+      <div class="task-meta">${esc(b.description || '')} · ${b.estimated_mins||10} min</div>
+    </div>
+    ${done ? '' : `<div class="chev">${I.chev}</div>`}
+  </div>`;
+
+  // Videoaula toca dentro da missão. Quando não há vídeo curado para a
+  // matéria, o payload traz uma busca pronta no YouTube — que não pode ser
+  // embutida, então vira link.
+  if (b.block_type === 'video_lesson' && !done) {
+    const p = b.payload || {};
+    const inner = p.video_id
+      ? `<div class="yt-frame-wrap"><iframe src="${_ytEmbedUrl(p.video_id)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
+      : `<a href="${esc(p.url || '#')}" target="_blank" rel="noopener" class="vid-card">
+           <div class="vid-play">${I.play}</div>
+           <div class="vid-title">${esc(p.title || 'Abrir videoaula')}</div>
+           <div class="vid-meta">${esc(p.source || 'YouTube')}</div>
+         </a>`;
+    return row + `<div class="task-embed">
+      ${inner}
+      <button class="btn btn-primary btn-full" onclick="event.stopPropagation();startMissionBlock(${i},'video')">Marcar videoaula como assistida</button>
+    </div>`;
+  }
+  return row;
+}
+
 function viewDashboard() {
   const d = S.dashboard;
   if (!d) return appbar() + skeletonBlock(3, 100);
@@ -1774,11 +1890,7 @@ function viewDashboard() {
       if (isRest) return '';
       const mEst = mission ? (mission.estimated_mins || 0) : 0;
       const nextBlock = mBlocks.find(b => !b.is_completed);
-      const nextType = nextBlock ? (nextBlock.block_type === 'questions' ? 'practice' :
-        nextBlock.block_type === 'review' ? 'review' :
-        nextBlock.block_type === 'legal_reading' ? 'legal' :
-        nextBlock.block_type === 'flashcards' ? 'flashcards' :
-        (nextBlock.block_type === 'podcast' || nextBlock.block_type === 'podcast_drill') ? 'podcast' : 'practice') : null;
+      const nextType = nextBlock ? blockActionType(nextBlock) : null;
       const nextIdx = nextBlock ? mBlocks.indexOf(nextBlock) : -1;
       if (!missionDone && nextBlock && mTotal > 0) {
         return `<button class="mission-cta fade-in" onclick="startMissionBlock(${nextIdx},'${nextType}')">
@@ -1790,9 +1902,10 @@ function viewDashboard() {
     })()}
 
     ${!(mission && isRestDay) ? `<div class="mission-block fade-in">
+      ${mission && mission.carried_over ? `<div class="carry-warn">${I.clock} <span>Missão anterior em aberto — ela continua sendo a de hoje. Conteúdo novo só depois que esta fechar.</span></div>` : ''}
       <div class="mission-header">
         <div>
-          <div class="section-eyebrow">Missão do dia</div>
+          <div class="section-eyebrow">${mission ? (DAY_KIND_LABEL[mission.day_kind] || 'Missão do dia') : 'Missão do dia'}${mission && mission.topic_label ? ` · ${esc(mission.topic_label)}` : ''}</div>
           <div class="section-title">${missionDone ? 'Missão cumprida!' : mTotal > 0 ? `${mDone} de ${mTotal} etapas` : 'Carregando...'}</div>
         </div>
         ${mTotal > 0 ? `<div class="mission-ring">
@@ -1805,32 +1918,7 @@ function viewDashboard() {
       </div>
       ${mission && mDone === 0 && !missionDone ? `<button class="mission-regen-btn" onclick="regenerateMission()">Gerar nova missão de hoje</button>` : ''}
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
-      mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => {
-        const done = b.is_completed;
-        if (b.block_type === 'audio' || b.block_type === 'audio_lesson') return '';
-        const icon = b.block_type === 'questions' ? I.book :
-          b.block_type === 'review' ? I.refresh :
-          b.block_type === 'legal_reading' ? I.scale :
-          b.block_type === 'flashcards' ? I.brain :
-          (b.block_type === 'podcast' || b.block_type === 'podcast_drill') ? I.headphones :
-          b.block_type === 'error_review' ? I.brain : I.target;
-        const action = b.block_type === 'questions' ? `startMissionBlock(${i},'practice')` :
-          b.block_type === 'review' ? `startMissionBlock(${i},'review')` :
-          b.block_type === 'legal_reading' ? `startMissionBlock(${i},'legal')` :
-          b.block_type === 'flashcards' ? `startMissionBlock(${i},'flashcards')` :
-          (b.block_type === 'podcast' || b.block_type === 'podcast_drill') ? `startMissionBlock(${i},'podcast')` :
-          b.block_type === 'error_review' ? `startMissionBlock(${i},'review')` :
-          `startMissionBlock(${i},'practice')`;
-        return `<div class="mission-task ${done?'done':''}" onclick="${done?'':action}">
-          <div class="task-check">${done ? '<svg viewBox="0 0 24 24" fill="var(--success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : `<div class="task-circle"></div>`}</div>
-          <div class="task-icon">${icon}</div>
-          <div class="task-info">
-            <div class="task-title">${esc(b.title)}</div>
-            <div class="task-meta">${esc(b.description || '')} · ${b.estimated_mins||10} min</div>
-          </div>
-          ${done ? '' : `<div class="chev">${I.chev}</div>`}
-        </div>`;
-      }).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
+      mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => missionTaskRow(b, i)).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
       ${missionDone ? `<div class="mission-complete-banner"><span>Parabéns! Volte amanhã para a próxima missão.</span></div>` : ''}
     </div>` : ''}
 
@@ -1845,33 +1933,20 @@ function viewDashboard() {
       slugs.forEach(s => { (related[s] || []).forEach(r => expanded.add(r)); });
       let allRes = S.resources.filter(r => expanded.has(r.subject_slug));
       if (!allRes.length) allRes = S.resources.slice(0, 6);
-      const vids = allRes.filter(r => r.resource_type === 'video');
+      // A videoaula do dia agora vive dentro da própria missão (bloco
+      // video_lesson, do mesmo tópico do áudio e da lei seca). Aqui fica só o
+      // material de apoio — repetir vídeo solto embaixo competia com a missão.
       const docs = allRes.filter(r => r.resource_type !== 'video');
+      if (!docs.length) return '';
       return `<div class="mission-resources fade-in">
-        <div class="section-eyebrow">Videoaulas recomendadas</div>
-        <div class="section-title" style="margin-bottom:12px">Para a missão de hoje</div>
-        ${vids.map(v => {
-          const ytId = _ytId(v.url);
-          if (ytId) return `<div class="yt-embed-card">
-            <div class="yt-frame-wrap"><iframe src="${_ytEmbedUrl(ytId)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-            <div class="yt-info">
-              <div class="vid-title">${esc(v.title)}</div>
-              <div class="vid-meta">${esc(v.reason)}</div>
-            </div>
-          </div>`;
-          return `<a href="${esc(v.url)}" target="_blank" rel="noopener" class="vid-card">
-            <div class="vid-play">${I.play}</div>
-            <div class="vid-title">${esc(v.title)}</div>
-            <div class="vid-meta">${esc(v.source)} · ${esc(v.reason.length > 60 ? v.reason.slice(0,57)+'...' : v.reason)}</div>
-          </a>`;
-        }).join('')}
-        ${docs.length ? `<div class="section-eyebrow" style="margin-top:16px">Material complementar</div>
-          ${docs.map(d => `<a href="${esc(d.url)}" target="_blank" rel="noopener" class="resource-card" style="text-decoration:none;color:inherit">
-            <div class="res-type-badge">${d.resource_type === 'pdf' ? I.book : I.search} ${d.resource_type === 'pdf' ? 'PDF' : 'Artigo'}</div>
-            <div class="res-title">${esc(d.title)}</div>
-            <div class="res-reason">${esc(d.reason)}</div>
-            <div class="res-source">${esc(d.source)}</div>
-          </a>`).join('')}` : ''}
+        <div class="section-eyebrow">Material complementar</div>
+        <div class="section-title" style="margin-bottom:12px">Leis e artigos das matérias de hoje</div>
+        ${docs.map(d => `<a href="${esc(d.url)}" target="_blank" rel="noopener" class="resource-card" style="text-decoration:none;color:inherit">
+          <div class="res-type-badge">${d.resource_type === 'pdf' ? I.book : I.search} ${d.resource_type === 'pdf' ? 'PDF' : 'Artigo'}</div>
+          <div class="res-title">${esc(d.title)}</div>
+          <div class="res-reason">${esc(d.reason)}</div>
+          <div class="res-source">${esc(d.source)}</div>
+        </a>`).join('')}
       </div>`;
     })()}
 
@@ -2987,6 +3062,107 @@ function viewChecklist() {
     </div>`).join('')}`;
 }
 
+// ===== TRAJETÓRIA =====
+// Calendário do candidato: o passado com visto (veio de daily_missions, é
+// fato) e o futuro projetado (a fila de tópicos que a missão vai consumir).
+// O tipo do dia — conteúdo, simulado no sábado, revisão no domingo — é fixo e
+// não depende de projeção nenhuma.
+const PLANO_STATUS = {
+  done:    { label: 'Concluída',  cls: 'pl-done' },
+  partial: { label: 'Incompleta', cls: 'pl-partial' },
+  missed:  { label: 'Não feita',  cls: 'pl-missed' },
+  today:   { label: 'Hoje',       cls: 'pl-today' },
+  future:  { label: '',           cls: 'pl-future' },
+};
+
+function viewPlano() {
+  const p = S.plano;
+  const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Minha trajetória</span></div>`;
+  if (!p) return head + skeletonBlock(6, 60);
+
+  const s = p.summary || {};
+  // Dias anteriores ao primeiro uso do app não entram: nunca houve missão
+  // ali para ser perdida.
+  const dias = (p.days || []).filter(d => d.status !== 'before_start');
+  const passados = dias.filter(d => d.is_past);
+  const futuros = dias.filter(d => !d.is_past);
+  const mostrarPassado = S.planoHistorico;
+  const visiveis = mostrarPassado ? dias : futuros;
+
+  const grupos = {};
+  visiveis.forEach(d => {
+    const dt = new Date(d.date + 'T12:00:00');
+    const chave = dt.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    (grupos[chave] = grupos[chave] || []).push(d);
+  });
+
+  return head + `
+    <div class="settings-section fade-in">
+      <div class="section-eyebrow">${p.exam_date ? `Prova em ${new Date(p.exam_date + 'T12:00:00').toLocaleDateString('pt-BR')}` : 'Sem data de prova definida'}</div>
+      <div class="section-title">${p.days_until_exam != null ? `Faltam ${p.days_until_exam} dias` : `Próximos ${s.horizon_days || 90} dias`}</div>
+      <div class="plano-stats">
+        <div class="pl-stat"><span class="pl-num">${s.missions_done || 0}</span><span class="pl-lbl">missões fechadas</span></div>
+        <div class="pl-stat"><span class="pl-num">${s.missions_missed || 0}</span><span class="pl-lbl">não feitas</span></div>
+        <div class="pl-stat"><span class="pl-num">${s.simulados_ahead || 0}</span><span class="pl-lbl">simulados pela frente</span></div>
+        <div class="pl-stat"><span class="pl-num">${s.topics_remaining || 0}</span><span class="pl-lbl">tópicos a cobrir</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-3);line-height:1.5;margin-top:12px">
+        Sábado é simulado e domingo é revisão — isso é fixo. A matéria de cada dia de
+        conteúdo é a fila atual: se você errar muito em uma matéria, ela sobe e o resto
+        desce.
+      </p>
+      ${passados.length ? `<button class="btn btn-ghost btn-full" style="margin-top:10px" onclick="togglePlanoHistorico()">
+        ${mostrarPassado ? 'Ocultar dias anteriores' : `Mostrar os ${passados.length} dias anteriores`}
+      </button>` : ''}
+    </div>
+    ${Object.keys(grupos).map(mes => `<div class="settings-section fade-in" style="padding-top:0">
+      <div class="section-eyebrow">${esc(mes)}</div>
+      <div class="plano-list">
+        ${grupos[mes].map(d => planoRow(d)).join('')}
+      </div>
+    </div>`).join('')}`;
+}
+
+function planoRow(d) {
+  const st = PLANO_STATUS[d.status] || PLANO_STATUS.future;
+  const dt = new Date(d.date + 'T12:00:00');
+  const dia = dt.getDate();
+  const semana = WEEKDAY_SHORT[d.weekday];
+  const kindIcon = d.kind === 'simulado' ? I.timer : d.kind === 'revisao' ? I.refresh : I.book;
+  const visto = d.status === 'done'
+    ? `<span class="pl-check">${I.checkCircle}</span>`
+    : d.status === 'partial'
+      ? `<span class="pl-frac">${d.blocks_done}/${d.blocks_total}</span>`
+      : d.status === 'missed'
+        ? `<span class="pl-miss">—</span>`
+        : '';
+  const linha2 = d.is_rest_day
+    ? 'Descanso — só o áudio do deslocamento'
+    : [d.subject_name, d.topic_name].filter(Boolean).join(' · ') || DAY_KIND_LABEL[d.kind] || '';
+  return `<div class="plano-day ${st.cls} ${d.is_today ? 'is-today' : ''}">
+    <div class="pl-date"><span class="pl-dnum">${dia}</span><span class="pl-dweek">${semana}</span></div>
+    <div class="pl-kind">${kindIcon}</div>
+    <div class="pl-info">
+      <div class="pl-title">${esc(DAY_KIND_LABEL[d.kind] || 'Conteúdo')}${d.is_today ? ' · hoje' : ''}</div>
+      <div class="pl-sub">${esc(linha2)}</div>
+    </div>
+    ${visto}
+  </div>`;
+}
+
+function togglePlanoHistorico() { S.planoHistorico = !S.planoHistorico; render(); scrollTop(); }
+
+function openPlano() {
+  S.subView = 'plano'; S.tab = 'more'; render(); scrollTop();
+  if (!S.plano) loadPlano();
+}
+
+async function loadPlano() {
+  try { S.plano = await api('/api/prf/plano/calendario'); }
+  catch (e) { toast('Erro ao carregar trajetória', 'error'); S.plano = { days: [], summary: {} }; }
+  render();
+}
+
 // ===== MORE =====
 function viewMore() {
   if (S.subView === 'podcastNow') return viewPodcastNow();
@@ -2998,6 +3174,7 @@ function viewMore() {
   if (S.subView === 'taf') return viewTAF();
   if (S.subView === 'checklist') return viewChecklist();
   if (S.subView === 'reviews') return viewReviews();
+  if (S.subView === 'plano') return viewPlano();
   if (S.subView === 'trilha') return viewTrilha();
   if (S.subView === 'history') return viewHistory();
   if (S.subView === 'settings') return viewSettings();
@@ -3010,6 +3187,11 @@ function viewMore() {
       <div class="display-hero">Ferramentas de <em>estudo</em></div>
     </div>
     <div class="more-list">
+      <div class="shortcut" onclick="openPlano()">
+        <div class="badge-icon gold">${I.calendar}</div>
+        <div class="info"><h3>Minha trajetória</h3><p>Calendário até a prova — o que já fechou e o que vem</p></div>
+        <div class="chev">${I.chev}</div>
+      </div>
       <div class="shortcut" onclick="openTrilha()">
         <div class="badge-icon" style="background:var(--primary)">${I.target}</div>
         <div class="info"><h3>Trilha do edital</h3><p>${trilhaPct != null ? `${trilhaPct}% coberto` : 'Mapa completo das matérias'}</p></div>
@@ -3153,7 +3335,22 @@ async function startMissionBlock(blockIdx, type) {
   S.activeMissionIdx = blockIdx;
   S.missionBlockId = b.id;
   if (type === 'practice') {
-    const sid = b.subject_id || (b.content_ids?.length ? b.content_ids[0] : null);
+    // Bloco de revisão da semana (domingo) já vem com a lista exata de
+    // questões; buscar por matéria ali sortearia outras e perderia o ponto.
+    if (!b.subject_id && b.content_ids?.length) {
+      S.selSubject = null; S.selSubjectName = b.title;
+      S.subView = 'questions'; S.qIndex = 0; S.questions = []; S.answerResult = null;
+      S.answered = {}; S.qStartedAt = Date.now();
+      S.loading.questions = true; S.tab = 'practice'; render();
+      try {
+        const d = await api(`/api/prf/questions/list?limit=40&ids=${encodeURIComponent(b.content_ids.join(','))}`);
+        S.questions = d.questions || [];
+      } catch (e) { toast('Erro ao carregar questões', 'error'); }
+      if (!S.questions.length) { toast('Nenhuma questão disponível — avançando', 'info'); await finishMissionBlock(); return; }
+      S.loading.questions = false; render(); scrollTop();
+      return;
+    }
+    const sid = b.subject_id;
     if (!sid) { toast('Sem matéria para questões — avançando', 'info'); await finishMissionBlock(); return; }
     // A missão já escolheu o tópico do dia (o mesmo da aula em áudio e da
     // lei seca); sem passar topic_id aqui o bloco caía num sorteio da
@@ -3205,6 +3402,18 @@ async function startMissionBlock(blockIdx, type) {
     S.podKind = b.block_type === 'podcast_drill' ? 'drill' : 'aula';
     await playPodcast(epId, { tela: true });
     return;
+  } else if (type === 'video') {
+    // O vídeo já toca embutido no cartão da missão; aqui só se confirma que
+    // foi assistido e a unidade avança para a lei seca.
+    await finishMissionBlock(false);
+    toast('Videoaula concluída', 'success');
+    return;
+  } else if (type === 'simulado') {
+    // Sábado: a missão inteira é o simulado. Ele fecha sozinho quando o
+    // candidato finaliza a prova (ver finishSimulado).
+    S.pendingSimBlockId = b.id;
+    switchTab('simulado');
+    return;
   } else {
     switchTab('practice');
   }
@@ -3237,11 +3446,17 @@ function advanceToNextMissionBlock() {
     return;
   }
   const nextIdx = blocks.indexOf(next);
-  const type = next.block_type === 'questions' ? 'practice' :
-    next.block_type === 'review' ? 'review' :
-    next.block_type === 'legal_reading' ? 'legal' :
-    next.block_type === 'flashcards' ? 'flashcards' :
-    next.block_type === 'error_review' ? 'review' : 'practice';
+  // Videoaula e simulado não encadeiam sozinhos: um toca dentro do próprio
+  // cartão e o outro é uma sessão de 3 horas. Avançar automaticamente para
+  // eles marcaria o vídeo como assistido sem ninguém ter assistido nada.
+  if (next.block_type === 'video_lesson' || next.block_type === 'simulado') {
+    S.activeMissionIdx = null;
+    S.missionBlockId = null;
+    switchTab('dashboard');
+    toast(`Próxima etapa: ${next.title}`, 'info');
+    return;
+  }
+  const type = blockActionType(next);
   toast(`Próxima etapa: ${next.title}`, 'info');
   setTimeout(() => startMissionBlock(nextIdx, type), 1500);
 }
@@ -3430,6 +3645,15 @@ async function finishSimulado() {
   localStorage.removeItem(SIM_ID_KEY);
   try { S.simResult = await api(`/api/prf/simulados/${S.sim.id}/finish`, { method:'POST' }); }
   catch (e) { toast('Erro ao finalizar', 'error'); }
+  // Sábado: o simulado É a missão do dia. Terminar a prova fecha o bloco.
+  if (S.pendingSimBlockId) {
+    const bid = S.pendingSimBlockId;
+    S.pendingSimBlockId = null;
+    try {
+      await api('/api/prf/missions/blocks/complete', { method:'POST', json:{ block_id: bid } });
+      S.mission = null; await loadMission();
+    } catch (e) {}
+  }
   render(); scrollTop();
 }
 function resetSimulado() {
@@ -3731,8 +3955,17 @@ async function openMissionReview(blockIdx) {
   S.subView = 'missionReview';
   S.tab = 'more';
   render();
-  try { S.reviews = await api('/api/prf/reviews/due?limit=20'); }
+  // Os cartões do bloco vêm da missão (incluem os do dia anterior, que ainda
+  // não venceram); /due sozinho devolveria só o que o SM-2 já liberou e a
+  // revisão de ontem nunca apareceria.
+  const ids = (b.content_ids || []).join(',');
+  const url = ids ? `/api/prf/reviews/due?limit=40&ids=${encodeURIComponent(ids)}`
+                  : '/api/prf/reviews/due?limit=20';
+  try { S.reviews = await api(url); }
   catch (e) { S.reviews = []; }
+  if (!S.reviews?.length && ids) {
+    try { S.reviews = await api('/api/prf/reviews/due?limit=20'); } catch (e) { S.reviews = []; }
+  }
   if (!S.reviews?.length) { await finishMissionBlock(); return; }
   await loadMissionReviewQuestion();
   render(); scrollTop();

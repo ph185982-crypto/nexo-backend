@@ -23,6 +23,7 @@ from uuid import UUID, uuid4
 
 from prf.models.user import EnergyLevel, StudyMode
 from prf.engines.priority import PriorityResult, PriorityContext
+from prf.engines.schedule import CONTEUDO, SIMULADO, REVISAO
 
 
 @dataclass
@@ -39,6 +40,12 @@ class MissionBlock:
     content_ids: list[UUID] = field(default_factory=list)
     is_optional: bool = False
     mode: str = "focus"
+    # Conteúdo que não é FK do banco — hoje, o link da videoaula do tópico.
+    payload: dict = field(default_factory=dict)
+    # Todas as etapas do mesmo tópico compartilham a chave: é o que faz o app
+    # mostrar a missão como UMA unidade de estudo, e não como sete cartões
+    # soltos que por acaso caíram no mesmo dia.
+    unit_key: Optional[str] = None
 
 
 @dataclass
@@ -51,6 +58,8 @@ class Mission:
     mode_suggested: str = "focus"
     energy_detected: Optional[str] = None
     is_rest_day: bool = False
+    day_kind: str = "conteudo"
+    topic_label: Optional[str] = None
 
 
 GREETINGS_BY_ENERGY = {
@@ -115,6 +124,10 @@ def build_mission(
     topic_plan: dict[UUID, dict] | None = None,
     is_rest_day: bool = False,
     commute_minutes: int = 0,
+    day_kind: str = CONTEUDO,
+    video: dict | None = None,
+    week_review_card_ids: list[UUID] | None = None,
+    week_question_ids: list[UUID] | None = None,
 ) -> Mission:
     """
     Monta a missão do dia a partir das prioridades e do conteúdo disponível.
@@ -153,7 +166,21 @@ def build_mission(
     energy = context.energy
     mode = context.mode
 
+    week_review_card_ids = week_review_card_ids or []
+    week_question_ids = week_question_ids or []
+
     import random
+    # Sábado e domingo são o esqueleto do plano: simulado e revisão acontecem
+    # mesmo em dia marcado como descanso, porque é deles que sai a leitura
+    # honesta de onde o candidato está.
+    if day_kind == SIMULADO:
+        return _simulado_mission(context, is_pm, energy)
+    if day_kind == REVISAO:
+        return _revisao_mission(
+            context, energy, mode, review_card_ids, week_review_card_ids,
+            week_question_ids, error_flashcard_ids,
+        )
+
     if is_rest_day:
         greeting = random.choice(REST_DAY_GREETINGS)
     elif mode == StudyMode.COMMUTE:
@@ -164,6 +191,8 @@ def build_mission(
 
     if is_rest_day:
         blocks = _build_rest_day_audio(priorities, topic_plan, commute_minutes, order)
+        for b in blocks:
+            b.unit_key = str(b.topic_id) if b.topic_id else "descanso"
         return Mission(
             date=context.today,
             greeting=greeting,
@@ -180,8 +209,8 @@ def build_mission(
         count = min(reviews_due, review_mins * 2)
         blocks.append(MissionBlock(
             block_type="review",
-            title=f"Revisão espaçada — {count} itens",
-            description="Revise os cartões vencidos antes de avançar.",
+            title=f"Revisão — {count} itens",
+            description="O que você viu ontem e o que venceu de antes. Começa por aqui.",
             estimated_mins=review_mins,
             display_order=order,
             content_ids=review_card_ids[:count],
@@ -241,6 +270,33 @@ def build_mission(
             order += 1
 
     audio_subject_ids = {audio_plan[0].subject_id} if audio_plan else set()
+
+    # 2b. VIDEOAULA DO TÓPICO — a mesma matéria do áudio, em vídeo, antes da
+    # lei seca. Ver alguém explicar antes de ler o texto frio é o que faz a
+    # leitura render; sozinha, a lei seca vira decoreba.
+    if video and video.get("url"):
+        v_subject = audio_plan[0] if audio_plan else (priorities[0] if priorities else None)
+        v_plan = topic_plan.get(v_subject.subject_id) if v_subject else None
+        v_mins = 15 if remaining_mins >= 30 else min(10, max(remaining_mins, 5))
+        blocks.append(MissionBlock(
+            block_type="video_lesson",
+            subject_id=v_subject.subject_id if v_subject else None,
+            subject_name=v_subject.subject_name if v_subject else None,
+            topic_id=(v_plan or {}).get("topic_id"),
+            title=f"Videoaula — {video.get('topic_name') or (v_subject.subject_name if v_subject else '')}",
+            description=(
+                "Assista antes de abrir a lei seca."
+                if not video.get("is_search")
+                else "Busca pronta no YouTube com o tópico de hoje — escolha uma aula gratuita."
+            ),
+            estimated_mins=v_mins,
+            display_order=order,
+            content_ids=[],
+            payload=video,
+            mode=mode.value,
+        ))
+        order += 1
+        remaining_mins -= min(v_mins, max(remaining_mins - 5, 0))
 
     # 3. ESTUDO DA NOITE — lei seca e questões do MESMO tópico do áudio.
     # As matérias que tiveram áudio vêm primeiro e sempre nesse par, porque
@@ -385,12 +441,28 @@ def build_mission(
         order += 1
         remaining_mins -= err_mins
 
-    # O tempo estimado é o do estudo sentado; o áudio do deslocamento fica
-    # de fora para não inflar o que o candidato precisa reservar à noite.
+    # O tempo estimado é o do estudo sentado; o áudio do deslocamento (ida e
+    # volta) fica de fora para não inflar o que o candidato precisa reservar
+    # à noite — ele já vai estar no carro de qualquer jeito.
     total_mins = sum(
         b.estimated_mins for b in blocks
-        if not b.is_optional and b.block_type != "podcast"
+        if not b.is_optional and b.block_type not in ("podcast", "podcast_drill")
     )
+
+    unit_topic_id = None
+    unit_label = None
+    if audio_plan:
+        unit_topic_id = audio_plan[1].get("topic_id")
+        unit_label = audio_plan[1].get("topic_name") or audio_plan[0].subject_name
+    else:
+        for b in blocks:
+            if b.topic_id:
+                unit_topic_id = b.topic_id
+                unit_label = b.subject_name
+                break
+    unit_key = str(unit_topic_id) if unit_topic_id else "dia"
+    for b in blocks:
+        b.unit_key = unit_key
 
     return Mission(
         date=context.today,
@@ -399,6 +471,129 @@ def build_mission(
         blocks=blocks,
         mode_suggested=mode.value,
         energy_detected=energy.value if energy else None,
+        day_kind=CONTEUDO,
+        topic_label=unit_label,
+    )
+
+
+SIMULADO_GREETINGS = [
+    "Sábado é dia de prova. Sem consulta, sem pausa — como vai ser lá.",
+    "Simulado de hoje. É o único número que não mente sobre onde você está.",
+]
+
+REVISAO_GREETINGS = [
+    "Domingo é revisão. Nada de matéria nova — hoje é fixar o que passou.",
+    "Fechando a semana: só o que você já viu, para não escorrer.",
+]
+
+
+def _simulado_mission(
+    context: PriorityContext, is_pm: bool, energy: EnergyLevel | None,
+) -> Mission:
+    """Sábado: um bloco só, o simulado no formato do certame.
+
+    Não entra questão avulsa nem lei seca junto: a prova é uma sessão contínua
+    e quebrar isso em etapas destruiria justamente o que o simulado mede —
+    resistência e gestão de tempo sob o formato real.
+    """
+    import random
+
+    total_items = 50 if is_pm else 120
+    mins = 180 if is_pm else 210
+    blocks = [MissionBlock(
+        block_type="simulado",
+        title=f"Simulado completo — {total_items} questões",
+        description=(
+            "Sem consulta e sem parar o cronômetro. Ao terminar, o resultado "
+            "entra no domínio, no caderno de erros e na revisão."
+        ),
+        estimated_mins=mins,
+        display_order=0,
+        content_ids=[],
+        payload={"question_count": total_items, "is_pm": is_pm},
+        mode="focus",
+        unit_key="simulado",
+    )]
+    return Mission(
+        date=context.today,
+        greeting=random.choice(SIMULADO_GREETINGS),
+        estimated_mins=mins,
+        blocks=blocks,
+        mode_suggested="focus",
+        energy_detected=energy.value if energy else None,
+        day_kind=SIMULADO,
+        topic_label="Simulado da semana",
+    )
+
+
+def _revisao_mission(
+    context: PriorityContext,
+    energy: EnergyLevel | None,
+    mode: StudyMode,
+    due_card_ids: list[UUID],
+    week_card_ids: list[UUID],
+    week_question_ids: list[UUID],
+    error_flashcard_ids: list[UUID],
+) -> Mission:
+    """Domingo: só o que já passou pela semana. Nenhum conteúdo novo."""
+    import random
+
+    blocks: list[MissionBlock] = []
+    order = 0
+
+    # Cartões vencidos primeiro, depois os da semana que ainda não venceram —
+    # antecipar a revisão do que foi visto há poucos dias é barato e é o que
+    # impede a semana inteira de escorrer até o próximo domingo.
+    cards = list(dict.fromkeys([*due_card_ids, *week_card_ids]))
+    if cards:
+        mins = min(30, max(10, len(cards) // 2))
+        blocks.append(MissionBlock(
+            block_type="review",
+            title=f"Revisão da semana — {len(cards[:40])} itens",
+            description="Tudo o que você estudou nos últimos 7 dias, de uma vez.",
+            estimated_mins=mins,
+            display_order=order,
+            content_ids=cards[:40],
+            mode=mode.value,
+            unit_key="revisao",
+        ))
+        order += 1
+
+    if week_question_ids:
+        blocks.append(MissionBlock(
+            block_type="questions",
+            title=f"Questões da semana — {len(week_question_ids[:20])} itens",
+            description="As matérias que passaram na missão desta semana, de novo.",
+            estimated_mins=25,
+            display_order=order,
+            content_ids=week_question_ids[:20],
+            mode=mode.value,
+            unit_key="revisao",
+        ))
+        order += 1
+
+    if error_flashcard_ids:
+        blocks.append(MissionBlock(
+            block_type="flashcards",
+            title="Caderno de erros",
+            description="Flashcards do que você errou. É onde o ponto está perdido.",
+            estimated_mins=10,
+            display_order=order,
+            content_ids=error_flashcard_ids[:15],
+            mode=mode.value,
+            unit_key="revisao",
+        ))
+        order += 1
+
+    return Mission(
+        date=context.today,
+        greeting=random.choice(REVISAO_GREETINGS),
+        estimated_mins=sum(b.estimated_mins for b in blocks),
+        blocks=blocks,
+        mode_suggested=mode.value,
+        energy_detected=energy.value if energy else None,
+        day_kind=REVISAO,
+        topic_label="Revisão da semana",
     )
 
 

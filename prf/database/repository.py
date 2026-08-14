@@ -488,6 +488,28 @@ class PRFRepository:
             user_id, limit,
         )
 
+    async def get_review_cards_by_ids(self, user_id: UUID, ids: list[UUID]) -> list[dict]:
+        """Cartões exatos de um bloco de missão, vencidos ou não.
+
+        A revisão do dia anterior entra na missão antes de o intervalo do SM-2
+        vencer — buscar só o que já venceu (get_due_review_cards) faria o bloco
+        montado pela missão abrir vazio e se autoconcluir.
+        """
+        if not ids:
+            return []
+        return await self._fetch(
+            """SELECT rc.*, q.text as question_text, q.subject_id,
+                      s.name as subject_name, f.front as flashcard_front
+                 FROM review_cards rc
+                 LEFT JOIN questions q ON q.id = rc.question_id
+                 LEFT JOIN subjects s ON s.id = q.subject_id
+                 LEFT JOIN flashcards f ON f.id = rc.flashcard_id
+                WHERE rc.user_id = $1 AND rc.id = ANY($2::uuid[])
+                  AND rc.suspended = FALSE
+                ORDER BY rc.next_review ASC""",
+            user_id, ids,
+        )
+
     async def get_review_card(self, card_id: UUID) -> Optional[dict]:
         return await self._fetchrow("SELECT * FROM review_cards WHERE id = $1", card_id)
 
@@ -663,16 +685,126 @@ class PRFRepository:
     async def create_mission(self, user_id: UUID, data: dict) -> dict:
         mission = await self._fetchrow(
             f"""INSERT INTO daily_missions (user_id, date, estimated_mins, mode_suggested,
-               energy_detected, greeting, blocks_total)
-               VALUES ($1, {self._TODAY_BRT}, $2, $3, $4, $5, $6)
+               energy_detected, greeting, blocks_total, day_kind, topic_label, carried_over)
+               VALUES ($1, {self._TODAY_BRT}, $2, $3, $4, $5, $6, $7, $8, $9)
                ON CONFLICT (user_id, date) DO UPDATE SET
                    estimated_mins = $2, mode_suggested = $3,
-                   energy_detected = $4, greeting = $5, blocks_total = $6
+                   energy_detected = $4, greeting = $5, blocks_total = $6,
+                   day_kind = $7, topic_label = $8, carried_over = $9
                RETURNING *""",
             user_id, data["estimated_mins"], data["mode_suggested"],
             data.get("energy_detected"), data.get("greeting"), data.get("blocks_total", 0),
+            data.get("day_kind", "conteudo"), data.get("topic_label"),
+            data.get("carried_over", False),
         )
         return mission
+
+    async def get_last_unfinished_mission(self, user_id: UUID) -> Optional[dict]:
+        """Missão anterior a hoje que ficou com etapa em aberto.
+
+        A missão só acaba quando concluída: enquanto existir uma assim, o dia
+        de hoje começa terminando ela, e não com conteúdo novo por cima.
+        """
+        mission = await self._fetchrow(
+            f"""SELECT * FROM daily_missions
+                 WHERE user_id = $1 AND date < {self._TODAY_BRT}
+                   AND status NOT IN ('completed', 'skipped', 'partial')
+                   AND blocks_total > 0 AND blocks_done < blocks_total
+                 ORDER BY date DESC LIMIT 1""",
+            user_id,
+        )
+        if mission:
+            mission["blocks"] = await self._fetch(
+                """SELECT mb.*, s.name as subject_name
+                     FROM mission_blocks mb
+                     LEFT JOIN subjects s ON s.id = mb.subject_id
+                    WHERE mb.mission_id = $1 AND mb.is_completed = FALSE
+                    ORDER BY mb.display_order""",
+                mission["id"],
+            )
+        return mission
+
+    async def mark_mission_partial(self, mission_id: UUID) -> None:
+        """Fecha a missão antiga depois que as pendências foram transferidas,
+        para o mesmo bloco não ser herdado duas vezes."""
+        await self._execute(
+            "UPDATE daily_missions SET status = 'partial' WHERE id = $1", mission_id,
+        )
+
+    async def get_missions_range(
+        self, user_id: UUID, start: "date", end: "date",
+    ) -> list[dict]:
+        """Missões de um intervalo, com contagem de etapas — alimenta o visto
+        da tela de trajetória."""
+        return await self._fetch(
+            """SELECT id, date, status, day_kind, topic_label, blocks_total,
+                      blocks_done, estimated_mins, actual_mins
+                 FROM daily_missions
+                WHERE user_id = $1 AND date BETWEEN $2 AND $3
+                ORDER BY date""",
+            user_id, start, end,
+        )
+
+    async def get_recent_mission_topic_ids(
+        self, user_id: UUID, days: int = 7,
+    ) -> list[UUID]:
+        """Tópicos que passaram pelas missões dos últimos N dias."""
+        cutoff = (
+            f"(NOW() AT TIME ZONE 'America/Sao_Paulo')::date - INTERVAL '{days} days'"
+        )
+        rows = await self._fetch(
+            f"""SELECT DISTINCT mb.topic_id
+                  FROM mission_blocks mb
+                  JOIN daily_missions dm ON dm.id = mb.mission_id
+                 WHERE dm.user_id = $1 AND dm.date >= {cutoff}
+                   AND mb.topic_id IS NOT NULL""",
+            user_id,
+        )
+        return [r["topic_id"] for r in rows if r["topic_id"]]
+
+    async def get_review_card_ids_for_topics(
+        self, user_id: UUID, topic_ids: list[UUID], limit: int = 40,
+    ) -> list[UUID]:
+        """Cartões dos tópicos informados, vencidos ou não.
+
+        get_due_review_card_ids só devolve o que já venceu. A revisão do dia
+        anterior precisa vir mesmo com o intervalo ainda aberto — é justamente
+        a recuperação precoce que impede o conteúdo de escorrer.
+        """
+        if not topic_ids:
+            return []
+        rows = await self._fetch(
+            """SELECT rc.id
+                 FROM review_cards rc
+                 LEFT JOIN questions q ON q.id = rc.question_id
+                 LEFT JOIN flashcards f ON f.id = rc.flashcard_id
+                 LEFT JOIN legal_articles la ON la.id = rc.article_id
+                WHERE rc.user_id = $1 AND rc.suspended = FALSE
+                  AND COALESCE(q.topic_id, f.topic_id, la.topic_id) = ANY($2::uuid[])
+                ORDER BY rc.next_review
+                LIMIT $3""",
+            user_id, topic_ids, limit,
+        )
+        return [r["id"] for r in rows]
+
+    async def get_question_ids_for_topics(
+        self, user_id: UUID, topic_ids: list[UUID], limit: int = 20,
+    ) -> list[UUID]:
+        """Questões dos tópicos da semana, priorizando as que ele errou."""
+        if not topic_ids:
+            return []
+        rows = await self._fetch(
+            """SELECT q.id
+                 FROM questions q
+                 LEFT JOIN error_notebook en
+                        ON en.question_id = q.id AND en.user_id = $1
+                          AND en.resolved = FALSE
+                WHERE q.topic_id = ANY($2::uuid[]) AND q.is_active
+                ORDER BY (en.id IS NOT NULL) DESC, RANDOM()
+                LIMIT $3""",
+            user_id, topic_ids, limit,
+        )
+        return [r["id"] for r in rows]
 
     async def delete_mission_blocks(self, mission_id: UUID) -> None:
         """Limpa os blocos de uma missão antes de regerar.
@@ -683,18 +815,27 @@ class PRFRepository:
         no fim) empilhava blocos duplicados por cima dos antigos.
         """
         await self._execute("DELETE FROM mission_blocks WHERE mission_id = $1", mission_id)
+        # O contador vive na missão, não nos blocos: apagar as etapas sem
+        # zerar blocks_done deixava a missão nova já nascendo "meio feita".
+        await self._execute(
+            "UPDATE daily_missions SET blocks_done = 0, status = 'pending' WHERE id = $1",
+            mission_id,
+        )
 
     async def create_mission_block(self, mission_id: UUID, block: dict) -> dict:
         return await self._fetchrow(
             """INSERT INTO mission_blocks (mission_id, block_type, subject_id, topic_id,
-               title, description, estimated_mins, display_order, content_ids, is_optional, mode)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+               title, description, estimated_mins, display_order, content_ids, is_optional,
+               mode, payload, unit_key)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                RETURNING *""",
             mission_id, block["block_type"], block.get("subject_id"),
             block.get("topic_id"), block["title"], block.get("description"),
             block.get("estimated_mins", 10), block.get("display_order", 0),
             block.get("content_ids", []), block.get("is_optional", False),
             block.get("mode", "focus"),
+            json.dumps(block.get("payload") or {}),
+            block.get("unit_key"),
         )
 
     async def complete_mission_block(self, block_id: UUID) -> dict:
@@ -915,6 +1056,37 @@ class PRFRepository:
                          t.weight DESC, t.display_order
                 LIMIT 1""",
             user_id, subject_id,
+        )
+
+    async def get_topic_queue(
+        self, user_id: UUID, subject_id: UUID, limit: int = 20,
+    ) -> list[dict]:
+        """Fila de tópicos de uma matéria, na mesma ordem que pick_study_topic
+        escolheria — os menos lidos primeiro.
+
+        É o que permite a tela de trajetória dizer "quarta é Crimes contra a
+        Administração" sem chutar: o calendário projeta exatamente a fila que
+        a missão vai consumir.
+        """
+        return await self._fetch(
+            """SELECT t.id, t.name, t.slug,
+                      COALESCE(SUM(CASE WHEN uap.read_count > 0 THEN 1 ELSE 0 END), 0) AS lidos,
+                      COUNT(la.id) AS total,
+                      EXISTS (SELECT 1 FROM podcast_episodes pe
+                               WHERE pe.topic_id = t.id AND pe.is_active = TRUE) AS tem_audio
+                 FROM topics t
+                 JOIN legal_articles la ON la.topic_id = t.id
+                 LEFT JOIN user_article_progress uap
+                        ON uap.article_id = la.id AND uap.user_id = $1
+                WHERE t.subject_id = $2 AND t.is_active
+                GROUP BY t.id, t.name, t.slug, t.weight, t.display_order
+               HAVING COUNT(la.id) > 0
+                ORDER BY tem_audio DESC,
+                         (COALESCE(SUM(CASE WHEN uap.read_count > 0 THEN 1 ELSE 0 END), 0)::real
+                          / GREATEST(COUNT(la.id), 1)) ASC,
+                         t.weight DESC, t.display_order
+                LIMIT $3""",
+            user_id, subject_id, limit,
         )
 
     async def toggle_bookmark(self, user_id: UUID, article_id: UUID, note: str | None = None) -> bool:
