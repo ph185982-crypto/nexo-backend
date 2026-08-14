@@ -20,6 +20,17 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Versão do roteiro. Suba este número sempre que a metodologia do áudio mudar
+# de forma que o conteúdo já gravado fique desatualizado — o pipeline passa a
+# tratar tudo abaixo dele como pendente de refação, sem ninguém precisar
+# apagar nada à mão.
+#
+#   1 — formato original: 8 blocos, sem jurisprudência e sem debate de tese.
+#   2 — 10 blocos, com "Jurisprudência e a tese que divide" e "Caso difícil,
+#       do começo ao fim"; os dois apresentadores discordam ao menos uma vez
+#       por bloco; duração ajustada ao trajeto real de 40 minutos.
+SCRIPT_VERSION = 2
+
 
 def build_units(topics: list[dict]) -> list[dict]:
     """Agrupa os tópicos em unidades de aula.
@@ -58,6 +69,74 @@ def build_units(topics: list[dict]) -> list[dict]:
         }
 
     return sorted(units.values(), key=lambda u: (-u["peso"], -u["chars"]))
+
+
+async def refazer_episodio_antigo(repo, kind: str = "aula") -> dict:
+    """Regrava um episódio que ficou num formato de roteiro anterior.
+
+    Troca em duas etapas: grava a versão nova e só então aposenta a antiga.
+    Se a geração falhar no meio, o candidato continua com a aula velha em vez
+    de ficar sem áudio nenhum naquele tópico.
+    """
+    from prf.services import podcast_service
+
+    antigo = await repo.get_outdated_episode(SCRIPT_VERSION, kind=kind)
+    if not antigo:
+        return {"generated": False, "reason": f"Nenhum {kind} em formato antigo"}
+
+    topics = await repo.get_topics_for_podcast(is_pm=True)
+    units = build_units([dict(t) for t in topics])
+    unidade = next((u for u in units if u["unit_slug"] == antigo.get("unit_slug")), None)
+    if not unidade:
+        return {"generated": False, "reason": f"Unidade '{antigo.get('unit_slug')}' saiu do plano"}
+
+    artigos = await repo.get_articles_for_topics(unidade["topic_ids"], limit=300)
+    partes = podcast_service.plan_parts([dict(a) for a in artigos])
+    idx = (antigo.get("part") or 1) - 1
+    if idx >= len(partes):
+        return {"generated": False, "reason": "Parte não existe mais no plano atual"}
+
+    if kind == "aula":
+        novo = await podcast_service.generate_episode(
+            antigo["title"], antigo.get("subject_name") or unidade["subject_name"], partes[idx]
+        )
+    else:
+        novo = await podcast_service.generate_drill(
+            antigo["title"], antigo.get("subject_name") or unidade["subject_name"], partes[idx]
+        )
+    if not novo["turns"]:
+        return {"generated": False, "reason": "Geração falhou — verifique a chave do provedor de IA"}
+
+    mins = round(novo["duration_secs"] / 60)
+    salvo = await repo.create_podcast_episode({
+        "subject_id": antigo["subject_id"],
+        "topic_id": antigo["topic_id"],
+        "title": antigo["title"],
+        "topic": antigo["topic"],
+        "description": antigo.get("description"),
+        "turns": novo["turns"],
+        "segment_count": novo["segment_count"],
+        "duration_secs": novo["duration_secs"],
+        "word_count": novo["word_count"],
+        "kind": kind,
+        "part": antigo.get("part", 1),
+        "total_parts": antigo.get("total_parts", 1),
+        "parent_episode_id": antigo.get("parent_episode_id"),
+        "unit_slug": antigo.get("unit_slug"),
+        "script_version": SCRIPT_VERSION,
+    })
+    await repo.retire_episode(antigo["id"])
+
+    restantes = await repo.count_outdated_episodes(SCRIPT_VERSION)
+    return {
+        "generated": True,
+        "kind": kind,
+        "replaced": antigo["title"],
+        "episode_id": str(salvo.get("id")),
+        "duration_mins": mins,
+        "words": novo["word_count"],
+        "remaining": (restantes.get("aulas") or 0) + (restantes.get("drills") or 0),
+    }
 
 
 async def gerar_proxima_aula(repo, unit_slug: str | None = None) -> dict:
@@ -125,6 +204,7 @@ async def gerar_proxima_aula(repo, unit_slug: str | None = None) -> dict:
         "part": part,
         "total_parts": total_parts,
         "unit_slug": u["unit_slug"],
+        "script_version": SCRIPT_VERSION,
     })
 
     return {
@@ -193,6 +273,7 @@ async def gerar_proximo_drill(repo) -> dict:
         "total_parts": aula["total_parts"],
         "parent_episode_id": aula["id"],
         "unit_slug": aula["unit_slug"],
+        "script_version": SCRIPT_VERSION,
     })
 
     restantes = await repo._fetchval(

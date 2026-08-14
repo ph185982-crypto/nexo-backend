@@ -284,6 +284,19 @@ MIGRATIONS: list[tuple[str, str]] = [
         "daily_missions_topic_label",
         "ALTER TABLE daily_missions ADD COLUMN IF NOT EXISTS topic_label TEXT",
     ),
+    (
+        # Versão do roteiro que gerou o episódio. Sem isto não há como saber
+        # quais aulas são do formato antigo (8 blocos, sem jurisprudência e sem
+        # debate) e precisam ser refeitas — DEFAULT 1 marca tudo que já existe
+        # como formato antigo, que é exatamente o que é.
+        "podcast_episodes_script_version",
+        "ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS script_version INTEGER DEFAULT 1",
+    ),
+    (
+        "idx_podcast_episodes_script_version",
+        "CREATE INDEX IF NOT EXISTS idx_podcast_episodes_script_version "
+        "ON podcast_episodes(script_version) WHERE is_active",
+    ),
 ]
 
 

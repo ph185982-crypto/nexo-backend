@@ -88,7 +88,18 @@ class TTSService:
         return voice
 
     def _cache_path(self, text: str) -> Path:
-        h = hashlib.md5(f"{text}:{self.voice}".encode()).hexdigest()
+        """Chave do cache: texto + voz + MODELO + direção de atuação.
+
+        A chave levava só texto e voz. Trocar `tts-1` por `gpt-4o-mini-tts`
+        não mudava a chave, então todo áudio já sintetizado continuaria sendo
+        servido do cache no timbre antigo — a melhoria de voz simplesmente não
+        chegaria a nenhum episódio existente. O mesmo valeria para qualquer
+        ajuste na direção de atuação.
+        """
+        model = os.getenv("OPENAI_TTS_MODEL", DEFAULT_TTS_MODEL)
+        direction = VOICE_DIRECTION.get(self.voice, "")
+        chave = f"{text}:{self.voice}:{model}:{direction}"
+        h = hashlib.md5(chave.encode()).hexdigest()
         return self.cache_dir / f"{h}.mp3"
 
     async def synthesize(self, text: str) -> bytes:

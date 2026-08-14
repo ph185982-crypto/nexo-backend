@@ -565,6 +565,38 @@ async def generate_podcast_drill(
     return await gerar_proximo_drill(repo)
 
 
+@router.get("/podcast/status-formato")
+async def podcast_status_formato(
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Quantos episódios ainda estão no formato de roteiro antigo."""
+    _require_admin(x_maintenance_token)
+    from prf.services.audio_pipeline import SCRIPT_VERSION
+    atrasados = await repo.count_outdated_episodes(SCRIPT_VERSION)
+    return {
+        "script_version_atual": SCRIPT_VERSION,
+        "em_formato_antigo": atrasados,
+        "total_pendente": (atrasados.get("aulas") or 0) + (atrasados.get("drills") or 0),
+    }
+
+
+@router.post("/podcast/refazer")
+async def podcast_refazer(
+    kind: str = Query("aula", description="aula ou drill"),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Refaz um episódio em formato antigo, do mais pesado para o mais leve.
+
+    Um por chamada, mesma razão da geração: são dez idas ao modelo. A tarefa
+    agendada já faz isso sozinha todo dia; este endpoint serve para acelerar.
+    """
+    _require_admin(x_maintenance_token)
+    from prf.services.audio_pipeline import refazer_episodio_antigo
+    return await refazer_episodio_antigo(repo, kind=kind)
+
+
 @router.post("/podcast/backfill-units")
 async def backfill_podcast_units(
     x_maintenance_token: str | None = Header(default=None),

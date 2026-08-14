@@ -137,25 +137,52 @@ async def rodar_audio(
     """
     _authorize(authorization, x_maintenance_token)
 
-    from prf.services.audio_pipeline import gerar_proxima_aula, gerar_proximo_drill
+    from prf.services.audio_pipeline import (
+        SCRIPT_VERSION, gerar_proxima_aula, gerar_proximo_drill,
+        refazer_episodio_antigo,
+    )
 
-    try:
-        aula = await gerar_proxima_aula(repo)
-    except Exception as e:
-        logger.error(f"[PRF] geração de aula falhou: {e}")
-        aula = {"generated": False, "reason": str(e)}
+    # Refazer o que está em formato antigo vem ANTES de cobrir tópico novo.
+    # Uma aula sem jurisprudência e sem debate, no tópico de maior peso, custa
+    # mais ponto do que a ausência de aula num tópico de peso menor. A troca é
+    # feita gravando a nova antes de aposentar a velha, então o acervo nunca
+    # encolhe durante a transição.
+    atrasados = await repo.count_outdated_episodes(SCRIPT_VERSION)
+    pendente_refazer = (atrasados.get("aulas") or 0) + (atrasados.get("drills") or 0)
 
-    try:
-        drill = await gerar_proximo_drill(repo)
-    except Exception as e:
-        logger.error(f"[PRF] geração de drill falhou: {e}")
-        drill = {"generated": False, "reason": str(e)}
+    aula = drill = None
+    if pendente_refazer:
+        for kind in ("aula", "drill"):
+            try:
+                r = await refazer_episodio_antigo(repo, kind=kind)
+            except Exception as e:
+                logger.error(f"[PRF] refação de {kind} falhou: {e}")
+                r = {"generated": False, "reason": str(e)}
+            if kind == "aula":
+                aula = r
+            else:
+                drill = r
+
+    # Só depois de zerada a fila de refação é que o acervo cresce.
+    if not pendente_refazer:
+        try:
+            aula = await gerar_proxima_aula(repo)
+        except Exception as e:
+            logger.error(f"[PRF] geração de aula falhou: {e}")
+            aula = {"generated": False, "reason": str(e)}
+
+        try:
+            drill = await gerar_proximo_drill(repo)
+        except Exception as e:
+            logger.error(f"[PRF] geração de drill falhou: {e}")
+            drill = {"generated": False, "reason": str(e)}
 
     return {
+        "modo": "refazendo formato antigo" if pendente_refazer else "cobrindo tópico novo",
+        "script_version": SCRIPT_VERSION,
+        "episodios_em_formato_antigo": atrasados,
         "aula": aula,
         "drill": drill,
-        "aulas_pendentes": aula.get("remaining"),
-        "drills_pendentes": drill.get("remaining"),
     }
 
 

@@ -1496,9 +1496,10 @@ class PRFRepository:
             """INSERT INTO podcast_episodes
                    (subject_id, topic_id, title, topic, description, turns,
                     segment_count, duration_secs, word_count,
-                    kind, part, total_parts, parent_episode_id, unit_slug)
+                    kind, part, total_parts, parent_episode_id, unit_slug,
+                    script_version)
                VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9,
-                       $10, $11, $12, $13, $14)
+                       $10, $11, $12, $13, $14, $15)
                RETURNING id, subject_id, topic_id, title, topic, kind, part,
                          total_parts, segment_count, duration_secs, word_count""",
             data.get("subject_id"), data.get("topic_id"), data["title"], data["topic"],
@@ -1508,8 +1509,45 @@ class PRFRepository:
             data.get("kind", "aula"), data.get("part", 1),
             data.get("total_parts", 1), data.get("parent_episode_id"),
             data.get("unit_slug"),
+            data.get("script_version", 1),
         )
         return dict(row) if row else {}
+
+    async def count_outdated_episodes(self, version: int) -> dict:
+        """Quantos episódios ainda estão num formato de roteiro anterior."""
+        row = await self._fetchrow(
+            """SELECT
+                   COUNT(*) FILTER (WHERE kind = 'aula')  AS aulas,
+                   COUNT(*) FILTER (WHERE kind = 'drill') AS drills
+                 FROM podcast_episodes
+                WHERE is_active AND COALESCE(script_version, 1) < $1""",
+            version,
+        )
+        return dict(row) if row else {"aulas": 0, "drills": 0}
+
+    async def get_outdated_episode(self, version: int, kind: str = "aula") -> Optional[dict]:
+        """Próximo episódio a refazer, do mais pesado para o mais leve.
+
+        A ordem segue o peso da matéria no certame: refazer primeiro o que vale
+        mais ponto. Enquanto a nova versão não é gravada, a antiga continua no
+        ar — o candidato nunca fica sem áudio no meio da troca.
+        """
+        return await self._fetchrow(
+            """SELECT pe.*, s.name AS subject_name
+                 FROM podcast_episodes pe
+                 LEFT JOIN subjects s ON s.id = pe.subject_id
+                WHERE pe.is_active AND pe.kind = $2
+                  AND COALESCE(pe.script_version, 1) < $1
+                ORDER BY COALESCE(s.weight_pm, 0) DESC, pe.created_at
+                LIMIT 1""",
+            version, kind,
+        )
+
+    async def retire_episode(self, episode_id: UUID) -> None:
+        """Aposenta o episódio antigo depois que o substituto já está gravado."""
+        await self._execute(
+            "UPDATE podcast_episodes SET is_active = FALSE WHERE id = $1", episode_id,
+        )
 
     async def get_next_topic_without_episode(self, is_pm: bool = True) -> Optional[dict]:
         """Próximo tópico do edital sem episódio, do mais pesado para o mais
