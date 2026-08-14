@@ -21,10 +21,12 @@ from uuid import UUID
 
 from prf.engines.schedule import day_kind, label_for, CONTEUDO, SIMULADO, REVISAO
 
-# Teto de dias projetados. Sem data de prova não há corrida definida; 90 dias
-# já cobre um ciclo inteiro de edital sem transformar a tela num relatório.
+# Janela da trajetória: 90 dias, sempre. Com data de prova mais próxima, para
+# no dia da prova; com data mais distante (ou sem data), mostra os 90 dias e
+# para ali. Projetar um ano à frente seria ficção — a ordem das matérias muda
+# com o desempenho, e ninguém planeja o dia 250 hoje.
 DEFAULT_HORIZON_DAYS = 90
-MAX_HORIZON_DAYS = 400
+MAX_HORIZON_DAYS = 90
 # Quantos dias para trás a trajetória mostra o que já aconteceu.
 HISTORY_DAYS = 30
 

@@ -1047,6 +1047,10 @@ button { font-family:inherit; }
 /* Videoaula toca dentro da própria etapa da missão. */
 .task-embed { padding:0 0 14px 34px; display:flex; flex-direction:column; gap:10px; }
 .task-embed .vid-card { margin:0; }
+.task-embed-link {
+  font-size:12.5px; color:var(--primary); text-decoration:none; font-weight:600;
+}
+.task-embed-link:hover { text-decoration:underline; }
 
 /* ── Trajetória ── */
 .plano-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
@@ -1795,8 +1799,14 @@ function missionTaskRow(b, i) {
            <div class="vid-title">${esc(p.title || 'Abrir videoaula')}</div>
            <div class="vid-meta">${esc(p.source || 'YouTube')}</div>
          </a>`;
+    // A curadoria é por matéria, não por tópico: o atalho de busca deixa ele
+    // achar uma aula do tópico exato do dia quando quiser.
+    const busca = p.search_url && !p.is_search
+      ? `<a href="${esc(p.search_url)}" target="_blank" rel="noopener" class="task-embed-link">Buscar aula sobre "${esc(p.topic_name || '')}" no YouTube</a>`
+      : '';
     return row + `<div class="task-embed">
       ${inner}
+      ${busca}
       <button class="btn btn-primary btn-full" onclick="event.stopPropagation();startMissionBlock(${i},'video')">Marcar videoaula como assistida</button>
     </div>`;
   }
