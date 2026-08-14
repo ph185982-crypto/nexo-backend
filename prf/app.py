@@ -88,33 +88,43 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     import urllib.parse
     import socket
 
-    # Pre-resolve hostname to IP to avoid DNS issues in Lambda
-    # Lambda's mDNS fallback can cause EBUSY errors, so we resolve early
+    # Resolução antecipada do hostname — só para aquecer o DNS do Lambda, cuja
+    # queda para mDNS provoca EBUSY na primeira conexão.
+    #
+    # NÃO se troca o hostname por IP no DSN. O Postgres gerenciado (Render, e
+    # o mesmo vale para Neon e Supabase) roteia a conexão pelo nome enviado no
+    # SNI do handshake TLS: conectando por IP não há nome nenhum, o proxy não
+    # sabe para qual banco encaminhar e fecha a conexão no meio da negociação.
+    # O sintoma é exatamente `ConnectionDoesNotExistError: connection was
+    # closed in the middle of operation`, repetido nas dez tentativas — foi o
+    # que derrubou o boot em produção. O IP fica guardado só como plano B, e
+    # entra apenas se o erro for de resolução de nome, que é o problema que a
+    # substituição pretendia resolver.
     parsed = urllib.parse.urlparse(database_url)
     hostname = parsed.hostname
     resolved_ip = None
+    ip_url = None
 
     if hostname:
         try:
-            # Use simple gethostbyname instead of getaddrinfo to minimize DNS overhead
             socket.setdefaulttimeout(5.0)
             resolved_ip = socket.gethostbyname(hostname)
-            logger.info(f"[PRF] Pre-resolved {hostname} → {resolved_ip}")
-
-            # Replace hostname with IP in connection string to avoid future DNS lookups
-            database_url = database_url.replace(f"@{hostname}", f"@{resolved_ip}", 1)
-            logger.info(f"[PRF] Using IP-based connection URL")
+            ip_url = database_url.replace(f"@{hostname}", f"@{resolved_ip}", 1)
+            logger.info(f"[PRF] DNS aquecido: {hostname} → {resolved_ip} (conectando pelo nome)")
         except Exception as e:
-            logger.warning(f"[PRF] Failed to pre-resolve {hostname}: {e}, will attempt with hostname")
+            logger.warning(f"[PRF] Não resolveu {hostname}: {e}; segue pelo nome mesmo assim")
 
     # Log sanitized URL for debugging (hide credentials)
-    parsed = urllib.parse.urlparse(database_url)
-    safe_url = f"{parsed.scheme}://user@{parsed.hostname}:{parsed.port or 5432}/{parsed.path}?..."
+    safe_url = f"{parsed.scheme}://user@{parsed.hostname}:{parsed.port or 5432}{parsed.path}?..."
     logger.info(f"[PRF] Connecting to DB: {safe_url} (full url length={len(database_url)})")
 
     # Aggressive retry loop for transient DNS/network issues in Lambda
     pool = None
     last_error = None
+
+    # DSN em uso. Só vira o do IP se o erro for de resolução de nome — ver o
+    # comentário sobre SNI acima.
+    dsn = database_url
 
     for attempt in range(10):  # 10 attempts with exponential backoff (up to 60s total)
         try:
@@ -123,7 +133,7 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
             # Wrap connection in timeout to fail fast on DNS hangs
             pool = await asyncio.wait_for(
                 asyncpg.create_pool(
-                    database_url,
+                    dsn,
                     min_size=1,
                     max_size=5,
                     statement_cache_size=0,
@@ -146,6 +156,13 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
                 logger.warning(f"[PRF] EBUSY on attempt {attempt + 1}/10 (DNS resolver busy)")
             else:
                 logger.warning(f"[PRF] OSError on attempt {attempt + 1}/10: {e}")
+            # Falha de nome (gaierror) ou resolver ocupado: aí sim o IP ajuda,
+            # e é o único caso em que perder o SNI é melhor que não conectar.
+            if ip_url and dsn is database_url and (
+                isinstance(e, socket.gaierror) or e.errno in (16, -2, -3, -5)
+            ):
+                dsn = ip_url
+                logger.warning(f"[PRF] Falha de DNS; passando a conectar por IP ({resolved_ip})")
             last_error = e
             if attempt < 9:
                 wait = min(2 ** attempt, 32)
