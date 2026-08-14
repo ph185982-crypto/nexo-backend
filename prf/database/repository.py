@@ -834,7 +834,9 @@ class PRFRepository:
             block.get("estimated_mins", 10), block.get("display_order", 0),
             block.get("content_ids", []), block.get("is_optional", False),
             block.get("mode", "focus"),
-            json.dumps(block.get("payload") or {}),
+            # dict cru: o pool registra codec de jsonb (ver prf/app.py), então
+            # serializar aqui gravaria a string dentro de um JSON.
+            block.get("payload") or {},
             block.get("unit_key"),
         )
 
