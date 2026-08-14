@@ -20,6 +20,7 @@ async def list_questions(
     topic_id: Optional[UUID] = None,
     difficulty: Optional[str] = None,
     question_type: Optional[str] = None,
+    ids: Optional[str] = Query(default=None, description="ids de questões separados por vírgula"),
     limit: int = Query(default=10, ge=1, le=100),
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
@@ -29,7 +30,21 @@ async def list_questions(
     Prioriza questões que o usuário ainda não respondeu — sem isso a mesma
     questão reaparece na missão do dia seguinte mesmo já tendo sido
     respondida. Só reusa respondidas quando o recorte (matéria/tópico) não
-    tem estoque suficiente de inéditas, pra não deixar o bloco vazio."""
+    tem estoque suficiente de inéditas, pra não deixar o bloco vazio.
+
+    Com `ids`, devolve exatamente aquelas questões e ignora os filtros: é o
+    caminho dos blocos de missão que já vêm com a lista montada (revisão de
+    domingo), onde repetir o que ele já respondeu é justamente o objetivo."""
+    if ids:
+        try:
+            wanted = [UUID(x.strip()) for x in ids.split(",") if x.strip()]
+        except ValueError:
+            raise HTTPException(400, "ids inválidos")
+        questions = await repo.get_questions_by_ids(wanted[:limit])
+        return _serialize_questions(questions, await repo.get_alternatives_batch(
+            [q["id"] for q in questions]
+        ))
+
     answered_ids = await repo.get_answered_question_ids(user_id)
     questions = await repo.get_questions(
         subject_id=subject_id,
@@ -53,7 +68,10 @@ async def list_questions(
     # Batch-fetch all alternatives in one query (avoids N+1)
     q_ids = [q["id"] for q in questions]
     alts_map = await repo.get_alternatives_batch(q_ids)
+    return _serialize_questions(questions, alts_map)
 
+
+def _serialize_questions(questions: list[dict], alts_map: dict) -> dict:
     results = [
         {
             "id": q["id"],
@@ -75,7 +93,6 @@ async def list_questions(
         }
         for q in questions
     ]
-
     return {"questions": results, "total": len(results)}
 
 

@@ -253,6 +253,37 @@ MIGRATIONS: list[tuple[str, str]] = [
         "user_profiles_taf_targets",
         "ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS taf_targets JSONB DEFAULT '{}'::jsonb",
     ),
+    (
+        # A videoaula do tópico do dia não é uma linha do banco — é um link
+        # externo (YouTube). content_ids é UUID[] e não comporta URL, então o
+        # bloco carrega o payload livre. Serve também para qualquer conteúdo
+        # futuro que não seja uma FK.
+        "mission_blocks_payload",
+        "ALTER TABLE mission_blocks ADD COLUMN IF NOT EXISTS payload JSONB DEFAULT '{}'::jsonb",
+    ),
+    (
+        # Todos os blocos do dia pertencem à mesma unidade de estudo (um
+        # tópico). unit_key agrupa; o frontend renderiza um card só.
+        "mission_blocks_unit_key",
+        "ALTER TABLE mission_blocks ADD COLUMN IF NOT EXISTS unit_key TEXT",
+    ),
+    (
+        # Tipo do dia no calendário fixo: conteudo (seg-sex), simulado (sáb),
+        # revisao (dom). Gravado na missão pra tela de trajetória mostrar o
+        # que de fato aconteceu, não só o que o calendário previa.
+        "daily_missions_day_kind",
+        "ALTER TABLE daily_missions ADD COLUMN IF NOT EXISTS day_kind TEXT DEFAULT 'conteudo'",
+    ),
+    (
+        # Missão que herdou etapas pendentes da anterior. A missão só acaba
+        # quando concluída: o que não fechou ontem abre o dia de hoje.
+        "daily_missions_carried_over",
+        "ALTER TABLE daily_missions ADD COLUMN IF NOT EXISTS carried_over BOOLEAN DEFAULT FALSE",
+    ),
+    (
+        "daily_missions_topic_label",
+        "ALTER TABLE daily_missions ADD COLUMN IF NOT EXISTS topic_label TEXT",
+    ),
 ]
 
 

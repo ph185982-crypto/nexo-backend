@@ -27,6 +27,8 @@ from prf.engines.approval import (
     SubjectMastery as ApprovalSubject, estimate_approval,
 )
 from prf.engines.exam_profile import exam_profile_for
+from prf.engines.schedule import day_kind, CONTEUDO, SIMULADO, REVISAO
+from prf.seeds.topic_videos import video_for_topic
 from prf.models.user import EnergyLevel, StudyMode
 
 
@@ -54,11 +56,24 @@ class StudyService:
         if existing and existing.get("blocks") and not force:
             return existing
 
+        # A missão só acaba quando concluída. Se sobrou etapa de um dia
+        # anterior, o dia de hoje é ela — não se empilha conteúdo novo por
+        # cima de pendência, senão o atraso vira uma bola de neve que o
+        # candidato nunca alcança e o cronograma inteiro perde o sentido.
+        pending = await self.repo.get_last_unfinished_mission(user_id)
+        if pending and pending.get("blocks") and not force:
+            return await self._carry_over_mission(user_id, pending)
+
         profile = await self.repo.get_profile(user_id)
         routine = await self.repo.get_routine_for_day(user_id, date.today().weekday())
         behavior = await self.repo.get_behavior_metrics(user_id)
 
-        is_rest_day = bool(routine and routine.get("is_rest_day"))
+        today = date.today()
+        kind = day_kind(today)
+
+        # Descanso vale para os dias de conteúdo; sábado e domingo não abrem
+        # mão do simulado e da revisão (ver prf/engines/schedule.py).
+        is_rest_day = bool(routine and routine.get("is_rest_day")) and kind == CONTEUDO
         commute_mins = (routine or {}).get("commute_minutes", 0) or 0
 
         if is_rest_day:
@@ -152,6 +167,31 @@ class StudyService:
         error_flashcard_ids = await self.repo.get_error_flashcard_ids(user_id)
         commute_lesson_ids = await self.repo.get_commute_lesson_ids()
 
+        # Revisão do dia anterior: os cartões dos tópicos de ontem entram
+        # mesmo sem terem vencido. O SM-2 sozinho só devolve o conteúdo dias
+        # depois; puxar o de ontem para a frente da missão é o que fecha o
+        # ciclo ouvir → ler → praticar → recuperar no dia seguinte.
+        yesterday_topics = await self.repo.get_recent_mission_topic_ids(user_id, days=1)
+        if yesterday_topics:
+            recent_cards = await self.repo.get_review_card_ids_for_topics(
+                user_id, yesterday_topics, limit=20,
+            )
+            merged = list(dict.fromkeys([*recent_cards, *review_card_ids]))
+            reviews_due_count = max(reviews_due_count, len(merged))
+            review_card_ids = merged
+
+        # Domingo puxa a semana inteira, não só o que venceu.
+        week_review_card_ids: list = []
+        week_question_ids: list = []
+        if kind == REVISAO:
+            week_topics = await self.repo.get_recent_mission_topic_ids(user_id, days=7)
+            week_review_card_ids = await self.repo.get_review_card_ids_for_topics(
+                user_id, week_topics, limit=40,
+            )
+            week_question_ids = await self.repo.get_question_ids_for_topics(
+                user_id, week_topics, limit=20,
+            )
+
         question_pool = {}
         legal_pool = {}
         for p in priorities[:5]:
@@ -211,6 +251,23 @@ class StudyService:
                 "flashcard_ids": flashcard_ids,
             }
 
+        # Videoaula do tópico do dia — mesma matéria do áudio sempre que
+        # houver áudio, para o dia inteiro girar em torno de um assunto só.
+        subject_meta = {s["id"]: (s.get("slug") or "", s["name"]) for s in subjects}
+        video = None
+        for p in priorities:
+            plan = topic_plan.get(p.subject_id)
+            if not plan:
+                continue
+            slug, name = subject_meta.get(p.subject_id, ("", p.subject_name))
+            video = video_for_topic(
+                subject_slug=slug,
+                subject_name=name,
+                topic_name=plan.get("topic_name") or name,
+                rotation=today.toordinal(),
+            )
+            break
+
         mission = build_mission(
             priorities=priorities,
             context=ctx,
@@ -224,6 +281,10 @@ class StudyService:
             topic_plan=topic_plan,
             is_rest_day=is_rest_day,
             commute_minutes=commute_mins,
+            day_kind=kind,
+            video=video,
+            week_review_card_ids=week_review_card_ids,
+            week_question_ids=week_question_ids,
         )
 
         db_mission = await self.repo.create_mission(user_id, {
@@ -232,6 +293,9 @@ class StudyService:
             "energy_detected": mission.energy_detected,
             "greeting": mission.greeting,
             "blocks_total": len(mission.blocks),
+            "day_kind": mission.day_kind,
+            "topic_label": mission.topic_label,
+            "carried_over": False,
         })
         if force:
             await self.repo.delete_mission_blocks(db_mission["id"])
@@ -248,8 +312,62 @@ class StudyService:
                 "content_ids": [str(cid) for cid in block.content_ids],
                 "is_optional": block.is_optional,
                 "mode": block.mode,
+                "payload": block.payload,
+                "unit_key": block.unit_key,
             })
 
+        return await self.repo.get_todays_mission(user_id)
+
+    async def _carry_over_mission(self, user_id: UUID, pending: dict) -> dict:
+        """Transfere para hoje as etapas que ficaram abertas na missão anterior.
+
+        Os blocos vêm exatamente como estavam — mesmo conteúdo, mesma ordem.
+        A missão antiga é fechada como 'partial' para a pendência não ser
+        herdada de novo amanhã em duplicata.
+        """
+        blocks = pending.get("blocks") or []
+        atraso = (date.today() - pending["date"]).days
+
+        db_mission = await self.repo.create_mission(user_id, {
+            "estimated_mins": sum(b.get("estimated_mins", 0) or 0 for b in blocks),
+            "mode_suggested": pending.get("mode_suggested") or "focus",
+            "energy_detected": pending.get("energy_detected"),
+            "greeting": (
+                f"Missão de {pending['date'].strftime('%d/%m')} ficou aberta. "
+                "Ela continua sendo a de hoje — feche antes de avançar."
+                if atraso <= 1 else
+                f"Missão parada há {atraso} dias. Termine esta antes de pegar conteúdo novo."
+            ),
+            "blocks_total": len(blocks),
+            "day_kind": pending.get("day_kind") or "conteudo",
+            "topic_label": pending.get("topic_label"),
+            "carried_over": True,
+        })
+        await self.repo.delete_mission_blocks(db_mission["id"])
+
+        for i, b in enumerate(blocks):
+            payload = b.get("payload")
+            if isinstance(payload, str):
+                try:
+                    payload = json.loads(payload)
+                except (ValueError, TypeError):
+                    payload = {}
+            await self.repo.create_mission_block(db_mission["id"], {
+                "block_type": b["block_type"],
+                "subject_id": b.get("subject_id"),
+                "topic_id": b.get("topic_id"),
+                "title": b["title"],
+                "description": b.get("description"),
+                "estimated_mins": b.get("estimated_mins", 10),
+                "display_order": i,
+                "content_ids": [str(c) for c in (b.get("content_ids") or [])],
+                "is_optional": b.get("is_optional", False),
+                "mode": b.get("mode", "focus"),
+                "payload": payload or {},
+                "unit_key": b.get("unit_key"),
+            })
+
+        await self.repo.mark_mission_partial(pending["id"])
         return await self.repo.get_todays_mission(user_id)
 
     # ── Answer Processing ─────────────────────────────────────────────────────

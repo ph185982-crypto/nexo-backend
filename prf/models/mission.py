@@ -27,6 +27,8 @@ class BlockType(str, Enum):
     # Aulas em diálogo do deslocamento: a da ida e o drill de recall da volta.
     PODCAST = "podcast"
     PODCAST_DRILL = "podcast_drill"
+    # Videoaula gratuita do tópico do dia (YouTube) — link no payload.
+    VIDEO_LESSON = "video_lesson"
 
 
 class MissionBlockOut(BaseModel):
@@ -44,6 +46,8 @@ class MissionBlockOut(BaseModel):
     is_completed: bool = False
     is_optional: bool = False
     mode: StudyMode = StudyMode.FOCUS
+    payload: dict = Field(default_factory=dict)
+    unit_key: Optional[str] = None
 
 
 class DailyMissionOut(BaseModel):
@@ -60,6 +64,9 @@ class DailyMissionOut(BaseModel):
     blocks_done: int = 0
     xp_earned: int = 0
     progress_pct: float = 0
+    day_kind: str = "conteudo"
+    topic_label: Optional[str] = None
+    carried_over: bool = False
 
 
 class MissionBlockComplete(BaseModel):

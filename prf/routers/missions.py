@@ -1,4 +1,6 @@
 """Missions router — daily mission generation, block completion, progress."""
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Optional
 from uuid import UUID
@@ -53,6 +55,8 @@ async def get_today_mission(
                 is_completed=b.get("is_completed", False),
                 is_optional=b.get("is_optional", False),
                 mode=b.get("mode", "focus"),
+                payload=_payload(b.get("payload")),
+                unit_key=b.get("unit_key"),
             )
             for b in blocks
         ],
@@ -60,7 +64,22 @@ async def get_today_mission(
         blocks_done=done,
         xp_earned=mission.get("xp_earned", 0),
         progress_pct=round((done / max(total, 1)) * 100, 1),
+        day_kind=mission.get("day_kind") or "conteudo",
+        topic_label=mission.get("topic_label"),
+        carried_over=bool(mission.get("carried_over")),
     )
+
+
+def _payload(raw) -> dict:
+    """asyncpg devolve JSONB como texto quando não há codec registrado."""
+    if isinstance(raw, dict):
+        return raw
+    if isinstance(raw, str) and raw:
+        try:
+            return json.loads(raw)
+        except ValueError:
+            return {}
+    return {}
 
 
 @router.post("/blocks/complete")

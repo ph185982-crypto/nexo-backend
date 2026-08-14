@@ -18,11 +18,19 @@ router = APIRouter()
 @router.get("/due", response_model=list[ReviewCardOut])
 async def get_due_reviews(
     limit: int = Query(default=20, ge=1, le=50),
+    ids: Optional[str] = Query(default=None, description="ids de cartões separados por vírgula"),
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Get review cards that are due."""
-    cards = await repo.get_due_review_cards(user_id, limit=limit)
+    """Cartões de revisão vencidos — ou, com `ids`, exatamente os do bloco."""
+    if ids:
+        try:
+            wanted = [UUID(x.strip()) for x in ids.split(",") if x.strip()]
+        except ValueError:
+            raise HTTPException(400, "ids inválidos")
+        cards = await repo.get_review_cards_by_ids(user_id, wanted[:limit])
+    else:
+        cards = await repo.get_due_review_cards(user_id, limit=limit)
     return [
         ReviewCardOut(
             id=c["id"],
