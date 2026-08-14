@@ -60,8 +60,11 @@ class StudyService:
         # anterior, o dia de hoje é ela — não se empilha conteúdo novo por
         # cima de pendência, senão o atraso vira uma bola de neve que o
         # candidato nunca alcança e o cronograma inteiro perde o sentido.
+        # `force` regera o conteúdo do dia, mas NÃO apaga pendência: se ele
+        # apagasse, "gerar nova missão" viraria o botão de fugir do que ficou
+        # em aberto e a regra de missão travada não valeria nada.
         pending = await self.repo.get_last_unfinished_mission(user_id)
-        if pending and pending.get("blocks") and not force:
+        if pending and pending.get("blocks"):
             return await self._carry_over_mission(user_id, pending)
 
         profile = await self.repo.get_profile(user_id)

@@ -1926,7 +1926,7 @@ function viewDashboard() {
           <span class="ring-text">${mPct}%</span>
         </div>` : ''}
       </div>
-      ${mission && mDone === 0 && !missionDone ? `<button class="mission-regen-btn" onclick="regenerateMission()">Gerar nova missão de hoje</button>` : ''}
+      ${mission && mDone === 0 && !missionDone && !mission.carried_over ? `<button class="mission-regen-btn" onclick="regenerateMission()">Gerar nova missão de hoje</button>` : ''}
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
       mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => missionTaskRow(b, i)).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
       ${missionDone ? `<div class="mission-complete-banner"><span>Parabéns! Volte amanhã para a próxima missão.</span></div>` : ''}

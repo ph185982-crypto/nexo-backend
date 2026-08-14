@@ -35,9 +35,13 @@ logger = logging.getLogger(__name__)
 WORDS_PER_MINUTE = 175
 # Pedir blocos maiores não funciona: o modelo satura perto de 800 palavras
 # por resposta e ignora o resto do pedido (com alvo de 1100 entregou 800).
-# O que escala é o número de blocos — oito de ~800 dão ~6400 palavras,
-# ou ~36 min, dentro da faixa de 30-40 min pedida.
-WORDS_PER_BLOCK = 1000
+# O que escala é o número de blocos.
+#
+# São 10 blocos (o roteiro ganhou jurisprudência e caso difícil). A 1000
+# palavras cada, o episódio ia a 57 min — não cabe nos 40 min de trajeto do
+# candidato, e áudio que estoura a viagem é áudio que fica pela metade.
+# 700 × 10 = 7000 palavras = 40 min cravados, no ritmo real medido do TTS.
+WORDS_PER_BLOCK = 700
 TARGET_MIN_MINUTES = 30
 
 # Dimensionamento das partes. Medido: o tópico "Crime" tem 4,2 kchars de lei
@@ -53,7 +57,9 @@ CHARS_PER_PART = 7000
 MAX_PARTS = 4
 # Duração alvo do drill da volta. Recuperar não precisa do mesmo tempo que
 # aprender — o que conta é a quantidade de tentativas de recuperação.
-DRILL_WORDS_PER_BLOCK = 950
+# 875 × 8 = 7000 palavras = 40 min, o mesmo trajeto da volta. Estava em 950,
+# que dava 43 min e deixava o fecho do drill acontecendo na garagem.
+DRILL_WORDS_PER_BLOCK = 875
 DRILL_BLOCKS = 8
 
 HOST_A = "MARCOS"
@@ -88,7 +94,34 @@ RETENTION_RULES = f"""TÉCNICAS DE RETENÇÃO — OBRIGATÓRIAS EM TODO BLOCO:
    a questão inteira"). Use com parcimônia, só no que realmente importa.
 
 7. BLOCOS NOMEADOS — no máximo de três a cinco ideias por bloco, cada uma
-   com um nome curto que o ouvinte consiga repetir de cabeça."""
+   com um nome curto que o ouvinte consiga repetir de cabeça.
+
+8. TESE E CONTRATESE — em todo bloco, pelo menos uma vez, os dois DISCORDAM
+   de verdade. {HOST_A} sustenta a leitura intuitiva do dispositivo (a que o
+   candidato faria) e {HOST_B} sustenta a leitura técnica. Cada um defende a
+   sua com argumento, não com autoridade. Só então fica claro qual prevalece
+   e POR QUÊ. Concordância imediata não ensina nada — é o atrito que mostra
+   onde está a armadilha."""
+
+
+# Jurisprudência é o ponto onde um modelo de linguagem mais inventa: número de
+# acórdão, data de julgamento e ementa são exatamente o tipo de detalhe que ele
+# preenche com algo plausível e falso. A regra abaixo troca precisão aparente
+# por precisão real — entendimento consolidado, sim; número inventado, nunca.
+JURISPRUDENCE_RULES = """REGRAS DE JURISPRUDÊNCIA — LEIA COM ATENÇÃO:
+
+- Cite APENAS entendimentos consolidados e amplamente conhecidos: súmulas
+  vinculantes, súmulas do STF e do STJ, teses de repercussão geral já
+  pacificadas e posições clássicas da doutrina penal e processual penal.
+- NUNCA invente número de acórdão, número de recurso, data de julgamento,
+  nome de relator ou trecho de ementa. Se não tiver certeza do número, fale
+  do ENTENDIMENTO sem numerar: "o STJ entende que...", "está pacificado que...".
+- Quando a matéria for controvertida, DIGA que é controvertida e apresente os
+  dois lados. Não force um consenso que não existe.
+- Sempre feche a jurisprudência com o que ela muda na prática: o que o
+  policial faz de diferente na rua por causa desse entendimento.
+- Avise o ouvinte, uma vez por episódio, que jurisprudência muda e que ele
+  deve conferir a posição atual antes da prova."""
 
 SYSTEM_PROMPT = f"""Você escreve roteiros de AULA em áudio para candidatos ao concurso da Polícia Militar de Goiás (banca Instituto AOCP).
 
@@ -134,6 +167,8 @@ REGRAS DE FORMATO:
   por um sintetizador de voz: escreva só o que deve ser falado.
 
 {RETENTION_RULES}
+
+{JURISPRUDENCE_RULES}
 
 Responda SEMPRE em JSON válido."""
 
@@ -241,6 +276,37 @@ def _block_briefs(topic: str, subject: str, articles: list[dict]) -> list[dict]:
                 f"{HOST_A} confunde os dois de propósito, do jeito que o aluno "
                 "confundiria, e ela desfaz mostrando um caso em que a diferença muda "
                 "completamente a conduta do policial."
+            ),
+        },
+        {
+            "title": "Jurisprudência e a tese que divide",
+            "articles": articles[:8],
+            "brief": (
+                f"Levem '{topic}' para além do texto seco: como os tribunais leem "
+                f"esse dispositivo. {HOST_B} traz o entendimento consolidado — súmula "
+                "ou tese pacificada — e explica o raciocínio que levou até ele, sem "
+                "inventar número de acórdão nem data. Em seguida montem um DEBATE de "
+                f"verdade: {HOST_A} sustenta a leitura literal e intuitiva do artigo, "
+                f"{HOST_B} sustenta a leitura que prevaleceu nos tribunais, e cada um "
+                "defende a sua com argumento. Se o ponto for controvertido, digam que "
+                "é e apresentem os dois lados. Fechem com o que muda na prática para "
+                "quem está de farda e como a banca costuma cobrar essa diferença "
+                "entre a letra da lei e o entendimento aplicado."
+            ),
+        },
+        {
+            "title": "Caso difícil, do começo ao fim",
+            "articles": articles[:8],
+            "brief": (
+                f"Um caso hipotético longo e cheio de detalhes envolvendo '{topic}' — "
+                f"{HOST_A} narra a ocorrência inteira, com hora, local, quem estava "
+                "presente, o que foi dito, o que foi feito, e onde a situação vira. "
+                "Parem no ponto de decisão e mandem o ouvinte decidir de cabeça antes "
+                f"de qualquer resposta. Depois {HOST_B} destrincha: qual dispositivo "
+                "incide, qual requisito está presente, qual está ausente, o que "
+                "mudaria a resposta se um único fato fosse diferente. Testem duas "
+                "variações do mesmo caso alterando um detalhe de cada vez, para o "
+                "ouvinte sentir a fronteira da regra se mexer."
             ),
         },
         {

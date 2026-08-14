@@ -28,6 +28,33 @@ OPENAI_VOICES = {
     "narrator": "alloy",
 }
 
+# Modelo padrão. `tts-1` é o modelo básico e soa sintético — locução de rádio
+# antiga. `gpt-4o-mini-tts` aceita direção de atuação (o campo `instructions`),
+# que é o que separa "sintetizador lendo texto" de "duas pessoas conversando".
+DEFAULT_TTS_MODEL = "gpt-4o-mini-tts"
+
+# Direção de atuação por voz. Vai junto de cada requisição no modelo que
+# aceita `instructions`; nos modelos antigos é ignorada silenciosamente (o
+# código detecta a recusa e repete a chamada sem o campo).
+VOICE_DIRECTION = {
+    "onyx": (
+        "Você é Marcos, instrutor de formação policial, ex-praça com quinze anos "
+        "de rua. Voz masculina grave, peito cheio, ritmo pausado e seguro. Fala "
+        "como quem já viu a ocorrência acontecer: direto, sem formalidade "
+        "acadêmica, com pausas curtas antes do ponto importante. Quando faz "
+        "pergunta ao ouvinte, levanta levemente o tom e espera. Português "
+        "brasileiro coloquial, nada de locução de propaganda."
+    ),
+    "nova": (
+        "Você é Julia, professora de Direito. Voz feminina clara e acolhedora, "
+        "ritmo didático, calorosa sem ser infantil. Quando lê o texto da lei, "
+        "desacelera e articula cada palavra, com pausa nas vírgulas — é leitura "
+        "literal, solene. Quando explica, volta ao tom de conversa e enfatiza "
+        "as palavras que mudam o sentido do dispositivo. Português brasileiro "
+        "natural, nada de leitura robótica."
+    ),
+}
+
 EDGE_VOICES = {
     "female": "pt-BR-FranciscaNeural",
     "male": "pt-BR-AntonioNeural",
@@ -93,14 +120,29 @@ class TTSService:
         try:
             from openai import AsyncOpenAI
             client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            model = os.getenv("OPENAI_TTS_MODEL", DEFAULT_TTS_MODEL)
+            direction = VOICE_DIRECTION.get(self.voice)
+
             parts = []
             for chunk in self._split_text(text):
-                resp = await client.audio.speech.create(
-                    model=os.getenv("OPENAI_TTS_MODEL", "tts-1"),
-                    voice=self.voice,
-                    input=chunk,
-                    response_format="mp3",
-                )
+                kwargs = {
+                    "model": model,
+                    "voice": self.voice,
+                    "input": chunk,
+                    "response_format": "mp3",
+                }
+                if direction:
+                    kwargs["instructions"] = direction
+                try:
+                    resp = await client.audio.speech.create(**kwargs)
+                except Exception:
+                    # Modelo antigo (tts-1/tts-1-hd) não conhece `instructions`
+                    # e recusa a requisição inteira. Repete sem o campo em vez
+                    # de deixar o episódio mudo.
+                    if not direction:
+                        raise
+                    kwargs.pop("instructions")
+                    resp = await client.audio.speech.create(**kwargs)
                 parts.append(resp.content)
             return b"".join(parts)
         except Exception as e:
