@@ -418,6 +418,39 @@ class PRFRepository:
             user_id, mode, energy,
         )
 
+    async def close_dangling_sessions(self, user_id: UUID) -> str:
+        """Encerra sessões que ficaram abertas (aba fechada, app morto).
+
+        A duração vira o intervalo até a ÚLTIMA resposta daquela sessão, não
+        até agora: uma sessão esquecida durante a noite viraria oito horas de
+        estudo e envenenaria a média de tempo, o limiar de fadiga e a
+        consistência — exatamente as métricas que ela deveria alimentar.
+        Sessão sem resposta nenhuma é descartada, porque não houve estudo.
+        """
+        return await self._execute(
+            """WITH ultimas AS (
+                   SELECT s.id,
+                          MAX(a.created_at) AS fim,
+                          COUNT(a.id)       AS total,
+                          COUNT(a.id) FILTER (WHERE a.is_correct) AS acertos
+                     FROM study_sessions s
+                     LEFT JOIN question_attempts a ON a.session_id = s.id
+                    WHERE s.user_id = $1 AND s.ended_at IS NULL
+                    GROUP BY s.id
+               )
+               UPDATE study_sessions s
+                  SET ended_at        = COALESCE(u.fim, s.started_at),
+                      duration_mins   = GREATEST(
+                          ROUND(EXTRACT(EPOCH FROM (COALESCE(u.fim, s.started_at) - s.started_at)) / 60.0)::int,
+                          0),
+                      questions_total = u.total,
+                      questions_correct = u.acertos,
+                      is_completed    = (u.total > 0)
+                 FROM ultimas u
+                WHERE s.id = u.id AND s.ended_at IS NULL""",
+            user_id,
+        )
+
     async def end_session(self, session_id: UUID, data: dict) -> dict:
         return await self._fetchrow(
             """UPDATE study_sessions SET

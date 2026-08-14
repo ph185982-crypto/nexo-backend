@@ -1350,6 +1350,7 @@ const S = {
   history: null, consistency: null,
   plano: null, planoHistorico: false, pendingSimBlockId: null,
   essayHistory: null,
+  sessionId: null, sessionTouchedAt: 0,
 };
 
 let timerInterval = null;
@@ -3213,6 +3214,7 @@ function openPlano() {
 // acertou de novo. O endpoint existia desde a Fase 0 e nenhuma tela chamava —
 // era a prática de maior retorno por minuto, inalcançável.
 async function openErrosDrill() {
+  await ensureSession('focus');
   S.selSubject = null;
   S.selSubjectName = 'Caderno de erros';
   S.subView = 'questions'; S.tab = 'practice';
@@ -3360,6 +3362,7 @@ function scrollTop() { document.getElementById('main-content')?.scrollTo(0, 0); 
 
 // ===== ACTIONS =====
 function switchTab(tab) {
+  if (tab !== 'practice' && tab !== 'simulado') endSession();
   S.tab = tab; S.subView = null; S.answerResult = null; S.answered = {};
   render(); scrollTop();
   if (tab === 'dashboard') loadDashboard();
@@ -3370,6 +3373,48 @@ function switchTab(tab) {
   if (tab === 'more' && !S.trilha) loadTrilha();
   if (tab === 'simulado' && !S.sim) resumeSimuladoIfAny();
 }
+// ===== SESSÃO DE ESTUDO =====
+// O backend calcula melhor horário, limiar de fadiga e consistência a partir
+// de sessões registradas — e o app nunca registrava nenhuma, então esses
+// números eram sempre o valor padrão. A sessão abre quando ele começa a
+// responder e fecha quando ele para; nada disso pede ação dele.
+const SESSION_IDLE_MS = 12 * 60 * 1000;   // parado 12 min = sessão encerrada
+
+async function ensureSession(mode) {
+  if (S.sessionId) { S.sessionTouchedAt = Date.now(); return S.sessionId; }
+  try {
+    const s = await api('/api/prf/sessions/start', {
+      method: 'POST',
+      json: { mode: mode || S.mission?.mode_suggested || 'focus' },
+    });
+    S.sessionId = s.id;
+    S.sessionTouchedAt = Date.now();
+  } catch (e) { S.sessionId = null; }
+  return S.sessionId;
+}
+
+async function endSession() {
+  const id = S.sessionId;
+  if (!id) return;
+  S.sessionId = null;
+  try { await api(`/api/prf/sessions/${id}/end`, { method: 'POST', json: {} }); }
+  catch (e) {}
+}
+
+// Fechar a aba não dispara await nenhum. A saída seria o sendBeacon, mas ele
+// não manda cabeçalho — exigiria o token na URL, e token em URL vai parar em
+// log de servidor. Quem fecha sessão abandonada é o backend, ao abrir a
+// próxima (ver start_session). Aqui só se aproveita a saída para tentar.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') endSession();
+});
+
+function touchSession() {
+  if (!S.sessionId) return;
+  if (Date.now() - (S.sessionTouchedAt || 0) > SESSION_IDLE_MS) { endSession(); return; }
+  S.sessionTouchedAt = Date.now();
+}
+
 // Telas que moram dentro de outra tela. Sem isto, voltar de uma redação jogava
 // o candidato no menu inteiro em vez da lista de temas, e ele tinha que
 // reentrar — o botão dizia "voltar" e fazia "sair".
@@ -3419,6 +3464,9 @@ async function regenerateMission() {
 async function startMissionBlock(blockIdx, type) {
   const b = S.mission?.blocks?.[blockIdx];
   if (!b || b.is_completed) return;
+  if (type === 'practice' || type === 'review' || type === 'flashcards' || type === 'legal') {
+    await ensureSession(S.mission?.mode_suggested || 'focus');
+  }
   S.activeMissionIdx = blockIdx;
   S.missionBlockId = b.id;
   if (type === 'practice') {
@@ -3526,6 +3574,7 @@ function advanceToNextMissionBlock() {
   const blocks = S.mission.blocks;
   const next = blocks.find(b => !b.is_completed);
   if (!next) {
+    endSession();
     toast('Missão cumprida!', 'success');
     S.activeMissionIdx = null;
     S.missionBlockId = null;
@@ -3563,6 +3612,7 @@ async function loadSubjects() {
 
 // Practice
 async function selectSubject(id, name) {
+  await ensureSession('focus');
   S.selSubject = id; S.selSubjectName = name; S.subView = 'questions';
   S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
   S.loading.questions = true; render();
@@ -3584,8 +3634,10 @@ async function answerQuestion(qid, altId) {
   if (S.answerResult) return;
   const elapsed = S.qStartedAt ? Math.round((Date.now() - S.qStartedAt) / 1000) : null;
   try {
+    touchSession();
     S.answerResult = await api('/api/prf/questions/answer', {
-      method:'POST', json:{ question_id: qid, selected_alternative_id: altId, time_spent_secs: elapsed },
+      method:'POST', json:{ question_id: qid, selected_alternative_id: altId,
+                            time_spent_secs: elapsed, session_id: S.sessionId || null },
     });
     S.answered[S.qIndex] = S.answerResult.is_correct;
     if (S.answerResult.xp_earned) toast(`+${S.answerResult.xp_earned} XP`, 'xp');

@@ -157,6 +157,7 @@ async def answer_question(
         user_id=user_id,
         question_id=body.question_id,
         selected_alt_id=body.selected_alternative_id,
+        session_id=body.session_id,
         time_spent=body.time_spent_secs,
         confidence=body.confidence,
     )

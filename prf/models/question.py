@@ -52,6 +52,10 @@ class AnswerSubmission(BaseModel):
     selected_alternative_id: UUID
     time_spent_secs: Optional[int] = None
     confidence: Optional[int] = Field(default=None, ge=1, le=5)
+    # Sem isto a tentativa entrava com session_id nulo e a sessão fechava
+    # contando zero questões — as métricas de comportamento (melhor horário,
+    # limiar de fadiga, consistência) são calculadas em cima dessa contagem.
+    session_id: Optional[UUID] = None
 
 
 class AnswerResult(BaseModel):

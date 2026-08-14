@@ -18,7 +18,16 @@ async def start_session(
     user_id: UUID = Depends(get_current_user_id),
     repo: PRFRepository = Depends(get_repo),
 ):
-    """Start a new study session."""
+    """Start a new study session.
+
+    Fecha antes qualquer sessão que tenha ficado aberta. O app não consegue
+    encerrar a sessão quando o candidato simplesmente fecha a aba — enviar
+    nesse instante exigiria o token na URL, que acabaria em log de servidor.
+    Então a limpeza acontece aqui, no próximo começo: sessão pendurada é
+    encerrada com a duração real até a última resposta dela, e não fica
+    contaminando a média de tempo de estudo.
+    """
+    await repo.close_dangling_sessions(user_id)
     session = await repo.create_session(
         user_id,
         mode=body.mode.value,
@@ -56,8 +65,14 @@ async def end_session(
     if not session_data:
         raise HTTPException(404, "Session not found")
 
-    from datetime import datetime
-    duration = (datetime.utcnow() - session_data["started_at"]).total_seconds() / 60
+    # started_at é TIMESTAMPTZ, ou seja, vem com fuso. utcnow() devolve um
+    # datetime ingênuo, e subtrair um do outro levanta TypeError — este
+    # endpoint respondia 500 em toda chamada. Como nenhuma tela o chamava,
+    # o erro nunca apareceu.
+    from datetime import datetime, timezone
+    duration = (
+        datetime.now(timezone.utc) - session_data["started_at"]
+    ).total_seconds() / 60
 
     session = await repo.end_session(session_id, {
         "energy_at_end": body.energy_at_end.value if body.energy_at_end else None,
