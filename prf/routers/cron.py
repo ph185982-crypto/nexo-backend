@@ -116,6 +116,49 @@ async def rodar_retorno(
     }
 
 
+@router.post("/audio")
+@router.get("/audio")
+async def rodar_audio(
+    authorization: str | None = Header(default=None),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Produz o áudio do dia: uma aula da ida e um drill da volta.
+
+    O gargalo do plano não é o motor de estudo, é o acervo — o candidato tem
+    80 minutos de carro por dia e o áudio só existia para os tópicos em que
+    alguém lembrou de disparar a geração à mão. Com esta tarefa rodando
+    diariamente, o acervo caminha sozinho até cobrir o edital.
+
+    Dois passos na mesma execução, nunca mais que isso: são dez idas ao
+    modelo para a aula e oito para o drill, e o tempo da função serverless
+    não comporta uma terceira peça. O drill roda mesmo se a aula falhar,
+    porque ele trabalha na fila das aulas que já existem.
+    """
+    _authorize(authorization, x_maintenance_token)
+
+    from prf.services.audio_pipeline import gerar_proxima_aula, gerar_proximo_drill
+
+    try:
+        aula = await gerar_proxima_aula(repo)
+    except Exception as e:
+        logger.error(f"[PRF] geração de aula falhou: {e}")
+        aula = {"generated": False, "reason": str(e)}
+
+    try:
+        drill = await gerar_proximo_drill(repo)
+    except Exception as e:
+        logger.error(f"[PRF] geração de drill falhou: {e}")
+        drill = {"generated": False, "reason": str(e)}
+
+    return {
+        "aula": aula,
+        "drill": drill,
+        "aulas_pendentes": aula.get("remaining"),
+        "drills_pendentes": drill.get("remaining"),
+    }
+
+
 async def service_send_return(repo: PRFRepository, user_id) -> None:
     await NotificationService(repo).send_gentle_return(user_id)
 

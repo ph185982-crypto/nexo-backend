@@ -11,6 +11,7 @@
   },
   "crons": [
     { "path": "/api/prf/cron/lembretes", "schedule": "0 11 * * *" },
-    { "path": "/api/prf/cron/retorno", "schedule": "0 21 * * *" }
+    { "path": "/api/prf/cron/retorno", "schedule": "0 21 * * *" },
+    { "path": "/api/prf/cron/audio", "schedule": "0 6 * * *" }
   ]
 }
