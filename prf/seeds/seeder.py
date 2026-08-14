@@ -14,6 +14,7 @@ from prf.seeds.seed_data import (
 )
 from prf.seeds.audio_lessons import AUDIO_LESSONS
 from prf.seeds.loader import load_questions, load_articles
+from prf.seeds.topic_aliases import resolve_topic_slug
 
 logger = logging.getLogger(__name__)
 
@@ -138,10 +139,8 @@ async def _seed_legal_articles_from_json(
                 continue
             text = a["official_text"]
 
-            topic_key = (
-                f"{a.get('subject_slug')}:{a.get('topic_slug')}"
-                if a.get("topic_slug") else None
-            )
+            resolved = resolve_topic_slug(a.get("subject_slug"), a.get("topic_slug"))
+            topic_key = f"{a.get('subject_slug')}:{resolved}" if resolved else None
             topic_id = topic_map.get(topic_key) if topic_key else None
 
             # O tópico entra na comparação junto com o texto. Conferir só o
@@ -229,9 +228,13 @@ async def _seed_questions_from_json(
                 skipped += 1
                 continue
 
-            topic_key = (
-                f"{q['subject_slug']}:{q.get('topic_slug')}" if q.get("topic_slug") else None
-            )
+            # O slug do arquivo passa pelo mapa de apelidos antes de virar
+            # tópico: as questões vieram de fontes diferentes e cada uma nomeou
+            # o assunto do seu jeito ('licitacao' contra 'licitacoes-contratos').
+            # Sem isso, 294 das 2.082 questões entravam sem tópico e a missão
+            # perdia a amarração entre áudio, lei seca e prática.
+            resolved = resolve_topic_slug(q["subject_slug"], q.get("topic_slug"))
+            topic_key = f"{q['subject_slug']}:{resolved}" if resolved else None
             pending.append((q, subject_id, topic_map.get(topic_key) if topic_key else None))
 
         for start in range(0, len(pending), 50):

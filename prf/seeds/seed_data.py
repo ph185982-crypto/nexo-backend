@@ -317,6 +317,8 @@ TOPICS = {
         {"name": "Poder Judiciário", "slug": "poder-judiciario", "weight": 1.0},
         {"name": "Administração Pública", "slug": "adm-publica-cf", "weight": 2.0},
         {"name": "Remédios constitucionais", "slug": "remedios-constitucionais", "weight": 2.0},
+        {"name": "Nacionalidade e direitos políticos", "slug": "direitos-politicos-nacionalidade", "weight": 2.0},
+        {"name": "Defesa do Estado e das instituições democráticas", "slug": "defesa-estado", "weight": 1.5},
     ],
     "direito-penal": [
         {"name": "Princípios do Direito Penal", "slug": "principios-penal", "weight": 2.0},
@@ -337,6 +339,7 @@ TOPICS = {
         {"name": "Provas", "slug": "provas", "weight": 2.5},
         {"name": "Competência", "slug": "competencia-cpp", "weight": 1.5},
         {"name": "Recursos no processo penal", "slug": "recursos-cpp", "weight": 2.0},
+        {"name": "Citações e intimações", "slug": "citacao-intimacao", "weight": 1.5},
     ],
     "legislacao-especial": [
         {"name": "Lei de Drogas (11.343/06)", "slug": "lei-drogas", "weight": 3.0},
@@ -347,6 +350,7 @@ TOPICS = {
         {"name": "Lei de Crimes Ambientais (9.605/98)", "slug": "crimes-ambientais", "weight": 1.5},
         {"name": "Crimes Hediondos (8.072/90)", "slug": "crimes-hediondos", "weight": 2.0},
         {"name": "Lei de Organização Criminosa (12.850/13)", "slug": "organizacao-criminosa", "weight": 1.5},
+        {"name": "Lei de Tortura (9.455/97)", "slug": "lei-tortura", "weight": 2.0},
     ],
     "direito-administrativo": [
         {"name": "Atos administrativos", "slug": "atos-administrativos", "weight": 2.5},
@@ -357,6 +361,7 @@ TOPICS = {
         {"name": "Controle da Administração Pública", "slug": "controle-adm", "weight": 1.5},
         {"name": "Responsabilidade civil do Estado", "slug": "responsabilidade-estado", "weight": 2.0},
         {"name": "Bens públicos", "slug": "bens-publicos", "weight": 1.0},
+        {"name": "Princípios da Administração Pública", "slug": "principios-adm", "weight": 3.0},
     ],
     "lingua-portuguesa": [
         {"name": "Interpretação de textos", "slug": "interpretacao-textos", "weight": 3.0},
@@ -365,6 +370,10 @@ TOPICS = {
         {"name": "Pontuação", "slug": "pontuacao", "weight": 2.0},
         {"name": "Redação oficial", "slug": "redacao-oficial", "weight": 1.5},
         {"name": "Classes de palavras", "slug": "classes-palavras", "weight": 2.0},
+        {"name": "Ortografia e acentuação", "slug": "ortografia-acentuacao", "weight": 2.0},
+        {"name": "Crase", "slug": "crase", "weight": 2.0},
+        {"name": "Coesão e coerência", "slug": "coesao-coerencia", "weight": 2.5},
+        {"name": "Sintaxe do período", "slug": "sintaxe-periodo", "weight": 2.0},
     ],
     "direitos-humanos": [
         {"name": "Declaração Universal dos Direitos Humanos", "slug": "dudh", "weight": 2.5},
@@ -429,10 +438,18 @@ TOPICS = {
         {"name": "Crime militar", "slug": "crime-militar", "weight": 3.0},
         {"name": "Penas militares", "slug": "penas-militares", "weight": 2.0},
         {"name": "Crimes militares em espécie", "slug": "crimes-militares-especie", "weight": 3.0},
+        {"name": "Crimes contra a autoridade e a disciplina militar", "slug": "crimes-hierarquia-disciplina", "weight": 3.0},
+        {"name": "Crimes contra o serviço e o dever militar", "slug": "crimes-servico-dever", "weight": 2.5},
+        {"name": "Crimes contra a Administração Militar", "slug": "crimes-adm-militar", "weight": 2.5},
     ],
     "direito-processual-penal-militar": [
         {"name": "Inquérito policial militar (IPM)", "slug": "ipm", "weight": 3.0},
         {"name": "Processo penal militar", "slug": "processo-penal-militar-geral", "weight": 2.0},
+        {"name": "Competência da Justiça Militar", "slug": "competencia-justica-militar", "weight": 3.0},
+        {"name": "Ação penal militar", "slug": "acao-penal-militar", "weight": 2.5},
+        {"name": "Prisão e liberdade provisória no CPPM", "slug": "prisao-liberdade-militar", "weight": 2.5},
+        {"name": "Provas no processo penal militar", "slug": "provas-cppm", "weight": 2.0},
+        {"name": "Recursos e ações de impugnação", "slug": "recursos-cppm", "weight": 1.5},
     ],
     "legislacao-institucional-pm": [
         {"name": "Estatuto dos Militares de GO", "slug": "estatuto-militares-go", "weight": 3.0},
@@ -458,6 +475,7 @@ TOPICS = {
         {"name": "Economia de Goiás", "slug": "economia-goias", "weight": 2.0},
         {"name": "Cultura e sociedade goiana", "slug": "cultura-sociedade-goiana", "weight": 1.5},
         {"name": "Política e organização do Estado", "slug": "politica-organizacao-go", "weight": 2.0},
+        {"name": "Segurança pública em Goiás", "slug": "seguranca-publica-go", "weight": 2.5},
     ],
 }
 

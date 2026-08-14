@@ -1212,6 +1212,19 @@ _TOPIC_KEYWORDS: dict[str, list[tuple[str, list[str]]]] = {
 
 
 def _classify_topic(text: str, subject_slug: str) -> str | None:
+    """Tópico por palavra-chave, ou None quando nada casa.
+
+    Antes, o que não batia com nenhuma regra caía no último tópico da lista
+    como padrão. Não era "não sei" — era um palpite gravado com cara de
+    certeza: prescrição e tentativa iam parar em "Crimes em espécie", e a
+    trilha do edital passava a mentir sobre o que já tinha sido coberto.
+    Tópico nulo é informação honesta; tópico errado contamina a missão, que
+    monta o dia inteiro em cima desse vínculo.
+
+    O grosso do trabalho agora é feito antes daqui, pelo mapa de apelidos em
+    prf/seeds/topic_aliases.py — este classificador é a rede para o que entra
+    sem nenhum slug de origem.
+    """
     rules = _TOPIC_KEYWORDS.get(subject_slug)
     if not rules:
         return None
@@ -1221,8 +1234,7 @@ def _classify_topic(text: str, subject_slug: str) -> str | None:
             continue
         if any(kw in low for kw in keywords):
             return topic_slug
-    # Use last entry as default
-    return rules[-1][0]
+    return None
 
 
 @router.post("/topics/classify")
