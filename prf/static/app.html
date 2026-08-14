@@ -3401,13 +3401,12 @@ async function endSession() {
   catch (e) {}
 }
 
-// Fechar a aba não dispara await nenhum. A saída seria o sendBeacon, mas ele
-// não manda cabeçalho — exigiria o token na URL, e token em URL vai parar em
-// log de servidor. Quem fecha sessão abandonada é o backend, ao abrir a
-// próxima (ver start_session). Aqui só se aproveita a saída para tentar.
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') endSession();
-});
+// Não se encerra a sessão ao esconder a página: no celular, atender uma
+// mensagem por dez segundos dispara esse evento, e a sessão de estudo viraria
+// picadinho de dois minutos — quebrando exatamente as médias (duração típica,
+// limiar de fadiga) que ela serve para medir. Quem fecha sessão abandonada é o
+// backend, no próximo início, com a duração medida até a última resposta —
+// mais preciso do que qualquer palpite feito aqui na saída.
 
 function touchSession() {
   if (!S.sessionId) return;
