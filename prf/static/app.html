@@ -1053,6 +1053,31 @@ button { font-family:inherit; }
 .task-embed-link:hover { text-decoration:underline; }
 
 /* ── Trajetória ── */
+/* Menu "Mais" agrupado por finalidade. */
+.more-group { margin-bottom: 22px; }
+.more-group-title {
+  font-size:11.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3); padding:0 4px 8px;
+}
+
+/* Histórico de redação — nota em destaque, porque é ela que mostra evolução. */
+.essay-hist { padding:0 20px; display:flex; flex-direction:column; }
+.essay-hist-row {
+  display:flex; align-items:center; gap:14px; padding:12px 0;
+  border-top:1px solid var(--border); cursor:pointer;
+}
+.essay-hist-row:first-child { border-top:none; }
+.essay-hist-row:active { opacity:.7; }
+.eh-score {
+  font-size:20px; font-weight:700; font-variant-numeric:tabular-nums;
+  color:var(--primary); flex-shrink:0; min-width:58px;
+}
+.eh-max { font-size:12px; font-weight:600; color:var(--ink-3); }
+.eh-info { flex:1; min-width:0; }
+.eh-title { font-size:14.5px; font-weight:600; line-height:1.3;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.eh-meta { font-size:12px; color:var(--ink-3); margin-top:1px; }
+
 .plano-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
 .pl-stat {
   display:flex; flex-direction:column; gap:2px; padding:10px 12px;
@@ -1324,6 +1349,7 @@ const S = {
   studyProfile: null, savingProfile: false,
   history: null, consistency: null,
   plano: null, planoHistorico: false, pendingSimBlockId: null,
+  essayHistory: null,
 };
 
 let timerInterval = null;
@@ -2907,10 +2933,26 @@ function viewEssays() {
   if (S.subView === 'essay-write') return viewEssayWrite();
   const head = `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Redação</span></div>`;
   if (!S.themes) return head + skeletonBlock(3, 90);
+  const isPM = S.targetExam && S.targetExam.startsWith('PM');
+  const hist = S.essayHistory || [];
   return head + `<div class="essay-hero fade-in">
       <div class="display-hero">Escreva. Receba <em>diagnóstico</em>.</div>
-      <div class="chip-row mt-12"><span class="level-chip">Critérios CEBRASPE</span></div>
+      <div class="chip-row mt-12"><span class="level-chip">${isPM ? 'Rubrica AOCP' : 'Critérios CEBRASPE'}</span></div>
     </div>
+    ${hist.length ? `<div class="section-eyebrow" style="padding:8px 20px">Suas redações</div>
+      <div class="fade-in essay-hist">${hist.map(e => {
+        const nota = e.final_score != null ? Number(e.final_score).toFixed(1) : '—';
+        const max = e.max_score || (isPM ? 10 : 20);
+        const d = new Date(e.created_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+        return `<div class="essay-hist-row" onclick="openEssayDetail('${e.id}')">
+          <div class="eh-score">${nota}<span class="eh-max">/${max}</span></div>
+          <div class="eh-info">
+            <div class="eh-title">${esc(e.theme_title || 'Sem tema')}</div>
+            <div class="eh-meta">${d} · ${e.total_lines || 0} linhas · ${esc(e.banca || '')}</div>
+          </div>
+          <div class="chev">${I.chev}</div>
+        </div>`;
+      }).join('')}</div>` : ''}
     <div class="section-eyebrow" style="padding:8px 20px">Temas prováveis</div>
     <div class="fade-in">${S.themes.map(t => `
       <div class="theme-card" onclick="selectTheme('${t.id}')">
@@ -3167,6 +3209,29 @@ function openPlano() {
   if (!S.plano) loadPlano();
 }
 
+// Caderno de erros: refaz exatamente as questões que ele errou e ainda não
+// acertou de novo. O endpoint existia desde a Fase 0 e nenhuma tela chamava —
+// era a prática de maior retorno por minuto, inalcançável.
+async function openErrosDrill() {
+  S.selSubject = null;
+  S.selSubjectName = 'Caderno de erros';
+  S.subView = 'questions'; S.tab = 'practice';
+  S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {};
+  S.qStartedAt = Date.now(); S.loading.questions = true;
+  S.missionBlockId = null; S.activeMissionIdx = null;
+  render(); scrollTop();
+  try {
+    const d = await api('/api/prf/questions/errors/drill?limit=15');
+    S.questions = d.questions || [];
+  } catch (e) { S.questions = []; }
+  S.loading.questions = false;
+  if (!S.questions.length) {
+    toast('Nenhum erro pendente — caderno limpo', 'success');
+    S.subView = null; S.tab = 'more';
+  }
+  render(); scrollTop();
+}
+
 async function loadPlano() {
   try { S.plano = await api('/api/prf/plano/calendario'); }
   catch (e) { toast('Erro ao carregar trajetória', 'error'); S.plano = { days: [], summary: {} }; }
@@ -3174,6 +3239,25 @@ async function loadPlano() {
 }
 
 // ===== MORE =====
+// Eram 14 atalhos numa lista corrida. Uma lista desse tamanho sem agrupamento
+// não é navegação, é índice: o candidato varre tudo toda vez para achar o que
+// quer. Agrupado por finalidade — planejar, fixar, consultar, sobreviver às
+// fases eliminatórias, ajustar — cada grupo cabe num olhar.
+function moreGroup(titulo, itens) {
+  const vivos = itens.filter(Boolean);
+  if (!vivos.length) return '';
+  return `<div class="more-group">
+    <div class="more-group-title">${esc(titulo)}</div>
+    <div class="more-list">${vivos.map(it => `
+      <div class="shortcut" onclick="${it.on}">
+        <div class="badge-icon ${it.cls || ''}">${it.icon}</div>
+        <div class="info"><h3>${esc(it.h)}</h3><p>${esc(it.p)}</p></div>
+        ${it.badge != null ? `<span class="count-badge">${esc(String(it.badge))}</span>`
+                           : `<div class="chev">${I.chev}</div>`}
+      </div>`).join('')}</div>
+  </div>`;
+}
+
 function viewMore() {
   if (S.subView === 'podcastNow') return viewPodcastNow();
   if (S.subView === 'flashcards') return viewFlashcards();
@@ -3196,58 +3280,41 @@ function viewMore() {
       <div class="section-eyebrow">Mais</div>
       <div class="display-hero">Ferramentas de <em>estudo</em></div>
     </div>
-    <div class="more-list">
-      <div class="shortcut" onclick="openPlano()">
-        <div class="badge-icon gold">${I.calendar}</div>
-        <div class="info"><h3>Minha trajetória</h3><p>Calendário até a prova — o que já fechou e o que vem</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-      <div class="shortcut" onclick="openTrilha()">
-        <div class="badge-icon" style="background:var(--primary)">${I.target}</div>
-        <div class="info"><h3>Trilha do edital</h3><p>${trilhaPct != null ? `${trilhaPct}% coberto` : 'Mapa completo das matérias'}</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-      <div class="shortcut" onclick="openReviews()">
-        <div class="badge-icon gold">${I.refresh}</div>
-        <div class="info"><h3>Revisões espaçadas</h3><p>Algoritmo SM-2 para memória de longo prazo</p></div>
-        ${due > 0 ? `<span class="count-badge">${due}</span>` : `<div class="chev">${I.chev}</div>`}
-      </div>
-      <div class="shortcut" onclick="openHistory()">
-        <div class="badge-icon accent">${I.clock}</div>
-        <div class="info"><h3>Histórico de respostas</h3><p>Todas as questões que você respondeu</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-      <div class="shortcut" onclick="openLegal()">
-        <div class="badge-icon">${I.scale}</div>
-        <div class="info"><h3>Biblioteca jurídica</h3><p>Constituição, códigos e leis especiais</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-      <div class="shortcut" onclick="openEssays()">
-        <div class="badge-icon accent">${I.pen}</div>
-        <div class="info"><h3>Redação discursiva</h3><p>${isPM ? 'Correção AOCP (estimativa) com diagnóstico por IA' : 'Correção CEBRASPE com diagnóstico por IA'}</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-      ${isPM ? `<div class="shortcut" onclick="openTAF()">
-        <div class="badge-icon gold">${I.dumbbell}</div>
-        <div class="info"><h3>TAF</h3><p>Registre suas medições e veja a tendência até a prova</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-      <div class="shortcut" onclick="openChecklist()">
-        <div class="badge-icon accent">${I.checkCircle}</div>
-        <div class="info"><h3>Fases eliminatórias</h3><p>Investigação social, psicotécnico e exame médico</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>` : ''}
-      <div class="shortcut" onclick="toggleLembretes()">
-        <div class="badge-icon">${I.clock}</div>
-        <div class="info"><h3>Lembretes de estudo</h3><p>${S.pushOn ? 'Ativados neste aparelho' : 'Receber cobrança no celular'}</p></div>
-        ${S.pushOn ? '<span class="count-badge">on</span>' : `<div class="chev">${I.chev}</div>`}
-      </div>
-      <div class="shortcut" onclick="openSettings()">
-        <div class="badge-icon">${I.grid}</div>
-        <div class="info"><h3>Meu concurso</h3><p>Soldado PMGO · Instituto AOCP</p></div>
-        <div class="chev">${I.chev}</div>
-      </div>
-    </div>`;
+    ${moreGroup('O plano', [
+      { on:'openPlano()', icon:I.calendar, cls:'gold', h:'Minha trajetória',
+        p:'Calendário até a prova — o que já fechou e o que vem' },
+      { on:'openTrilha()', icon:I.target, cls:'', h:'Trilha do edital',
+        p: trilhaPct != null ? `${trilhaPct}% do edital coberto` : 'Mapa completo das matérias' },
+    ])}
+    ${moreGroup('Fixar o que passou', [
+      { on:'openReviews()', icon:I.refresh, cls:'gold', h:'Revisões espaçadas',
+        p:'Traz de volta o que está prestes a escorrer', badge: due > 0 ? due : null },
+      { on:'openErrosDrill()', icon:I.brain, cls:'accent', h:'Caderno de erros',
+        p:'Refaz só o que você errou e ainda não acertou' },
+      { on:'openHistory()', icon:I.clock, cls:'accent', h:'Histórico de respostas',
+        p:'Todas as questões que você já respondeu' },
+    ])}
+    ${moreGroup('Consulta', [
+      { on:'openLegal()', icon:I.scale, cls:'', h:'Biblioteca jurídica',
+        p:'Constituição, códigos e leis especiais' },
+    ])}
+    ${moreGroup('Fases eliminatórias', [
+      { on:'openEssays()', icon:I.pen, cls:'accent', h:'Redação discursiva',
+        p: isPM ? 'Correção na rubrica AOCP com diagnóstico' : 'Correção CEBRASPE com diagnóstico' },
+      ...(isPM ? [
+        { on:'openTAF()', icon:I.dumbbell, cls:'gold', h:'TAF',
+          p:'Medições e projeção da sua evolução até a prova' },
+        { on:'openChecklist()', icon:I.checkCircle, cls:'accent', h:'Documentos e exames',
+          p:'Investigação social, psicotécnico e exame médico' },
+      ] : []),
+    ])}
+    ${moreGroup('Ajustes', [
+      { on:'toggleLembretes()', icon:I.clock, cls:'', h:'Lembretes de estudo',
+        p: S.pushOn ? 'Ativados neste aparelho' : 'Receber cobrança no celular',
+        badge: S.pushOn ? 'on' : null },
+      { on:'openSettings()', icon:I.grid, cls:'', h:'Meu concurso',
+        p:'Rotina, município, corte-alvo e data da prova' },
+    ])}`;
 }
 
 // ===== NAV / RENDER =====
@@ -3303,8 +3370,18 @@ function switchTab(tab) {
   if (tab === 'more' && !S.trilha) loadTrilha();
   if (tab === 'simulado' && !S.sim) resumeSimuladoIfAny();
 }
+// Telas que moram dentro de outra tela. Sem isto, voltar de uma redação jogava
+// o candidato no menu inteiro em vez da lista de temas, e ele tinha que
+// reentrar — o botão dizia "voltar" e fazia "sair".
+const SUBVIEW_PARENT = {
+  'essay-write': 'essays',
+  'articles': 'legal',
+  'search': 'legal',
+};
+
 function goBack() {
-  S.subView = null; S.answerResult = null; S.searchResults = null; S.searchQ = '';
+  S.subView = SUBVIEW_PARENT[S.subView] || null;
+  S.answerResult = null; S.searchResults = null; S.searchQ = '';
   S.essayResult = null;
   render(); scrollTop();
 }
@@ -4375,12 +4452,26 @@ function viewSettings() {
 function openEssays() {
   S.tab = 'more'; S.subView = 'essays'; S.essayResult = null; render(); scrollTop();
   if (!S.themes) loadThemes();
+  loadEssayHistory();
 }
 function backToThemes() { S.subView = 'essays'; render(); scrollTop(); }
 async function loadThemes() {
   try { const d = await api('/api/prf/essays/themes'); S.themes = d.themes || d; }
   catch (e) { S.themes = []; }
   render();
+}
+// O backend guardava toda redação com nota e diagnóstico e nenhuma tela lia.
+// Sem histórico não existe evolução visível — e redação elimina.
+async function loadEssayHistory() {
+  try { const d = await api('/api/prf/essays/history?limit=20'); S.essayHistory = d.essays || []; }
+  catch (e) { S.essayHistory = []; }
+  render();
+}
+async function openEssayDetail(id) {
+  try {
+    S.essayResult = await api(`/api/prf/essays/${id}`);
+    render(); scrollTop();
+  } catch (e) { toast('Não foi possível abrir a redação', 'error'); }
 }
 function selectTheme(id) {
   S.selTheme = (S.themes || []).find(t => t.id === id);
