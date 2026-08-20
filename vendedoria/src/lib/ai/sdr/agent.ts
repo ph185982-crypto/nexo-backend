@@ -166,22 +166,22 @@ export async function processSdrResponse(
     where: { id: conversationId },
     include: {
       lead: {
-        select: { id: true, phone: true, profileName: true, status: true },
+        select: { id: true, phoneNumber: true, profileName: true, status: true },
       },
-      whatsappProviderConfig: {
+      provider: {
         select: { businessPhoneNumberId: true, accessToken: true, organizationId: true },
       },
     },
   });
 
-  if (!conversation?.lead || !conversation.whatsappProviderConfig) {
+  if (!conversation?.lead || !conversation.provider) {
     console.error("[SDR] Conversa não encontrada ou sem lead:", conversationId);
     return;
   }
 
   const lead = conversation.lead;
-  const provider = conversation.whatsappProviderConfig;
-  const phone = lead.phone;
+  const provider = conversation.provider;
+  const phone = lead.phoneNumber;
   const token = provider.accessToken ?? undefined;
   const phoneNumberId = provider.businessPhoneNumberId;
 

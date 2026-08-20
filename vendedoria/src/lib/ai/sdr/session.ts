@@ -26,10 +26,10 @@ export async function saveSdrSession(
   await prisma.whatsappConversation.update({
     where: { id: conversationId },
     data: {
-      sessaoProspeccao: {
+      sessaoProspeccao: ({
         ...current,
         [SDR_KEY]: session,
-      } as import("@prisma/client").Prisma.InputJsonValue,
+      } as unknown) as import("@prisma/client").Prisma.InputJsonValue,
     },
   });
 }
