@@ -3,8 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Runtime: pooler do Supabase em transaction mode (6543).
+  url       = env("DATABASE_URL")
+  // Migrations: conexão de sessão (5432) — pgbouncer não aceita DDL em transaction mode.
+  // Precisa estar definida para db push / migrate; no dev local aponta para o mesmo banco.
+  directUrl = env("DIRECT_URL")
 }
 
 // ─── NextAuth ──────────────────────────────────────────────────────────────
@@ -972,10 +976,36 @@ model ProspectSegment {
   filtroSite            String   @default("TODOS") // TODOS | COM_SITE | SEM_SITE
   metaEmpresas          Int      @default(200)     // alvo de empresas por busca
   prospects             ProspectLead[]
+  sourcingRuns          SourcingRun[]
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
   @@index([organizationId, ativo])
+}
+
+// ─── Execuções de jobs longos ─────────────────────────────────────────────────
+// Em serverless cada invocação é um processo novo, então o progresso de uma
+// busca ou de um disparo vive no banco — não em memória — e cada lote retoma
+// de onde o anterior parou.
+
+model SourcingRun {
+  id           String    @id @default(cuid())
+  segmentId    String
+  segment      ProspectSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  status       String    @default("EXECUTANDO") // EXECUTANDO | CONCLUIDO | ERRO
+  meta         Int
+  indice       Int       @default(0)            // posição na matriz termo × cidade
+  inseridos    Int       @default(0)
+  ignorados    Int       @default(0)
+  erros        Int       @default(0)
+  lotes        Int       @default(0)
+  motivo       String?
+  iniciadoEm   DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  finalizadoEm DateTime?
+
+  @@index([segmentId, status])
+  @@index([status, atualizadoEm])
 }
 
 // ─── ProspectLead (B2B Prospecção Nexos Brasil) ────────────────────────────────

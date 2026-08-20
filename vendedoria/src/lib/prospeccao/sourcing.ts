@@ -311,11 +311,31 @@ async function buscarEmpresas(termo: string, cidade: string, limite = 20): Promi
   return buscarNoGooglePlaces(termo, cidade, limite);
 }
 
-export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
+/** Progresso acumulado de uma busca, persistido entre lotes. */
+export interface EstadoSourcing {
+  /** Posição na matriz termo × cidade já percorrida. */
+  indice: number;
   inseridos: number;
   ignorados: number;
   erros: number;
-}> {
+}
+
+export interface ResultadoLoteSourcing {
+  estado: EstadoSourcing;
+  concluido: boolean;
+  /** Total de combinações termo × cidade do segmento. */
+  combinacoes: number;
+  meta: number;
+}
+
+/** Orçamento de tempo; quando estoura, o lote para e devolve o cursor. */
+interface Orcamento {
+  estourou: () => boolean;
+}
+
+const SEM_LIMITE: Orcamento = { estourou: () => false };
+
+async function carregarSegmento(segmentId: string) {
   const rapidKey = await getRapidApiKey();
   if (!rapidKey && !process.env.GOOGLE_PLACES_API_KEY) {
     throw new Error(
@@ -332,84 +352,136 @@ export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
     throw new Error(`Segmento ${segmentId} não encontrado ou inativo`);
   }
 
-  const termos = [segment.termoBusca, ...segment.termosSecundarios];
-  const result = { inseridos: 0, ignorados: 0, erros: 0 };
+  return segment;
+}
 
-  // Meta de empresas: para quando atingir (evita buscas desnecessárias).
-  const meta = (segment as { metaEmpresas?: number }).metaEmpresas ?? 200;
-  const limitePorBusca = Math.min(Math.max(meta, 20), 100);
+type Segmento = Awaited<ReturnType<typeof carregarSegmento>>;
+type Place = Awaited<ReturnType<typeof buscarEmpresas>>[number];
 
-  // Para cada combinação termo × cidade (para assim que atingir a meta)
-  outer:
-  for (const termo of termos) {
-    for (const cidade of segment.cidades) {
-      if (result.inseridos >= meta) break outer;
-      console.log(`[Sourcing] Buscando "${termo}" em "${cidade}"... (${result.inseridos}/${meta})`);
-      const places = await buscarEmpresas(termo, cidade, limitePorBusca);
+/** Grava os resultados de uma consulta, respeitando filtros e meta. */
+async function gravarPlaces(
+  segment: Segmento,
+  places: Place[],
+  estado: EstadoSourcing,
+  meta: number,
+): Promise<void> {
+  for (const place of places) {
+    if (estado.inseridos >= meta) break;
+    if (!place.id) continue;
 
-      for (const place of places) {
-        if (result.inseridos >= meta) break;
-        if (!place.id) continue;
+    // Dedupe por placeId
+    const exists = await prisma.prospectLead.findUnique({
+      where: { placeId: place.id },
+    });
 
-        // Dedupe por placeId
-        const exists = await prisma.prospectLead.findUnique({
-          where: { placeId: place.id },
-        });
-
-        if (exists) {
-          result.ignorados++;
-          continue;
-        }
-
-        try {
-          const telefone = normalizePhone(
-            place.nationalPhoneNumber ?? place.internationalPhoneNumber,
-          );
-          const tipoTelefone = detectarTipoTelefoneBR(telefone);
-
-          // Filtros do segmento
-          if (segment.apenasCelular && tipoTelefone !== "CELULAR") {
-            result.ignorados++;
-            continue;
-          }
-          if (segment.filtroSite === "SEM_SITE" && place.websiteUri) {
-            result.ignorados++;
-            continue;
-          }
-          if (segment.filtroSite === "COM_SITE" && !place.websiteUri) {
-            result.ignorados++;
-            continue;
-          }
-
-          await prisma.prospectLead.create({
-            data: {
-              organizationId: segment.organizationId,
-              segmentId:      segment.id,
-              placeId:        place.id,
-              nome:           place.displayName?.text ?? null,
-              telefone,
-              tipoTelefone,
-              enderecoCompleto: place.formattedAddress ?? null,
-              website:          place.websiteUri       ?? null,
-              ratingGoogle:     place.rating           ?? null,
-              numeroAvaliacoes: place.userRatingCount  ?? null,
-              status:           "NOVO",
-            },
-          });
-          result.inseridos++;
-        } catch (e) {
-          console.error(`[Sourcing] Erro ao inserir placeId=${place.id}:`, e);
-          result.erros++;
-        }
-      }
-
-      // Rate limiting gentil entre chamadas
-      await new Promise((r) => setTimeout(r, 300));
+    if (exists) {
+      estado.ignorados++;
+      continue;
     }
 
-    await new Promise((r) => setTimeout(r, 500));
+    try {
+      const telefone = normalizePhone(
+        place.nationalPhoneNumber ?? place.internationalPhoneNumber,
+      );
+      const tipoTelefone = detectarTipoTelefoneBR(telefone);
+
+      // Filtros do segmento
+      if (segment.apenasCelular && tipoTelefone !== "CELULAR") {
+        estado.ignorados++;
+        continue;
+      }
+      if (segment.filtroSite === "SEM_SITE" && place.websiteUri) {
+        estado.ignorados++;
+        continue;
+      }
+      if (segment.filtroSite === "COM_SITE" && !place.websiteUri) {
+        estado.ignorados++;
+        continue;
+      }
+
+      await prisma.prospectLead.create({
+        data: {
+          organizationId: segment.organizationId,
+          segmentId:      segment.id,
+          placeId:        place.id,
+          nome:           place.displayName?.text ?? null,
+          telefone,
+          tipoTelefone,
+          enderecoCompleto: place.formattedAddress ?? null,
+          website:          place.websiteUri       ?? null,
+          ratingGoogle:     place.rating           ?? null,
+          numeroAvaliacoes: place.userRatingCount  ?? null,
+          status:           "NOVO",
+        },
+      });
+      estado.inseridos++;
+    } catch (e) {
+      console.error(`[Sourcing] Erro ao inserir placeId=${place.id}:`, e);
+      estado.erros++;
+    }
+  }
+}
+
+/**
+ * Processa combinações termo × cidade a partir de `estado.indice` até atingir a
+ * meta, esgotar as combinações ou estourar o orçamento de tempo.
+ *
+ * Devolver o cursor é o que torna a busca retomável: em serverless a invocação
+ * seguinte continua exatamente da combinação onde esta parou.
+ */
+export async function processarLoteSourcing(
+  segmentId: string,
+  estadoInicial: EstadoSourcing,
+  orcamento: Orcamento = SEM_LIMITE,
+): Promise<ResultadoLoteSourcing> {
+  const segment = await carregarSegmento(segmentId);
+
+  const termos = [segment.termoBusca, ...segment.termosSecundarios];
+  const cidades = segment.cidades;
+  const combinacoes = termos.length * cidades.length;
+
+  const meta = segment.metaEmpresas ?? 200;
+  const limitePorBusca = Math.min(Math.max(meta, 20), 100);
+
+  const estado: EstadoSourcing = { ...estadoInicial };
+
+  while (estado.indice < combinacoes) {
+    if (estado.inseridos >= meta) break;
+    if (orcamento.estourou()) break;
+
+    const termo = termos[Math.floor(estado.indice / cidades.length)];
+    const cidade = cidades[estado.indice % cidades.length];
+
+    console.log(
+      `[Sourcing] Buscando "${termo}" em "${cidade}"... (${estado.inseridos}/${meta})`,
+    );
+    const places = await buscarEmpresas(termo, cidade, limitePorBusca);
+    await gravarPlaces(segment, places, estado, meta);
+
+    estado.indice++;
+
+    // Rate limiting gentil entre chamadas
+    await new Promise((r) => setTimeout(r, 300));
   }
 
-  console.log(`[Sourcing] Segmento ${segmentId} — inseridos=${result.inseridos} ignorados=${result.ignorados} erros=${result.erros}`);
-  return result;
+  const concluido = estado.indice >= combinacoes || estado.inseridos >= meta;
+  return { estado, concluido, combinacoes, meta };
+}
+
+/**
+ * Executa a busca inteira numa tacada só, sem orçamento de tempo.
+ * Serve para execução local e scripts; em serverless use `processarLoteSourcing`.
+ */
+export async function buscarLeadsPorSegmento(segmentId: string): Promise<{
+  inseridos: number;
+  ignorados: number;
+  erros: number;
+}> {
+  const { estado } = await processarLoteSourcing(
+    segmentId,
+    { indice: 0, inseridos: 0, ignorados: 0, erros: 0 },
+  );
+
+  console.log(`[Sourcing] Segmento ${segmentId} — inseridos=${estado.inseridos} ignorados=${estado.ignorados} erros=${estado.erros}`);
+  return { inseridos: estado.inseridos, ignorados: estado.ignorados, erros: estado.erros };
 }

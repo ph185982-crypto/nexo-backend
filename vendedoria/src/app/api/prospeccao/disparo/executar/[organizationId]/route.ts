@@ -1,67 +1,97 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma/client";
 import { executarDisparoDiario } from "@/lib/prospeccao/disparo";
+import { criarOrcamento, enfileirar } from "@/lib/jobs/fila";
 
-// Estado em memória do disparo em andamento (processo único no PM2 fork mode)
-const emAndamento = new Map<string, { iniciadoEm: string }>();
-const ultimoResultado = new Map<string, { finalizadoEm: string; resultado: unknown }>();
+// Teto da função. O que não couber fica na fila e sai numa nova invocação.
+export const maxDuration = 60;
 
-// POST /api/prospeccao/disparo/executar/:organizationId
-// Retorna 202 imediatamente — o loop de disparo tem delays de 30-90s por lead
-// e estouraria o timeout do Nginx se fosse síncrono.
+/** Janela usada para resumir a última rodada quando a fila já esvaziou. */
+const HORAS_RESUMO = 6;
+
+function pendentes(organizationId: string) {
+  return prisma.disparoJob.count({
+    where: { organizationId, status: { in: ["QUEUED", "RUNNING"] } },
+  });
+}
+
+/**
+ * POST /api/prospeccao/disparo/executar/:organizationId
+ *
+ * Envia o que couber no orçamento da invocação. Como há intervalo de 30–90s
+ * entre mensagens, uma rodada grande não cabe numa função só: o restante fica
+ * na fila DisparoJob e uma continuação é agendada.
+ */
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
   const { organizationId } = await params;
 
-  if (emAndamento.has(organizationId)) {
+  if (await pendentes(organizationId) > 0) {
     return NextResponse.json(
-      { ok: false, error: "Disparo já em andamento", ...emAndamento.get(organizationId) },
+      { ok: false, error: "Disparo já em andamento" },
       { status: 409 },
     );
   }
 
-  emAndamento.set(organizationId, { iniciadoEm: new Date().toISOString() });
+  const orcamento = criarOrcamento(maxDuration);
 
-  const execucao = executarDisparoDiario(organizationId)
-    .then((resultado) => {
-      ultimoResultado.set(organizationId, { finalizadoEm: new Date().toISOString(), resultado });
-      console.log(`[Disparo] Rodada manual concluída para ${organizationId}:`, resultado);
-      return resultado;
-    })
-    .catch((e) => {
-      const resultado = { disparados: 0, ignorados: 0, erros: 1, motivo: `erro interno: ${String(e).slice(0, 200)}` };
-      ultimoResultado.set(organizationId, { finalizadoEm: new Date().toISOString(), resultado });
-      console.error(`[Disparo] Rodada manual falhou para ${organizationId}:`, e);
-      return resultado;
-    })
-    .finally(() => emAndamento.delete(organizationId));
+  try {
+    const resultado = await executarDisparoDiario(organizationId, orcamento);
 
-  // Se um gate bloquear (pausa, janela, template, leads…), executarDisparoDiario
-  // retorna em <5s com `motivo` — devolve isso ao usuário na hora em vez de 202 mudo.
-  // Se realmente começou a disparar (delays de 30-90s/lead), responde 202 e segue em background.
-  const timeout = new Promise<null>((r) => setTimeout(() => r(null), 5_000));
-  const rapido = await Promise.race([execucao, timeout]);
+    // Gate bloqueou (pausa manual, fora da janela, sem template, sem lead…)
+    if (resultado.disparados === 0 && resultado.motivo) {
+      return NextResponse.json({ ok: false, status: "concluido", ...resultado }, { status: 422 });
+    }
 
-  if (rapido) {
-    const bloqueado = rapido.disparados === 0 && rapido.motivo;
-    return NextResponse.json(
-      { ok: !bloqueado, status: "concluido", ...rapido },
-      { status: bloqueado ? 422 : 200 },
-    );
+    if (resultado.restantes > 0) {
+      const fila = await enfileirar("/api/cron/disparo-diario", {
+        delaySegundos: resultado.esperaSegundos ?? 0,
+        corpo: { continuacao: true },
+      });
+
+      if (!fila.ok) {
+        return NextResponse.json(
+          { ok: false, error: "Rodada iniciada, mas a continuação não pôde ser agendada", ...resultado },
+          { status: 500 },
+        );
+      }
+
+      return NextResponse.json({ ok: true, status: "em_andamento", ...resultado }, { status: 202 });
+    }
+
+    return NextResponse.json({ ok: true, status: "concluido", ...resultado });
+  } catch (e) {
+    const motivo = `erro interno: ${String(e).slice(0, 200)}`;
+    console.error(`[Disparo] Rodada manual falhou para ${organizationId}:`, e);
+    return NextResponse.json({ ok: false, error: motivo }, { status: 500 });
   }
-
-  return NextResponse.json({ ok: true, status: "iniciado" }, { status: 202 });
 }
 
-// GET /api/prospeccao/disparo/executar/:organizationId — status da rodada
+/** GET /api/prospeccao/disparo/executar/:organizationId — status da rodada. */
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
   const { organizationId } = await params;
+  const desde = new Date(Date.now() - HORAS_RESUMO * 60 * 60_000);
+
+  const [restantes, enviados, falhos] = await Promise.all([
+    pendentes(organizationId),
+    prisma.disparoJob.count({
+      where: { organizationId, status: "DONE", atualizadoEm: { gte: desde } },
+    }),
+    prisma.disparoJob.count({
+      where: { organizationId, status: "FAILED", atualizadoEm: { gte: desde } },
+    }),
+  ]);
+
   return NextResponse.json({
-    emAndamento: emAndamento.get(organizationId) ?? null,
-    ultimoResultado: ultimoResultado.get(organizationId) ?? null,
+    emAndamento: restantes > 0 ? { restantes } : null,
+    ultimoResultado:
+      restantes === 0 && (enviados > 0 || falhos > 0)
+        ? { resultado: { disparados: enviados, erros: falhos } }
+        : null,
   });
 }

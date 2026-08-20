@@ -29,6 +29,7 @@ services:
              npx tsx prisma/seed.ts"
     environment:
       DATABASE_URL: postgresql://vendedoria:vendedoria_pass@db:5432/vendedoria
+      DIRECT_URL: postgresql://vendedoria:vendedoria_pass@db:5432/vendedoria
     depends_on:
       db:
         condition: service_healthy

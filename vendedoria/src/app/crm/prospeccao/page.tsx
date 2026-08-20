@@ -102,22 +102,31 @@ export default function ProspeccoesPage() {
       const data = await res.json() as Record<string, unknown>;
       if (!res.ok && res.status !== 202) throw new Error(String(data.error ?? res.status));
 
-      // Sourcing grande roda em background (202) — acompanha até terminar
-      if (acao === "sourcing" && data.status === "iniciado") {
+      // Sourcing grande roda em lotes encadeados (202) — acompanha até terminar
+      if (acao === "sourcing" && data.status === "em_andamento") {
         setFeedback("Busca iniciada… pode levar alguns minutos para metas grandes. Vou atualizando a contagem.");
         await new Promise<void>((resolve) => {
           const iv = setInterval(async () => {
             try {
               const st = await fetch(`/api/prospeccao/sourcing/${segId}`).then((r) => r.json()) as {
-                emAndamento: unknown; ultimoResultado: { resultado: Record<string, unknown> } | null;
+                emAndamento: { inseridos: number; meta: number } | null;
+                ultimoResultado: { status: string; motivo: string | null; resultado: Record<string, unknown> } | null;
               };
               await carregar();
-              if (!st.emAndamento) {
-                clearInterval(iv);
-                const r = st.ultimoResultado?.resultado ?? {};
-                setFeedback(`Busca concluída: ${r.inseridos ?? 0} novas empresas, ${r.ignorados ?? 0} já existentes.`);
-                resolve();
+
+              if (st.emAndamento) {
+                setFeedback(`Buscando… ${st.emAndamento.inseridos} de ${st.emAndamento.meta} empresas.`);
+                return;
               }
+
+              clearInterval(iv);
+              const r = st.ultimoResultado?.resultado ?? {};
+              setFeedback(
+                st.ultimoResultado?.status === "ERRO"
+                  ? `Busca interrompida: ${st.ultimoResultado.motivo ?? "erro desconhecido"}`
+                  : `Busca concluída: ${r.inseridos ?? 0} novas empresas, ${r.ignorados ?? 0} já existentes.`,
+              );
+              resolve();
             } catch { /* segue tentando */ }
           }, 8_000);
         });

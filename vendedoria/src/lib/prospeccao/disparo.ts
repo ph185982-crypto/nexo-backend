@@ -3,9 +3,33 @@ import { sendWhatsAppTemplate, normalizeBrazilianNumber } from "@/lib/whatsapp/s
 import { verificarSaudeNumero } from "./saude-numero";
 import { garantirLeadDoProspect, moverLeadPorTipo, colunaPorTentativa } from "@/lib/crm/pipeline-mover";
 
-function randomDelay(minMs: number, maxMs: number): Promise<void> {
-  const ms = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+/** Intervalo anti-bloqueio entre dois envios consecutivos. */
+const ESPERA_MIN_MS = 30_000;
+const ESPERA_MAX_MS = 90_000;
+
+function intervaloAleatorioMs(minMs: number, maxMs: number): number {
+  return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+}
+
+function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+/** Tempo restante da invocação atual; ausente quando não há teto (VPS, CLI). */
+interface Orcamento {
+  estourou: () => boolean;
+  restanteMs: () => number;
+}
+
+export interface ResultadoDisparo {
+  disparados: number;
+  ignorados: number;
+  erros: number;
+  /** Jobs que continuam na fila e precisam de uma nova invocação. */
+  restantes: number;
+  /** Intervalo anti-bloqueio a respeitar antes de retomar. */
+  esperaSegundos?: number;
+  motivo?: string;
 }
 
 export function getHoraBRT(): { hora: number; diaSemana: number } {
@@ -195,13 +219,11 @@ async function registrarConversaDisparo(params: {
  * Executa uma rodada de disparos diários para a organização.
  * Respeita limite, janela de horário, pausa manual e saúde do número.
  */
-export async function executarDisparoDiario(organizationId: string): Promise<{
-  disparados: number;
-  ignorados: number;
-  erros: number;
-  motivo?: string;
-}> {
-  const resultado = { disparados: 0, ignorados: 0, erros: 0 };
+export async function executarDisparoDiario(
+  organizationId: string,
+  orcamento?: Orcamento,
+): Promise<ResultadoDisparo> {
+  const resultado = { disparados: 0, ignorados: 0, erros: 0, restantes: 0 };
 
   // 1. Buscar ou criar config de disparo
   let config = await prisma.disparoConfig.findUnique({ where: { organizationId } });
@@ -316,7 +338,7 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
   }
 
   // 9. Processar a fila (novos + qualquer QUEUED pendente de rodadas anteriores)
-  return processarFilaDisparo(organizationId, { config, providerConfig, token, templates });
+  return processarFilaDisparo(organizationId, { config, providerConfig, token, templates }, orcamento);
 }
 
 // ── Processador da fila persistente ────────────────────────────────────────────
@@ -331,16 +353,30 @@ type ContextoDisparo = {
 async function processarFilaDisparo(
   organizationId: string,
   ctx: ContextoDisparo,
-): Promise<{ disparados: number; ignorados: number; erros: number; motivo?: string }> {
+  orcamento?: Orcamento,
+): Promise<ResultadoDisparo> {
   const { config, providerConfig, token, templates } = ctx;
-  const resultado = { disparados: 0, ignorados: 0, erros: 0 };
+  const resultado: ResultadoDisparo = { disparados: 0, ignorados: 0, erros: 0, restantes: 0 };
   let rodada = 0; // rotação A/B: alterna template a cada envio
 
   for (;;) {
+    // Orçamento estourado: o resto da fila fica QUEUED para a próxima invocação.
+    if (orcamento?.estourou()) {
+      resultado.restantes = await prisma.disparoJob.count({
+        where: { organizationId, status: "QUEUED" },
+      });
+      if (resultado.restantes > 0) {
+        console.log(`[Disparo] Orçamento da invocação esgotado — ${resultado.restantes} jobs seguem na fila`);
+      }
+      break;
+    }
+
     // Sai da janela comercial no meio do lote → deixa o resto QUEUED (retomado depois)
     if (!dentroJanela(config)) {
       const restantes = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
       if (restantes > 0) console.log(`[Disparo] Janela fechou — ${restantes} jobs ficam na fila`);
+      // Fora da janela não se reagenda: a retomada periódica cuida do resto.
+      resultado.restantes = 0;
       break;
     }
 
@@ -419,7 +455,20 @@ async function processarFilaDisparo(
 
       // Delay aleatório entre disparos: 30–90 segundos (anti-bloqueio Meta)
       const haMais = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
-      if (haMais > 0) await randomDelay(30_000, 90_000);
+      if (haMais > 0) {
+        const esperaMs = intervaloAleatorioMs(ESPERA_MIN_MS, ESPERA_MAX_MS);
+
+        // Se a espera não cabe no que sobrou da invocação, encerra aqui e deixa
+        // o intervalo para quem agendar a continuação — dormir além do teto da
+        // função só faria o processo ser morto no meio do envio seguinte.
+        if (orcamento && orcamento.restanteMs() <= esperaMs) {
+          resultado.restantes = haMais;
+          resultado.esperaSegundos = Math.ceil(esperaMs / 1_000);
+          break;
+        }
+
+        await esperar(esperaMs);
+      }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error(`[Disparo] Falha | lead=${lead.id} |`, errMsg);
