@@ -9,7 +9,16 @@ const nextConfig: NextConfig = {
   // BullMQ + ioredis use Node.js built-ins (child_process, net, worker_threads)
   // that webpack cannot bundle. serverExternalPackages covers Route Handlers;
   // the webpack externals below cover the instrumentation.ts compilation pass.
-  serverExternalPackages: ["bullmq", "ioredis", "bcryptjs"],
+  // @sparticuz/chromium carrega o binário do Chrome de dentro do próprio pacote,
+  // então precisa ficar fora do bundle junto com o puppeteer.
+  serverExternalPackages: [
+    "bullmq",
+    "ioredis",
+    "bcryptjs",
+    "puppeteer",
+    "puppeteer-core",
+    "@sparticuz/chromium",
+  ],
 
   webpack(config, { isServer }) {
     if (isServer) {
