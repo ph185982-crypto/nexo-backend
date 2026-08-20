@@ -2,14 +2,13 @@
  * POST /api/sdr/setup
  * Cria (ou retorna existente) a organização Nexo Brasil SDR no banco.
  *
- * Body JSON esperado:
- * {
- *   "secret": "<CRON_SECRET>",          ← autenticação
- *   "businessPhoneNumberId": "...",     ← ID do telefone no painel Meta
- *   "wabaId": "...",                    ← WhatsApp Business Account ID
- *   "accessToken": "EAAbrI...",         ← Token Meta para o número SDR
- *   "displayPhoneNumber": "+55 62 98446-5388"  ← opcional, display only
- * }
+ * Body mínimo:
+ *   { "secret": "<CRON_SECRET>" }
+ *
+ * Os dados Meta (businessPhoneNumberId, wabaId, accessToken) são lidos
+ * das variáveis de ambiente META_WHATSAPP_PHONE_NUMBER_ID,
+ * META_WHATSAPP_WABA_ID e META_WHATSAPP_ACCESS_TOKEN — já configuradas na Vercel.
+ * Pode sobrescrever qualquer um deles no body se necessário.
  *
  * Idempotente: pode ser chamado várias vezes sem duplicar registros.
  */
@@ -20,7 +19,7 @@ import { buildSdrSystemPrompt } from "@/lib/ai/sdr/prompt";
 import { SDR_EMPTY_SESSION } from "@/lib/ai/sdr/types";
 
 const ORG_NAME = "Nexo Brasil SDR";
-const ORG_DOCUMENT = "00000000000000"; // substituir pelo CNPJ real
+const ORG_DOCUMENT = "00000000000000";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as {
@@ -35,8 +34,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  if (!body.businessPhoneNumberId) {
-    return NextResponse.json({ error: "businessPhoneNumberId é obrigatório" }, { status: 400 });
+  // Usa variáveis de ambiente como fallback para credenciais Meta
+  const phoneNumberId = body.businessPhoneNumberId ?? process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "";
+  const wabaId = body.wabaId ?? process.env.META_WHATSAPP_WABA_ID;
+  const accessToken = body.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
+
+  if (!phoneNumberId) {
+    return NextResponse.json({ error: "businessPhoneNumberId não encontrado (body ou META_WHATSAPP_PHONE_NUMBER_ID)" }, { status: 400 });
   }
 
   // ── 1. Organização ──────────────────────────────────────────────────────────
@@ -82,7 +86,7 @@ export async function POST(req: NextRequest) {
   let providerConfig = await prisma.whatsappProviderConfig.findFirst({
     where: {
       organizationId: org.id,
-      businessPhoneNumberId: body.businessPhoneNumberId,
+      businessPhoneNumberId: phoneNumberId,
     },
     include: { agent: true },
   });
@@ -92,22 +96,22 @@ export async function POST(req: NextRequest) {
       data: {
         accountName: ORG_NAME,
         displayPhoneNumber: body.displayPhoneNumber ?? "+55 62 98446-5388",
-        businessPhoneNumberId: body.businessPhoneNumberId,
-        wabaId: body.wabaId,
-        accessToken: body.accessToken,
+        businessPhoneNumberId: phoneNumberId,
+        wabaId,
+        accessToken,
         status: "CONNECTED",
         organizationId: org.id,
       },
       include: { agent: true },
     });
     console.log("[SDR Setup] Provider config criado:", providerConfig.id);
-  } else if (body.accessToken || body.wabaId) {
+  } else if (accessToken || wabaId) {
     // Atualiza token/wabaId se fornecido
     providerConfig = await prisma.whatsappProviderConfig.update({
       where: { id: providerConfig.id },
       data: {
-        ...(body.accessToken ? { accessToken: body.accessToken } : {}),
-        ...(body.wabaId ? { wabaId: body.wabaId } : {}),
+        ...(accessToken ? { accessToken } : {}),
+        ...(wabaId ? { wabaId } : {}),
       },
       include: { agent: true },
     });
