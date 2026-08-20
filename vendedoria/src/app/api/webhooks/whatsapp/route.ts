@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
+import { processSdrResponse } from "@/lib/ai/sdr/agent";
 import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
 import { cancelFollowUpJobs as _cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
@@ -452,6 +453,12 @@ async function runAIFlow(
     }
   } catch (e) {
     console.warn(`[Orchestrator] error (non-fatal) for conv=${conversationId}:`, e);
+  }
+
+  // SDR mode: systemPrompt starts with "[SDR]" → dedicated qualification agent
+  if (agent.systemPrompt?.trimStart().startsWith("[SDR]")) {
+    await processSdrResponse(conversationId, userMessage, agent, incomingMessageId);
+    return;
   }
 
   await processAIResponse(conversationId, userMessage, agent, incomingMessageId);
