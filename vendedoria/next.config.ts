@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
     "@sparticuz/chromium",
   ],
 
-  webpack(config, { isServer }) {
-    if (isServer) {
+  webpack(config, { isServer, nextRuntime }) {
+    if (isServer && nextRuntime === "nodejs") {
       const prev = Array.isArray(config.externals)
         ? config.externals
         : config.externals != null
@@ -32,6 +32,19 @@ const nextConfig: NextConfig = {
         { bullmq: "commonjs bullmq", ioredis: "commonjs ioredis" },
       ];
     }
+
+    // instrumentation.ts também é compilada para o Edge. O import das filas ali
+    // é dinâmico e nunca executa fora do runtime Node, mas o bundler segue a
+    // referência mesmo assim — e um external "commonjs" no Edge vira módulo não
+    // suportado, o que derruba o deploy. Resolver para false apaga a referência.
+    if (nextRuntime === "edge") {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        bullmq: false,
+        ioredis: false,
+      };
+    }
+
     return config;
   },
 
