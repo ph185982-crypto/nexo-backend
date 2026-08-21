@@ -29,14 +29,20 @@ async function alertarDono(chave: string, texto: string): Promise<boolean> {
   return true;
 }
 
+export const maxDuration = 60;
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Retomada da fila de disparo (fire-and-forget — jobs órfãos de restart/janela)
-  void retomarDisparosPendentes();
+  // Em serverless a função pode ser congelada assim que a resposta é enviada —
+  // um "fire-and-forget" sem await arrisca nunca terminar. Aguarda com timeout.
+  await Promise.race([
+    retomarDisparosPendentes(),
+    new Promise((resolve) => setTimeout(resolve, 20_000)),
+  ]).catch((e) => console.error("[Healthcheck] retomarDisparosPendentes falhou:", e));
 
   const hoje = new Date().toISOString().slice(0, 10);
   const alertas: string[] = [];

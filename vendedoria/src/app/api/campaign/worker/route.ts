@@ -1,8 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { criarOrcamento, enfileirar } from "@/lib/jobs/fila";
 
-const CRON_SECRET = process.env.CRON_SECRET;
+// Teto da função — o que não couber é retomado numa nova invocação encadeada.
+export const maxDuration = 60;
+
+/**
+ * Aceita as três formas de chamada: cron da Vercel (Authorization: Bearer),
+ * cron externo (?secret=) e o encadeamento interno (x-cron-secret via enfileirar()).
+ */
+function autorizado(req: NextRequest): boolean {
+  const esperado = process.env.CRON_SECRET;
+  if (!esperado) return false;
+
+  const auth = req.headers.get("authorization");
+  const header = req.headers.get("x-cron-secret");
+  const query = new URL(req.url).searchParams.get("secret");
+
+  return auth === `Bearer ${esperado}` || header === esperado || query === esperado;
+}
 
 function isWithinDailyWindow(startTime: string, endTime: string): boolean {
   const now = new Date();
@@ -22,29 +39,27 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function GET(req: NextRequest) {
-  // Verify cron secret to prevent unauthorized calls
-  const authHeader = req.headers.get("authorization");
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+async function executar(req: NextRequest): Promise<NextResponse> {
+  if (!autorizado(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const orcamento = criarOrcamento(60, 10);
   const results = { processed: 0, sent: 0, failed: 0, skipped: 0 };
+  let restante = false;
 
-  // Find all active campaigns
   const activeCampaigns = await prisma.campaign.findMany({
     where: { status: "ACTIVE" },
     include: {
       sender: true,
       recipients: {
         where: { status: "PENDING" },
-        take: 100, // process at most 100 per tick
+        take: 100, // processa no máximo 100 por invocação
       },
     },
   });
 
-  for (const campaign of activeCampaigns) {
-    // Check daily time window
+  outer: for (const campaign of activeCampaigns) {
     if (!isWithinDailyWindow(campaign.dailyStartTime, campaign.dailyEndTime)) {
       results.skipped += campaign.recipients.length;
       continue;
@@ -52,14 +67,16 @@ export async function GET(req: NextRequest) {
 
     const accessToken = campaign.sender.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
     const phoneNumberId = campaign.sender.businessPhoneNumberId;
-
-    // Rate limiting: maxMessagesPerMinute
     const intervalMs = Math.ceil((60 * 1000) / campaign.maxMessagesPerMinute);
 
     for (const recipient of campaign.recipients) {
+      if (orcamento.estourou()) {
+        restante = true;
+        break outer;
+      }
+
       results.processed++;
 
-      // Skip if lead already has an active conversation and skipExistingConversation is set
       if (campaign.skipExistingConversation) {
         const existing = await prisma.whatsappConversation.findFirst({
           where: {
@@ -78,20 +95,17 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      // Build message from template
       const metadata = (recipient.metadata ?? {}) as Record<string, string>;
       if (recipient.name) metadata.nome = recipient.name;
       const message = buildMessage(campaign.templateMessage, metadata);
 
-      // Random delay between minDelaySeconds and maxDelaySeconds
       const delayMs =
         (campaign.minDelaySeconds +
           Math.random() * (campaign.maxDelaySeconds - campaign.minDelaySeconds)) *
         1000;
 
-      // Idempotency: optimistically claim the recipient before sending.
-      // If the worker runs twice concurrently, only one wins the update from PENDING → SENT.
-      // The second will see SENT/FAILED and won't double-send.
+      // Idempotência: reivindica o destinatário antes de enviar. Se o worker
+      // rodar duas vezes em paralelo, só uma delas ganha a troca PENDING → SENT.
       const sentAt = new Date();
       const claimed = await prisma.campaignRecipient.updateMany({
         where: { id: recipient.id, status: "PENDING" },
@@ -99,23 +113,15 @@ export async function GET(req: NextRequest) {
       });
 
       if (claimed.count === 0) {
-        // Another worker already claimed this recipient — skip it
         results.skipped++;
         continue;
       }
 
       try {
-        await sendWhatsAppMessage(
-          phoneNumberId,
-          recipient.phoneNumber,
-          message,
-          accessToken ?? undefined
-        );
-        // Status is already SENT from the claim above
+        await sendWhatsAppMessage(phoneNumberId, recipient.phoneNumber, message, accessToken ?? undefined);
         results.sent++;
       } catch (err) {
         console.error(`[CampaignWorker] Failed to send to ${recipient.phoneNumber}:`, err);
-        // Revert claim to FAILED so the UI shows the real outcome
         await prisma.campaignRecipient.update({
           where: { id: recipient.id },
           data: { status: "FAILED", sentAt: null },
@@ -123,22 +129,33 @@ export async function GET(req: NextRequest) {
         results.failed++;
       }
 
-      // Respect rate limit and random delay
       const waitMs = Math.max(intervalMs, delayMs);
-      await sleep(waitMs);
+      if (orcamento.restanteMs() > waitMs) await sleep(waitMs);
     }
 
-    // Check if campaign is now complete
     const remaining = await prisma.campaignRecipient.count({
       where: { campaignId: campaign.id, status: "PENDING" },
     });
     if (remaining === 0) {
-      await prisma.campaign.update({
-        where: { id: campaign.id },
-        data: { status: "COMPLETED" },
-      });
+      await prisma.campaign.update({ where: { id: campaign.id }, data: { status: "COMPLETED" } });
+    } else if (remaining > 0) {
+      restante = true;
     }
   }
 
-  return NextResponse.json({ ok: true, ...results });
+  if (restante) {
+    await enfileirar("/api/campaign/worker", { delaySegundos: 5 }).catch((e) =>
+      console.error("[CampaignWorker] Falha ao encadear continuação:", e),
+    );
+  }
+
+  return NextResponse.json({ ok: true, ...results, continuacaoAgendada: restante });
+}
+
+export async function GET(req: NextRequest) {
+  return executar(req);
+}
+
+export async function POST(req: NextRequest) {
+  return executar(req);
 }

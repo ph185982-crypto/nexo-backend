@@ -1,18 +1,22 @@
 /**
- * GET /api/sdr/bootstrap
+ * GET /api/sdr/bootstrap?secret=<CRON_SECRET>
  * Configura a org Nexo Brasil SDR no banco usando as variáveis de ambiente
- * já presentes na Vercel. Não exige senha.
- * Idempotente — seguro chamar várias vezes.
+ * já presentes na Vercel. Idempotente — seguro chamar várias vezes.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { buildSdrSystemPrompt } from "@/lib/ai/sdr/prompt";
 import { SDR_EMPTY_SESSION } from "@/lib/ai/sdr/types";
 
 const ORG_NAME = "Nexo Brasil SDR";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const secret = req.nextUrl.searchParams.get("secret");
+  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "";
   const wabaId = process.env.META_WHATSAPP_WABA_ID;
   const accessToken = process.env.META_WHATSAPP_ACCESS_TOKEN;

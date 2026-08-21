@@ -3,13 +3,11 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { processSdrResponse } from "@/lib/ai/sdr/agent";
-import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
-import { cancelFollowUpJobs as _cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
-import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@/lib/manager/handler";
 import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
 import { isMaxOwnerNumber } from "@/lib/max/config";
@@ -444,17 +442,6 @@ async function runAIFlow(
     escalationThreshold?: number | null;
   },
 ): Promise<void> {
-  try {
-    const result = await orchestrateAIDecision({ conversationId, incomingMessage: userMessage });
-    if (result) {
-      console.log(`[Orchestrator] conv=${conversationId} action=${result.action} state=${result.targetState}`);
-    } else {
-      console.warn(`[Orchestrator] returned null for conv=${conversationId} — proceeding to agent`);
-    }
-  } catch (e) {
-    console.warn(`[Orchestrator] error (non-fatal) for conv=${conversationId}:`, e);
-  }
-
   // SDR mode: systemPrompt starts with "[SDR]" → dedicated qualification agent
   if (agent.systemPrompt?.trimStart().startsWith("[SDR]")) {
     await processSdrResponse(conversationId, userMessage, agent, incomingMessageId);

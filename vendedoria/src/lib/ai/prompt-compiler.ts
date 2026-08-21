@@ -453,26 +453,3 @@ export class PromptCompiler {
 }
 
 export const promptCompiler = new PromptCompiler();
-
-// Async helper used by orchestrator / responder
-export async function compilePrompt(
-  _conversationId: string,
-  history: Array<{ role: "user" | "assistant"; content: string }>,
-  _options?: { action?: string },
-): Promise<CompiledPrompt> {
-  const { prisma } = await import("@/lib/prisma/client");
-  const config = await prisma.agentConfig.findFirst();
-  return promptCompiler.compile({
-    basePersonaPrompt: config?.currentPrompt ?? "",
-    aiConfig: null,
-    activeProducts: [],
-    businessHours: { hour: new Date().getHours(), dayOfWeek: new Date().getDay() },
-    collectedData: {},
-    recentMessages: history,
-    leadState: null,
-    messageCount: history.length,
-    isFirstInteraction: history.length <= 1,
-    etapa: "NOVO",
-    detectedProducts: [],
-  });
-}

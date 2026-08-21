@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma/client";
 import { callOpenAI, callAnthropic, callGemini } from "@/lib/ai/llm-client";
 import { sendWhatsAppMessage, simulateTypingDelay } from "@/lib/whatsapp/send";
+import { detectDesinteresse } from "@/lib/ai/agent";
+import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { buildSdrSystemPrompt } from "./prompt";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
@@ -179,11 +181,39 @@ export async function processSdrResponse(
     return;
   }
 
+  // ── Guards de segurança — mesmos do agente padrão ────────────────────────────
+  if (conversation.lead.status === "ESCALATED") {
+    console.log(`[SDR] Conv ${conversationId} já está ESCALATED — ignorando`);
+    return;
+  }
+  if (conversation.humanTakeover) {
+    console.log(`[SDR] humanTakeover=true — ignorando conv ${conversationId}`);
+    return;
+  }
+
   const lead = conversation.lead;
   const provider = conversation.provider;
   const phone = lead.phoneNumber;
   const token = provider.accessToken ?? undefined;
   const phoneNumberId = provider.businessPhoneNumberId;
+
+  if (detectDesinteresse(userMessage)) {
+    console.log(`[SDR] Desinteresse/opt-out detectado — encerrando conv ${conversationId}`);
+    await prisma.lead.update({ where: { id: lead.id }, data: { status: "BLOCKED" } }).catch(() => {});
+    await prisma.conversationFollowUp.updateMany({
+      where: { conversationId, status: "ACTIVE" },
+      data: { status: "OPT_OUT" },
+    }).catch(() => {});
+    await cancelFollowUpJobs(conversationId).catch(() => {});
+    const session = await loadSdrSession(conversationId);
+    await saveSdrSession(conversationId, { ...SDR_EMPTY_SESSION, ...session, mode: "SDR", status: "fora" });
+    try {
+      await sendWhatsAppMessage(phoneNumberId, phone, "Tudo bem, sem problema. Qualquer coisa é só chamar aqui.", token);
+    } catch (e) {
+      console.error("[SDR] Erro ao enviar confirmação de opt-out:", e);
+    }
+    return;
+  }
 
   // ── Carregar sessão SDR ─────────────────────────────────────────────────────
   const session = await loadSdrSession(conversationId);

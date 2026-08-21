@@ -138,7 +138,10 @@ function fallbackFollowupMessage(step: number, totalSteps: number, name: string 
   ];
 }
 
+export const maxDuration = 60;
+
 export async function GET(req: Request) {
+  const inicio = Date.now();
   const auth = req.headers.get("authorization");
   const secret = new URL(req.url).searchParams.get("secret");
   if (!process.env.CRON_SECRET || (auth !== `Bearer ${process.env.CRON_SECRET}` && secret !== process.env.CRON_SECRET)) {
@@ -163,6 +166,12 @@ export async function GET(req: Request) {
   results.checked = due.length;
 
   for (const fu of due) {
+    // Deixa ~10s de folga pro fim da invocação — os pendentes ficam com
+    // nextSendAt já vencido e são pegos na próxima chamada do cron.
+    if (Date.now() - inicio > 50_000) {
+      console.warn(`[FollowUp] Orçamento de tempo esgotado — ${results.sent} enviados, restam itens para a próxima execução`);
+      break;
+    }
     try {
       const messages = await prisma.whatsappMessage.findMany({
         where: { conversationId: fu.conversationId },

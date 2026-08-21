@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { invalidateOpenAIKeyCache } from "@/lib/max/openai";
+import { auth } from "@/lib/auth";
 
 function mask(key: string): string {
   if (key.length <= 8) return "••••";
@@ -14,6 +15,11 @@ function mask(key: string): string {
 }
 
 export async function GET() {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const cred = await prisma.integrationCredential.findUnique({
     where: { provider: "OPENAI" },
     select: { refreshToken: true, updatedAt: true },

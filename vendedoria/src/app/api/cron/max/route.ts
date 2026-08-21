@@ -12,7 +12,8 @@ import {
 } from "@/lib/max/crons/briefing";
 import { prisma } from "@/lib/prisma/client";
 
-export const maxDuration = 120;
+// Teto do plano Hobby da Vercel é 60s — 120s seria descartado silenciosamente.
+export const maxDuration = 60;
 
 async function tryDedup(chave: string): Promise<boolean> {
   try {

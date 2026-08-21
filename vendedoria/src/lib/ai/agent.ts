@@ -248,7 +248,7 @@ function detectHardEscalation(
 
 // ── TASK 2: Desinteresse explícito (Anti-Zumbi) ──────────────────────────────
 // Detecta sinais claros de rejeição/opt-out. Não confunde com objeção de preço.
-function detectDesinteresse(message: string): boolean {
+export function detectDesinteresse(message: string): boolean {
   const n = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
   const msg = n(message);
@@ -946,8 +946,11 @@ export async function processAIResponse(
         `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
         `_Organizar entrega e encaminhar motoboy._`;
 
-      // Tenta enviar — retry 30s → 2min se falhar
-      const enviarPassagem = async (tentativa = 1) => {
+      // Retry síncrono dentro da mesma invocação — setTimeout de minutos não
+      // sobrevive ao fim da função serverless, então o backoff precisa caber
+      // no orçamento da requisição atual (poucos segundos, não minutos).
+      let passagemEnviada = false;
+      for (let tentativa = 1; tentativa <= 3 && !passagemEnviada; tentativa++) {
         try {
           await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
           await prisma.ownerNotification.create({
@@ -956,16 +959,19 @@ export async function processAIResponse(
           await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
           await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
           console.log(`[AI Agent] PASSAGEM enviada com sucesso (tentativa ${tentativa})`);
+          passagemEnviada = true;
         } catch (e) {
           console.error(`[AI Agent] PASSAGEM falhou tentativa ${tentativa}:`, e);
-          if (tentativa === 1) {
-            setTimeout(() => enviarPassagem(2), 30_000);
-          } else if (tentativa === 2) {
-            setTimeout(() => enviarPassagem(3), 120_000);
-          }
+          if (tentativa < 3) await new Promise((r) => setTimeout(r, 2_000 * tentativa));
         }
-      };
-      await enviarPassagem();
+      }
+      if (!passagemEnviada) {
+        await notificarErroCritico(
+          `Falha ao enviar passagem de pedido após 3 tentativas — conv ${conversationId}`,
+          conversation.provider.businessPhoneNumberId,
+          token,
+        );
+      }
 
       // Confirma ao cliente
       await sendWhatsAppMessage(

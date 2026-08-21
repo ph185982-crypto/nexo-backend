@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { invalidateRapidApiKeyCache } from "@/lib/prospeccao/sourcing";
+import { auth } from "@/lib/auth";
 
 const RAPIDAPI_HOST = "local-business-data.p.rapidapi.com";
 
@@ -16,6 +17,11 @@ function mask(key: string): string {
 }
 
 export async function GET() {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const cred = await prisma.integrationCredential.findUnique({
     where: { provider: "RAPIDAPI" },
     select: { refreshToken: true, updatedAt: true },
@@ -33,6 +39,11 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   let key: string | undefined;
   try {
     const body = await req.json() as { key?: string };

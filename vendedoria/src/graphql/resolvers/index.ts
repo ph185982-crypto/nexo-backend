@@ -1049,6 +1049,10 @@ export const resolvers = {
         data: { status: "ACTIVE" },
         include: { recipients: { select: { status: true } } },
       });
+      const { enfileirar } = await import("@/lib/jobs/fila");
+      enfileirar("/api/campaign/worker").catch((e) =>
+        console.error("[startCampaign] Falha ao acordar o worker:", e),
+      );
       return {
         ...campaign,
         totalRecipients: campaign.recipients.length,

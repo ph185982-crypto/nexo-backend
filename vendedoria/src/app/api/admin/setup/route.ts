@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import bcrypt from "bcryptjs";
 
 // Cria ou reseta o usuário admin.
 // - Sem secret: funciona apenas se não existir NENHUM usuário no banco (first-run)
 // - Com secret: GET /api/admin/setup?secret=<CRON_SECRET>
+// A senha é sempre gerada aleatoriamente e devolvida uma única vez na resposta —
+// nunca fica hardcoded no código-fonte.
 export async function GET(req: Request) {
   const secret = new URL(req.url).searchParams.get("secret");
 
   const userCount = await prisma.user.count();
-  const secretOk = process.env.CRON_SECRET && secret === process.env.CRON_SECRET;
+  const secretOk = !!process.env.CRON_SECRET && secret === process.env.CRON_SECRET;
   const firstRun = userCount === 0;
 
   if (!secretOk && !firstRun) {
@@ -20,7 +23,7 @@ export async function GET(req: Request) {
   }
 
   const email = "admin@nexovendas.com";
-  const password = "Nexo@2025";
+  const password = randomBytes(12).toString("base64url");
   const hashed = await bcrypt.hash(password, 10);
 
   await prisma.user.upsert({
@@ -29,16 +32,10 @@ export async function GET(req: Request) {
     create: { name: "Administrador", email, password: hashed, role: "ADMIN" },
   });
 
-  await prisma.user.upsert({
-    where: { email: "admin@vendedoria.com" },
-    update: { password: hashed },
-    create: { name: "Administrador", email: "admin@vendedoria.com", password: hashed, role: "ADMIN" },
-  });
-
   return NextResponse.json({
     ok: true,
     email,
     password,
-    message: "Admin criado/resetado. Acesse /login com as credenciais acima.",
+    message: "Admin criado/resetado. Guarde essa senha agora — ela não é salva em texto puro em lugar nenhum. Acesse /login com as credenciais acima.",
   });
 }
