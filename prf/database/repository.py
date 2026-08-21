@@ -874,19 +874,31 @@ class PRFRepository:
         )
 
     async def complete_mission_block(self, block_id: UUID) -> dict:
-        await self._execute(
+        """Marca o bloco como concluído e soma um em blocks_done — só na
+        primeira vez.
+
+        Antes, o UPDATE não checava se o bloco já estava concluído: um
+        reenvio (duplo toque, corrida de rede, o app tentando de novo depois
+        de um tempo de resposta lento) incrementava blocks_done outra vez sem
+        blocks_total acompanhar, e o anel de progresso passava de 100% — foi
+        exatamente o que apareceu na tela como "200%". O WHERE abaixo só deixa
+        a primeira chamada valer; reenvios devolvem o estado atual sem
+        contar de novo.
+        """
+        block = await self._fetchrow(
             """UPDATE mission_blocks SET is_completed = TRUE, completed_at = NOW()
-               WHERE id = $1""",
+               WHERE id = $1 AND is_completed = FALSE
+               RETURNING *""",
             block_id,
         )
-        block = await self._fetchrow("SELECT * FROM mission_blocks WHERE id = $1", block_id)
         if block:
             await self._execute(
                 """UPDATE daily_missions SET blocks_done = blocks_done + 1
                    WHERE id = $1""",
                 block["mission_id"],
             )
-        return block
+            return block
+        return await self._fetchrow("SELECT * FROM mission_blocks WHERE id = $1", block_id)
 
     async def complete_mission(self, mission_id: UUID, actual_mins: int, xp: int):
         await self._execute(

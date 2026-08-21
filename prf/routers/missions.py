@@ -98,7 +98,11 @@ async def complete_block(
     if mission:
         total = mission["blocks_total"]
         done = mission["blocks_done"]
-        if done >= total and total > 0:
+        # `mission["status"] != "completed"` é o que impede o prêmio de bater
+        # de novo: sem essa checagem, qualquer chamada repetida a este
+        # endpoint depois que a missão já tinha fechado (reenvio, corrida de
+        # rede) voltava a somar os 50 XP e a contar a sequência outra vez.
+        if done >= total and total > 0 and mission["status"] != "completed":
             xp = 50
             await repo.complete_mission(mission["id"], body.time_spent_mins or 0, xp)
             await repo.add_xp(user_id, xp, "mission_complete")

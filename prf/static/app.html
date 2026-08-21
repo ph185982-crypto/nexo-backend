@@ -1858,7 +1858,10 @@ function viewDashboard() {
   const mTotal = mission ? (mission.blocks_total || mBlocks.length) : 0;
   const mDone = mission ? (mission.blocks_done || 0) : 0;
   const isRestDay = mission && mission.estimated_mins === 0 && (!mBlocks.length || mBlocks.every(b => b.block_type === 'podcast' || b.block_type === 'podcast_drill'));
-  const mPct = mTotal > 0 ? Math.round(mDone / mTotal * 100) : 0;
+  // Math.min protege o anel mesmo se algum dado antigo tiver ficado
+  // inconsistente (ver o fix de complete_mission_block): a barra nunca
+  // deve passar de 100%, ponto.
+  const mPct = mTotal > 0 ? Math.min(100, Math.round(mDone / mTotal * 100)) : 0;
 
   const motivational = d.streak >= 7 ? 'você é consistente' :
     d.streak >= 3 ? 'continue firme' :
@@ -1953,7 +1956,7 @@ function viewDashboard() {
           <span class="ring-text">${mPct}%</span>
         </div>` : ''}
       </div>
-      ${mission && mDone === 0 && !missionDone && !mission.carried_over ? `<button class="mission-regen-btn" onclick="regenerateMission()">Gerar nova missão de hoje</button>` : ''}
+      ${mission && mBlocks.length ? `<button class="mission-regen-btn" onclick="confirmSkipMission()">Pular para a próxima missão</button>` : ''}
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
       mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => missionTaskRow(b, i)).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
       ${missionDone ? `<div class="mission-complete-banner"><span>Parabéns! Volte amanhã para a próxima missão.</span></div>` : ''}
@@ -3453,12 +3456,23 @@ async function loadMission() {
   }
   render();
 }
+// Escape manual: pular a missão atual (concluída, em andamento ou herdada de
+// um dia anterior) e puxar uma nova para hoje. `force=true` já resolve isso
+// sozinho — se ainda existisse pendência de um dia ANTERIOR ao de hoje, o
+// backend continuaria herdando ela em vez de deixar fugir (regra de que a
+// missão só acaba quando concluída); o que este botão pula é só a instância
+// de HOJE, que é exatamente o gatilho manual que faltava.
+function confirmSkipMission() {
+  if (confirm('Pular esta missão e gerar uma nova para hoje? O progresso das etapas atuais não conta mais.')) {
+    regenerateMission();
+  }
+}
 async function regenerateMission() {
   S.mission = null; render();
   try { S.mission = await api('/api/prf/missions/today?force=true'); }
-  catch (e) { toast('Erro ao gerar nova missão', 'error'); }
+  catch (e) { toast('Erro ao gerar nova missão', 'error'); render(); return; }
   render(); scrollTop();
-  toast('Missão do dia atualizada', 'success');
+  toast('Nova missão gerada', 'success');
 }
 async function startMissionBlock(blockIdx, type) {
   const b = S.mission?.blocks?.[blockIdx];
