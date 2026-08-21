@@ -50,7 +50,19 @@ export async function GET(req: Request) {
       }),
     });
     const updateData = await updateRes.json();
-    results[phone.display_phone_number] = { phoneId: phone.id, status: updateRes.status, response: updateData };
+
+    // Verifica imediatamente o resultado (leitura fresca, sem cache)
+    const verifyRes = await fetch(
+      `https://graph.facebook.com/v21.0/${phone.id}?fields=webhook_configuration&access_token=${token}`,
+    );
+    const verifyData = await verifyRes.json();
+
+    results[phone.display_phone_number] = {
+      phoneId: phone.id,
+      updateStatus: updateRes.status,
+      updateResponse: updateData,
+      verifyResponse: verifyData,
+    };
   }
 
   return NextResponse.json({ callbackUri, results }, { status: 200 });
