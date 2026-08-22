@@ -5,7 +5,7 @@ export async function GET() {
   const org = await prisma.whatsappBusinessOrganization.findFirst({
     where: { tipo: "PROSPECCAO" },
     include: {
-      providers: {
+      accounts: {
         include: { agent: { select: { id: true, displayName: true, status: true, aiProvider: true, aiModel: true } } },
       },
     },
@@ -13,7 +13,7 @@ export async function GET() {
 
   if (!org) return NextResponse.json({ ok: false, error: "Org SDR não encontrada no banco" });
 
-  const provider = org.providers[0];
+  const provider = org.accounts[0];
   return NextResponse.json({
     ok: true,
     orgId: org.id,
