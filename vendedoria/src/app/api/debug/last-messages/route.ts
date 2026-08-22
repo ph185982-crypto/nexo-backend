@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         select: {
           id: true,
           humanTakeover: true,
-          providerId: true,
+          provider: { select: { id: true } },
           lead: { select: { phoneNumber: true, status: true } },
         },
       },
