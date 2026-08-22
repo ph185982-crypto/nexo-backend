@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
@@ -12,6 +12,11 @@ import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@
 import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
 import { isMaxOwnerNumber } from "@/lib/max/config";
 import { handleMaxMessage } from "@/lib/max/responder";
+
+// Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
+// default da função para terminar — a Vercel pode congelar a invocação assim que
+// a resposta HTTP é enviada, então todo esse trabalho roda dentro de after().
+export const maxDuration = 60;
 
 // ─── Webhook Verification (GET) ──────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -379,20 +384,22 @@ async function handleIncomingMessage(
 
   if (isMaxOwnerNumber(phone)) {
     console.log(`[Webhook] Max owner message | from=${phone} → Max assistant`);
-    handleMaxMessage(
-      {
-        text: message.text?.body ?? content,
-        isAudio,
-        media: inboundMediaId ? {
-          mediaId: inboundMediaId,
-          mimeType: message.image?.mime_type ?? message.document?.mime_type ?? "application/octet-stream",
-          type: message.type as "image" | "document" | "audio",
-          caption: inboundCaption,
-          filename: message.document?.filename,
-        } : undefined,
-      },
-      providerConfig,
-    ).catch((e) => console.error("[Webhook] Max handler error:", e));
+    after(() =>
+      handleMaxMessage(
+        {
+          text: message.text?.body ?? content,
+          isAudio,
+          media: inboundMediaId ? {
+            mediaId: inboundMediaId,
+            mimeType: message.image?.mime_type ?? message.document?.mime_type ?? "application/octet-stream",
+            type: message.type as "image" | "document" | "audio",
+            caption: inboundCaption,
+            filename: message.document?.filename,
+          } : undefined,
+        },
+        providerConfig,
+      ).catch((e) => console.error("[Webhook] Max handler error:", e)),
+    );
     return;
   }
 
@@ -407,12 +414,14 @@ async function handleIncomingMessage(
       managerMedia = { mediaId: message.document.id, mimeType: message.document.mime_type ?? "application/pdf", type: "document" };
     }
 
-    handleManagerMessage(
-      msgText,
-      { businessPhoneNumberId: providerConfig.businessPhoneNumberId, organizationId: providerConfig.organizationId, accessToken: providerConfig.accessToken },
-      phone,
-      managerMedia,
-    ).catch((e) => console.error("[Webhook] Manager handler error:", e));
+    after(() =>
+      handleManagerMessage(
+        msgText,
+        { businessPhoneNumberId: providerConfig.businessPhoneNumberId, organizationId: providerConfig.organizationId, accessToken: providerConfig.accessToken },
+        phone,
+        managerMedia,
+      ).catch((e) => console.error("[Webhook] Manager handler error:", e)),
+    );
     return;
   }
 
@@ -422,8 +431,10 @@ async function handleIncomingMessage(
   }
 
   const agentConfig = providerConfig.agent!;
-  runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
-    console.error("[Webhook] AI flow error:", e),
+  after(() =>
+    runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
+      console.error("[Webhook] AI flow error:", e),
+    ),
   );
 }
 
