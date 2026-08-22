@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma/client";
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get("secret");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  if (!process.env.DEBUG_DIAG_SECRET2 || secret !== process.env.DEBUG_DIAG_SECRET2) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
