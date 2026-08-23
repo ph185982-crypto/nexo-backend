@@ -908,8 +908,12 @@ export async function processAIResponse(
     }
 
     // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
+    // Exclusivo do fluxo VENDAS (pedido + entrega). Em PROSPECCAO os mesmos campos
+    // genéricos (endereço/horário/pagamento/nome) podem aparecer numa conversa B2B
+    // por coincidência e não devem disparar uma "passagem de pedido" — o handoff de
+    // prospecção usa [QUALIFICADO]/[REUNIAO_AGENDADA], tratados mais abaixo.
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
-    const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
+    const dadosCompletos = orgTipo === "VENDAS" && temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
     const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
     if (dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);

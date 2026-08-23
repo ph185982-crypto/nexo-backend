@@ -47,19 +47,46 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Colunas Kanban ───────────────────────────────────────────────────────────
+  // Base (triagem/escalação manual/perda) + funil automático usado por
+  // pipeline-mover.ts (disparo de prospecção, follow-ups e handoff da IA:
+  // [QUALIFICADO] → PROPOSTA, [REUNIAO_AGENDADA] → REUNIAO_AGENDADA, etc).
+  // Loop idempotente: cria só o que faltar, sem tocar em colunas já existentes
+  // (preserva customizações feitas pelo usuário via CRM).
   const existingCol = await prisma.kanbanColumn.findFirst({ where: { organizationId: org.id } });
+  const desiredColumns = [
+    { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, color: "#6B7280" },
+    { name: "Em qualificação", order: 1, type: "CUSTOM", color: "#3B82F6" },
+    { name: "Qualificados", order: 2, type: "CUSTOM", color: "#10B981" },
+    { name: "Mornos", order: 3, type: "CUSTOM", color: "#F59E0B" },
+    { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, color: "#8B5CF6" },
+    { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, color: "#EF4444" },
+    // ── Funil automático (pipeline-mover.ts) ──────────────────────────────────
+    { name: "1º Contato",       order: 6,  type: "CONTATO_1",       color: "#0EA5E9" },
+    { name: "2º Contato",       order: 7,  type: "CONTATO_2",       color: "#0EA5E9" },
+    { name: "3º Contato",       order: 8,  type: "CONTATO_3",       color: "#0EA5E9" },
+    { name: "Proposta",         order: 9,  type: "PROPOSTA",        color: "#14B8A6" },
+    { name: "Reunião Agendada", order: 10, type: "REUNIAO_AGENDADA", color: "#6366F1" },
+    { name: "Em Contrato",      order: 11, type: "CONTRATO",        color: "#A855F7" },
+    { name: "Ganho",            order: 12, type: "GANHO",           color: "#22C55E" },
+  ];
   if (!existingCol) {
     await prisma.kanbanColumn.createMany({
-      data: [
-        { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, organizationId: org.id, color: "#6B7280" },
-        { name: "Em qualificação", order: 1, type: "CUSTOM", organizationId: org.id, color: "#3B82F6" },
-        { name: "Qualificados", order: 2, type: "CUSTOM", organizationId: org.id, color: "#10B981" },
-        { name: "Mornos", order: 3, type: "CUSTOM", organizationId: org.id, color: "#F59E0B" },
-        { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, organizationId: org.id, color: "#8B5CF6" },
-        { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, organizationId: org.id, color: "#EF4444" },
-      ],
+      data: desiredColumns.map((c) => ({ ...c, organizationId: org.id })),
     });
     console.log("[SDR Bootstrap] Colunas Kanban criadas");
+  } else {
+    // Org já bootstrapada antes — garante que os tipos do funil automático existem
+    const existingTypes = new Set(
+      (await prisma.kanbanColumn.findMany({ where: { organizationId: org.id }, select: { type: true } }))
+        .map((c) => c.type),
+    );
+    const missing = desiredColumns.filter((c) => !existingTypes.has(c.type));
+    if (missing.length > 0) {
+      await prisma.kanbanColumn.createMany({
+        data: missing.map((c) => ({ ...c, organizationId: org.id })),
+      });
+      console.log(`[SDR Bootstrap] Colunas Kanban do funil automático adicionadas: ${missing.map((c) => c.type).join(", ")}`);
+    }
   }
 
   // ── Provider config ──────────────────────────────────────────────────────────
