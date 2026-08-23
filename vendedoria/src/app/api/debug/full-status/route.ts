@@ -11,7 +11,7 @@ export async function GET() {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const [providers, orgs, totalLeads, totalConversations, totalMessages, escalatedLeads, closedLeads, ownerNotifs, recentMsgs] =
+  const [providers, orgs, kanbanColumns, totalLeads, totalConversations, totalMessages, escalatedLeads, closedLeads, ownerNotifs, recentMsgs] =
     await Promise.all([
       prisma.whatsappProviderConfig.findMany({
         select: {
@@ -22,6 +22,10 @@ export async function GET() {
       }),
       prisma.whatsappBusinessOrganization.findMany({
         select: { id: true, name: true, tipo: true, status: true },
+      }),
+      prisma.kanbanColumn.findMany({
+        select: { id: true, name: true, type: true, order: true, organizationId: true, isDefaultEntry: true },
+        orderBy: { order: "asc" },
       }),
       prisma.lead.count(),
       prisma.whatsappConversation.count(),
@@ -63,6 +67,7 @@ export async function GET() {
   return NextResponse.json({
     providers,
     organizations: orgs,
+    kanbanColumns,
     duplicatePhoneNumbers,
     counts: { totalLeads, totalConversations, totalMessages },
     escalatedLeads,
