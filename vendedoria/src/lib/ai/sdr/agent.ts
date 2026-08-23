@@ -304,9 +304,19 @@ export async function processSdrResponse(
           console.error("[SDR] Erro ao enviar bastão:", e)
         );
       }
+      const escalatedColumn = await prisma.kanbanColumn.findFirst({
+        where: { organizationId: provider.organizationId, type: "ESCALATED" },
+      }).catch(() => null);
       await prisma.lead.update({
         where: { id: lead.id },
-        data: { status: "ESCALATED" },
+        data: {
+          status: "ESCALATED",
+          ...(escalatedColumn ? { kanbanColumnId: escalatedColumn.id } : {}),
+          lastActivityAt: now,
+        },
+      }).catch(() => {});
+      await prisma.leadActivity.create({
+        data: { leadId: lead.id, type: "STATUS_CHANGE", description: "Lead escalado para especialista pelo SDR", createdBy: "AI_AGENT" },
       }).catch(() => {});
       // Cancela follow-ups pendentes
       await prisma.conversationFollowUp.updateMany({
