@@ -8,12 +8,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { buildSdrSystemPrompt } from "@/lib/ai/sdr/prompt";
 import { SDR_EMPTY_SESSION } from "@/lib/ai/sdr/types";
+import { auth } from "@/lib/auth";
 
 const ORG_NAME = "Nexo Brasil SDR";
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get("secret");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  const authorizedBySecret = !!process.env.CRON_SECRET && secret === process.env.CRON_SECRET;
+  const authorizedBySession = !authorizedBySecret && !!(await auth())?.user;
+  if (!authorizedBySecret && !authorizedBySession) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
