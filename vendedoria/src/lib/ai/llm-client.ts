@@ -8,6 +8,8 @@ export interface LLMMessage {
 export interface LLMCallOptions {
   maxTokens?: number;
   temperature?: number;
+  /** OpenAI only — forces the API to guarantee syntactically valid JSON output. */
+  responseFormat?: "json_object";
 }
 
 // ─── Provider callers ────────────────────────────────────────────────────────
@@ -29,6 +31,7 @@ export async function callOpenAI(
         messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }],
         max_tokens: opts.maxTokens ?? 400,
         temperature: opts.temperature ?? 0.85,
+        ...(opts.responseFormat ? { response_format: { type: opts.responseFormat } } : {}),
       }),
     });
     if (!res.ok) { console.error("[OpenAI]", await res.text()); return null; }

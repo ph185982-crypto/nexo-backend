@@ -9,6 +9,47 @@ import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types
 
 const HANDOFF_NUMBER = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 
+// Falha do LLM (sem resposta ou JSON inválido) nunca deve deixar o cliente sem
+// retorno nem passar em silêncio para o dono — manda uma mensagem de espera pro
+// cliente e um alerta pro dono no WhatsApp + registro no CRM.
+async function notifySdrFailure(
+  conversationId: string,
+  phoneNumberId: string,
+  customerPhone: string,
+  token: string | undefined,
+  organizationId: string,
+  leadName: string | null,
+  detalhe: string,
+): Promise<void> {
+  const fallbackMsg = "opa, tive um probleminha aqui pra processar sua mensagem — já já te respondo, um segundo 🙏";
+  try {
+    await sendWhatsAppMessage(phoneNumberId, customerPhone, fallbackMsg, token);
+    await prisma.whatsappMessage.create({
+      data: { content: fallbackMsg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+    });
+  } catch (e) {
+    console.error("[SDR] Erro ao enviar mensagem de espera ao cliente:", e);
+  }
+  try {
+    await sendWhatsAppMessage(
+      phoneNumberId, HANDOFF_NUMBER,
+      `⚠️ SDR falhou ao responder\n\nCliente: ${leadName ?? customerPhone} (${customerPhone})\nMotivo: ${detalhe}\n\nO cliente recebeu uma mensagem de espera automática — pode ser que precise de atendimento manual.`,
+      token,
+    );
+  } catch (e) {
+    console.error("[SDR] Erro ao notificar dono da falha:", e);
+  }
+  await prisma.ownerNotification.create({
+    data: {
+      type: "INFO",
+      title: `⚠️ SDR falhou ao responder | ${leadName ?? customerPhone}`,
+      body: detalhe,
+      organizationId,
+      conversationId,
+    },
+  }).catch(() => {});
+}
+
 // Formato de handoff enviado ao especialista
 function formatHandoffMessage(phone: string, session: SDRSession): string {
   const canais = session.canais_atuais.length > 0 ? session.canais_atuais.join(", ") : "não informado";
@@ -43,25 +84,29 @@ async function callSdrLLM(
   const provider = aiProvider?.toUpperCase();
   const model = aiModel ?? "gpt-4o";
 
+  // maxTokens 1000 (era 600) — mensagens longas do cliente (ex.: áudio transcrito)
+  // levam o modelo a preencher mais campos de updateSession + mais balões de texto,
+  // e um JSON cortado no meio nunca é parseável. response_format=json_object garante
+  // que a OpenAI só devolva JSON sintaticamente válido (sem texto solto antes/depois).
   if (provider === "OPENAI" && process.env.OPENAI_API_KEY) {
-    const r = await callOpenAI(systemPrompt, history, userMessage, model, { maxTokens: 600, temperature: 0.7 });
+    const r = await callOpenAI(systemPrompt, history, userMessage, model, { maxTokens: 1000, temperature: 0.7, responseFormat: "json_object" });
     if (r) return r;
   }
   if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
-    const r = await callAnthropic(systemPrompt, history, userMessage, model, { maxTokens: 600 });
+    const r = await callAnthropic(systemPrompt, history, userMessage, model, { maxTokens: 1000 });
     if (r) return r;
   }
   // Fallback chain
   if (process.env.OPENAI_API_KEY) {
-    const r = await callOpenAI(systemPrompt, history, userMessage, "gpt-4o", { maxTokens: 600, temperature: 0.7 });
+    const r = await callOpenAI(systemPrompt, history, userMessage, "gpt-4o", { maxTokens: 1000, temperature: 0.7, responseFormat: "json_object" });
     if (r) return r;
   }
   if (process.env.ANTHROPIC_API_KEY) {
-    const r = await callAnthropic(systemPrompt, history, userMessage, "claude-haiku-4-5-20251001", { maxTokens: 600 });
+    const r = await callAnthropic(systemPrompt, history, userMessage, "claude-haiku-4-5-20251001", { maxTokens: 1000 });
     if (r) return r;
   }
   if (process.env.GOOGLE_AI_API_KEY) {
-    const r = await callGemini(systemPrompt, history, userMessage, "gemini-2.0-flash-lite", { maxTokens: 600 });
+    const r = await callGemini(systemPrompt, history, userMessage, "gemini-2.0-flash-lite", { maxTokens: 1000 });
     if (r) return r;
   }
   return null;
@@ -252,12 +297,14 @@ export async function processSdrResponse(
 
   if (!raw) {
     console.error("[SDR] Nenhuma resposta do LLM para conv:", conversationId);
+    await notifySdrFailure(conversationId, phoneNumberId, phone, token, provider.organizationId, lead.profileName, "LLM não respondeu após 3 tentativas");
     return;
   }
 
   const parsed = parseSdrResponse(raw);
   if (!parsed) {
     console.error("[SDR] Falha ao parsear resposta do LLM:", raw.substring(0, 200));
+    await notifySdrFailure(conversationId, phoneNumberId, phone, token, provider.organizationId, lead.profileName, `Resposta do LLM não era JSON válido: ${raw.substring(0, 200)}`);
     return;
   }
 
