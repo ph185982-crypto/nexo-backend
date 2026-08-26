@@ -1,13 +1,3 @@
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import crypto from "crypto";
-
-const AUDIO_DIR = path.join(process.cwd(), "public", "audios");
-
-async function ensureDir() {
-  await mkdir(AUDIO_DIR, { recursive: true });
-}
-
 async function gerarAudioElevenLabs(text: string): Promise<Buffer | null> {
   const apiKey = process.env.ELEVENLABS_API_KEY;
   if (!apiKey) return null;
@@ -60,35 +50,60 @@ async function gerarAudioOpenAI(text: string): Promise<Buffer | null> {
   return Buffer.from(await res.arrayBuffer());
 }
 
-export async function gerarAudio(text: string): Promise<string | null> {
-  const appUrl = (
-    process.env.RENDER_EXTERNAL_URL ??
-    process.env.NEXTAUTH_URL ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "")
-  ).replace(/\/$/, "");
-
-  if (!appUrl) {
-    console.error("[gerarAudio] Nenhuma URL pública configurada — não é possível gerar áudio");
-    return null;
-  }
-
+/**
+ * Gera áudio TTS e retorna os bytes em memória (mp3) — seguro para serverless.
+ * Vercel não permite escrever em disco fora de /tmp nem servir arquivos escritos
+ * em runtime a partir de /public (o build é imutável), então o caminho correto
+ * é enviar os bytes direto pra API de mídia do WhatsApp (uploadWhatsAppMedia)
+ * e mandar por media_id — sem depender de nenhuma URL pública própria.
+ */
+export async function gerarAudioBuffer(text: string): Promise<{ buffer: Buffer; mimeType: string } | null> {
   let audioBuffer = await gerarAudioElevenLabs(text);
-  if (!audioBuffer) {
-    console.log("[gerarAudio] ElevenLabs indisponível — tentando OpenAI TTS");
-    audioBuffer = await gerarAudioOpenAI(text);
+  if (audioBuffer) return { buffer: audioBuffer, mimeType: "audio/mpeg" };
+
+  console.log("[gerarAudio] ElevenLabs indisponível — tentando OpenAI TTS");
+  audioBuffer = await gerarAudioOpenAI(text);
+  if (audioBuffer) return { buffer: audioBuffer, mimeType: "audio/mpeg" };
+
+  console.error("[gerarAudio] Nenhum provedor TTS disponível");
+  return null;
+}
+
+/**
+ * Gera o áudio e já envia pro cliente via WhatsApp, salvando a mensagem no CRM
+ * com o media_id em `mediaUrl` (mesmo esquema usado para áudio recebido) — assim
+ * o áudio que a IA mandou também fica ouvível no painel de conversas.
+ */
+export async function gerarESalvarAudioWhatsApp(
+  text: string,
+  conversationId: string,
+  phoneNumberId: string,
+  to: string,
+  accessToken: string | undefined,
+): Promise<boolean> {
+  const { prisma } = await import("@/lib/prisma/client");
+  const { uploadWhatsAppMedia, sendWhatsAppAudioById } = await import("@/lib/whatsapp/send");
+
+  const gerado = await gerarAudioBuffer(text);
+  if (!gerado) return false;
+
+  const uploaded = await uploadWhatsAppMedia(phoneNumberId, gerado.buffer, gerado.mimeType, "audio.mp3", accessToken);
+  if (!uploaded?.id) {
+    console.error("[gerarAudio] Upload pro WhatsApp falhou");
+    return false;
   }
 
-  if (!audioBuffer) {
-    console.error("[gerarAudio] Nenhum provedor TTS disponível");
-    return null;
-  }
-
-  await ensureDir();
-  const hash = crypto.createHash("md5").update(text).digest("hex").slice(0, 8);
-  const filename = `audio_${Date.now()}_${hash}.mp3`;
-  const filepath = path.join(AUDIO_DIR, filename);
-  await writeFile(filepath, audioBuffer);
-
-  return `${appUrl}/audios/${filename}`;
+  await sendWhatsAppAudioById(phoneNumberId, to, uploaded.id, accessToken);
+  await prisma.whatsappMessage.create({
+    data: {
+      content: `[Áudio TTS] ${text.substring(0, 200)}`,
+      type: "AUDIO",
+      role: "ASSISTANT",
+      sentAt: new Date(),
+      status: "SENT",
+      mediaUrl: uploaded.id,
+      conversationId,
+    },
+  }).catch(() => {});
+  return true;
 }

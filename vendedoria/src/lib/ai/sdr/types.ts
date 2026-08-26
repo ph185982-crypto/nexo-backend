@@ -29,6 +29,8 @@ export interface SDRSession {
 export interface SDRMessage {
   text: string;
   delay: number;
+  /** true → esse balão é enviado como nota de voz (TTS) em vez de texto. */
+  audio?: boolean;
 }
 
 export interface SDRLLMResponse {

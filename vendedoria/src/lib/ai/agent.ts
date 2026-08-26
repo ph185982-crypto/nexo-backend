@@ -1804,17 +1804,12 @@ export async function processAIResponse(
       const audioText = audioFlagMatch[1].trim();
       if (audioText) {
         try {
-          const { gerarAudio } = await import("@/lib/audio/gerar-audio");
-          const { sendWhatsAppAudio } = await import("@/lib/whatsapp/send");
-          const audioUrl = await gerarAudio(audioText);
-          if (audioUrl) {
-            await sendWhatsAppAudio(provider.businessPhoneNumberId, to, audioUrl, token);
-            await prisma.whatsappMessage.create({
-              data: { content: `[Áudio TTS] ${audioText.substring(0, 80)}`, type: "AUDIO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-            }).catch(() => {});
+          const { gerarESalvarAudioWhatsApp } = await import("@/lib/audio/gerar-audio");
+          const enviado = await gerarESalvarAudioWhatsApp(audioText, conversationId, provider.businessPhoneNumberId, to, token);
+          if (enviado) {
             console.log(`[AI Agent] ✅ Áudio TTS enviado: "${audioText.substring(0, 50)}"`);
           } else {
-            console.warn(`[AI Agent] ⚠️ gerarAudio retornou null para: "${audioText.substring(0, 50)}"`);
+            console.warn(`[AI Agent] ⚠️ Áudio TTS indisponível para: "${audioText.substring(0, 50)}"`);
           }
         } catch (e) {
           console.error("[AI Agent] ❌ Áudio TTS falhou:", e);
