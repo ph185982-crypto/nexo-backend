@@ -54,6 +54,13 @@ export async function GET() {
       }),
     ]);
 
+  const audioMessages = await prisma.whatsappMessage.findMany({
+    where: { type: "AUDIO" },
+    orderBy: { sentAt: "desc" },
+    take: 15,
+    select: { id: true, content: true, mediaUrl: true, sentAt: true, conversationId: true },
+  });
+
   // Detecta duplicidade: mesmo businessPhoneNumberId em mais de um provider
   const byPhone: Record<string, typeof providers> = {};
   for (const p of providers) {
@@ -74,5 +81,6 @@ export async function GET() {
     closedLeads,
     ownerNotifications: ownerNotifs,
     last10Messages: recentMsgs,
+    audioMessages,
   });
 }

@@ -239,7 +239,7 @@ async function handleIncomingMessage(
     }
   }
 
-  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
+  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id ?? mediaPayload?.id;
   const inboundCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
 
   if (inboundMediaId) {
