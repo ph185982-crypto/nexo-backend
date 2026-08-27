@@ -1109,6 +1109,8 @@ function ConversationsContent() {
                           {isMe && (
                             msg.status === "SENDING"
                               ? <Clock className="w-3 h-3 opacity-50" />
+                              : msg.status === "FAILED"
+                              ? <span title="Falha ao enviar — o cliente não recebeu esta mensagem" className="flex items-center gap-0.5 text-red-500"><AlertTriangle className="w-3 h-3" /></span>
                               : msg.status === "READ"
                               ? <CheckCheck className="w-3 h-3 text-blue-500" />
                               : <Check className="w-3 h-3 opacity-50" />

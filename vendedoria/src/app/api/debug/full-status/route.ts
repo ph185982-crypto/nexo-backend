@@ -50,7 +50,7 @@ export async function GET() {
       prisma.whatsappMessage.findMany({
         orderBy: { sentAt: "desc" },
         take: 10,
-        select: { id: true, role: true, content: true, sentAt: true, conversationId: true },
+        select: { id: true, role: true, content: true, sentAt: true, conversationId: true, status: true },
       }),
     ]);
 

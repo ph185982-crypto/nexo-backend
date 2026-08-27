@@ -860,6 +860,7 @@ export const resolvers = {
       });
 
       // Send via Meta WhatsApp API
+      let finalStatus: "SENT" | "FAILED" = "SENT";
       try {
         await sendWhatsAppMessage(
           conversation.provider.businessPhoneNumberId,
@@ -867,20 +868,16 @@ export const resolvers = {
           content,
           conversation.provider.accessToken ?? undefined
         );
-        // Update status to SENT
-        await prisma.whatsappMessage.update({
-          where: { id: message.id },
-          data: { status: "SENT" },
-        });
       } catch (err) {
         console.error("[sendWhatsappMessage] Meta API error:", err);
-        await prisma.whatsappMessage.update({
-          where: { id: message.id },
-          data: { status: "FAILED" },
-        });
+        finalStatus = "FAILED";
       }
+      await prisma.whatsappMessage.update({
+        where: { id: message.id },
+        data: { status: finalStatus },
+      });
 
-      return { ...message, status: "SENT" };
+      return { ...message, status: finalStatus };
     },
 
     sendWhatsappMedia: async (
