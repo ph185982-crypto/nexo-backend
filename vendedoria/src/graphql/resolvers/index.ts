@@ -768,11 +768,20 @@ export const resolvers = {
       ctx: ResolverContext
     ) => {
       await requireLeadAccess(ctx, leadId);
-      return prisma.lead.update({
+      const result = await prisma.lead.update({
         where: { id: leadId },
         data: { kanbanColumnId: columnId, lastActivityAt: new Date() },
         include: { kanbanColumn: true },
       });
+      // Auto-create diagnosis draft when moved to GANHO
+      if (result.kanbanColumn?.type === "GANHO") {
+        prisma.clientDiagnosis.upsert({
+          where: { leadId },
+          create: { leadId },
+          update: {},
+        }).catch(() => {});
+      }
+      return result;
     },
 
     updateLeadTags: async (

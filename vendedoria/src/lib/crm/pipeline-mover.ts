@@ -71,6 +71,16 @@ export async function moverLeadPorTipo(
     }).catch(() => {});
 
     console.log(`[PipelineMover] Lead ${leadId} → ${coluna.name} (${tipo})`);
+
+    // Ao mover para GANHO: cria rascunho do diagnóstico se ainda não existir
+    if (tipo === "GANHO") {
+      prisma.clientDiagnosis.upsert({
+        where: { leadId },
+        create: { leadId },
+        update: {},
+      }).catch(() => {});
+    }
+
     return true;
   } catch (e) {
     console.error(`[PipelineMover] Erro ao mover lead ${leadId} → ${tipo}:`, e);

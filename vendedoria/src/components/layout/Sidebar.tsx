@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
-  Settings, X, Zap, Radar, Wallet, ChevronLeft, ChevronRight,
+  Settings, X, Zap, Radar, Wallet, ChevronLeft, ChevronRight, Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -41,12 +41,13 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: "/crm/conversations", label: "Conversas",   icon: MessageSquare },
-  { href: "/crm/lead/kanban",   label: "CRM",         icon: Kanban },
-  { href: "/crm/prospeccao",    label: "Prospecções", icon: Radar },
-  { href: "/crm/calendar",      label: "Calendário",  icon: Calendar },
-  { href: "/crm/configure-agent", label: "Agente",    icon: Bot },
-  { href: "/crm/financeiro",    label: "Financeiro",  icon: Wallet },
+  { href: "/crm/conversations", label: "Conversas",       icon: MessageSquare },
+  { href: "/crm/lead/kanban",   label: "CRM",             icon: Kanban },
+  { href: "/crm/delivery",      label: "Funil de Entrega", icon: Trophy },
+  { href: "/crm/prospeccao",    label: "Prospecções",     icon: Radar },
+  { href: "/crm/calendar",      label: "Calendário",      icon: Calendar },
+  { href: "/crm/configure-agent", label: "Agente",        icon: Bot },
+  { href: "/crm/financeiro",    label: "Financeiro",      icon: Wallet },
 ];
 
 export function Sidebar({

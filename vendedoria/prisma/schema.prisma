@@ -261,9 +261,51 @@ model Lead {
   notes          LeadNote[]
   prospectLead   ProspectLead? @relation(fields: [prospectLeadId], references: [id])
   prospectLeadId String?
+  diagnosis      ClientDiagnosis?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
+}
+
+// ─── Funil de Entrega ──────────────────────────────────────────────────────
+
+model ClientDiagnosis {
+  id     String @id @default(cuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id])
+
+  // Blocos do formulário de diagnóstico (JSON livre por bloco)
+  comercialData   Json @default("{}")
+  produtoData     Json @default("{}")
+  marketingData   Json @default("{}")
+  operacaoData    Json @default("{}")
+  financeiroData  Json @default("{}")
+  priorizacaoData Json @default("[]") // array de items → gera cards no Backlog
+
+  isFinalized Boolean   @default(false)
+  finalizedAt DateTime?
+
+  cards DeliveryCard[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DeliveryCard {
+  id          String          @id @default(cuid())
+  diagnosisId String
+  diagnosis   ClientDiagnosis @relation(fields: [diagnosisId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?  @db.Text
+  pilar       String   @default("COMERCIAL") // COMERCIAL|PRODUTO|MARKETING|OPERACAO|FINANCEIRO|TECNOLOGIA
+  dataAlvo    DateTime?
+  responsavel String   @default("PEDRO")     // PEDRO | LAYANE | CLIENTE
+  column      String   @default("BACKLOG")   // DIAGNOSTICO|BACKLOG|ESSA_SEMANA|EM_ANDAMENTO|AGUARDANDO_CLIENTE|CONCLUIDO
+  order       Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LeadActivity {
