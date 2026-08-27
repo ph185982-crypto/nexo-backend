@@ -52,25 +52,26 @@ async function notifySdrFailure(
 
 // Formato de handoff enviado ao especialista
 function formatHandoffMessage(phone: string, session: SDRSession): string {
-  const canais = session.canais_atuais.length > 0 ? session.canais_atuais.join(", ") : "não informado";
-  const marketplace = session.marketplace_atual.length > 0 ? session.marketplace_atual.join(", ") : "nenhum";
-  const objecoes = session.objecoes_mencionadas.length > 0 ? session.objecoes_mencionadas.join(", ") : "nenhuma";
+  const canais: string[] = [];
+  if (session.canais_atuais.length > 0) canais.push(...session.canais_atuais);
+  if (session.tem_loja_fisica) canais.push("Loja física");
+  if (session.marketplace_atual.length > 0) canais.push(...session.marketplace_atual);
+  const canaisStr = canais.length > 0 ? canais.join(", ") : "não informado";
 
-  return `🎯 LEAD QUALIFICADO — NEXO BRASIL
+  return `🔥 NOVO LEAD — PASSAGEM DE BASTÃO
 
-Nome: ${session.nome || "não informado"}
-WhatsApp: ${phone}
-Canais atuais: ${canais}
-Tem loja física: ${session.tem_loja_fisica ? "sim" : "não"}
-Fatura (total): ${session.faturamento_total || "não informado"}
-Marketplace atual: ${marketplace}
-Problema principal: ${session.problema_principal || "não informado"}
-CNPJ: ${session.cnpj || "não tem ainda"}
-Opera: ${session.opera_com_equipe === true ? "com equipe" : session.opera_com_equipe === false ? "sozinho" : "não informado"}
-Disponibilidade: ${session.disponibilidade || "não informado"}
-Objeções: ${objecoes}
-Score: ${session.score} pts
-Produto indicado: ${session.produto_indicado || "a definir"}`;
+👤 Nome: ${session.nome || "não informado"}
+📱 WhatsApp: +${phone}
+⏰ Melhor período para contato: ${session.disponibilidade || "não informado"}
+
+💰 Faturamento: ${session.faturamento_total || "não informado"}
+🏪 Canais de atuação: ${canaisStr}
+🎯 Necessidade / Problema principal: ${session.problema_principal || "não informado"}
+
+${session.produto_indicado ? `✅ Produto indicado: ${session.produto_indicado}` : ""}
+${session.cnpj ? `📄 CNPJ: ${session.cnpj}` : ""}
+
+⚡ Ação: Entrar em contato no período informado para agendar diagnóstico gratuito (20 min).`;
 }
 
 // Chama o LLM com fallback chain
