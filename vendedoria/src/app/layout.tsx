@@ -33,10 +33,9 @@ export const viewport: Viewport = {
   // statusBarStyle é "black-translucent": sem viewportFit=cover o conteúdo
   // fica por baixo do notch e do home indicator no iPhone.
   viewportFit: "cover",
-  // Trava o zoom por duplo-toque/pinça dentro do app (comportamento de app
-  // nativo). O auto-zoom ao focar input é evitado via font-size 16px no CSS.
-  maximumScale: 1,
-  userScalable: false,
+  // Zoom por pinça continua liberado de propósito (acessibilidade). O
+  // auto-zoom ao focar input é evitado via font-size 16px no globals.css,
+  // que resolve a causa sem tirar o zoom de quem precisa.
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0d1117" },
