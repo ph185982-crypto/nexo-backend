@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   MessageSquare, Search, RefreshCw, Clock,
-  ChevronLeft, Loader2, Send, Bot, UserCheck,
+  ChevronLeft, ChevronRight, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
   Video, ShieldOff, MoreVertical, X, MapPin,
   Zap, TrendingUp, Info, Smile, Play, Pause,
@@ -330,7 +330,17 @@ function ConversationsContent() {
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
-  const [showInfoPanel, setShowInfoPanel] = useState(true);
+  // Lazy init lê a preferência salva — evita "piscar" expandido antes de recolher.
+  const [infoPanelCollapsed, setInfoPanelCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("nexo-ai-panel-collapsed") === "1";
+  });
+  const toggleInfoPanel = () =>
+    setInfoPanelCollapsed((v) => {
+      const next = !v;
+      window.localStorage.setItem("nexo-ai-panel-collapsed", next ? "1" : "0");
+      return next;
+    });
   // Aparece quando o usuário rolou pra cima no histórico
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
 
@@ -1012,9 +1022,9 @@ function ConversationsContent() {
                 {/* Info panel toggle — desktop only */}
                 <Button
                   variant="ghost" size="icon"
-                  className={cn("h-8 w-8 hidden xl:flex", showInfoPanel && "text-primary")}
-                  onClick={() => setShowInfoPanel(v => !v)}
-                  title="Painel de IA"
+                  className={cn("h-8 w-8 hidden xl:flex", !infoPanelCollapsed && "text-primary")}
+                  onClick={toggleInfoPanel}
+                  title={infoPanelCollapsed ? "Expandir painel de IA" : "Minimizar painel de IA"}
                 >
                   <Info className="w-4 h-4" />
                 </Button>
@@ -1319,14 +1329,42 @@ function ConversationsContent() {
       {/* ════════════════════════════════════════════════════════════════════════
           RIGHT PANEL — AI Intelligence Panel (xl+ only)
       ════════════════════════════════════════════════════════════════════════ */}
-      {selected && showInfoPanel && (
+      {selected && infoPanelCollapsed && (
+        <div className="hidden xl:flex flex-col w-12 flex-shrink-0 border-l border-border bg-card items-center py-4 gap-4">
+          <button
+            onClick={toggleInfoPanel}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+            title="Expandir painel de IA"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <Zap className="w-4 h-4 text-emerald-500" />
+          {selected.humanTakeover
+            ? <UserCheck className="w-4 h-4 text-blue-500" />
+            : selected.lead?.status === "ESCALATED"
+            ? <AlertTriangle className="w-4 h-4 text-orange-500" />
+            : <Bot className="w-4 h-4 text-emerald-500" />
+          }
+        </div>
+      )}
+
+      {selected && !infoPanelCollapsed && (
         <div className="hidden xl:flex flex-col w-72 flex-shrink-0 border-l border-border bg-card overflow-y-auto">
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-emerald-500" />
-              <h3 className="text-sm font-semibold">Inteligência IA</h3>
+          <div className="p-4 border-b border-border flex items-start justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-4 h-4 text-emerald-500" />
+                <h3 className="text-sm font-semibold">Inteligência IA</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
             </div>
-            <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
+            <button
+              onClick={toggleInfoPanel}
+              className="w-6 h-6 flex-shrink-0 rounded-md flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+              title="Minimizar painel"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
 
           <div className="p-4 space-y-5">

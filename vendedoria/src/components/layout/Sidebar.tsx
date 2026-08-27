@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
-  Settings, X, Zap, Radar, Wallet,
+  Settings, X, Zap, Radar, Wallet, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -52,6 +52,7 @@ const navItems = [
 export function Sidebar({
   collapsed,
   mobileOpen = false,
+  onToggle,
   onMobileClose,
 }: SidebarProps) {
   const pathname = usePathname();
@@ -98,6 +99,16 @@ export function Sidebar({
           <X className="w-5 h-5" />
         </button>
       </div>
+
+      {/* Chevron de minimizar — fixado na borda, sempre visível, sem depender
+          do hamburger do header pra descobrir que o sidebar recolhe. */}
+      <button
+        onClick={onToggle}
+        className="hidden md:flex absolute -right-3 top-16 w-6 h-6 items-center justify-center rounded-full bg-[hsl(var(--sidebar-bg))] ring-1 ring-white/15 text-white/60 hover:text-white hover:ring-white/30 transition-colors z-10"
+        aria-label={collapsed ? "Expandir menu" : "Minimizar menu"}
+      >
+        {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+      </button>
 
       <ScrollArea className="flex-1">
         <nav className="py-3 px-2 space-y-0.5">
