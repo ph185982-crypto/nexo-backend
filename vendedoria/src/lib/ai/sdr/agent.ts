@@ -9,6 +9,12 @@ import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types
 
 const HANDOFF_NUMBER = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 
+// WhatsApp entrega cada mensagem do cliente como um webhook separado. Quando o
+// cliente manda 2-3 mensagens seguidas (comum em conversas por celular), cada
+// uma dispara sua própria execução do SDR em paralelo — sem essa espera, o
+// cliente recebia respostas duplicadas/sobrepostas, uma pra cada mensagem.
+const DEBOUNCE_MS = Number(process.env.SDR_DEBOUNCE_MS ?? 7000);
+
 // Falha do LLM (sem resposta ou JSON inválido) nunca deve deixar o cliente sem
 // retorno nem passar em silêncio para o dono — manda uma mensagem de espera pro
 // cliente e um alerta pro dono no WhatsApp + registro no CRM.
@@ -243,6 +249,26 @@ export async function processSdrResponse(
   const token = provider.accessToken ?? undefined;
   const phoneNumberId = provider.businessPhoneNumberId;
 
+  // ── Debounce ──────────────────────────────────────────────────────────────
+  // Espera o cliente terminar de digitar antes de responder. Se uma mensagem
+  // mais nova chegar nesse meio-tempo, esta execução aborta — a execução da
+  // mensagem mais nova (que vai passar pelo mesmo debounce) responde por todas
+  // de uma vez, já que o histórico carregado logo abaixo inclui as anteriores.
+  const thisMessage = await prisma.whatsappMessage.findUnique({
+    where: { id: incomingMessageId },
+    select: { sentAt: true },
+  });
+  await new Promise((r) => setTimeout(r, DEBOUNCE_MS));
+  if (thisMessage) {
+    const newerCount = await prisma.whatsappMessage.count({
+      where: { conversationId, role: "USER", sentAt: { gt: thisMessage.sentAt } },
+    });
+    if (newerCount > 0) {
+      console.log(`[SDR] Debounce: mensagem mais nova já chegou — abortando run de ${incomingMessageId}`);
+      return;
+    }
+  }
+
   if (detectDesinteresse(userMessage)) {
     console.log(`[SDR] Desinteresse/opt-out detectado — encerrando conv ${conversationId}`);
     await prisma.lead.update({ where: { id: lead.id }, data: { status: "BLOCKED" } }).catch(() => {});
@@ -319,7 +345,12 @@ export async function processSdrResponse(
 
   // ── Enviar mensagens em blocos ───────────────────────────────────────────────
   if (!agent.sandboxMode) {
+    let bubbleIndex = 0;
     for (const msg of parsed.messages.slice(0, 4)) {
+      // Cita (reply-quote) a mensagem do cliente só no primeiro balão da
+      // resposta — deixa claro pra quem a IA está respondendo, como um humano.
+      const isFirstBubble = bubbleIndex === 0;
+      bubbleIndex++;
       const delay = typeof msg.delay === "number" ? msg.delay : 0;
       if (delay > 0) await new Promise((r) => setTimeout(r, delay));
 
@@ -329,14 +360,14 @@ export async function processSdrResponse(
           const enviado = await gerarESalvarAudioWhatsApp(msg.text, conversationId, phoneNumberId, phone, token);
           if (!enviado) {
             // TTS indisponível — cai pra texto em vez de perder o balão
-            await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token);
+            await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token, isFirstBubble ? incomingMessageId : undefined);
             await prisma.whatsappMessage.create({
               data: { content: msg.text, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
             }).catch(() => {});
           }
         } else {
           await simulateTypingDelay(phoneNumberId, incomingMessageId, msg.text, phone, token);
-          await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token);
+          await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token, isFirstBubble ? incomingMessageId : undefined);
           await prisma.whatsappMessage.create({
             data: {
               content: msg.text,
