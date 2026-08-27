@@ -73,6 +73,7 @@ function formatHandoffMessage(phone: string, session: SDRSession): string {
 💰 Faturamento: ${session.faturamento_total || "não informado"}
 🏪 Canais de atuação: ${canaisStr}
 🎯 Necessidade / Problema principal: ${session.problema_principal || "não informado"}
+${session.objecoes_mencionadas.length > 0 ? `\n⚠️ Pontos de atenção: ${session.objecoes_mencionadas.join(", ")}` : ""}
 
 ${session.produto_indicado ? `✅ Produto indicado: ${session.produto_indicado}` : ""}
 ${session.cnpj ? `📄 CNPJ: ${session.cnpj}` : ""}
