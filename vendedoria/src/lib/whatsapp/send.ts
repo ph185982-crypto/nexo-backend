@@ -94,17 +94,23 @@ export async function simulateTypingDelay(
   await sendTypingIndicator(phoneNumberId, to, ms, accessToken);
 }
 
+/**
+ * @returns o wamid (message id) atribuído pela Meta, ou undefined se não veio na resposta.
+ * Esse id é o que a Meta usa depois para reportar status (delivered/read/failed) via
+ * webhook — sem guardar ele, nunca dá pra casar essas atualizações assíncronas com a
+ * mensagem certa no banco.
+ */
 export async function sendWhatsAppMessage(
   phoneNumberId: string,
   to: string,
   text: string,
   accessToken?: string,
   contextMessageId?: string  // reply-to: quotes this message in WhatsApp
-): Promise<void> {
+): Promise<string | undefined> {
   const token = resolveToken(accessToken);
   if (!token) {
     console.warn("[WhatsApp] No access token configured — skipping send");
-    return;
+    return undefined;
   }
 
   const body: Record<string, unknown> = {
@@ -128,6 +134,9 @@ export async function sendWhatsAppMessage(
     console.error("[WhatsApp] Send error:", error);
     throw new Error(`WhatsApp send failed: ${error}`);
   }
+
+  const data = (await response.json()) as { messages?: Array<{ id?: string }> };
+  return data.messages?.[0]?.id;
 }
 
 export async function sendWhatsAppImage(

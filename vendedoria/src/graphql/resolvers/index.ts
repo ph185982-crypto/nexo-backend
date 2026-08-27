@@ -861,8 +861,9 @@ export const resolvers = {
 
       // Send via Meta WhatsApp API
       let finalStatus: "SENT" | "FAILED" = "SENT";
+      let wamid: string | undefined;
       try {
-        await sendWhatsAppMessage(
+        wamid = await sendWhatsAppMessage(
           conversation.provider.businessPhoneNumberId,
           conversation.customerWhatsappBusinessId,
           content,
@@ -872,12 +873,14 @@ export const resolvers = {
         console.error("[sendWhatsappMessage] Meta API error:", err);
         finalStatus = "FAILED";
       }
-      await prisma.whatsappMessage.update({
+      // Re-chaveia pelo wamid da Meta — é por esse id que o webhook de status
+      // (delivered/read/failed) vai encontrar essa mensagem depois.
+      const updated = await prisma.whatsappMessage.update({
         where: { id: message.id },
-        data: { status: finalStatus },
+        data: { status: finalStatus, ...(wamid ? { id: wamid } : {}) },
       });
 
-      return { ...message, status: finalStatus };
+      return updated;
     },
 
     sendWhatsappMedia: async (
