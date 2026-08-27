@@ -347,17 +347,18 @@ async function handleIncomingMessage(
   }
 
   if (inboundMediaId) {
-    prisma.whatsappMessage.update({
-      where: { id: savedMessage.id },
-      data: {
-        mediaUrl: inboundMediaId,
-        ...(inboundCaption ? { caption: inboundCaption } : {}),
-      },
-    }).then(() => {
+    try {
+      await prisma.whatsappMessage.update({
+        where: { id: savedMessage.id },
+        data: {
+          mediaUrl: inboundMediaId,
+          ...(inboundCaption ? { caption: inboundCaption } : {}),
+        },
+      });
       console.log(`[Webhook] mediaId persistido: ${inboundMediaId} → msg ${savedMessage.id}`);
-    }).catch((e) => {
+    } catch (e) {
       console.error(`[Webhook] Erro ao persistir mediaId ${inboundMediaId}:`, e);
-    });
+    }
   }
 
   const nomeCliente = conversation.profileName ?? conversation.customerWhatsappBusinessId;
