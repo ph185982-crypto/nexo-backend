@@ -19,7 +19,12 @@ export type FunilTipo =
   | "CONTRATO"
   | "GANHO"
   | "LOST"
-  | "DESCARTADO";
+  | "DESCARTADO"
+  // Funil de qualificação do SDR inbound (src/lib/ai/sdr/agent.ts)
+  | "EM_QUALIFICACAO"
+  | "QUALIFICADO"
+  | "MORNO"
+  | "ESCALATED";
 
 /**
  * Move um lead para a coluna do funil identificada por `tipo`.

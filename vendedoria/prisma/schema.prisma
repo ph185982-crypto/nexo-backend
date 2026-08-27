@@ -225,7 +225,11 @@ model KanbanColumn {
   id              String   @id @default(cuid())
   name            String
   order           Int
-  type            String   // CUSTOM | ESCALATED | LOST | TRIAGE | JUNK
+  type            String   // CUSTOM | ESCALATED | LOST | TRIAGE | JUNK |
+                            // EM_QUALIFICACAO | QUALIFICADO | MORNO (funil SDR) |
+                            // CONTATO_1 | CONTATO_2 | CONTATO_3 | PROPOSTA |
+                            // REUNIAO_AGENDADA | CONTRATO | GANHO | DESCARTADO (funil prospecção)
+                            // — mantido em sincronia com o enum GraphQL KanbanColumnType
   isSystemDefault Boolean  @default(false)
   isDefaultEntry  Boolean  @default(false)
   organizationId  String

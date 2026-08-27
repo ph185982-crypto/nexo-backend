@@ -3,6 +3,7 @@ import { callOpenAI, callAnthropic, callGemini } from "@/lib/ai/llm-client";
 import { sendWhatsAppMessage, simulateTypingDelay } from "@/lib/whatsapp/send";
 import { detectDesinteresse } from "@/lib/ai/agent";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { buildSdrSystemPrompt } from "./prompt";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
@@ -427,6 +428,7 @@ export async function processSdrResponse(
 
     case "nurture": {
       newSession.status = "morno";
+      await moverLeadPorTipo(lead.id, provider.organizationId, "MORNO", "Lead qualificado como morno pelo SDR — iniciando nutrição");
       await scheduleNurtureFollowups(conversationId, phone, phoneNumberId, token).catch((e) =>
         console.error("[SDR] Erro ao agendar nutrição:", e)
       );
@@ -436,6 +438,7 @@ export async function processSdrResponse(
 
     case "close": {
       newSession.status = "fora";
+      await moverLeadPorTipo(lead.id, provider.organizationId, "LOST", "Lead fora do ICP — encerrado pelo SDR");
       await prisma.conversationFollowUp.updateMany({
         where: { conversationId, status: "ACTIVE" },
         data: { status: "DONE" },
@@ -447,6 +450,12 @@ export async function processSdrResponse(
     case "continue":
     default: {
       if (newSession.status === "novo") newSession.status = "em_qualificacao";
+      // Reflete a qualificação em andamento no Kanban — moverLeadPorTipo já é
+      // idempotente (não faz nada se o lead já está na coluna), seguro chamar
+      // a cada turno em vez de só na transição novo→em_qualificacao.
+      if (newSession.status === "em_qualificacao") {
+        await moverLeadPorTipo(lead.id, provider.organizationId, "EM_QUALIFICACAO");
+      }
       // Agenda follow-up para leads qualificados que param de responder
       if (newSession.score >= 70 && newSession.status !== "handoff_enviado") {
         await scheduleQualifiedFollowup(

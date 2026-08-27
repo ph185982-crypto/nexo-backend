@@ -58,9 +58,9 @@ export async function GET(req: NextRequest) {
   const existingCol = await prisma.kanbanColumn.findFirst({ where: { organizationId: org.id } });
   const desiredColumns = [
     { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, color: "#6B7280" },
-    { name: "Em qualificação", order: 1, type: "CUSTOM", color: "#3B82F6" },
-    { name: "Qualificados", order: 2, type: "CUSTOM", color: "#10B981" },
-    { name: "Mornos", order: 3, type: "CUSTOM", color: "#F59E0B" },
+    { name: "Em qualificação", order: 1, type: "EM_QUALIFICACAO", color: "#3B82F6" },
+    { name: "Qualificados", order: 2, type: "QUALIFICADO", color: "#10B981" },
+    { name: "Mornos", order: 3, type: "MORNO", color: "#F59E0B" },
     { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, color: "#8B5CF6" },
     { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, color: "#EF4444" },
     // ── Funil automático (pipeline-mover.ts) ──────────────────────────────────
@@ -71,6 +71,7 @@ export async function GET(req: NextRequest) {
     { name: "Reunião Agendada", order: 10, type: "REUNIAO_AGENDADA", color: "#6366F1" },
     { name: "Em Contrato",      order: 11, type: "CONTRATO",        color: "#A855F7" },
     { name: "Ganho",            order: 12, type: "GANHO",           color: "#22C55E" },
+    { name: "Descartado",       order: 13, type: "DESCARTADO",      color: "#78716C" },
   ];
   if (!existingCol) {
     await prisma.kanbanColumn.createMany({
@@ -78,7 +79,28 @@ export async function GET(req: NextRequest) {
     });
     console.log("[SDR Bootstrap] Colunas Kanban criadas");
   } else {
-    // Org já bootstrapada antes — garante que os tipos do funil automático existem
+    // Reparo: versões antigas do bootstrap criaram "Em qualificação", "Qualificados"
+    // e "Mornos" todas com type=CUSTOM — como o type não é único, isso impedia
+    // identificar qual coluna é qual pra mover o lead automaticamente. Corrige o
+    // type das colunas já existentes (por nome) antes de checar o que falta criar,
+    // pra não duplicar essas três colunas na org que já rodou o bootstrap antigo.
+    const legacyRename: Record<string, string> = {
+      "Em qualificação": "EM_QUALIFICACAO",
+      "Qualificados": "QUALIFICADO",
+      "Mornos": "MORNO",
+    };
+    const customCols = await prisma.kanbanColumn.findMany({
+      where: { organizationId: org.id, type: "CUSTOM", name: { in: Object.keys(legacyRename) } },
+      select: { id: true, name: true },
+    });
+    for (const col of customCols) {
+      await prisma.kanbanColumn.update({ where: { id: col.id }, data: { type: legacyRename[col.name] } });
+    }
+    if (customCols.length > 0) {
+      console.log(`[SDR Bootstrap] Colunas legadas corrigidas (CUSTOM → tipo dedicado): ${customCols.map((c) => c.name).join(", ")}`);
+    }
+
+    // Garante que os tipos do funil automático existem
     const existingTypes = new Set(
       (await prisma.kanbanColumn.findMany({ where: { organizationId: org.id }, select: { type: true } }))
         .map((c) => c.type),

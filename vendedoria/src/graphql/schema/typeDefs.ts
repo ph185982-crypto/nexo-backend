@@ -5,7 +5,11 @@ export const typeDefs = `#graphql
   # ─── Enums ────────────────────────────────────────────
   enum LeadOrigin { INBOUND OUTBOUND }
   enum LeadStatus { OPEN ESCALATED CLOSED BLOCKED }
-  enum KanbanColumnType { CUSTOM ESCALATED LOST TRIAGE JUNK }
+  enum KanbanColumnType {
+    CUSTOM ESCALATED LOST TRIAGE JUNK
+    EM_QUALIFICACAO QUALIFICADO MORNO
+    CONTATO_1 CONTATO_2 CONTATO_3 PROPOSTA REUNIAO_AGENDADA CONTRATO GANHO DESCARTADO
+  }
   enum CampaignStatus { PLANNING ACTIVE PAUSED COMPLETED CANCELLED }
   enum CampaignMode { DEFAULT PARALLEL }
   enum MessageRole { ASSISTANT USER }
