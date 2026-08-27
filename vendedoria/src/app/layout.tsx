@@ -30,7 +30,17 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [{ color: "#10b981" }],
+  // statusBarStyle é "black-translucent": sem viewportFit=cover o conteúdo
+  // fica por baixo do notch e do home indicator no iPhone.
+  viewportFit: "cover",
+  // Trava o zoom por duplo-toque/pinça dentro do app (comportamento de app
+  // nativo). O auto-zoom ao focar input é evitado via font-size 16px no CSS.
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d1117" },
+  ],
 };
 
 export default function RootLayout({

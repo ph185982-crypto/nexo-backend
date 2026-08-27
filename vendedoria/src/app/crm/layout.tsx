@@ -38,7 +38,8 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onToggleSidebar={handleToggle} />
-        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-16 md:pb-0">
+        {/* pb-tabbar reserva a altura da MobileTabBar + o home indicator (só no mobile) */}
+        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-tabbar">
           {children}
         </main>
         <MobileTabBar />

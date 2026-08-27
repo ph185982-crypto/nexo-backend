@@ -65,9 +65,22 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-poppins), system-ui, sans-serif;
     overflow-x: hidden;
+    /* iOS: impede o "rubber band" da página inteira ao rolar listas internas */
+    overscroll-behavior-y: none;
   }
-  html, body { height: 100%; }
+  html, body {
+    height: 100%;
+    /* iOS Safari infla fontes em landscape sem isso */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   button, a { -webkit-tap-highlight-color: transparent; }
+
+  /* iOS Safari dá zoom automático ao focar campos com fonte < 16px.
+     16px é o mínimo para manter o layout estável ao abrir o teclado. */
+  @supports (-webkit-touch-callout: none) {
+    input, textarea, select { font-size: 16px; }
+  }
 }
 
 @layer utilities {
@@ -100,22 +113,67 @@
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* ── Safe areas (iPhone notch / home indicator) ──────────────────────────
+     A classe .safe-area-bottom já era usada pela MobileTabBar mas nunca
+     existiu — a barra ficava por baixo do home indicator no iPhone. */
+  .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .safe-area-top    { padding-top: env(safe-area-inset-top, 0px); }
+  .safe-area-x {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  /* Altura do home indicator, para reservar espaço sem virar padding */
+  .h-safe-bottom { height: env(safe-area-inset-bottom, 0px); }
+  .mb-safe-bottom { margin-bottom: env(safe-area-inset-bottom, 0px); }
+
+  /* Reserva a altura da MobileTabBar (56px) + home indicator. Só no mobile —
+     a partir de md a barra some e o padding tem que zerar. */
+  .pb-tabbar { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
+  @media (min-width: 768px) {
+    .pb-tabbar { padding-bottom: 0; }
+  }
+
+  /* Dentro de uma conversa no mobile, a tab bar sai de cena (padrão
+     WhatsApp/Telegram): o compositor precisa da altura e a navegação
+     volta pelo botão de voltar / swipe. */
+  @media (max-width: 767px) {
+    body[data-chat-open="true"] .mobile-tab-bar { display: none; }
+    body[data-chat-open="true"] .pb-tabbar { padding-bottom: 0; }
+  }
+
+  /* Scroll com inércia nativa no iOS */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Alvo de toque mínimo recomendado pela Apple (44×44pt) */
+  .tap-target { min-width: 44px; min-height: 44px; }
+
+  /* Feedback de toque estilo iOS */
+  .press-scale {
+    transition: transform 120ms ease, opacity 120ms ease;
+  }
+  .press-scale:active { transform: scale(0.96); opacity: 0.7; }
 }
 
-/* WhatsApp chat bubbles — dark mode aware */
+/* Balões de chat — o wrapper controla largura e padding.
+   Estas classes cuidam só de cor/canto, senão o `max-w-xs` e o padding
+   daqui brigavam com o `max-w-[80%] px-3.5 py-2` aplicado no elemento. */
 .msg-bubble-sent {
-  @apply rounded-2xl rounded-br-sm px-3 py-2 max-w-xs shadow-sm;
-  background: #dcf8c6;
-  color: #111;
+  @apply rounded-br-md;
+  background: #d9fdd3;
+  color: #111b21;
 }
 .dark .msg-bubble-sent {
-  background: #1a4731;
+  background: #144d37;
   color: #d1fae5;
 }
 .msg-bubble-received {
-  @apply rounded-2xl rounded-bl-sm px-3 py-2 max-w-xs shadow-sm;
+  @apply rounded-bl-md;
   background: #ffffff;
-  color: #111;
+  color: #111b21;
 }
 .dark .msg-bubble-received {
   background: hsl(222 18% 15%);

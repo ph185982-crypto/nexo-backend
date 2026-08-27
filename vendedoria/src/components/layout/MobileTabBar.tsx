@@ -18,10 +18,10 @@ export function MobileTabBar() {
 
   return (
     <nav className={cn(
-      "fixed bottom-0 left-0 right-0 z-50 md:hidden",
-      "bg-card/95 backdrop-blur-xl border-t border-border",
-      "flex h-16 safe-area-bottom",
-      "shadow-[0_-1px_12px_rgba(0,0,0,0.08)]"
+      "mobile-tab-bar fixed bottom-0 left-0 right-0 z-50 md:hidden",
+      "bg-card/85 backdrop-blur-xl border-t border-border",
+      "flex safe-area-bottom",
+      "shadow-[0_-1px_12px_rgba(0,0,0,0.06)]"
     )}>
       {tabs.map((t) => {
         const active = pathname.startsWith(t.href);
@@ -30,20 +30,16 @@ export function MobileTabBar() {
           <Link
             key={t.href}
             href={t.href}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 transition-all duration-200",
+              "flex flex-1 flex-col items-center justify-center gap-1 h-14 press-scale",
               active ? "text-primary" : "text-muted-foreground"
             )}
           >
-            <div className={cn(
-              "flex items-center justify-center w-10 h-6 rounded-full transition-all duration-200",
-              active && "bg-primary/12"
-            )}>
-              <Icon className={cn("w-5 h-5 transition-all", active && "stroke-[2.5px]")} />
-            </div>
+            <Icon className={cn("w-[22px] h-[22px] transition-all", active && "stroke-[2.4px]")} />
             <span className={cn(
-              "text-[10px] font-medium leading-none transition-all",
-              active ? "font-semibold" : ""
+              "text-[10px] leading-none tracking-tight",
+              active ? "font-semibold" : "font-medium"
             )}>
               {t.label}
             </span>
