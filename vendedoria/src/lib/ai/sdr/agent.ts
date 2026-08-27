@@ -13,7 +13,13 @@ const HANDOFF_NUMBER = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 // cliente manda 2-3 mensagens seguidas (comum em conversas por celular), cada
 // uma dispara sua própria execução do SDR em paralelo — sem essa espera, o
 // cliente recebia respostas duplicadas/sobrepostas, uma pra cada mensagem.
-const DEBOUNCE_MS = Number(process.env.SDR_DEBOUNCE_MS ?? 7000);
+//
+// IMPORTANTE: cada segundo aqui é um segundo a mais que a invocação serverless
+// (e a conexão Prisma dela) fica viva. Em 27/08/26 um valor de 7000ms esgotou
+// o pool de conexões do Supabase (connection_limit=1 por instância, mas em
+// rajada de mensagens muitas instâncias concorrentes = pool cheio) e derrubou
+// o /api/conversations do CRM inteiro. Mantenha esse valor baixo.
+const DEBOUNCE_MS = Number(process.env.SDR_DEBOUNCE_MS ?? 2000);
 
 // Falha do LLM (sem resposta ou JSON inválido) nunca deve deixar o cliente sem
 // retorno nem passar em silêncio para o dono — manda uma mensagem de espera pro
