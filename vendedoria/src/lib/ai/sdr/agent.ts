@@ -20,7 +20,7 @@ const HANDOFF_NUMBER = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 // o pool de conexões do Supabase (connection_limit=1 por instância, mas em
 // rajada de mensagens muitas instâncias concorrentes = pool cheio) e derrubou
 // o /api/conversations do CRM inteiro. Mantenha esse valor baixo.
-const DEBOUNCE_MS = Number(process.env.SDR_DEBOUNCE_MS ?? 2000);
+const DEBOUNCE_MS = Number(process.env.SDR_DEBOUNCE_MS ?? 1200);
 
 // Falha do LLM (sem resposta ou JSON inválido) nunca deve deixar o cliente sem
 // retorno nem passar em silêncio para o dono — manda uma mensagem de espera pro
