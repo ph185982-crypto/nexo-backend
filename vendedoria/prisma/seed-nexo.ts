@@ -20,16 +20,14 @@ const prisma = new PrismaClient();
 
 const REAL_PHONE_NUMBER_ID = "1009631782242056";
 
+// Funil unificado em 5 etapas (era 9 colunas — ver pipeline-mover.ts para o
+// mapa de canonicalização que redireciona tipos antigos pra essas 5).
 const FUNIL_NEXO: Array<{ name: string; type: string; color: string; isDefaultEntry?: boolean }> = [
-  { name: "1º Contato",             type: "CONTATO_1",        color: "#10b981", isDefaultEntry: true },
-  { name: "2º Contato",             type: "CONTATO_2",        color: "#0ea5e9" },
-  { name: "3º Contato",             type: "CONTATO_3",        color: "#6366f1" },
-  { name: "Proposta e Negociação",  type: "PROPOSTA",         color: "#f59e0b" },
-  { name: "Reunião Agendada",       type: "REUNIAO_AGENDADA", color: "#8b5cf6" },
-  { name: "Assinatura de Contrato", type: "CONTRATO",         color: "#14b8a6" },
-  { name: "Ganho",                  type: "GANHO",            color: "#22c55e" },
-  { name: "Perdido",                type: "LOST",             color: "#ef4444" },
-  { name: "Descartado",             type: "DESCARTADO",       color: "#6b7280" },
+  { name: "Novo",            type: "TRIAGE",           color: "#6b7280", isDefaultEntry: true },
+  { name: "Em Qualificação", type: "EM_QUALIFICACAO",  color: "#3b82f6" },
+  { name: "Qualificado",     type: "QUALIFICADO",      color: "#10b981" },
+  { name: "Ganho",           type: "GANHO",             color: "#22c55e" },
+  { name: "Perdido",         type: "LOST",              color: "#ef4444" },
 ];
 
 const SDR_NEXO_PROMPT = `Você é o SDR da Nexo, assessoria especializada em fazer empresas venderem nos maiores marketplaces do Brasil (Mercado Livre, Shopee, Amazon, Magalu).

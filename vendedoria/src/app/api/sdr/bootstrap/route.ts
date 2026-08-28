@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma/client";
 import { buildSdrSystemPrompt } from "@/lib/ai/sdr/prompt";
 import { SDR_EMPTY_SESSION } from "@/lib/ai/sdr/types";
 import { auth } from "@/lib/auth";
+import { consolidarColunasEm5Etapas } from "@/lib/crm/pipeline-mover";
 
 const ORG_NAME = "Nexo Brasil SDR";
 
@@ -49,69 +50,20 @@ export async function GET(req: NextRequest) {
     console.log("[SDR Bootstrap] Org criada:", org.id);
   }
 
-  // ── Colunas Kanban ───────────────────────────────────────────────────────────
-  // Base (triagem/escalação manual/perda) + funil automático usado por
-  // pipeline-mover.ts (disparo de prospecção, follow-ups e handoff da IA:
-  // [QUALIFICADO] → PROPOSTA, [REUNIAO_AGENDADA] → REUNIAO_AGENDADA, etc).
-  // Loop idempotente: cria só o que faltar, sem tocar em colunas já existentes
-  // (preserva customizações feitas pelo usuário via CRM).
-  const existingCol = await prisma.kanbanColumn.findFirst({ where: { organizationId: org.id } });
-  const desiredColumns = [
-    { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, color: "#6B7280" },
-    { name: "Em qualificação", order: 1, type: "EM_QUALIFICACAO", color: "#3B82F6" },
-    { name: "Qualificados", order: 2, type: "QUALIFICADO", color: "#10B981" },
-    { name: "Mornos", order: 3, type: "MORNO", color: "#F59E0B" },
-    { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, color: "#8B5CF6" },
-    { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, color: "#EF4444" },
-    // ── Funil automático (pipeline-mover.ts) ──────────────────────────────────
-    { name: "1º Contato",       order: 6,  type: "CONTATO_1",       color: "#0EA5E9" },
-    { name: "2º Contato",       order: 7,  type: "CONTATO_2",       color: "#0EA5E9" },
-    { name: "3º Contato",       order: 8,  type: "CONTATO_3",       color: "#0EA5E9" },
-    { name: "Proposta",         order: 9,  type: "PROPOSTA",        color: "#14B8A6" },
-    { name: "Reunião Agendada", order: 10, type: "REUNIAO_AGENDADA", color: "#6366F1" },
-    { name: "Em Contrato",      order: 11, type: "CONTRATO",        color: "#A855F7" },
-    { name: "Ganho",            order: 12, type: "GANHO",           color: "#22C55E" },
-    { name: "Descartado",       order: 13, type: "DESCARTADO",      color: "#78716C" },
-  ];
-  if (!existingCol) {
-    await prisma.kanbanColumn.createMany({
-      data: desiredColumns.map((c) => ({ ...c, organizationId: org.id })),
-    });
-    console.log("[SDR Bootstrap] Colunas Kanban criadas");
-  } else {
-    // Reparo: versões antigas do bootstrap criaram "Em qualificação", "Qualificados"
-    // e "Mornos" todas com type=CUSTOM — como o type não é único, isso impedia
-    // identificar qual coluna é qual pra mover o lead automaticamente. Corrige o
-    // type das colunas já existentes (por nome) antes de checar o que falta criar,
-    // pra não duplicar essas três colunas na org que já rodou o bootstrap antigo.
-    const legacyRename: Record<string, string> = {
-      "Em qualificação": "EM_QUALIFICACAO",
-      "Qualificados": "QUALIFICADO",
-      "Mornos": "MORNO",
-    };
-    const customCols = await prisma.kanbanColumn.findMany({
-      where: { organizationId: org.id, type: "CUSTOM", name: { in: Object.keys(legacyRename) } },
-      select: { id: true, name: true },
-    });
-    for (const col of customCols) {
-      await prisma.kanbanColumn.update({ where: { id: col.id }, data: { type: legacyRename[col.name] } });
-    }
-    if (customCols.length > 0) {
-      console.log(`[SDR Bootstrap] Colunas legadas corrigidas (CUSTOM → tipo dedicado): ${customCols.map((c) => c.name).join(", ")}`);
-    }
-
-    // Garante que os tipos do funil automático existem
-    const existingTypes = new Set(
-      (await prisma.kanbanColumn.findMany({ where: { organizationId: org.id }, select: { type: true } }))
-        .map((c) => c.type),
-    );
-    const missing = desiredColumns.filter((c) => !existingTypes.has(c.type));
-    if (missing.length > 0) {
-      await prisma.kanbanColumn.createMany({
-        data: missing.map((c) => ({ ...c, organizationId: org.id })),
-      });
-      console.log(`[SDR Bootstrap] Colunas Kanban do funil automático adicionadas: ${missing.map((c) => c.type).join(", ")}`);
-    }
+  // ── Colunas Kanban — funil unificado em 5 etapas ────────────────────────────
+  // Era 14 colunas somando dois sub-funis sobrepostos (qualificação do SDR +
+  // prospecção outbound), difícil de ler de relance. Consolidado em:
+  //   Novo → Em Qualificação → Qualificado → Ganho | Perdido
+  // pipeline-mover.ts canonicaliza qualquer tipo antigo (MORNO, PROPOSTA,
+  // REUNIAO_AGENDADA, CONTATO_2, etc.) para uma dessas 5 antes de mover um
+  // lead — nenhum outro código precisou mudar.
+  //
+  // Roda pra TODAS as orgs, não só esta: o CRM pode ter mais de uma
+  // organização configurada (ex.: uma de prospecção outbound separada) e o
+  // problema de excesso de colunas vale pra qualquer board que o usuário abra.
+  const todasOrgs = await prisma.whatsappBusinessOrganization.findMany({ select: { id: true } });
+  for (const o of todasOrgs) {
+    await consolidarColunasEm5Etapas(o.id);
   }
 
   // ── Provider config ──────────────────────────────────────────────────────────
