@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
         select: {
           id: true, isActive: true, humanTakeover: true, lastMessageAt: true,
           etapa: true,
-          provider: { select: { businessPhoneNumberId: true, agent: { select: { systemPrompt: true, kind: true, status: true } } } },
+          provider: { select: { businessPhoneNumberId: true, accessToken: true, agent: { select: { systemPrompt: true, kind: true, status: true, sandboxMode: true } } } },
         },
       },
     },
@@ -53,7 +53,8 @@ export async function GET(req: NextRequest) {
           return {
             ...c,
             provider: {
-              ...c.provider,
+              businessPhoneNumberId: c.provider?.businessPhoneNumberId,
+              hasAccessToken: !!c.provider?.accessToken,
               agent: c.provider?.agent
                 ? { ...c.provider.agent, isSdr: c.provider.agent.systemPrompt?.trimStart().startsWith("[SDR]") ?? false, systemPrompt: undefined }
                 : null,
