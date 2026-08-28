@@ -30,19 +30,42 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({
-    count: leads.length,
-    leads: leads.map((l) => ({
+  const withExtras = await Promise.all(
+    leads.map(async (l) => ({
       ...l,
-      conversations: l.conversations.map((c) => ({
-        ...c,
-        provider: {
-          ...c.provider,
-          agent: c.provider?.agent
-            ? { ...c.provider.agent, isSdr: c.provider.agent.systemPrompt?.trimStart().startsWith("[SDR]") ?? false, systemPrompt: undefined }
-            : null,
-        },
-      })),
+      conversations: await Promise.all(
+        l.conversations.map(async (c) => {
+          const [conv, messages, ownerNotifs] = await Promise.all([
+            prisma.whatsappConversation.findUnique({
+              where: { id: c.id },
+              select: { sessaoProspeccao: true },
+            }),
+            prisma.whatsappMessage.findMany({
+              where: { conversationId: c.id },
+              orderBy: { sentAt: "asc" },
+              select: { role: true, content: true, sentAt: true, status: true, wamid: true, aiProcessedAt: true },
+            }),
+            prisma.ownerNotification.findMany({
+              where: { conversationId: c.id },
+              select: { type: true, title: true, body: true, createdAt: true },
+            }),
+          ]);
+          return {
+            ...c,
+            provider: {
+              ...c.provider,
+              agent: c.provider?.agent
+                ? { ...c.provider.agent, isSdr: c.provider.agent.systemPrompt?.trimStart().startsWith("[SDR]") ?? false, systemPrompt: undefined }
+                : null,
+            },
+            sdrSession: (conv?.sessaoProspeccao as Record<string, unknown>)?.sdr ?? null,
+            ownerNotifications: ownerNotifs,
+            messages,
+          };
+        }),
+      ),
     })),
-  });
+  );
+
+  return NextResponse.json({ count: leads.length, leads: withExtras });
 }
