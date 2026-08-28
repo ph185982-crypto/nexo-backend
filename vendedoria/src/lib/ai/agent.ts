@@ -252,12 +252,17 @@ export function detectDesinteresse(message: string): boolean {
   const n = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
   const msg = n(message);
+  // "nao quero" / "nao preciso" soltos eram gatilho de opt-out, mas casam com
+  // frases normais de qualificação — "nao quero gastar muito agora", "nao quero
+  // perder tempo com anuncio", "nao preciso de CNPJ pra comecar?". O lead era
+  // BLOCKED, os follow-ups cancelados e ele recebia um encerramento seco.
+  // Agora exige complemento que indique recusa de contato, não de um detalhe
+  // da oferta. Recusa ambígua fica a cargo do action "close" do LLM.
   return (
-    /\bnao\s+quero\b/.test(msg) ||
+    /\bnao\s+quero\s+(mais|nada|receber|falar|continuar|conversar|comprar|contratar)\b/.test(msg) ||
+    /\bnao\s+quero\b\s*$/.test(msg.trim()) ||
     /\bnao\s+tenho\s+interesse\b/.test(msg) ||
-    /\bnao\s+preciso\b/.test(msg) ||
     /\bnao\s+me\s+interessa\b/.test(msg) ||
-    /\bnao\s+quero\s+mais\b/.test(msg) ||
     /\bpode\s+parar\b/.test(msg) ||
     /\bpara\s+de\s+(mandar|enviar)\b/.test(msg) ||
     /\bnao\s+mand[ae]\s+mais\b/.test(msg) ||

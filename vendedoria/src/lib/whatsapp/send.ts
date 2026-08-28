@@ -12,12 +12,51 @@ function resolveToken(override?: string): string | undefined {
  * Exported so the webhook can normalise phone numbers at storage time too.
  */
 export function normalizeBrazilianNumber(phone: string): string {
-  if (/^55\d{10}$/.test(phone)) {
-    const areaCode = phone.slice(2, 4);
-    const number = phone.slice(4);
+  const digits = phone.replace(/\D/g, "");
+  if (/^55\d{10}$/.test(digits)) {
+    const areaCode = digits.slice(2, 4);
+    const number = digits.slice(4);
     if (/^[6-9]/.test(number)) return `55${areaCode}9${number}`;
   }
-  return phone;
+  return digits || phone;
+}
+
+/**
+ * Chave canônica de um número brasileiro: só dígitos, sem o 55 e sem o 9º
+ * dígito — sempre DDD + 8 dígitos.
+ *
+ * `normalizeBrazilianNumber` é de mão única (só ACRESCENTA o 9), então dois
+ * registros do mesmo cliente em formatos diferentes ("556284465388" vindo de
+ * importação e "5562984465388" vindo do WhatsApp) nunca se encontravam e
+ * viravam leads duplicados no Kanban. Comparar sempre pela forma canônica.
+ */
+export function canonicalBrazilianNumber(phone: string): string {
+  let n = phone.replace(/\D/g, "");
+  if (n.startsWith("55") && n.length >= 12) n = n.slice(2);
+  if (n.length === 11 && n[2] === "9") n = n.slice(0, 2) + n.slice(3);
+  return n;
+}
+
+/**
+ * Todas as grafias plausíveis de um número, para consultar registros gravados
+ * antes da normalização virar padrão (com/sem 55, com/sem o 9º dígito).
+ */
+export function brazilianNumberVariants(phone: string): string[] {
+  const canonical = canonicalBrazilianNumber(phone); // DDD + 8
+  if (canonical.length !== 10) {
+    const digits = phone.replace(/\D/g, "");
+    return Array.from(new Set([phone, digits].filter(Boolean)));
+  }
+  const ddd = canonical.slice(0, 2);
+  const eightDigits = canonical.slice(2);
+  const nineDigits = `9${eightDigits}`;
+  return Array.from(new Set([
+    `55${ddd}${nineDigits}`, // 13 dígitos — formato atual da Meta
+    `55${ddd}${eightDigits}`, // 12 dígitos — legado
+    `${ddd}${nineDigits}`,    // sem código do país
+    canonical,
+    phone,
+  ].filter(Boolean)));
 }
 
 /**

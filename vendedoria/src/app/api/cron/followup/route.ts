@@ -196,6 +196,24 @@ export async function GET(req: Request) {
       break;
     }
     try {
+      // Não perturbar quem já saiu do fluxo automático. Sem este guard o bot
+      // mandava "oi! ficou alguma dúvida?" para um lead que já estava em
+      // conversa com o especialista, ou por cima de um atendimento humano.
+      const conv = await prisma.whatsappConversation.findUnique({
+        where: { id: fu.conversationId },
+        select: { humanTakeover: true, lead: { select: { status: true } } },
+      }).catch(() => null);
+
+      const leadStatus = conv?.lead?.status;
+      if (conv?.humanTakeover || (leadStatus && ["ESCALATED", "BLOCKED", "CLOSED"].includes(leadStatus))) {
+        await prisma.conversationFollowUp.update({
+          where: { id: fu.id }, data: { status: "DONE" },
+        }).catch(() => {});
+        console.log(`[FollowUp] Pulado (lead ${leadStatus ?? "humanTakeover"}) — conv ${fu.conversationId}`);
+        results.closed++;
+        continue;
+      }
+
       const messages = await prisma.whatsappMessage.findMany({
         where: { conversationId: fu.conversationId },
         orderBy: { sentAt: "desc" },
@@ -218,12 +236,26 @@ export async function GET(req: Request) {
         });
       }
 
-      // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato
+      // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato.
+      // Só vale para prospecção outbound. A org do SDR também é tipo
+      // PROSPECCAO, então sem checar o agente um lead inbound que estava em
+      // "Em qualificação"/"Mornos" era jogado para "2º Contato" — coluna de
+      // outro funil — e sumia do board onde o dono acompanha o SDR.
       const convInfo = await prisma.whatsappConversation.findUnique({
         where: { id: fu.conversationId },
-        select: { leadId: true, provider: { select: { organization: { select: { id: true, tipo: true } } } } },
+        select: {
+          leadId: true,
+          provider: {
+            select: {
+              organization: { select: { id: true, tipo: true } },
+              agent: { select: { systemPrompt: true } },
+            },
+          },
+        },
       }).catch(() => null);
-      if (convInfo?.provider?.organization?.tipo === "PROSPECCAO" && convInfo.leadId) {
+      const isSdrConversation = !!convInfo?.provider?.agent?.systemPrompt
+        ?.trimStart().startsWith("[SDR]");
+      if (!isSdrConversation && convInfo?.provider?.organization?.tipo === "PROSPECCAO" && convInfo.leadId) {
         await moverLeadPorTipo(
           convInfo.leadId,
           convInfo.provider.organization.id,
@@ -238,7 +270,13 @@ export async function GET(req: Request) {
       } else {
         const nextStep = fu.step + 1;
         const intervalMs = intervals[nextStep - 1] ?? intervals[intervals.length - 1];
-        const nextSendAt = new Date(fu.aiMessageAt.getTime() + intervalMs);
+        // Nunca agenda no passado. Calculando só a partir de aiMessageAt, um
+        // toque enviado depois do intervalo previsto (nutrição de 7/30 dias, ou
+        // lead do SDR agendado pra 24h com a tabela em 4h) já nascia vencido e
+        // o cliente recebia o próximo follow-up minutos depois do anterior.
+        const nextSendAt = new Date(
+          Math.max(fu.aiMessageAt.getTime() + intervalMs, Date.now() + intervalMs),
+        );
         await prisma.conversationFollowUp.update({ where: { id: fu.id }, data: { step: nextStep, nextSendAt } });
       }
 

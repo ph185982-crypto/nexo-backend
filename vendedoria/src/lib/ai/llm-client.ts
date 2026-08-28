@@ -5,6 +5,12 @@ export interface LLMMessage {
   content: string;
 }
 
+// Timeout obrigatório: sem AbortSignal um provedor lento segurava a invocação
+// serverless até o teto de 60s, que a Vercel corta no meio do envio — o cliente
+// recebia parte dos balões e a sessão não era salva. Falhar em 20s permite cair
+// para o próximo provedor dentro do orçamento da invocação.
+const LLM_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS ?? 20000);
+
 export interface LLMCallOptions {
   maxTokens?: number;
   temperature?: number;
@@ -25,6 +31,7 @@ export async function callOpenAI(
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(LLM_TIMEOUT_MS),
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
       body: JSON.stringify({
         model,
@@ -51,6 +58,7 @@ export async function callAnthropic(
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
+      signal: AbortSignal.timeout(LLM_TIMEOUT_MS),
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.ANTHROPIC_API_KEY,
@@ -81,6 +89,7 @@ export async function callGemini(
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GOOGLE_AI_API_KEY}`;
     const res = await fetch(url, {
       method: "POST",
+      signal: AbortSignal.timeout(LLM_TIMEOUT_MS),
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },

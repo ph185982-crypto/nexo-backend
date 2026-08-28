@@ -8,7 +8,7 @@ import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
-import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
+import { normalizeBrazilianNumber, brazilianNumberVariants } from "@/lib/whatsapp/send";
 import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@/lib/manager/handler";
 import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
 import { isMaxOwnerNumber } from "@/lib/max/config";
@@ -261,10 +261,15 @@ async function handleIncomingMessage(
     console.log(`[Webhook] Mídia inbound | type=${message.type} | media_id=${inboundMediaId}`);
   }
 
+  // Busca por todas as grafias do número: `phone` e `message.from` costumam ser
+  // a mesma string, então um lead gravado em outro formato (importação de CSV,
+  // cadastro manual formatado, legado de 12 dígitos) não era encontrado e o
+  // webhook criava um SEGUNDO lead pro mesmo cliente — dois cards no Kanban,
+  // histórico partido ao meio e follow-up em dobro.
   let lead = await prisma.lead.findFirst({
     where: {
       organizationId: providerConfig.organizationId,
-      OR: [{ phoneNumber: phone }, { phoneNumber: message.from }],
+      phoneNumber: { in: brazilianNumberVariants(message.from) },
     },
     select: {
       id: true,

@@ -2,12 +2,7 @@ import { prisma } from "@/lib/prisma/client";
 
 export const MAX_OWNER_NUMBER = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 
-function canonicalBR(phone: string): string {
-  let n = phone.replace(/\D/g, "");
-  if (n.startsWith("55") && n.length >= 12) n = n.slice(2);
-  if (n.length === 11 && n[2] === "9") n = n.slice(0, 2) + n.slice(3);
-  return n;
-}
+import { canonicalBrazilianNumber as canonicalBR } from "@/lib/whatsapp/send";
 
 export function isMaxOwnerNumber(phone: string): boolean {
   return canonicalBR(phone) === canonicalBR(MAX_OWNER_NUMBER);

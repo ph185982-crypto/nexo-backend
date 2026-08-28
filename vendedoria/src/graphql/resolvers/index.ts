@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
 import { GraphQLScalarType, Kind } from "graphql";
 import bcrypt from "bcryptjs";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { criarEventoReuniao } from "@/lib/integrations/google-calendar";
 
 interface ResolverContext {
@@ -732,7 +732,11 @@ export const resolvers = {
 
       const lead = await prisma.lead.create({
         data: {
-          phoneNumber: input.phoneNumber as string,
+          // Normaliza na gravação: o atendente digita "(62) 98446-5388" e, sem
+          // isso, o número ia formatado pro banco — nunca casava com o wa_id
+          // que chega da Meta (virava lead duplicado) e ia formatado pra API
+          // de envio em campanhas, que responde 400.
+          phoneNumber: normalizeBrazilianNumber(input.phoneNumber as string),
           profileName: input.profileName as string | undefined,
           email: input.email as string | undefined,
           leadOrigin: input.leadOrigin as string,

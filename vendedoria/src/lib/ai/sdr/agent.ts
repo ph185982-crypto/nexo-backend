@@ -63,6 +63,60 @@ async function notifySdrFailure(
   }).catch(() => {});
 }
 
+// Campos que o LLM pode gravar na sessão. `status` e `mode` ficam de fora de
+// propósito: o modelo às vezes devolvia status="handoff_enviado" junto de
+// action="continue", e aí nenhum bastão era enviado, o lead não virava
+// ESCALATED, mas nos turnos seguintes o próprio modelo lia a sessão e agia como
+// se já tivesse passado o contato — lead qualificado perdido em silêncio.
+// `status` passou a ser derivado exclusivamente de `parsed.action`, no código.
+const CAMPOS_EDITAVEIS_PELO_LLM = [
+  "nome", "canais_atuais", "tem_loja_fisica", "faturamento_total",
+  "ja_vende_marketplace", "marketplace_atual", "problema_principal", "cnpj",
+  "opera_com_equipe", "disponibilidade", "score", "rota", "produto_indicado",
+  "objecoes_mencionadas", "etapa",
+] as const satisfies ReadonlyArray<keyof SDRSession>;
+
+const CAMPOS_LISTA = ["canais_atuais", "marketplace_atual", "objecoes_mencionadas"] as const;
+
+/**
+ * Aplica o updateSession do LLM sobre a sessão atual sem destruir o que já foi
+ * coletado. O prompt pede "apenas os campos que mudaram", mas o modelo devolve
+ * com frequência o campo vazio ("nome": "") num turno em que o assunto não
+ * apareceu — com spread cru isso zerava o dado e o bastão saía com
+ * "Nome: não informado" mesmo tendo o nome coletado turnos antes.
+ *
+ * Listas são unidas em vez de substituídas: `objecoes_mencionadas` carrega o
+ * alerta de risco regulatório que o especialista precisa ver no handoff, e ele
+ * sumia assim que o modelo mencionava qualquer outra objeção.
+ */
+function mergeSdrSession(
+  atual: SDRSession,
+  update: Partial<SDRSession> | undefined,
+): SDRSession {
+  const merged: SDRSession = { ...SDR_EMPTY_SESSION, ...atual, mode: "SDR" };
+  if (!update) return merged;
+
+  for (const campo of CAMPOS_EDITAVEIS_PELO_LLM) {
+    const valor = update[campo];
+    if (valor === undefined || valor === null) continue;
+
+    if ((CAMPOS_LISTA as readonly string[]).includes(campo)) {
+      if (!Array.isArray(valor)) continue;
+      const anterior = (merged[campo] as string[] | undefined) ?? [];
+      const novos = valor.filter((v): v is string => typeof v === "string" && v.trim() !== "");
+      (merged[campo] as string[]) = Array.from(new Set([...anterior, ...novos]));
+      continue;
+    }
+
+    // String vazia = "não mencionado neste turno", não "apagar o que eu sabia".
+    if (typeof valor === "string" && valor.trim() === "") continue;
+
+    (merged[campo] as unknown) = valor;
+  }
+
+  return merged;
+}
+
 // Formato de handoff enviado ao especialista
 function formatHandoffMessage(phone: string, session: SDRSession): string {
   const canais: string[] = [];
@@ -127,34 +181,58 @@ async function callSdrLLM(
   return null;
 }
 
+/**
+ * Valida o objeto vindo do LLM.
+ *
+ * Duas correções sobre a versão anterior, que exigia `parsed.action` truthy:
+ * - Resposta boa sem `action` era descartada nas três tentativas, o cliente
+ *   recebia "tive um probleminha" e o dono um alerta falso — mesmo existindo
+ *   uma resposta pronta. `action` agora cai para "continue".
+ * - `messages: []` passava (Array.isArray([]) é true): nenhum balão era
+ *   enviado, o cliente ficava em silêncio total, mas o código seguia movendo
+ *   kanban e logando sucesso. Agora exige pelo menos um balão com texto.
+ */
+function validarRespostaSdr(parsed: SDRLLMResponse | null): SDRLLMResponse | null {
+  if (!parsed || !Array.isArray(parsed.messages)) return null;
+  const messages = parsed.messages.filter(
+    (m) => m && typeof m.text === "string" && m.text.trim() !== "",
+  );
+  if (messages.length === 0) return null;
+
+  const acoesValidas = ["continue", "handoff", "nurture", "close"];
+  const action = acoesValidas.includes(parsed.action) ? parsed.action : "continue";
+  return { ...parsed, messages, action };
+}
+
 // Parseia a resposta JSON do LLM de forma resiliente
 function parseSdrResponse(raw: string): SDRLLMResponse | null {
   const cleaned = raw.trim();
-  // Tenta JSON direto
-  try {
-    const parsed = JSON.parse(cleaned) as SDRLLMResponse;
-    if (Array.isArray(parsed.messages) && parsed.action) return parsed;
-  } catch { /* continua */ }
-  // Tenta extrair JSON de dentro de markdown
+  const candidatos: string[] = [cleaned];
+
+  // JSON dentro de bloco markdown
   const jsonMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) {
-    try {
-      const parsed = JSON.parse(jsonMatch[1].trim()) as SDRLLMResponse;
-      if (Array.isArray(parsed.messages) && parsed.action) return parsed;
-    } catch { /* continua */ }
-  }
-  // Tenta encontrar primeiro objeto JSON no texto
+  if (jsonMatch) candidatos.push(jsonMatch[1].trim());
+
+  // Primeiro objeto JSON solto no texto
   const objMatch = cleaned.match(/\{[\s\S]*\}/);
-  if (objMatch) {
+  if (objMatch) candidatos.push(objMatch[0]);
+
+  for (const candidato of candidatos) {
     try {
-      const parsed = JSON.parse(objMatch[0]) as SDRLLMResponse;
-      if (Array.isArray(parsed.messages) && parsed.action) return parsed;
-    } catch { /* continua */ }
+      const validado = validarRespostaSdr(JSON.parse(candidato) as SDRLLMResponse);
+      if (validado) return validado;
+    } catch { /* tenta o próximo formato */ }
   }
   return null;
 }
 
-// Agenda follow-ups de nutrição (dia 7, 20, 30)
+// Agenda a nutrição do lead morno — primeiro toque em 7 dias.
+//
+// Antes isto era um laço de step 1..3 fazendo upsert por `conversationId`, que
+// é @unique: as três iterações escreviam NA MESMA LINHA e só a última
+// sobrevivia. Na prática a "nutrição de 3 toques em 30 dias" virava uma única
+// mensagem daqui a um mês. Os toques seguintes são responsabilidade do cron,
+// que avança o step conforme a linha for sendo processada.
 async function scheduleNurtureFollowups(
   conversationId: string,
   phone: string,
@@ -162,24 +240,22 @@ async function scheduleNurtureFollowups(
   accessToken: string | null | undefined,
 ): Promise<void> {
   const now = new Date();
-  const delays = [7, 20, 30].map((d) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000));
+  const primeiroToque = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-  for (let step = 1; step <= 3; step++) {
-    await prisma.conversationFollowUp.upsert({
-      where: { conversationId },
-      update: { step, status: "ACTIVE", aiMessageAt: now, nextSendAt: delays[step - 1] },
-      create: {
-        conversationId,
-        step,
-        status: "ACTIVE",
-        aiMessageAt: now,
-        nextSendAt: delays[step - 1],
-        phoneNumber: phone,
-        phoneNumberId,
-        accessToken: accessToken ?? undefined,
-      },
-    });
-  }
+  await prisma.conversationFollowUp.upsert({
+    where: { conversationId },
+    update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: primeiroToque },
+    create: {
+      conversationId,
+      step: 1,
+      status: "ACTIVE",
+      aiMessageAt: now,
+      nextSendAt: primeiroToque,
+      phoneNumber: phone,
+      phoneNumberId,
+      accessToken: accessToken ?? undefined,
+    },
+  });
 }
 
 // Agenda follow-up de lead qualificado sem resposta (24h, 48h, 72h)
@@ -246,6 +322,12 @@ export async function processSdrResponse(
     console.log(`[SDR] Conv ${conversationId} já está ESCALATED — ignorando`);
     return;
   }
+  // Respeita o opt-out: o lead pediu para não ser mais contatado, então a IA
+  // não volta a puxar conversa. O atendimento humano continua possível pelo CRM.
+  if (conversation.lead.status === "BLOCKED") {
+    console.log(`[SDR] Lead ${conversation.lead.id} pediu opt-out — IA não responde`);
+    return;
+  }
   if (conversation.humanTakeover) {
     console.log(`[SDR] humanTakeover=true — ignorando conv ${conversationId}`);
     return;
@@ -268,8 +350,20 @@ export async function processSdrResponse(
   });
   await new Promise((r) => setTimeout(r, DEBOUNCE_MS));
   if (thisMessage) {
+    // O timestamp da Meta vem em SEGUNDOS: duas mensagens digitadas no mesmo
+    // segundo ficam com sentAt idêntico. Com `gt` puro nenhuma das duas runs
+    // via a outra como mais nova e ambas respondiam — justamente a rajada que
+    // o debounce existe pra resolver. O desempate por id cobre o empate: a run
+    // mais nova continua, a mais antiga aborta.
     const newerCount = await prisma.whatsappMessage.count({
-      where: { conversationId, role: "USER", sentAt: { gt: thisMessage.sentAt } },
+      where: {
+        conversationId,
+        role: "USER",
+        OR: [
+          { sentAt: { gt: thisMessage.sentAt } },
+          { sentAt: thisMessage.sentAt, id: { gt: incomingMessageId } },
+        ],
+      },
     });
     if (newerCount > 0) {
       console.log(`[SDR] Debounce: mensagem mais nova já chegou — abortando run de ${incomingMessageId}`);
@@ -280,6 +374,13 @@ export async function processSdrResponse(
   if (detectDesinteresse(userMessage)) {
     console.log(`[SDR] Desinteresse/opt-out detectado — encerrando conv ${conversationId}`);
     await prisma.lead.update({ where: { id: lead.id }, data: { status: "BLOCKED" } }).catch(() => {});
+    // Também tira do funil de trabalho: marcando só o status, o lead que pediu
+    // pra não ser mais contatado continuava aparecendo em "Novos"/"Em
+    // qualificação" e o dono seguia tentando trabalhar um contato morto.
+    await moverLeadPorTipo(
+      lead.id, provider.organizationId, "DESCARTADO",
+      "Lead pediu para não ser mais contatado (opt-out)", "LOST",
+    );
     await prisma.conversationFollowUp.updateMany({
       where: { conversationId, status: "ACTIVE" },
       data: { status: "OPT_OUT" },
@@ -344,12 +445,17 @@ export async function processSdrResponse(
   }
 
   // ── Atualizar sessão ─────────────────────────────────────────────────────────
-  const newSession: SDRSession = {
-    ...SDR_EMPTY_SESSION,
-    ...session,
-    ...(parsed.updateSession ?? {}),
-    mode: "SDR",
-  };
+  const newSession = mergeSdrSession(session, parsed.updateSession);
+
+  // Persiste o que foi coletado ANTES de enviar os balões. O envio leva de 12 a
+  // 20s (delays + "digitando..."), e se a invocação for cortada nesse meio a
+  // sessão nunca era salva: na mensagem seguinte o agente voltava para
+  // etapa "boas_vindas" com score 0 e perguntava tudo de novo, apesar da regra
+  // do prompt de nunca repetir pergunta já respondida. O status definitivo é
+  // gravado no fim, depois de processada a ação.
+  await saveSdrSession(conversationId, newSession).catch((e) =>
+    console.error("[SDR] Falha ao salvar sessão parcial:", e),
+  );
 
   // ── Enviar mensagens em blocos ───────────────────────────────────────────────
   if (!agent.sandboxMode) {
@@ -394,23 +500,35 @@ export async function processSdrResponse(
   switch (parsed.action) {
     case "handoff": {
       newSession.status = "handoff_enviado";
+
+      // Reivindica o handoff ANTES de enviar o bastão. O guard lá em cima lê o
+      // status no início da run, ~30s antes desta linha — se o lead mandasse
+      // outra mensagem nesse meio-tempo, a segunda run passava pelo guard e o
+      // especialista recebia "NOVO LEAD" duplicado do mesmo cliente.
+      // updateMany condicional é atômico: só uma run leva count===1.
+      const claim = await prisma.lead.updateMany({
+        where: { id: lead.id, status: { not: "ESCALATED" } },
+        data: { status: "ESCALATED", lastActivityAt: now },
+      }).catch(() => ({ count: 0 }));
+
+      if (claim.count === 0) {
+        console.log(`[SDR] Handoff já realizado para lead=${lead.id} — ignorando duplicata`);
+        break;
+      }
+
       if (!agent.sandboxMode) {
         const bastao = formatHandoffMessage(phone, newSession);
         await sendWhatsAppMessage(phoneNumberId, HANDOFF_NUMBER, bastao, token).catch((e) =>
           console.error("[SDR] Erro ao enviar bastão:", e)
         );
       }
-      const escalatedColumn = await prisma.kanbanColumn.findFirst({
-        where: { organizationId: provider.organizationId, type: "ESCALATED" },
-      }).catch(() => null);
-      await prisma.lead.update({
-        where: { id: lead.id },
-        data: {
-          status: "ESCALATED",
-          ...(escalatedColumn ? { kanbanColumnId: escalatedColumn.id } : {}),
-          lastActivityAt: now,
-        },
-      }).catch(() => {});
+      // Usa o helper em vez de findFirst inline: se a org não tiver a coluna
+      // ESCALATED, o helper loga o aviso e tenta o fallback, em vez de deixar o
+      // lead marcado como escalado mas visualmente parado na coluna anterior.
+      await moverLeadPorTipo(
+        lead.id, provider.organizationId, "ESCALATED",
+        "Lead escalado para especialista pelo SDR", "QUALIFICADO",
+      );
       await prisma.leadActivity.create({
         data: { leadId: lead.id, type: "STATUS_CHANGE", description: "Lead escalado para especialista pelo SDR", createdBy: "AI_AGENT" },
       }).catch(() => {});
@@ -446,7 +564,13 @@ export async function processSdrResponse(
 
     case "continue":
     default: {
-      if (newSession.status === "novo") newSession.status = "em_qualificacao";
+      // Qualquer estado não-terminal volta pra "em qualificação" quando o lead
+      // responde de novo. Antes só "novo" era promovido, então um lead marcado
+      // "morno" ou "fora" que voltasse a conversar seguia sendo qualificado
+      // ativamente mas continuava parado em "Mornos"/"Fora do ICP" no board.
+      if (newSession.status !== "handoff_enviado") {
+        newSession.status = "em_qualificacao";
+      }
       // Reflete a qualificação em andamento no Kanban — moverLeadPorTipo já é
       // idempotente (não faz nada se o lead já está na coluna), seguro chamar
       // a cada turno em vez de só na transição novo→em_qualificacao.
