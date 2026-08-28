@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
-import { createHmac } from "crypto";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
+import { drainWebhookQueue } from "@/lib/jobs/webhook-queue";
 
 function parseFollowUpIntervals(hoursStr: string): number[] {
   const parsed = hoursStr.split(",").map((h) => parseFloat(h.trim())).filter((h) => !isNaN(h) && h > 0);
@@ -158,16 +158,39 @@ export async function GET(req: Request) {
   const followUpPrompt = (agentConfig as typeof agentConfig & { followUpPrompt?: string | null })?.followUpPrompt ?? null;
   const agentName = agentConfig?.agentName ?? "Pedro";
 
-  const due = await prisma.conversationFollowUp.findMany({
-    where: { status: "ACTIVE", nextSendAt: { lte: now } },
-    take: 50,
-  });
+  // Claim atômico com lease: empurra nextSendAt 15 min pra frente ao pegar o
+  // item, então uma execução concorrente (outro cron, ou o gatilho oportunista
+  // do webhook) não pega o mesmo e o cliente não recebe follow-up duplicado.
+  // Se a invocação morrer no meio, o lease vence e o item volta a ser elegível.
+  const due = await prisma.$queryRaw<Array<{
+    id: string;
+    conversationId: string;
+    step: number;
+    leadName: string | null;
+    phoneNumber: string;
+    phoneNumberId: string;
+    accessToken: string | null;
+    aiMessageAt: Date;
+  }>>`
+    UPDATE "ConversationFollowUp"
+       SET "nextSendAt" = NOW() + INTERVAL '15 minutes'
+     WHERE id IN (
+       SELECT id FROM "ConversationFollowUp"
+        WHERE status = 'ACTIVE' AND "nextSendAt" <= NOW()
+        ORDER BY "nextSendAt" ASC
+        LIMIT 50
+        FOR UPDATE SKIP LOCKED
+     )
+    RETURNING id, "conversationId", step, "leadName",
+              "phoneNumber", "phoneNumberId", "accessToken", "aiMessageAt"
+  `;
 
   results.checked = due.length;
 
   for (const fu of due) {
-    // Deixa ~10s de folga pro fim da invocação — os pendentes ficam com
-    // nextSendAt já vencido e são pegos na próxima chamada do cron.
+    // Deixa ~10s de folga pro fim da invocação. Os itens já reservados que
+    // não deram tempo ficam com o lease de 15 min e voltam a ser elegíveis
+    // quando ele vencer.
     if (Date.now() - inicio > 50_000) {
       console.warn(`[FollowUp] Orçamento de tempo esgotado — ${results.sent} enviados, restam itens para a próxima execução`);
       break;
@@ -226,45 +249,10 @@ export async function GET(req: Request) {
     }
   }
 
-  // ── Process retry queue ───────────────────────────────────────────────────
-  const queueResults = { retried: 0, requeued: 0, dropped: 0 };
-  const pending = await prisma.webhookQueue.findMany({
-    where: { status: "PENDING", retryAfter: { lte: now } },
-    take: 20,
-    orderBy: { createdAt: "asc" },
-  });
-
-  for (const item of pending) {
-    if (item.attempts >= 5) {
-      await prisma.webhookQueue.update({ where: { id: item.id }, data: { status: "FAILED" } });
-      queueResults.dropped++;
-      continue;
-    }
-    try {
-      const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:10000";
-      const secret = process.env.META_WHATSAPP_APP_SECRET ?? "";
-      const sig = "sha256=" + createHmac("sha256", secret).update(item.payload).digest("hex");
-      const res = await fetch(`${baseUrl}/api/webhooks/whatsapp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-hub-signature-256": sig },
-        body: item.payload,
-      });
-      if (res.ok) {
-        const json = await res.json() as { queued?: boolean };
-        if (!json.queued) {
-          await prisma.webhookQueue.update({ where: { id: item.id }, data: { status: "PROCESSED" } });
-          queueResults.retried++;
-        } else {
-          const backoff = Math.min(300_000, 30_000 * (item.attempts + 1));
-          await prisma.webhookQueue.update({ where: { id: item.id }, data: { attempts: item.attempts + 1, retryAfter: new Date(Date.now() + backoff) } });
-          queueResults.requeued++;
-        }
-      }
-    } catch (err) {
-      await prisma.webhookQueue.update({ where: { id: item.id }, data: { attempts: item.attempts + 1, error: String(err), retryAfter: new Date(Date.now() + 60_000) } });
-      queueResults.requeued++;
-    }
-  }
+  // ── Reprocessa a fila de retry ────────────────────────────────────────────
+  // Lógica compartilhada com o dreno oportunista do webhook (claim atômico,
+  // seguro rodar em paralelo com ele).
+  const queueResults = await drainWebhookQueue(20);
 
   return NextResponse.json({ ok: true, followups: results, queue: queueResults });
 }

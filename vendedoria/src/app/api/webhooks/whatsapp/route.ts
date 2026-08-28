@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
+import { Prisma } from "@prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
 import { processSdrResponse } from "@/lib/ai/sdr/agent";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
@@ -12,6 +13,7 @@ import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@
 import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
 import { isMaxOwnerNumber } from "@/lib/max/config";
 import { handleMaxMessage } from "@/lib/max/responder";
+import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
 
 // Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
 // default da função para terminar — a Vercel pode congelar a invocação assim que
@@ -98,6 +100,19 @@ export async function POST(req: NextRequest) {
           await handleStatusUpdate(status);
         }
       }
+    }
+
+    // ── Dreno oportunista da fila de retry ───────────────────────────────────
+    // O plano Hobby da Vercel só permite 2 crons diários (ambos já em uso), e
+    // "1x por dia" deixaria um cliente que caiu na fila esperando horas. Então
+    // o próprio tráfego carrega o reprocessamento: cada mensagem recebida
+    // drena alguns itens, em after() (fora do caminho da resposta pra Meta).
+    // O guard do RETRY_HEADER evita recursão — um retry não dispara outro.
+    if (req.headers.get(RETRY_HEADER) !== "1") {
+      after(async () => {
+        await drainWebhookQueue(5);
+        await triggerDueFollowups();
+      });
     }
 
     return NextResponse.json({ success: true });
@@ -318,12 +333,11 @@ async function handleIncomingMessage(
     }).catch(() => {});
   }
 
-  const alreadyProcessed = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });
-  if (alreadyProcessed) {
-    console.log(`[Webhook] Mensagem duplicada ignorada: ${message.id}`);
-    return;
-  }
-
+  // Salva a mensagem. Se já existe (reenvio da Meta, replay da fila de retry,
+  // ou outra invocação concorrente), segue adiante em vez de sair: quem decide
+  // se a IA responde é a reivindicação de `aiProcessedAt` mais abaixo — a
+  // mensagem pode já estar salva justamente porque a execução anterior morreu
+  // ANTES de disparar a IA, e nesse caso o cliente ainda está sem resposta.
   let savedMessage;
   try {
     savedMessage = await prisma.whatsappMessage.create({
@@ -338,12 +352,13 @@ async function handleIncomingMessage(
       },
     });
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e);
-    if (msg.includes("Unique constraint") || msg.includes("unique")) {
-      console.log(`[Webhook] Race-condition dedup: mensagem ${message.id} já foi processada por outro worker`);
-      return;
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      console.log(`[Webhook] Mensagem ${message.id} já salva — seguindo para checar se a IA já respondeu`);
+      savedMessage = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });
+      if (!savedMessage) return;
+    } else {
+      throw e;
     }
-    throw e;
   }
 
   if (inboundMediaId) {
@@ -367,6 +382,8 @@ async function handleIncomingMessage(
     console.error("[Webhook] Push notification error:", e)
   );
 
+  // Não-fatal: se isso lançar (pressão de pool), a exceção subia até o catch do
+  // POST e o disparo da IA nunca era agendado — o cliente ficava sem resposta.
   await prisma.whatsappConversation.update({
     where: { id: conversation.id },
     data: {
@@ -374,7 +391,7 @@ async function handleIncomingMessage(
       updatedAt: new Date(),
       ...(message.type === "location" ? { localizacaoRecebida: true } : {}),
     },
-  });
+  }).catch((e) => console.error(`[Webhook] Falha ao atualizar conv ${conversation.id}:`, e));
   console.log(`[Webhook] Conv ${conversation.id} atualizada | lastMessageAt=${sentAt.toISOString()} | localizacaoRecebida=${message.type === "location"}`);
 
   await prisma.conversationFollowUp.updateMany({
@@ -432,6 +449,23 @@ async function handleIncomingMessage(
   }
 
   const agentConfig = providerConfig.agent!;
+
+  // Reivindica o direito de responder esta mensagem. Atômico: se duas
+  // invocações concorrentes (reenvio da Meta, replay da fila) chegarem aqui,
+  // só uma leva count===1 e o cliente recebe uma única resposta. E como a
+  // marca só é gravada AQUI — depois de tudo que podia falhar — um replay de
+  // mensagem que ficou sem resposta ainda encontra aiProcessedAt nulo e
+  // dispara a IA, em vez de considerar a mensagem "já processada".
+  const claim = await prisma.whatsappMessage.updateMany({
+    where: { id: message.id, aiProcessedAt: null },
+    data: { aiProcessedAt: new Date() },
+  }).catch(() => ({ count: 0 }));
+
+  if (claim.count === 0) {
+    console.log(`[Webhook] IA já respondeu a ${message.id} — ignorando duplicata`);
+    return;
+  }
+
   after(() =>
     runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
       console.error("[Webhook] AI flow error:", e),
@@ -474,10 +508,20 @@ async function handleStatusUpdate(status: { id: string; status: string }) {
   const newStatus = statusMap[status.status];
   if (!newStatus) return;
 
-  await prisma.whatsappMessage.updateMany({
-    where: { id: status.id },
+  // status.id é o wamid da Meta, não o cuid interno — casar por `id` (como era
+  // feito antes) nunca encontrava nada e todo aviso de falha de entrega era
+  // descartado em silêncio.
+  const { count } = await prisma.whatsappMessage.updateMany({
+    where: { wamid: status.id },
     data: { status: newStatus },
-  }).catch(() => {});
+  }).catch(() => ({ count: 0 }));
+
+  if (count === 0) {
+    // Mensagens enviadas antes desta correção não têm wamid gravado — esperado.
+    console.log(`[Webhook] Status ${status.status} sem mensagem correspondente (wamid ${status.id})`);
+  } else if (newStatus === "FAILED") {
+    console.error(`[Webhook] ⚠️ Meta reportou FALHA DE ENTREGA (wamid ${status.id}) — cliente não recebeu`);
+  }
 }
 
 function verifySignature(body: string, signature: string | null): boolean {

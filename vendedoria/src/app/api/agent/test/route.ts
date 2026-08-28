@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { auth } from "@/lib/auth";
 
 function parseAIResponse(raw: string): { mensagens: string[]; delays: number[] } {
   const parts = raw.split(/---+\s*(\d+)s?\s*---+/);
@@ -61,6 +62,12 @@ async function callLLM(systemPrompt: string, userMessage: string): Promise<strin
 
 export async function POST(req: NextRequest) {
   try {
+    // Rota de teste: sem auth, era um proxy de LLM aberto — qualquer um podia
+    // queimar os créditos de API e extrair o script de vendas via `rawFull`.
+    if (!(await auth())?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { message } = await req.json() as { message: string };
     const config = await prisma.agentConfig.findFirst();
     if (!config) {

@@ -416,6 +416,10 @@ model ConversationTag {
 
 model WhatsappMessage {
   id             String   @id @default(cuid())
+  // ID da mensagem na Meta ("wamid.…"). Os webhooks de status (sent/delivered/
+  // read/failed) chegam identificados por ele — sem guardar, o aviso de FALHA
+  // DE ENTREGA da Meta não casa com nenhuma linha e é descartado em silêncio.
+  wamid          String?  @unique
   content        String   @db.Text
   type           String   // TEXT | IMAGE | AUDIO | VIDEO | DOCUMENT
   role           String   // ASSISTANT | USER
@@ -424,6 +428,11 @@ model WhatsappMessage {
   caption        String?
   repliedToId    String?
   status         String   @default("SENT") // SENT | DELIVERED | READ | FAILED
+  // Marca que o fluxo de IA já foi disparado para esta mensagem do cliente.
+  // Reivindicado atomicamente antes de agendar a resposta: se o webhook falhar
+  // depois de salvar a mensagem, o replay da fila reconhece que a IA ainda não
+  // respondeu e dispara — sem isso o cliente ficava sem resposta pra sempre.
+  aiProcessedAt  DateTime?
   conversationId String
   conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
 }

@@ -1481,11 +1481,38 @@ export async function processAIResponse(
         await new Promise((r) => setTimeout(r, 150 + Math.floor(Math.random() * 250)));
       }
 
+      // Enviar ANTES de gravar: gravando primeiro com status "SENT", qualquer
+      // falha de envio (token expirado, janela de 24h fechada, rate limit)
+      // deixava o CRM exibindo uma conversa saudável enquanto o cliente não
+      // recebeu nada — o atendente não tinha como saber que precisava agir.
       const msgNow = new Date();
+      let wamid: string | undefined;
+      let sendFailed = false;
+      try {
+        wamid = await sendWhatsAppMessage(
+          provider.businessPhoneNumberId, to, mensagens[i], token,
+          i === 0 ? contextMessageId : undefined,
+        );
+      } catch (e) {
+        sendFailed = true;
+        console.error(`[AI Agent] ❌ Falha ao enviar bolha ${i + 1}/${mensagens.length} para ${to}:`, e);
+      }
+
       await prisma.whatsappMessage.create({
-        data: { content: mensagens[i], type: "TEXT", role: "ASSISTANT", sentAt: msgNow, status: "SENT", conversationId },
-      });
-      await sendWhatsAppMessage(provider.businessPhoneNumberId, to, mensagens[i], token, i === 0 ? contextMessageId : undefined);
+        data: {
+          wamid,
+          content: mensagens[i],
+          type: "TEXT",
+          role: "ASSISTANT",
+          sentAt: msgNow,
+          status: sendFailed ? "FAILED" : "SENT",
+          conversationId,
+        },
+      }).catch((e) => console.error("[AI Agent] Falha ao gravar mensagem:", e));
+
+      // Envio falhou: abortar as bolhas seguintes (provavelmente falhariam
+      // igual) em vez de seguir gravando mensagens que ninguém recebeu.
+      if (sendFailed) break;
     }
 
     // ── Envia Meet link ao cliente após as mensagens de texto da IA ─────────

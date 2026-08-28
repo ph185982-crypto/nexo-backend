@@ -368,9 +368,13 @@ export async function processSdrResponse(
           void msg.audio; // nunca executa
         } else {
           await simulateTypingDelay(phoneNumberId, incomingMessageId, msg.text, phone, token);
-          await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token, isFirstBubble ? incomingMessageId : undefined);
+          const wamid = await sendWhatsAppMessage(
+            phoneNumberId, phone, msg.text, token,
+            isFirstBubble ? incomingMessageId : undefined,
+          );
           await prisma.whatsappMessage.create({
             data: {
+              wamid,
               content: msg.text,
               type: "TEXT",
               role: "ASSISTANT",
