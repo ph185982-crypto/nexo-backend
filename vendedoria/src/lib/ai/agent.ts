@@ -1084,7 +1084,7 @@ export async function processAIResponse(
       slotsDisponiveis,
       sessaoProspeccao,
     });
-    const flagsRuntimeSection = "\n\n[AUDIO:texto] — envia mensagem de voz TTS. Use para mensagens pessoais ou quando o cliente preferir áudio.";
+    const flagsRuntimeSection = ""; // áudio TTS desabilitado globalmente
     const sessaoContext = buildSessaoContext(sessaoNacional, collectedData);
     const systemPromptFinal = compiled.systemPrompt + productSection + leadContext + flagsRuntimeSection + sessaoContext;
 
@@ -1798,23 +1798,10 @@ export async function processAIResponse(
       }
     }
 
-    // ── [AUDIO:texto] — TTS via ElevenLabs/OpenAI ───────────────────────────────
+    // ── [AUDIO:texto] — TTS desabilitado globalmente ────────────────────────────
     const audioFlagMatch = combinedRaw.match(/\[AUDIO:([^\]]+)\]/i);
     if (audioFlagMatch) {
-      const audioText = audioFlagMatch[1].trim();
-      if (audioText) {
-        try {
-          const { gerarESalvarAudioWhatsApp } = await import("@/lib/audio/gerar-audio");
-          const enviado = await gerarESalvarAudioWhatsApp(audioText, conversationId, provider.businessPhoneNumberId, to, token);
-          if (enviado) {
-            console.log(`[AI Agent] ✅ Áudio TTS enviado: "${audioText.substring(0, 50)}"`);
-          } else {
-            console.warn(`[AI Agent] ⚠️ Áudio TTS indisponível para: "${audioText.substring(0, 50)}"`);
-          }
-        } catch (e) {
-          console.error("[AI Agent] ❌ Áudio TTS falhou:", e);
-        }
-      }
+      // áudio TTS desativado — não envia nada
     }
 
     // ── Agendar follow-up (só se não confirmado/perdido/fora de área) ──────────

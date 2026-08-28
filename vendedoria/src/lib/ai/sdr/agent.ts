@@ -363,16 +363,9 @@ export async function processSdrResponse(
       if (delay > 0) await new Promise((r) => setTimeout(r, delay));
 
       try {
-        if (msg.audio) {
-          const { gerarESalvarAudioWhatsApp } = await import("@/lib/audio/gerar-audio");
-          const enviado = await gerarESalvarAudioWhatsApp(msg.text, conversationId, phoneNumberId, phone, token);
-          if (!enviado) {
-            // TTS indisponível — cai pra texto em vez de perder o balão
-            await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token, isFirstBubble ? incomingMessageId : undefined);
-            await prisma.whatsappMessage.create({
-              data: { content: msg.text, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-            }).catch(() => {});
-          }
+        // msg.audio desativado — áudio TTS desabilitado globalmente
+        if (false && msg.audio) {
+          void msg.audio; // nunca executa
         } else {
           await simulateTypingDelay(phoneNumberId, incomingMessageId, msg.text, phone, token);
           await sendWhatsAppMessage(phoneNumberId, phone, msg.text, token, isFirstBubble ? incomingMessageId : undefined);
