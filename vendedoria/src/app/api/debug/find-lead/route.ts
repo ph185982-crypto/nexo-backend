@@ -11,10 +11,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const name = searchParams.get("name") ?? "";
-  if (!name) return NextResponse.json({ error: "name obrigatório" }, { status: 400 });
+  const phone = searchParams.get("phone") ?? "";
+  if (!name && !phone) return NextResponse.json({ error: "name ou phone obrigatório" }, { status: 400 });
 
   const leads = await prisma.lead.findMany({
-    where: { profileName: { contains: name, mode: "insensitive" } },
+    where: phone
+      ? { phoneNumber: { contains: phone.replace(/\D/g, "").slice(-8) } }
+      : { profileName: { contains: name, mode: "insensitive" } },
     select: {
       id: true, profileName: true, phoneNumber: true, status: true,
       organizationId: true, createdAt: true, lastActivityAt: true,
@@ -68,5 +71,34 @@ export async function GET(req: NextRequest) {
     })),
   );
 
-  return NextResponse.json({ count: leads.length, leads: withExtras });
+  // Quando busca por telefone, também procura direto em WhatsappConversation —
+  // o dono/especialista não é necessariamente um Lead, mas se ele já mandou
+  // mensagem pro número do bot alguma vez, existe uma conversa com o histórico
+  // que diz se a janela de 24h da Meta está aberta.
+  let ownerConversation = null;
+  if (phone) {
+    const digits = phone.replace(/\D/g, "").slice(-8);
+    const conv = await prisma.whatsappConversation.findFirst({
+      where: { customerWhatsappBusinessId: { contains: digits } },
+      select: { id: true, customerWhatsappBusinessId: true, lastMessageAt: true },
+    });
+    if (conv) {
+      const lastInbound = await prisma.whatsappMessage.findFirst({
+        where: { conversationId: conv.id, role: "USER" },
+        orderBy: { sentAt: "desc" },
+        select: { sentAt: true, content: true },
+      });
+      ownerConversation = {
+        ...conv,
+        lastInboundFromOwner: lastInbound,
+        horasDesdeUltimaMensagemDono: lastInbound
+          ? (Date.now() - new Date(lastInbound.sentAt).getTime()) / 3_600_000
+          : null,
+      };
+    } else {
+      ownerConversation = { error: `Nenhuma WhatsappConversation encontrada terminando em ${digits}` };
+    }
+  }
+
+  return NextResponse.json({ count: leads.length, leads: withExtras, ownerConversation });
 }
