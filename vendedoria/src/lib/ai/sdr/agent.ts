@@ -480,7 +480,7 @@ export async function processSdrResponse(
   } catch { /* não crítico */ }
 
   // ── Construir system prompt ─────────────────────────────────────────────────
-  const systemPrompt = buildSdrSystemPrompt(session);
+  const systemPrompt = buildSdrSystemPrompt(session, lead.profileName);
 
   // ── Chamar LLM ──────────────────────────────────────────────────────────────
   let raw: string | null = null;
