@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   const session = await loadSdrSession(conversationId);
   const bastao = formatHandoffMessage(conversation.lead.phoneNumber, session);
 
-  await notificarHandoff(
+  const resultado = await notificarHandoff(
     bastao,
     conversation.provider.businessPhoneNumberId,
     conversation.provider.accessToken ?? undefined,
@@ -41,5 +41,5 @@ export async function GET(req: NextRequest) {
     conversationId,
   );
 
-  return NextResponse.json({ ok: true, bastao, session });
+  return NextResponse.json({ ok: true, ...resultado, bastao, session });
 }

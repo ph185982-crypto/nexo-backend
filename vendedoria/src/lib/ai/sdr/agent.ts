@@ -163,17 +163,19 @@ export async function notificarHandoff(
   organizationId: string,
   leadId: string,
   conversationId: string,
-): Promise<void> {
+): Promise<{ whatsappOk: boolean; erroWhatsapp?: string; janelaFechada?: boolean }> {
   let whatsappOk = false;
+  let erroWhatsapp: string | undefined;
+  let janelaFechada = false;
   try {
     await sendWhatsAppMessage(phoneNumberId, HANDOFF_NUMBER, bastao, token);
     whatsappOk = true;
   } catch (e) {
-    const detalhe = e instanceof Error ? e.message : String(e);
-    const janelaFechada = /131047|24.?hour|re-?engagement/i.test(detalhe);
+    erroWhatsapp = e instanceof Error ? e.message : String(e);
+    janelaFechada = /131047|24.?hour|re-?engagement/i.test(erroWhatsapp);
     console.error(
       `[SDR] ❌ Falha ao enviar bastão via WhatsApp${janelaFechada ? " (janela de 24h fechada — especialista precisa mandar uma mensagem pro bot pra reabrir)" : ""}:`,
-      detalhe,
+      erroWhatsapp,
     );
   }
 
@@ -195,6 +197,8 @@ export async function notificarHandoff(
     url: `/crm/lead/kanban?leadId=${leadId}`,
     tag: `handoff-${leadId}`,
   }).catch((e) => console.error("[SDR] Falha ao enviar push do handoff:", e));
+
+  return { whatsappOk, erroWhatsapp, janelaFechada };
 }
 
 // Chama o LLM com fallback chain
