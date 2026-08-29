@@ -100,5 +100,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ count: leads.length, leads: withExtras, ownerConversation });
+  const pushSubscriptionsCount = await prisma.pushSubscription.count();
+
+  return NextResponse.json({ count: leads.length, leads: withExtras, ownerConversation, pushSubscriptionsCount });
 }

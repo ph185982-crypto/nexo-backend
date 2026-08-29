@@ -118,7 +118,7 @@ function mergeSdrSession(
 }
 
 // Formato de handoff enviado ao especialista
-function formatHandoffMessage(phone: string, session: SDRSession): string {
+export function formatHandoffMessage(phone: string, session: SDRSession): string {
   const canais: string[] = [];
   if (session.canais_atuais.length > 0) canais.push(...session.canais_atuais);
   if (session.tem_loja_fisica) canais.push("Loja física");
@@ -140,6 +140,61 @@ ${session.produto_indicado ? `✅ Produto indicado: ${session.produto_indicado}`
 ${session.cnpj ? `📄 CNPJ: ${session.cnpj}` : ""}
 
 ⚡ Ação: Entrar em contato no período informado para agendar diagnóstico gratuito (20 min).`;
+}
+
+// Notifica o especialista sobre um handoff por TODOS os canais disponíveis —
+// nunca só WhatsApp.
+//
+// A API do WhatsApp só aceita mensagem de texto livre pra um número que
+// mandou mensagem pro bot nas últimas 24h (janela de atendimento da Meta).
+// Se o especialista não conversa com o próprio bot todo dia — o normal —,
+// o envio falha com HTTP 400 (erro 131047) e, antes desta correção, esse
+// erro era só logado: o lead virava ESCALATED no CRM mas a notificação
+// nunca chegava a lugar nenhum, silenciosamente, pra QUALQUER cliente.
+//
+// Fix: sempre grava um OwnerNotification (aparece na CRM independente de
+// canal) e sempre dispara push notification (não depende da janela da
+// Meta) — o WhatsApp continua sendo tentado por ser o canal mais imediato,
+// mas deixou de ser o único.
+export async function notificarHandoff(
+  bastao: string,
+  phoneNumberId: string,
+  token: string | undefined,
+  organizationId: string,
+  leadId: string,
+  conversationId: string,
+): Promise<void> {
+  let whatsappOk = false;
+  try {
+    await sendWhatsAppMessage(phoneNumberId, HANDOFF_NUMBER, bastao, token);
+    whatsappOk = true;
+  } catch (e) {
+    const detalhe = e instanceof Error ? e.message : String(e);
+    const janelaFechada = /131047|24.?hour|re-?engagement/i.test(detalhe);
+    console.error(
+      `[SDR] ❌ Falha ao enviar bastão via WhatsApp${janelaFechada ? " (janela de 24h fechada — especialista precisa mandar uma mensagem pro bot pra reabrir)" : ""}:`,
+      detalhe,
+    );
+  }
+
+  await prisma.ownerNotification.create({
+    data: {
+      type: "ESCALATION",
+      title: whatsappOk ? "🔥 Novo lead escalado" : "🔥 Novo lead escalado (WhatsApp falhou — veja aqui)",
+      body: bastao,
+      organizationId,
+      leadId,
+      conversationId,
+    },
+  }).catch((e) => console.error("[SDR] Falha ao gravar OwnerNotification:", e));
+
+  const { sendPushToAll } = await import("@/lib/push/notificar");
+  await sendPushToAll({
+    title: whatsappOk ? "🔥 Novo lead escalado" : "🔥 Novo lead escalado — WhatsApp não entregou",
+    body: bastao.split("\n").filter(Boolean).slice(0, 3).join(" · ").slice(0, 180),
+    url: `/crm/lead/kanban?leadId=${leadId}`,
+    tag: `handoff-${leadId}`,
+  }).catch((e) => console.error("[SDR] Falha ao enviar push do handoff:", e));
 }
 
 // Chama o LLM com fallback chain
@@ -518,9 +573,7 @@ export async function processSdrResponse(
 
       if (!agent.sandboxMode) {
         const bastao = formatHandoffMessage(phone, newSession);
-        await sendWhatsAppMessage(phoneNumberId, HANDOFF_NUMBER, bastao, token).catch((e) =>
-          console.error("[SDR] Erro ao enviar bastão:", e)
-        );
+        await notificarHandoff(bastao, phoneNumberId, token, provider.organizationId, lead.id, conversationId);
       }
       // Usa o helper em vez de findFirst inline: se a org não tiver a coluna
       // ESCALATED, o helper loga o aviso e tenta o fallback, em vez de deixar o
