@@ -80,6 +80,12 @@ def _resolve_db_url(database_url: str) -> str:
 
         # Render internal hostname pattern: dpg-{id}-a (no dots, no TLD)
         if not re.fullmatch(r"dpg-[a-z0-9]+-a", host):
+            # For any non-Render hostname (Neon, Supabase, Vercel Postgres, etc.)
+            # ensure sslmode=require — all managed Postgres providers require SSL
+            # and asyncpg won't negotiate it without an explicit sslmode.
+            if "sslmode" not in database_url:
+                sep = "&" if "?" in database_url else "?"
+                return database_url + f"{sep}sslmode=require"
             return database_url
 
         # Try all 5 Render regions and return the first valid-looking one.
