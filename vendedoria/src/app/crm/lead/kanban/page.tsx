@@ -115,7 +115,7 @@ function LeadCard({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`kanban-card cursor-grab active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${dragging ? "shadow-xl rotate-2" : ""}`}
+      className={`kanban-card cursor-grab active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${dragging ? "shadow-xl rotate-2" : ""} ${lead.kanbanColumn?.type === "GANHO" ? "border-green-500/50 bg-green-500/5 ring-1 ring-green-500/20" : ""}`}
       onClick={onClick}
     >
       <div className="flex items-start gap-2.5">

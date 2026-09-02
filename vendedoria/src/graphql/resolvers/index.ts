@@ -744,6 +744,11 @@ export const resolvers = {
           kanbanColumnId,
         },
       });
+      // Cria rascunho do diagnóstico quando criado diretamente em GANHO
+      const col = await prisma.kanbanColumn.findUnique({ where: { id: kanbanColumnId }, select: { type: true } });
+      if (col?.type === "GANHO") {
+        prisma.clientDiagnosis.upsert({ where: { leadId: lead.id }, create: { leadId: lead.id }, update: {} }).catch(() => {});
+      }
       return lead;
     },
 

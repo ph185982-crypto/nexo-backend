@@ -20,14 +20,14 @@ const prisma = new PrismaClient();
 
 const REAL_PHONE_NUMBER_ID = "1009631782242056";
 
-// Funil unificado em 5 etapas (era 9 colunas — ver pipeline-mover.ts para o
-// mapa de canonicalização que redireciona tipos antigos pra essas 5).
+// Funil de vendas em 6 entradas (5 estágios ativos + Perdido):
 const FUNIL_NEXO: Array<{ name: string; type: string; color: string; isDefaultEntry?: boolean }> = [
-  { name: "Novo",            type: "TRIAGE",           color: "#6b7280", isDefaultEntry: true },
-  { name: "Em Qualificação", type: "EM_QUALIFICACAO",  color: "#3b82f6" },
-  { name: "Qualificado",     type: "QUALIFICADO",      color: "#10b981" },
-  { name: "Ganho",           type: "GANHO",             color: "#22c55e" },
-  { name: "Perdido",         type: "LOST",              color: "#ef4444" },
+  { name: "Leads",                 type: "TRIAGE",              color: "#6b7280", isDefaultEntry: true },
+  { name: "Qualificação",          type: "EM_QUALIFICACAO",     color: "#3b82f6" },
+  { name: "Proposta e Negociação", type: "PROPOSTA_NEGOCIACAO", color: "#f59e0b" },
+  { name: "Contrato",              type: "CONTRATO",            color: "#8b5cf6" },
+  { name: "Ganho",                 type: "GANHO",               color: "#22c55e" },
+  { name: "Perdido",               type: "LOST",                color: "#ef4444" },
 ];
 
 const SDR_NEXO_PROMPT = `Você é o SDR da Nexo, assessoria especializada em fazer empresas venderem nos maiores marketplaces do Brasil (Mercado Livre, Shopee, Amazon, Magalu).
@@ -137,7 +137,7 @@ async function main() {
     console.log(`[Seed Nexo] Provider placeholder removido/desativado`);
   }
 
-  // ── 4. Funil Nexo (9 colunas) ────────────────────────────────────────────────
+  // ── 4. Funil Nexo ────────────────────────────────────────────────────────────
   // Remove flag default de colunas antigas para garantir entrada única
   await prisma.kanbanColumn.updateMany({
     where: { organizationId: org.id, isDefaultEntry: true },
@@ -168,11 +168,20 @@ async function main() {
       });
     }
   }
-  // Coluna "Triagem" antiga sai do fluxo (leads existentes nela permanecem)
-  await prisma.kanbanColumn.updateMany({
-    where: { organizationId: org.id, type: "TRIAGE" },
-    data: { isDefaultEntry: false, order: 99 },
+  // Remove qualquer coluna QUALIFICADO legada (migrada para PROPOSTA_NEGOCIACAO)
+  const colunaQualificado = await prisma.kanbanColumn.findFirst({
+    where: { organizationId: org.id, type: "QUALIFICADO" },
   });
+  if (colunaQualificado) {
+    const colunaAlvo = await prisma.kanbanColumn.findFirst({
+      where: { organizationId: org.id, type: "PROPOSTA_NEGOCIACAO" },
+    });
+    if (colunaAlvo) {
+      await prisma.lead.updateMany({ where: { kanbanColumnId: colunaQualificado.id }, data: { kanbanColumnId: colunaAlvo.id } });
+      await prisma.kanbanColumn.delete({ where: { id: colunaQualificado.id } }).catch(() => {});
+      console.log(`[Seed Nexo] Coluna QUALIFICADO migrada para PROPOSTA_NEGOCIACAO`);
+    }
+  }
   console.log(`[Seed Nexo] Funil com ${FUNIL_NEXO.length} colunas criado/atualizado`);
 
   // ── 5. Agente SDR Nexo no provider real ──────────────────────────────────────

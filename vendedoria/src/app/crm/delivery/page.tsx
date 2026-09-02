@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import {
-  Trophy, ClipboardList, CheckCircle2, Clock, ChevronRight, Loader2,
+  Trophy, ClipboardList, CheckCircle2, Clock, ChevronRight, Loader2, Plus,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn, formatPhone } from "@/lib/utils";
 
 const GET_GANHO_LEADS = gql`
@@ -27,6 +31,14 @@ const GET_ORGS = gql`
   query GetOrgsDelivery {
     whatsappBusinessOrganizations {
       id name status
+    }
+  }
+`;
+
+const CREATE_LEAD = gql`
+  mutation CreateLeadDelivery($input: CreateLeadInput!) {
+    createLead(input: $input) {
+      id
     }
   }
 `;
@@ -71,17 +83,19 @@ export default function DeliveryPage() {
     (o: { id: string; status: string }) => o.status === "ACTIVE",
   );
 
-  const { data, loading } = useQuery(GET_GANHO_LEADS, {
+  const { data, loading, refetch } = useQuery(GET_GANHO_LEADS, {
     variables: { organizationId: org?.id, leadsPerColumn: 100 },
     skip: !org?.id,
     fetchPolicy: "cache-and-network",
   });
 
   const [diagnosisMap, setDiagnosisMap] = useState<Record<string, "none" | "draft" | "finalized">>({});
+  const [adicionarOpen, setAdicionarOpen] = useState(false);
 
   const ganhoColumns = (data?.getKanbanBoard?.columns ?? []).filter(
     (c: { type: string }) => c.type === "GANHO",
   );
+  const ganhoColumnId: string = ganhoColumns[0]?.id ?? "";
   const leads: Lead[] = ganhoColumns.flatMap((c: { leads: Lead[] }) => c.leads);
 
   const fetchDiagnoses = useCallback(async () => {
@@ -120,7 +134,20 @@ export default function DeliveryPage() {
         <Badge className="ml-auto bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
           {leads.length} cliente{leads.length !== 1 ? "s" : ""}
         </Badge>
+        <Button size="sm" onClick={() => setAdicionarOpen(true)} disabled={!ganhoColumnId}>
+          <Plus className="w-4 h-4 mr-1.5" />
+          Adicionar cliente
+        </Button>
       </div>
+
+      {/* Adicionar cliente */}
+      <AdicionarClienteDialog
+        open={adicionarOpen}
+        onClose={() => setAdicionarOpen(false)}
+        organizationId={org?.id ?? ""}
+        ganhoColumnId={ganhoColumnId}
+        onCreated={() => { setAdicionarOpen(false); void refetch(); }}
+      />
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
@@ -168,5 +195,82 @@ export default function DeliveryPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function AdicionarClienteDialog({
+  open,
+  onClose,
+  organizationId,
+  ganhoColumnId,
+  onCreated,
+}: {
+  open: boolean;
+  onClose: () => void;
+  organizationId: string;
+  ganhoColumnId: string;
+  onCreated: () => void;
+}) {
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [erro, setErro] = useState<string | null>(null);
+
+  const [createLead, { loading }] = useMutation(CREATE_LEAD, {
+    onCompleted: () => {
+      setNome(""); setTelefone(""); setErro(null);
+      onCreated();
+    },
+    onError: (e) => setErro(e.message),
+  });
+
+  const salvar = () => {
+    const tel = telefone.replace(/\D/g, "");
+    if (!tel || tel.length < 10) {
+      setErro("Informe um telefone válido com DDD.");
+      return;
+    }
+    if (!ganhoColumnId) {
+      setErro("Coluna Ganho não encontrada.");
+      return;
+    }
+    void createLead({
+      variables: {
+        input: {
+          phoneNumber: tel.startsWith("55") ? tel : `55${tel}`,
+          profileName: nome.trim() || undefined,
+          leadOrigin: "OUTBOUND",
+          organizationId,
+          kanbanColumnId: ganhoColumnId,
+        },
+      },
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Adicionar cliente</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Nome / Empresa</Label>
+            <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Loja Exemplo" />
+          </div>
+          <div className="space-y-2">
+            <Label>WhatsApp (com DDD)</Label>
+            <Input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="62 99999-9999" />
+          </div>
+          {erro && <p className="text-sm text-destructive">{erro}</p>}
+          <div className="flex gap-2 pt-2">
+            <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
+            <Button className="flex-1" onClick={salvar} disabled={loading}>
+              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Adicionar
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,17 +1,12 @@
 // ─── Pipeline Mover — movimentação automática de leads no funil Nexo ─────────
 //
-// Funil unificado em 5 etapas (era 14 colunas espalhadas em dois sub-funis
-// sobrepostos — qualificação do SDR + prospecção outbound — dificultando ver
-// de relance onde cada contato está):
-//   Novo → Em Qualificação → Qualificado → Ganho | Perdido
+// Funil de vendas em 5 etapas:
+//   Leads → Qualificação → Proposta e Negociação → Contrato → Ganho | Perdido
 //
 // Todo o código continua chamando moverLeadPorTipo com os tipos antigos e mais
 // granulares (MORNO, PROPOSTA, REUNIAO_AGENDADA, CONTATO_2, etc.) — o mapa
-// CANONICO abaixo traduz cada um pra uma das 5 colunas reais antes de buscar
-// no banco, então nenhum call site precisou mudar. O detalhe fino (em qual
-// tentativa de contato, se tem reunião marcada) continua registrado em
-// LeadActivity/ProspectLead.tentativasDisparo — só deixou de virar uma coluna
-// própria no board.
+// CANONICO abaixo traduz cada um pra uma das colunas reais antes de buscar
+// no banco, então nenhum call site precisou mudar.
 //
 // Todas as funções são fail-safe: erros são logados, nunca propagados —
 // a movimentação do kanban jamais pode derrubar o fluxo de mensagens.
@@ -33,26 +28,34 @@ export type FunilTipo =
   | "EM_QUALIFICACAO"
   | "QUALIFICADO"
   | "MORNO"
-  | "ESCALATED";
+  | "ESCALATED"
+  | "PROPOSTA_NEGOCIACAO";
 
-/** As 5 colunas que de fato existem no board — tudo mais é canonicalizado pra uma delas. */
-export type FunilCanonico = "TRIAGE" | "EM_QUALIFICACAO" | "QUALIFICADO" | "GANHO" | "LOST";
+/** As colunas canônicas do funil de vendas. */
+export type FunilCanonico =
+  | "TRIAGE"
+  | "EM_QUALIFICACAO"
+  | "PROPOSTA_NEGOCIACAO"
+  | "CONTRATO"
+  | "GANHO"
+  | "LOST";
 
 const MAPA_CANONICO: Record<FunilTipo | FunilCanonico, FunilCanonico> = {
-  TRIAGE: "TRIAGE",
-  CONTATO_1: "TRIAGE",
-  CONTATO_2: "TRIAGE",
-  CONTATO_3: "TRIAGE",
-  EM_QUALIFICACAO: "EM_QUALIFICACAO",
-  MORNO: "EM_QUALIFICACAO",
-  QUALIFICADO: "QUALIFICADO",
-  ESCALATED: "QUALIFICADO",
-  PROPOSTA: "QUALIFICADO",
-  REUNIAO_AGENDADA: "QUALIFICADO",
-  CONTRATO: "QUALIFICADO",
-  GANHO: "GANHO",
-  LOST: "LOST",
-  DESCARTADO: "LOST",
+  TRIAGE:              "TRIAGE",
+  CONTATO_1:           "TRIAGE",
+  CONTATO_2:           "TRIAGE",
+  CONTATO_3:           "TRIAGE",
+  EM_QUALIFICACAO:     "EM_QUALIFICACAO",
+  MORNO:               "EM_QUALIFICACAO",
+  QUALIFICADO:         "PROPOSTA_NEGOCIACAO",
+  ESCALATED:           "PROPOSTA_NEGOCIACAO",
+  PROPOSTA:            "PROPOSTA_NEGOCIACAO",
+  REUNIAO_AGENDADA:    "PROPOSTA_NEGOCIACAO",
+  PROPOSTA_NEGOCIACAO: "PROPOSTA_NEGOCIACAO",
+  CONTRATO:            "CONTRATO",
+  GANHO:               "GANHO",
+  LOST:                "LOST",
+  DESCARTADO:          "LOST",
 };
 
 export function canonicalizarTipo(tipo: string): FunilCanonico {
@@ -223,11 +226,12 @@ export function colunaPorTentativa(tentativa: number): FunilTipo {
 }
 
 const COLUNAS_CANONICAS: Array<{ type: FunilCanonico; name: string; order: number; color: string; isDefaultEntry?: boolean }> = [
-  { type: "TRIAGE",           name: "Novo",             order: 0, color: "#6B7280", isDefaultEntry: true },
-  { type: "EM_QUALIFICACAO",  name: "Em Qualificação",  order: 1, color: "#3B82F6" },
-  { type: "QUALIFICADO",      name: "Qualificado",      order: 2, color: "#10B981" },
-  { type: "GANHO",            name: "Ganho",            order: 3, color: "#22C55E" },
-  { type: "LOST",             name: "Perdido",          order: 4, color: "#EF4444" },
+  { type: "TRIAGE",              name: "Leads",                  order: 0, color: "#6B7280", isDefaultEntry: true },
+  { type: "EM_QUALIFICACAO",     name: "Qualificação",           order: 1, color: "#3B82F6" },
+  { type: "PROPOSTA_NEGOCIACAO", name: "Proposta e Negociação",  order: 2, color: "#F59E0B" },
+  { type: "CONTRATO",            name: "Contrato",               order: 3, color: "#8B5CF6" },
+  { type: "GANHO",               name: "Ganho",                  order: 4, color: "#22C55E" },
+  { type: "LOST",                name: "Perdido",                order: 5, color: "#EF4444" },
 ];
 
 /**
@@ -263,8 +267,9 @@ export async function consolidarColunasEm5Etapas(organizationId: string): Promis
     //    por nome (o type não distinguia qual coluna era qual).
     const legacyRenamePorNome: Record<string, FunilTipo> = {
       "Em qualificação": "EM_QUALIFICACAO",
-      "Qualificados": "QUALIFICADO",
-      "Mornos": "MORNO",
+      "Qualificados":    "PROPOSTA_NEGOCIACAO",
+      "Qualificado":     "PROPOSTA_NEGOCIACAO",
+      "Mornos":          "MORNO",
     };
     const customLegado = existentes.filter(
       (c) => c.type === "CUSTOM" && legacyRenamePorNome[c.name],
