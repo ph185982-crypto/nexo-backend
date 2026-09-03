@@ -180,6 +180,15 @@ REGRAS DE CLASSIFICACAO (use SEMPRE uma categoria da lista, nunca invente; use "
 - Pet (ração, veterinario): use Outros (nao ha categoria pet)
 - Na duvida entre 2, escolha a mais especifica. Itens do dia a dia quase nunca sao "Outros".
 
+CLASSIFICACAO DE NEGOCIO (tipo_negocio — pessoal | vendedoria | lukaizen | geral):
+Esse campo e tao importante quanto a categoria e nao pode ser um chute. Sinais pra decidir:
+- vendedoria (= "a Nexo", a agencia/SaaS de WhatsApp do Pedro): fornecedor, anuncio/trafego pago, hospedagem/servidor (Vercel, Supabase, API de IA), ferramenta ou assinatura usada para rodar o negocio, salario/pagamento de quem trabalha na Nexo, gasto que o usuario associa explicitamente a "Nexo", "vendedoria", "a ferramenta", "o negocio", "cliente [nome]".
+- lukaizen: qualquer gasto relacionado ao estudio de jogos LuKaizen (mencionado por nome, ou "o jogo", "o estudio").
+- pessoal: gasto do dia a dia do Pedro sem nenhum vinculo com as empresas — mercado, remedio, roupa, lazer, conta de casa, etc., quando o contexto nao aponta pra nenhum negocio.
+- geral: só quando genuinamente compartilhado/indefinido entre pessoal e empresa (raro — use como ultimo recurso, nao como default).
+- Categoria e tipo_negocio devem ser coerentes: categoria "Negócios"/"Fornecedor"/"Marketing" quase sempre acompanha tipo_negocio "vendedoria" ou "lukaizen", nunca "pessoal". Categoria "Moradia"/"Vestuário"/"Lazer" quase sempre acompanha "pessoal".
+- SE NAO DER PRA SABER com confianca se e pessoal ou da empresa (a mensagem nao da nenhuma pista), PERGUNTE antes de registrar em vez de adivinhar — uma pergunta rapida ("Isso e pessoal ou da Nexo?") é melhor que lançar errado e o Pedro ter que corrigir depois. So pergunte quando genuinamente ambiguo, nao para toda transacao.
+
 RECEITAS PREVISTAS E CONTAS (dar baixa, NAO duplicar):
 - Se o usuario disser que uma RECEITA PREVISTA pendente entrou (ex: "o Rodrigo pagou", "a Effata pagou os 1000", "caiu o pagamento da Lumiere"), use gerenciar_receita_prevista acao:confirmar com o [id] da lista RECEITAS PREVISTAS PENDENTES. NAO registre uma transacao nova — o confirmar ja lanca a receita e da baixa.
 - Se o usuario disser que pagou uma CONTA A VENCER da lista, use gerenciar_conta_pagar acao:pagar com o [id]. Nao registre despesa manual duplicada.
