@@ -45,6 +45,61 @@ export async function GET() {
     const despesas = despesasAgg._sum.valor ?? 0;
     const saldo = receitas - despesas;
 
+    // Mes anterior (pro comparativo)
+    const mesAnteriorDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const mesAnterior = `${mesAnteriorDate.getFullYear()}-${String(mesAnteriorDate.getMonth() + 1).padStart(2, "0")}`;
+    const [receitasAntAgg, despesasAntAgg] = await Promise.all([
+      prisma.transacao.aggregate({
+        where: { mes: mesAnterior, tipo: "receita" },
+        _sum: { valor: true },
+      }),
+      prisma.transacao.aggregate({
+        where: { mes: mesAnterior, tipo: "despesa" },
+        _sum: { valor: true },
+      }),
+    ]);
+    const receitasAnt = receitasAntAgg._sum.valor ?? 0;
+    const despesasAnt = despesasAntAgg._sum.valor ?? 0;
+    const saldoAnt = receitasAnt - despesasAnt;
+
+    function variacaoPct(atual: number, anterior: number): number | null {
+      if (anterior === 0) return atual === 0 ? 0 : null; // null = "sem base de comparacao"
+      return Math.round(((atual - anterior) / Math.abs(anterior)) * 1000) / 10;
+    }
+
+    const comparativo = {
+      mesAnterior,
+      receitas: { atual: receitas, anterior: receitasAnt, variacaoPct: variacaoPct(receitas, receitasAnt) },
+      despesas: { atual: despesas, anterior: despesasAnt, variacaoPct: variacaoPct(despesas, despesasAnt) },
+      saldo: { atual: saldo, anterior: saldoAnt, variacaoPct: variacaoPct(saldo, saldoAnt) },
+    };
+
+    // Receitas previstas (ainda nao recebidas)
+    const [receitasPrevistasAgg, receitasPrevistasProximas] = await Promise.all([
+      prisma.receitaPrevistaMax.aggregate({
+        where: { status: { in: ["pendente", "atrasada"] } },
+        _sum: { valor: true },
+        _count: true,
+      }),
+      prisma.receitaPrevistaMax.findMany({
+        where: { status: { in: ["pendente", "atrasada"] } },
+        orderBy: { data_prevista: "asc" },
+        take: 5,
+      }),
+    ]);
+    const receitasPrevistas = {
+      total: receitasPrevistasAgg._sum.valor ?? 0,
+      quantidade: receitasPrevistasAgg._count,
+      proximas: receitasPrevistasProximas.map((r) => ({
+        id: r.id,
+        descricao: r.descricao,
+        valor: r.valor,
+        data_prevista: r.data_prevista,
+        cliente: r.cliente,
+        status: r.status,
+      })),
+    };
+
     // Meta
     const metaDb = await prisma.metaFinanceiraMax.findFirst({
       where: { tipo: "mensal", status: "ativa" },
@@ -93,6 +148,8 @@ export async function GET() {
       meta,
       categorias,
       mensal,
+      comparativo,
+      receitasPrevistas,
     });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "Forbidden") {

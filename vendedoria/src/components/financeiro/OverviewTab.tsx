@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Loader2, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, DollarSign, ArrowUp, ArrowDown, CalendarClock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -16,6 +16,21 @@ const DONUT_COLORS = [
   "#f97316", "#eab308", "#22c55e", "#06b6d4",
 ];
 
+interface Comparativo {
+  atual: number;
+  anterior: number;
+  variacaoPct: number | null;
+}
+
+interface ReceitaPrevistaResumo {
+  id: string;
+  descricao: string;
+  valor: number;
+  data_prevista: string;
+  cliente: string | null;
+  status: string;
+}
+
 interface OverviewData {
   receitas: number;
   despesas: number;
@@ -23,6 +38,33 @@ interface OverviewData {
   meta: { alvo: number; atual: number };
   categorias: Array<{ categoria: string; total: number }>;
   mensal: Array<{ mes: string; receitas: number; despesas: number }>;
+  comparativo?: {
+    mesAnterior: string;
+    receitas: Comparativo;
+    despesas: Comparativo;
+    saldo: Comparativo;
+  };
+  receitasPrevistas?: {
+    total: number;
+    quantidade: number;
+    proximas: ReceitaPrevistaResumo[];
+  };
+}
+
+// Pra despesas, variacao positiva (gastou mais) e ruim -> inverte a cor.
+function VariacaoBadge({ variacao, invertColor }: { variacao: Comparativo | undefined; invertColor?: boolean }) {
+  if (!variacao || variacao.variacaoPct === null) return null;
+  const pct = variacao.variacaoPct;
+  const isUp = pct > 0;
+  const isFlat = pct === 0;
+  const good = isFlat ? null : invertColor ? !isUp : isUp;
+  const color = isFlat ? "text-muted-foreground" : good ? "text-green-500" : "text-red-500";
+  return (
+    <span className={cn("inline-flex items-center gap-0.5 text-xs font-medium", color)}>
+      {!isFlat && (isUp ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
+      {isFlat ? "0%" : `${Math.abs(pct)}%`} vs mes passado
+    </span>
+  );
 }
 
 export function OverviewTab() {
@@ -66,6 +108,7 @@ export function OverviewTab() {
               <div>
                 <p className="text-sm text-muted-foreground">Receitas</p>
                 <p className="text-2xl font-bold text-green-500">{BRL.format(data.receitas)}</p>
+                <VariacaoBadge variacao={data.comparativo?.receitas} />
               </div>
               <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-green-500" />
@@ -80,6 +123,7 @@ export function OverviewTab() {
               <div>
                 <p className="text-sm text-muted-foreground">Despesas</p>
                 <p className="text-2xl font-bold text-red-500">{BRL.format(data.despesas)}</p>
+                <VariacaoBadge variacao={data.comparativo?.despesas} invertColor />
               </div>
               <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
                 <TrendingDown className="w-5 h-5 text-red-500" />
@@ -96,6 +140,7 @@ export function OverviewTab() {
                 <p className={cn("text-2xl font-bold", data.saldo >= 0 ? "text-blue-500" : "text-red-500")}>
                   {BRL.format(data.saldo)}
                 </p>
+                <VariacaoBadge variacao={data.comparativo?.saldo} />
               </div>
               <div className={cn(
                 "w-10 h-10 rounded-full flex items-center justify-center",
@@ -128,6 +173,42 @@ export function OverviewTab() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Receitas previstas */}
+      {data.receitasPrevistas && data.receitasPrevistas.quantidade > 0 && (
+        <Card>
+          <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base flex items-center gap-2">
+              <CalendarClock className="w-4 h-4 text-muted-foreground" />
+              Receitas Previstas
+            </CardTitle>
+            <span className="text-lg font-semibold text-green-500">
+              {BRL.format(data.receitasPrevistas.total)}
+            </span>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {data.receitasPrevistas.proximas.map((r) => (
+              <div key={r.id} className="flex items-center justify-between text-sm py-1 border-b border-border last:border-0">
+                <div className="min-w-0">
+                  <span className="text-foreground">{r.descricao}</span>
+                  {r.cliente && <span className="text-muted-foreground"> — {r.cliente}</span>}
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className={cn("text-xs", r.status === "atrasada" ? "text-red-500" : "text-muted-foreground")}>
+                    {new Date(r.data_prevista).toLocaleDateString("pt-BR")}
+                  </span>
+                  <span className="font-medium text-green-500">{BRL.format(r.valor)}</span>
+                </div>
+              </div>
+            ))}
+            {data.receitasPrevistas.quantidade > data.receitasPrevistas.proximas.length && (
+              <p className="text-xs text-muted-foreground pt-1">
+                +{data.receitasPrevistas.quantidade - data.receitasPrevistas.proximas.length} outra(s) na aba Receitas
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
