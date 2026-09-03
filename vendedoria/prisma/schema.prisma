@@ -3,8 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Runtime: pooler do Supabase em transaction mode (6543).
+  url       = env("DATABASE_URL")
+  // Migrations: conexão de sessão (5432) — pgbouncer não aceita DDL em transaction mode.
+  // Precisa estar definida para db push / migrate; no dev local aponta para o mesmo banco.
+  directUrl = env("DIRECT_URL")
 }
 
 // ─── NextAuth ──────────────────────────────────────────────────────────────
@@ -221,7 +225,11 @@ model KanbanColumn {
   id              String   @id @default(cuid())
   name            String
   order           Int
-  type            String   // CUSTOM | ESCALATED | LOST | TRIAGE | JUNK
+  type            String   // CUSTOM | ESCALATED | LOST | TRIAGE | JUNK |
+                            // EM_QUALIFICACAO | QUALIFICADO | MORNO (funil SDR) |
+                            // CONTATO_1 | CONTATO_2 | CONTATO_3 | PROPOSTA |
+                            // REUNIAO_AGENDADA | CONTRATO | GANHO | DESCARTADO (funil prospecção)
+                            // — mantido em sincronia com o enum GraphQL KanbanColumnType
   isSystemDefault Boolean  @default(false)
   isDefaultEntry  Boolean  @default(false)
   organizationId  String
@@ -253,9 +261,51 @@ model Lead {
   notes          LeadNote[]
   prospectLead   ProspectLead? @relation(fields: [prospectLeadId], references: [id])
   prospectLeadId String?
+  diagnosis      ClientDiagnosis?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
+}
+
+// ─── Funil de Entrega ──────────────────────────────────────────────────────
+
+model ClientDiagnosis {
+  id     String @id @default(cuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id])
+
+  // Blocos do formulário de diagnóstico (JSON livre por bloco)
+  comercialData   Json @default("{}")
+  produtoData     Json @default("{}")
+  marketingData   Json @default("{}")
+  operacaoData    Json @default("{}")
+  financeiroData  Json @default("{}")
+  priorizacaoData Json @default("[]") // array de items → gera cards no Backlog
+
+  isFinalized Boolean   @default(false)
+  finalizedAt DateTime?
+
+  cards DeliveryCard[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DeliveryCard {
+  id          String          @id @default(cuid())
+  diagnosisId String
+  diagnosis   ClientDiagnosis @relation(fields: [diagnosisId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?  @db.Text
+  pilar       String   @default("COMERCIAL") // COMERCIAL|PRODUTO|MARKETING|OPERACAO|FINANCEIRO|TECNOLOGIA
+  dataAlvo    DateTime?
+  responsavel String   @default("PEDRO")     // PEDRO | LAYANE | CLIENTE
+  column      String   @default("BACKLOG")   // DIAGNOSTICO|BACKLOG|ESSA_SEMANA|EM_ANDAMENTO|AGUARDANDO_CLIENTE|CONCLUIDO
+  order       Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LeadActivity {
@@ -366,6 +416,10 @@ model ConversationTag {
 
 model WhatsappMessage {
   id             String   @id @default(cuid())
+  // ID da mensagem na Meta ("wamid.…"). Os webhooks de status (sent/delivered/
+  // read/failed) chegam identificados por ele — sem guardar, o aviso de FALHA
+  // DE ENTREGA da Meta não casa com nenhuma linha e é descartado em silêncio.
+  wamid          String?  @unique
   content        String   @db.Text
   type           String   // TEXT | IMAGE | AUDIO | VIDEO | DOCUMENT
   role           String   // ASSISTANT | USER
@@ -374,6 +428,11 @@ model WhatsappMessage {
   caption        String?
   repliedToId    String?
   status         String   @default("SENT") // SENT | DELIVERED | READ | FAILED
+  // Marca que o fluxo de IA já foi disparado para esta mensagem do cliente.
+  // Reivindicado atomicamente antes de agendar a resposta: se o webhook falhar
+  // depois de salvar a mensagem, o replay da fila reconhece que a IA ainda não
+  // respondeu e dispara — sem isso o cliente ficava sem resposta pra sempre.
+  aiProcessedAt  DateTime?
   conversationId String
   conversation   WhatsappConversation @relation(fields: [conversationId], references: [id])
 }
@@ -968,11 +1027,40 @@ model ProspectSegment {
   pesoInstagramParado   Int      @default(1)
   pesoRatingBaixo       Int      @default(1)
   limiarScoreQualificado Int     @default(4)
+  apenasCelular         Boolean  @default(false)
+  filtroSite            String   @default("TODOS") // TODOS | COM_SITE | SEM_SITE
+  metaEmpresas          Int      @default(200)     // alvo de empresas por busca
   prospects             ProspectLead[]
+  sourcingRuns          SourcingRun[]
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
   @@index([organizationId, ativo])
+}
+
+// ─── Execuções de jobs longos ─────────────────────────────────────────────────
+// Em serverless cada invocação é um processo novo, então o progresso de uma
+// busca ou de um disparo vive no banco — não em memória — e cada lote retoma
+// de onde o anterior parou.
+
+model SourcingRun {
+  id           String    @id @default(cuid())
+  segmentId    String
+  segment      ProspectSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  status       String    @default("EXECUTANDO") // EXECUTANDO | CONCLUIDO | ERRO
+  meta         Int
+  indice       Int       @default(0)            // posição na matriz termo × cidade
+  inseridos    Int       @default(0)
+  ignorados    Int       @default(0)
+  erros        Int       @default(0)
+  lotes        Int       @default(0)
+  motivo       String?
+  iniciadoEm   DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  finalizadoEm DateTime?
+
+  @@index([segmentId, status])
+  @@index([status, atualizadoEm])
 }
 
 // ─── ProspectLead (B2B Prospecção Nexos Brasil) ────────────────────────────────
@@ -988,6 +1076,7 @@ model ProspectLead {
   // Dados do negócio (vindos do sourcing)
   nome                  String?
   telefone              String?
+  tipoTelefone          String?  // FIXO | CELULAR
   enderecoCompleto      String?
   website               String?
   placeId               String?  // Google Places ID — usado para dedupe
@@ -1044,6 +1133,7 @@ model TemplateProspeccao {
   idioma           String   @default("pt_BR")
   variaveis        String[]
   ativo            Boolean  @default(true)
+  corpoTexto       String?  @db.Text  // corpo real do template puxado da Meta (com {{n}})
   prospects        ProspectLead[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -1066,8 +1156,37 @@ model DisparoConfig {
   pausadoManualmente      Boolean   @default(false)
   motivoPausa             String?
   ultimaAtualizacaoLimite DateTime?
+  diasEntreTentativas     Int       @default(3)
+  maxTentativasContato    Int       @default(3)
   createdAt               DateTime  @default(now())
   updatedAt               DateTime  @updatedAt
+}
+
+// ─── DisparoJob — fila persistente de disparo (sobrevive a restart do PM2) ────
+
+model DisparoJob {
+  id             String   @id @default(cuid())
+  organizationId String
+  leadId         String
+  status         String   @default("QUEUED") // QUEUED | RUNNING | DONE | FAILED
+  erro           String?
+  criadoEm       DateTime @default(now())
+  atualizadoEm   DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([leadId, status])
+}
+
+// ─── IntegrationCredential (OAuth do usuário — ex.: Google Calendar) ──────────
+
+model IntegrationCredential {
+  id           String   @id @default(cuid())
+  provider     String   @unique // "GOOGLE_CALENDAR"
+  email        String?
+  refreshToken String   @db.Text
+  calendarId   String   @default("primary")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model OfertaGerada {
@@ -1088,4 +1207,163 @@ model OfertaGerada {
   criadaEm            DateTime  @default(now())
 
   @@index([produtoId, criadaEm])
+}
+
+// ─── Max — Assistente Pessoal Financeiro ─────────────────────────────────────
+
+model Transacao {
+  id              String   @id @default(uuid())
+  tipo            String   // receita | despesa
+  valor           Float
+  descricao       String
+  categoria       String
+  tipo_negocio    String   @default("pessoal") // pessoal | vendedoria | lukaizen | geral
+  empresa         String?
+  data_transacao  DateTime @db.Date
+  mes             String   // YYYY-MM
+  confirmado      Boolean  @default(true)
+  criado_em       DateTime @default(now())
+
+  @@map("max_transacoes")
+  @@index([data_transacao])
+  @@index([categoria])
+  @@index([mes])
+}
+
+model ConversaMax {
+  id        String   @id @default(uuid())
+  numero    String
+  role      String   // user | assistant
+  content   String   @db.Text
+  criado_em DateTime @default(now())
+
+  @@map("max_conversas")
+  @@index([numero, criado_em])
+}
+
+model ContextoPedro {
+  id             String   @id @default(uuid())
+  chave          String   @unique
+  valor          String   @db.Text
+  categoria      String?  // financeiro | negocio | pessoal | meta | contato | rotina | outros
+  atualizado_em  DateTime @default(now()) @updatedAt
+
+  @@map("max_contexto_pedro")
+}
+
+model LembreteMax {
+  id         String   @id @default(uuid())
+  descricao  String
+  data_hora  DateTime
+  recorrente Boolean  @default(false)
+  frequencia String?  // diario | semanal | mensal
+  enviado    Boolean  @default(false)
+  criado_em  DateTime @default(now())
+
+  @@map("max_lembretes")
+  @@index([enviado, data_hora])
+}
+
+model DividaMax {
+  id              String   @id @default(uuid())
+  descricao       String
+  valor_total     Float
+  valor_pago      Float    @default(0)
+  parcela_mensal  Float?
+  dia_vencimento  Int?
+  credor          String?
+  status          String   @default("ativa") // ativa | quitada
+  observacao      String?
+  criado_em       DateTime @default(now())
+
+  @@map("max_dividas")
+}
+
+model MetaFinanceiraMax {
+  id          String    @id @default(uuid())
+  descricao   String
+  valor_alvo  Float
+  valor_atual Float     @default(0)
+  tipo        String    @default("mensal")
+  tipo_negocio String?
+  data_inicio DateTime? @db.Date
+  data_fim    DateTime? @db.Date
+  status      String    @default("ativa")
+  criado_em   DateTime  @default(now())
+
+  @@map("max_metas_financeiras")
+}
+
+model ReceitaPrevistaMax {
+  id               String    @id @default(uuid())
+  descricao        String
+  valor            Float
+  data_prevista    DateTime  @db.Date
+  tipo_negocio     String?
+  cliente          String?
+  status           String    @default("pendente") // pendente | atrasada | recebida
+  data_recebimento DateTime?
+  observacao       String?
+  criado_em        DateTime  @default(now())
+
+  @@map("max_receitas_previstas")
+}
+
+model TarefaMax {
+  id                String    @id @default(uuid())
+  descricao         String
+  recorrente        Boolean   @default(false)
+  frequencia        String?   // diario | semanal | mensal
+  proxima_cobranca  DateTime?
+  status            String    @default("ativa") // ativa | concluida | cancelada
+  historico         Json      @default("[]")
+  criado_em         DateTime  @default(now())
+
+  @@map("max_tarefas")
+}
+
+model AlertaEnviadoMax {
+  id         String   @id @default(uuid())
+  chave      String   @unique
+  enviado_em DateTime @default(now())
+
+  @@map("max_alertas_enviados")
+}
+
+model ContaPagarMax {
+  id              String    @id @default(uuid())
+  descricao       String
+  valor           Float
+  data_vencimento DateTime  @db.Date
+  categoria       String    @default("Outros")
+  tipo_negocio    String    @default("pessoal")
+  recorrente      Boolean   @default(false)
+  frequencia      String?   // mensal | semanal | anual
+  status          String    @default("pendente") // pendente | paga | cancelada
+  transacao_id    String?
+  criado_em       DateTime  @default(now())
+
+  @@map("max_contas_pagar")
+  @@index([status, data_vencimento])
+}
+
+model OrcamentoMax {
+  id            String   @id @default(uuid())
+  categoria     String   @unique
+  limite_mensal Float
+  criado_em     DateTime @default(now())
+
+  @@map("max_orcamentos")
+}
+
+model WebhookEventMax {
+  id          String   @id @default(uuid())
+  from_number String?
+  msg_type    String?
+  msg_id      String?
+  payload     Json?
+  criado_em   DateTime @default(now())
+
+  @@map("max_webhook_events")
+  @@index([msg_id])
 }

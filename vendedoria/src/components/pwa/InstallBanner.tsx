@@ -57,13 +57,13 @@ export function InstallBanner() {
     >
       <img
         src="/icon-192.png"
-        alt="Nexo Vendas"
+        alt="Nexo"
         className="h-10 w-10 flex-shrink-0 rounded-xl"
       />
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-white">
-          Instalar Nexo Vendas
+          Instalar Nexo
         </p>
         <p className="truncate text-xs text-emerald-400/80">
           Acesse mais rápido, direto da sua tela inicial

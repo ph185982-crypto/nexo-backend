@@ -61,8 +61,7 @@ export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const force = searchParams.get("force") === "1";
 
-  // Auth check (skip if no secret configured — open endpoint warning)
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!secret || authHeader !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

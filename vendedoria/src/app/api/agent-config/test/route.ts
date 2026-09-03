@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { auth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    // Sem auth, `customScript` fazia desta rota um proxy de LLM totalmente
+    // aberto (system prompt arbitrário às custas da nossa chave de API) e
+    // `raw` vazava o script de vendas do agente.
+    if (!(await auth())?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { agentId, message, customScript } = await req.json() as {
       agentId: string;
       message: string;

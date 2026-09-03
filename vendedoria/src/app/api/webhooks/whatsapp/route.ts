@@ -1,15 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma/client";
+import { Prisma } from "@prisma/client";
 import { processAIResponse } from "@/lib/ai/agent";
-import { orchestrateAIDecision } from "@/lib/ai/orchestrator";
-import { cancelFollowUpJobs as _cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { processSdrResponse } from "@/lib/ai/sdr/agent";
+import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
 import { transcribeAudio } from "@/lib/ai/transcription";
-import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
-import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
+import { normalizeBrazilianNumber, brazilianNumberVariants } from "@/lib/whatsapp/send";
 import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@/lib/manager/handler";
+import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
+import { isMaxOwnerNumber } from "@/lib/max/config";
+import { handleMaxMessage } from "@/lib/max/responder";
+import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
+
+// Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
+// default da função para terminar — a Vercel pode congelar a invocação assim que
+// a resposta HTTP é enviada, então todo esse trabalho roda dentro de after().
+export const maxDuration = 60;
 
 // ─── Webhook Verification (GET) ──────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -70,6 +79,17 @@ export async function POST(req: NextRequest) {
 
         console.log("[WhatsApp Webhook] ProviderConfig encontrado:", providerConfig.id, "| Agente:", providerConfig.agent?.kind, providerConfig.agent?.status);
 
+        // Captura o WABA ID real (entry.id) quando ainda não temos um válido —
+        // permite puxar o corpo dos templates da Meta depois.
+        const wabaIdWebhook = (entry as { id?: string }).id;
+        if (wabaIdWebhook && (!providerConfig.wabaId || providerConfig.wabaId === "DEMO_WABA_ID")) {
+          await prisma.whatsappProviderConfig.update({
+            where: { id: providerConfig.id },
+            data: { wabaId: wabaIdWebhook },
+          }).catch(() => {});
+          console.log("[WhatsApp Webhook] WABA ID capturado do webhook:", wabaIdWebhook);
+        }
+
         // Process messages
         for (const message of value.messages ?? []) {
           await handleIncomingMessage(message, value.contacts?.[0], providerConfig);
@@ -80,6 +100,19 @@ export async function POST(req: NextRequest) {
           await handleStatusUpdate(status);
         }
       }
+    }
+
+    // ── Dreno oportunista da fila de retry ───────────────────────────────────
+    // O plano Hobby da Vercel só permite 2 crons diários (ambos já em uso), e
+    // "1x por dia" deixaria um cliente que caiu na fila esperando horas. Então
+    // o próprio tráfego carrega o reprocessamento: cada mensagem recebida
+    // drena alguns itens, em after() (fora do caminho da resposta pra Meta).
+    // O guard do RETRY_HEADER evita recursão — um retry não dispara outro.
+    if (req.headers.get(RETRY_HEADER) !== "1") {
+      after(async () => {
+        await drainWebhookQueue(5);
+        await triggerDueFollowups();
+      });
     }
 
     return NextResponse.json({ success: true });
@@ -221,17 +254,22 @@ async function handleIncomingMessage(
     }
   }
 
-  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id;
+  const inboundMediaId = message.image?.id ?? message.video?.id ?? message.document?.id ?? message.sticker?.id ?? mediaPayload?.id;
   const inboundCaption = message.image?.caption ?? message.video?.caption ?? message.document?.caption;
 
   if (inboundMediaId) {
     console.log(`[Webhook] Mídia inbound | type=${message.type} | media_id=${inboundMediaId}`);
   }
 
+  // Busca por todas as grafias do número: `phone` e `message.from` costumam ser
+  // a mesma string, então um lead gravado em outro formato (importação de CSV,
+  // cadastro manual formatado, legado de 12 dígitos) não era encontrado e o
+  // webhook criava um SEGUNDO lead pro mesmo cliente — dois cards no Kanban,
+  // histórico partido ao meio e follow-up em dobro.
   let lead = await prisma.lead.findFirst({
     where: {
       organizationId: providerConfig.organizationId,
-      OR: [{ phoneNumber: phone }, { phoneNumber: message.from }],
+      phoneNumber: { in: brazilianNumberVariants(message.from) },
     },
     select: {
       id: true,
@@ -267,6 +305,8 @@ async function handleIncomingMessage(
       },
     });
     console.log("[WhatsApp Webhook] Novo lead criado:", lead.id, "| telefone:", phone);
+    // Prospecção: vincula ao ProspectLead abordado (se existir) pelo telefone
+    vincularProspectAoLead(lead.id, providerConfig.organizationId, phone).catch(() => {});
   }
 
   let conversation = await prisma.whatsappConversation.findFirst({
@@ -298,12 +338,11 @@ async function handleIncomingMessage(
     }).catch(() => {});
   }
 
-  const alreadyProcessed = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });
-  if (alreadyProcessed) {
-    console.log(`[Webhook] Mensagem duplicada ignorada: ${message.id}`);
-    return;
-  }
-
+  // Salva a mensagem. Se já existe (reenvio da Meta, replay da fila de retry,
+  // ou outra invocação concorrente), segue adiante em vez de sair: quem decide
+  // se a IA responde é a reivindicação de `aiProcessedAt` mais abaixo — a
+  // mensagem pode já estar salva justamente porque a execução anterior morreu
+  // ANTES de disparar a IA, e nesse caso o cliente ainda está sem resposta.
   let savedMessage;
   try {
     savedMessage = await prisma.whatsappMessage.create({
@@ -318,26 +357,28 @@ async function handleIncomingMessage(
       },
     });
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e);
-    if (msg.includes("Unique constraint") || msg.includes("unique")) {
-      console.log(`[Webhook] Race-condition dedup: mensagem ${message.id} já foi processada por outro worker`);
-      return;
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      console.log(`[Webhook] Mensagem ${message.id} já salva — seguindo para checar se a IA já respondeu`);
+      savedMessage = await prisma.whatsappMessage.findUnique({ where: { id: message.id } });
+      if (!savedMessage) return;
+    } else {
+      throw e;
     }
-    throw e;
   }
 
   if (inboundMediaId) {
-    prisma.whatsappMessage.update({
-      where: { id: savedMessage.id },
-      data: {
-        mediaUrl: inboundMediaId,
-        ...(inboundCaption ? { caption: inboundCaption } : {}),
-      },
-    }).then(() => {
+    try {
+      await prisma.whatsappMessage.update({
+        where: { id: savedMessage.id },
+        data: {
+          mediaUrl: inboundMediaId,
+          ...(inboundCaption ? { caption: inboundCaption } : {}),
+        },
+      });
       console.log(`[Webhook] mediaId persistido: ${inboundMediaId} → msg ${savedMessage.id}`);
-    }).catch((e) => {
+    } catch (e) {
       console.error(`[Webhook] Erro ao persistir mediaId ${inboundMediaId}:`, e);
-    });
+    }
   }
 
   const nomeCliente = conversation.profileName ?? conversation.customerWhatsappBusinessId;
@@ -346,6 +387,8 @@ async function handleIncomingMessage(
     console.error("[Webhook] Push notification error:", e)
   );
 
+  // Não-fatal: se isso lançar (pressão de pool), a exceção subia até o catch do
+  // POST e o disparo da IA nunca era agendado — o cliente ficava sem resposta.
   await prisma.whatsappConversation.update({
     where: { id: conversation.id },
     data: {
@@ -353,7 +396,7 @@ async function handleIncomingMessage(
       updatedAt: new Date(),
       ...(message.type === "location" ? { localizacaoRecebida: true } : {}),
     },
-  });
+  }).catch((e) => console.error(`[Webhook] Falha ao atualizar conv ${conversation.id}:`, e));
   console.log(`[Webhook] Conv ${conversation.id} atualizada | lastMessageAt=${sentAt.toISOString()} | localizacaoRecebida=${message.type === "location"}`);
 
   await prisma.conversationFollowUp.updateMany({
@@ -361,6 +404,27 @@ async function handleIncomingMessage(
     data: { status: "DONE" },
   }).catch(() => {});
   await cancelFollowUpJobs(conversation.id).catch(() => {});
+
+  if (isMaxOwnerNumber(phone)) {
+    console.log(`[Webhook] Max owner message | from=${phone} → Max assistant`);
+    after(() =>
+      handleMaxMessage(
+        {
+          text: message.text?.body ?? content,
+          isAudio,
+          media: inboundMediaId ? {
+            mediaId: inboundMediaId,
+            mimeType: message.image?.mime_type ?? message.document?.mime_type ?? "application/octet-stream",
+            type: message.type as "image" | "document" | "audio",
+            caption: inboundCaption,
+            filename: message.document?.filename,
+          } : undefined,
+        },
+        providerConfig,
+      ).catch((e) => console.error("[Webhook] Max handler error:", e)),
+    );
+    return;
+  }
 
   if (isManagerNumber(phone)) {
     console.log(`[Webhook] Manager message detected | from=${phone} → admin handler`);
@@ -373,12 +437,14 @@ async function handleIncomingMessage(
       managerMedia = { mediaId: message.document.id, mimeType: message.document.mime_type ?? "application/pdf", type: "document" };
     }
 
-    handleManagerMessage(
-      msgText,
-      { businessPhoneNumberId: providerConfig.businessPhoneNumberId, organizationId: providerConfig.organizationId, accessToken: providerConfig.accessToken },
-      phone,
-      managerMedia,
-    ).catch((e) => console.error("[Webhook] Manager handler error:", e));
+    after(() =>
+      handleManagerMessage(
+        msgText,
+        { businessPhoneNumberId: providerConfig.businessPhoneNumberId, organizationId: providerConfig.organizationId, accessToken: providerConfig.accessToken },
+        phone,
+        managerMedia,
+      ).catch((e) => console.error("[Webhook] Manager handler error:", e)),
+    );
     return;
   }
 
@@ -388,8 +454,27 @@ async function handleIncomingMessage(
   }
 
   const agentConfig = providerConfig.agent!;
-  runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
-    console.error("[Webhook] AI flow error:", e),
+
+  // Reivindica o direito de responder esta mensagem. Atômico: se duas
+  // invocações concorrentes (reenvio da Meta, replay da fila) chegarem aqui,
+  // só uma leva count===1 e o cliente recebe uma única resposta. E como a
+  // marca só é gravada AQUI — depois de tudo que podia falhar — um replay de
+  // mensagem que ficou sem resposta ainda encontra aiProcessedAt nulo e
+  // dispara a IA, em vez de considerar a mensagem "já processada".
+  const claim = await prisma.whatsappMessage.updateMany({
+    where: { id: message.id, aiProcessedAt: null },
+    data: { aiProcessedAt: new Date() },
+  }).catch(() => ({ count: 0 }));
+
+  if (claim.count === 0) {
+    console.log(`[Webhook] IA já respondeu a ${message.id} — ignorando duplicata`);
+    return;
+  }
+
+  after(() =>
+    runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
+      console.error("[Webhook] AI flow error:", e),
+    ),
   );
 }
 
@@ -408,15 +493,10 @@ async function runAIFlow(
     escalationThreshold?: number | null;
   },
 ): Promise<void> {
-  try {
-    const result = await orchestrateAIDecision({ conversationId, incomingMessage: userMessage });
-    if (result) {
-      console.log(`[Orchestrator] conv=${conversationId} action=${result.action} state=${result.targetState}`);
-    } else {
-      console.warn(`[Orchestrator] returned null for conv=${conversationId} — proceeding to agent`);
-    }
-  } catch (e) {
-    console.warn(`[Orchestrator] error (non-fatal) for conv=${conversationId}:`, e);
+  // SDR mode: systemPrompt starts with "[SDR]" → dedicated qualification agent
+  if (agent.systemPrompt?.trimStart().startsWith("[SDR]")) {
+    await processSdrResponse(conversationId, userMessage, agent, incomingMessageId);
+    return;
   }
 
   await processAIResponse(conversationId, userMessage, agent, incomingMessageId);
@@ -433,10 +513,20 @@ async function handleStatusUpdate(status: { id: string; status: string }) {
   const newStatus = statusMap[status.status];
   if (!newStatus) return;
 
-  await prisma.whatsappMessage.updateMany({
-    where: { id: status.id },
+  // status.id é o wamid da Meta, não o cuid interno — casar por `id` (como era
+  // feito antes) nunca encontrava nada e todo aviso de falha de entrega era
+  // descartado em silêncio.
+  const { count } = await prisma.whatsappMessage.updateMany({
+    where: { wamid: status.id },
     data: { status: newStatus },
-  }).catch(() => {});
+  }).catch(() => ({ count: 0 }));
+
+  if (count === 0) {
+    // Mensagens enviadas antes desta correção não têm wamid gravado — esperado.
+    console.log(`[Webhook] Status ${status.status} sem mensagem correspondente (wamid ${status.id})`);
+  } else if (newStatus === "FAILED") {
+    console.error(`[Webhook] ⚠️ Meta reportou FALHA DE ENTREGA (wamid ${status.id}) — cliente não recebeu`);
+  }
 }
 
 function verifySignature(body: string, signature: string | null): boolean {

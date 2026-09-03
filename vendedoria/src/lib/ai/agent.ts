@@ -10,6 +10,7 @@ import { buscarSessaoNacional, atualizarSessaoNacional } from "@/lib/ai/sessao-n
 import { buscarSessaoProspeccao, atualizarSessaoProspeccao, type SessaoProspeccao } from "@/lib/ai/sessao-prospeccao";
 import { criarEventoReuniao, verificarDisponibilidade, buscarSlotsDisponiveis } from "@/lib/integrations/google-calendar";
 import { config } from "@/lib/config/env";
+import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -247,16 +248,21 @@ function detectHardEscalation(
 
 // ── TASK 2: Desinteresse explícito (Anti-Zumbi) ──────────────────────────────
 // Detecta sinais claros de rejeição/opt-out. Não confunde com objeção de preço.
-function detectDesinteresse(message: string): boolean {
+export function detectDesinteresse(message: string): boolean {
   const n = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\x00-\x7F]/g, "?");
   const msg = n(message);
+  // "nao quero" / "nao preciso" soltos eram gatilho de opt-out, mas casam com
+  // frases normais de qualificação — "nao quero gastar muito agora", "nao quero
+  // perder tempo com anuncio", "nao preciso de CNPJ pra comecar?". O lead era
+  // BLOCKED, os follow-ups cancelados e ele recebia um encerramento seco.
+  // Agora exige complemento que indique recusa de contato, não de um detalhe
+  // da oferta. Recusa ambígua fica a cargo do action "close" do LLM.
   return (
-    /\bnao\s+quero\b/.test(msg) ||
+    /\bnao\s+quero\s+(mais|nada|receber|falar|continuar|conversar|comprar|contratar)\b/.test(msg) ||
+    /\bnao\s+quero\b\s*$/.test(msg.trim()) ||
     /\bnao\s+tenho\s+interesse\b/.test(msg) ||
-    /\bnao\s+preciso\b/.test(msg) ||
     /\bnao\s+me\s+interessa\b/.test(msg) ||
-    /\bnao\s+quero\s+mais\b/.test(msg) ||
     /\bpode\s+parar\b/.test(msg) ||
     /\bpara\s+de\s+(mandar|enviar)\b/.test(msg) ||
     /\bnao\s+mand[ae]\s+mais\b/.test(msg) ||
@@ -593,13 +599,18 @@ export async function processAIResponse(
       return;
     }
 
-    // ── CORREÇÃO 2: Área de entrega ───────────────────────────────────────────
-    if (conversation.foraAreaEntrega) {
+    // ── Tipo de organização — decide qual lógica se aplica (VENDAS × PROSPECCAO) ──
+    const orgTipoEarly: string =
+      (conversation.provider as typeof conversation.provider & { organization?: { tipo?: string } })
+        .organization?.tipo ?? "VENDAS";
+
+    // ── CORREÇÃO 2: Área de entrega (só para VENDAS com entrega local) ─────────
+    if (orgTipoEarly === "VENDAS" && conversation.foraAreaEntrega) {
       console.log(`[AI Agent] foraAreaEntrega=true — ignorando mensagem para conv ${conversationId}`);
       return;
     }
 
-    if (detectForaDeArea(userMessage)) {
+    if (orgTipoEarly === "VENDAS" && detectForaDeArea(userMessage)) {
       console.log(`[AI Agent] Fora de área detectado para conv ${conversationId} — marcando DB, IA responde`);
       await prisma.whatsappConversation.update({
         where: { id: conversationId },
@@ -616,7 +627,13 @@ export async function processAIResponse(
     if (detectDesinteresse(userMessage)) {
       console.log(`[AI Agent] Desinteresse detectado para conv ${conversationId} — marcando DB, IA responde`);
       const orgId = conversation.provider.organizationId;
+      // Prospecção usa a coluna DESCARTADO; vendas usa LOST (com fallback)
       const lostColumn = await prisma.kanbanColumn.findFirst({
+        where: {
+          organizationId: orgId,
+          type: orgTipoEarly === "PROSPECCAO" ? "DESCARTADO" : "LOST",
+        },
+      }).catch(() => null) ?? await prisma.kanbanColumn.findFirst({
         where: { organizationId: orgId, type: "LOST" },
       }).catch(() => null);
       await Promise.all([
@@ -647,7 +664,7 @@ export async function processAIResponse(
     // ── Contexto ──────────────────────────────────────────────────────────────
     const lead = conversation.lead;
     const orgId = conversation.provider.organizationId;
-    const orgTipo: string = (conversation.provider as typeof conversation.provider & { organization?: { tipo?: string } }).organization?.tipo ?? "VENDAS";
+    const orgTipo: string = orgTipoEarly;
 
     // Contagem de mensagens trocadas (para detectar etapa da conversa)
     const msgCount = recentMessages.length;
@@ -896,8 +913,12 @@ export async function processAIResponse(
     }
 
     // ── CORREÇÃO 5: Passagem automática por código quando todos os dados estão coletados ──
+    // Exclusivo do fluxo VENDAS (pedido + entrega). Em PROSPECCAO os mesmos campos
+    // genéricos (endereço/horário/pagamento/nome) podem aparecer numa conversa B2B
+    // por coincidência e não devem disparar uma "passagem de pedido" — o handoff de
+    // prospecção usa [QUALIFICADO]/[REUNIAO_AGENDADA], tratados mais abaixo.
     const temEndereco  = !!(collectedData.endereco || collectedData.localizacao);
-    const dadosCompletos = temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
+    const dadosCompletos = orgTipo === "VENDAS" && temEndereco && !!collectedData.horario && !!collectedData.pagamento && !!collectedData.nome;
     const passagemJaFeita = recentMessages.some((m) => /\[PASSAGEM\]/.test(m.content));
     if (dadosCompletos && !passagemJaFeita) {
       console.log(`[AI Agent] PASSAGEM AUTOMÁTICA ativada por código — todos os 4 dados coletados`);
@@ -934,8 +955,11 @@ export async function processAIResponse(
         `💬 *Últimas mensagens do cliente:*\n${last3client}\n\n` +
         `_Organizar entrega e encaminhar motoboy._`;
 
-      // Tenta enviar — retry 30s → 2min se falhar
-      const enviarPassagem = async (tentativa = 1) => {
+      // Retry síncrono dentro da mesma invocação — setTimeout de minutos não
+      // sobrevive ao fim da função serverless, então o backoff precisa caber
+      // no orçamento da requisição atual (poucos segundos, não minutos).
+      let passagemEnviada = false;
+      for (let tentativa = 1; tentativa <= 3 && !passagemEnviada; tentativa++) {
         try {
           await sendWhatsAppMessage(conversation.provider.businessPhoneNumberId, ownerNumber, handoffMsg, token);
           await prisma.ownerNotification.create({
@@ -944,16 +968,19 @@ export async function processAIResponse(
           await prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "CLOSED" } }).catch(() => {});
           await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { resumoEnviado: true } }).catch(() => {});
           console.log(`[AI Agent] PASSAGEM enviada com sucesso (tentativa ${tentativa})`);
+          passagemEnviada = true;
         } catch (e) {
           console.error(`[AI Agent] PASSAGEM falhou tentativa ${tentativa}:`, e);
-          if (tentativa === 1) {
-            setTimeout(() => enviarPassagem(2), 30_000);
-          } else if (tentativa === 2) {
-            setTimeout(() => enviarPassagem(3), 120_000);
-          }
+          if (tentativa < 3) await new Promise((r) => setTimeout(r, 2_000 * tentativa));
         }
-      };
-      await enviarPassagem();
+      }
+      if (!passagemEnviada) {
+        await notificarErroCritico(
+          `Falha ao enviar passagem de pedido após 3 tentativas — conv ${conversationId}`,
+          conversation.provider.businessPhoneNumberId,
+          token,
+        );
+      }
 
       // Confirma ao cliente
       await sendWhatsAppMessage(
@@ -1062,7 +1089,7 @@ export async function processAIResponse(
       slotsDisponiveis,
       sessaoProspeccao,
     });
-    const flagsRuntimeSection = "\n\n[AUDIO:texto] — envia mensagem de voz TTS. Use para mensagens pessoais ou quando o cliente preferir áudio.";
+    const flagsRuntimeSection = ""; // áudio TTS desabilitado globalmente
     const sessaoContext = buildSessaoContext(sessaoNacional, collectedData);
     const systemPromptFinal = compiled.systemPrompt + productSection + leadContext + flagsRuntimeSection + sessaoContext;
 
@@ -1123,6 +1150,7 @@ export async function processAIResponse(
         .replace(/\[CHECKOUT\]/gi, "")
         .replace(/\[AGUARDANDO_PAGAMENTO\]/gi, "")
         .replace(/\[REUNIAO_AGENDADA\]/gi, "")
+        .replace(/\[QUALIFICADO\]/gi, "")
         .replace(mediaFlagRe, "")
         .trim()
     ).filter(Boolean);
@@ -1140,6 +1168,10 @@ export async function processAIResponse(
     const token = provider.accessToken ?? undefined;
     const now = new Date();
 
+    // Captura de Meet link para envio ao cliente após o loop de mensagens
+    let reuniaoMeetLink: string | null = null;
+    let reuniaoDataLabel: string | null = null;
+
     // ── [OPT_OUT] ─────────────────────────────────────────────────────────────
     if (/\[OPT_OUT\]/i.test(combinedRaw)) {
       await Promise.all([
@@ -1147,6 +1179,25 @@ export async function processAIResponse(
         prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "OPT_OUT" } }),
       ]);
       await cancelFollowUpJobs(conversationId).catch(() => {});
+      if (orgTipo === "PROSPECCAO" && conversation.leadId) {
+        await moverLeadPorTipo(conversation.leadId, orgId, "DESCARTADO", "Opt-out solicitado pelo contato", "LOST");
+      }
+    }
+
+    // ── [QUALIFICADO] — lead qualificado pela IA → Proposta e Negociação ──────
+    if (/\[QUALIFICADO\]/i.test(combinedRaw) && orgTipo === "PROSPECCAO" && conversation.leadId) {
+      console.log(`[AI Agent] 🎯 [QUALIFICADO] | conv ${conversationId}`);
+      await moverLeadPorTipo(conversation.leadId, orgId, "PROPOSTA", "Lead qualificado pela IA");
+      const leadComProspect = await prisma.lead.findUnique({
+        where: { id: conversation.leadId },
+        select: { prospectLeadId: true },
+      }).catch(() => null);
+      if (leadComProspect?.prospectLeadId) {
+        await prisma.prospectLead.update({
+          where: { id: leadComProspect.prospectLeadId },
+          data: { status: "QUALIFICADO" },
+        }).catch(() => {});
+      }
     }
 
     // ── [PASSAGEM] ────────────────────────────────────────────────────────────
@@ -1370,10 +1421,38 @@ export async function processAIResponse(
             }
           }
 
-          // Notifica Pedro
+          // Funil: move o lead para "Reunião Agendada" e cria o evento local
+          // (a aba Calendário lê CalendarEvent — sem isso a reunião ficaria invisível)
+          if (lead) {
+            await moverLeadPorTipo(lead.id, orgId, "REUNIAO_AGENDADA", "Reunião agendada pela IA");
+          }
+          await prisma.calendarEvent.create({
+            data: {
+              title: `Diagnóstico Nexo — ${nomeNegocio}`,
+              description: `Reunião agendada pela IA via WhatsApp.\nContato: ${to}` +
+                (sessaoProspeccao.tipoNegocio ? `\nTipo de negócio: ${sessaoProspeccao.tipoNegocio}` : ""),
+              startTime: dataHoraInicio,
+              endTime: new Date(dataHoraInicio.getTime() + 30 * 60 * 1000),
+              provider: "GOOGLE",
+              externalEventId: evento.eventId,
+              googleMeetLink: evento.meetLink ?? null,
+              organizationId: orgId,
+              leadId: lead?.id ?? null,
+              whatsappProviderConfigId: provider.id,
+            },
+          }).catch((e) => console.error("[REUNIAO_AGENDADA] Falha ao criar CalendarEvent local:", e));
+
+          // Captura Meet link para enviar ao cliente após o loop de mensagens
+          if (evento.meetLink) {
+            reuniaoMeetLink = evento.meetLink;
+          }
+
+          // Notifica o gestor
           const dataLabel = dataHoraInicio.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
+          reuniaoDataLabel = dataLabel;
+
           const notifMsg =
-            `📅 *REUNIÃO AGENDADA — NEXOS BRASIL*\n\n` +
+            `📅 *REUNIÃO AGENDADA — NEXO*\n\n` +
             `🏢 Empresa: ${nomeNegocio}\n` +
             `📱 WhatsApp: ${to}\n` +
             `🗓️ Data/hora: ${dataLabel}\n` +
@@ -1407,11 +1486,63 @@ export async function processAIResponse(
         await new Promise((r) => setTimeout(r, 150 + Math.floor(Math.random() * 250)));
       }
 
+      // Enviar ANTES de gravar: gravando primeiro com status "SENT", qualquer
+      // falha de envio (token expirado, janela de 24h fechada, rate limit)
+      // deixava o CRM exibindo uma conversa saudável enquanto o cliente não
+      // recebeu nada — o atendente não tinha como saber que precisava agir.
       const msgNow = new Date();
+      let wamid: string | undefined;
+      let sendFailed = false;
+      try {
+        wamid = await sendWhatsAppMessage(
+          provider.businessPhoneNumberId, to, mensagens[i], token,
+          i === 0 ? contextMessageId : undefined,
+        );
+      } catch (e) {
+        sendFailed = true;
+        console.error(`[AI Agent] ❌ Falha ao enviar bolha ${i + 1}/${mensagens.length} para ${to}:`, e);
+      }
+
       await prisma.whatsappMessage.create({
-        data: { content: mensagens[i], type: "TEXT", role: "ASSISTANT", sentAt: msgNow, status: "SENT", conversationId },
-      });
-      await sendWhatsAppMessage(provider.businessPhoneNumberId, to, mensagens[i], token, i === 0 ? contextMessageId : undefined);
+        data: {
+          wamid,
+          content: mensagens[i],
+          type: "TEXT",
+          role: "ASSISTANT",
+          sentAt: msgNow,
+          status: sendFailed ? "FAILED" : "SENT",
+          conversationId,
+        },
+      }).catch((e) => console.error("[AI Agent] Falha ao gravar mensagem:", e));
+
+      // Envio falhou: abortar as bolhas seguintes (provavelmente falhariam
+      // igual) em vez de seguir gravando mensagens que ninguém recebeu.
+      if (sendFailed) break;
+    }
+
+    // ── Envia Meet link ao cliente após as mensagens de texto da IA ─────────
+    // O Meet link só está disponível após criarEventoReuniao() — não pode ir no array mensagens[]
+    if (reuniaoMeetLink) {
+      await new Promise((r) => setTimeout(r, 1000));
+      await sendTypingIndicator(provider.businessPhoneNumberId, to, 1500, token).catch(() => {});
+      await new Promise((r) => setTimeout(r, 200));
+
+      const meetMsg = `🗓️ Aqui está o link da reunião no Google Meet:\n\n${reuniaoMeetLink}`;
+      await sendWhatsAppMessage(provider.businessPhoneNumberId, to, meetMsg, token).catch((e) => console.error("[REUNIAO_AGENDADA] Falha ao enviar Meet link:", e));
+      await prisma.whatsappMessage.create({
+        data: { content: meetMsg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+      }).catch(() => {});
+
+      if (reuniaoDataLabel) {
+        await new Promise((r) => setTimeout(r, 800));
+        await sendTypingIndicator(provider.businessPhoneNumberId, to, 1200, token).catch(() => {});
+        await new Promise((r) => setTimeout(r, 200));
+        const confirmaMsg = `Confirmado para ${reuniaoDataLabel} 👊 qualquer dúvida é só chamar!`;
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, to, confirmaMsg, token).catch(() => {});
+        await prisma.whatsappMessage.create({
+          data: { content: confirmaMsg, type: "TEXT", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
+        }).catch(() => {});
+      }
     }
 
     // ── [PEDIDO_NACIONAL] — cria pedido e gera Pix/link ──────────────────────
@@ -1699,28 +1830,10 @@ export async function processAIResponse(
       }
     }
 
-    // ── [AUDIO:texto] — TTS via ElevenLabs/OpenAI ───────────────────────────────
+    // ── [AUDIO:texto] — TTS desabilitado globalmente ────────────────────────────
     const audioFlagMatch = combinedRaw.match(/\[AUDIO:([^\]]+)\]/i);
     if (audioFlagMatch) {
-      const audioText = audioFlagMatch[1].trim();
-      if (audioText) {
-        try {
-          const { gerarAudio } = await import("@/lib/audio/gerar-audio");
-          const { sendWhatsAppAudio } = await import("@/lib/whatsapp/send");
-          const audioUrl = await gerarAudio(audioText);
-          if (audioUrl) {
-            await sendWhatsAppAudio(provider.businessPhoneNumberId, to, audioUrl, token);
-            await prisma.whatsappMessage.create({
-              data: { content: `[Áudio TTS] ${audioText.substring(0, 80)}`, type: "AUDIO", role: "ASSISTANT", sentAt: new Date(), status: "SENT", conversationId },
-            }).catch(() => {});
-            console.log(`[AI Agent] ✅ Áudio TTS enviado: "${audioText.substring(0, 50)}"`);
-          } else {
-            console.warn(`[AI Agent] ⚠️ gerarAudio retornou null para: "${audioText.substring(0, 50)}"`);
-          }
-        } catch (e) {
-          console.error("[AI Agent] ❌ Áudio TTS falhou:", e);
-        }
-      }
+      // áudio TTS desativado — não envia nada
     }
 
     // ── Agendar follow-up (só se não confirmado/perdido/fora de área) ──────────

@@ -5,7 +5,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Settings, Phone, Bot, Plus, Save, Eye, EyeOff,
   CheckCircle2, XCircle, Loader2, RefreshCw, Wifi, WifiOff,
-  Building2, Key, MessageSquare, Zap,
+  Building2, Key, MessageSquare, Zap, Calendar, Unplug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -921,10 +921,14 @@ export default function SettingsPage() {
         </div>
       ) : (
         <Tabs defaultValue="whatsapp">
-          <TabsList className="grid grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-6 w-full">
             <TabsTrigger value="whatsapp" className="gap-1.5 text-xs">
               <Phone className="w-3.5 h-3.5" />
               WhatsApp
+            </TabsTrigger>
+            <TabsTrigger value="integracoes" className="gap-1.5 text-xs">
+              <Calendar className="w-3.5 h-3.5" />
+              Integrações
             </TabsTrigger>
             <TabsTrigger value="agent" className="gap-1.5 text-xs">
               <Bot className="w-3.5 h-3.5" />
@@ -948,6 +952,9 @@ export default function SettingsPage() {
             <TabsContent value="whatsapp">
               <WhatsappTab orgs={orgs} refetch={refetch} />
             </TabsContent>
+            <TabsContent value="integracoes">
+              <IntegracoesTab />
+            </TabsContent>
             <TabsContent value="agent">
               <AgentTab orgs={orgs} />
             </TabsContent>
@@ -964,5 +971,202 @@ export default function SettingsPage() {
         </Tabs>
       )}
     </div>
+  );
+}
+
+// ─── Integrações (Google Calendar OAuth) ──────────────────────────────────
+
+function IntegracoesTab() {
+  const [status, setStatus] = React.useState<{
+    connected: boolean; email: string | null; calendarId: string;
+  } | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [desconectando, setDesconectando] = React.useState(false);
+
+  const carregar = React.useCallback(() => {
+    setLoading(true);
+    fetch("/api/integrations/google/status")
+      .then((r) => r.json())
+      .then((d) => setStatus(d as { connected: boolean; email: string | null; calendarId: string }))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  React.useEffect(() => { carregar(); }, [carregar]);
+
+  const desconectar = async () => {
+    setDesconectando(true);
+    try {
+      await fetch("/api/integrations/google/status", { method: "DELETE" });
+      carregar();
+    } finally {
+      setDesconectando(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Calendar className="w-4 h-4 text-primary" />
+          Google Calendar
+        </CardTitle>
+        <CardDescription>
+          Conecte sua agenda para a IA marcar reuniões com Google Meet direto no seu calendário.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {loading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" /> Verificando conexão...
+          </div>
+        ) : status?.connected ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle2 className="w-4 h-4 text-green-500" />
+              <span className="text-foreground">
+                Conectado{status.email ? ` como ${status.email}` : ""}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Agenda: {status.calendarId} — reuniões marcadas pela IA aparecem na aba Calendário e no seu Google.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void desconectar()}
+              disabled={desconectando}
+            >
+              {desconectando ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unplug className="w-4 h-4 mr-2" />}
+              Desconectar
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <XCircle className="w-4 h-4 text-red-500" />
+              Nenhuma conta Google conectada
+            </div>
+            <Button asChild size="sm">
+              <a href="/api/integrations/google/connect">Conectar conta Google</a>
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Você será redirecionado para o login do Google e voltará aqui automaticamente.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+
+    <RapidApiCard />
+    </div>
+  );
+}
+
+// ─── RapidAPI (Prospecção) ────────────────────────────────────────────────
+
+function RapidApiCard() {
+  const [status, setStatus] = React.useState<{
+    configured: boolean; maskedKey: string | null; source: string | null;
+  } | null>(null);
+  const [key, setKey] = React.useState("");
+  const [loading, setLoading] = React.useState(true);
+  const [salvando, setSalvando] = React.useState(false);
+  const [erro, setErro] = React.useState<string | null>(null);
+  const [sucesso, setSucesso] = React.useState(false);
+
+  const carregar = React.useCallback(() => {
+    setLoading(true);
+    fetch("/api/integrations/rapidapi")
+      .then((r) => r.json())
+      .then((d) => setStatus(d as { configured: boolean; maskedKey: string | null; source: string | null }))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  React.useEffect(() => { carregar(); }, [carregar]);
+
+  const salvar = async () => {
+    setSalvando(true);
+    setErro(null);
+    setSucesso(false);
+    try {
+      const res = await fetch("/api/integrations/rapidapi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: key.trim() }),
+      });
+      const data = await res.json() as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        setErro(data.error ?? "Erro ao salvar a chave");
+      } else {
+        setSucesso(true);
+        setKey("");
+        carregar();
+      }
+    } catch {
+      setErro("Erro de rede ao salvar a chave");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Zap className="w-4 h-4 text-primary" />
+          RapidAPI (Prospecção)
+        </CardTitle>
+        <CardDescription>
+          Chave usada para buscar empresas (Google Maps + Receita Federal) na aba Prospecções.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {loading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" /> Verificando...
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 text-sm">
+              {status?.configured ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <span>Configurada ({status.maskedKey})</span>
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-4 h-4 text-red-500" />
+                  <span className="text-muted-foreground">Nenhuma chave configurada — a busca de empresas não funciona sem ela</span>
+                </>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="rapidapi-key">Chave RapidAPI</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="rapidapi-key"
+                  type="password"
+                  placeholder="Cole sua chave x-rapidapi-key aqui"
+                  value={key}
+                  onChange={(e) => setKey(e.target.value)}
+                />
+                <Button size="sm" onClick={() => void salvar()} disabled={salvando || key.trim().length < 20}>
+                  {salvando ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Salvar
+                </Button>
+              </div>
+              {erro && <p className="text-xs text-red-500">{erro}</p>}
+              {sucesso && <p className="text-xs text-green-600">Chave validada e salva ✓</p>}
+              <p className="text-xs text-muted-foreground">
+                Obtenha em rapidapi.com — assine as APIs &quot;Local Business Data&quot; e &quot;Lista de Empresas por Segmento&quot;.
+              </p>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

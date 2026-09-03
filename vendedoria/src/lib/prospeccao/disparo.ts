@@ -1,10 +1,50 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppTemplate, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { verificarSaudeNumero } from "./saude-numero";
+import { garantirLeadDoProspect, moverLeadPorTipo, colunaPorTentativa } from "@/lib/crm/pipeline-mover";
 
-function randomDelay(minMs: number, maxMs: number): Promise<void> {
-  const ms = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+/** Intervalo anti-bloqueio entre dois envios consecutivos. */
+const ESPERA_MIN_MS = 30_000;
+const ESPERA_MAX_MS = 90_000;
+
+function intervaloAleatorioMs(minMs: number, maxMs: number): number {
+  return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+}
+
+function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+/** Tempo restante da invocação atual; ausente quando não há teto (VPS, CLI). */
+interface Orcamento {
+  estourou: () => boolean;
+  restanteMs: () => number;
+}
+
+export interface ResultadoDisparo {
+  disparados: number;
+  ignorados: number;
+  erros: number;
+  /** Jobs que continuam na fila e precisam de uma nova invocação. */
+  restantes: number;
+  /** Intervalo anti-bloqueio a respeitar antes de retomar. */
+  esperaSegundos?: number;
+  motivo?: string;
+}
+
+export function getHoraBRT(): { hora: number; diaSemana: number } {
+  const agora = new Date();
+  const brt = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "numeric",
+    hour12: false,
+    weekday: "short",
+  }).formatToParts(agora);
+  const hora = Number(brt.find((p) => p.type === "hour")?.value ?? agora.getHours());
+  const dayMap: Record<string, number> = { dom: 0, seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sáb: 6 };
+  const dayStr = (brt.find((p) => p.type === "weekday")?.value ?? "").toLowerCase().replace(".", "");
+  const diaSemana = dayMap[dayStr] ?? agora.getDay();
+  return { hora, diaSemana };
 }
 
 function dentroJanela(config: {
@@ -12,9 +52,7 @@ function dentroJanela(config: {
   janelaFimHora: number;
   diasSemana: number[];
 }): boolean {
-  const agora = new Date();
-  const hora = agora.getHours();
-  const diaSemana = agora.getDay(); // 0=dom, 1=seg, ..., 6=sab
+  const { hora, diaSemana } = getHoraBRT();
   return (
     config.diasSemana.includes(diaSemana) &&
     hora >= config.janelaInicioHora &&
@@ -31,10 +69,12 @@ function montarComponentesTemplate(
     website?: string | null;
     tipoNegocio?: string | null;
   },
+  extra: { nomeResponsavel?: string } = {},
 ): unknown[] {
   if (variaveis.length === 0) return [];
 
   const valoresMap: Record<string, string> = {
+    nomeResponsavel: extra.nomeResponsavel ?? "",
     nomeNegocio: lead.nome ?? "seu negócio",
     sinalOportunidade: lead.sinalOportunidade ?? "oportunidade identificada",
     telefone: lead.telefone ?? "",
@@ -51,16 +91,139 @@ function montarComponentesTemplate(
 }
 
 /**
+ * Envia o template de forma adaptativa: começa com o número de variáveis
+ * configurado e, se a Meta rejeitar por contagem de parâmetros (#132000),
+ * reduz um a um até funcionar (ou até 0). Quando um número menor funciona,
+ * grava esse ajuste no template para os próximos disparos usarem direto.
+ * Erros que NÃO são de contagem (número inválido, template não aprovado) são
+ * propagados normalmente.
+ */
+async function enviarTemplateAdaptativo(
+  providerConfig: { businessPhoneNumberId: string; accountName?: string | null },
+  telefone: string,
+  template: { id: string; nomeTemplateMeta: string; idioma: string; variaveis: string[] },
+  lead: Parameters<typeof montarComponentesTemplate>[1],
+  token: string,
+): Promise<number> {
+  const full = template.variaveis;
+  for (let n = full.length; n >= 0; n--) {
+    const vars = full.slice(0, n);
+    const components = montarComponentesTemplate(vars, lead, { nomeResponsavel: providerConfig.accountName ?? undefined });
+    try {
+      await sendWhatsAppTemplate(
+        providerConfig.businessPhoneNumberId, telefone,
+        template.nomeTemplateMeta, template.idioma, components, token,
+      );
+      if (n < full.length) {
+        // Ajuste aprendido — persiste para os próximos disparos não errarem
+        await prisma.templateProspeccao.update({
+          where: { id: template.id }, data: { variaveis: vars },
+        }).catch(() => {});
+        console.log(`[Disparo] Template ${template.nomeTemplateMeta}: contagem ajustada de ${full.length} → ${n} parâmetro(s)`);
+      }
+      return n;
+    } catch (e) {
+      const msg = (e instanceof Error ? e.message : String(e)).toLowerCase();
+      const contagem = msg.includes("132000") || msg.includes("number of parameters") || msg.includes("expected number of params");
+      if (contagem && n > 0) continue; // tenta com menos parâmetros
+      throw e; // erro real (ou já chegou em 0)
+    }
+  }
+  throw new Error("Template rejeitado em todas as contagens de parâmetro — verifique o template aprovado na Meta");
+}
+
+/**
+ * Registra a abordagem na aba Conversas: cria (ou reutiliza) a WhatsappConversation
+ * do lead e grava a mensagem de saída (template). Assim o contato aparece em
+ * Conversas imediatamente, sem depender de o lead responder primeiro.
+ */
+/** Renderiza o corpo do template ({{1}},{{2}}…) com os valores do lead. */
+function renderarCorpoTemplate(
+  corpoTexto: string | null | undefined,
+  variaveis: string[],
+  lead: Parameters<typeof montarComponentesTemplate>[1],
+  nomeResponsavel?: string | null,
+): string | null {
+  if (!corpoTexto) return null;
+  const valoresMap: Record<string, string> = {
+    nomeResponsavel: nomeResponsavel ?? "",
+    nomeNegocio: lead.nome ?? "seu negócio",
+    sinalOportunidade: lead.sinalOportunidade ?? "oportunidade identificada",
+    telefone: lead.telefone ?? "",
+    website: lead.website ?? "",
+    tipoNegocio: lead.tipoNegocio ?? "",
+  };
+  return corpoTexto.replace(/\{\{\s*(\d+)\s*\}\}/g, (_m, n) => {
+    const idx = Number(n) - 1;
+    const chave = variaveis[idx];
+    return chave ? (valoresMap[chave] ?? _m) : _m;
+  });
+}
+
+async function registrarConversaDisparo(params: {
+  crmLeadId: string;
+  providerConfigId: string;
+  telefone: string;
+  profileName?: string | null;
+  templateNome: string;
+  tentativa: number;
+  mensagemTexto?: string | null;
+}): Promise<void> {
+  const { crmLeadId, providerConfigId, telefone, profileName, templateNome, tentativa, mensagemTexto } = params;
+
+  let conversa = await prisma.whatsappConversation.findFirst({
+    where: { leadId: crmLeadId, whatsappProviderConfigId: providerConfigId },
+    select: { id: true },
+  });
+
+  const agora = new Date();
+
+  if (!conversa) {
+    conversa = await prisma.whatsappConversation.create({
+      data: {
+        customerWhatsappBusinessId: telefone,
+        profileName: profileName ?? null,
+        leadOrigin: "OUTBOUND",
+        leadId: crmLeadId,
+        whatsappProviderConfigId: providerConfigId,
+        etapa: "NOVO",
+        lastMessageAt: agora,
+      },
+      select: { id: true },
+    });
+  }
+
+  // Usa o corpo real do template (renderizado); se ainda não sincronizado, mostra um aviso curto
+  const conteudo = mensagemTexto?.trim()
+    ? mensagemTexto.trim()
+    : `📤 Abordagem enviada (template "${templateNome}", tentativa ${tentativa})`;
+
+  await prisma.whatsappMessage.create({
+    data: {
+      content: conteudo,
+      type: "TEXT",
+      role: "ASSISTANT",
+      sentAt: agora,
+      status: "SENT",
+      conversationId: conversa.id,
+    },
+  });
+
+  await prisma.whatsappConversation.update({
+    where: { id: conversa.id },
+    data: { lastMessageAt: agora, isActive: true },
+  });
+}
+
+/**
  * Executa uma rodada de disparos diários para a organização.
  * Respeita limite, janela de horário, pausa manual e saúde do número.
  */
-export async function executarDisparoDiario(organizationId: string): Promise<{
-  disparados: number;
-  ignorados: number;
-  erros: number;
-  motivo?: string;
-}> {
-  const resultado = { disparados: 0, ignorados: 0, erros: 0 };
+export async function executarDisparoDiario(
+  organizationId: string,
+  orcamento?: Orcamento,
+): Promise<ResultadoDisparo> {
+  const resultado = { disparados: 0, ignorados: 0, erros: 0, restantes: 0 };
 
   // 1. Buscar ou criar config de disparo
   let config = await prisma.disparoConfig.findUnique({ where: { organizationId } });
@@ -99,52 +262,158 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
     return { ...resultado, motivo: "sem access token" };
   }
 
-  // 6. Buscar template ativo
-  const template = await prisma.templateProspeccao.findFirst({
+  // 6. Buscar templates ativos (2+ = rotação A/B automática entre eles)
+  const templates = await prisma.templateProspeccao.findMany({
     where: { organizationId, ativo: true },
+    orderBy: { createdAt: "asc" },
   });
-  if (!template) {
+  if (templates.length === 0) {
     console.warn(`[Disparo] Nenhum TemplateProspeccao ativo para org ${organizationId} — disparo abortado`);
     return { ...resultado, motivo: "nenhum template ativo cadastrado" };
   }
 
-  // 7. Buscar leads APROVADOS ordenados por score desc
+  // 6b. Auto-recuperação: leads queimados ESPECIFICAMENTE pelo erro de contagem
+  //     de parâmetros (#132000) voltam para APROVADO. Como o envio agora se
+  //     autocorrige, eles não queimam de novo. Não mexe em falhas de número
+  //     inválido ou outros motivos.
+  const recuperados = await prisma.prospectLead.updateMany({
+    where: {
+      organizationId,
+      status: { in: ["ERRO_ENVIO", "DESCARTADO"] },
+      OR: [
+        { motivoAnaliseIA: { contains: "132000" } },
+        { motivoAnaliseIA: { contains: "number of parameters" } },
+        { motivoAnaliseIA: { contains: "expected number of params" } },
+      ],
+    },
+    data: { status: "APROVADO", tentativasDisparo: 0, dataAbordagem: null, motivoAnaliseIA: null },
+  });
+  if (recuperados.count > 0) {
+    console.log(`[Disparo] Auto-recuperados ${recuperados.count} leads queimados pelo erro #132000`);
+  }
+
+  // 7. Buscar leads: APROVADOS (1ª tentativa) + ABORDADOS sem resposta que
+  //    já passaram do intervalo entre tentativas (2ª/3ª tentativa).
+  //    Nunca dispara para telefone FIXO (template WhatsApp só chega em celular).
+  const cutoffRetentativa = new Date(Date.now() - config.diasEntreTentativas * 24 * 60 * 60 * 1000);
   const leads = await prisma.prospectLead.findMany({
-    where: { organizationId, status: "APROVADO" },
-    orderBy: { score: "desc" },
+    where: {
+      organizationId,
+      NOT: { tipoTelefone: "FIXO" },
+      OR: [
+        { status: "APROVADO" },
+        {
+          status: "ABORDADO",
+          dataAbordagem: { lte: cutoffRetentativa },
+          tentativasDisparo: { lt: config.maxTentativasContato },
+        },
+        {
+          status: "ERRO_ENVIO",
+          tentativasDisparo: { lt: config.maxTentativasContato },
+        },
+      ],
+    },
+    orderBy: [{ tentativasDisparo: "asc" }, { score: "desc" }],
     take: config.limiteDiarioAtual,
   });
 
   if (leads.length === 0) {
-    return { ...resultado, motivo: "nenhum lead APROVADO disponível" };
+    return { ...resultado, motivo: "nenhum lead APROVADO ou retentativa disponível" };
   }
 
-  console.log(`[Disparo] ${leads.length} leads para disparar | template=${template.nomeTemplateMeta} | limite=${config.limiteDiarioAtual}`);
+  console.log(`[Disparo] ${leads.length} leads para disparar | templates=${templates.map((t) => t.nomeTemplateMeta).join(",")} | limite=${config.limiteDiarioAtual}`);
 
-  // 8. Disparar
-  for (const lead of leads) {
-    if (!lead.telefone) {
+  // 8. Enfileirar na fila persistente (sobrevive a restart do PM2) — pula leads já na fila
+  const jaNaFila = await prisma.disparoJob.findMany({
+    where: { leadId: { in: leads.map((l) => l.id) }, status: { in: ["QUEUED", "RUNNING"] } },
+    select: { leadId: true },
+  });
+  const jaNaFilaSet = new Set(jaNaFila.map((j) => j.leadId));
+  const novos = leads.filter((l) => !jaNaFilaSet.has(l.id));
+
+  if (novos.length > 0) {
+    await prisma.disparoJob.createMany({
+      data: novos.map((l) => ({ organizationId, leadId: l.id })),
+    });
+  }
+
+  // 9. Processar a fila (novos + qualquer QUEUED pendente de rodadas anteriores)
+  return processarFilaDisparo(organizationId, { config, providerConfig, token, templates }, orcamento);
+}
+
+// ── Processador da fila persistente ────────────────────────────────────────────
+
+type ContextoDisparo = {
+  config: NonNullable<Awaited<ReturnType<typeof prisma.disparoConfig.findUnique>>>;
+  providerConfig: NonNullable<Awaited<ReturnType<typeof prisma.whatsappProviderConfig.findFirst>>>;
+  token: string;
+  templates: Array<NonNullable<Awaited<ReturnType<typeof prisma.templateProspeccao.findFirst>>>>;
+};
+
+async function processarFilaDisparo(
+  organizationId: string,
+  ctx: ContextoDisparo,
+  orcamento?: Orcamento,
+): Promise<ResultadoDisparo> {
+  const { config, providerConfig, token, templates } = ctx;
+  const resultado: ResultadoDisparo = { disparados: 0, ignorados: 0, erros: 0, restantes: 0 };
+  let rodada = 0; // rotação A/B: alterna template a cada envio
+
+  for (;;) {
+    // Orçamento estourado: o resto da fila fica QUEUED para a próxima invocação.
+    if (orcamento?.estourou()) {
+      resultado.restantes = await prisma.disparoJob.count({
+        where: { organizationId, status: "QUEUED" },
+      });
+      if (resultado.restantes > 0) {
+        console.log(`[Disparo] Orçamento da invocação esgotado — ${resultado.restantes} jobs seguem na fila`);
+      }
+      break;
+    }
+
+    // Sai da janela comercial no meio do lote → deixa o resto QUEUED (retomado depois)
+    if (!dentroJanela(config)) {
+      const restantes = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
+      if (restantes > 0) console.log(`[Disparo] Janela fechou — ${restantes} jobs ficam na fila`);
+      // Fora da janela não se reagenda: a retomada periódica cuida do resto.
+      resultado.restantes = 0;
+      break;
+    }
+
+    // Claim atômico do próximo job QUEUED
+    const proximo = await prisma.disparoJob.findFirst({
+      where: { organizationId, status: "QUEUED" },
+      orderBy: { criadoEm: "asc" },
+    });
+    if (!proximo) break;
+
+    const claimed = await prisma.disparoJob.updateMany({
+      where: { id: proximo.id, status: "QUEUED" },
+      data: { status: "RUNNING" },
+    });
+    if (claimed.count === 0) continue; // outro processador pegou
+
+    const lead = await prisma.prospectLead.findUnique({ where: { id: proximo.leadId } });
+
+    // Lead sumiu, mudou de status (ex: respondeu nesse meio-tempo) ou sem telefone → ignora
+    if (!lead || !lead.telefone || !["APROVADO", "ABORDADO", "ERRO_ENVIO"].includes(lead.status)) {
+      await prisma.disparoJob.update({
+        where: { id: proximo.id },
+        data: { status: "DONE", erro: lead ? `pulado (status ${lead.status})` : "lead removido" },
+      });
       resultado.ignorados++;
       continue;
     }
 
+    const template = templates[rodada % templates.length];
+    rodada++;
+
     try {
-      const telefoneNormalizado = normalizeBrazilianNumber(
-        lead.telefone.replace(/\D/g, ""),
-      );
+      const telefoneNormalizado = normalizeBrazilianNumber(lead.telefone.replace(/\D/g, ""));
 
-      const components = montarComponentesTemplate(template.variaveis, lead);
+      await enviarTemplateAdaptativo(providerConfig, telefoneNormalizado, template, lead, token);
 
-      await sendWhatsAppTemplate(
-        providerConfig.businessPhoneNumberId,
-        telefoneNormalizado,
-        template.nomeTemplateMeta,
-        template.idioma,
-        components,
-        token,
-      );
-
-      await prisma.prospectLead.update({
+      const atualizado = await prisma.prospectLead.update({
         where: { id: lead.id },
         data: {
           status: "ABORDADO",
@@ -154,24 +423,70 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
         },
       });
 
-      resultado.disparados++;
-      console.log(`[Disparo] OK | lead=${lead.id} | tel=${telefoneNormalizado}`);
+      // CRM: garante Lead no funil e move para a coluna da tentativa (1º/2º/3º Contato)
+      const crmLeadId = await garantirLeadDoProspect(atualizado);
+      if (crmLeadId) {
+        await moverLeadPorTipo(
+          crmLeadId,
+          organizationId,
+          colunaPorTentativa(atualizado.tentativasDisparo),
+          `Disparo de prospecção — tentativa ${atualizado.tentativasDisparo}`,
+        );
 
-      // Delay aleatório entre disparos: 30–90 segundos
-      if (lead !== leads[leads.length - 1]) {
-        await randomDelay(30_000, 90_000);
+        // Registra a abordagem na aba Conversas (conversa + mensagem de saída)
+        const mensagemTexto = renderarCorpoTemplate(
+          (template as { corpoTexto?: string | null }).corpoTexto,
+          template.variaveis, lead, providerConfig.accountName,
+        );
+        await registrarConversaDisparo({
+          crmLeadId,
+          providerConfigId: providerConfig.id,
+          telefone: telefoneNormalizado,
+          profileName: atualizado.nome,
+          templateNome: template.nomeTemplateMeta,
+          tentativa: atualizado.tentativasDisparo,
+          mensagemTexto,
+        }).catch((e) => console.error(`[Disparo] Falha ao registrar conversa | lead=${lead.id}:`, e));
+      }
+
+      await prisma.disparoJob.update({ where: { id: proximo.id }, data: { status: "DONE" } });
+      resultado.disparados++;
+      console.log(`[Disparo] OK | lead=${lead.id} | tel=${telefoneNormalizado} | tentativa=${atualizado.tentativasDisparo}`);
+
+      // Delay aleatório entre disparos: 30–90 segundos (anti-bloqueio Meta)
+      const haMais = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
+      if (haMais > 0) {
+        const esperaMs = intervaloAleatorioMs(ESPERA_MIN_MS, ESPERA_MAX_MS);
+
+        // Se a espera não cabe no que sobrou da invocação, encerra aqui e deixa
+        // o intervalo para quem agendar a continuação — dormir além do teto da
+        // função só faria o processo ser morto no meio do envio seguinte.
+        if (orcamento && orcamento.restanteMs() <= esperaMs) {
+          resultado.restantes = haMais;
+          resultado.esperaSegundos = Math.ceil(esperaMs / 1_000);
+          break;
+        }
+
+        await esperar(esperaMs);
       }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error(`[Disparo] Falha | lead=${lead.id} |`, errMsg);
 
+      const tentativas = (lead.tentativasDisparo ?? 0) + 1;
+      const esgotouTentativas = tentativas >= (config.maxTentativasContato ?? 3);
+
       await prisma.prospectLead.update({
         where: { id: lead.id },
         data: {
-          status: "DESCARTADO",
-          motivoAnaliseIA: `Falha no envio: ${errMsg.slice(0, 200)}`,
+          status: esgotouTentativas ? "DESCARTADO" : "ERRO_ENVIO",
+          motivoAnaliseIA: `Falha no envio (tentativa ${tentativas}): ${errMsg.slice(0, 200)}`,
           tentativasDisparo: { increment: 1 },
         },
+      });
+      await prisma.disparoJob.update({
+        where: { id: proximo.id },
+        data: { status: "FAILED", erro: errMsg.slice(0, 300) },
       });
 
       resultado.erros++;
@@ -179,6 +494,56 @@ export async function executarDisparoDiario(organizationId: string): Promise<{
   }
 
   return resultado;
+}
+
+// ── Retomada pós-restart — chamada pelo healthcheck a cada 5min ────────────────
+
+let retomadaAtiva = false;
+
+/**
+ * Retoma jobs QUEUED deixados para trás (restart do PM2 no meio do lote ou
+ * janela comercial que fechou). RUNNING órfãos (>15min sem update) voltam a QUEUED.
+ */
+export async function retomarDisparosPendentes(): Promise<void> {
+  if (retomadaAtiva) return;
+  retomadaAtiva = true;
+  try {
+    // Requeue de RUNNING órfãos
+    const staleCutoff = new Date(Date.now() - 15 * 60 * 1000);
+    await prisma.disparoJob.updateMany({
+      where: { status: "RUNNING", atualizadoEm: { lt: staleCutoff } },
+      data: { status: "QUEUED" },
+    });
+
+    const pendentes = await prisma.disparoJob.groupBy({
+      by: ["organizationId"],
+      where: { status: "QUEUED" },
+      _count: true,
+    });
+
+    for (const p of pendentes) {
+      const organizationId = p.organizationId;
+
+      // Reconstrói contexto respeitando os mesmos gates do disparo normal
+      const config = await prisma.disparoConfig.findUnique({ where: { organizationId } });
+      if (!config || config.pausadoManualmente || !dentroJanela(config)) continue;
+
+      const providerConfig = await prisma.whatsappProviderConfig.findFirst({ where: { organizationId } });
+      const token = providerConfig?.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN;
+      const templates = await prisma.templateProspeccao.findMany({
+        where: { organizationId, ativo: true },
+        orderBy: { createdAt: "asc" },
+      });
+      if (!providerConfig || !token || templates.length === 0) continue;
+
+      console.log(`[Disparo] Retomando ${p._count} jobs pendentes da org ${organizationId}`);
+      await processarFilaDisparo(organizationId, { config, providerConfig, token, templates });
+    }
+  } catch (e) {
+    console.error("[Disparo] Erro na retomada:", e);
+  } finally {
+    retomadaAtiva = false;
+  }
 }
 
 /**

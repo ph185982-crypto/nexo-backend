@@ -1,6 +1,6 @@
 export const config = {
   ownerWhatsapp:    process.env.OWNER_WHATSAPP_NUMBER!,
-  businessName:     process.env.BUSINESS_NAME     || "Nexo Vendas",
+  businessName:     process.env.BUSINESS_NAME     || "Nexo",
   deliveryRegion:   process.env.DELIVERY_REGION   || "Goiânia",
   cepOrigem:        process.env.CEP_ORIGEM!,
   renderUrl:        process.env.RENDER_EXTERNAL_URL || process.env.NEXTAUTH_URL || "",
