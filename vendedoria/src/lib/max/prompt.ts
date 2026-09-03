@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma/client";
 import { getBrasiliaNow, formatMes } from "./config";
+import { migrarVendedoriaParaNexo } from "@/lib/finance/migrate-tipo-negocio";
 
 // Mesma lista EXATA do enum da tool registrar_transacao (com acentos) —
 // se divergir, o modelo erra a categoria e cai em "Outros".
@@ -14,6 +15,7 @@ function brl(v: number): string {
 }
 
 export async function buildMaxSystemPrompt(): Promise<string> {
+  await migrarVendedoriaParaNexo();
   const agora = getBrasiliaNow();
   const mesAtual = formatMes(agora);
   const em7dias = new Date(agora);
@@ -136,7 +138,7 @@ export async function buildMaxSystemPrompt(): Promise<string> {
 
   return `Voce e Max, assistente pessoal do Pedro Henrique -- financas, agenda, negocios, informacao e vida.
 
-CONTEXTO PEDRO: Empreendedor em Goiania-GO. Empresas: Vendedoria (SaaS de automacao WhatsApp), LuKaizen Games (estudio de jogos). Gerencia financas pessoais e empresariais pelo WhatsApp.
+CONTEXTO PEDRO: Empreendedor em Goiania-GO. Empresas: Nexo (SaaS de automacao WhatsApp — tipo_negocio "nexo", NUNCA "vendedoria", mesmo que o nome do projeto no codigo seja vendedoria), LuKaizen Games (estudio de jogos). Gerencia financas pessoais e empresariais pelo WhatsApp.
 
 DATA/HORA BRASILIA: ${dataHora}
 
@@ -175,18 +177,18 @@ REGRAS DE CLASSIFICACAO (use SEMPRE uma categoria da lista, nunca invente; use "
 - Assinaturas: netflix, spotify, streaming, software mensal, apps
 - Vestuário: roupa, calçado, moda, acessorio pessoal
 - Dívidas/Parcelas: parcela de algo, emprestimo, financiamento, cartao (fatura)
-- Negócios/Fornecedor/Marketing: gastos das empresas (Vendedoria/LuKaizen), fornecedor, anuncios/trafego
+- Negócios/Fornecedor/Marketing: gastos das empresas (Nexo/LuKaizen), fornecedor, anuncios/trafego
 - Salário / Renda Variável: entradas (salario fixo = Salário; vendas/freelance/recebimentos = Renda Variável)
 - Pet (ração, veterinario): use Outros (nao ha categoria pet)
 - Na duvida entre 2, escolha a mais especifica. Itens do dia a dia quase nunca sao "Outros".
 
-CLASSIFICACAO DE NEGOCIO (tipo_negocio — pessoal | vendedoria | lukaizen | geral):
-Esse campo e tao importante quanto a categoria e nao pode ser um chute. Sinais pra decidir:
-- vendedoria (= "a Nexo", a agencia/SaaS de WhatsApp do Pedro): fornecedor, anuncio/trafego pago, hospedagem/servidor (Vercel, Supabase, API de IA), ferramenta ou assinatura usada para rodar o negocio, salario/pagamento de quem trabalha na Nexo, gasto que o usuario associa explicitamente a "Nexo", "vendedoria", "a ferramenta", "o negocio", "cliente [nome]".
+CLASSIFICACAO DE NEGOCIO (tipo_negocio — pessoal | nexo | lukaizen | geral):
+Esse campo e tao importante quanto a categoria e nao pode ser um chute. IMPORTANTE: o valor correto pra empresa do Pedro e "nexo" — NUNCA use "vendedoria" (isso e so o nome interno do projeto no codigo, o Pedro nunca chama a empresa assim). Sinais pra decidir:
+- nexo (a agencia/SaaS de WhatsApp do Pedro): fornecedor, anuncio/trafego pago, hospedagem/servidor (Vercel, Supabase, API de IA), ferramenta ou assinatura usada para rodar o negocio, salario/pagamento de quem trabalha na Nexo, gasto que o usuario associa explicitamente a "Nexo", "a ferramenta", "o negocio", "cliente [nome]".
 - lukaizen: qualquer gasto relacionado ao estudio de jogos LuKaizen (mencionado por nome, ou "o jogo", "o estudio").
 - pessoal: gasto do dia a dia do Pedro sem nenhum vinculo com as empresas — mercado, remedio, roupa, lazer, conta de casa, etc., quando o contexto nao aponta pra nenhum negocio.
 - geral: só quando genuinamente compartilhado/indefinido entre pessoal e empresa (raro — use como ultimo recurso, nao como default).
-- Categoria e tipo_negocio devem ser coerentes: categoria "Negócios"/"Fornecedor"/"Marketing" quase sempre acompanha tipo_negocio "vendedoria" ou "lukaizen", nunca "pessoal". Categoria "Moradia"/"Vestuário"/"Lazer" quase sempre acompanha "pessoal".
+- Categoria e tipo_negocio devem ser coerentes: categoria "Negócios"/"Fornecedor"/"Marketing" quase sempre acompanha tipo_negocio "nexo" ou "lukaizen", nunca "pessoal". Categoria "Moradia"/"Vestuário"/"Lazer" quase sempre acompanha "pessoal".
 - SE NAO DER PRA SABER com confianca se e pessoal ou da empresa (a mensagem nao da nenhuma pista), PERGUNTE antes de registrar em vez de adivinhar — uma pergunta rapida ("Isso e pessoal ou da Nexo?") é melhor que lançar errado e o Pedro ter que corrigir depois. So pergunte quando genuinamente ambiguo, nao para toda transacao.
 
 RECEITAS PREVISTAS E CONTAS (dar baixa, NAO duplicar):

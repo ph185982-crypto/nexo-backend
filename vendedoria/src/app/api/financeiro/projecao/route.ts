@@ -37,17 +37,26 @@ export async function GET(req: NextRequest) {
     ]);
     const saldo_atual = (recAgg._sum.valor ?? 0) - (despAgg._sum.valor ?? 0);
 
-    // Burn rate: average daily spending over last 60 days
+    // Burn rate: average daily spending over the last up-to-60 days de historico real
+    // (dividir sempre por 60 sub-estima o gasto diario quando ha menos dias de dados —
+    // ex: CRM com so 5 dias de despesas registradas).
     const sixtyDaysAgo = new Date(now);
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-    const burnAgg = await prisma.transacao.aggregate({
-      where: {
-        tipo: "despesa",
-        data_transacao: { gte: sixtyDaysAgo },
-      },
-      _sum: { valor: true },
-    });
-    const burn_rate = Math.round(((burnAgg._sum.valor ?? 0) / 60) * 100) / 100;
+    const [burnAgg, burnMin] = await Promise.all([
+      prisma.transacao.aggregate({
+        where: { tipo: "despesa", data_transacao: { gte: sixtyDaysAgo } },
+        _sum: { valor: true },
+      }),
+      prisma.transacao.aggregate({
+        where: { tipo: "despesa", data_transacao: { gte: sixtyDaysAgo } },
+        _min: { data_transacao: true },
+      }),
+    ]);
+    const primeiraDespesa = burnMin._min.data_transacao;
+    const diasComDados = primeiraDespesa
+      ? Math.min(60, Math.max(1, Math.round((now.getTime() - primeiraDespesa.getTime()) / 86_400_000) + 1))
+      : 60;
+    const burn_rate = Math.round(((burnAgg._sum.valor ?? 0) / diasComDados) * 100) / 100;
 
     // Upcoming receitas previstas (pendentes)
     const hoje = new Date(now.getFullYear(), now.getMonth(), now.getDate());

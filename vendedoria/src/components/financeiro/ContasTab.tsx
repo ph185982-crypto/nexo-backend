@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { TIPO_NEGOCIO_OPTIONS, formatTipoNegocio } from "@/lib/finance/labels";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -16,6 +17,7 @@ interface Conta {
   valor: number;
   vencimento: string;
   categoria: string;
+  tipo_negocio?: string | null;
   status: "pendente" | "paga" | "vencida";
 }
 
@@ -23,7 +25,7 @@ export function ContasTab() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ descricao: "", valor: "", vencimento: "", categoria: "" });
+  const [form, setForm] = useState({ descricao: "", valor: "", vencimento: "", categoria: "", tipo_negocio: "pessoal" });
   const [submitting, setSubmitting] = useState(false);
 
   const fetchContas = useCallback(async () => {
@@ -45,7 +47,7 @@ export function ContasTab() {
     await fetch(`/api/financeiro/contas/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "paga" }),
+      body: JSON.stringify({ acao: "pagar" }),
     });
     fetchContas();
   };
@@ -60,11 +62,12 @@ export function ContasTab() {
         body: JSON.stringify({
           descricao: form.descricao,
           valor: parseFloat(form.valor),
-          vencimento: form.vencimento,
+          data_vencimento: form.vencimento,
           categoria: form.categoria,
+          tipo_negocio: form.tipo_negocio,
         }),
       });
-      setForm({ descricao: "", valor: "", vencimento: "", categoria: "" });
+      setForm({ descricao: "", valor: "", vencimento: "", categoria: "", tipo_negocio: "pessoal" });
       setShowForm(false);
       fetchContas();
     } finally {
@@ -96,7 +99,7 @@ export function ContasTab() {
       {showForm && (
         <Card>
           <CardContent className="p-4">
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
               <Input
                 placeholder="Descricao"
                 value={form.descricao}
@@ -122,6 +125,15 @@ export function ContasTab() {
                 value={form.categoria}
                 onChange={(e) => setForm({ ...form, categoria: e.target.value })}
               />
+              <select
+                value={form.tipo_negocio}
+                onChange={(e) => setForm({ ...form, tipo_negocio: e.target.value })}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+              >
+                {TIPO_NEGOCIO_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
               <Button type="submit" disabled={submitting} className="gap-1">
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Salvar
@@ -158,6 +170,7 @@ export function ContasTab() {
                         <span className="font-semibold text-foreground">{BRL.format(conta.valor)}</span>
                         <span>Vence: {new Date(conta.vencimento).toLocaleDateString("pt-BR")}</span>
                         {conta.categoria && <span>{conta.categoria}</span>}
+                        <span>{formatTipoNegocio(conta.tipo_negocio)}</span>
                       </div>
                     </div>
                     {conta.status === "pendente" && (

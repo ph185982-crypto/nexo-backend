@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       if (data_fim) (where.data_transacao as Record<string, unknown>).lte = new Date(data_fim);
     }
 
-    const [transacoes, total] = await Promise.all([
+    const [rows, total, categoriasRows, tiposNegocioRows] = await Promise.all([
       prisma.transacao.findMany({
         where,
         orderBy: [{ data_transacao: "desc" }, { criado_em: "desc" }],
@@ -42,9 +42,23 @@ export async function GET(req: NextRequest) {
         take: pageSize,
       }),
       prisma.transacao.count({ where }),
+      prisma.transacao.findMany({ distinct: ["categoria"], select: { categoria: true }, orderBy: { categoria: "asc" } }),
+      prisma.transacao.findMany({ distinct: ["tipo_negocio"], select: { tipo_negocio: true }, orderBy: { tipo_negocio: "asc" } }),
     ]);
 
-    return NextResponse.json({ transacoes, total, page, pageSize });
+    // A UI (ExtratoTab) espera o campo "data" — a coluna no banco e "data_transacao".
+    const transacoes = rows.map((t) => ({ ...t, data: t.data_transacao }));
+    const categorias = categoriasRows.map((c) => c.categoria);
+    const tipos_negocio = tiposNegocioRows.map((t) => t.tipo_negocio);
+
+    return NextResponse.json({
+      transacoes,
+      total,
+      pagina: page,
+      paginas: Math.max(1, Math.ceil(total / pageSize)),
+      categorias,
+      tipos_negocio,
+    });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "Forbidden") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { formatTipoNegocio } from "@/lib/finance/labels";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -140,7 +141,7 @@ export function ExtratoTab() {
             >
               <option value="">Todos os negocios</option>
               {(data?.tipos_negocio ?? []).map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>{formatTipoNegocio(t)}</option>
               ))}
             </select>
             <Input
@@ -203,7 +204,7 @@ export function ExtratoTab() {
                             className="h-7 text-sm"
                           />
                         </td>
-                        <td className="p-3 text-muted-foreground">{t.tipo_negocio ?? "-"}</td>
+                        <td className="p-3 text-muted-foreground">{formatTipoNegocio(t.tipo_negocio)}</td>
                         <td className="p-3 text-right">
                           <Input
                             type="number"
@@ -231,7 +232,7 @@ export function ExtratoTab() {
                         </td>
                         <td className="p-3 text-foreground">{t.descricao}</td>
                         <td className="p-3 text-muted-foreground">{t.categoria}</td>
-                        <td className="p-3 text-muted-foreground">{t.tipo_negocio ?? "-"}</td>
+                        <td className="p-3 text-muted-foreground">{formatTipoNegocio(t.tipo_negocio)}</td>
                         <td className={cn(
                           "p-3 text-right font-medium whitespace-nowrap",
                           t.tipo === "receita" ? "text-green-500" : "text-red-500"

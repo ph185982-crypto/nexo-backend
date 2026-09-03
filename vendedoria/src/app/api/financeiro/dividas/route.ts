@@ -14,6 +14,7 @@ export async function GET() {
     await requireAdmin();
 
     const dividas = await prisma.dividaMax.findMany({
+      where: { status: "ativa" },
       orderBy: { criado_em: "desc" },
     });
 

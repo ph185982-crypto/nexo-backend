@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { getBrasiliaDateOnly, formatMesUTC } from "@/lib/max/config";
 
 async function requireAdmin() {
   const session = await auth();
@@ -29,8 +30,8 @@ export async function PATCH(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const now = new Date();
-    const mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const now = getBrasiliaDateOnly();
+    const mes = formatMesUTC(now);
 
     const [updated] = await prisma.$transaction([
       prisma.receitaPrevistaMax.update({

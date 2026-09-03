@@ -50,7 +50,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Qual negocio/ambito se refere",
           },
           data: {
@@ -135,7 +135,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Filtrar por tipo de negocio",
           },
           categoria: {
@@ -296,7 +296,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Tipo de negocio",
           },
         },
@@ -337,7 +337,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Filtrar por tipo de negocio",
           },
           limite: {
@@ -372,7 +372,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Novo tipo de negocio",
           },
           data_transacao: {
@@ -421,7 +421,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Filtrar por tipo de negocio",
           },
           categoria: {
@@ -463,7 +463,7 @@ export const MAX_TOOLS: Array<{
           },
           tipo_negocio: {
             type: "string",
-            enum: ["pessoal", "vendedoria", "lukaizen", "geral"],
+            enum: ["pessoal", "nexo", "lukaizen", "geral"],
             description: "Tipo de negocio",
           },
           recorrente: {

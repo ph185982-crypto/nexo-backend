@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { migrarVendedoriaParaNexo } from "@/lib/finance/migrate-tipo-negocio";
 
 async function requireAdmin() {
   const session = await auth();
@@ -12,6 +13,7 @@ async function requireAdmin() {
 export async function GET() {
   try {
     await requireAdmin();
+    await migrarVendedoriaParaNexo();
 
     const now = new Date(
       new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })

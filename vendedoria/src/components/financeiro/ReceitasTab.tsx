@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { TIPO_NEGOCIO_OPTIONS, formatTipoNegocio } from "@/lib/finance/labels";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -16,6 +17,7 @@ interface Receita {
   valor: number;
   data_prevista: string;
   cliente: string;
+  tipo_negocio?: string | null;
   status: "pendente" | "atrasada" | "recebida";
 }
 
@@ -31,7 +33,7 @@ export function ReceitasTab() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ descricao: "", valor: "", data_prevista: "", cliente: "" });
+  const [form, setForm] = useState({ descricao: "", valor: "", data_prevista: "", cliente: "", tipo_negocio: "pessoal" });
   const [submitting, setSubmitting] = useState(false);
 
   const fetchReceitas = useCallback(async () => {
@@ -53,7 +55,7 @@ export function ReceitasTab() {
     await fetch(`/api/financeiro/receitas/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "recebida" }),
+      body: JSON.stringify({ acao: "confirmar" }),
     });
     fetchReceitas();
   };
@@ -70,9 +72,10 @@ export function ReceitasTab() {
           valor: parseFloat(form.valor),
           data_prevista: form.data_prevista,
           cliente: form.cliente,
+          tipo_negocio: form.tipo_negocio,
         }),
       });
-      setForm({ descricao: "", valor: "", data_prevista: "", cliente: "" });
+      setForm({ descricao: "", valor: "", data_prevista: "", cliente: "", tipo_negocio: "pessoal" });
       setShowForm(false);
       fetchReceitas();
     } finally {
@@ -101,7 +104,7 @@ export function ReceitasTab() {
       {showForm && (
         <Card>
           <CardContent className="p-4">
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
               <Input
                 placeholder="Descricao"
                 value={form.descricao}
@@ -127,6 +130,15 @@ export function ReceitasTab() {
                 value={form.cliente}
                 onChange={(e) => setForm({ ...form, cliente: e.target.value })}
               />
+              <select
+                value={form.tipo_negocio}
+                onChange={(e) => setForm({ ...form, tipo_negocio: e.target.value })}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+              >
+                {TIPO_NEGOCIO_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
               <Button type="submit" disabled={submitting} className="gap-1">
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Salvar
@@ -148,6 +160,7 @@ export function ReceitasTab() {
                   <th className="text-right p-3 font-medium text-muted-foreground">Valor</th>
                   <th className="text-left p-3 font-medium text-muted-foreground">Data Prevista</th>
                   <th className="text-left p-3 font-medium text-muted-foreground">Cliente</th>
+                  <th className="text-left p-3 font-medium text-muted-foreground">Negocio</th>
                   <th className="text-left p-3 font-medium text-muted-foreground">Status</th>
                   <th className="p-3 w-16" />
                 </tr>
@@ -163,6 +176,7 @@ export function ReceitasTab() {
                       {new Date(r.data_prevista).toLocaleDateString("pt-BR")}
                     </td>
                     <td className="p-3 text-muted-foreground">{r.cliente || "-"}</td>
+                    <td className="p-3 text-muted-foreground">{formatTipoNegocio(r.tipo_negocio)}</td>
                     <td className="p-3">{statusBadge(r.status)}</td>
                     <td className="p-3">
                       {(r.status === "pendente" || r.status === "atrasada") && (

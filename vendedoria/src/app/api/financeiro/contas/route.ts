@@ -22,7 +22,12 @@ export async function GET(req: NextRequest) {
       orderBy: { data_vencimento: "asc" },
     });
 
-    return NextResponse.json(contas);
+    // A UI espera o campo "vencimento" (nome usado no componente ContasTab),
+    // enquanto a coluna no banco e "data_vencimento" — mapeia aqui pra nao
+    // quebrar silenciosamente (Invalid Date / "vencida" nunca disparando).
+    const mapped = contas.map((c) => ({ ...c, vencimento: c.data_vencimento }));
+
+    return NextResponse.json(mapped);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "Forbidden") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

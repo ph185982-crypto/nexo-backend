@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { getBrasiliaDateOnly, formatMesUTC } from "@/lib/max/config";
 
 async function requireAdmin() {
   const session = await auth();
@@ -41,14 +42,24 @@ export async function PATCH(
     }
 
     // acao === "pagar_parcela"
+    if (divida.status === "quitada") {
+      return NextResponse.json({ error: "Esta divida ja esta quitada" }, { status: 400 });
+    }
     if (valor == null || valor <= 0) {
       return NextResponse.json({ error: "valor is required and must be positive" }, { status: 400 });
     }
 
     const valorParcela = Math.round(valor * 100) / 100;
+    const restante = Math.round((divida.valor_total - divida.valor_pago) * 100) / 100;
+    if (valorParcela > restante) {
+      return NextResponse.json(
+        { error: `Valor da parcela (${valorParcela}) maior que o restante da divida (${restante})` },
+        { status: 400 },
+      );
+    }
     const novoValorPago = Math.round((divida.valor_pago + valorParcela) * 100) / 100;
-    const now = new Date();
-    const mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const now = getBrasiliaDateOnly();
+    const mes = formatMesUTC(now);
 
     const [updated] = await prisma.$transaction([
       prisma.dividaMax.update({
