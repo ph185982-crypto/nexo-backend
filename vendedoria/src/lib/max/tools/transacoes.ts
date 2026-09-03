@@ -80,6 +80,7 @@ export async function registrarTransacao(args: Record<string, unknown>): Promise
     `  Receitas: ${BRL.format(totalReceitas)}`,
     `  Despesas: ${BRL.format(totalDespesas)}`,
     `  Saldo do dia: ${BRL.format(totalReceitas - totalDespesas)}`,
+    `(valores definitivos calculados pelo banco — se for informar o saldo/total de hoje na resposta, repita exatamente estes numeros, nao recalcule)`,
   ].join("\n");
 }
 
@@ -285,6 +286,8 @@ export async function gerarExtrato(args: Record<string, unknown>): Promise<strin
   lines.push(`  Total Despesas:  - ${BRL.format(totalDespesas)}`);
   lines.push(`  Saldo:           ${BRL.format(totalReceitas - totalDespesas)}`);
   lines.push(`  Transacoes:      ${txs.length}`);
+  lines.push("");
+  lines.push("(valores definitivos calculados pelo banco — repita exatamente estes numeros na resposta, nao recalcule)");
 
   return lines.join("\n");
 }
@@ -383,6 +386,9 @@ export async function consultarFinancas(args: Record<string, unknown>): Promise<
       lines.push(`    ${cat.padEnd(20)} ${BRL.format(total)}`);
     }
   }
+
+  lines.push("");
+  lines.push("(valores definitivos calculados pelo banco — repita exatamente estes numeros na resposta, nao recalcule)");
 
   return lines.join("\n");
 }
