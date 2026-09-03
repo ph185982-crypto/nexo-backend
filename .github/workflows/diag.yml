@@ -1,0 +1,14 @@
+name: Diag
+on:
+  push:
+    branches:
+      - claude/whatsapp-ai-crm-hYSVU
+    paths:
+      - 'vps-status/diag-trigger.txt'
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello from runner"
