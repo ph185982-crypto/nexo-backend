@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 const CONV_SELECT = {
   id: true,
@@ -25,6 +26,12 @@ const CONV_SELECT = {
 };
 
 export async function GET(req: NextRequest) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { searchParams } = new URL(req.url);
   const organizationId = searchParams.get("organizationId");
   const search   = searchParams.get("search") ?? "";

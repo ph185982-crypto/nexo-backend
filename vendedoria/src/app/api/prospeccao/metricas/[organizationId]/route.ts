@@ -37,14 +37,57 @@ export async function GET(
     porStatus[row.status] = row._count._all;
   }
 
-  const abordados = porStatus["ABORDADO"] ?? 0;
-  const responderam = porStatus["RESPONDEU"] ?? 0;
-  const qualificados = porStatus["QUALIFICADO"] ?? 0;
-  const reunioes = porStatus["REUNIAO_AGENDADA"] ?? 0;
+  // Funil CUMULATIVO: um lead em QUALIFICADO também conta como abordado e respondido.
+  // Sem isso as taxas ficam distorcidas (o denominador esvazia conforme o lead avança).
+  const s = (k: string) => porStatus[k] ?? 0;
+  const reunioes     = s("REUNIAO_AGENDADA");
+  const qualificados = s("QUALIFICADO") + reunioes;
+  const responderam  = s("RESPONDEU") + qualificados;
+  const abordados    = await prisma.prospectLead.count({
+    where: { ...filtroBase, dataAbordagem: { not: null } },
+  });
 
   const taxaResposta     = abordados > 0 ? responderam / abordados : 0;
   const taxaQualificacao = responderam > 0 ? qualificados / responderam : 0;
   const taxaReuniao      = qualificados > 0 ? reunioes / qualificados : 0;
+
+  // Quebra por template (base para A/B): respostas e reuniões por template usado
+  const templates = await prisma.templateProspeccao.findMany({
+    where: { organizationId },
+    select: { id: true, nomeTemplateMeta: true, ativo: true },
+  });
+  const porTemplate = await Promise.all(
+    templates.map(async (t) => {
+      const filtroTpl = { ...filtroBase, templateUsadoId: t.id };
+      const [enviados, respondidos, reunioesTpl] = await Promise.all([
+        prisma.prospectLead.count({ where: { ...filtroTpl, dataAbordagem: { not: null } } }),
+        prisma.prospectLead.count({ where: { ...filtroTpl, status: { in: ["RESPONDEU", "QUALIFICADO", "REUNIAO_AGENDADA"] } } }),
+        prisma.prospectLead.count({ where: { ...filtroTpl, status: "REUNIAO_AGENDADA" } }),
+      ]);
+      return {
+        templateId: t.id,
+        nome: t.nomeTemplateMeta,
+        ativo: t.ativo,
+        enviados,
+        respondidos,
+        reunioes: reunioesTpl,
+        taxaResposta: enviados > 0 ? respondidos / enviados : 0,
+      };
+    }),
+  );
+
+  // Envios por dia (últimos 14 dias) — evolução do volume
+  const inicio14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+  const abordagens = await prisma.prospectLead.findMany({
+    where: { ...filtroBase, dataAbordagem: { gte: inicio14d } },
+    select: { dataAbordagem: true },
+  });
+  const enviosPorDia: Record<string, number> = {};
+  for (const a of abordagens) {
+    if (!a.dataAbordagem) continue;
+    const dia = a.dataAbordagem.toISOString().slice(0, 10);
+    enviosPorDia[dia] = (enviosPorDia[dia] ?? 0) + 1;
+  }
 
   // Por segmento
   const segmentos = await prisma.prospectSegment.findMany({
@@ -80,9 +123,12 @@ export async function GET(
 
   return NextResponse.json({
     porStatus,
+    funil: { abordados, responderam, qualificados, reunioes },
     taxaResposta,
     taxaQualificacao,
     taxaReuniao,
     porSegmento,
+    porTemplate,
+    enviosPorDia,
   });
 }

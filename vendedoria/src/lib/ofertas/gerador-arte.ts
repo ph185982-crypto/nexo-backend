@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { type Browser } from "puppeteer-core";
 import path from "path";
 import fs from "fs/promises";
 import os from "os";
@@ -180,24 +180,55 @@ function htmlTemplate(dados: DadosArte): string {
 </html>`;
 }
 
-export async function gerarArte(dados: DadosArte): Promise<string> {
-  const browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+const ARGS_PADRAO = [
+  "--no-sandbox",
+  "--disable-setuid-sandbox",
+  "--disable-gpu",
+  "--disable-dev-shm-usage",
+];
+
+/**
+ * Abre um Chrome headless no ambiente em que estivermos.
+ *
+ * Em serverless não há navegador instalado no runtime, então o binário vem
+ * comprimido dentro de @sparticuz/chromium — com os args que ele exige para
+ * rodar sob o sandbox da lambda. Fora dali usamos o Chrome apontado por
+ * PUPPETEER_EXECUTABLE_PATH (VPS, Docker) ou o que o puppeteer completo baixou.
+ */
+async function abrirNavegador(): Promise<Browser> {
+  const executavelDoSistema = process.env.PUPPETEER_EXECUTABLE_PATH;
+
+  if (process.env.VERCEL && !executavelDoSistema) {
+    const { default: chromium } = await import("@sparticuz/chromium");
+    return puppeteer.launch({
+      args: [...chromium.args, ...ARGS_PADRAO],
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
+  }
+
+  const executavel =
+    executavelDoSistema ??
+    (await import("puppeteer")).default.executablePath();
+
+  return puppeteer.launch({
+    executablePath: executavel,
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-gpu",
-      "--disable-dev-shm-usage",
-    ],
+    args: ARGS_PADRAO,
   });
+}
+
+export async function gerarArte(dados: DadosArte): Promise<string> {
+  const browser = await abrirNavegador();
 
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1080, height: 1080, deviceScaleFactor: 1 });
 
     const html = htmlTemplate(dados);
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 30000 });
+    // setContent só aceita load/domcontentloaded; a espera pela rede que
+    // interessa aqui são as imagens, resolvidas explicitamente logo abaixo.
+    await page.setContent(html, { waitUntil: "load", timeout: 30000 });
 
     // Wait for image to load if present
     if (dados.fotoUrl) {

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 // GET /api/ai/monitor?etapa=NOVO&human=true&take=50
 export async function GET(req: NextRequest) {
   try {
+    await requireAdmin();
     const url     = new URL(req.url);
     const etapa   = url.searchParams.get("etapa") ?? undefined;
     const take    = Math.min(Number(url.searchParams.get("take") ?? "60"), 200);
@@ -46,6 +48,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ conversations, counts, total, humanCount });
   } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }

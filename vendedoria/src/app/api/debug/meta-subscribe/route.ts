@@ -1,14 +1,23 @@
 /**
- * TEMPORARY — calls Meta Graph API to subscribe WABA to app webhooks + test send
+ * GET /api/debug/meta-subscribe?secret=<CRON_SECRET>
+ *
+ * TEMPORARY — calls Meta Graph API to subscribe WABA to app webhooks + test send.
+ * Protected by CRON_SECRET — this can send a real WhatsApp message via ?sendTo=,
+ * so it must never be reachable without it.
  */
 import { NextResponse } from "next/server";
 import { config } from "@/lib/config/env";
 
 export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const secret = url.searchParams.get("secret");
+  if (!secret || secret !== process.env.CRON_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const token = process.env.META_WHATSAPP_ACCESS_TOKEN;
   const wabaId = process.env.META_WHATSAPP_WABA_ID;
   const phoneNumberId = process.env.META_WHATSAPP_PHONE_NUMBER_ID;
-  const url = new URL(req.url);
   const testTo = url.searchParams.get("sendTo");
   const testWaba = url.searchParams.get("waba");
   const testPhone = url.searchParams.get("phone");

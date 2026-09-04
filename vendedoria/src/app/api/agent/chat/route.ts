@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 const CONFIGURADORA_PROMPT = `Você é especialista em configurar agentes de vendas por WhatsApp.
 Ajuda o usuário a ajustar o roteiro do agente de vendas via WhatsApp.
@@ -49,6 +50,7 @@ async function callClaude(
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin();
     const { message, history = [] } = await req.json() as {
       message: string;
       history?: Array<{ role: "user" | "assistant"; content: string }>;
@@ -95,6 +97,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ response, patchAplicado, newVersion });
   } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }

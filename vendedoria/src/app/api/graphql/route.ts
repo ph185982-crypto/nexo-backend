@@ -6,6 +6,11 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma/client";
 import type { NextRequest } from "next/server";
 
+// Sem isso a Vercel usa o default da plataforma (10s no plano Hobby) — resolvers
+// mais pesados (contagens/joins do Kanban, dashboard) podem estourar e devolver
+// erro genérico ao CRM inteiro sem log estruturado.
+export const maxDuration = 30;
+
 export interface GraphQLContext {
   userId?: string;
   userRole?: string;

@@ -1,16 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Phone, Mail, MapPin, Calendar, Tag, MessageSquare, User,
   MoreVertical, X, Clock, AlertTriangle, Ban, ChevronRight,
-  Bot, Loader2,
+  Bot, Loader2, MessageCircle, Send,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -76,6 +77,13 @@ interface Conversation {
   tags?: Array<{ id: string; name: string; color: string }>;
 }
 
+interface LeadNote {
+  id: string;
+  content: string;
+  createdBy?: string | null;
+  createdAt: string;
+}
+
 interface LeadDetailModalProps {
   lead: Lead | null;
   open: boolean;
@@ -94,6 +102,51 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
     skip: !lead?.id || !open,
     fetchPolicy: "cache-and-network",
   });
+
+  // ── Feedback (LeadNote) — uma aba por contato pra registrar observações
+  // internas sem misturar com o histórico de conversa do WhatsApp.
+  const [notes, setNotes] = useState<LeadNote[]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [newNote, setNewNote] = useState("");
+  const [sendingNote, setSendingNote] = useState(false);
+
+  const loadNotes = useCallback(async (leadId: string) => {
+    setNotesLoading(true);
+    try {
+      const res = await fetch(`/api/leads/${leadId}/notes`);
+      if (res.ok) setNotes(await res.json());
+    } catch (e) {
+      console.error("Erro ao carregar feedback:", e);
+    } finally {
+      setNotesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (open && lead?.id) loadNotes(lead.id);
+    if (!open) { setNotes([]); setNewNote(""); }
+  }, [open, lead?.id, loadNotes]);
+
+  const handleSendNote = async () => {
+    if (!lead?.id || !newNote.trim() || sendingNote) return;
+    setSendingNote(true);
+    try {
+      const res = await fetch(`/api/leads/${lead.id}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newNote.trim() }),
+      });
+      if (res.ok) {
+        const note = await res.json();
+        setNotes((prev) => [note, ...prev]);
+        setNewNote("");
+      }
+    } catch (e) {
+      console.error("Erro ao enviar feedback:", e);
+    } finally {
+      setSendingNote(false);
+    }
+  };
 
   if (!lead) return null;
 
@@ -203,7 +256,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
         {/* Tabs */}
         <Tabs defaultValue="overview" className="flex-1 overflow-hidden flex flex-col">
           <TabsList className="mx-6 mt-3 w-auto justify-start bg-transparent p-0 border-b rounded-none h-auto gap-0">
-            {(["overview", "activities", "escalations", "conversations"] as const).map((tab) => (
+            {(["overview", "activities", "escalations", "conversations", "feedback"] as const).map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
@@ -218,6 +271,16 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                     {conversations.length > 0 && (
                       <span className="bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
                         {conversations.length}
+                      </span>
+                    )}
+                  </span>
+                )}
+                {tab === "feedback" && (
+                  <span className="flex items-center gap-1.5">
+                    Feedback
+                    {notes.length > 0 && (
+                      <span className="bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                        {notes.length}
                       </span>
                     )}
                   </span>
@@ -433,6 +496,75 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                   })}
                 </div>
               )}
+            </TabsContent>
+
+            {/* Feedback Tab */}
+            <TabsContent value="feedback" className="m-0 p-6 flex flex-col gap-4">
+              <div>
+                <h3 className="text-sm font-semibold mb-2">Deixar feedback</h3>
+                <div className="flex flex-col gap-2">
+                  <Textarea
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Registre uma observação sobre este contato..."
+                    rows={3}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault();
+                        handleSendNote();
+                      }
+                    }}
+                  />
+                  <Button
+                    size="sm"
+                    className="self-end gap-1.5"
+                    onClick={handleSendNote}
+                    disabled={!newNote.trim() || sendingNote}
+                  >
+                    {sendingNote ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Send className="w-3.5 h-3.5" />
+                    )}
+                    Enviar
+                  </Button>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h3 className="text-sm font-semibold mb-3">Histórico</h3>
+                {notesLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                ) : notes.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 gap-3">
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-sm">Nenhum feedback registrado ainda</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {notes.map((note) => (
+                      <div key={note.id} className="border rounded-lg p-3">
+                        <p className="text-sm whitespace-pre-wrap">{note.content}</p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                          {note.createdBy && (
+                            <>
+                              <span className="font-medium">{note.createdBy}</span>
+                              <span>·</span>
+                            </>
+                          )}
+                          <span>{relativeTime(note.createdAt)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </TabsContent>
           </ScrollArea>
         </Tabs>

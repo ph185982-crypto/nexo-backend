@@ -18,12 +18,7 @@ export const MANAGER_NUMBER =
 // Normalize BR phone: strip country code 55 and the mobile "9" prefix.
 // Makes comparison tolerant to both 12-digit (55 + DDD + 8) and 13-digit
 // (55 + DDD + 9 + 8) formats that WhatsApp/Meta deliver interchangeably.
-function canonicalBR(phone: string): string {
-  let n = phone.replace(/\D/g, "");
-  if (n.startsWith("55") && n.length >= 12) n = n.slice(2);
-  if (n.length === 11 && n[2] === "9") n = n.slice(0, 2) + n.slice(3);
-  return n; // always 10 digits (DDD + 8)
-}
+import { canonicalBrazilianNumber as canonicalBR } from "@/lib/whatsapp/send";
 
 export function isManagerNumber(phone: string): boolean {
   return canonicalBR(phone) === canonicalBR(MANAGER_NUMBER);

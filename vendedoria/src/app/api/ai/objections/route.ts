@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectionService } from "@/lib/services/ai-config.service";
 import { ObjectionCreateSchema, parseBody } from "@/lib/schemas/ai-config";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 // GET /api/ai/objections?active=true
 export async function GET(req: NextRequest) {
   try {
+    await requireAdmin();
     const onlyActive = new URL(req.url).searchParams.get("active") === "true";
     return NextResponse.json(await ObjectionService.list(onlyActive));
   } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
@@ -15,6 +20,7 @@ export async function GET(req: NextRequest) {
 // POST /api/ai/objections
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin();
     const body = await req.json();
     const parsed = parseBody(ObjectionCreateSchema, body);
     if ("error" in parsed) return NextResponse.json(parsed, { status: 422 });
@@ -22,6 +28,9 @@ export async function POST(req: NextRequest) {
     const rule = await ObjectionService.create(parsed.data);
     return NextResponse.json(rule, { status: 201 });
   } catch (e: unknown) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     const isDuplicate = e instanceof Error && e.message.includes("Unique constraint");
     if (isDuplicate) return NextResponse.json({ error: "Já existe uma regra com essa keyword" }, { status: 409 });
     return NextResponse.json({ error: String(e) }, { status: 500 });

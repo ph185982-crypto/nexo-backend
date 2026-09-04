@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 export const maxDuration = 60;
 
@@ -9,6 +10,12 @@ function sleep(ms: number) {
 }
 
 export async function POST(req: NextRequest) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const body = await req.json();
   const { organizationId, phoneNumberId, leadIds, message } = body as {
     organizationId?: string;

@@ -117,6 +117,11 @@ async function handler(conversationId: string): Promise<{ ok: boolean; msg?: str
 }
 
 export async function POST(req: NextRequest) {
+  const auth = req.headers.get("authorization");
+  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json() as { conversationId?: string };
     const { conversationId } = body;
@@ -133,8 +138,7 @@ export async function GET(req: NextRequest) {
   const conversationId = searchParams.get("conversationId");
   const secret = searchParams.get("secret");
 
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && secret !== cronSecret) {
+  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

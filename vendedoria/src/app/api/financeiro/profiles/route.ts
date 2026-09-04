@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { listProfiles, createProfile } from "@/lib/finance/repository";
 
 export async function GET(req: NextRequest) {
+  const __session = await auth();
+  if (!__session?.user || (__session.user as { role?: string }).role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const organizationId = new URL(req.url).searchParams.get("organizationId");
   if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
   const profiles = await listProfiles(organizationId);
@@ -9,6 +14,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const __session = await auth();
+  if (!__session?.user || (__session.user as { role?: string }).role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const body = await req.json() as { organizationId?: string; name?: string; personType?: string; cpfCnpj?: string };
   if (!body.organizationId || !body.name || !body.personType) {
     return NextResponse.json({ error: "organizationId, name, personType required" }, { status: 400 });

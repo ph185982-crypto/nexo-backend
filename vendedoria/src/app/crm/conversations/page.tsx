@@ -4,10 +4,10 @@ import React, { Suspense, useState, useEffect, useCallback, useRef } from "react
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
-  MessageSquare, Search, RefreshCw, Phone, Clock,
-  ChevronLeft, Loader2, Send, Bot, UserCheck,
+  MessageSquare, Search, RefreshCw, Clock,
+  ChevronLeft, ChevronRight, Loader2, Send, Bot, UserCheck,
   AlertTriangle, CheckCheck, Check, Image as ImageIcon,
-  Video, ShieldOff, ArrowLeft, MoreVertical, X, MapPin,
+  Video, ShieldOff, MoreVertical, X, MapPin,
   Zap, TrendingUp, Info, Smile, Play, Pause,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -275,7 +275,7 @@ function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (u
   if (msg.content.startsWith("[CONTATO_CARD]")) {
     return <ContactCard content={msg.content} />;
   }
-  return <p className="whitespace-pre-wrap break-words leading-relaxed text-sm">{msg.content}</p>;
+  return <p className="whitespace-pre-wrap break-words leading-[1.45] text-[15px]">{msg.content}</p>;
 }
 
 // ── Avatar Component ─────────────────────────────────────────────────────────
@@ -330,7 +330,19 @@ function ConversationsContent() {
   // Mobile: "list" = show conversation list; "chat" = show chat panel
   const [mobilePanel, setMobilePanel]   = useState<"list" | "chat">("list");
   const [showSearch, setShowSearch]     = useState(false);
-  const [showInfoPanel, setShowInfoPanel] = useState(true);
+  // Lazy init lê a preferência salva — evita "piscar" expandido antes de recolher.
+  const [infoPanelCollapsed, setInfoPanelCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("nexo-ai-panel-collapsed") === "1";
+  });
+  const toggleInfoPanel = () =>
+    setInfoPanelCollapsed((v) => {
+      const next = !v;
+      window.localStorage.setItem("nexo-ai-panel-collapsed", next ? "1" : "0");
+      return next;
+    });
+  // Aparece quando o usuário rolou pra cima no histórico
+  const [showJumpToLatest, setShowJumpToLatest] = useState(false);
 
   const messagesEndRef       = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -348,6 +360,12 @@ function ConversationsContent() {
     if (!el) return;
     const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
     atBottomRef.current = dist < 60;
+    setShowJumpToLatest(dist > 400);
+  }, []);
+
+  const scrollToLatest = useCallback(() => {
+    atBottomRef.current = true;
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   const [sendMessage]        = useMutation(SEND_MESSAGE);
@@ -509,6 +527,29 @@ function ConversationsContent() {
     // Keep selectedId so desktop stays selected
   }, []);
 
+  // No mobile, dentro do chat a MobileTabBar sai de cena (CSS lê esse atributo)
+  useEffect(() => {
+    document.body.dataset.chatOpen = mobilePanel === "chat" ? "true" : "false";
+    return () => { delete document.body.dataset.chatOpen; };
+  }, [mobilePanel]);
+
+  // Swipe da borda esquerda para voltar à lista — gesto padrão do iOS
+  const swipeRef = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    // Só conta como "voltar" se o toque começar perto da borda esquerda
+    swipeRef.current = { x: t.clientX, y: t.clientY, active: t.clientX < 40 };
+  }, []);
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!swipeRef.current.active) return;
+    swipeRef.current.active = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipeRef.current.x;
+    const dy = Math.abs(t.clientY - swipeRef.current.y);
+    // Horizontal o suficiente e claramente mais horizontal que vertical
+    if (dx > 70 && dy < 60) handleBackToList();
+  }, [handleBackToList]);
+
   // ── De-escalate ───────────────────────────────────────────────────────────────
   const handleDeescalate = useCallback(async () => {
     if (!selectedId || deescalating) return;
@@ -644,53 +685,72 @@ function ConversationsContent() {
         mobilePanel === "list" ? "flex w-full" : "hidden",
       )}>
         {/* Header */}
-        <div className="p-3 border-b border-border space-y-2.5">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-base">Conversas</h2>
-            <div className="flex items-center gap-1">
-              {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
-              <Button
-                variant="ghost" size="icon" className="h-8 w-8"
+        <div className="border-b border-border">
+          <div className="px-4 pt-3 pb-2 flex items-center justify-between gap-2">
+            <h2 className="font-bold text-[22px] tracking-tight leading-none">Conversas</h2>
+            <div className="flex items-center gap-0.5">
+              {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground mr-1" />}
+              <button
+                type="button"
+                aria-label={showSearch ? "Fechar busca" : "Buscar"}
+                className="tap-target flex items-center justify-center rounded-full text-muted-foreground press-scale"
                 onClick={() => setShowSearch(s => !s)}
               >
-                {showSearch ? <X className="w-4 h-4" /> : <Search className="w-4 h-4" />}
-              </Button>
-              <Button
-                variant="ghost" size="icon" className="h-8 w-8"
+                {showSearch ? <X className="w-[22px] h-[22px]" /> : <Search className="w-[22px] h-[22px]" />}
+              </button>
+              <button
+                type="button"
+                aria-label="Atualizar"
+                className="tap-target flex items-center justify-center rounded-full text-muted-foreground press-scale"
                 onClick={() => fetchConversations(true)}
               >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
+                <RefreshCw className="w-[20px] h-[20px]" />
+              </button>
             </div>
           </div>
 
-          {/* Search — collapsible on mobile */}
+          {/* Search — collapsible */}
           {showSearch && (
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <Input
-                autoFocus
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Nome, (61) 9044-2728, ou parte do número..."
-                className="h-9 pl-8 text-sm"
-              />
+            <div className="px-4 pb-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  autoFocus
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Nome ou telefone"
+                  // rounded-full + bg-muted = campo de busca padrão do iOS
+                  className="h-10 pl-9 pr-9 rounded-full bg-muted border-transparent"
+                />
+                {search && (
+                  <button
+                    type="button"
+                    aria-label="Limpar busca"
+                    onClick={() => setSearch("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full bg-foreground/15 text-background"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
           {orgs.length > 1 && (
-            <Select value={orgId} onValueChange={setOrgId}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {orgs.map(o => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="px-4 pb-2">
+              <Select value={orgId} onValueChange={setOrgId}>
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {orgs.map(o => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           )}
 
-          {/* Status filter chips */}
-          <div className="flex gap-1 flex-wrap">
+          {/* Status filters — rolagem horizontal, sem quebrar linha */}
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide momentum-scroll px-4 pb-2.5">
             {[
               ["all", "Todos"],
               ["hot", "🔥 Quentes"],
@@ -703,10 +763,10 @@ function ConversationsContent() {
                 key={v}
                 onClick={() => setStatusFilter(v)}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-xs border transition-colors",
+                  "px-3.5 h-8 shrink-0 rounded-full text-[13px] font-medium transition-colors press-scale",
                   statusFilter === v
-                    ? "bg-primary text-white border-primary"
-                    : "border-border text-muted-foreground hover:bg-muted"
+                    ? "bg-primary text-white"
+                    : "bg-muted text-muted-foreground"
                 )}
               >
                 {l}
@@ -716,7 +776,7 @@ function ConversationsContent() {
         </div>
 
         {/* Conversation list */}
-        <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="flex-1 overflow-y-auto momentum-scroll">
           {conversations.length === 0 && !loading && (
             <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
               <MessageSquare className="w-10 h-10 mb-2 opacity-20" />
@@ -734,70 +794,77 @@ function ConversationsContent() {
                 key={conv.id}
                 onClick={() => selectConversation(conv.id, conv)}
                 className={cn(
-                  "w-full text-left px-3 py-3 border-b border-border hover:bg-muted/40 active:bg-muted/60 transition-colors",
-                  isSelected && "bg-primary/10 dark:bg-primary/15 border-l-2 border-l-primary"
+                  "w-full text-left pl-4 pr-3 py-2.5 active:bg-muted/70 transition-colors",
+                  isSelected ? "bg-primary/10 dark:bg-primary/15" : "hover:bg-muted/40"
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <Avatar conv={conv} size="md" />
+                  <Avatar conv={conv} size="lg" />
 
-                  <div className="flex-1 min-w-0">
-                    {/* Name + status */}
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <p className="text-sm font-semibold truncate flex-1">
+                  {/* border no filho, não na linha: o separador começa depois
+                      do avatar, como nas listas nativas do iOS */}
+                  <div className="flex-1 min-w-0 border-b border-border/70 pb-2.5 -mb-2.5">
+                    {/* Nome + horário */}
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-[15px] font-semibold truncate flex-1 leading-tight">
                         {getContactName(conv)}
                       </p>
-                      <span className="text-[10px] text-muted-foreground shrink-0">
+                      <span className="text-[12px] text-muted-foreground shrink-0 tabular-nums">
                         {timeAgo(conv.lastMessageAt)}
                       </span>
                     </div>
 
-                    {/* Badges row */}
-                    <div className="flex items-center gap-1 mb-0.5">
-                      <span className={cn(
-                        "text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0",
-                        STATUS_COLORS[leadStatus]
-                      )}>
-                        {STATUS_LABELS[leadStatus] ?? leadStatus}
-                      </span>
-                      {conv.humanTakeover && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700 shrink-0">
-                          👤 Você
-                        </span>
-                      )}
-                      {conv.followUp?.status === "ACTIVE" && (
-                        <span className="text-[10px] text-amber-600 flex items-center gap-0.5 shrink-0">
-                          <Clock className="w-2.5 h-2.5" />F{conv.followUp.step}
-                        </span>
-                      )}
-                      {conv.localizacaoRecebida && (
-                        <span className="text-[10px] text-emerald-700 flex items-center gap-0.5 shrink-0 font-medium">
-                          <MapPin className="w-2.5 h-2.5" />Loc
-                        </span>
-                      )}
-                      {(conv.etapa === "PEDIDO_CONFIRMADO") && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-purple-100 text-purple-700 shrink-0">
-                          ✅ Confirmado
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Last message preview */}
+                    {/* Prévia da última mensagem */}
                     {lastMsg && (
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-[13px] text-muted-foreground truncate mt-0.5 leading-snug">
                         {lastMsg.role === "ASSISTANT"
                           ? (conv.humanTakeover ? "👤 " : "🤖 ")
-                          : "💬 "}
+                          : ""}
                         {lastMsg.type === "IMAGE"  ? "🖼 Imagem"
                           : lastMsg.type === "VIDEO"  ? "🎥 Vídeo"
                           : lastMsg.type === "AUDIO"  ? "🎙 Áudio"
-                          : lastMsg.type === "LOCATION" ? "📍 Localização recebida"
-                          : lastMsg.content.slice(0, 60)}
+                          : lastMsg.type === "LOCATION" ? "📍 Localização"
+                          : lastMsg.content.slice(0, 70)}
                       </p>
+                    )}
+
+                    {/* Badges — só o que não é o estado normal, pra não poluir */}
+                    {(leadStatus !== "OPEN" || conv.humanTakeover || conv.followUp?.status === "ACTIVE"
+                      || conv.localizacaoRecebida || conv.etapa === "PEDIDO_CONFIRMADO") && (
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {leadStatus !== "OPEN" && (
+                          <span className={cn(
+                            "text-[11px] px-2 py-0.5 rounded-full font-medium",
+                            STATUS_COLORS[leadStatus]
+                          )}>
+                            {STATUS_LABELS[leadStatus] ?? leadStatus}
+                          </span>
+                        )}
+                        {conv.humanTakeover && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                            👤 Você
+                          </span>
+                        )}
+                        {conv.etapa === "PEDIDO_CONFIRMADO" && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                            ✅ Confirmado
+                          </span>
+                        )}
+                        {conv.followUp?.status === "ACTIVE" && (
+                          <span className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-0.5 font-medium">
+                            <Clock className="w-3 h-3" />F{conv.followUp.step}
+                          </span>
+                        )}
+                        {conv.localizacaoRecebida && (
+                          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5 font-medium">
+                            <MapPin className="w-3 h-3" />Loc
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
 
-                  <ChevronLeft className="w-4 h-4 text-muted-foreground rotate-180 shrink-0 md:block hidden" />
+                  <ChevronLeft className="w-4 h-4 text-muted-foreground/50 rotate-180 shrink-0" />
                 </div>
               </button>
             );
@@ -819,9 +886,12 @@ function ConversationsContent() {
           On mobile: full screen, hidden when list is shown
           On desktop: takes remaining width
       ════════════════════════════════════════════════════════════════════════ */}
-      <div className={cn(
-        "flex-col overflow-hidden",
-        "bg-[#f0f2f5] dark:bg-[#0d1117]",
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className={cn(
+          "flex-col overflow-hidden relative",
+          "bg-[#f0f2f5] dark:bg-[#0d1117]",
         "md:flex md:flex-1",
         mobilePanel === "chat" ? "flex flex-1 w-full" : "hidden",
       )}>
@@ -834,37 +904,34 @@ function ConversationsContent() {
         ) : (
           <>
             {/* ── Chat Header ─────────────────────────────────────────────────── */}
-            <div className="bg-card border-b border-border px-3 py-2 flex items-center gap-2 flex-shrink-0 shadow-sm">
+            <div className="bg-card/90 backdrop-blur-xl border-b border-border pl-1 pr-2 py-1.5 flex items-center gap-1.5 flex-shrink-0">
               {/* Back button — mobile only */}
               <button
                 onClick={handleBackToList}
-                className="md:hidden p-2 -ml-1 rounded-full hover:bg-muted active:bg-muted/80 transition-colors shrink-0"
+                aria-label="Voltar para a lista"
+                className="md:hidden tap-target flex items-center justify-center rounded-full text-primary press-scale shrink-0"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ChevronLeft className="w-7 h-7 -ml-1" />
               </button>
 
               {/* Avatar */}
-              <Avatar conv={selected} size="sm" />
+              <div className="md:ml-2">
+                <Avatar conv={selected} size="md" />
+              </div>
 
               {/* Name + phone */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 ml-1">
                 <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-semibold truncate">
+                  <p className="text-[15px] font-semibold truncate leading-tight">
                     {getContactName(selected)}
                   </p>
-                  {selected.lead?.status && (
+                  {selected.lead?.status && selected.lead.status !== "OPEN" && (
                     <Badge className={cn("text-[10px] shrink-0 hidden sm:inline-flex", STATUS_COLORS[selected.lead.status])}>
                       {STATUS_LABELS[selected.lead.status]}
                     </Badge>
                   )}
-                  {selected.localizacaoRecebida && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700 shrink-0 hidden sm:inline-flex items-center gap-0.5">
-                      <MapPin className="w-2.5 h-2.5" />Localização
-                    </span>
-                  )}
                 </div>
-                <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                  <Phone className="w-3 h-3 shrink-0" />
+                <p className="text-[12px] text-muted-foreground truncate leading-tight mt-0.5">
                   {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
                   {selected.followUp?.status === "ACTIVE" && (
                     <span className="hidden sm:inline ml-1 text-amber-600">
@@ -881,7 +948,7 @@ function ConversationsContent() {
                     {/* Mobile: dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="icon" className="h-8 w-8 md:hidden border-orange-200">
+                        <Button variant="outline" size="icon" className="h-9 w-9 md:hidden border-orange-200">
                           <AlertTriangle className="w-4 h-4 text-orange-600" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -917,7 +984,7 @@ function ConversationsContent() {
                 ) : isHumanControl ? (
                   <>
                     <Button size="icon" variant="outline" onClick={() => handleTakeover(false)} disabled={takingOver}
-                      className="h-8 w-8 md:hidden border-emerald-200 text-emerald-700">
+                      className="h-9 w-9 md:hidden border-emerald-200 text-emerald-700">
                       {takingOver ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bot className="w-4 h-4" />}
                     </Button>
                     <div className="hidden md:flex items-center gap-2">
@@ -935,7 +1002,7 @@ function ConversationsContent() {
                 ) : (
                   <>
                     <Button size="icon" variant="outline" onClick={() => handleTakeover(true)} disabled={takingOver}
-                      className="h-8 w-8 md:hidden border-blue-200 text-blue-700">
+                      className="h-9 w-9 md:hidden border-blue-200 text-blue-700">
                       {takingOver ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
                     </Button>
                     <div className="hidden md:flex items-center gap-2">
@@ -955,9 +1022,9 @@ function ConversationsContent() {
                 {/* Info panel toggle — desktop only */}
                 <Button
                   variant="ghost" size="icon"
-                  className={cn("h-8 w-8 hidden xl:flex", showInfoPanel && "text-primary")}
-                  onClick={() => setShowInfoPanel(v => !v)}
-                  title="Painel de IA"
+                  className={cn("h-8 w-8 hidden xl:flex", !infoPanelCollapsed && "text-primary")}
+                  onClick={toggleInfoPanel}
+                  title={infoPanelCollapsed ? "Expandir painel de IA" : "Minimizar painel de IA"}
                 >
                   <Info className="w-4 h-4" />
                 </Button>
@@ -1056,7 +1123,7 @@ function ConversationsContent() {
             <div
               ref={messagesContainerRef}
               onScroll={handleContainerScroll}
-              className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-1"
+              className="flex-1 overflow-y-auto momentum-scroll px-3 py-3 space-y-1 relative"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}
             >
               {loadingMessages && messages.length === 0 && (
@@ -1088,8 +1155,9 @@ function ConversationsContent() {
                 return (
                   <React.Fragment key={msg.id}>
                     {showTime && (
-                      <div className="flex justify-center my-3">
-                        <span className="text-[11px] text-muted-foreground bg-card/80 dark:bg-card/60 px-3 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
+                      // sticky: a data fica visível no topo enquanto se rola o dia
+                      <div className="flex justify-center my-3 sticky top-0 z-10 pointer-events-none">
+                        <span className="text-[11px] font-medium text-muted-foreground bg-card/85 px-3 py-1 rounded-full shadow-sm backdrop-blur-md">
                           {new Date(msg.sentAt).toLocaleDateString("pt-BR", {
                             day: "2-digit", month: "short",
                           })} {formatTime(msg.sentAt)}
@@ -1098,7 +1166,7 @@ function ConversationsContent() {
                     )}
                     <div className={cn("flex", isMe ? "justify-end" : "justify-start")}>
                       <div className={cn(
-                        "max-w-[80%] sm:max-w-[72%] rounded-2xl px-3.5 py-2 shadow-sm",
+                        "max-w-[82%] sm:max-w-[72%] rounded-2xl px-3 py-1.5 shadow-sm",
                         isMe
                           ? "msg-bubble-sent"
                           : "msg-bubble-received"
@@ -1109,6 +1177,8 @@ function ConversationsContent() {
                           {isMe && (
                             msg.status === "SENDING"
                               ? <Clock className="w-3 h-3 opacity-50" />
+                              : msg.status === "FAILED"
+                              ? <span title="Falha ao enviar — o cliente não recebeu esta mensagem" className="flex items-center gap-0.5 text-red-500"><AlertTriangle className="w-3 h-3" /></span>
                               : msg.status === "READ"
                               ? <CheckCheck className="w-3 h-3 text-blue-500" />
                               : <Check className="w-3 h-3 opacity-50" />
@@ -1122,22 +1192,36 @@ function ConversationsContent() {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Botão flutuante para voltar ao fim do histórico */}
+            {showJumpToLatest && (
+              <button
+                type="button"
+                onClick={scrollToLatest}
+                aria-label="Ir para a mensagem mais recente"
+                className="absolute bottom-24 right-4 z-20 w-10 h-10 rounded-full bg-card shadow-lg border border-border flex items-center justify-center text-foreground/70 press-scale"
+              >
+                <ChevronLeft className="w-5 h-5 -rotate-90" />
+              </button>
+            )}
+
             {/* ── Message input ────────────────────────────────────────────────── */}
-            <div className="bg-card border-t border-border flex-shrink-0">
+            <div className="bg-card border-t border-border flex-shrink-0 safe-area-bottom">
               {!isHumanControl && (
-                <div className="px-3 pt-2 pb-0">
-                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                    <Bot className="w-3 h-3 shrink-0" />
-                    IA respondendo automaticamente.
-                    <button
-                      className="text-blue-600 font-medium underline underline-offset-2 ml-0.5"
-                      onClick={() => handleTakeover(true)}
-                    >
-                      Tomar controle
-                    </button>
-                    para responder.
-                  </p>
-                </div>
+                // Barra compacta: antes o texto corrido quebrava em 3 linhas no
+                // iPhone e empurrava o campo pra fora da tela.
+                <button
+                  type="button"
+                  onClick={() => handleTakeover(true)}
+                  className="w-full px-4 py-2 flex items-center gap-2 border-b border-border/60 active:bg-muted/60 transition-colors text-left"
+                >
+                  <Bot className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <span className="text-[13px] text-muted-foreground flex-1 truncate">
+                    IA respondendo automaticamente
+                  </span>
+                  <span className="text-[13px] font-semibold text-blue-600 shrink-0">
+                    Assumir
+                  </span>
+                </button>
               )}
               <div className="px-2 py-2 flex gap-1 items-end relative">
                 {/* Emoji picker */}
@@ -1171,7 +1255,7 @@ function ConversationsContent() {
                   title="Emojis"
                   disabled={!isHumanControl}
                   onClick={() => setShowEmojiPicker(s => !s)}
-                  className="h-11 w-9 shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
+                  className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 press-scale"
                 >
                   <Smile className="w-5 h-5" />
                 </button>
@@ -1182,7 +1266,7 @@ function ConversationsContent() {
                   title="Enviar foto ou vídeo"
                   disabled={!isHumanControl || uploadingMedia}
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-11 w-9 shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
+                  className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 press-scale"
                 >
                   {uploadingMedia
                     ? <Loader2 className="w-5 h-5 animate-spin" />
@@ -1202,11 +1286,13 @@ function ConversationsContent() {
                   onChange={e => setMsgInput(e.target.value)}
                   placeholder={
                     isHumanControl
-                      ? "Digite sua mensagem..."
-                      : "Mensagem (tome controle para enviar)"
+                      ? "Mensagem"
+                      : "Assuma o controle para responder"
                   }
                   rows={1}
-                  className="min-h-[42px] max-h-32 resize-none text-sm flex-1 leading-snug py-2.5"
+                  // rounded-3xl + bg-muted = campo de mensagem padrão do iOS.
+                  // O tamanho de fonte vem do CSS (16px no iOS) pra não dar zoom.
+                  className="min-h-[40px] max-h-32 resize-none flex-1 leading-snug py-2 px-3.5 rounded-3xl bg-muted border-transparent shadow-none"
                   onKeyDown={e => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -1214,23 +1300,25 @@ function ConversationsContent() {
                     }
                   }}
                 />
-                <Button
-                  size="icon"
+                <button
+                  type="button"
+                  aria-label="Enviar mensagem"
                   onClick={() => void handleSend()}
                   disabled={sending || !msgInput.trim()}
                   className={cn(
-                    "h-11 w-11 shrink-0 transition-colors rounded-full",
-                    isHumanControl
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "bg-primary hover:bg-primary/90"
+                    "h-10 w-10 shrink-0 rounded-full flex items-center justify-center transition-all press-scale",
+                    msgInput.trim()
+                      ? (isHumanControl ? "bg-blue-600 text-white" : "bg-primary text-white")
+                      : "bg-muted text-muted-foreground/50"
                   )}
                 >
                   {sending
-                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <Send className="w-4 h-4" />}
-                </Button>
+                    ? <Loader2 className="w-[18px] h-[18px] animate-spin" />
+                    : <Send className="w-[18px] h-[18px]" />}
+                </button>
               </div>
-              <p className="text-[10px] text-muted-foreground px-3 pb-2">
+              {/* Atalhos só fazem sentido com teclado físico */}
+              <p className="hidden md:block text-[10px] text-muted-foreground px-3 pb-2">
                 Enter · enviar &nbsp;·&nbsp; Shift+Enter · nova linha
               </p>
             </div>
@@ -1241,14 +1329,42 @@ function ConversationsContent() {
       {/* ════════════════════════════════════════════════════════════════════════
           RIGHT PANEL — AI Intelligence Panel (xl+ only)
       ════════════════════════════════════════════════════════════════════════ */}
-      {selected && showInfoPanel && (
+      {selected && infoPanelCollapsed && (
+        <div className="hidden xl:flex flex-col w-12 flex-shrink-0 border-l border-border bg-card items-center py-4 gap-4">
+          <button
+            onClick={toggleInfoPanel}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+            title="Expandir painel de IA"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <Zap className="w-4 h-4 text-emerald-500" />
+          {selected.humanTakeover
+            ? <UserCheck className="w-4 h-4 text-blue-500" />
+            : selected.lead?.status === "ESCALATED"
+            ? <AlertTriangle className="w-4 h-4 text-orange-500" />
+            : <Bot className="w-4 h-4 text-emerald-500" />
+          }
+        </div>
+      )}
+
+      {selected && !infoPanelCollapsed && (
         <div className="hidden xl:flex flex-col w-72 flex-shrink-0 border-l border-border bg-card overflow-y-auto">
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-emerald-500" />
-              <h3 className="text-sm font-semibold">Inteligência IA</h3>
+          <div className="p-4 border-b border-border flex items-start justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-4 h-4 text-emerald-500" />
+                <h3 className="text-sm font-semibold">Inteligência IA</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
             </div>
-            <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
+            <button
+              onClick={toggleInfoPanel}
+              className="w-6 h-6 flex-shrink-0 rounded-md flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+              title="Minimizar painel"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
 
           <div className="p-4 space-y-5">

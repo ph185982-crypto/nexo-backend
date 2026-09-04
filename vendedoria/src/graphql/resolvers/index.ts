@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma/client";
 import { Prisma } from "@prisma/client";
 import { GraphQLScalarType, Kind } from "graphql";
 import bcrypt from "bcryptjs";
-import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
+import { criarEventoReuniao } from "@/lib/integrations/google-calendar";
 
 interface ResolverContext {
   userId?: string;
@@ -731,7 +732,11 @@ export const resolvers = {
 
       const lead = await prisma.lead.create({
         data: {
-          phoneNumber: input.phoneNumber as string,
+          // Normaliza na gravação: o atendente digita "(62) 98446-5388" e, sem
+          // isso, o número ia formatado pro banco — nunca casava com o wa_id
+          // que chega da Meta (virava lead duplicado) e ia formatado pra API
+          // de envio em campanhas, que responde 400.
+          phoneNumber: normalizeBrazilianNumber(input.phoneNumber as string),
           profileName: input.profileName as string | undefined,
           email: input.email as string | undefined,
           leadOrigin: input.leadOrigin as string,
@@ -739,6 +744,11 @@ export const resolvers = {
           kanbanColumnId,
         },
       });
+      // Cria rascunho do diagnóstico quando criado diretamente em GANHO
+      const col = await prisma.kanbanColumn.findUnique({ where: { id: kanbanColumnId }, select: { type: true } });
+      if (col?.type === "GANHO") {
+        prisma.clientDiagnosis.upsert({ where: { leadId: lead.id }, create: { leadId: lead.id }, update: {} }).catch(() => {});
+      }
       return lead;
     },
 
@@ -767,11 +777,20 @@ export const resolvers = {
       ctx: ResolverContext
     ) => {
       await requireLeadAccess(ctx, leadId);
-      return prisma.lead.update({
+      const result = await prisma.lead.update({
         where: { id: leadId },
         data: { kanbanColumnId: columnId, lastActivityAt: new Date() },
         include: { kanbanColumn: true },
       });
+      // Auto-create diagnosis draft when moved to GANHO
+      if (result.kanbanColumn?.type === "GANHO") {
+        prisma.clientDiagnosis.upsert({
+          where: { leadId },
+          create: { leadId },
+          update: {},
+        }).catch(() => {});
+      }
+      return result;
     },
 
     updateLeadTags: async (
@@ -859,27 +878,27 @@ export const resolvers = {
       });
 
       // Send via Meta WhatsApp API
+      let finalStatus: "SENT" | "FAILED" = "SENT";
+      let wamid: string | undefined;
       try {
-        await sendWhatsAppMessage(
+        wamid = await sendWhatsAppMessage(
           conversation.provider.businessPhoneNumberId,
           conversation.customerWhatsappBusinessId,
           content,
           conversation.provider.accessToken ?? undefined
         );
-        // Update status to SENT
-        await prisma.whatsappMessage.update({
-          where: { id: message.id },
-          data: { status: "SENT" },
-        });
       } catch (err) {
         console.error("[sendWhatsappMessage] Meta API error:", err);
-        await prisma.whatsappMessage.update({
-          where: { id: message.id },
-          data: { status: "FAILED" },
-        });
+        finalStatus = "FAILED";
       }
+      // Re-chaveia pelo wamid da Meta — é por esse id que o webhook de status
+      // (delivered/read/failed) vai encontrar essa mensagem depois.
+      const updated = await prisma.whatsappMessage.update({
+        where: { id: message.id },
+        data: { status: finalStatus, ...(wamid ? { id: wamid } : {}) },
+      });
 
-      return { ...message, status: "SENT" };
+      return updated;
     },
 
     sendWhatsappMedia: async (
@@ -1048,6 +1067,10 @@ export const resolvers = {
         data: { status: "ACTIVE" },
         include: { recipients: { select: { status: true } } },
       });
+      const { enfileirar } = await import("@/lib/jobs/fila");
+      enfileirar("/api/campaign/worker").catch((e) =>
+        console.error("[startCampaign] Falha ao acordar o worker:", e),
+      );
       return {
         ...campaign,
         totalRecipients: campaign.recipients.length,
@@ -1115,25 +1138,71 @@ export const resolvers = {
       ctx: ResolverContext
     ) => {
       requireOrgAccess(ctx, input.organizationId as string);
-      return prisma.calendarEvent.create({
+
+      const startTime = new Date(input.startTime as string);
+      const endTime = new Date(input.endTime as string);
+      const timezone = (input.timezone as string) || "America/Sao_Paulo";
+      const saveToGoogle = input.saveToGoogle as boolean | undefined;
+      const generateMeet = input.generateMeet as boolean | undefined;
+      const attendeeName = input.attendeeName as string | undefined;
+      const attendeeEmail = input.attendeeEmail as string | undefined;
+      const attendeePhone = input.attendeePhone as string | undefined;
+
+      let provider = "LOCAL";
+      let externalEventId: string | undefined;
+      let googleMeetLink: string | undefined;
+
+      if (saveToGoogle) {
+        const duracao = Math.max(15, Math.round((endTime.getTime() - startTime.getTime()) / 60_000));
+        const resultado = await criarEventoReuniao({
+          nomeNegocio: input.title as string,
+          telefone: attendeePhone ?? "",
+          dataHoraInicio: startTime,
+          duracaoMinutos: duracao,
+          descricao: input.description as string | undefined,
+          generateMeet: generateMeet ?? true,
+          attendeeEmail: attendeeEmail || undefined,
+          timezone,
+        });
+        if (resultado) {
+          provider = "GOOGLE";
+          externalEventId = resultado.eventId;
+          googleMeetLink = resultado.meetLink;
+        }
+      }
+
+      const event = await prisma.calendarEvent.create({
         data: {
           title: input.title as string,
           description: input.description as string | undefined,
           location: input.location as string | undefined,
-          startTime: new Date(input.startTime as string),
-          endTime: new Date(input.endTime as string),
-          timezone: (input.timezone as string) || "America/Sao_Paulo",
+          startTime,
+          endTime,
+          timezone,
           isAllDay: (input.isAllDay as boolean) || false,
           status: "SCHEDULED",
-          provider: "LOCAL",
+          provider,
+          externalEventId,
+          googleMeetLink,
           organizationId: input.organizationId as string,
           workUnitId: input.workUnitId as string | undefined,
           profissionalId: input.profissionalId as string | undefined,
           leadId: input.leadId as string | undefined,
           whatsappProviderConfigId: input.whatsappProviderConfigId as string | undefined,
+          ...(attendeeName ? {
+            attendees: {
+              create: {
+                name: attendeeName,
+                email: attendeeEmail || undefined,
+                phone: attendeePhone || undefined,
+              },
+            },
+          } : {}),
         },
         include: { attendees: true },
       });
+
+      return event;
     },
 
     updateCalendarEvent: async (

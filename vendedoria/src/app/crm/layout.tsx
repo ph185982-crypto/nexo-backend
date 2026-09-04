@@ -8,7 +8,12 @@ import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { NotificationPrompt } from "@/components/pwa/NotificationPrompt";
 
 function CRMLayoutInner({ children }: { children: React.ReactNode }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // Lazy init lê a preferência salva antes do primeiro paint — evita o
+  // sidebar "piscar" expandido e depois recolher assim que o efeito roda.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("nexo-sidebar-collapsed") === "1";
+  });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<string | undefined>();
   const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>();
@@ -17,7 +22,11 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setMobileSidebarOpen((v) => !v);
     } else {
-      setSidebarCollapsed((v) => !v);
+      setSidebarCollapsed((v) => {
+        const next = !v;
+        window.localStorage.setItem("nexo-sidebar-collapsed", next ? "1" : "0");
+        return next;
+      });
     }
   }, []);
 
@@ -38,7 +47,8 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Header onToggleSidebar={handleToggle} />
-        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-16 md:pb-0">
+        {/* pb-tabbar reserva a altura da MobileTabBar + o home indicator (só no mobile) */}
+        <main className="flex-1 overflow-hidden bg-background flex flex-col min-h-0 pb-tabbar">
           {children}
         </main>
         <MobileTabBar />

@@ -12,12 +12,51 @@ function resolveToken(override?: string): string | undefined {
  * Exported so the webhook can normalise phone numbers at storage time too.
  */
 export function normalizeBrazilianNumber(phone: string): string {
-  if (/^55\d{10}$/.test(phone)) {
-    const areaCode = phone.slice(2, 4);
-    const number = phone.slice(4);
+  const digits = phone.replace(/\D/g, "");
+  if (/^55\d{10}$/.test(digits)) {
+    const areaCode = digits.slice(2, 4);
+    const number = digits.slice(4);
     if (/^[6-9]/.test(number)) return `55${areaCode}9${number}`;
   }
-  return phone;
+  return digits || phone;
+}
+
+/**
+ * Chave canônica de um número brasileiro: só dígitos, sem o 55 e sem o 9º
+ * dígito — sempre DDD + 8 dígitos.
+ *
+ * `normalizeBrazilianNumber` é de mão única (só ACRESCENTA o 9), então dois
+ * registros do mesmo cliente em formatos diferentes ("556284465388" vindo de
+ * importação e "5562984465388" vindo do WhatsApp) nunca se encontravam e
+ * viravam leads duplicados no Kanban. Comparar sempre pela forma canônica.
+ */
+export function canonicalBrazilianNumber(phone: string): string {
+  let n = phone.replace(/\D/g, "");
+  if (n.startsWith("55") && n.length >= 12) n = n.slice(2);
+  if (n.length === 11 && n[2] === "9") n = n.slice(0, 2) + n.slice(3);
+  return n;
+}
+
+/**
+ * Todas as grafias plausíveis de um número, para consultar registros gravados
+ * antes da normalização virar padrão (com/sem 55, com/sem o 9º dígito).
+ */
+export function brazilianNumberVariants(phone: string): string[] {
+  const canonical = canonicalBrazilianNumber(phone); // DDD + 8
+  if (canonical.length !== 10) {
+    const digits = phone.replace(/\D/g, "");
+    return Array.from(new Set([phone, digits].filter(Boolean)));
+  }
+  const ddd = canonical.slice(0, 2);
+  const eightDigits = canonical.slice(2);
+  const nineDigits = `9${eightDigits}`;
+  return Array.from(new Set([
+    `55${ddd}${nineDigits}`, // 13 dígitos — formato atual da Meta
+    `55${ddd}${eightDigits}`, // 12 dígitos — legado
+    `${ddd}${nineDigits}`,    // sem código do país
+    canonical,
+    phone,
+  ].filter(Boolean)));
 }
 
 /**
@@ -94,17 +133,26 @@ export async function simulateTypingDelay(
   await sendTypingIndicator(phoneNumberId, to, ms, accessToken);
 }
 
+/**
+ * @returns o wamid (message id) atribuído pela Meta, ou undefined se não veio na resposta.
+ * Esse id é o que a Meta usa depois para reportar status (delivered/read/failed) via
+ * webhook — sem guardar ele, nunca dá pra casar essas atualizações assíncronas com a
+ * mensagem certa no banco.
+ */
 export async function sendWhatsAppMessage(
   phoneNumberId: string,
   to: string,
   text: string,
   accessToken?: string,
   contextMessageId?: string  // reply-to: quotes this message in WhatsApp
-): Promise<void> {
+): Promise<string | undefined> {
   const token = resolveToken(accessToken);
   if (!token) {
-    console.warn("[WhatsApp] No access token configured — skipping send");
-    return;
+    // Lançar aqui é essencial: os chamadores tratam falha de envio (retry,
+    // status FAILED na mensagem, alerta ao dono) só a partir de uma exceção.
+    // Um "return undefined" silencioso fazia a mensagem ficar marcada como
+    // SENT no CRM mesmo sem nunca ter saído.
+    throw new Error("[WhatsApp] No access token configured — cannot send message");
   }
 
   const body: Record<string, unknown> = {
@@ -128,6 +176,9 @@ export async function sendWhatsAppMessage(
     console.error("[WhatsApp] Send error:", error);
     throw new Error(`WhatsApp send failed: ${error}`);
   }
+
+  const data = (await response.json()) as { messages?: Array<{ id?: string }> };
+  return data.messages?.[0]?.id;
 }
 
 export async function sendWhatsAppImage(
@@ -232,7 +283,7 @@ export async function sendWhatsAppTemplate(
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       messaging_product: "whatsapp",
-      to,
+      to: normalizeBrazilianNumber(to),
       type: "template",
       template: { name: templateName, language: { code: languageCode }, components },
     }),
@@ -330,4 +381,56 @@ export async function getPhoneNumberInfo(phoneNumberId: string): Promise<{
 
   if (!response.ok) throw new Error("Failed to get phone info");
   return response.json();
+}
+
+export async function uploadWhatsAppMedia(
+  phoneNumberId: string,
+  buffer: Buffer,
+  mimeType: string,
+  filename: string,
+  accessToken?: string,
+): Promise<{ id: string } | null> {
+  const token = resolveToken(accessToken);
+  const formData = new FormData();
+  formData.append("messaging_product", "whatsapp");
+  formData.append("type", mimeType);
+  formData.append("file", new Blob([new Uint8Array(buffer)], { type: mimeType }), filename);
+
+  const res = await fetch(`${BASE_URL}/${phoneNumberId}/media`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    console.error("[WhatsApp] Media upload failed:", res.status, await res.text());
+    return null;
+  }
+  return res.json();
+}
+
+export async function sendWhatsAppAudioById(
+  phoneNumberId: string,
+  to: string,
+  mediaId: string,
+  accessToken?: string,
+): Promise<void> {
+  const token = resolveToken(accessToken);
+  const res = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to,
+      type: "audio",
+      audio: { id: mediaId },
+    }),
+  });
+  if (!res.ok) {
+    console.error("[WhatsApp] Audio by ID send failed:", res.status, await res.text());
+  }
 }

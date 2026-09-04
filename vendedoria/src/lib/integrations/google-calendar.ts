@@ -1,6 +1,11 @@
 // Google Calendar integration — OAuth2 com refresh token
-// Env vars: GOOGLE_CALENDAR_CLIENT_ID, GOOGLE_CALENDAR_CLIENT_SECRET,
-//           GOOGLE_CALENDAR_REFRESH_TOKEN, GOOGLE_CALENDAR_ID
+// Fonte do refresh token (nesta ordem):
+//   1. IntegrationCredential (provider "GOOGLE_CALENDAR") — conectado pela UI
+//   2. Env vars: GOOGLE_CALENDAR_REFRESH_TOKEN / GOOGLE_CALENDAR_ID (fallback)
+// Client ID/Secret sempre vêm de GOOGLE_CALENDAR_CLIENT_ID/CLIENT_SECRET.
+
+import { prisma } from "@/lib/prisma/client";
+import { getGoogleOAuthApp } from "./google-oauth-app";
 
 const GOOGLE_AUTH_URL = "https://oauth2.googleapis.com/token";
 const CALENDAR_API = "https://www.googleapis.com/calendar/v3";
@@ -21,15 +26,43 @@ export interface EventoReuniao {
 
 // ── OAuth2: obtém access token via refresh token ───────────────────────────────
 
-async function getAccessToken(): Promise<string | null> {
-  const clientId     = process.env.GOOGLE_CALENDAR_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CALENDAR_CLIENT_SECRET;
-  const refreshToken = process.env.GOOGLE_CALENDAR_REFRESH_TOKEN;
+// Cache leve das credenciais do banco (evita query a cada chamada)
+let credCache: { refreshToken: string; calendarId: string } | null | undefined;
+let credCacheAt = 0;
+const CRED_CACHE_TTL_MS = 60_000;
 
-  if (!clientId || !clientSecret || !refreshToken) {
-    console.warn("[GoogleCalendar] Credenciais não configuradas (GOOGLE_CALENDAR_*)");
+async function getStoredCredential(): Promise<{ refreshToken: string; calendarId: string } | null> {
+  const now = Date.now();
+  if (credCache !== undefined && now - credCacheAt < CRED_CACHE_TTL_MS) return credCache ?? null;
+  try {
+    const cred = await prisma.integrationCredential.findUnique({
+      where: { provider: "GOOGLE_CALENDAR" },
+      select: { refreshToken: true, calendarId: true },
+    });
+    credCache = cred ?? null;
+    credCacheAt = now;
+    return credCache;
+  } catch {
     return null;
   }
+}
+
+/** Invalida o cache (chamar após conectar/desconectar pela UI). */
+export function invalidateGoogleCredentialCache(): void {
+  credCache = undefined;
+  credCacheAt = 0;
+}
+
+async function getAccessToken(): Promise<string | null> {
+  const app          = await getGoogleOAuthApp();
+  const stored       = await getStoredCredential();
+  const refreshToken = stored?.refreshToken ?? process.env.GOOGLE_CALENDAR_REFRESH_TOKEN;
+
+  if (!app || !refreshToken) {
+    console.warn("[GoogleCalendar] Credenciais não configuradas (conecte em Configurações > Integrações)");
+    return null;
+  }
+  const { clientId, clientSecret } = app;
 
   try {
     const res = await fetch(GOOGLE_AUTH_URL, {
@@ -57,7 +90,9 @@ async function getAccessToken(): Promise<string | null> {
   }
 }
 
-function getCalendarId(): string {
+async function getCalendarId(): Promise<string> {
+  const stored = await getStoredCredential();
+  if (stored?.calendarId) return stored.calendarId;
   return process.env.GOOGLE_CALENDAR_ID ?? "primary";
 }
 
@@ -69,31 +104,47 @@ export async function criarEventoReuniao(params: {
   dataHoraInicio: Date;
   duracaoMinutos?: number;
   descricao?: string;
+  generateMeet?: boolean;
+  attendeeEmail?: string;
+  timezone?: string;
 }): Promise<EventoReuniao | null> {
   const token = await getAccessToken();
   if (!token) return null;
 
-  const { nomeNegocio, telefone, dataHoraInicio, duracaoMinutos = 30, descricao } = params;
-  const calendarId = getCalendarId();
+  const {
+    nomeNegocio, telefone, dataHoraInicio, duracaoMinutos = 30,
+    descricao, generateMeet = true, attendeeEmail, timezone = "America/Sao_Paulo",
+  } = params;
+  const calendarId = await getCalendarId();
 
   const fim = new Date(dataHoraInicio.getTime() + duracaoMinutos * 60_000);
 
-  const body = {
+  const body: Record<string, unknown> = {
     summary: `Reunião — ${nomeNegocio}`,
     description: descricao ?? `Reunião de apresentação via WhatsApp.\nContato: ${telefone}`,
-    start: { dateTime: dataHoraInicio.toISOString(), timeZone: "America/Sao_Paulo" },
-    end:   { dateTime: fim.toISOString(),             timeZone: "America/Sao_Paulo" },
-    conferenceData: {
+    start: { dateTime: dataHoraInicio.toISOString(), timeZone: timezone },
+    end:   { dateTime: fim.toISOString(),             timeZone: timezone },
+  };
+
+  if (generateMeet) {
+    body.conferenceData = {
       createRequest: {
         requestId:             `nexos-${Date.now()}`,
         conferenceSolutionKey: { type: "hangoutsMeet" },
       },
-    },
-  };
+    };
+  }
+
+  if (attendeeEmail) {
+    body.attendees = [{ email: attendeeEmail }];
+  }
+
+  const confParam = generateMeet ? "conferenceDataVersion=1" : "";
+  const sendParam = attendeeEmail ? "sendUpdates=all" : "sendUpdates=none";
 
   try {
     const res = await fetch(
-      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events?conferenceDataVersion=1&sendUpdates=none`,
+      `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events?${[confParam, sendParam].filter(Boolean).join("&")}`,
       {
         method:  "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -134,7 +185,7 @@ export async function verificarDisponibilidade(
   const token = await getAccessToken();
   if (!token) return true; // assume disponível se não há credenciais
 
-  const calendarId = getCalendarId();
+  const calendarId = await getCalendarId();
   const fim = new Date(dataHoraInicio.getTime() + duracaoMinutos * 60_000);
 
   try {
@@ -172,7 +223,7 @@ export async function buscarSlotsDisponiveis(quantidade = 5): Promise<SlotDispon
   const token = await getAccessToken();
   if (!token) return gerarSlotsFallback(quantidade);
 
-  const calendarId = getCalendarId();
+  const calendarId = await getCalendarId();
   const agora = new Date();
   // Começa a partir da próxima hora cheia
   const inicio = new Date(agora);

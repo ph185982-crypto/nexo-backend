@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { notificarNovaMensagem } from "@/lib/push/notificar";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin();
     const { title, body, url, nomeCliente, preview, conversationId } = await req.json() as {
       title?: string;
       body?: string;
@@ -23,6 +25,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
+    if (err instanceof Error && err.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

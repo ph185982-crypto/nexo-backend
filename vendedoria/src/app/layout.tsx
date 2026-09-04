@@ -13,13 +13,13 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Nexo Vendas — CRM Inteligente para WhatsApp",
+  title: "Nexo — Prospecção Inteligente para Marketplaces",
   description: "Gerencie seus leads e automatize suas vendas via WhatsApp com IA",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Nexo Vendas",
+    title: "Nexo",
   },
   icons: {
     icon: "/icon-192.png",
@@ -30,7 +30,16 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [{ color: "#10b981" }],
+  // statusBarStyle é "black-translucent": sem viewportFit=cover o conteúdo
+  // fica por baixo do notch e do home indicator no iPhone.
+  viewportFit: "cover",
+  // Zoom por pinça continua liberado de propósito (acessibilidade). O
+  // auto-zoom ao focar input é evitado via font-size 16px no globals.css,
+  // que resolve a causa sem tirar o zoom de quem precisa.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d1117" },
+  ],
 };
 
 export default function RootLayout({
