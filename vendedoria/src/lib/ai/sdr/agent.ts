@@ -202,39 +202,45 @@ export async function notificarHandoff(
   return { whatsappOk, erroWhatsapp, janelaFechada };
 }
 
-// Chama o LLM com fallback chain
+// Chama o LLM com fallback chain. `deadline` (epoch ms) corta a cadeia de
+// fallback assim que o orçamento de tempo da invocação (ver SDR_LLM_BUDGET_MS)
+// já foi consumido — sem isso, provider configurado + até 3 fallbacks, cada um
+// com timeout de 20s (LLM_TIMEOUT_MS), somavam até 80s numa ÚNICA chamada, e o
+// loop externo ainda tentava de novo em cima disso.
 async function callSdrLLM(
   systemPrompt: string,
   history: Array<{ role: "user" | "assistant"; content: string }>,
   userMessage: string,
   aiProvider?: string | null,
   aiModel?: string | null,
+  deadline: number = Infinity,
 ): Promise<string | null> {
   const provider = aiProvider?.toUpperCase();
   const model = aiModel ?? "gpt-4o";
+  const timeLeft = () => Date.now() < deadline;
 
   // maxTokens 1000 (era 600) — mensagens longas do cliente (ex.: áudio transcrito)
   // levam o modelo a preencher mais campos de updateSession + mais balões de texto,
   // e um JSON cortado no meio nunca é parseável. response_format=json_object garante
   // que a OpenAI só devolva JSON sintaticamente válido (sem texto solto antes/depois).
-  if (provider === "OPENAI" && process.env.OPENAI_API_KEY) {
+  if (provider === "OPENAI" && process.env.OPENAI_API_KEY && timeLeft()) {
     const r = await callOpenAI(systemPrompt, history, userMessage, model, { maxTokens: 1000, temperature: 0.7, responseFormat: "json_object" });
     if (r) return r;
   }
-  if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) {
+  if (provider === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY && timeLeft()) {
     const r = await callAnthropic(systemPrompt, history, userMessage, model, { maxTokens: 1000 });
     if (r) return r;
   }
-  // Fallback chain
-  if (process.env.OPENAI_API_KEY) {
+  // Fallback chain — cada elo checa o orçamento antes de gastar outros 20s
+  if (process.env.OPENAI_API_KEY && timeLeft()) {
     const r = await callOpenAI(systemPrompt, history, userMessage, "gpt-4o", { maxTokens: 1000, temperature: 0.7, responseFormat: "json_object" });
     if (r) return r;
   }
-  if (process.env.ANTHROPIC_API_KEY) {
+  if (process.env.ANTHROPIC_API_KEY && timeLeft()) {
     const r = await callAnthropic(systemPrompt, history, userMessage, "claude-haiku-4-5-20251001", { maxTokens: 1000 });
     if (r) return r;
   }
-  if (process.env.GOOGLE_AI_API_KEY) {
+  if (process.env.GOOGLE_AI_API_KEY && timeLeft()) {
     const r = await callGemini(systemPrompt, history, userMessage, "gemini-2.0-flash-lite", { maxTokens: 1000 });
     if (r) return r;
   }
@@ -513,16 +519,23 @@ async function runSdrResponse(
   const systemPrompt = buildSdrSystemPrompt(session, lead.profileName);
 
   // ── Chamar LLM ──────────────────────────────────────────────────────────────
+  // Orçamento único pra toda a fase de LLM (tentativas + fallback de provider).
+  // O webhook tem maxDuration=60s e ainda precisa sobrar tempo pra parsear,
+  // salvar sessão e enviar os balões (delays + "digitando..."). Sem deadline
+  // compartilhado, 3 tentativas × até 4 providers × 20s cada podiam somar 180s+.
+  const SDR_LLM_BUDGET_MS = 35_000;
+  const llmDeadline = Date.now() + SDR_LLM_BUDGET_MS;
   let raw: string | null = null;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    raw = await callSdrLLM(systemPrompt, history, userMessage, agent.aiProvider, agent.aiModel);
+  for (let attempt = 0; attempt < 3 && Date.now() < llmDeadline; attempt++) {
+    raw = await callSdrLLM(systemPrompt, history, userMessage, agent.aiProvider, agent.aiModel, llmDeadline);
     if (raw) break;
-    await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+    if (Date.now() >= llmDeadline) break;
+    await new Promise((r) => setTimeout(r, Math.min(1000 * (attempt + 1), Math.max(llmDeadline - Date.now(), 0))));
   }
 
   if (!raw) {
     console.error("[SDR] Nenhuma resposta do LLM para conv:", conversationId);
-    await notifySdrFailure(conversationId, phoneNumberId, phone, token, provider.organizationId, lead.profileName, "LLM não respondeu após 3 tentativas");
+    await notifySdrFailure(conversationId, phoneNumberId, phone, token, provider.organizationId, lead.profileName, "LLM não respondeu dentro do orçamento de tempo");
     return;
   }
 

@@ -97,6 +97,7 @@ export const resolvers = {
 
   Query: {
     // Dashboard
+    // ─── Dashboard ───────────────────────────────────────────────────────────
     widgetsData: async (
       _: unknown,
       { timeFilter, whatsappProviderConfigId }: { timeFilter?: string; whatsappProviderConfigId?: string },
@@ -143,6 +144,7 @@ export const resolvers = {
     },
 
     // Organizations
+    // ─── Organizações / contas WhatsApp ─────────────────────────────────────
     whatsappBusinessOrganizations: async (
       _: unknown,
       { input }: { input?: { search?: string; status?: string } },
@@ -196,6 +198,7 @@ export const resolvers = {
     },
 
     // Kanban
+    // ─── Conversas / Kanban / IA ─────────────────────────────────────────────
     getKanbanBoard: async (
       _: unknown,
       {
@@ -446,6 +449,7 @@ export const resolvers = {
     },
 
     // Campaigns
+    // ─── Campanhas ───────────────────────────────────────────────────────────
     getCampaigns: async (
       _: unknown,
       {
@@ -586,6 +590,7 @@ export const resolvers = {
     },
 
     // Calendar
+    // ─── Agenda ──────────────────────────────────────────────────────────────
     listCalendarEvents: async (
       _: unknown,
       { organizationId, month, year }: { organizationId: string; month: number; year: number },
@@ -655,6 +660,7 @@ export const resolvers = {
       });
     },
 
+    // ─── Unidades / profissionais ────────────────────────────────────────────
     listWorkUnits: async (
       _: unknown,
       { organizationId, search }: { organizationId: string; search?: string },
@@ -719,6 +725,7 @@ export const resolvers = {
   },
 
   Mutation: {
+    // ─── Leads ───────────────────────────────────────────────────────────────
     createLead: async (_: unknown, { input }: { input: Record<string, unknown> }, ctx: ResolverContext) => {
       requireOrgAccess(ctx, input.organizationId as string);
       // Find or use provided kanban column
@@ -844,6 +851,7 @@ export const resolvers = {
       });
     },
 
+    // ─── Conversas ───────────────────────────────────────────────────────────
     sendWhatsappMessage: async (
       _: unknown,
       { conversationId, content }: { conversationId: string; content: string },
@@ -1007,6 +1015,7 @@ export const resolvers = {
       });
     },
 
+    // ─── Campanhas ───────────────────────────────────────────────────────────
     createCampaign: async (
       _: unknown,
       { input }: { input: Record<string, unknown> },
@@ -1132,6 +1141,7 @@ export const resolvers = {
       };
     },
 
+    // ─── Agenda ──────────────────────────────────────────────────────────────
     createCalendarEvent: async (
       _: unknown,
       { input }: { input: Record<string, unknown> },
@@ -1232,6 +1242,7 @@ export const resolvers = {
       });
     },
 
+    // ─── Unidades / profissionais ────────────────────────────────────────────
     createProfissional: async (
       _: unknown,
       { input }: { input: Record<string, unknown> },
@@ -1327,6 +1338,7 @@ export const resolvers = {
     },
 
     // Settings mutations
+    // ─── Organizações / contas WhatsApp ─────────────────────────────────────
     createOrganization: async (
       _: unknown,
       { input }: { input: { name: string; documentId: string; documentType: string } }
@@ -1417,6 +1429,7 @@ export const resolvers = {
       return true;
     },
 
+    // ─── Agente IA ───────────────────────────────────────────────────────────
     updateAgent: async (
       _: unknown,
       { id, input }: {
@@ -1528,6 +1541,7 @@ export const resolvers = {
       }
     },
 
+    // ─── Kanban ──────────────────────────────────────────────────────────────
     updateKanbanColumn: async (
       _: unknown,
       { id, input }: { id: string; input: { name?: string; color?: string } }
@@ -1549,6 +1563,7 @@ export const resolvers = {
       };
     },
 
+    // ─── Autenticação ────────────────────────────────────────────────────────
     changePassword: async (
       _: unknown,
       {

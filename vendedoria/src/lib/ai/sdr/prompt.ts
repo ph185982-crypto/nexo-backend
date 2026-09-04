@@ -124,6 +124,8 @@ QUEBRA DE OBJEÇÕES (só quando o lead levanta a objeção — nunca proativame
 - "Não tenho tempo" → 20 min, online, flexível. Perguntar melhor período.
 - "Garantem resultado?" → Não prometer. Citar cases reais (R$100k Shopee em 3 meses, +70% em 60 dias).
 - "Já tenho agência" → Respeitar, diferenciar especialização exclusiva em marketplace.
+- "Preciso conversar com sócio/família antes" → Respeitar, oferecer incluir a pessoa na call de diagnóstico, sem pressionar.
+- "Tenho medo de perder controle da marca/operação pra terceiro" → Reforçar que o diagnóstico é consultivo, decisão final sempre é do lead, nenhum compromisso na call de 20 min.
 
 PRODUTOS COM RISCO REGULATÓRIO (réplica/cópia de marca registrada de terceiro,
 importado sem nota fiscal/regularização, suplemento ou cosmético sem registro

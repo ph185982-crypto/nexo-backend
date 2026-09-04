@@ -74,6 +74,7 @@ interface Conversation {
   lastMessageAt: string | null;
   isActive: boolean;
   humanTakeover: boolean;
+  aiLockUntil: string | null;
   etapa: string;
   localizacaoRecebida: boolean;
   lead: Lead | null;
@@ -149,6 +150,10 @@ const STATUS_COLORS: Record<string, string> = {
 const STATUS_LABELS: Record<string, string> = {
   OPEN: "Aberto", ESCALATED: "Escalado", BLOCKED: "Bloqueado", CLOSED: "Fechado",
 };
+
+function isAiProcessing(conv: Conversation): boolean {
+  return !!conv.aiLockUntil && new Date(conv.aiLockUntil).getTime() > Date.now();
+}
 
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return "—";
@@ -830,8 +835,13 @@ function ConversationsContent() {
 
                     {/* Badges — só o que não é o estado normal, pra não poluir */}
                     {(leadStatus !== "OPEN" || conv.humanTakeover || conv.followUp?.status === "ACTIVE"
-                      || conv.localizacaoRecebida || conv.etapa === "PEDIDO_CONFIRMADO") && (
+                      || conv.localizacaoRecebida || conv.etapa === "PEDIDO_CONFIRMADO" || isAiProcessing(conv)) && (
                       <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {isAiProcessing(conv) && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 animate-pulse">
+                            ⏳ IA respondendo…
+                          </span>
+                        )}
                         {leadStatus !== "OPEN" && (
                           <span className={cn(
                             "text-[11px] px-2 py-0.5 rounded-full font-medium",
@@ -1068,6 +1078,7 @@ function ConversationsContent() {
               <div className="bg-slate-800 text-slate-100 text-[11px] px-3 py-2.5 flex-shrink-0 relative">
                 <button
                   onClick={() => setDiagResult(null)}
+                  aria-label="Fechar diagnóstico"
                   className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-base leading-none"
                 >×</button>
                 <p className="font-bold mb-1.5 text-amber-300">
@@ -1253,6 +1264,7 @@ function ConversationsContent() {
                 <button
                   type="button"
                   title="Emojis"
+                  aria-label="Abrir seletor de emojis"
                   disabled={!isHumanControl}
                   onClick={() => setShowEmojiPicker(s => !s)}
                   className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 press-scale"
@@ -1264,6 +1276,7 @@ function ConversationsContent() {
                 <button
                   type="button"
                   title="Enviar foto ou vídeo"
+                  aria-label="Enviar foto ou vídeo"
                   disabled={!isHumanControl || uploadingMedia}
                   onClick={() => fileInputRef.current?.click()}
                   className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 press-scale"
@@ -1335,6 +1348,7 @@ function ConversationsContent() {
             onClick={toggleInfoPanel}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
             title="Expandir painel de IA"
+            aria-label="Expandir painel de IA"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -1362,12 +1376,19 @@ function ConversationsContent() {
               onClick={toggleInfoPanel}
               className="w-6 h-6 flex-shrink-0 rounded-md flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
               title="Minimizar painel"
+              aria-label="Minimizar painel"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
           <div className="p-4 space-y-5">
+            {isAiProcessing(selected) && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 text-xs font-medium">
+                <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse shrink-0" />
+                IA respondendo agora — evite mandar mensagem por cima
+              </div>
+            )}
             {/* Contact info */}
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Contato</p>

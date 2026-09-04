@@ -11,6 +11,7 @@ import { buscarSessaoProspeccao, atualizarSessaoProspeccao, type SessaoProspecca
 import { criarEventoReuniao, verificarDisponibilidade, buscarSlotsDisponiveis } from "@/lib/integrations/google-calendar";
 import { config } from "@/lib/config/env";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
+import { callLLM } from "@/lib/ai/llm-client";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
 const FOLLOWUP_INTERVALS_MS = [
@@ -1862,64 +1863,6 @@ export async function processAIResponse(
   } catch (error) {
     console.error("[AI Agent] Error:", error);
   }
-}
-
-async function callLLM(
-  systemPrompt: string,
-  history: Array<{ role: "user" | "assistant"; content: string }>,
-  userMessage: string,
-  aiProvider?: string,
-  aiModel?: string
-): Promise<string | null> {
-  const p = aiProvider?.toUpperCase();
-  // Tenta o provider configurado primeiro
-  if (p === "ANTHROPIC" && process.env.ANTHROPIC_API_KEY) { const r = await callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-haiku-4-5-20251001"); if (r) return r; }
-  if (p === "OPENAI"    && process.env.OPENAI_API_KEY)    { const r = await callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini"); if (r) return r; }
-  if (p === "GOOGLE"    && process.env.GOOGLE_AI_API_KEY) { const r = await callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite"); if (r) return r; }
-  // Fallback chain
-  if (process.env.ANTHROPIC_API_KEY) { const r = await callAnthropic(systemPrompt, history, userMessage, "claude-haiku-4-5-20251001"); if (r) return r; }
-  if (process.env.GOOGLE_AI_API_KEY) { const r = await callGemini(systemPrompt, history, userMessage, "gemini-2.0-flash-lite"); if (r) return r; }
-  if (process.env.OPENAI_API_KEY)    { const r = await callOpenAI(systemPrompt, history, userMessage, "gpt-4o-mini"); if (r) return r; }
-  console.warn("[AI Agent] Nenhuma API key de LLM disponível");
-  return null;
-}
-
-async function callOpenAI(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: JSON.stringify({ model, messages: [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }], max_tokens: 400, temperature: 0.9 }),
-  });
-  if (!res.ok) { console.error("[OpenAI] Error:", await res.text()); return null; }
-  const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
-  return data.choices?.[0]?.message?.content ?? null;
-}
-
-async function callAnthropic(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY!, "anthropic-version": "2023-06-01" },
-    body: JSON.stringify({ model, system: systemPrompt, messages: [...history, { role: "user", content: userMessage }], max_tokens: 400 }),
-  });
-  if (!res.ok) { console.error("[Anthropic] Error:", await res.text()); return null; }
-  const data = await res.json() as { content?: Array<{ text?: string }> };
-  return data.content?.[0]?.text ?? null;
-}
-
-async function callGemini(systemPrompt: string, history: Array<{ role: "user" | "assistant"; content: string }>, userMessage: string, model: string): Promise<string | null> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GOOGLE_AI_API_KEY}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: [...history.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })), { role: "user", parts: [{ text: userMessage }] }],
-      generationConfig: { maxOutputTokens: 400, temperature: 0.9 },
-    }),
-  });
-  if (!res.ok) { console.error("[Gemini] Error:", await res.text()); return null; }
-  const data = await res.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
-  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
 }
 
 async function handleEscalation(leadId: string, conversationId: string, reason: string): Promise<void> {
