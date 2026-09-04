@@ -86,12 +86,41 @@ export async function GET(req: NextRequest) {
     if (enviado) alertas.push(`erros_envio:${errosEnvio}`);
   }
 
+  // 4. Agente ativo em sandboxMode — a IA para de responder clientes reais em
+  // silêncio total quando isso acontece por engano (ver /crm/settings).
+  const agentesSandbox = await prisma.agent.findMany({
+    where: { status: "ACTIVE", sandboxMode: true },
+    select: { id: true, displayName: true },
+  });
+  for (const a of agentesSandbox) {
+    const enviado = await alertarDono(
+      `health-sandbox-${a.id}-${hoje}`,
+      `🚨 Alerta NEXO: o agente "${a.displayName}" está em modo SANDBOX — ele NÃO está respondendo clientes reais no WhatsApp. Se isso não foi proposital, desligue em Configurações do Agente agora.`,
+    );
+    if (enviado) alertas.push(`sandbox:${a.id}`);
+  }
+
+  // 5. Mensagens da IA marcadas como falha de envio nas últimas 24h (token
+  // expirado, janela de 24h fechada, número inválido, etc.)
+  const mensagensFalhas = await prisma.whatsappMessage.count({
+    where: { role: "ASSISTANT", status: "FAILED", sentAt: { gte: ontem } },
+  });
+  if (mensagensFalhas >= 3) {
+    const enviado = await alertarDono(
+      `health-msg-falhas-${hoje}`,
+      `⚠️ Alerta NEXO: ${mensagensFalhas} respostas da IA falharam ao enviar pro WhatsApp nas últimas 24h. Confira o token/conexão do número.`,
+    );
+    if (enviado) alertas.push(`msg_falhas:${mensagensFalhas}`);
+  }
+
   return NextResponse.json({
     ok: true,
     verificadoEm: new Date().toISOString(),
     disparosPausados: pausados.length,
     providersComProblema: providersRuins.length,
     errosEnvio24h: errosEnvio,
+    agentesSandbox: agentesSandbox.length,
+    mensagensFalhas24h: mensagensFalhas,
     alertasEnviados: alertas,
   });
 }

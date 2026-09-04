@@ -148,8 +148,11 @@ export async function sendWhatsAppMessage(
 ): Promise<string | undefined> {
   const token = resolveToken(accessToken);
   if (!token) {
-    console.warn("[WhatsApp] No access token configured — skipping send");
-    return undefined;
+    // Lançar aqui é essencial: os chamadores tratam falha de envio (retry,
+    // status FAILED na mensagem, alerta ao dono) só a partir de uma exceção.
+    // Um "return undefined" silencioso fazia a mensagem ficar marcada como
+    // SENT no CRM mesmo sem nunca ter saído.
+    throw new Error("[WhatsApp] No access token configured — cannot send message");
   }
 
   const body: Record<string, unknown> = {
