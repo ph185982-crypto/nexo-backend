@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 const DEFAULT_PROMPT = `Você é um vendedor da empresa. Configure seu roteiro de vendas no painel Agente IA.`;
 
@@ -11,18 +12,23 @@ async function getOrCreateConfig() {
 
 export async function GET() {
   try {
+    await requireAdmin();
     const config = await getOrCreateConfig();
     // Expose all fields except currentPrompt (managed via /api/agent/prompt)
     const { currentPrompt: _p, ...rest } = config;
     void _p;
     return NextResponse.json(rest);
   } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
+    await requireAdmin();
     const body = await req.json() as Record<string, unknown>;
     // Strip read-only fields
     const { currentPrompt: _p, promptVersion: _v, id: _id, createdAt: _c, updatedAt: _u, ...updateData } = body;
@@ -37,6 +43,9 @@ export async function PUT(req: NextRequest) {
     void __p;
     return NextResponse.json(rest);
   } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }

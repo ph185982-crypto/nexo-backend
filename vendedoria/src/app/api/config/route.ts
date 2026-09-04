@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 const DEFAULTS = {
   usarEmoji: true,
@@ -17,15 +18,29 @@ const DEFAULTS = {
 };
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const organizationId = searchParams.get("organizationId");
-  if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
+  try {
+    await requireAdmin();
+    const { searchParams } = new URL(req.url);
+    const organizationId = searchParams.get("organizationId");
+    if (!organizationId) return NextResponse.json({ error: "organizationId required" }, { status: 400 });
 
-  const config = await prisma.aiConfig.findUnique({ where: { organizationId } });
-  return NextResponse.json(config ?? { organizationId, ...DEFAULTS });
+    const config = await prisma.aiConfig.findUnique({ where: { organizationId } });
+    return NextResponse.json(config ?? { organizationId, ...DEFAULTS });
+  } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const body = await req.json() as {
     organizationId: string;
     usarEmoji?: boolean;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppImage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
 import { uploadToCloudinary, isCloudinaryConfigured } from "@/lib/cloudinary";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 function appUrl(req: NextRequest): string {
   return (
@@ -16,6 +17,12 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { id: conversationId } = await params;
 
   // Load conversation + provider

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadToCloudinary, isCloudinaryConfigured } from "@/lib/cloudinary";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/quicktime", "video/webm", "video/3gpp"];
@@ -7,6 +8,12 @@ const MAX_IMAGE_BYTES = 20 * 1024 * 1024;  // 20 MB
 const MAX_VIDEO_BYTES = 200 * 1024 * 1024; // 200 MB
 
 export async function POST(req: NextRequest) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   // ── Verify Cloudinary is configured ──────────────────────────────────────
   if (!isCloudinaryConfigured()) {
     return NextResponse.json(

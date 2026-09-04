@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { executarDisparoDiario } from "@/lib/prospeccao/disparo";
 import { criarOrcamento, enfileirar } from "@/lib/jobs/fila";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 // Teto da função. O que não couber fica na fila e sai numa nova invocação.
 export const maxDuration = 60;
@@ -26,6 +27,12 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { organizationId } = await params;
 
   if (await pendentes(organizationId) > 0) {
@@ -74,6 +81,12 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { organizationId } = await params;
   const desde = new Date(Date.now() - HORAS_RESUMO * 60 * 60_000);
 

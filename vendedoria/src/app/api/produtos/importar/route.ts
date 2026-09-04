@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { importarDoFornecedor, importarManual } from "@/lib/produtos/importador";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin();
     const body = await req.json().catch(() => ({})) as {
       modo?: "scraper" | "manual";
       url?: string;
@@ -28,6 +30,9 @@ export async function POST(req: NextRequest) {
     const result = await importarDoFornecedor(body.url);
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {
+    if (err instanceof Error && err.message === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     console.error("[importar] erro:", err);
     return NextResponse.json(
       { error: "Falha na importação", detail: String(err) },
