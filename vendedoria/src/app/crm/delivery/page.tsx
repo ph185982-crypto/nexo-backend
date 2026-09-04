@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Trophy, ClipboardList, CheckCircle2, Clock, ChevronRight, Loader2, Plus,
+  MessageSquareHeart, AlertCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,41 @@ type Lead = {
   diagnosisStatus?: "none" | "draft" | "finalized";
 };
 
+// ── Health do cliente — dias desde o último contato ──────────────────────────
+// Não é um score inventado do nada: reusa lastActivityAt (já existente no
+// lead) pra sinalizar quem tá esfriando sem contato do Pedro. Sem infra nova,
+// sem automação — só visibilidade de quem precisa de um toque.
+function diasSemContato(lastActivityAt?: string): number | null {
+  if (!lastActivityAt) return null;
+  return Math.floor((Date.now() - new Date(lastActivityAt).getTime()) / (24 * 60 * 60 * 1000));
+}
+
+function HealthBadge({ lastActivityAt }: { lastActivityAt?: string }) {
+  const dias = diasSemContato(lastActivityAt);
+  if (dias === null) return null;
+  if (dias <= 14) {
+    return (
+      <Badge className="bg-green-500/10 text-green-400 border-green-500/20 gap-1">
+        Contato recente
+      </Badge>
+    );
+  }
+  if (dias <= 30) {
+    return (
+      <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 gap-1">
+        <Clock className="w-3 h-3" />
+        {dias}d sem contato
+      </Badge>
+    );
+  }
+  return (
+    <Badge className="bg-red-500/10 text-red-400 border-red-500/20 gap-1">
+      <AlertCircle className="w-3 h-3" />
+      {dias}d sem contato — falar com o cliente
+    </Badge>
+  );
+}
+
 function StatusBadge({ status }: { status: "none" | "draft" | "finalized" }) {
   if (status === "finalized")
     return (
@@ -90,6 +126,8 @@ export default function DeliveryPage() {
   });
 
   const [diagnosisMap, setDiagnosisMap] = useState<Record<string, "none" | "draft" | "finalized">>({});
+  const [depoimentoMap, setDepoimentoMap] = useState<Record<string, string | null>>({});
+  const [pedindoDepoimento, setPedindoDepoimento] = useState<string | null>(null);
   const [adicionarOpen, setAdicionarOpen] = useState(false);
 
   const ganhoColumns = (data?.getKanbanBoard?.columns ?? []).filter(
@@ -121,6 +159,40 @@ export default function DeliveryPage() {
   useEffect(() => {
     fetchDiagnoses();
   }, [fetchDiagnoses]);
+
+  const fetchDepoimentos = useCallback(async () => {
+    if (!leads.length) return;
+    const results = await Promise.all(
+      leads.map(async (l) => {
+        try {
+          const res = await fetch(`/api/delivery/${l.id}/depoimento`);
+          const json = await res.json();
+          return [l.id, json.askedAt as string | null] as [string, string | null];
+        } catch {
+          return [l.id, null] as [string, null];
+        }
+      }),
+    );
+    setDepoimentoMap(Object.fromEntries(results));
+  }, [leads.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    fetchDepoimentos();
+  }, [fetchDepoimentos]);
+
+  const pedirDepoimento = useCallback(async (leadId: string) => {
+    setPedindoDepoimento(leadId);
+    try {
+      const res = await fetch(`/api/delivery/${leadId}/depoimento`, { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Falha ao pedir depoimento");
+      setDepoimentoMap((prev) => ({ ...prev, [leadId]: json.askedAt }));
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Falha ao pedir depoimento");
+    } finally {
+      setPedindoDepoimento(null);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -165,16 +237,13 @@ export default function DeliveryPage() {
           <div className="grid gap-3 max-w-3xl">
             {leads.map((lead) => {
               const status = diagnosisMap[lead.id] ?? "none";
+              const askedAt = depoimentoMap[lead.id];
               return (
-                <Link
+                <div
                   key={lead.id}
-                  href={`/crm/delivery/${lead.id}`}
-                  className={cn(
-                    "flex items-center gap-4 rounded-xl border border-border bg-card p-4",
-                    "hover:bg-muted/40 transition-colors group",
-                  )}
+                  className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 hover:bg-muted/40 transition-colors group"
                 >
-                  <div className="flex-1 min-w-0">
+                  <Link href={`/crm/delivery/${lead.id}`} className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-medium text-sm truncate">
                         {lead.profileName || formatPhone(lead.phoneNumber)}
@@ -185,10 +254,33 @@ export default function DeliveryPage() {
                         </span>
                       )}
                     </div>
-                    <StatusBadge status={status} />
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                </Link>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <StatusBadge status={status} />
+                      <HealthBadge lastActivityAt={lead.lastActivityAt} />
+                    </div>
+                  </Link>
+                  {askedAt ? (
+                    <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">
+                      Depoimento pedido em {new Date(askedAt).toLocaleDateString("pt-BR")}
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0"
+                      disabled={pedindoDepoimento === lead.id}
+                      onClick={() => pedirDepoimento(lead.id)}
+                    >
+                      {pedindoDepoimento === lead.id
+                        ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                        : <MessageSquareHeart className="w-3.5 h-3.5 mr-1.5" />}
+                      Pedir depoimento
+                    </Button>
+                  )}
+                  <Link href={`/crm/delivery/${lead.id}`}>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                  </Link>
+                </div>
               );
             })}
           </div>
