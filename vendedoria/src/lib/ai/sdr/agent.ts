@@ -7,6 +7,7 @@ import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { buildSdrSystemPrompt } from "./prompt";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
+import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
 const HANDOFF_NUMBER = process.env.OWNER_WHATSAPP_NUMBER ?? "5562984465388";
 
@@ -398,6 +399,35 @@ export async function processSdrResponse(
   const token = provider.accessToken ?? undefined;
   const phoneNumberId = provider.businessPhoneNumberId;
 
+  // Serializa por conversa — ver comentário de AI_LOCK_HOLD_MS acima. Se não
+  // conseguir a trava a tempo (outra execução muito longa travada na frente),
+  // aborta em vez de arriscar responder em paralelo ou estourar o tempo
+  // máximo da function.
+  const gotLock = await acquireAiLock(conversationId);
+  if (!gotLock) {
+    console.warn(`[SDR] Não consegui a trava de IA pra conv ${conversationId} a tempo — abortando run de ${incomingMessageId}`);
+    return;
+  }
+
+  try {
+    await runSdrResponse(conversationId, userMessage, agent, incomingMessageId, now, lead, provider, phone, token, phoneNumberId);
+  } finally {
+    await releaseAiLock(conversationId);
+  }
+}
+
+async function runSdrResponse(
+  conversationId: string,
+  userMessage: string,
+  agent: { id: string; aiProvider?: string | null; aiModel?: string | null; sandboxMode?: boolean },
+  incomingMessageId: string,
+  now: Date,
+  lead: { id: string; phoneNumber: string; profileName: string | null; status: string },
+  provider: { businessPhoneNumberId: string; accessToken: string | null; organizationId: string },
+  phone: string,
+  token: string | undefined,
+  phoneNumberId: string,
+): Promise<void> {
   // ── Debounce ──────────────────────────────────────────────────────────────
   // Espera o cliente terminar de digitar antes de responder. Se uma mensagem
   // mais nova chegar nesse meio-tempo, esta execução aborta — a execução da

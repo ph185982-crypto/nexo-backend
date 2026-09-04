@@ -385,6 +385,13 @@ model WhatsappConversation {
   sessaoProspeccao   Json?                           // dados do fluxo de prospecção B2B
   midiasEnviadas     Json?    @default("[]")          // slugs de mídia já enviados nesta conversa
 
+  // Trava atômica contra duas respostas de IA concorrentes pra mesma conversa
+  // (cliente manda 2a mensagem enquanto a 1a resposta ainda está sendo gerada/
+  // enviada — sem isso, cada run gera e envia sua própria resposta, duplicando
+  // a mensagem pro cliente). Claim via updateMany condicional, mesmo padrão do
+  // aiProcessedAt em WhatsappMessage.
+  aiLockUntil                DateTime?
+
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
 }

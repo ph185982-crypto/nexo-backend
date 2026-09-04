@@ -14,6 +14,7 @@ import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
 import { isMaxOwnerNumber } from "@/lib/max/config";
 import { handleMaxMessage } from "@/lib/max/responder";
 import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
+import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
 // Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
 // default da função para terminar — a Vercel pode congelar a invocação assim que
@@ -494,12 +495,25 @@ async function runAIFlow(
   },
 ): Promise<void> {
   // SDR mode: systemPrompt starts with "[SDR]" → dedicated qualification agent
+  // (processSdrResponse já trava a conversa internamente)
   if (agent.systemPrompt?.trimStart().startsWith("[SDR]")) {
     await processSdrResponse(conversationId, userMessage, agent, incomingMessageId);
     return;
   }
 
-  await processAIResponse(conversationId, userMessage, agent, incomingMessageId);
+  // Fluxo padrão não tem proteção própria contra duas mensagens do cliente
+  // gerando duas respostas em paralelo — trava aqui, do lado de fora, pelo
+  // mesmo motivo e mesmo mecanismo do SDR (ver src/lib/ai/conversation-lock.ts).
+  const gotLock = await acquireAiLock(conversationId);
+  if (!gotLock) {
+    console.warn(`[AI Agent] Não consegui a trava de IA pra conv ${conversationId} a tempo — abortando run de ${incomingMessageId}`);
+    return;
+  }
+  try {
+    await processAIResponse(conversationId, userMessage, agent, incomingMessageId);
+  } finally {
+    await releaseAiLock(conversationId);
+  }
 }
 
 async function handleStatusUpdate(status: { id: string; status: string }) {
