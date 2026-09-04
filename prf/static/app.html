@@ -2451,6 +2451,7 @@ function playerBar() {
         <button class="pb-btn" onclick="togglePlayPause()" aria-label="${S.audioPlaying ? 'Pausar' : 'Tocar'}">${S.audioPlaying ? I.pause : I.play}</button>
         <button class="pb-btn ${hasNext?'':'ghost'}" onclick="podNext()" ${hasNext?'':'disabled'}>${I.chev}</button>
         <div class="pb-title">${esc(S.pod.title)}<span class="pb-pos">Parte ${S.podSeq+1}/${S.pod.segment_count}</span></div>
+        ${S.missionBlockId ? `<button class="pb-btn" title="Já ouvi — concluir etapa" onclick="confirmFinishPodcastBlock()">${I.checkCircle}</button>` : ''}
         <button class="pb-btn ghost" onclick="stopPodcast()">${I.close}</button>
       </div>
       <div class="pb-progress">
@@ -2724,7 +2725,19 @@ function viewPodcastNow() {
         `<div class="pn-part ${i < S.podSeq ? 'done' : ''} ${i === S.podSeq ? 'on' : ''}"
               onclick="playPodSegment(${i})" title="Parte ${i+1}"></div>`).join('')}</div>
     `}
+    ${S.missionBlockId ? `<button class="btn btn-primary btn-full mt-16" onclick="confirmFinishPodcastBlock()">Já ouvi — concluir etapa</button>` : ''}
   </div>`;
+}
+// A etapa só fechava sozinha no fim natural do áudio (evento `ended`) — se o
+// candidato tranca o celular, troca de app ou a conexão cai no meio dos 40
+// min, a missão inteira travava ali para sempre, sem jeito de seguir em
+// frente. Este botão dá a saída manual: fecha a etapa sem exigir ouvir tudo,
+// sem apagar histórico nenhum (só marca este bloco como concluído).
+function confirmFinishPodcastBlock() {
+  if (!S.missionBlockId) return;
+  if (confirm('Marcar esta aula como concluída e avançar na missão?')) {
+    finishMissionBlock(false);
+  }
 }
 
 // ===== FLASHCARDS =====
