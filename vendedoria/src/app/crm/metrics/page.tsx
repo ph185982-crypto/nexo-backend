@@ -28,7 +28,19 @@ interface Metrics {
   followUpsDone: number;
   conversionRate: number;
   avgResponseTimeSec: number;
+  sdrFunnel: { total: number; byStatus: Record<string, number> } | null;
 }
+
+const SDR_STATUS_ORDER: Array<{ key: string; label: string; color: string }> = [
+  { key: "novo",            label: "Novo",              color: "#64748b" },
+  { key: "em_qualificacao", label: "Em qualificação",   color: "#0891b2" },
+  { key: "qualificado",     label: "Qualificado",       color: "#22c55e" },
+  { key: "handoff_enviado", label: "Handoff enviado",   color: "#004c3f" },
+  { key: "morno",           label: "Morno (parou)",     color: "#f59e0b" },
+  { key: "frio",            label: "Frio (parou)",      color: "#94a3b8" },
+  { key: "fora",            label: "Fora do ICP",       color: "#ef4444" },
+  { key: "inativo",         label: "Inativo",           color: "#cbd5e1" },
+];
 
 interface StatCardProps {
   title: string;
@@ -240,6 +252,40 @@ export default function MetricsPage() {
               })}
             </CardContent>
           </Card>
+
+          {/* SDR qualification funnel — onde os leads travam na qualificação */}
+          {metrics.sdrFunnel && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Funil de Qualificação (SDR)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {SDR_STATUS_ORDER.filter((s) => metrics.sdrFunnel!.byStatus[s.key] > 0).map((s) => {
+                  const value = metrics.sdrFunnel!.byStatus[s.key] ?? 0;
+                  const pct = metrics.sdrFunnel!.total > 0
+                    ? Math.round((value / metrics.sdrFunnel!.total) * 100)
+                    : 0;
+                  return (
+                    <div key={s.key} className="flex items-center gap-3 mb-3">
+                      <span className="text-sm text-muted-foreground w-40 flex-shrink-0">{s.label}</span>
+                      <div className="flex-1 bg-muted rounded-full h-2.5">
+                        <div
+                          className="h-2.5 rounded-full transition-all"
+                          style={{ width: `${pct}%`, backgroundColor: s.color }}
+                        />
+                      </div>
+                      <span className="text-sm font-semibold w-20 text-right" style={{ color: s.color }}>
+                        {value} <span className="text-xs text-muted-foreground font-normal">({pct}%)</span>
+                      </span>
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted-foreground mt-2">
+                  {metrics.sdrFunnel.total} lead(s) com sessão de qualificação no período.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </div>

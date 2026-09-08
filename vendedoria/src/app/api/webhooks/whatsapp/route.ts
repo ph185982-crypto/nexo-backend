@@ -472,11 +472,33 @@ async function handleIncomingMessage(
     return;
   }
 
+  // Flood guard: sem isso, um número enviando dezenas de mensagens em rajada
+  // (bot de teste, ataque, cliente com dedo no botão de repetir) disparava uma
+  // chamada de LLM por mensagem — cada uma custa dinheiro e tempo de função.
+  // A mensagem continua salva normalmente; só a resposta da IA é pausada até
+  // a rajada esfriar (mesma janela de 60s).
+  if (await isConversationFlooding(conversation.id)) {
+    console.warn(`[Webhook] Rate limit: conv ${conversation.id} passou de ${RATE_LIMIT_MAX_MESSAGES} msgs em ${RATE_LIMIT_WINDOW_MS / 1000}s — IA pausada nesta mensagem`);
+    return;
+  }
+
   after(() =>
     runAIFlow(conversation.id, content, message.id, agentConfig).catch((e) =>
       console.error("[Webhook] AI flow error:", e),
     ),
   );
+}
+
+// ─── Rate limit de rajada por conversa ───────────────────────────────────────
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_MESSAGES = 20;
+
+async function isConversationFlooding(conversationId: string): Promise<boolean> {
+  const since = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const count = await prisma.whatsappMessage.count({
+    where: { conversationId, role: "USER", sentAt: { gte: since } },
+  }).catch(() => 0);
+  return count > RATE_LIMIT_MAX_MESSAGES;
 }
 
 async function runAIFlow(

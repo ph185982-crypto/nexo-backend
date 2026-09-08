@@ -121,6 +121,28 @@ export async function GET(req: NextRequest) {
     ? Math.round((orders / totalConversations) * 100 * 10) / 10
     : 0;
 
+  // ── Funil de qualificação do SDR — onde os leads travam ────────────────────
+  // A sessão do SDR (etapa/status/score) fica dentro do JSON `sessaoProspeccao`,
+  // sem tabela própria, então não dá pra agregar via `groupBy` do Prisma — lê os
+  // registros do período e conta em memória. Sem isso não existia visibilidade
+  // de em qual ponto da qualificação (novo → em_qualificacao → qualificado →
+  // handoff) os leads abandonam a conversa.
+  const sdrConvs = await prisma.whatsappConversation.findMany({
+    where: { whatsappProviderConfigId: { in: providerIds }, ...(dateFilter ? { createdAt: dateFilter } : {}) },
+    select: { sessaoProspeccao: true },
+  });
+  const sdrStatusCounts: Record<string, number> = {};
+  let sdrTotal = 0;
+  for (const c of sdrConvs) {
+    const raw = c.sessaoProspeccao as Record<string, unknown> | null;
+    const sdr = raw?.sdr as { mode?: string; status?: string } | undefined;
+    if (!sdr || sdr.mode !== "SDR") continue;
+    sdrTotal++;
+    const status = sdr.status ?? "novo";
+    sdrStatusCounts[status] = (sdrStatusCounts[status] ?? 0) + 1;
+  }
+  const sdrFunnel = sdrTotal > 0 ? { total: sdrTotal, byStatus: sdrStatusCounts } : null;
+
   return NextResponse.json({
     period,
     totalConversations,
@@ -135,5 +157,6 @@ export async function GET(req: NextRequest) {
     conversionRate,
     avgResponseTimeMs: avgMs,
     avgResponseTimeSec: Math.round(avgMs / 1000),
+    sdrFunnel,
   });
 }

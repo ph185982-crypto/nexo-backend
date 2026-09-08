@@ -9,6 +9,7 @@ const CONV_SELECT = {
   lastMessageAt: true,
   isActive: true,
   humanTakeover: true,
+  aiLockUntil: true,
   etapa: true,
   localizacaoRecebida: true,
   produtoInteresse: true,
