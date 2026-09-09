@@ -109,6 +109,27 @@ def _resolve_db_url(database_url: str) -> str:
     return database_url
 
 
+
+# Ordem de preferência das variáveis de banco. Integrações de marketplace do
+# Vercel (Neon, Supabase) gravam a connection string sob o nome do próprio
+# provedor — não necessariamente `DATABASE_URL` — e se essa chave já existia
+# no projeto (o Render antigo), o painel evita sobrescrever e a nova conexão
+# fica só em POSTGRES_URL/POSTGRES_PRISMA_URL. Checar essas primeiro faz o
+# app migrar para o banco novo sem precisar renomear nada na mão.
+_DB_ENV_CANDIDATES = (
+    "POSTGRES_URL", "POSTGRES_PRISMA_URL", "POSTGRES_URL_NON_POOLING",
+    "DATABASE_URL", "DATABASE_URL_UNPOOLED",
+)
+
+
+def _find_database_url() -> tuple[str | None, str | None]:
+    for name in _DB_ENV_CANDIDATES:
+        val = os.getenv(name)
+        if val:
+            return val, name
+    return None, None
+
+
 async def _init_prf():
     """
     Lazy initializer — called on first HTTP request.
@@ -123,12 +144,13 @@ async def _init_prf():
         return
 
     _initializing = True
-    db_url = os.getenv("DATABASE_URL")
+    db_url, db_url_var = _find_database_url()
     if not db_url:
-        _startup_error = "DATABASE_URL not set"
+        _startup_error = "Nenhuma variável de banco encontrada (DATABASE_URL/POSTGRES_URL/...)"
         _initializing = False
         logger.warning(f"[PRF] {_startup_error}")
         return
+    logger.info(f"[PRF] Usando variável de banco: {db_url_var}")
 
     try:
         import asyncio
@@ -223,7 +245,9 @@ async def debug_net():
         except Exception as e:
             results[label] = f"{type(e).__name__}: {e}"
     # Test DB host
-    db_url = os.getenv("DATABASE_URL", "")
+    db_url, db_url_var = _find_database_url()
+    db_url = db_url or ""
+    results["db_url_var"] = db_url_var
     if db_url:
         try:
             host = urllib.parse.urlparse(db_url).hostname
