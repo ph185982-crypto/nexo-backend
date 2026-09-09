@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { isMaxOwnerNumber } from "@/lib/max/config";
 
 /**
  * TEMPORARY — one-off read-only report for Pedro's "quem é o público / quais
@@ -55,10 +56,9 @@ export async function GET(_req: NextRequest) {
 
     if (totalUserMsgs === 0) continue;
 
-    // Amostra distribuída no tempo (não só as últimas) pra cobrir do início até agora.
-    const CAP = 500;
-    const skipStep = Math.max(1, Math.floor(totalUserMsgs / CAP));
-    const msgs = await prisma.whatsappMessage.findMany({
+    // Exclui o próprio número do Pedro (conversas com o Max, roteadas por esse
+    // mesmo provider antes de chegar no SDR) — não é "público", é ruído.
+    const msgs = (await prisma.whatsappMessage.findMany({
       where: { role: "USER", conversation: { whatsappProviderConfigId: { in: providerIds } } },
       orderBy: { sentAt: "asc" },
       select: {
@@ -66,17 +66,23 @@ export async function GET(_req: NextRequest) {
         content: true,
         conversation: { select: { profileName: true, customerWhatsappBusinessId: true } },
       },
-    });
+    })).filter((m) => !isMaxOwnerNumber(m.conversation.customerWhatsappBusinessId));
 
-    for (let i = 0; i < msgs.length; i += skipStep) {
-      const m = msgs[i];
+    // Amostra distribuída no tempo (índices igualmente espaçados do primeiro
+    // ao último) — cobre do início até agora, não só os mais antigos.
+    const CAP = 600;
+    const n = msgs.length;
+    const picked = n <= CAP
+      ? msgs
+      : Array.from({ length: CAP }, (_, k) => msgs[Math.floor((k * (n - 1)) / (CAP - 1))]);
+
+    for (const m of picked) {
       allSamples.push({
         org: org.name,
         at: m.sentAt.toISOString(),
         lead: m.conversation.profileName ?? m.conversation.customerWhatsappBusinessId,
         content: m.content.slice(0, 240),
       });
-      if (allSamples.length >= CAP * orgs.length) break;
     }
   }
 
