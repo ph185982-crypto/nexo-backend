@@ -565,6 +565,21 @@ async def generate_podcast_drill(
     return await gerar_proximo_drill(repo)
 
 
+@router.post("/podcast/presynth")
+async def presynth_podcast_audio(
+    max_episodes: int = Query(2, ge=1, le=5),
+    x_maintenance_token: str | None = Header(default=None),
+    repo: PRFRepository = Depends(get_repo),
+):
+    """Pré-sintetiza o áudio de episódios que já têm roteiro mas ainda
+    dependem de síntese sob demanda — a espera que o candidato sentia ao
+    clicar em tocar. Chame em loop até `generated` zerar.
+    """
+    _require_admin(x_maintenance_token)
+    from prf.services.audio_pipeline import presynth_pending_audio
+    return await presynth_pending_audio(repo, max_episodes=max_episodes)
+
+
 @router.get("/podcast/status-formato")
 async def podcast_status_formato(
     x_maintenance_token: str | None = Header(default=None),

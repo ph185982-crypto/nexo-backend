@@ -71,6 +71,63 @@ def build_units(topics: list[dict]) -> list[dict]:
     return sorted(units.values(), key=lambda u: (-u["peso"], -u["chars"]))
 
 
+async def _presynth_audio(repo, episode_id, turns: list[dict]) -> bool:
+    """Sintetiza o áudio do episódio assim que o roteiro nasce.
+
+    Sem isto, a síntese (dez idas ao TTS) só acontecia sob demanda, na
+    primeira vez que alguém abria o episódio para ouvir — exatamente o
+    delay que o candidato sentia ao clicar em "tocar". Pré-sintetizar aqui
+    faz o áudio já estar em cache quando a aula aparece na missão.
+
+    Tem timeout próprio e nunca propaga erro: o roteiro já foi salvo antes
+    desta chamada, e se a síntese falhar ou demorar demais, o endpoint de
+    reprodução sintetiza na hora — exatamente como já fazia.
+    """
+    import asyncio
+    from prf.services import podcast_service
+
+    blocks = sorted({t.get("block", 0) for t in turns})
+    if not blocks:
+        return False
+
+    async def _synth(seq: int):
+        seg_turns = [t for t in turns if t.get("block") == seq]
+        audio = await podcast_service.synthesize_segment(seg_turns)
+        return seq, audio, podcast_service.estimate_duration_secs(seg_turns)
+
+    try:
+        results = await asyncio.wait_for(
+            asyncio.gather(*[_synth(seq) for seq in blocks]), timeout=110,
+        )
+    except Exception as e:
+        logger.warning(f"[PRF] pré-síntese de áudio do episódio {episode_id} falhou: {e}")
+        return False
+
+    ok = 0
+    for seq, audio, dur in results:
+        if audio:
+            await repo.save_podcast_segment_audio(episode_id, seq, audio, dur)
+            ok += 1
+    return ok == len(blocks)
+
+
+async def presynth_pending_audio(repo, max_episodes: int = 1) -> dict:
+    """Pré-sintetiza áudio de episódios já roteirizados que ainda não têm
+    todos os segmentos em cache — a fila que cobre o que foi gerado antes
+    desta pré-síntese existir. Uma peça por chamada, no mesmo padrão das
+    demais tarefas deste módulo."""
+    pendentes = await repo.get_episodes_missing_audio(limit=max_episodes)
+    if not pendentes:
+        return {"generated": 0, "reason": "Nenhum episódio pendente de áudio"}
+
+    feitos = 0
+    for ep in pendentes:
+        if await _presynth_audio(repo, ep["id"], ep.get("turns") or []):
+            feitos += 1
+
+    return {"generated": feitos, "attempted": len(pendentes)}
+
+
 async def refazer_episodio_antigo(repo, kind: str = "aula") -> dict:
     """Regrava um episódio que ficou num formato de roteiro anterior.
 
@@ -125,6 +182,7 @@ async def refazer_episodio_antigo(repo, kind: str = "aula") -> dict:
         "unit_slug": antigo.get("unit_slug"),
         "script_version": SCRIPT_VERSION,
     })
+    await _presynth_audio(repo, salvo["id"], novo["turns"])
     await repo.retire_episode(antigo["id"])
 
     restantes = await repo.count_outdated_episodes(SCRIPT_VERSION)
@@ -206,6 +264,7 @@ async def gerar_proxima_aula(repo, unit_slug: str | None = None) -> dict:
         "unit_slug": u["unit_slug"],
         "script_version": SCRIPT_VERSION,
     })
+    await _presynth_audio(repo, saved["id"], episode["turns"])
 
     return {
         "generated": True,

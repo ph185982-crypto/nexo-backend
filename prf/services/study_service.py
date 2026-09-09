@@ -56,6 +56,18 @@ class StudyService:
         if existing and existing.get("blocks") and not force:
             return existing
 
+        # "Pular missão" (force=True) tinha efeito nenhum na prática: o tópico
+        # do dia é escolhido por critério determinístico (pick_study_topic) em
+        # cima de dados que não mudam só por descartar a missão — mesmo
+        # domínio, mesmo progresso de leitura — então a regeneração devolvia
+        # sempre o mesmo assunto. Guardar os tópicos da missão descartada e
+        # excluí-los da escolha é o que garante um tópico novo de fato.
+        skip_topic_ids = []
+        if force and existing and existing.get("blocks"):
+            skip_topic_ids = list({
+                b["topic_id"] for b in existing["blocks"] if b.get("topic_id")
+            })
+
         # A missão só acaba quando concluída. Se sobrou etapa de um dia
         # anterior, o dia de hoje é ela — não se empilha conteúdo novo por
         # cima de pendência, senão o atraso vira uma bola de neve que o
@@ -226,7 +238,9 @@ class StudyService:
         qtype = None if is_pm else "certo_errado"
         topic_plan: dict = {}
         for p in priorities[:4]:
-            topic = await self.repo.pick_study_topic(user_id, p.subject_id)
+            topic = await self.repo.pick_study_topic(
+                user_id, p.subject_id, exclude_topic_ids=skip_topic_ids,
+            )
             if not topic:
                 continue
             aula = await self.repo.get_next_aula_for_topic(topic["id"])

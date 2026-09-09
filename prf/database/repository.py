@@ -1076,14 +1076,23 @@ class PRFRepository:
         )
         return [r["id"] for r in rows]
 
-    async def pick_study_topic(self, user_id: UUID, subject_id: UUID) -> Optional[dict]:
+    async def pick_study_topic(
+        self, user_id: UUID, subject_id: UUID, exclude_topic_ids: Optional[list] = None,
+    ) -> Optional[dict]:
         """Escolhe o tópico do dia dentro de uma matéria.
 
         Prioriza tópico que já tem episódio de áudio pronto e cujo material
         ainda não foi lido — é o que permite a missão encadear o mesmo
         assunto no áudio da ida, na lei seca da noite e nas questões
         seguintes, em vez de pular de tema a cada etapa.
+
+        `exclude_topic_ids` tira da disputa o(s) tópico(s) que acabaram de ser
+        descartados (botão "pular missão"). Sem isso, o critério de escolha é
+        determinístico em cima de dados que não mudam só por pular — mesmo
+        domínio, mesmo `user_article_progress` — então pular devolvia
+        exatamente o mesmo tópico de novo.
         """
+        exclude = list(exclude_topic_ids or [])
         return await self._fetchrow(
             """SELECT t.id, t.name, t.slug,
                       COALESCE(SUM(CASE WHEN uap.read_count > 0 THEN 1 ELSE 0 END), 0) AS lidos,
@@ -1095,6 +1104,7 @@ class PRFRepository:
                  LEFT JOIN user_article_progress uap
                         ON uap.article_id = la.id AND uap.user_id = $1
                 WHERE t.subject_id = $2 AND t.is_active
+                  AND NOT (t.id = ANY($3::uuid[]))
                 GROUP BY t.id, t.name, t.slug, t.weight, t.display_order
                HAVING COUNT(la.id) > 0
                 ORDER BY tem_audio DESC,
@@ -1102,7 +1112,7 @@ class PRFRepository:
                           / GREATEST(COUNT(la.id), 1)) ASC,
                          t.weight DESC, t.display_order
                 LIMIT 1""",
-            user_id, subject_id,
+            user_id, subject_id, exclude,
         )
 
     async def get_topic_queue(
@@ -1778,6 +1788,21 @@ class PRFRepository:
             episode_id,
         )
         return {r["seq"]: {"audio": r["audio"], "duration_secs": r["duration_secs"]} for r in rows}
+
+    async def get_episodes_missing_audio(self, limit: int = 1) -> list[dict]:
+        """Episódios com roteiro pronto mas cujo áudio ainda depende de
+        síntese sob demanda — a fila que faz o primeiro candidato a abrir
+        pagar a espera do TTS na hora de ouvir."""
+        return await self._fetch(
+            """SELECT pe.id, pe.turns, pe.segment_count
+                 FROM podcast_episodes pe
+                WHERE pe.is_active = TRUE AND pe.segment_count > 0
+                  AND (SELECT COUNT(*) FROM podcast_segments ps
+                        WHERE ps.episode_id = pe.id AND ps.audio IS NOT NULL) < pe.segment_count
+                ORDER BY pe.created_at ASC
+                LIMIT $1""",
+            limit,
+        )
 
     async def podcast_topic_exists(self, subject_id: UUID | None, topic: str) -> bool:
         return bool(await self._fetchval(
