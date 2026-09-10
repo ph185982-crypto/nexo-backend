@@ -1321,6 +1321,7 @@ const S = {
   theme: localStorage.getItem('prf_theme') || 'auto',
   tab: 'dashboard', subView: null,
   token: localStorage.getItem('prf_token'),
+  localMode: localStorage.getItem('prf_local_mode') === '1',
   loading: {},
   dashboard: null, subjects: null,
   selSubject: null, selSubjectName: '', resources: null,
@@ -1394,8 +1395,11 @@ async function ensureAuth() {
   if (S.token) {
     try {
       const r = await fetch(`${API}/api/prf/auth/me`, { headers: { 'Authorization': `Bearer ${S.token}` } });
-      if (r.ok) return;
+      if (r.ok) { S.localMode = false; return; }
     } catch (e) {}
+    // Token de sessão local continua válido mesmo sem /auth/me — ele nunca
+    // dependeu do banco pra ser verificado, só pra ser consultado.
+    if (localStorage.getItem('prf_local_mode') === '1') { S.localMode = true; return; }
     S.token = null; localStorage.removeItem('prf_token');
   }
   let deviceId = localStorage.getItem('prf_device_id');
@@ -1405,20 +1409,111 @@ async function ensureAuth() {
     password: `PRF#${deviceId.slice(0, 16)}`,
     name: 'Estudante PMGO',
   };
-  let r = await fetch(`${API}/api/prf/auth/register`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(creds),
-  });
-  if (r.status === 409 || r.status === 400) {
-    r = await fetch(`${API}/api/prf/auth/login`, {
+  try {
+    let r = await fetch(`${API}/api/prf/auth/register`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: creds.email, password: creds.password }),
+      body: JSON.stringify(creds),
     });
+    if (r.status === 409 || r.status === 400) {
+      r = await fetch(`${API}/api/prf/auth/login`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: creds.email, password: creds.password }),
+      });
+    }
+    if (!r.ok) throw new Error('Auth failed');
+    const data = await r.json();
+    S.token = data.access_token;
+    S.localMode = false;
+    localStorage.setItem('prf_token', S.token);
+    localStorage.removeItem('prf_local_mode');
+    return;
+  } catch (e) {
+    // Banco fora do ar: o modo local não depende dele — o token ainda é um
+    // JWT válido (a verificação nunca tocou banco), só não há onde ler
+    // e-mail/senha pra confirmar a conta. Registra localmente e segue.
+    const r = await fetch(`${API}/api/prf/local/register`, { method: 'POST' });
+    if (!r.ok) throw new Error('Auth failed (local)');
+    const data = await r.json();
+    S.token = data.access_token;
+    S.localMode = true;
+    localStorage.setItem('prf_token', S.token);
+    localStorage.setItem('prf_local_mode', '1');
   }
-  if (!r.ok) throw new Error('Auth failed');
-  const data = await r.json();
-  S.token = data.access_token;
-  localStorage.setItem('prf_token', S.token);
+}
+
+// ===== MODO LOCAL (banco fora do ar) =====
+// Progresso, XP, sequência e a missão do dia moram aqui, no navegador —
+// não há tabela pra gravar nada disso enquanto o Postgres estiver fora do
+// ar. O servidor continua fazendo o trabalho pesado (motor de prioridade,
+// montagem da missão, geração de roteiro e áudio); só não guarda o
+// resultado entre chamadas.
+const LOCAL_KEY = 'prf_local_state_v1';
+function localState() {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if (raw) return { ..._localDefault(), ...JSON.parse(raw) };
+  } catch (e) {}
+  return _localDefault();
+}
+function _localDefault() {
+  return {
+    xp: 0, level: 1, streak: 0, last_active_date: null,
+    mastery: {}, recent_subjects: [], recent_subjects_date: null,
+    questions_today: { date: null, total: 0, correct: 0 },
+    mission_date: null, mission: null, skip_topic_ids: [],
+  };
+}
+function saveLocalState(s) {
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch (e) {}
+  return s;
+}
+function localToday() { return new Date().toISOString().slice(0, 10); }
+function localRecordAnswer(subjectId, isCorrect) {
+  const s = localState();
+  const today = localToday();
+  if (s.questions_today.date !== today) s.questions_today = { date: today, total: 0, correct: 0 };
+  s.questions_today.total++;
+  if (isCorrect) s.questions_today.correct++;
+  s.xp += isCorrect ? 10 : 3;
+  s.level = 1 + Math.floor(s.xp / 500);
+  if (subjectId) {
+    const m = s.mastery[subjectId] || { total_attempts: 0, total_correct: 0, accuracy: 0, mastery_level: 0, last_studied: null };
+    m.total_attempts++;
+    if (isCorrect) m.total_correct++;
+    m.accuracy = m.total_correct / m.total_attempts;
+    m.mastery_level = Math.min(1, m.accuracy * Math.min(m.total_attempts / 50, 1));
+    m.last_studied = new Date().toISOString();
+    s.mastery[subjectId] = m;
+  }
+  return saveLocalState(s);
+}
+function localBumpStreak() {
+  const s = localState();
+  const today = localToday();
+  if (s.last_active_date === today) return s;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  s.streak = (s.last_active_date === y.toISOString().slice(0, 10)) ? s.streak + 1 : 1;
+  s.last_active_date = today;
+  return saveLocalState(s);
+}
+function localDashboard() {
+  const s = localState();
+  const qt = (s.questions_today.date === localToday()) ? s.questions_today : { total: 0, correct: 0 };
+  return {
+    greeting: localGreeting(), streak: s.streak, questions_today: qt.total,
+    accuracy_today: qt.total ? Math.round((qt.correct / qt.total) * 100) : 0,
+    time_studied_today: 0, reviews_due: 0, approval_estimate: 0,
+    level: s.level, weekly_progress: [], target_exam: S.targetExam || 'PMGO',
+    xp_progress_pct: Math.round(((s.xp % 500) / 500) * 100),
+  };
+}
+function buildClientState() {
+  const s = localState();
+  return {
+    profile: { target_exam: S.targetExam || 'PMGO', available_minutes: 60, energy: 'medium' },
+    mastery: s.mastery, recent_subjects: s.recent_subjects || [],
+    skip_topic_ids: s.skip_topic_ids || [],
+  };
 }
 
 // ===== API =====
@@ -2803,6 +2898,11 @@ async function openMissionFlashcards(blockIdx) {
   S.fcCards = null; S.fcIdx = 0; S.fcFlipped = false;
   S.subView = 'flashcards'; S.tab = 'more';
   render();
+  if (b.payload?.cards?.length) {
+    S.fcCards = b.payload.cards;
+    render(); scrollTop();
+    return;
+  }
   const ids = (b.content_ids || []).join(',');
   if (!ids) { await finishMissionBlock(); return; }
   try {
@@ -3448,6 +3548,12 @@ function goBack() {
 
 // Dashboard
 async function loadDashboard() {
+  if (S.localMode) {
+    S.dashboard = localDashboard();
+    render();
+    if (!S.mission) loadMission();
+    return;
+  }
   try {
     S.dashboard = await api('/api/prf/dashboard/');
   } catch (e) {
@@ -3462,6 +3568,7 @@ async function loadDashboard() {
   }
 }
 async function loadMission() {
+  if (S.localMode) { await loadLocalMission(); return; }
   try {
     S.mission = await api('/api/prf/missions/today');
   } catch (e) {
@@ -3481,11 +3588,53 @@ function confirmSkipMission() {
   }
 }
 async function regenerateMission() {
+  if (S.localMode) {
+    // Sem isto, pular devolvia sempre o mesmo tópico: o motor de prioridade
+    // é determinístico sobre os mesmos dados, então o tópico da missão
+    // descartada precisa entrar na lista de exclusão antes de gerar outra.
+    const s = localState();
+    const skipped = new Set(s.skip_topic_ids || []);
+    for (const b of (s.mission?.blocks || [])) {
+      if (b.topic_id) skipped.add(b.topic_id);
+    }
+    s.skip_topic_ids = [...skipped];
+    s.mission = null; s.mission_date = null;
+    saveLocalState(s);
+    S.mission = null; render();
+    await loadLocalMission();
+    toast('Nova missão gerada', 'success');
+    return;
+  }
   S.mission = null; render();
   try { S.mission = await api('/api/prf/missions/today?force=true'); }
   catch (e) { toast('Erro ao gerar nova missão', 'error'); render(); return; }
   render(); scrollTop();
   toast('Nova missão gerada', 'success');
+}
+async function loadLocalMission() {
+  const s = localState();
+  const today = localToday();
+  if (s.mission && s.mission_date === today) {
+    S.mission = s.mission;
+    render();
+    return;
+  }
+  try {
+    const mission = await api('/api/prf/local/mission', { method: 'POST', json: buildClientState() });
+    const fresh = localState();
+    fresh.mission = mission; fresh.mission_date = today;
+    saveLocalState(fresh);
+    S.mission = mission;
+  } catch (e) {
+    toast('Erro ao gerar missão', 'error');
+    S.mission = { status: 'empty', blocks: [], blocks_total: 0, blocks_done: 0 };
+  }
+  render();
+}
+function saveLocalMission(mission) {
+  const s = localState();
+  s.mission = mission; s.mission_date = localToday();
+  saveLocalState(s);
 }
 async function startMissionBlock(blockIdx, type) {
   const b = S.mission?.blocks?.[blockIdx];
@@ -3496,6 +3645,16 @@ async function startMissionBlock(blockIdx, type) {
   S.activeMissionIdx = blockIdx;
   S.missionBlockId = b.id;
   if (type === 'practice') {
+    // Modo local: a missão já vem com as questões embutidas no bloco (não
+    // há endpoint de banco pra buscar por id) — usa direto, sem fetch.
+    if (b.payload?.questions?.length) {
+      S.selSubject = b.subject_id || null; S.selSubjectName = b.subject_name || b.title;
+      S.subView = 'questions'; S.qIndex = 0; S.answerResult = null;
+      S.answered = {}; S.qStartedAt = Date.now();
+      S.questions = b.payload.questions;
+      S.tab = 'practice'; render(); scrollTop();
+      return;
+    }
     // Bloco de revisão da semana (domingo) já vem com a lista exata de
     // questões; buscar por matéria ali sortearia outras e perderia o ponto.
     if (!b.subject_id && b.content_ids?.length) {
@@ -3558,6 +3717,13 @@ async function startMissionBlock(blockIdx, type) {
     await openMissionFlashcards(blockIdx);
     return;
   } else if (type === 'podcast') {
+    if (S.localMode) {
+      const topicId = b.payload?.topic_id || b.topic_id;
+      if (!topicId) { toast('Aula indisponível', 'error'); return; }
+      S.podKind = b.block_type === 'podcast_drill' ? 'drill' : 'aula';
+      await playLocalPodcast(topicId, { tela: true });
+      return;
+    }
     const epId = b.content_ids?.[0];
     if (!epId) { toast('Episódio indisponível', 'error'); return; }
     S.podKind = b.block_type === 'podcast_drill' ? 'drill' : 'aula';
@@ -3583,17 +3749,44 @@ async function finishMissionBlock(advance = true) {
   const bid = S.missionBlockId;
   if (!bid) return;
   S.missionBlockId = null;
-  try {
-    await api('/api/prf/missions/blocks/complete', {
-      method:'POST', json:{ block_id: bid },
-    });
-  } catch (e) {}
-  S.mission = null;
-  await loadMission();
+  if (S.localMode) {
+    completeLocalBlock(bid);
+  } else {
+    try {
+      await api('/api/prf/missions/blocks/complete', {
+        method:'POST', json:{ block_id: bid },
+      });
+    } catch (e) {}
+    S.mission = null;
+    await loadMission();
+  }
   // A aula em áudio não encadeia na etapa seguinte: a segunda é para a
   // volta do trabalho e a lei seca é para a noite, não para agora.
   if (advance) advanceToNextMissionBlock();
   else { S.activeMissionIdx = null; render(); }
+}
+function completeLocalBlock(blockId) {
+  if (!S.mission) return;
+  const b = S.mission.blocks.find(x => x.id === blockId);
+  if (!b || b.is_completed) return;
+  b.is_completed = true;
+  S.mission.blocks_done = (S.mission.blocks_done || 0) + 1;
+  const allDone = S.mission.blocks.every(x => x.is_completed);
+  if (allDone) {
+    S.mission.status = 'completed';
+    const s = localBumpStreak();
+    s.xp += 50;
+    s.level = 1 + Math.floor(s.xp / 500);
+    // Matéria estudada hoje entra na rotação de amanhã: sem isto a mesma
+    // matéria voltaria a ganhar prioridade máxima no dia seguinte.
+    const today = localToday();
+    const subjectIds = [...new Set(S.mission.blocks.map(x => x.subject_id).filter(Boolean))];
+    s.recent_subjects = (s.recent_subjects_date === today) ? [...new Set([...s.recent_subjects, ...subjectIds])] : subjectIds;
+    s.recent_subjects_date = today;
+    saveLocalState(s);
+    toast('+50 XP — missão cumprida!', 'xp');
+  }
+  saveLocalMission(S.mission);
 }
 function advanceToNextMissionBlock() {
   if (!S.mission || !S.mission.blocks) return;
@@ -3623,6 +3816,15 @@ function advanceToNextMissionBlock() {
   setTimeout(() => startMissionBlock(nextIdx, type), 1500);
 }
 async function loadSubjects() {
+  if (S.localMode) {
+    try {
+      const d = await api('/api/prf/local/subjects');
+      S.subjects = (d.subjects || []).filter(s => (s.weight_pm || 0) > 0);
+      S.resources = [];
+    } catch (e) { S.subjects = []; S.resources = []; }
+    render();
+    return;
+  }
   try {
     const exam = S.targetExam || 'PMGO';
     const [d, res] = await Promise.all([
@@ -3638,10 +3840,18 @@ async function loadSubjects() {
 
 // Practice
 async function selectSubject(id, name) {
-  await ensureSession('focus');
   S.selSubject = id; S.selSubjectName = name; S.subView = 'questions';
   S.qIndex = 0; S.questions = []; S.answerResult = null; S.answered = {}; S.qStartedAt = Date.now();
   S.loading.questions = true; render();
+  if (S.localMode) {
+    try {
+      const d = await api(`/api/prf/local/questions?subject_id=${id}&limit=20`);
+      S.questions = d.questions || [];
+    } catch (e) { toast('Erro ao carregar questões', 'error'); }
+    S.loading.questions = false; render(); scrollTop();
+    return;
+  }
+  await ensureSession('focus');
   try {
     const isPM = S.targetExam && S.targetExam.startsWith('PM');
     // PMGO recebe os dois formatos na prática (ver comentário em
@@ -3660,11 +3870,19 @@ async function answerQuestion(qid, altId) {
   if (S.answerResult) return;
   const elapsed = S.qStartedAt ? Math.round((Date.now() - S.qStartedAt) / 1000) : null;
   try {
-    touchSession();
-    S.answerResult = await api('/api/prf/questions/answer', {
-      method:'POST', json:{ question_id: qid, selected_alternative_id: altId,
-                            time_spent_secs: elapsed, session_id: S.sessionId || null },
-    });
+    if (S.localMode) {
+      S.answerResult = await api('/api/prf/local/answer', {
+        method: 'POST', json: { question_id: qid, selected_alternative_id: altId },
+      });
+      const q = S.questions[S.qIndex];
+      localRecordAnswer(q?.subject_id, S.answerResult.is_correct);
+    } else {
+      touchSession();
+      S.answerResult = await api('/api/prf/questions/answer', {
+        method:'POST', json:{ question_id: qid, selected_alternative_id: altId,
+                              time_spent_secs: elapsed, session_id: S.sessionId || null },
+      });
+    }
     S.answered[S.qIndex] = S.answerResult.is_correct;
     if (S.answerResult.xp_earned) toast(`+${S.answerResult.xp_earned} XP`, 'xp');
   } catch (e) { toast('Erro ao responder', 'error'); }
@@ -4024,6 +4242,107 @@ async function playPodcast(id, opts) {
   }
 }
 
+// ===== PODCAST LOCAL (banco fora do ar) =====
+// Roteiro (LLM) e áudio (TTS) são gerados na hora pelo servidor — o que
+// falta é onde guardar o resultado depois. Isso mora no IndexedDB do
+// navegador: a segunda vez que abre a mesma aula, toca direto do cache,
+// sem gerar nada de novo.
+function openLocalAudioDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('prf_local_audio', 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore('episodes', { keyPath: 'topic_id' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function getLocalEpisode(topicId) {
+  try {
+    const db = await openLocalAudioDB();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('episodes', 'readonly');
+      const req = tx.objectStore('episodes').get(topicId);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) { return null; }
+}
+async function saveLocalEpisode(episode) {
+  try {
+    const db = await openLocalAudioDB();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('episodes', 'readwrite');
+      tx.objectStore('episodes').put(episode);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) {}
+}
+async function playLocalPodcast(topicId, opts) {
+  const tela = !!(opts && opts.tela);
+  if (S.podId === topicId && !tela) { togglePlayPause(); return; }
+  if (S.podId === topicId && tela) { S.subView = 'podcastNow'; S.tab = 'audio'; render(); return; }
+  stopAudio();
+  S.podId = topicId; S.pod = null; S.podSeq = 0; S.podBoundaries = null;
+  S.podLoading = true;
+  if (tela) { S.subView = 'podcastNow'; S.tab = 'audio'; }
+  render();
+
+  const savedTime = loadPodTime(topicId);
+  try {
+    let cached = await getLocalEpisode(topicId);
+    if (!cached) {
+      toast('Gerando roteiro da aula...', 'info');
+      const script = await api('/api/prf/local/podcast/script', {
+        method: 'POST', json: { topic_id: topicId },
+      });
+      toast('Gerando áudio — só na primeira vez que abre esta aula...', 'info');
+      const r = await fetch(`${API}/api/prf/local/podcast/audio`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.token}` },
+        body: JSON.stringify({ turns: script.turns }),
+      });
+      if (!r.ok) throw new Error('audio failed');
+      const header = r.headers.get('X-Segment-Boundaries') || '';
+      const boundaries = header.split(',').filter(Boolean).map(Number);
+      const blob = await r.blob();
+      cached = {
+        topic_id: topicId, title: script.title, segment_count: script.segment_count,
+        duration_secs: script.duration_secs, boundaries, audio: blob,
+      };
+      await saveLocalEpisode(cached);
+    } else {
+      toast(savedTime > 0 ? 'Retomando de onde parou' : 'Tocando do cache...', 'info');
+    }
+    if (S.podId !== topicId) return; // trocou de aula enquanto isso gerava
+    S.pod = {
+      title: cached.title, segment_count: cached.segment_count,
+      duration_secs: cached.duration_secs, description: '',
+    };
+    S.podBoundaries = cached.boundaries || [];
+    S.podLoading = false;
+    audioEl.src = URL.createObjectURL(cached.audio);
+    const resume = () => {
+      const dur = audioEl.duration || 0;
+      if (savedTime > 0 && savedTime < dur) audioEl.currentTime = savedTime;
+      audioEl.removeEventListener('loadedmetadata', resume);
+    };
+    audioEl.addEventListener('loadedmetadata', resume);
+    if (S.podBoundaries.length) {
+      const idx = S.podBoundaries.findIndex(b => savedTime < b);
+      S.podSeq = idx === -1 ? 0 : idx;
+    }
+    try { await audioEl.play(); S.audioPlaying = true; }
+    catch (e) { S.audioPlaying = false; }
+    render();
+  } catch (e) {
+    S.podLoading = false;
+    toast('Não foi possível gerar o áudio agora', 'error');
+    render();
+  }
+}
+
 function podNext() { if (S.pod && S.podSeq < S.pod.segment_count - 1) playPodSegment(S.podSeq + 1); }
 function podPrev() { if (S.pod && S.podSeq > 0) playPodSegment(S.podSeq - 1); }
 
@@ -4084,6 +4403,11 @@ async function openMissionLegalReader(blockIdx) {
   S.subView = 'missionLegal';
   S.tab = 'more';
   render();
+  if (b.payload?.articles?.length) {
+    S.missionLegalArticles = b.payload.articles;
+    render(); scrollTop();
+    return;
+  }
   const ids = b.content_ids || [];
   if (!ids.length) { await finishMissionBlock(); return; }
   const articles = [];

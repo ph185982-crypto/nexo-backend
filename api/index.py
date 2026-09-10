@@ -48,6 +48,15 @@ _startup_error = None
 _seed_task = None
 _initializing = False
 _routers_registered = False
+# Sem isto, toda requisição que chegasse depois de um ciclo de tentativas
+# falho disparava outro ciclo inteiro (10 tentativas, backoff até 32s cada —
+# quase 3 minutos) só para descobrir de novo que o banco está fora do ar.
+# Com o banco realmente inalcançável, isso significa qualquer requisição
+# "desafortunada" pagando essa espera inteira antes de sequer chegar nas
+# rotas locais, que nunca precisaram do banco. 60s de intervalo é curto o
+# bastante para perceber quando o banco volta, sem pagar o preço a cada vez.
+_last_db_attempt = 0.0
+_DB_RETRY_COOLDOWN_SECS = 60.0
 
 
 async def _run_seed_in_background(pool):
@@ -109,6 +118,27 @@ def _resolve_db_url(database_url: str) -> str:
     return database_url
 
 
+
+# Ordem de preferência das variáveis de banco. Integrações de marketplace do
+# Vercel (Neon, Supabase) gravam a connection string sob o nome do próprio
+# provedor — não necessariamente `DATABASE_URL` — e se essa chave já existia
+# no projeto (o Render antigo), o painel evita sobrescrever e a nova conexão
+# fica só em POSTGRES_URL/POSTGRES_PRISMA_URL. Checar essas primeiro faz o
+# app migrar para o banco novo sem precisar renomear nada na mão.
+_DB_ENV_CANDIDATES = (
+    "POSTGRES_URL", "POSTGRES_PRISMA_URL", "POSTGRES_URL_NON_POOLING",
+    "DATABASE_URL", "DATABASE_URL_UNPOOLED",
+)
+
+
+def _find_database_url() -> tuple[str | None, str | None]:
+    for name in _DB_ENV_CANDIDATES:
+        val = os.getenv(name)
+        if val:
+            return val, name
+    return None, None
+
+
 async def _init_prf():
     """
     Lazy initializer — called on first HTTP request.
@@ -118,17 +148,37 @@ async def _init_prf():
     it by resolving the database host synchronously in the event-loop coroutine
     before handing the (now IP-based) URL to asyncpg.
     """
-    global _prf_ready, _prf_pool, _seed_task, _startup_error, _initializing, _routers_registered
+    global _prf_ready, _prf_pool, _seed_task, _startup_error, _initializing
+    global _routers_registered, _last_db_attempt
     if _prf_ready or _initializing:
         return
 
+    # As rotas registram sempre, com banco ou sem — o router local
+    # (prf/routers/local_api.py) não depende de Postgres, e é o que mantém
+    # o app funcionando com o Render fora do ar. Sem isto, a ausência de
+    # DATABASE_URL deixava o app inteiro sem nenhuma rota /api/prf/*. Isto
+    # roda fora do cooldown abaixo — é síncrono e só acontece uma vez.
+    if not _routers_registered:
+        from prf.app import register_prf_routers
+        register_prf_routers(app)
+        _routers_registered = True
+
+    import time
+    now = time.monotonic()
+    if _startup_error and (now - _last_db_attempt) < _DB_RETRY_COOLDOWN_SECS:
+        # Já tentou e falhou recentemente — não paga de novo o ciclo de 10
+        # tentativas (até ~3 minutos) só para confirmar o que já sabe.
+        return
+    _last_db_attempt = now
     _initializing = True
-    db_url = os.getenv("DATABASE_URL")
+
+    db_url, db_url_var = _find_database_url()
     if not db_url:
-        _startup_error = "DATABASE_URL not set"
+        _startup_error = "Nenhuma variável de banco encontrada (DATABASE_URL/POSTGRES_URL/...) — modo local ativo"
         _initializing = False
         logger.warning(f"[PRF] {_startup_error}")
         return
+    logger.info(f"[PRF] Usando variável de banco: {db_url_var}")
 
     try:
         import asyncio
@@ -141,11 +191,7 @@ async def _init_prf():
         # Fix internal/unresolvable DB hostname before asyncpg touches it.
         resolved_url = _resolve_db_url(db_url)
 
-        from prf.app import register_prf_routers, init_prf_database
-
-        if not _routers_registered:
-            register_prf_routers(app)
-            _routers_registered = True
+        from prf.app import init_prf_database
 
         _prf_pool = await init_prf_database(resolved_url)
         _prf_ready = True
@@ -223,7 +269,9 @@ async def debug_net():
         except Exception as e:
             results[label] = f"{type(e).__name__}: {e}"
     # Test DB host
-    db_url = os.getenv("DATABASE_URL", "")
+    db_url, db_url_var = _find_database_url()
+    db_url = db_url or ""
+    results["db_url_var"] = db_url_var
     if db_url:
         try:
             host = urllib.parse.urlparse(db_url).hostname

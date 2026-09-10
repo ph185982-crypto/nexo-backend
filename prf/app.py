@@ -30,6 +30,7 @@ from prf.routers.coverage import router as coverage_router
 from prf.routers.taf import router as taf_router
 from prf.routers.checklist import router as checklist_router
 from prf.routers.plano import router as plano_router
+from prf.routers.local_api import router as local_router
 from prf.database.repository import PRFRepository
 
 logger = logging.getLogger(__name__)
@@ -60,6 +61,10 @@ def register_prf_routers(app: FastAPI):
     app.include_router(taf_router,           prefix=f"{PREFIX}/taf",            tags=["PRF TAF"])
     app.include_router(checklist_router,     prefix=f"{PREFIX}/checklist",      tags=["PRF Checklist"])
     app.include_router(plano_router,         prefix=f"{PREFIX}/plano",          tags=["PRF Plano"])
+    # Modo local: funciona sem Postgres (arquivos de conteúdo + estado no
+    # navegador). Registrado sempre — não depende de banco, e é o que
+    # mantém o app 100% funcional enquanto o Render estiver fora do ar.
+    app.include_router(local_router,         prefix=f"{PREFIX}/local",          tags=["PRF Local (sem banco)"])
 
     logger.info("[PRF] All routers registered under /api/prf")
 
@@ -126,9 +131,17 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
     # comentário sobre SNI acima.
     dsn = database_url
 
-    for attempt in range(10):  # 10 attempts with exponential backoff (up to 60s total)
+    # Eram 10 tentativas com backoff até 32s — até quase 3 minutos no pior
+    # caso. Isso fazia sentido para um soluço passageiro de DNS/EBUSY no cold
+    # start do Lambda, mas com o banco genuinamente fora do ar (cobrança em
+    # atraso), essa mesma espera cai sobre a primeira requisição de cada
+    # janela de cooldown (ver _DB_RETRY_COOLDOWN_SECS em api/index.py) — e o
+    # modo local (prf/routers/local_api.py) nem depende de banco. Reduzido
+    # para falhar rápido sem abandonar a resiliência a soluços curtos.
+    MAX_ATTEMPTS = 4
+    for attempt in range(MAX_ATTEMPTS):
         try:
-            logger.info(f"[PRF] Connection attempt {attempt + 1}/10…")
+            logger.info(f"[PRF] Connection attempt {attempt + 1}/{MAX_ATTEMPTS}…")
 
             # Wrap connection in timeout to fail fast on DNS hangs
             pool = await asyncio.wait_for(
@@ -140,22 +153,22 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
                     init=_init_connection,
                     command_timeout=10.0,
                 ),
-                timeout=15.0  # Total timeout per attempt: 15 seconds
+                timeout=8.0  # Total timeout per attempt: 8 seconds
             )
             logger.info(f"[PRF] Connected to database on attempt {attempt + 1}")
             break
         except asyncio.TimeoutError:
-            logger.warning(f"[PRF] Connection timeout on attempt {attempt + 1}/10")
+            logger.warning(f"[PRF] Connection timeout on attempt {attempt + 1}/{MAX_ATTEMPTS}")
             last_error = asyncio.TimeoutError("Connection timeout")
-            if attempt < 9:
-                wait = min(2 ** attempt, 32)  # Exponential backoff: 1,2,4,8,16,32
+            if attempt < MAX_ATTEMPTS - 1:
+                wait = min(2 ** attempt, 4)  # Exponential backoff: 1,2,4
                 logger.info(f"[PRF] Retrying in {wait}s…")
                 await asyncio.sleep(wait)
         except OSError as e:
             if e.errno == 16:  # EBUSY
-                logger.warning(f"[PRF] EBUSY on attempt {attempt + 1}/10 (DNS resolver busy)")
+                logger.warning(f"[PRF] EBUSY on attempt {attempt + 1}/{MAX_ATTEMPTS} (DNS resolver busy)")
             else:
-                logger.warning(f"[PRF] OSError on attempt {attempt + 1}/10: {e}")
+                logger.warning(f"[PRF] OSError on attempt {attempt + 1}/{MAX_ATTEMPTS}: {e}")
             # Falha de nome (gaierror) ou resolver ocupado: aí sim o IP ajuda,
             # e é o único caso em que perder o SNI é melhor que não conectar.
             if ip_url and dsn is database_url and (
@@ -164,15 +177,15 @@ async def init_prf_database(database_url: str) -> asyncpg.Pool:
                 dsn = ip_url
                 logger.warning(f"[PRF] Falha de DNS; passando a conectar por IP ({resolved_ip})")
             last_error = e
-            if attempt < 9:
-                wait = min(2 ** attempt, 32)
+            if attempt < MAX_ATTEMPTS - 1:
+                wait = min(2 ** attempt, 4)
                 logger.info(f"[PRF] Retrying in {wait}s…")
                 await asyncio.sleep(wait)
         except Exception as e:
-            logger.error(f"[PRF] Unexpected error on attempt {attempt + 1}/10: {type(e).__name__}: {e}")
+            logger.error(f"[PRF] Unexpected error on attempt {attempt + 1}/{MAX_ATTEMPTS}: {type(e).__name__}: {e}")
             last_error = e
-            if attempt < 9:
-                wait = min(2 ** attempt, 32)
+            if attempt < MAX_ATTEMPTS - 1:
+                wait = min(2 ** attempt, 4)
                 await asyncio.sleep(wait)
 
     if not pool:
