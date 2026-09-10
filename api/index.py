@@ -244,22 +244,6 @@ async def debug_net():
             results[label] = ip
         except Exception as e:
             results[label] = f"{type(e).__name__}: {e}"
-    # Inventário de armazenamento disponível no ambiente. Só os NOMES das
-    # variáveis presentes — nunca os valores, que são credenciais. Existe
-    # para responder "que infraestrutura de dados este deploy já alcança?"
-    # sem precisar de acesso ao painel.
-    _STORAGE_VARS = (
-        "DATABASE_URL", "DATABASE_URL_UNPOOLED", "POSTGRES_URL",
-        "POSTGRES_PRISMA_URL", "POSTGRES_URL_NON_POOLING", "PGHOST", "PGDATABASE",
-        "REDIS_URL", "KV_URL", "KV_REST_API_URL", "KV_REST_API_TOKEN",
-        "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN",
-        "BLOB_READ_WRITE_TOKEN", "EDGE_CONFIG",
-        "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY",
-        "TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN", "MONGODB_URI",
-        "GITHUB_TOKEN", "OPENAI_API_KEY", "CRON_SECRET", "MAINTENANCE_TOKEN",
-    )
-    results["storage_vars_present"] = [v for v in _STORAGE_VARS if os.getenv(v)]
-
     # Test DB host
     db_url, db_url_var = _find_database_url()
     db_url = db_url or ""
