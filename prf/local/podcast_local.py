@@ -77,7 +77,7 @@ async def synthesize_audio(turns: list[dict]) -> tuple[bytes, list[int]]:
     results = await asyncio.gather(*[_synth(b) for b in blocks])
     results.sort(key=lambda r: r[0])
 
-    if not any(r[1] for r in results):
+    if not all(r[1] for r in results):
         raise PodcastLocalError("Síntese de áudio indisponível — configure OPENAI_API_KEY")
 
     full_audio = b"".join(r[1] for r in results if r[1])

@@ -1467,7 +1467,7 @@ function saveLocalState(s) {
   try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch (e) {}
   return s;
 }
-function localToday() { return new Date().toISOString().slice(0, 10); }
+function localToday() { return new Intl.DateTimeFormat('en-CA', {timeZone:'America/Sao_Paulo', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date()); }
 function localRecordAnswer(subjectId, isCorrect) {
   const s = localState();
   const today = localToday();
@@ -1510,7 +1510,7 @@ function localDashboard() {
 function buildClientState() {
   const s = localState();
   return {
-    profile: { target_exam: S.targetExam || 'PMGO', available_minutes: 60, energy: 'medium' },
+    profile: { ...(s.study_profile || {}), target_exam: S.targetExam || 'PMGO', available_minutes: (s.routines || []).find(r => r.day_of_week === (new Date().getDay() + 6) % 7)?.study_minutes || 60, energy: 'medium' },
     mastery: s.mastery, recent_subjects: s.recent_subjects || [],
     skip_topic_ids: s.skip_topic_ids || [],
   };
@@ -1518,6 +1518,16 @@ function buildClientState() {
 
 // ===== API =====
 async function api(path, opts = {}) {
+  if (S.localMode && ['/api/prf/onboarding/profile', '/api/prf/onboarding/routines', '/api/prf/onboarding/target-exam'].includes(path)) {
+    const state = localState();
+    const key = path.endsWith('/routines') ? 'routines' : 'study_profile';
+    if (opts.method && opts.method !== 'GET') {
+      state[key] = key === 'routines' ? opts.json.routines : {...(state[key] || {}), ...opts.json};
+      if (!path.endsWith('/target-exam')) { state.mission = null; state.mission_date = null; }
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+    }
+    return state[key] || (key === 'routines' ? [] : {});
+  }
   const headers = { ...(opts.headers || {}) };
   if (S.token) headers['Authorization'] = `Bearer ${S.token}`;
   if (opts.json) {
@@ -2493,8 +2503,7 @@ function viewAudio() {
             <div class="pod-info">
               <div class="pod-title">${esc(p.title)}</div>
               <div class="pod-meta">
-                <span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span>
-                <span>·</span><span>${p.segment_count||0} partes</span>
+                ${p.on_demand ? '<span>Gerar aula em áudio</span>' : `<span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span><span>·</span><span>${p.segment_count||0} partes</span>`}
               </div>
               ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>`
                 : (loadPodProgress(p.id) > 0 ? `<div class="pod-progress">Retomar na parte ${loadPodProgress(p.id)+1}</div>` : '')}
@@ -3905,10 +3914,11 @@ async function startTutor(qid) {
   S.subView = 'tutor'; S.tutorMsgs = []; S.tutorTyping = true; S.tutorConv = null;
   render();
   try {
-    const r = await api('/api/prf/tutor/start', {
+    S.tutorQuestionId = qid; S.tutorStudentAnswer = studentAnswer;
+    const r = await api(S.localMode ? '/api/prf/local/tutor' : '/api/prf/tutor/start', {
       method:'POST', json:{ question_id: qid, student_answer: studentAnswer },
     });
-    S.tutorConv = r.conversation_id;
+    S.tutorConv = S.localMode ? qid : r.conversation_id;
     S.tutorMsgs = [{ role:'tutor', text: r.tutor_message }];
   } catch (e) {
     S.tutorMsgs = [{ role:'tutor', text:'Não consegui iniciar a sessão agora. Tente novamente.' }];
@@ -3923,8 +3933,13 @@ async function sendTutorMsg() {
   S.tutorMsgs.push({ role:'user', text });
   S.tutorTyping = true; render();
   try {
-    const r = await api('/api/prf/tutor/message', {
-      method:'POST', json:{ conversation_id: S.tutorConv, message: text },
+    const r = await api(S.localMode ? '/api/prf/local/tutor' : '/api/prf/tutor/message', {
+      method:'POST', json: S.localMode ? {
+        question_id: S.tutorQuestionId, student_answer: S.tutorStudentAnswer,
+        history: S.tutorMsgs.slice(0, -1).slice(-20).map(m => ({
+          role: m.role === 'tutor' ? 'assistant' : 'user', content: m.text,
+        })), message: text,
+      } : { conversation_id: S.tutorConv, message: text },
     });
     S.tutorMsgs.push({ role:'tutor', text: r.tutor_message });
     if (r.resolved) toast('Conceito consolidado', 'success');
@@ -3957,7 +3972,8 @@ function _startSimTimer() {
 async function generateSimulado() {
   S.loading.sim = true; render();
   try {
-    S.sim = await api('/api/prf/simulados/generate', { method:'POST' });
+    S.sim = await api(S.localMode ? '/api/prf/local/simulados/generate' : '/api/prf/simulados/generate', { method:'POST' });
+    if (S.localMode) { const state = localState(); state.active_exam = S.sim; localStorage.setItem(LOCAL_KEY, JSON.stringify(state)); }
     localStorage.setItem(SIM_ID_KEY, S.sim.id);
     const blockNums = Object.keys(S.sim.blocks || {}).map(k => parseInt(k.replace('bloco_', '')));
     S.simBlock = blockNums[0] || 1; S.simAnswers = {}; S.simResult = null;
@@ -3965,6 +3981,7 @@ async function generateSimulado() {
     S.simSeconds = (S.sim.time_limit_mins || 270) * 60;
     for (const b of blockNums) {
       try {
+        if (S.localMode) { S.simQuestions[b] = S.sim.questions_by_block[b] || []; continue; }
         const d = await api(`/api/prf/simulados/${S.sim.id}/questions?block=${b}`);
         S.simQuestions[b] = d.questions || [];
       } catch (e) { S.simQuestions[b] = []; }
@@ -3977,7 +3994,7 @@ async function resumeSimuladoIfAny() {
   const id = localStorage.getItem(SIM_ID_KEY);
   if (!id || S.sim) return;
   let meta;
-  try { meta = await api(`/api/prf/simulados/${id}`); }
+  try { meta = S.localMode ? localState().active_exam : await api(`/api/prf/simulados/${id}`); if (!meta || meta.id !== id) throw new Error('Simulado não encontrado'); }
   catch (e) { localStorage.removeItem(SIM_ID_KEY); return; }
   if (meta.is_completed) { localStorage.removeItem(SIM_ID_KEY); return; }
 
@@ -4000,6 +4017,7 @@ async function resumeSimuladoIfAny() {
   S.simSeconds = secondsLeft;
   for (const b of blockNums) {
     try {
+      if (S.localMode) { S.simQuestions[b] = meta.questions_by_block[b] || []; continue; }
       const d = await api(`/api/prf/simulados/${id}/questions?block=${b}`);
       S.simQuestions[b] = d.questions || [];
     } catch (e) { S.simQuestions[b] = []; }
@@ -4015,6 +4033,15 @@ function nextSimQ() {
   if ((S.simIndex[S.simBlock]||0) < qs.length - 1) { S.simIndex[S.simBlock]++; render(); scrollTop(); }
 }
 async function answerSimQ(qid, sel) {
+  if (S.localMode) {
+    try {
+      const state = localState();
+      state.active_exam.answers[qid] = { selected: sel };
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+      S.simAnswers[qid] = sel; render(); setTimeout(nextSimQ, 280);
+    } catch (e) { toast('Não foi possível salvar a resposta neste navegador', 'error'); }
+    return;
+  }
   S.simAnswers[qid] = sel;
   try { await api(`/api/prf/simulados/${S.sim.id}/answer?question_id=${qid}&selected=${sel}`, { method:'POST' }); }
   catch (e) {}
@@ -4025,15 +4052,32 @@ function confirmFinishSim() { if (confirm('Finalizar a prova? Esta ação não p
 function confirmExitSim() { if (confirm('Sair do simulado? Seu progresso já está salvo — você pode retomar depois nesta mesma tela.')) resetSimulado(); }
 async function finishSimulado() {
   clearInterval(timerInterval);
-  localStorage.removeItem(SIM_ID_KEY);
-  try { S.simResult = await api(`/api/prf/simulados/${S.sim.id}/finish`, { method:'POST' }); }
-  catch (e) { toast('Erro ao finalizar', 'error'); }
+  try {
+    if (S.localMode) {
+      const state = localState();
+      if (state.active_exam?.result) S.simResult = state.active_exam.result;
+      else {
+        const result = await api('/api/prf/local/simulados/finish', { method:'POST', json:{
+          question_ids: Object.values(S.sim.questions_by_block).flat().map(q => q.id), answers: S.simAnswers,
+        }});
+        state.active_exam.is_completed = true; state.active_exam.result = result;
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+        for (const attempt of result.attempts || []) localRecordAnswer(attempt.subject_id, attempt.is_correct);
+        S.simResult = result;
+      }
+    } else S.simResult = await api(`/api/prf/simulados/${S.sim.id}/finish`, { method:'POST' });
+    localStorage.removeItem(SIM_ID_KEY);
+  } catch (e) { toast('Erro ao finalizar. Suas respostas continuam salvas; tente novamente.', 'error'); render(); return; }
   // Sábado: o simulado É a missão do dia. Terminar a prova fecha o bloco.
   if (S.pendingSimBlockId) {
     const bid = S.pendingSimBlockId;
     S.pendingSimBlockId = null;
     try {
+      if (S.localMode) {
+        completeLocalBlock(bid);
+      } else {
       await api('/api/prf/missions/blocks/complete', { method:'POST', json:{ block_id: bid } });
+      }
       S.mission = null; await loadMission();
     } catch (e) {}
   }
@@ -4052,6 +4096,7 @@ function resetSimulado() {
 
 // Audio
 async function loadLessons() {
+  if (S.localMode) { S.lessons = []; render(); return; }
   try { const d = await api('/api/prf/commute/lessons?limit=50'); S.lessons = d.lessons || []; }
   catch (e) { S.lessons = []; toast('Erro ao carregar audiobooks', 'error'); }
   render();
@@ -4147,7 +4192,7 @@ audioEl.addEventListener('ended', () => {
 
 // ===== PODCAST (episódios em diálogo) =====
 async function loadPodcasts() {
-  try { const d = await api('/api/prf/commute/podcast?limit=50'); S.podcasts = d.episodes || []; }
+  try { const d = await api(S.localMode ? '/api/prf/local/podcasts' : '/api/prf/commute/podcast?limit=50'); S.podcasts = d.episodes || []; }
   catch (e) { S.podcasts = []; }
   render();
 }
@@ -4192,6 +4237,7 @@ function clearPodProgress(id) {
 }
 
 async function playPodcast(id, opts) {
+  if (S.localMode) return playLocalPodcast(id, opts);
   const tela = !!(opts && opts.tela);
   if (S.podId === id && !tela) { togglePlayPause(); return; }
   if (S.podId === id && tela) { S.subView = 'podcastNow'; S.tab = 'audio'; render(); return; }
@@ -4298,15 +4344,26 @@ async function playLocalPodcast(topicId, opts) {
         method: 'POST', json: { topic_id: topicId },
       });
       toast('Gerando áudio — só na primeira vez que abre esta aula...', 'info');
-      const r = await fetch(`${API}/api/prf/local/podcast/audio`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.token}` },
-        body: JSON.stringify({ turns: script.turns }),
-      });
-      if (!r.ok) throw new Error('audio failed');
-      const header = r.headers.get('X-Segment-Boundaries') || '';
-      const boundaries = header.split(',').filter(Boolean).map(Number);
-      const blob = await r.blob();
+      const chunks = localAudioChunks(script.turns);
+      const blobs = [], boundaries = [];
+      let elapsed = 0;
+      for (let i = 0; i < chunks.length; i++) {
+        if (S.podId !== topicId) return;
+        toast(`Gerando áudio: parte ${i + 1} de ${chunks.length}`, 'info');
+        const r = await fetch(`${API}/api/prf/local/podcast/audio`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.token}` },
+          body: JSON.stringify({ turns: chunks[i] }),
+        });
+        if (!r.ok) throw new Error('audio failed');
+        const durations = (r.headers.get('X-Segment-Boundaries') || '').split(',').filter(Boolean).map(Number);
+        elapsed += durations[durations.length - 1] || 0;
+        const part = await r.blob();
+        if (!part.size) throw new Error('empty audio');
+        blobs.push(part);
+        if (i === chunks.length - 1 || chunks[i + 1][0].block !== chunks[i][0].block) boundaries.push(elapsed);
+      }
+      const blob = new Blob(blobs, { type: 'audio/mpeg' });
       cached = {
         topic_id: topicId, title: script.title, segment_count: script.segment_count,
         duration_secs: script.duration_secs, boundaries, audio: blob,
@@ -4337,10 +4394,31 @@ async function playLocalPodcast(topicId, opts) {
     catch (e) { S.audioPlaying = false; }
     render();
   } catch (e) {
+    if (S.podId !== topicId) return;
+    S.podId = null;
     S.podLoading = false;
     toast('Não foi possível gerar o áudio agora', 'error');
     render();
   }
+}
+
+function localAudioChunks(turns) {
+  // Keep each serverless response small and preserve speaker/block order.
+  const chunks = [];
+  let batch = [], size = 0;
+  for (const turn of turns) {
+    const text = turn.text || '';
+    for (let offset = 0; offset < text.length; offset += 3000) {
+      const part = { ...turn, text: text.slice(offset, offset + 3000) };
+      if (batch.length && (batch[0].block !== part.block || size + part.text.length > 3000)) {
+        chunks.push(batch); batch = []; size = 0;
+      }
+      batch.push(part); size += part.text.length;
+    }
+  }
+  if (batch.length) chunks.push(batch);
+  if (!chunks.length) throw new Error('empty script');
+  return chunks;
 }
 
 function podNext() { if (S.pod && S.podSeq < S.pod.segment_count - 1) playPodSegment(S.podSeq + 1); }
@@ -4503,7 +4581,7 @@ function backToLegalDocs() {
 }
 async function loadLegalDocs() {
   try {
-    const docs = await api('/api/prf/legal/documents');
+    const docs = await api(S.localMode ? '/api/prf/local/legal/documents' : '/api/prf/legal/documents');
     // CTB is PRF-era content — exclude from PMGO library
     S.legalDocs = Array.isArray(docs) ? docs.filter(d => d.slug !== 'ctb') : [];
   }
@@ -4513,7 +4591,7 @@ async function loadLegalDocs() {
 async function selectDoc(id, name) {
   S.selDoc = id; S.selDocName = name; S.subView = 'articles';
   S.articles = []; S.loading.articles = true; render();
-  try { S.articles = await api(`/api/prf/legal/articles?document_id=${id}&limit=200`) || []; }
+  try { S.articles = await api(`${S.localMode ? '/api/prf/local' : '/api/prf'}/legal/articles?document_id=${id}&limit=200`) || []; }
   catch (e) { toast('Erro ao carregar artigos', 'error'); }
   S.loading.articles = false; render(); scrollTop();
 }
@@ -4526,7 +4604,7 @@ function debounceLegalSearch(q) {
   S.searchQ = q; clearTimeout(searchTimeout);
   if (q.length < 2) { S.searchResults = null; renderSearchResults(); return; }
   searchTimeout = setTimeout(async () => {
-    try { const d = await api(`/api/prf/legal/search?q=${encodeURIComponent(q)}&limit=20`); S.searchResults = d.articles || []; }
+    try { const d = await api(`${S.localMode ? '/api/prf/local' : '/api/prf'}/legal/search?q=${encodeURIComponent(q)}&limit=20`); S.searchResults = d.articles || []; }
     catch (e) { S.searchResults = []; }
     renderSearchResults();
   }, 400);
@@ -4858,20 +4936,22 @@ function openEssays() {
 }
 function backToThemes() { S.subView = 'essays'; render(); scrollTop(); }
 async function loadThemes() {
-  try { const d = await api('/api/prf/essays/themes'); S.themes = d.themes || d; }
+  try { const d = await api(S.localMode ? '/api/prf/local/essays/themes' : '/api/prf/essays/themes'); S.themes = d.themes || d; }
   catch (e) { S.themes = []; }
   render();
 }
 // O backend guardava toda redação com nota e diagnóstico e nenhuma tela lia.
 // Sem histórico não existe evolução visível — e redação elimina.
 async function loadEssayHistory() {
+  if (S.localMode) { S.essayHistory = localState().essays || []; render(); return; }
   try { const d = await api('/api/prf/essays/history?limit=20'); S.essayHistory = d.essays || []; }
   catch (e) { S.essayHistory = []; }
   render();
 }
 async function openEssayDetail(id) {
   try {
-    S.essayResult = await api(`/api/prf/essays/${id}`);
+    S.essayResult = S.localMode ? (localState().essays || []).find(e => e.id === id) : await api(`/api/prf/essays/${id}`);
+    if (!S.essayResult) throw new Error('Redação não encontrada');
     render(); scrollTop();
   } catch (e) { toast('Não foi possível abrir a redação', 'error'); }
 }
@@ -4894,10 +4974,22 @@ async function submitEssay() {
   if (!S.essayText?.trim()) { toast('Escreva sua redação antes de enviar', 'error'); return; }
   S.loading.essay = true; render();
   try {
+    if (S.localMode) {
+      const result = await api('/api/prf/local/essays/submit', {
+        method:'POST', json:{ theme_id: S.selTheme.id, text: S.essayText },
+      });
+      const state = localState();
+      state.essays = [result, ...(state.essays || [])];
+      // Fail visibly if storage is full instead of pretending the essay was saved.
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+      S.essayResult = result;
+      S.essayHistory = state.essays;
+    } else {
     const form = new FormData();
     form.append('theme_title', S.selTheme.title);
     form.append('text', S.essayText);
     S.essayResult = await apiForm('/api/prf/essays/submit', form);
+    }
     S.subView = 'essays';
   } catch (e) { toast('Erro na correção. Tente novamente.', 'error'); }
   S.loading.essay = false; render(); scrollTop();
@@ -4912,11 +5004,18 @@ function openTAF() {
 async function loadTAF() {
   S.taf = { history: [], projections: [], targets: {} };
   try {
+    if (S.localMode) {
+      const state = localState();
+      const history = state.taf_history || [], targets = state.taf_targets || {};
+      const proj = await api('/api/prf/local/taf/projection', {method:'POST', json:{records:history, targets, exam_date:state.study_profile?.exam_date || null}});
+      S.taf = {history, targets, projections:proj.projections};
+    } else {
     const [hist, proj] = await Promise.all([
       api('/api/prf/taf/history'),
       api('/api/prf/taf/projection'),
     ]);
     S.taf = { history: hist || [], projections: (proj && proj.projections) || [], targets: (proj && proj.targets) || {} };
+    }
   } catch (e) {}
   S.tafForm = { barra_reps:'', flexao_reps:'', abdominal_reps:'', corrida_12min_metros:'', notes:'' };
   render();
@@ -4931,7 +5030,11 @@ async function submitTAFRecord() {
   if (!Object.keys(body).length) { toast('Preencha ao menos uma medição', 'error'); return; }
   S.loading.taf = true; render();
   try {
-    await api('/api/prf/taf/record', { method:'POST', json:body });
+    if (S.localMode) {
+      const state = localState();
+      state.taf_history = [{...body, id:uid(), measured_at:localToday(), created_at:new Date().toISOString()}, ...(state.taf_history || [])];
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+    } else await api('/api/prf/taf/record', { method:'POST', json:body });
     toast('Medição registrada', 'success');
     await loadTAF();
   } catch (e) { toast('Erro ao registrar medição', 'error'); }
@@ -4940,10 +5043,15 @@ async function submitTAFRecord() {
 async function saveTAFTargets() {
   const t = (S.taf && S.taf.targets) || {};
   try {
+    if (S.localMode) {
+      const state = localState(); state.taf_targets = t;
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+    } else {
     await api('/api/prf/taf/targets', { method:'PATCH', json:{
       barra_reps: t.barra_reps || null, flexao_reps: t.flexao_reps || null,
       abdominal_reps: t.abdominal_reps || null, corrida_12min_metros: t.corrida_12min_metros || null,
     }});
+    }
     toast('Meta salva', 'success');
     await loadTAF();
   } catch (e) { toast('Erro ao salvar meta', 'error'); }
@@ -4955,13 +5063,25 @@ function openChecklist() {
   if (!S.checklist) loadChecklist();
 }
 async function loadChecklist() {
-  try { S.checklist = await api('/api/prf/checklist/'); }
+  try {
+    if (S.localMode) {
+      const data = await api('/api/prf/local/checklist');
+      const done = localState().checklist || {};
+      const items = data.items.map(item => ({...item, is_done:!!done[item.key]}));
+      const by_category = {};
+      items.forEach(item => (by_category[item.category] ||= []).push(item));
+      S.checklist = {items, by_category, total:items.length, done:items.filter(i => i.is_done).length};
+    } else S.checklist = await api('/api/prf/checklist/');
+  }
   catch (e) { S.checklist = { by_category:{}, total:0, done:0 }; }
   render();
 }
 async function toggleChecklistItem(key, isDone) {
   try {
-    await api(`/api/prf/checklist/${key}`, { method:'PATCH', json:{ is_done: isDone } });
+    if (S.localMode) {
+      const state = localState(); state.checklist = {...(state.checklist || {}), [key]:isDone};
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+    } else await api(`/api/prf/checklist/${key}`, { method:'PATCH', json:{ is_done: isDone } });
     await loadChecklist();
   } catch (e) { toast('Erro ao atualizar item', 'error'); }
 }

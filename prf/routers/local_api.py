@@ -25,9 +25,11 @@ from fastapi.responses import StreamingResponse
 from prf.local.content import get_store
 from prf.local.mission_service import generate_mission
 from prf.services.auth_service import create_token
+from prf.routers.local_tools import router as tools_router
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+router.include_router(tools_router)
 
 
 @router.post("/register")
