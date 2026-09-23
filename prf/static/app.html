@@ -1472,7 +1472,7 @@ function buildClientState() {
   const routine=(s.routines||[]).find(r=>r.day_of_week===(new Date().getDay()+6)%7);
   return {
     reviews_due_ids:StudyState.due(s).map(c=>c.question_id),
-    profile: { ...(s.study_profile || {}), target_exam: S.targetExam || 'PMGO', available_minutes:routine?.study_minutes??60,is_rest_day:!!routine?.is_rest_day,energy:routine?.energy||'medium' },
+    profile: { ...(s.study_profile || {}), target_exam: S.targetExam || 'PMGO', available_minutes:routine?.study_minutes??60,is_rest_day:!!routine?.is_rest_day,energy:routine?.typical_energy||'medium' },
     mastery: s.mastery, recent_subjects: s.recent_subjects || [],
     skip_topic_ids: s.skip_topic_ids || [],
   };
@@ -4734,7 +4734,7 @@ function viewHistory() {
           <div class="hist-dot">${h.is_correct ? '<svg viewBox="0 0 24 24" fill="var(--success)" width="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '<svg viewBox="0 0 24 24" fill="var(--error)" width="18"><path d="M18 6L6 18M6 6l12 12" stroke="var(--error)" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'}</div>
           <div class="hist-info">
             <div class="hist-q">${esc(txt)}</div>
-            <div class="hist-meta">${esc(h.subject_name || '')}${h.selected_letter ? ` · Marcou ${h.selected_letter}` : ''}${h.correct_letter && !h.is_correct ? ` · Gabarito ${h.correct_letter}` : ''}</div>
+            <div class="hist-meta">${esc(h.subject_name || '')}${h.selected_letter ? ` · Marcou ${esc(h.selected_letter)}` : ''}${h.correct_letter && !h.is_correct ? ` · Gabarito ${esc(h.correct_letter)}` : ''}</div>
           </div>
         </div>`;
       }).join('')}

@@ -70,6 +70,8 @@
     const safeIds=v=>{
       if(!v||typeof v!=='object')return;
       for(const [k,x] of Object.entries(v)) {
+        if(['estimated_mins','blocks_done','blocks_total','total_questions','time_limit_mins','score','final_score','max_score','nc_score','ne_count','total_lines','penalty','total_attempts','total_correct','accuracy','mastery_level','interval_days','repetitions','ease_factor'].includes(k)&&x!=null&&(typeof x!=='number'||!Number.isFinite(x)))throw Error('Número inválido');
+        if(['letter','selected_letter','correct_letter'].includes(k)&&x!=null&&(typeof x!=='string'||! /^[A-E]?$/.test(x)))throw Error('Alternativa inválida');
         if((k==='id'||k.endsWith('_id'))&&x!=null&&(typeof x!=='string'||! /^[a-zA-Z0-9_:.\-]+$/.test(x)))throw Error('Identificador inválido');
         if(k.endsWith('_ids')&&(!Array.isArray(x)||x.some(id=>typeof id!=='string'||! /^[a-zA-Z0-9_:.\-]+$/.test(id))))throw Error('Lista de identificadores inválida');
         safeIds(x);
