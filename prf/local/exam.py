@@ -34,6 +34,7 @@ def grade_exam(ids, answers):
     stats = {f'bloco_{n}': dict(certas=0, erradas=0, branco=0, total=0, score=0)
              for n in EXAM_BLOCKS_PM}
     attempts = []
+    subject_scores = {}
     if len(ids) != len(set(ids)):
         raise ValueError('Questões repetidas')
     for qid in ids:
@@ -45,6 +46,8 @@ def grade_exam(ids, answers):
             raise ValueError('Questão fora do simulado PMGO')
         stat = stats[f'bloco_{number}']
         stat['total'] += 1
+        area = subject_scores.setdefault(q['subject_slug'], {'total': 0, 'correct': 0})
+        area['total'] += 1
         selected = answers.get(qid)
         correct = next(a['letter'] for a in q['alternatives'] if a['is_correct'])
         if not selected:
@@ -53,8 +56,9 @@ def grade_exam(ids, answers):
             if selected not in {a['letter'] for a in q['alternatives']}:
                 raise ValueError('Alternativa inválida')
             ok = selected == correct
+            area['correct'] += int(ok)
             stat['certas' if ok else 'erradas'] += 1
-            attempts.append({'question_id': qid, 'subject_id': str(q['subject_id']), 'is_correct': ok})
+            attempts.append({'question_id': qid, 'subject_id': str(q['subject_id']), 'topic_id':str(q['topic_id']), 'correct_letter': correct, 'is_correct': ok})
     maximum = 0
     for n, b in EXAM_BLOCKS_PM.items():
         stat = stats[f'bloco_{n}']
@@ -67,4 +71,6 @@ def grade_exam(ids, answers):
                 branco=sum(s['branco'] for s in stats.values()), blocks=stats, total_questions=len(ids),
                 percentage=percentage, max_score=maximum, scoring_method='aocp_weighted',
                 passing_threshold='60%', attempts=attempts,
-                eliminated=percentage < 60 or any(s['total'] and not s['certas'] for s in stats.values()))
+                subjects=subject_scores,
+                zero_subjects=[slug for slug, data in subject_scores.items() if not data['correct']],
+                eliminated=percentage < 60 or any(not s['correct'] for s in subject_scores.values()))

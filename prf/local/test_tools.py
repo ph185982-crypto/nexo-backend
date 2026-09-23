@@ -56,6 +56,30 @@ class LocalToolsTest(unittest.TestCase):
     def test_paid_endpoints_require_identity(self):
         r = self.client.post('/local/tutor', json={'question_id': 'invalid'})
         self.assertIn(r.status_code, (401, 422))
+        for path in ('/local/podcast/script', '/local/podcast/audio'):
+            self.assertIn(self.client.post(path, json={}).status_code, (401, 422))
+
+    def test_audio_is_bounded_before_synthesis(self):
+        with patch('prf.local.podcast_local.synthesize_audio', new=AsyncMock()) as synth:
+            r = self.client.post('/local/podcast/audio', json={'turns': [{'speaker': 'A', 'text': 'x' * 3001, 'block': 0}]}, headers=self.headers)
+        self.assertEqual(r.status_code, 422)
+        synth.assert_not_called()
+
+    def test_content_assets_catalog_and_invalid_answer(self):
+        for name in ('refresh.css', 'study-state.js', 'local-client.js'):
+            self.assertEqual(self.client.get('/local/assets/' + name).status_code, 200)
+        self.assertEqual(self.client.get('/local/assets/private.py').status_code, 404)
+        self.assertGreater(len(self.client.get('/local/catalog').json()['subjects']), 0)
+        q = get_store().questions[0]
+        self.assertEqual(self.client.post('/local/answer', json={'question_id': str(q['id']), 'selected_alternative_id': 'fake'}).status_code, 422)
+
+    def test_all_questions_have_one_valid_answer_and_known_topic(self):
+        store = get_store()
+        for q in store.questions:
+            if q['topic_id']:
+                self.assertIsNotNone(store.get_topic(str(q['topic_id'])))
+            self.assertEqual(sum(bool(a['is_correct']) for a in q['alternatives']), 1, str(q['id']))
+            self.assertGreater(len(q['alternatives']), 1)
 
     def test_library_checklist_and_taf_without_database(self):
         docs = self.client.get('/local/legal/documents').json()
@@ -82,6 +106,11 @@ class LocalToolsTest(unittest.TestCase):
         result = self.client.post('/local/simulados/finish', json={'question_ids': ids, 'answers': answers}).json()
         self.assertEqual(result['percentage'], 100)
         self.assertFalse(result['eliminated'])
+        zero_area_answers = {qid: a for qid, a in answers.items() if get_store().get_question(qid)['subject_slug'] != 'direito-penal-militar'}
+        zero_area = self.client.post('/local/simulados/finish', json={'question_ids': ids, 'answers': zero_area_answers}).json()
+        self.assertGreater(zero_area['percentage'], 60)
+        self.assertTrue(zero_area['eliminated'])
+        self.assertIn('direito-penal-militar', zero_area['zero_subjects'])
         blank = self.client.post('/local/simulados/finish', json={'question_ids': ids, 'answers': {}}).json()
         self.assertEqual(blank['branco'], 50)
         self.assertTrue(blank['eliminated'])

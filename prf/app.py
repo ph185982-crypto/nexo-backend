@@ -64,7 +64,9 @@ def register_prf_routers(app: FastAPI):
     # Modo local: funciona sem Postgres (arquivos de conteúdo + estado no
     # navegador). Registrado sempre — não depende de banco, e é o que
     # mantém o app 100% funcional enquanto o Render estiver fora do ar.
-    app.include_router(local_router,         prefix=f"{PREFIX}/local",          tags=["PRF Local (sem banco)"])
+    if not getattr(app.state, 'local_routes_registered', False):
+        app.include_router(local_router, prefix=f"{PREFIX}/local", tags=["PRF Local (sem banco)"])
+        app.state.local_routes_registered = True
 
     logger.info("[PRF] All routers registered under /api/prf")
 

@@ -43,14 +43,14 @@ def generate_mission(client_state: dict) -> dict:
     is_pm = str(profile.get("target_exam") or "PMGO").upper().startswith("PM")
     weight_key = "weight_pm" if is_pm else "weight_prf"
 
-    today = date.today()
+    today = datetime.now(BRT).date()
     kind = day_kind(today)
 
     hour = datetime.now(BRT).hour
     energy_str = profile.get("energy") or "medium"
     energy = EnergyLevel(energy_str) if energy_str in EnergyLevel._value2member_map_ else EnergyLevel.MEDIUM
     mode = _mode_for_hour(hour, energy_str)
-    available_mins = int(profile.get("available_minutes") or 60)
+    available_mins = max(0, min(480, int(profile.get("available_minutes", 60))))
 
     mastery = client_state.get("mastery") or {}
     recent_subject_ids = {UUID(x) for x in (client_state.get("recent_subjects") or []) if _is_uuid(x)}
@@ -60,6 +60,8 @@ def generate_mission(client_state: dict) -> dict:
 
     subject_states: list[SubjectState] = []
     for s in store.get_subjects():
+        if is_pm and s['slug'] not in exam_profile.items_per_subject:
+            continue
         w = s.get(weight_key) or 0
         if w <= 0:
             continue
@@ -152,7 +154,7 @@ def generate_mission(client_state: dict) -> dict:
         error_flashcard_ids=error_flashcard_ids,
         is_pm=is_pm,
         topic_plan=topic_plan,
-        is_rest_day=False,
+        is_rest_day=bool(profile.get("is_rest_day")),
         day_kind=kind,
         video=video,
     )

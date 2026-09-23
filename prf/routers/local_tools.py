@@ -8,10 +8,40 @@ from pydantic import BaseModel, Field
 
 from prf.local.content import get_store
 from prf.routers.deps import get_current_user_id
+from prf.routers.usage_guard import guard_ai
 from prf.seeds.seed_data import ESSAY_THEMES
 from prf.services import ai_tutor_service, essay_service, llm_service
 
 router = APIRouter()
+
+
+@router.get('/assets/{name}')
+async def study_asset(name: str):
+    from pathlib import Path
+    from fastapi.responses import FileResponse
+    if name not in {'study-state.js', 'local-client.js', 'refresh.css'}:
+        raise HTTPException(404, 'Arquivo não encontrado')
+    path = Path(__file__).resolve().parent.parent / 'static' / name
+    return FileResponse(path, headers={'Cache-Control': 'no-cache'})
+
+
+@router.get('/catalog')
+async def catalog():
+    from prf.seeds.seed_data import ITEMS_PER_SUBJECT_SIMULADO_PM
+    store = get_store()
+    subjects = []
+    for subject in store.subjects:
+        if subject['slug'] not in ITEMS_PER_SUBJECT_SIMULADO_PM:
+            continue
+        topics = []
+        for t in store.get_topics(subject['slug']):
+            qs = store.get_questions(topic_id_=str(t['id']), limit=100000)
+            topics.append({'id': str(t['id']), 'name': t['name'], 'question_count': len(qs),
+                           'article_count': len(store.get_articles(topic_id_=str(t['id']), limit=100000))})
+        subjects.append({'id': str(subject['id']), 'name': subject['name'], 'slug': subject['slug'],
+                         'color': subject.get('color'), 'weight': subject['weight_pm'], 'topics': topics,
+                         'question_count': len(store.get_questions(subject_id_=str(subject['id']), limit=100000))})
+    return {'subjects': subjects}
 
 
 @router.get('/podcasts')
@@ -115,7 +145,7 @@ class EssayInput(BaseModel):
     text: str = Field(min_length=1, max_length=20000)
 
 
-@router.post('/essays/submit', dependencies=[Depends(get_current_user_id)])
+@router.post('/essays/submit', dependencies=[Depends(guard_ai)])
 async def submit_essay(body: EssayInput):
     theme = next((t for t in themes() if t['id'] == body.theme_id), None)
     if not theme:
@@ -143,7 +173,7 @@ class TutorInput(BaseModel):
     message: str = Field(default='', max_length=4000)
 
 
-@router.post('/tutor', dependencies=[Depends(get_current_user_id)])
+@router.post('/tutor', dependencies=[Depends(guard_ai)])
 async def tutor(body: TutorInput):
     question = get_store().get_question(body.question_id)
     if not question:

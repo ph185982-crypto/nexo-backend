@@ -209,7 +209,14 @@ async def _init_prf():
 @app.middleware("http")
 async def lazy_init_middleware(request: Request, call_next):
     """Initialize DB on the very first request, not at startup."""
-    if not _prf_ready and not _initializing:
+    global _routers_registered
+    local_path = request.url.path.startswith('/api/prf/local/')
+    static_path = request.url.path in ('/', '/app', '/manifest.json', '/sw.js', '/status', '/health') or request.url.path.startswith('/icons/')
+    if local_path and not getattr(app.state, 'local_routes_registered', False):
+        from prf.routers.local_api import router as local_router
+        app.include_router(local_router, prefix='/api/prf/local')
+        app.state.local_routes_registered = True
+    if not (local_path or static_path) and not _prf_ready and not _initializing:
         await _init_prf()
     return await call_next(request)
 
@@ -241,63 +248,13 @@ async def status(check_ai: bool = False):
         "docs": "/docs",
     }
 
-    if check_ai:
-        checks = {}
-        for provider in llm_service.configured_providers():
-            try:
-                await llm_service._chat_with(
-                    provider, [{"role": "user", "content": "ping"}], 0.0, 5, False
-                )
-                checks[provider] = "ok"
-            except Exception as e:
-                checks[provider] = f"error: {str(e)[:160]}"
-        payload["ai_checks"] = checks
-
     return payload
-
-
-@app.get("/debug/net", tags=["Debug"])
-async def debug_net():
-    """Diagnose network/DNS in Lambda — temporary endpoint."""
-    import socket, urllib.parse
-    results = {}
-    # Test basic DNS (Google)
-    for label, host in [("google", "google.com"), ("cloudflare", "1.1.1.1")]:
-        try:
-            ip = socket.gethostbyname(host)
-            results[label] = ip
-        except Exception as e:
-            results[label] = f"{type(e).__name__}: {e}"
-    # Test DB host
-    db_url, db_url_var = _find_database_url()
-    db_url = db_url or ""
-    results["db_url_var"] = db_url_var
-    if db_url:
-        try:
-            host = urllib.parse.urlparse(db_url).hostname
-            results["db_host"] = host
-            ip = socket.gethostbyname(host)
-            results["db_ip"] = ip
-        except Exception as e:
-            results["db_resolve"] = f"{type(e).__name__}: {e}"
-    # Try a TCP connect to the resolved IP (bypass DNS in asyncio)
-    if db_url:
-        try:
-            host = urllib.parse.urlparse(db_url).hostname
-            port = urllib.parse.urlparse(db_url).port or 5432
-            sock = socket.create_connection((host, port), timeout=5)
-            results["tcp_connect"] = "ok"
-            sock.close()
-        except Exception as e:
-            results["tcp_connect"] = f"{type(e).__name__}: {e}"
-    return results
 
 
 @app.get("/health", tags=["Health"])
 async def health():
     payload = {"status": "online", "prf_ready": _prf_ready}
-    if _startup_error:
-        payload["startup_error"] = _startup_error
+    payload["storage_mode"] = "browser"
     return payload
 
 

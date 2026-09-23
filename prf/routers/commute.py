@@ -7,6 +7,7 @@ from typing import Optional
 from uuid import UUID
 
 from prf.routers.deps import get_repo, get_current_user_id
+from prf.routers.usage_guard import guard_ai
 from prf.database.repository import PRFRepository
 from prf.services.audio_service import build_commute_playlist
 
@@ -100,7 +101,7 @@ async def stream_audio(
     )
 
 
-@router.post("/synthesize")
+@router.post("/synthesize", dependencies=[Depends(guard_ai)])
 async def synthesize_text(
     text: str = Query(..., max_length=5000),
     voice: Optional[str] = None,

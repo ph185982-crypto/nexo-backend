@@ -1,10 +1,11 @@
+import os
 """
 Mantém apenas produtos curados (20 produtos finais).
 Deleta duplicados e produtos não curados (Sony/HTC headphones etc).
 """
 import asyncio, asyncpg
 
-DATABASE_URL = "postgresql://nexo_db_wjv3_user:s0yvLJLFSBBd8BbsnFJS5Yq5WnJi2uu9@dpg-d6m1l3fgi27c738atp30-a.oregon-postgres.render.com/nexo_db_wjv3"
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 # Prefixos dos produtos curados (primeiros 30 caracteres do título, lowercase)
 CURATED_PREFIXES = [

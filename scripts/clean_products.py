@@ -1,10 +1,11 @@
+import os
 """
 Remove produtos garbage (charutos, roupas infantis, bandeiras, etc.)
 Mantém apenas produtos curados de fitness/saúde/pets/beleza
 """
 import asyncio, asyncpg
 
-DATABASE_URL = "postgresql://nexo_db_wjv3_user:s0yvLJLFSBBd8BbsnFJS5Yq5WnJi2uu9@dpg-d6m1l3fgi27c738atp30-a.oregon-postgres.render.com/nexo_db_wjv3"
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 # Palavras-chave que indicam produto garbage (não queremos no sistema)
 GARBAGE_KEYWORDS = [

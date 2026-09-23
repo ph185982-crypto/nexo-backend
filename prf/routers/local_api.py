@@ -19,7 +19,9 @@ import logging
 from typing import Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from pydantic import BaseModel, Field, model_validator
+from prf.routers.usage_guard import guard_ai
 from fastapi.responses import StreamingResponse
 
 from prf.local.content import get_store
@@ -43,6 +45,7 @@ async def local_register():
 
 @router.get("/subjects")
 async def local_subjects():
+    from prf.seeds.seed_data import ITEMS_PER_SUBJECT_SIMULADO_PM
     store = get_store()
     return {"subjects": [
         {
@@ -50,6 +53,8 @@ async def local_subjects():
             "description": s.get("description"), "weight_prf": s.get("weight_prf"),
             "weight_pm": s.get("weight_pm"), "color": s.get("color"),
             "icon": s.get("icon"), "display_order": s.get("display_order"),
+            "question_count": len(store.get_questions(subject_id_=str(s['id']), limit=100000)),
+            "in_exam_blueprint": s['slug'] in ITEMS_PER_SUBJECT_SIMULADO_PM,
         }
         for s in store.get_subjects()
     ]}
@@ -80,9 +85,11 @@ async def local_questions(
         qs = store.get_questions_by_ids(ids.split(","))
     else:
         qs = store.get_questions(
-            subject_id_=subject_id, topic_id_=topic_id, limit=limit,
+            subject_id_=subject_id, topic_id_=topic_id, limit=100000,
             question_type=question_type,
         )
+        import random
+        qs = random.sample(qs, min(limit, len(qs)))
     from prf.local.mission_service import _public_question
     return {"questions": [_public_question(q) for q in qs]}
 
@@ -98,6 +105,8 @@ async def local_answer(body: dict = Body(...)):
 
     correct = next((a for a in q["alternatives"] if a["is_correct"]), None)
     selected_alt = next((a for a in q["alternatives"] if str(a["id"]) == selected), None)
+    if not selected_alt:
+        raise HTTPException(422, 'Escolha uma alternativa válida')
     is_correct = bool(correct and selected_alt and str(correct["id"]) == selected)
 
     def _alt_out(a):
@@ -147,11 +156,11 @@ async def local_mission(client_state: dict = Body(default_factory=dict)):
     try:
         return generate_mission(client_state or {})
     except Exception as e:
-        logger.error(f"[LOCAL] Falha gerando missão: {e}")
-        raise HTTPException(500, f"Falha ao gerar missão: {e}")
+        logger.error("[LOCAL] Mission error: %s", type(e).__name__)
+        raise HTTPException(500, "Não foi possível gerar a missão. Tente novamente.")
 
 
-@router.post("/podcast/script")
+@router.post("/podcast/script", dependencies=[Depends(guard_ai)])
 async def local_podcast_script(body: dict = Body(...)):
     from prf.local.podcast_local import build_script, PodcastLocalError
     topic_id = body.get("topic_id")
@@ -162,19 +171,49 @@ async def local_podcast_script(body: dict = Body(...)):
     except PodcastLocalError as e:
         raise HTTPException(503, str(e))
     except Exception as e:
-        logger.error(f"[LOCAL] Falha gerando roteiro: {e}")
-        raise HTTPException(500, f"Falha ao gerar roteiro: {e}")
+        logger.error("[LOCAL] Script error: %s", type(e).__name__)
+        raise HTTPException(503, "Não foi possível gerar o roteiro. Tente novamente.")
 
 
-@router.post("/podcast/audio")
-async def local_podcast_audio(body: dict = Body(...)):
+class AudioTurn(BaseModel):
+    speaker: str = Field(min_length=1, max_length=40)
+    text: str = Field(min_length=1, max_length=3000)
+    block: int = Field(default=0, ge=0, le=100)
+
+
+class ReadingInput(BaseModel):
+    text: str = Field(min_length=1, max_length=5000)
+
+
+@router.post('/synthesize', dependencies=[Depends(guard_ai)])
+async def read_text(body: ReadingInput):
+    from prf.services.tts_service import TTSService
+    import io
+    audio = await TTSService().synthesize(body.text)
+    if not audio:
+        raise HTTPException(503, 'Leitura em áudio indisponível. Tente novamente.')
+    return StreamingResponse(io.BytesIO(audio), media_type='audio/mpeg', headers={'Cache-Control': 'no-store'})
+
+
+class AudioInput(BaseModel):
+    turns: list[AudioTurn] = Field(min_length=1, max_length=50)
+
+    @model_validator(mode='after')
+    def bound_size(self):
+        if sum(len(t.text) for t in self.turns) > 3500:
+            raise ValueError('Envie o áudio em partes de até 3500 caracteres')
+        return self
+
+
+@router.post("/podcast/audio", dependencies=[Depends(guard_ai)])
+async def local_podcast_audio(body: AudioInput):
     """Recebe os `turns` que /podcast/script já devolveu e sintetiza o
     áudio do episódio inteiro. Sem cache no servidor — o cliente guarda o
     blob resultante no IndexedDB e nunca precisa chamar de novo."""
     from prf.local.podcast_local import synthesize_audio, PodcastLocalError
     import io
 
-    turns = body.get("turns")
+    turns = [turn.model_dump() for turn in body.turns]
     if not turns:
         raise HTTPException(400, "turns é obrigatório")
     try:
@@ -182,8 +221,8 @@ async def local_podcast_audio(body: dict = Body(...)):
     except PodcastLocalError as e:
         raise HTTPException(503, str(e))
     except Exception as e:
-        logger.error(f"[LOCAL] Falha sintetizando áudio: {e}")
-        raise HTTPException(500, f"Falha ao sintetizar áudio: {e}")
+        logger.error("[LOCAL] Audio error: %s", type(e).__name__)
+        raise HTTPException(503, "Não foi possível gerar o áudio. Tente novamente.")
 
     return StreamingResponse(
         io.BytesIO(audio),

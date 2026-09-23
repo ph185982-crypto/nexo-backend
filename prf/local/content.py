@@ -146,6 +146,10 @@ class ContentStore:
                 resolved_topic = resolve_topic_slug(subj_slug, raw_topic) or raw_topic
                 tid = topic_id(subj_slug, resolved_topic) if resolved_topic else None
                 qid = question_id(path.name, idx)
+                # Keep uncategorized items honest; do not create phantom topic
+                # IDs that make progress disappear from the coverage report.
+                if tid and str(tid) not in self._topic_by_id:
+                    continue  # Explicit topic outside the bundled syllabus.
                 alts = []
                 for a in q.get("alternatives") or []:
                     alts.append({

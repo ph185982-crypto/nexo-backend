@@ -3,11 +3,21 @@ from __future__ import annotations
 import os
 import jwt
 import bcrypt
-from datetime import datetime, timedelta
+import hashlib
+import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import UUID
 
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+_configured_secret = os.getenv('SECRET_KEY')
+if _configured_secret == 'dev-secret-key-change-in-production':
+    _configured_secret = None
+# Domain separation avoids using an API key directly as a signing key. A
+# dedicated SECRET_KEY remains preferred; rotation expires device sessions.
+_provider_secret = os.getenv('OPENAI_API_KEY')
+SECRET_KEY = _configured_secret or (hashlib.sha256(('study-device-jwt-v2:' + _provider_secret).encode()).hexdigest() if _provider_secret else secrets.token_hex(32))
+if os.getenv('VERCEL') and not (_configured_secret or _provider_secret):
+    raise RuntimeError('Configure SECRET_KEY antes de publicar')
 TOKEN_EXPIRATION = 7 * 24 * 60 * 60  # 7 days
 
 
@@ -22,8 +32,8 @@ def verify_password(password: str, hashed: str) -> bool:
 def create_token(user_id: UUID) -> str:
     payload = {
         "sub": str(user_id),
-        "exp": datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION),
-        "iat": datetime.utcnow(),
+        "exp": datetime.now(timezone.utc) + timedelta(seconds=TOKEN_EXPIRATION),
+        "iat": datetime.now(timezone.utc),
     }
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
@@ -40,5 +50,8 @@ def decode_token(token: str) -> Optional[dict]:
 def get_user_id_from_token(token: str) -> Optional[UUID]:
     payload = decode_token(token)
     if payload and "sub" in payload:
-        return UUID(payload["sub"])
+        try:
+            return UUID(payload["sub"])
+        except (ValueError, TypeError, AttributeError):
+            return None
     return None

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F0E0C" media="(prefers-color-scheme: dark)">
@@ -1301,6 +1301,7 @@ button { font-family:inherit; }
   .sheet, .sheet-backdrop { left: 232px; }
 }
 </style>
+<link rel="stylesheet" href="/api/prf/local/assets/refresh.css">
 </head>
 <body>
 
@@ -1314,6 +1315,8 @@ button { font-family:inherit; }
 <div id="app"></div>
 <audio id="audio-el" preload="none"></audio>
 
+<script src="/api/prf/local/assets/study-state.js"></script>
+<script src="/api/prf/local/assets/local-client.js"></script>
 <script>
 const API = '';
 
@@ -1392,53 +1395,14 @@ function uid() {
   });
 }
 async function ensureAuth() {
-  if (S.token) {
-    try {
-      const r = await fetch(`${API}/api/prf/auth/me`, { headers: { 'Authorization': `Bearer ${S.token}` } });
-      if (r.ok) { S.localMode = false; return; }
-    } catch (e) {}
-    // Token de sessão local continua válido mesmo sem /auth/me — ele nunca
-    // dependeu do banco pra ser verificado, só pra ser consultado.
-    if (localStorage.getItem('prf_local_mode') === '1') { S.localMode = true; return; }
-    S.token = null; localStorage.removeItem('prf_token');
+  S.localMode=true;
+  if(S.token && localStorage.getItem('prf_local_mode')==='1') {
+    try { const claims=JSON.parse(atob(S.token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));if(claims.exp*1000>Date.now()+30000)return; } catch(e) {}
   }
-  let deviceId = localStorage.getItem('prf_device_id');
-  if (!deviceId) { deviceId = uid(); localStorage.setItem('prf_device_id', deviceId); }
-  const creds = {
-    email: `estudante-${deviceId}@prfestudo.app`,
-    password: `PRF#${deviceId.slice(0, 16)}`,
-    name: 'Estudante PMGO',
-  };
-  try {
-    let r = await fetch(`${API}/api/prf/auth/register`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(creds),
-    });
-    if (r.status === 409 || r.status === 400) {
-      r = await fetch(`${API}/api/prf/auth/login`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: creds.email, password: creds.password }),
-      });
-    }
-    if (!r.ok) throw new Error('Auth failed');
-    const data = await r.json();
-    S.token = data.access_token;
-    S.localMode = false;
-    localStorage.setItem('prf_token', S.token);
-    localStorage.removeItem('prf_local_mode');
-    return;
-  } catch (e) {
-    // Banco fora do ar: o modo local não depende dele — o token ainda é um
-    // JWT válido (a verificação nunca tocou banco), só não há onde ler
-    // e-mail/senha pra confirmar a conta. Registra localmente e segue.
-    const r = await fetch(`${API}/api/prf/local/register`, { method: 'POST' });
-    if (!r.ok) throw new Error('Auth failed (local)');
-    const data = await r.json();
-    S.token = data.access_token;
-    S.localMode = true;
-    localStorage.setItem('prf_token', S.token);
-    localStorage.setItem('prf_local_mode', '1');
-  }
+  const r=await fetch(`${API}/api/prf/local/register`,{method:'POST'});
+  if(!r.ok)throw Error('Não foi possível iniciar a sessão. Verifique sua conexão.');
+  S.token=(await r.json()).access_token;
+  localStorage.setItem('prf_token',S.token);localStorage.setItem('prf_local_mode','1');
 }
 
 // ===== MODO LOCAL (banco fora do ar) =====
@@ -1456,15 +1420,11 @@ function localState() {
   return _localDefault();
 }
 function _localDefault() {
-  return {
-    xp: 0, level: 1, streak: 0, last_active_date: null,
-    mastery: {}, recent_subjects: [], recent_subjects_date: null,
-    questions_today: { date: null, total: 0, correct: 0 },
-    mission_date: null, mission: null, skip_topic_ids: [],
-  };
+  return StudyState.initial();
 }
 function saveLocalState(s) {
-  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch (e) {}
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); }
+  catch (e) { toast('Não foi possível salvar. Exporte um backup antes de continuar.', 'error'); throw e; }
   return s;
 }
 function localToday() { return new Intl.DateTimeFormat('en-CA', {timeZone:'America/Sao_Paulo', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date()); }
@@ -1492,7 +1452,7 @@ function localBumpStreak() {
   const today = localToday();
   if (s.last_active_date === today) return s;
   const y = new Date(); y.setDate(y.getDate() - 1);
-  s.streak = (s.last_active_date === y.toISOString().slice(0, 10)) ? s.streak + 1 : 1;
+  s.streak = (s.last_active_date === StudyState.day(y)) ? s.streak + 1 : 1;
   s.last_active_date = today;
   return saveLocalState(s);
 }
@@ -1502,15 +1462,17 @@ function localDashboard() {
   return {
     greeting: localGreeting(), streak: s.streak, questions_today: qt.total,
     accuracy_today: qt.total ? Math.round((qt.correct / qt.total) * 100) : 0,
-    time_studied_today: 0, reviews_due: 0, approval_estimate: 0,
+    time_studied_today: (s.sessions || []).filter(x=>x.date===localToday()).reduce((n,x)=>n+x.minutes,0), reviews_due: StudyState.due(s).length, approval_estimate: null,
     level: s.level, weekly_progress: [], target_exam: S.targetExam || 'PMGO',
     xp_progress_pct: Math.round(((s.xp % 500) / 500) * 100),
   };
 }
 function buildClientState() {
   const s = localState();
+  const routine=(s.routines||[]).find(r=>r.day_of_week===(new Date().getDay()+6)%7);
   return {
-    profile: { ...(s.study_profile || {}), target_exam: S.targetExam || 'PMGO', available_minutes: (s.routines || []).find(r => r.day_of_week === (new Date().getDay() + 6) % 7)?.study_minutes || 60, energy: 'medium' },
+    reviews_due_ids:StudyState.due(s).map(c=>c.question_id),
+    profile: { ...(s.study_profile || {}), target_exam: S.targetExam || 'PMGO', available_minutes:routine?.study_minutes??60,is_rest_day:!!routine?.is_rest_day,energy:routine?.energy||'medium' },
     mastery: s.mastery, recent_subjects: s.recent_subjects || [],
     skip_topic_ids: s.skip_topic_ids || [],
   };
@@ -1518,6 +1480,10 @@ function buildClientState() {
 
 // ===== API =====
 async function api(path, opts = {}) {
+  if (S.localMode && !path.startsWith('/api/prf/local/')) {
+    const local = await localRequest(path, opts);
+    if (local.handled) return local.data;
+  }
   if (S.localMode && ['/api/prf/onboarding/profile', '/api/prf/onboarding/routines', '/api/prf/onboarding/target-exam'].includes(path)) {
     const state = localState();
     const key = path.endsWith('/routines') ? 'routines' : 'study_profile';
@@ -1541,7 +1507,7 @@ async function api(path, opts = {}) {
   } catch (networkErr) {
     // Falha de rede de verdade (sem sinal), não erro HTTP — enfileira POSTs
     // pra reenviar quando a conexão voltar, em vez de perder o registro.
-    if ((opts.method || 'GET').toUpperCase() === 'POST') _queueOfflineRequest(path, opts);
+    if (!S.localMode && /\/questions\/answer$/.test(path)) _queueOfflineRequest(path, opts);
     throw networkErr;
   }
   if (r.status === 401) {
@@ -1585,6 +1551,7 @@ async function flushOfflineQueue() {
   if (remaining.length < q.length) toast('Respostas offline sincronizadas', 'success');
 }
 window.addEventListener('online', flushOfflineQueue);
+window.addEventListener('pagehide',()=>{if(S.localMode)endSession();});
 // ===== LEMBRETES (WEB PUSH) =====
 // O agendador no servidor decide quando cobrar; sem o service worker inscrito
 // essa cobrança não sai do banco. É este trecho que fecha o caminho até a tela.
@@ -1608,6 +1575,7 @@ function b64ToUint8(base64) {
 }
 
 async function sincronizarPush() {
+  if(S.localMode){S.pushOn=false;return;}
   // Só reflete o estado atual; nunca pede permissão sozinho.
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   try {
@@ -1670,6 +1638,7 @@ function viewInstallGuide() {
 }
 
 async function toggleLembretes() {
+  if(S.localMode){downloadStudyReminder();return;}
   if (!('serviceWorker' in navigator)) {
     return toast('Este navegador não suporta lembretes', 'error');
   }
@@ -1856,7 +1825,7 @@ function renderCoverageHeatmap() {
     <div class="section-eyebrow">Banco de questões</div>
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:2px">
       <div class="section-title">Cobertura por matéria</div>
-      <span style="font-size:13px;font-weight:700;color:${readColor}">${readiness}% pronto</span>
+      <span style="font-size:13px;font-weight:700;color:${readColor}">${subjects.filter(s=>s.flag==='good').length}/${subjects.length} com 20+ questões</span>
     </div>
     <div class="coverage-grid">
       ${subjects.map(s => `<div class="cov-cell" onclick="switchTab('more');openTrilha()">
@@ -1954,7 +1923,8 @@ function viewDashboard() {
   const SD = ['D','S','T','Q','Q','S','S'];
   const today = new Date().getDay();
   const greeting = localGreeting();
-  const apr = Math.round(d.approval_estimate || 0);
+  const recent=localState().history.slice(-30);
+  const apr=recent.length?Math.round(100*recent.filter(h=>h.is_correct).length/recent.length):0;
   const dateStr = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
   const due = d.reviews_due || 0;
   const mission = S.mission;
@@ -1978,7 +1948,7 @@ function viewDashboard() {
     ${podeInstalar ? `<div class="install-banner" onclick="abrirGuiaInstalacao()">
       <div class="ib-icon">${I.headphones}</div>
       <div class="ib-text"><strong>Instale na tela de início</strong>
-        <span>Necessário para receber os alertas de estudo</span></div>
+        <span>Acesso rápido às suas aulas e revisões</span></div>
       <button class="ib-close" onclick="event.stopPropagation();dispensarInstalacao()" aria-label="Fechar">${I.close}</button>
     </div>` : ''}
     <div class="hero-block fade-in">
@@ -1990,6 +1960,7 @@ function viewDashboard() {
         <span class="level-chip">${S.targetExam || 'PMGO'}</span>
       </div>
     </div>
+    <div class="storage-note"><span>● Progresso salvo neste navegador</span><button onclick="openBackup()">Fazer backup ${I.chevRight||'→'}</button></div>
     <div class="stat-row">
       <div class="stat-cell"><div class="stat-eyebrow">Questões</div><div class="stat-num">${d.questions_today || 0}</div></div>
       <div class="stat-cell"><div class="stat-eyebrow">Acerto</div><div class="stat-num">${Math.round(d.accuracy_today||0)}<span class="stat-num-sm">%</span></div></div>
@@ -2040,7 +2011,7 @@ function viewDashboard() {
       if (!missionDone && nextBlock && mTotal > 0) {
         return `<button class="mission-cta fade-in" onclick="startMissionBlock(${nextIdx},'${nextType}')">
           <span class="cta-label">${mDone > 0 ? 'Continuar missão' : 'Começar missão'}</span>
-          <span class="cta-detail">${esc(nextBlock.title)} · ${mEst} min no total</span>
+          <span class="cta-detail">${esc(nextBlock.title)} · ${mEst} min de estudo guiado</span>
         </button>`;
       }
       return '';
@@ -2051,7 +2022,7 @@ function viewDashboard() {
       <div class="mission-header">
         <div>
           <div class="section-eyebrow">${mission ? (DAY_KIND_LABEL[mission.day_kind] || 'Missão do dia') : 'Missão do dia'}${mission && mission.topic_label ? ` · ${esc(mission.topic_label)}` : ''}</div>
-          <div class="section-title">${missionDone ? 'Missão cumprida!' : mTotal > 0 ? `${mDone} de ${mTotal} etapas` : 'Carregando...'}</div>
+          <div class="section-title">${missionDone ? 'Missão cumprida!' : mTotal > 0 ? `${mDone} de ${mTotal} etapas` : mission?.load_error ? 'Não foi possível carregar' : 'Carregando...'}</div>
         </div>
         ${mTotal > 0 ? `<div class="mission-ring">
           <svg viewBox="0 0 36 36" class="mission-svg">
@@ -2063,7 +2034,7 @@ function viewDashboard() {
       </div>
       ${mission && mBlocks.length ? `<button class="mission-regen-btn" onclick="confirmSkipMission()">Pular para a próxima missão</button>` : ''}
       ${!mission ? `<div class="mission-loading"><button class="btn btn-primary btn-full" onclick="loadMission()">Gerar plano de estudo</button></div>` :
-      mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => missionTaskRow(b, i)).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p></div>`}
+      mBlocks.length ? `<div class="mission-tasks">${mBlocks.map((b, i) => missionTaskRow(b, i)).join('')}</div>` : `<div class="mission-empty"><p>Nenhuma etapa disponível</p><button class="btn btn-primary" onclick="loadMission()">Tentar novamente</button></div>`}
       ${missionDone ? `<div class="mission-complete-banner"><span>Parabéns! Volte amanhã para a próxima missão.</span></div>` : ''}
     </div>` : ''}
 
@@ -2097,13 +2068,13 @@ function viewDashboard() {
 
     <div class="approval-block">
       <div class="approval-head">
-        <span class="lbl">Chance de aprovação</span>
+        <span class="lbl">Acertos recentes</span>
         <span class="val">${apr}<span class="pct">%</span></span>
       </div>
       <div class="meter-track"><div class="meter-fill" style="width:${apr}%"></div></div>
       <div class="approval-foot">
-        <span>Estimativa por desempenho</span>
-        <span>${apr < 40 ? 'Continue estudando' : apr < 70 ? 'No caminho certo' : 'Excelente'}</span>
+        <span>${recent.length ? `Últimas ${recent.length} respostas` : 'Responda questões para começar'}</span>
+        <span>${recent.length ? 'Seu desempenho no treino' : 'Sem respostas ainda'}</span>
       </div>
     </div>
     ${(d.expected_lost_points||0) > 0 ? `<div class="risk-block">
@@ -2184,14 +2155,16 @@ function viewPractice() {
       <div class="display-hero">Escolha uma <em>matéria</em></div>
       <div class="chip-row mt-12"><span class="level-chip">${active.length} disciplinas</span></div>
     </div>
+    <label class="study-search">Buscar matéria<input type="search" placeholder="Ex.: português, direito penal…" oninput="filterSubjects(this.value)"></label>
+    <p id="subject-empty" class="muted" hidden>Nenhuma matéria encontrada.</p>
     <div class="subject-list">${active.map(s => {
       const rc = resMap[s.slug] || 0;
       return `
-      <div class="subject-item" onclick='selectSubject("${s.id}", ${attr(s.name)})'>
+      <div class="subject-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" data-search="${esc(s.name)}" onclick='selectSubject("${s.id}", ${attr(s.name)})'>
         <div class="subj-color" style="background:${esc(s.color) || 'var(--primary)'}"></div>
         <div class="subj-info">
           <div class="subj-name">${esc(s.name)}</div>
-          <div class="subj-desc">${esc(s.description || '')}${rc ? ` · <span style="color:var(--primary)">${rc} recursos</span>` : ''}</div>
+          <div class="subj-desc">${s.in_exam_blueprint===false?'Complementar · ':''}${s.question_count===0?'Conteúdo em preparação':esc(s.description || '')}${rc ? ` · <span style="color:var(--primary)">${rc} recursos</span>` : ''}</div>
         </div>
         <div class="subj-weight">${s[wKey] || 0}×</div>
       </div>`;
@@ -2348,7 +2321,7 @@ function viewSimulado() {
     { name:'Bloco III', count:'35 itens', desc:'Dir. Administrativo, Constitucional, Penal, Proc. Penal, Leg. Especial, Dir. Humanos' },
   ];
   const formatDesc = isPM
-    ? `${totalItens} questões de múltipla escolha (A a E), dois blocos com pesos diferenciados. Nota mínima: 60%.`
+    ? `${totalItens} questões de múltipla escolha (A a E), dois blocos com pesos diferenciados. Meta: 60% e nenhuma matéria zerada. Referência: Soldado PMGO 002/2022.`
     : `${totalItens} itens Certo ou Errado, três blocos, correção oficial. Você é eliminado se a nota de qualquer bloco ficar negativa.`;
   return `${appbar()}
     <div class="sim-intro fade-in">
@@ -2423,7 +2396,7 @@ function viewSimuladoResult() {
     ? `${r.score} de ${r.max_score || '85'} pontos`
     : `certas − erradas · de ${r.total_questions} possíveis`;
   const passLabel = isPM
-    ? (pass ? 'Aprovado (60%+)' : 'Reprovado (< 60%)')
+    ? (pass ? 'Meta do treino atingida' : 'Meta do treino não atingida')
     : (pass ? 'Aprovado nos blocos' : 'Eliminado');
   const blockLabels = isPM
     ? { bloco_1: 'Gerais (peso 1)', bloco_2: 'Específicos (peso 2)' }
@@ -2434,6 +2407,7 @@ function viewSimuladoResult() {
         <div class="verdict-lbl">${verdictLabel}</div>
         <div class="verdict-num">${r.score != null ? r.score : 0}</div>
         <div class="verdict-scale">${scaleLabel}</div>
+        ${r.zero_subjects?.length?'<p>Você zerou pelo menos uma matéria. A referência do treino exige pontuação em todas.</p>':''}
         <div class="badge">${passLabel}</div>
       </div>
       <div class="sim-summary-grid">
@@ -2483,7 +2457,7 @@ function viewAudio() {
       <div class="pod-sub">Marcos e Júlia debatem a matéria com caso de rua, letra da lei e pegadinha de banca.</div>
       ${pods.length ? `<div class="chip-row mt-12">
         <span class="level-chip">${pods.length} episódio${pods.length===1?'':'s'}</span>
-        <span class="level-chip">${podMin} min</span>
+        <span class="level-chip">${S.localMode ? 'Gerados ao abrir' : podMin+' min'}</span>
       </div>` : ''}
     </div>
     ${pods.length ? Object.entries(pods.reduce((g, p) => {
@@ -2525,7 +2499,7 @@ function viewAudio() {
       <div class="display-hero">Estude <em>ouvindo</em></div>
       <div class="chip-row mt-12">
         <span class="level-chip">${lessons.length} aulas</span>
-        <span class="level-chip">${totalMin} min</span>
+        <span class="level-chip">${S.localMode ? 'Áudio gerado ao abrir' : totalMin+' min'}</span>
       </div>
     </div>
     <div class="audio-list">${lessons.map(l => {
@@ -2793,7 +2767,7 @@ function viewPodcastNow() {
     <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">${esc(S.podKind === 'drill' ? 'Drill de recall' : 'Aula em áudio')}</span>
   </div>`;
-  if (!ep && carregando) return head + skeletonBlock(2, 120);
+  if (!ep && carregando) return head + `<div class="empty" role="status"><h3>${esc(S.podProgress||'Preparando o roteiro…')}</h3><p>A primeira geração pode levar alguns minutos. As partes concluídas ficam salvas para retomar se necessário.</p><button class="btn btn-ghost" onclick="stopPodcast()">Pausar geração</button></div>`;
   if (!ep) return head + `<div class="empty">${I.headphones}<h3>Episódio indisponível</h3></div>`;
 
   const total = ep.segment_count || 1;
@@ -2892,7 +2866,7 @@ async function answerFlashcard(cardId, quality) {
   try {
     const r = await api(`/api/prf/reviews/flashcards/${cardId}/answer?quality=${quality}`, { method:'POST' });
     if (r?.xp_earned) toast(`+${r.xp_earned} XP`, 'xp');
-  } catch (e) {}
+  } catch (e) {toast('Não foi possível salvar o cartão. Tente novamente.','error');return;}
   S.fcIdx = (S.fcIdx || 0) + 1;
   S.fcFlipped = false;
   if (S.fcIdx >= (S.fcCards?.length || 0)) { await concludeFlashcards(); return; }
@@ -2923,6 +2897,7 @@ async function openMissionFlashcards(blockIdx) {
 }
 
 async function concludeFlashcards() {
+  if(!S.missionBlockId){toast('Cartões revisados!','success');openReviews();return;}
   await finishMissionBlock();
 }
 
@@ -2933,12 +2908,12 @@ function viewMissionReview() {
   const head = `<div class="topbar-sub">
     <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">Revisão</span>
-    ${reviews?.length ? `<span class="meta-sub">${idx+1}/${reviews.length}</span>` : ''}
+    ${reviews?.length ? `<span class="meta-sub">${Math.min(idx+1,reviews.length)}/${reviews.length}</span>` : ''}
   </div>`;
   if (!reviews) return head + skeletonBlock(2, 120);
-  if (!reviews.length) return head + `<div class="empty">${I.refresh}<h3>Sem revisões</h3><p>Nenhuma revisão pendente no momento.</p></div>`;
+  if (!reviews.length) return head + `<div class="empty">${I.refresh}<h3>Sem revisões</h3><p>Nenhuma questão pendente no momento.</p><button class="btn btn-primary" onclick="openDueFlashcards()">Revisar meus cartões</button></div>`;
   const card = reviews[idx];
-  if (!card) return head + `<div class="empty">${I.refresh}<h3>Concluído</h3><p>Todas as revisões feitas.</p></div>`;
+  if (!card) return head + `<div class="empty">${I.refresh}<h3>Concluído</h3><p>Todas as questões revisadas.</p><button class="btn btn-primary" onclick="openDueFlashcards()">Revisar meus cartões</button></div>`;
   const q = S.reviewQuestion;
   const ar = S.reviewAnswered;
   const answered = ar !== null && ar !== undefined;
@@ -2964,6 +2939,7 @@ function viewMissionReview() {
   }
   return head + `<div class="q-container fade-in">
     <div class="q-context">Revisão · ${esc(q.subject_name || card.subject_name || '')}</div>
+    ${q.context_text ? `<div class="q-context-text">${esc(q.context_text)}</div>` : ''}
     <div class="q-text">${esc(q.text)}</div>
     <div class="q-choices">${(q.alternatives||[]).map(a => {
       let cls = 'q-choice';
@@ -3063,7 +3039,7 @@ function viewEssays() {
   const hist = S.essayHistory || [];
   return head + `<div class="essay-hero fade-in">
       <div class="display-hero">Escreva. Receba <em>diagnóstico</em>.</div>
-      <div class="chip-row mt-12"><span class="level-chip">${isPM ? 'Rubrica AOCP' : 'Critérios CEBRASPE'}</span></div>
+      <div class="chip-row mt-12"><span class="level-chip">${isPM ? 'PMGO 2022 · 5 critérios · 25 pontos' : 'Critérios CEBRASPE'}</span></div>
     </div>
     ${hist.length ? `<div class="section-eyebrow" style="padding:8px 20px">Suas redações</div>
       <div class="fade-in essay-hist">${hist.map(e => {
@@ -3104,12 +3080,13 @@ function viewEssayWrite() {
       </div>
       <div class="essay-editor">
         <textarea id="essay-textarea" placeholder="Comece sua dissertação aqui..."
-          oninput="S.essayText=this.value;updateEssayCounter()">${esc(S.essayText||'')}</textarea>
+          oninput="S.essayText=this.value;saveEssayDraft();updateEssayCounter()" maxlength="20000">${esc(S.essayText||'')}</textarea>
         <div class="counter">
           <span><span class="lines-num ${over?'over':''}" id="line-count">${lines}</span> linhas · <span id="char-count">${(S.essayText||'').length}</span> caracteres</span>
-          <span>máx. 30 linhas</span>
+          <span>quebras digitadas</span>
         </div>
       </div>
+      <p class="muted">Rascunho salvo automaticamente. Referência PMGO 2022: 20 a 30 linhas manuscritas. As quebras digitadas acima não medem linhas da folha oficial.</p>
       <button class="btn btn-primary btn-lg btn-full mt-16" onclick="submitEssay()" ${S.loading.essay?'disabled':''}>
         ${S.loading.essay ? 'Corrigindo com IA...' : 'Enviar para correção'}</button>
     </div>`;
@@ -3154,9 +3131,7 @@ function viewTAF() {
   if (!S.taf) return head + skeletonBlock(3, 60);
   return head + `<div class="settings-section fade-in">
       <p style="font-size:13px;color:var(--ink-3);line-height:1.5">
-        Índice mínimo varia por edital/gênero e o próximo certame ainda não saiu — informe sua própria meta
-        (tirada do edital quando publicado) e acompanhe se o ritmo atual chega lá. Barra costuma ser o exercício
-        que mais reprova e o que menos se resolve em cima da hora.
+        Defina suas metas conforme o edital do seu cargo e acompanhe a evolução. A projeção usa suas medições anteriores e não garante desempenho futuro.
       </p>
     </div>
     <div class="settings-section fade-in" style="padding-top:0">
@@ -3285,9 +3260,7 @@ function viewPlano() {
         <div class="pl-stat"><span class="pl-num">${s.topics_remaining || 0}</span><span class="pl-lbl">tópicos a cobrir</span></div>
       </div>
       <p style="font-size:12.5px;color:var(--ink-3);line-height:1.5;margin-top:12px">
-        Sábado é simulado e domingo é revisão — isso é fixo. A matéria de cada dia de
-        conteúdo é a fila atual: se você errar muito em uma matéria, ela sobe e o resto
-        desce.
+        Sábado é dedicado ao simulado e domingo à revisão, respeitando seus dias de descanso. A matéria é escolhida ao gerar a missão do dia, conforme seu progresso.
       </p>
       ${passados.length ? `<button class="btn btn-ghost btn-full" style="margin-top:10px" onclick="togglePlanoHistorico()">
         ${mostrarPassado ? 'Ocultar dias anteriores' : `Mostrar os ${passados.length} dias anteriores`}
@@ -3399,6 +3372,7 @@ function viewMore() {
   if (S.subView === 'trilha') return viewTrilha();
   if (S.subView === 'history') return viewHistory();
   if (S.subView === 'settings') return viewSettings();
+  if (S.subView === 'backup') return viewBackup();
   const due = S.reviewSummary?.total_due ?? S.dashboard?.reviews_due ?? 0;
   const trilhaPct = S.trilha ? S.trilha.coverage : null;
   const isPM = S.targetExam && S.targetExam.startsWith('PM');
@@ -3411,7 +3385,7 @@ function viewMore() {
       { on:'openPlano()', icon:I.calendar, cls:'gold', h:'Minha trajetória',
         p:'Calendário até a prova — o que já fechou e o que vem' },
       { on:'openTrilha()', icon:I.target, cls:'', h:'Trilha do edital',
-        p: trilhaPct != null ? `${trilhaPct}% do edital coberto` : 'Mapa completo das matérias' },
+        p: trilhaPct != null ? `${Math.round(trilhaPct)}% dos tópicos consolidados` : 'Seu avanço nas matérias cadastradas' },
     ])}
     ${moreGroup('Fixar o que passou', [
       { on:'openReviews()', icon:I.refresh, cls:'gold', h:'Revisões espaçadas',
@@ -3436,8 +3410,9 @@ function viewMore() {
       ] : []),
     ])}
     ${moreGroup('Ajustes', [
+      { on:'openBackup()', icon:I.book, cls:'', h:'Backup do progresso', p:'Exportar, restaurar e trocar de aparelho' },
       { on:'toggleLembretes()', icon:I.clock, cls:'', h:'Lembretes de estudo',
-        p: S.pushOn ? 'Ativados neste aparelho' : 'Receber cobrança no celular',
+        p: S.localMode ? 'Adicionar à agenda do celular' : S.pushOn ? 'Ativados neste aparelho' : 'Receber cobrança no celular',
         badge: S.pushOn ? 'on' : null },
       { on:'openSettings()', icon:I.grid, cls:'', h:'Meu concurso',
         p:'Rotina, município, corte-alvo e data da prova' },
@@ -3453,8 +3428,8 @@ function renderNav() {
     { id:'audio',     icon:I.headphones, label:'Áudio' },
     { id:'more',      icon:I.grid,       label:'Mais' },
   ];
-  return `<nav class="nav">${tabs.map(t =>
-    `<button class="nav-item ${S.tab===t.id?'active':''}" onclick="switchTab('${t.id}')">${t.icon}<span>${t.label}</span></button>`
+  return `<nav class="nav" aria-label="Navegação principal"><div class="nav-brand"><span class="brand-monogram">E.</span><strong>Estudo<span>PMGO</span></strong><small>UM PASSO A CADA DIA</small></div>${tabs.map(t =>
+    `<button class="nav-item ${S.tab===t.id?'active':''}" aria-current="${S.tab===t.id?'page':'false'}" onclick="switchTab('${t.id}')">${t.icon}<span>${t.label}</span></button>`
   ).join('')}</nav>`;
 }
 
@@ -3467,7 +3442,7 @@ function render() {
   const inTutor = S.subView === 'tutor';
   const inPodTela = S.subView === 'podcastNow';
   document.getElementById('app').innerHTML = `
-    <div class="content" id="main-content">${(views[S.tab] || viewDashboard)()}</div>
+    <main class="content" id="main-content" data-view="${S.tab}">${(views[S.tab] || viewDashboard)()}</main>
     ${(inTutor || inPodTela) ? '' : playerBar()}
     ${inSim ? '' : renderNav()}
     ${viewInstallGuide()}
@@ -3506,6 +3481,7 @@ function switchTab(tab) {
 const SESSION_IDLE_MS = 12 * 60 * 1000;   // parado 12 min = sessão encerrada
 
 async function ensureSession(mode) {
+  if(S.localMode){ if(!S.sessionId){S.sessionId=uid();S.sessionStartedAt=Date.now();}S.sessionTouchedAt=Date.now();return S.sessionId; }
   if (S.sessionId) { S.sessionTouchedAt = Date.now(); return S.sessionId; }
   try {
     const s = await api('/api/prf/sessions/start', {
@@ -3519,6 +3495,7 @@ async function ensureSession(mode) {
 }
 
 async function endSession() {
+  if(S.localMode){ if(S.sessionId){const state=localState();state.sessions.push({id:S.sessionId,date:localToday(),minutes:Math.min(120,Math.max(0,(Math.min(Date.now(),S.sessionTouchedAt+SESSION_IDLE_MS)-S.sessionStartedAt)/60000))});saveLocalState(state);S.sessionId=null;}return; }
   const id = S.sessionId;
   if (!id) return;
   S.sessionId = null;
@@ -3630,18 +3607,20 @@ async function loadLocalMission() {
   }
   try {
     const mission = await api('/api/prf/local/mission', { method: 'POST', json: buildClientState() });
-    const fresh = localState();
+    let fresh = localState();
+    if(fresh.mission)fresh=StudyState.archiveMission(fresh,fresh.mission,fresh.mission_date);
+    fresh=StudyState.archiveMission(fresh,mission,today);
     fresh.mission = mission; fresh.mission_date = today;
     saveLocalState(fresh);
     S.mission = mission;
   } catch (e) {
     toast('Erro ao gerar missão', 'error');
-    S.mission = { status: 'empty', blocks: [], blocks_total: 0, blocks_done: 0 };
+    S.mission = { status: 'empty', blocks: [], blocks_total: 0, blocks_done: 0, load_error:true };
   }
   render();
 }
 function saveLocalMission(mission) {
-  const s = localState();
+  const s = StudyState.archiveMission(localState(), mission, localToday());
   s.mission = mission; s.mission_date = localToday();
   saveLocalState(s);
 }
@@ -3876,7 +3855,9 @@ async function selectSubject(id, name) {
   S.loading.questions = false; render(); scrollTop();
 }
 async function answerQuestion(qid, altId) {
-  if (S.answerResult) return;
+  if (S.answerResult||S.answerBusy) return;
+  S.answerBusy=true;
+  await ensureSession('focus');touchSession();
   const elapsed = S.qStartedAt ? Math.round((Date.now() - S.qStartedAt) / 1000) : null;
   try {
     if (S.localMode) {
@@ -3884,7 +3865,7 @@ async function answerQuestion(qid, altId) {
         method: 'POST', json: { question_id: qid, selected_alternative_id: altId },
       });
       const q = S.questions[S.qIndex];
-      localRecordAnswer(q?.subject_id, S.answerResult.is_correct);
+      recordLocalAnswer(q, S.answerResult, altId, `practice:${qid}:${S.qStartedAt}`);
     } else {
       touchSession();
       S.answerResult = await api('/api/prf/questions/answer', {
@@ -3894,7 +3875,7 @@ async function answerQuestion(qid, altId) {
     }
     S.answered[S.qIndex] = S.answerResult.is_correct;
     if (S.answerResult.xp_earned) toast(`+${S.answerResult.xp_earned} XP`, 'xp');
-  } catch (e) { toast('Erro ao responder', 'error'); }
+  } catch (e) {S.answerResult=null;toast('Não foi possível salvar a resposta. Verifique sua conexão e tente novamente.', 'error');} finally {S.answerBusy=false;}
   render();
 }
 function nextQuestion() {
@@ -3928,7 +3909,7 @@ async function startTutor(qid) {
 async function sendTutorMsg() {
   const input = document.getElementById('tutor-input');
   const text = (input?.value || '').trim();
-  if (!text || !S.tutorConv) return;
+  if (!text || !S.tutorConv || S.tutorTyping) return;
   input.value = '';
   S.tutorMsgs.push({ role:'user', text });
   S.tutorTyping = true; render();
@@ -4051,6 +4032,7 @@ async function answerSimQ(qid, sel) {
 function confirmFinishSim() { if (confirm('Finalizar a prova? Esta ação não pode ser desfeita.')) finishSimulado(); }
 function confirmExitSim() { if (confirm('Sair do simulado? Seu progresso já está salvo — você pode retomar depois nesta mesma tela.')) resetSimulado(); }
 async function finishSimulado() {
+  if(S.finishingSim)return;S.finishingSim=true;
   clearInterval(timerInterval);
   try {
     if (S.localMode) {
@@ -4060,14 +4042,18 @@ async function finishSimulado() {
         const result = await api('/api/prf/local/simulados/finish', { method:'POST', json:{
           question_ids: Object.values(S.sim.questions_by_block).flat().map(q => q.id), answers: S.simAnswers,
         }});
-        state.active_exam.is_completed = true; state.active_exam.result = result;
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
-        for (const attempt of result.attempts || []) localRecordAnswer(attempt.subject_id, attempt.is_correct);
+        let next=localState();
+        for(const attempt of result.attempts||[]) {
+          const q=Object.values(S.sim.questions_by_block).flat().find(q=>q.id===attempt.question_id);
+          next=StudyState.answer(next,{...attempt,id:`exam:${S.sim.id}:${attempt.question_id}`,text:q?.text||'',topic_id:q?.topic_id,subject_name:q?.subject_name,selected_letter:S.simAnswers[attempt.question_id]});
+        }
+        next.active_exam={...next.active_exam,is_completed:true,result};saveLocalState(next);
+        S.reviewSummary=null;S.history=null;S.trilha=null;
         S.simResult = result;
       }
     } else S.simResult = await api(`/api/prf/simulados/${S.sim.id}/finish`, { method:'POST' });
     localStorage.removeItem(SIM_ID_KEY);
-  } catch (e) { toast('Erro ao finalizar. Suas respostas continuam salvas; tente novamente.', 'error'); render(); return; }
+  } catch (e) { toast('Erro ao finalizar. Suas respostas continuam salvas; tente novamente.', 'error'); render(); return; } finally {S.finishingSim=false;}
   // Sábado: o simulado É a missão do dia. Terminar a prova fecha o bloco.
   if (S.pendingSimBlockId) {
     const bid = S.pendingSimBlockId;
@@ -4323,13 +4309,14 @@ async function saveLocalEpisode(episode) {
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
     });
-  } catch (e) {}
+  } catch (e) {if(!S.audioStorageWarned){S.audioStorageWarned=true;toast('Armazenamento de áudio indisponível. As novas partes não serão guardadas neste aparelho.','error');}}
 }
 async function playLocalPodcast(topicId, opts) {
   const tela = !!(opts && opts.tela);
   if (S.podId === topicId && !tela) { togglePlayPause(); return; }
   if (S.podId === topicId && tela) { S.subView = 'podcastNow'; S.tab = 'audio'; render(); return; }
   stopAudio();
+  S.podProgress='Preparando o roteiro…';
   S.podId = topicId; S.pod = null; S.podSeq = 0; S.podBoundaries = null;
   S.podLoading = true;
   if (tela) { S.subView = 'podcastNow'; S.tab = 'audio'; }
@@ -4338,29 +4325,36 @@ async function playLocalPodcast(topicId, opts) {
   const savedTime = loadPodTime(topicId);
   try {
     let cached = await getLocalEpisode(topicId);
-    if (!cached) {
-      toast('Gerando roteiro da aula...', 'info');
-      const script = await api('/api/prf/local/podcast/script', {
+    if (!cached?.audio) {
+      toast(cached?.script?'Retomando geração salva…':'Gerando roteiro da aula…', 'info');
+      const script = cached?.script || await api('/api/prf/local/podcast/script', {
         method: 'POST', json: { topic_id: topicId },
       });
       toast('Gerando áudio — só na primeira vez que abre esta aula...', 'info');
       const chunks = localAudioChunks(script.turns);
-      const blobs = [], boundaries = [];
+      const blobs = cached?.parts || [], durationsSaved=cached?.durations || [], boundaries = [];
       let elapsed = 0;
+      await saveLocalEpisode({topic_id:topicId,script,parts:blobs,durations:durationsSaved});
       for (let i = 0; i < chunks.length; i++) {
         if (S.podId !== topicId) return;
+        if(!blobs[i]) {
+        S.podProgress=`Preparando parte ${i+1} de ${chunks.length}`;render();
         toast(`Gerando áudio: parte ${i + 1} de ${chunks.length}`, 'info');
+        await ensureAuth();
         const r = await fetch(`${API}/api/prf/local/podcast/audio`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.token}` },
           body: JSON.stringify({ turns: chunks[i] }),
         });
-        if (!r.ok) throw new Error('audio failed');
+        if (!r.ok) throw new Error(r.status===429?'Limite temporário atingido. Tente mais tarde.':'Geração interrompida. Toque na aula para continuar.');
         const durations = (r.headers.get('X-Segment-Boundaries') || '').split(',').filter(Boolean).map(Number);
-        elapsed += durations[durations.length - 1] || 0;
+        durationsSaved[i] = durations[durations.length - 1] || 0;
         const part = await r.blob();
         if (!part.size) throw new Error('empty audio');
-        blobs.push(part);
+        blobs[i]=part;
+        await saveLocalEpisode({topic_id:topicId,script,parts:blobs,durations:durationsSaved});
+        }
+        elapsed+=durationsSaved[i]||0;
         if (i === chunks.length - 1 || chunks[i + 1][0].block !== chunks[i][0].block) boundaries.push(elapsed);
       }
       const blob = new Blob(blobs, { type: 'audio/mpeg' });
@@ -4397,7 +4391,7 @@ async function playLocalPodcast(topicId, opts) {
     if (S.podId !== topicId) return;
     S.podId = null;
     S.podLoading = false;
-    toast('Não foi possível gerar o áudio agora', 'error');
+    toast('Não foi possível concluir o áudio. Toque novamente para retomar as partes salvas.', 'error');
     render();
   }
 }
@@ -4436,8 +4430,9 @@ async function listenArticle(text) {
   if (!text) return;
   toast('Gerando áudio...', 'info');
   try {
-    const r = await fetch(`${API}/api/prf/commute/synthesize?text=${encodeURIComponent(text.slice(0, 4000))}`, {
-      method: 'POST', headers: { 'Authorization': `Bearer ${S.token}` },
+    await ensureAuth();
+    const r = await fetch(`${API}/api/prf/local/synthesize`, {
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${S.token}`},body:JSON.stringify({text:text.slice(0,5000)}),
     });
     if (!r.ok) throw new Error('tts failed');
     const blob = await r.blob();
@@ -4452,6 +4447,7 @@ async function loadReviewSummary() {
   render();
 }
 async function openReviews() {
+  if(S.localMode){S.tab='more';S.subView='missionReview';S.missionBlockId=null;S.activeMissionIdx=null;S.reviewIdx=0;S.reviews=StudyState.due(localState());await loadMissionReviewQuestion();render();scrollTop();return;}
   S.tab = 'more'; S.subView = 'reviews'; S.reviews = null; S.reviewIdx = 0;
   render();
   try { S.reviews = await api('/api/prf/reviews/due?limit=30'); }
@@ -4464,7 +4460,7 @@ async function submitReview(cardId, quality) {
       method:'POST', json:{ card_id: cardId, quality },
     });
     if (r.xp_earned) toast(`+${r.xp_earned} XP`, 'xp');
-  } catch (e) { toast('Erro ao registrar revisão', 'error'); }
+  } catch (e) { toast('Erro ao registrar revisão. Tente novamente.', 'error'); return; }
   S.reviewIdx++;
   render(); scrollTop();
 }
@@ -4538,6 +4534,7 @@ async function openMissionReview(blockIdx) {
   render(); scrollTop();
 }
 async function loadMissionReviewQuestion() {
+  S.reviewStartedAt=Date.now();
   const card = S.reviews?.[S.reviewIdx];
   if (!card) return;
   S.reviewAnswered = null;
@@ -4547,24 +4544,25 @@ async function loadMissionReviewQuestion() {
   }
 }
 async function answerMissionReview(questionId, altId) {
-  if (S.reviewAnswered) return;
+  if (S.reviewAnswered||S.reviewBusy) return;
+  S.reviewBusy=true;
   try {
     S.reviewAnswered = await api('/api/prf/questions/answer', {
       method: 'POST', json: { question_id: questionId, selected_alternative_id: altId },
     });
-  } catch (e) { toast('Erro ao registrar resposta', 'error'); }
+  } catch (e) { toast('Erro ao registrar resposta', 'error'); } finally {S.reviewBusy=false;}
   render(); scrollTop();
 }
 async function submitMissionReview(cardId, quality) {
   try {
     const r = await api('/api/prf/reviews/submit', { method:'POST', json:{ card_id: cardId, quality } });
     if (r?.xp_earned) toast(`+${r.xp_earned} XP`, 'xp');
-  } catch (e) {}
+  } catch (e) {toast('Não foi possível salvar a revisão. Tente novamente.','error');return;}
   S.reviewIdx++;
   S.reviewAnswered = null;
   S.reviewQuestion = null;
   if (S.reviewIdx >= (S.reviews?.length || 0)) {
-    await finishMissionBlock();
+    if(S.missionBlockId)await finishMissionBlock();else {S.reviewSummary=null;render();}
     return;
   }
   await loadMissionReviewQuestion();
@@ -4653,6 +4651,7 @@ function viewTrilha() {
         ${t.topics_per_week_needed ? `<div style="font-size:12px;color:var(--warning);margin-top:2px">${t.topics_per_week_needed} tópicos/semana necessários</div>` : ''}
       </div>
     </div>
+    <p class="muted" style="padding:0 20px">Um tópico fica consolidado após 10 respostas e pelo menos 80% de acertos. Este mapa cobre o conteúdo cadastrado; não equivale a uma previsão de aprovação.</p>
     <div class="section-eyebrow" style="padding:8px 20px">${S.targetExam} · ${(t.subjects||[]).length} matérias</div>
     ${(t.subjects||[]).map((s, si) => {
       const sPct = (s.coverage||0).toFixed(0);
@@ -4957,9 +4956,10 @@ async function openEssayDetail(id) {
 }
 function selectTheme(id) {
   S.selTheme = (S.themes || []).find(t => t.id === id);
-  S.subView = 'essay-write'; S.essayText = ''; S.essayResult = null;
+  S.subView = 'essay-write'; S.essayText = localState().essay_drafts?.[id]||''; S.essayResult = null;
   render(); scrollTop();
 }
+function saveEssayDraft(){const state=localState();state.essay_drafts||={};state.essay_drafts[S.selTheme.id]=S.essayText;saveLocalState(state);}
 function updateEssayCounter() {
   const lines = (S.essayText||'').split('\n').length;
   const over = lines > 30;
