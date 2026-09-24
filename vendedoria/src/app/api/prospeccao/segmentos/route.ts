@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // GET /api/prospeccao/segmentos?orgId=...
 export async function GET(req: NextRequest) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const orgId = req.nextUrl.searchParams.get("orgId") ?? undefined;
   const segments = await prisma.prospectSegment.findMany({
     where: { ...(orgId ? { organizationId: orgId } : {}), ativo: true },
@@ -14,6 +17,8 @@ export async function GET(req: NextRequest) {
 
 // POST /api/prospeccao/segmentos — cria novo segmento
 export async function POST(req: NextRequest) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const body = await req.json() as {
     organizationId: string;
     nome: string;

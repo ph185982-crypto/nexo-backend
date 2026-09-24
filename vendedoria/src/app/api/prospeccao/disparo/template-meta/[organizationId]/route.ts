@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { resolverWaba } from "@/lib/prospeccao/meta-waba";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 const GRAPH = "https://graph.facebook.com/v20.0";
 
@@ -16,9 +17,11 @@ type MetaComponent = {
 };
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { organizationId } = await params;
 
   const resolucao = await resolverWaba(organizationId);

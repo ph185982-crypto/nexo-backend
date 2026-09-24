@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { criarTemplateNaMeta, CATEGORIAS_META, type CategoriaMeta } from "@/lib/prospeccao/criar-template";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // POST /api/prospeccao/templates/criar-meta
 // Cria um template de mensagem direto na Meta (Graph API) e já cadastra no
@@ -7,6 +8,8 @@ import { criarTemplateNaMeta, CATEGORIAS_META, type CategoriaMeta } from "@/lib/
 // depois de aprovado pela Meta (ver GET /api/prospeccao/disparo/template-meta/:orgId
 // pra checar status, e PATCH /api/prospeccao/templates/:id { ativo: true } pra ativar).
 export async function POST(req: NextRequest) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const body = await req.json() as {
     organizationId?: string;
     nome?: string;

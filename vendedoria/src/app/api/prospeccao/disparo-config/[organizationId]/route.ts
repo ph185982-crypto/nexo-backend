@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // GET /api/prospeccao/disparo-config/:organizationId
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { organizationId } = await params;
   let config = await prisma.disparoConfig.findUnique({ where: { organizationId } });
   if (!config) {
@@ -19,6 +22,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { organizationId } = await params;
   const body = await req.json() as Partial<{
     limiteDiarioAtual: number;

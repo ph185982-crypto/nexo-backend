@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { enriquecerLote } from "@/lib/prospeccao/enriquecimento";
 import { calcularScoreLote } from "@/lib/prospeccao/score";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
+
+export const maxDuration = 60;
 
 // POST /api/prospeccao/enriquecimento/lote/:segmentId
 // Processa todos os leads NOVO do segmento: enriquece + calcula score
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ segmentId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { segmentId } = await params;
   try {
     const enriq = await enriquecerLote(segmentId);
