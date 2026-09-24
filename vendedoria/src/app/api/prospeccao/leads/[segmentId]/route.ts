@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // GET /api/prospeccao/leads/:segmentId?page=1&status=
 // Lista todos os leads de um segmento, com paginação
@@ -7,6 +8,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ segmentId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { segmentId } = await params;
   const { searchParams } = req.nextUrl;
   const status   = searchParams.get("status") ?? undefined;

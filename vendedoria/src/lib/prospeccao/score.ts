@@ -37,7 +37,26 @@ export async function calcularScore(leadId: string): Promise<number> {
   return score;
 }
 
-function calcularScoreComPesos(
+export interface ItemScore {
+  sinal: string;
+  pontos: number;
+  aplicado: boolean;
+}
+
+/** Explica quais sinais somaram no score — mostrado no detalhe da empresa. */
+export function explicarScore(
+  lead: Parameters<typeof calcularScoreComPesos>[0],
+  pesos: Parameters<typeof calcularScoreComPesos>[1],
+): ItemScore[] {
+  return [
+    { sinal: "Sem site",               pontos: pesos.pesoSemSite,         aplicado: lead.temSite === false },
+    { sinal: "Sem anúncio ativo",      pontos: pesos.pesoSemAnuncioAtivo, aplicado: lead.temAnuncioAtivo === false },
+    { sinal: "Instagram parado/ausente", pontos: pesos.pesoInstagramParado, aplicado: lead.instagramAtivo === false || lead.instagramAtivo === null },
+    { sinal: "Nota Google abaixo de 4", pontos: pesos.pesoRatingBaixo,    aplicado: lead.ratingGoogle !== null && lead.ratingGoogle < 4.0 },
+  ];
+}
+
+export function calcularScoreComPesos(
   lead: {
     temSite: boolean | null;
     temAnuncioAtivo: boolean | null;

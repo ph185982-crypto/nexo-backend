@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { importarPlanilha } from "@/lib/prospeccao/importacao";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 export const maxDuration = 60;
 
 // POST /api/prospeccao/leads/importar — multipart/form-data: file + organizationId
 export async function POST(req: NextRequest) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   const organizationId = form?.get("organizationId");
