@@ -108,6 +108,15 @@ export default function DisparoPage() {
   const [fila, setFila] = useState<FilaDisparo | null>(null);
   const [importando, setImportando] = useState(false);
   const [resultadoImportacao, setResultadoImportacao] = useState<ResultadoImportacao | null>(null);
+  const [novoNome, setNovoNome] = useState("");
+  const [novaCategoria, setNovaCategoria] = useState<"MARKETING" | "UTILITY" | "AUTHENTICATION">("MARKETING");
+  const [novoCorpo, setNovoCorpo] = useState("");
+  const [novoRodape, setNovoRodape] = useState("");
+  const [novasVariaveis, setNovasVariaveis] = useState<string[]>([]);
+  const [criandoTemplate, setCriandoTemplate] = useState(false);
+  const [resultadoCriacao, setResultadoCriacao] = useState<{ ok: boolean; mensagem: string } | null>(null);
+  const [statusMeta, setStatusMeta] = useState<Record<string, { status: string; corpoTemplate?: string; problema?: string }>>({});
+  const [verificandoStatus, setVerificandoStatus] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const filaPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -183,6 +192,73 @@ export default function DisparoPage() {
         }),
       });
       setNovoTemplate("");
+      await carregar();
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  const inserirVariavel = (v: string) => {
+    setNovoCorpo((prev) => `${prev}{{${novasVariaveis.length + 1}}}`);
+    setNovasVariaveis((prev) => [...prev, v]);
+  };
+
+  const criarTemplate = async () => {
+    if (!org || !novoNome.trim() || !novoCorpo.trim()) return;
+    setCriandoTemplate(true);
+    setResultadoCriacao(null);
+    try {
+      const res = await fetch("/api/prospeccao/templates/criar-meta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organizationId: org.id,
+          nome: novoNome.trim(),
+          categoria: novaCategoria,
+          corpoTexto: novoCorpo.trim(),
+          variaveisOrdem: novasVariaveis,
+          rodape: novoRodape.trim() || undefined,
+        }),
+      });
+      const data = await res.json() as { ok?: boolean; error?: string; status?: string; nome?: string };
+      if (res.ok && data.ok) {
+        setResultadoCriacao({ ok: true, mensagem: `✓ Enviado pra aprovação da Meta como "${data.nome}" — status inicial: ${data.status}. Verifique o status abaixo em alguns minutos.` });
+        setNovoNome(""); setNovoCorpo(""); setNovoRodape(""); setNovasVariaveis([]);
+        await carregar();
+      } else {
+        setResultadoCriacao({ ok: false, mensagem: data.error ?? "erro desconhecido" });
+      }
+    } catch (e) {
+      setResultadoCriacao({ ok: false, mensagem: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setCriandoTemplate(false);
+    }
+  };
+
+  const verificarStatusMeta = async () => {
+    if (!org) return;
+    setVerificandoStatus(true);
+    try {
+      const res = await fetch(`/api/prospeccao/disparo/template-meta/${org.id}`);
+      const data = await res.json() as { analise?: Array<{ nome: string; status?: string; corpoTemplate?: string; problema?: string }> };
+      const mapa: Record<string, { status: string; corpoTemplate?: string; problema?: string }> = {};
+      for (const a of data.analise ?? []) {
+        mapa[a.nome] = { status: a.status ?? "DESCONHECIDO", corpoTemplate: a.corpoTemplate, problema: a.problema };
+      }
+      setStatusMeta(mapa);
+    } finally {
+      setVerificandoStatus(false);
+    }
+  };
+
+  const ativarTemplate = async (id: string) => {
+    setSalvando(true);
+    try {
+      await fetch(`/api/prospeccao/templates/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ativo: true }),
+      });
       await carregar();
     } finally {
       setSalvando(false);
@@ -526,7 +602,8 @@ export default function DisparoPage() {
           </div>
           <p className="text-xs text-muted-foreground">
             O primeiro contato usa um template aprovado no WhatsApp Business (obrigatório pela Meta).
-            Crie o template no Gerenciador da Meta e cadastre o nome exato aqui.
+            Se já criou o template no Gerenciador da Meta, cadastre o nome exato abaixo. Pra criar um
+            template novo direto por aqui (sem abrir o Gerenciador da Meta), use a seção seguinte.
           </p>
 
           {templatesAtivos.length > 0 ? (
@@ -603,6 +680,160 @@ export default function DisparoPage() {
               Cadastrar e ativar
             </button>
           </div>
+
+          {templates.filter((t) => !t.ativo).length > 0 && (
+            <div className="pt-3 border-t border-border space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Aguardando aprovação da Meta ({templates.filter((t) => !t.ativo).length})
+                </p>
+                <button
+                  onClick={() => void verificarStatusMeta()}
+                  disabled={verificandoStatus}
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {verificandoStatus ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                  Verificar status na Meta
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {templates.filter((t) => !t.ativo).map((t) => {
+                  const sm = statusMeta[t.nomeTemplateMeta];
+                  const aprovado = sm?.status === "APPROVED";
+                  const rejeitado = sm?.status === "REJECTED";
+                  return (
+                    <div key={t.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-xs">
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate">{t.nomeTemplateMeta}</p>
+                        <p className="text-muted-foreground">
+                          {sm ? `status: ${sm.status}${sm.problema ? ` — ${sm.problema}` : ""}` : "status ainda não verificado"}
+                        </p>
+                      </div>
+                      {aprovado && (
+                        <button
+                          onClick={() => void ativarTemplate(t.id)}
+                          disabled={salvando}
+                          className="shrink-0 ml-2 px-2 py-1 rounded-lg border border-primary/40 text-primary text-[11px] font-medium hover:bg-primary/10 transition-colors"
+                        >
+                          Ativar
+                        </button>
+                      )}
+                      {rejeitado && (
+                        <span className="shrink-0 ml-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-500/15 text-red-500">rejeitado</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Criar template novo direto pela Meta */}
+        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageSquareText className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">Criar template novo (enviar pra aprovação da Meta)</h2>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Escreva a mensagem e clique nas variáveis pra inserir — a ordem clicada vira a ordem
+            {" "}{"{{1}}"}, {"{{2}}"}... A Meta costuma revisar de minutos a 24h. Categoria MARKETING é o
+            padrão certo pra abordagem fria (prospecção); UTILITY é pra avisos/confirmações a clientes existentes.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="block space-y-1">
+              <span className="text-xs font-medium text-muted-foreground">Nome do template</span>
+              <input
+                value={novoNome}
+                onChange={(e) => setNovoNome(e.target.value)}
+                placeholder="ex.: abordagem_moda_44"
+                className={inputCls}
+              />
+              {novoNome.trim() && (
+                <span className="text-[10px] text-muted-foreground">
+                  vai ser salvo como: {novoNome.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}
+                </span>
+              )}
+            </label>
+            <label className="block space-y-1">
+              <span className="text-xs font-medium text-muted-foreground">Categoria</span>
+              <select
+                value={novaCategoria}
+                onChange={(e) => setNovaCategoria(e.target.value as typeof novaCategoria)}
+                className={inputCls}
+              >
+                <option value="MARKETING">MARKETING (prospecção fria)</option>
+                <option value="UTILITY">UTILITY (aviso/confirmação)</option>
+                <option value="AUTHENTICATION">AUTHENTICATION (código/verificação)</option>
+              </select>
+            </label>
+          </div>
+
+          <label className="block space-y-1">
+            <span className="text-xs font-medium text-muted-foreground">Corpo da mensagem</span>
+            <textarea
+              value={novoCorpo}
+              onChange={(e) => setNovoCorpo(e.target.value)}
+              rows={4}
+              placeholder="Oi! Vi que a {{1}} ainda não tem presença digital forte..."
+              className={`${inputCls} resize-y`}
+            />
+          </label>
+
+          <div className="flex flex-wrap gap-2">
+            {VARIAVEIS_DISPONIVEIS.map((v) => (
+              <button
+                key={v}
+                onClick={() => inserirVariavel(v)}
+                className="px-2 py-1 rounded-lg border border-border text-xs text-muted-foreground hover:bg-accent/10 transition-colors"
+              >
+                + {`{{${novasVariaveis.length + 1}}} ${v}`}
+              </button>
+            ))}
+            {novasVariaveis.length > 0 && (
+              <button
+                onClick={() => { setNovasVariaveis([]); setNovoCorpo((prev) => prev.replace(/\{\{\s*\d+\s*\}\}/g, "")); }}
+                className="px-2 py-1 rounded-lg border border-border text-xs text-muted-foreground hover:bg-accent/10 transition-colors"
+              >
+                limpar variáveis
+              </button>
+            )}
+          </div>
+          {novasVariaveis.length > 0 && (
+            <p className="text-[11px] text-muted-foreground">
+              Ordem: {novasVariaveis.map((v, i) => `{{${i + 1}}}=${v}`).join("  ·  ")}
+            </p>
+          )}
+
+          <label className="block space-y-1">
+            <span className="text-xs font-medium text-muted-foreground">Rodapé (opcional)</span>
+            <input
+              value={novoRodape}
+              onChange={(e) => setNovoRodape(e.target.value)}
+              placeholder="ex.: Nexo Brasil"
+              className={inputCls}
+            />
+          </label>
+
+          <button
+            onClick={() => void criarTemplate()}
+            disabled={criandoTemplate || !org || !novoNome.trim() || !novoCorpo.trim()}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+          >
+            {criandoTemplate ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            Enviar pra aprovação da Meta
+          </button>
+
+          {resultadoCriacao && (
+            <div className={`text-xs rounded-lg px-3 py-2 border ${
+              resultadoCriacao.ok
+                ? "border-green-500/30 bg-green-500/5 text-green-600 dark:text-green-400"
+                : "border-red-500/40 bg-red-500/5 text-red-500"
+            }`}>
+              {resultadoCriacao.mensagem}
+            </div>
+          )}
         </section>
 
         {/* Cadência */}
