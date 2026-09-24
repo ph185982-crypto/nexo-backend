@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   ArrowLeft, Send, Save, Loader2, Pause, Play,
   ShieldCheck, Clock, MessageSquareText, RefreshCw,
+  Download, Upload, FileSpreadsheet,
 } from "lucide-react";
 
 interface Org { id: string; name: string }
@@ -39,6 +40,14 @@ interface LeadFila {
   telefone: string | null;
   status: string;
   tentativasDisparo: number;
+}
+
+interface ResultadoImportacao {
+  ok: boolean;
+  inseridos: number;
+  ignorados: number;
+  detalhes: Array<{ linha: number; nome: string | null; motivo: string }>;
+  error?: string;
 }
 
 interface FilaDisparo {
@@ -97,8 +106,11 @@ export default function DisparoPage() {
   const [statusDisparo, setStatusDisparo] = useState<string | null>(null);
   const [aprovados, setAprovados] = useState<number>(0);
   const [fila, setFila] = useState<FilaDisparo | null>(null);
+  const [importando, setImportando] = useState(false);
+  const [resultadoImportacao, setResultadoImportacao] = useState<ResultadoImportacao | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const filaPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -174,6 +186,26 @@ export default function DisparoPage() {
       await carregar();
     } finally {
       setSalvando(false);
+    }
+  };
+
+  const importarPlanilha = async (file: File) => {
+    if (!org) return;
+    setImportando(true);
+    setResultadoImportacao(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("organizationId", org.id);
+      const res = await fetch("/api/prospeccao/leads/importar", { method: "POST", body: formData });
+      const data = await res.json() as ResultadoImportacao;
+      setResultadoImportacao(data);
+      if (data.ok) await carregar();
+    } catch (e) {
+      setResultadoImportacao({ ok: false, inseridos: 0, ignorados: 0, detalhes: [], error: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setImportando(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -280,6 +312,68 @@ export default function DisparoPage() {
             {statusDisparo}
           </div>
         )}
+
+        {/* Importação de leads por planilha */}
+        <section className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <FileSpreadsheet className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">Importar leads por planilha</h2>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Baixe o modelo, preencha com nome e telefone (WhatsApp) de cada lead e suba de volta.
+            Cada linha importada entra direto na fila de disparo — respeitando a mesma cadência e
+            proteção de número configuradas abaixo. Telefone fixo ou inválido é rejeitado automaticamente.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="/api/prospeccao/leads/modelo"
+              download
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm hover:bg-accent/10 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Baixar planilha modelo
+            </a>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importando || !org}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              {importando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+              Carregar planilha preenchida
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void importarPlanilha(file);
+              }}
+            />
+          </div>
+          {resultadoImportacao && (
+            <div className={`text-xs rounded-lg px-3 py-2 border ${
+              resultadoImportacao.ok
+                ? "border-green-500/30 bg-green-500/5 text-green-600 dark:text-green-400"
+                : "border-red-500/40 bg-red-500/5 text-red-500"
+            }`}>
+              {resultadoImportacao.ok
+                ? `✓ ${resultadoImportacao.inseridos} lead(s) importado(s) e já elegível(is) pro disparo · ${resultadoImportacao.ignorados} ignorado(s)`
+                : `Erro na importação: ${resultadoImportacao.error ?? "desconhecido"}`}
+              {resultadoImportacao.detalhes.length > 0 && (
+                <details className="mt-1.5">
+                  <summary className="cursor-pointer">Ver linhas ignoradas ({resultadoImportacao.detalhes.length})</summary>
+                  <ul className="mt-1 space-y-0.5 max-h-40 overflow-auto">
+                    {resultadoImportacao.detalhes.map((d, i) => (
+                      <li key={i}>linha {d.linha} — {d.nome ?? "(sem nome)"}: {d.motivo}</li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </div>
+          )}
+        </section>
 
         {/* Fila de disparo em tempo real */}
         <section className="rounded-xl border border-border bg-card p-4 space-y-4">
