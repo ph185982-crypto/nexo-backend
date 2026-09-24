@@ -55,6 +55,8 @@ const CENARIOS: Array<{ nome: string; historico: Array<{ role: "user" | "assista
 
 const MODELOS = ["gpt-4o", "gpt-4o-mini", "gpt-6-luna"];
 
+export const maxDuration = 60;
+
 export async function POST() {
   if (!(await auth())?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -64,16 +66,18 @@ export async function POST() {
 
   const resultados = [];
   for (const cenario of CENARIOS) {
-    const porModelo: Record<string, { ok: boolean; resposta: string | null; ms: number }> = {};
-    for (const model of MODELOS) {
-      const t0 = Date.now();
-      const resposta = await callOpenAI(systemPrompt, cenario.historico, cenario.mensagem, model, {
-        maxTokens: 1000,
-        temperature: 0.7,
-        responseFormat: "json_object",
-      });
-      porModelo[model] = { ok: resposta !== null, resposta, ms: Date.now() - t0 };
-    }
+    const entradas = await Promise.all(
+      MODELOS.map(async (model) => {
+        const t0 = Date.now();
+        const resposta = await callOpenAI(systemPrompt, cenario.historico, cenario.mensagem, model, {
+          maxTokens: 1000,
+          temperature: 0.7,
+          responseFormat: "json_object",
+        });
+        return [model, { ok: resposta !== null, resposta, ms: Date.now() - t0 }] as const;
+      }),
+    );
+    const porModelo = Object.fromEntries(entradas);
     resultados.push({ cenario: cenario.nome, mensagem: cenario.mensagem, porModelo });
   }
 
