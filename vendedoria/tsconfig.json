@@ -19,5 +19,7 @@
     "target": "ES2017"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // mcp-server/ é um projeto Node separado (próprio package.json e tsconfig) —
+  // não faz parte do build do Next e não deve ser varrido pelo typecheck daqui.
+  "exclude": ["node_modules", "mcp-server"]
 }

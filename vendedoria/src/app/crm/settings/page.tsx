@@ -5,7 +5,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Settings, Phone, Bot, Plus, Save, Eye, EyeOff,
   CheckCircle2, XCircle, Loader2, RefreshCw, Wifi, WifiOff,
-  Building2, Key, MessageSquare, Zap, Calendar, Unplug,
+  Building2, Key, MessageSquare, Zap, Calendar, Unplug, Plug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { ApiKeysTab } from "@/components/settings/ApiKeysTab";
 import { cn } from "@/lib/utils";
 
 // ─── GraphQL ──────────────────────────────────────────────────────────────
@@ -921,7 +922,7 @@ export default function SettingsPage() {
         </div>
       ) : (
         <Tabs defaultValue="whatsapp">
-          <TabsList className="grid grid-cols-6 w-full">
+          <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="whatsapp" className="gap-1.5 text-xs">
               <Phone className="w-3.5 h-3.5" />
               WhatsApp
@@ -941,6 +942,10 @@ export default function SettingsPage() {
             <TabsTrigger value="organization" className="gap-1.5 text-xs">
               <Building2 className="w-3.5 h-3.5" />
               Organização
+            </TabsTrigger>
+            <TabsTrigger value="api" className="gap-1.5 text-xs">
+              <Plug className="w-3.5 h-3.5" />
+              API
             </TabsTrigger>
             <TabsTrigger value="security" className="gap-1.5 text-xs">
               <Key className="w-3.5 h-3.5" />
@@ -963,6 +968,9 @@ export default function SettingsPage() {
             </TabsContent>
             <TabsContent value="organization">
               <OrganizationTab orgs={orgs} refetch={refetch} />
+            </TabsContent>
+            <TabsContent value="api">
+              <ApiKeysTab />
             </TabsContent>
             <TabsContent value="security">
               <SecurityTab />

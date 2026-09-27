@@ -4,6 +4,7 @@ import { typeDefs } from "@/graphql/schema/typeDefs";
 import { resolvers } from "@/graphql/resolvers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma/client";
+import { validarChaveApi } from "@/lib/auth/api-key";
 import type { NextRequest } from "next/server";
 
 // Sem isso a Vercel usa o default da plataforma (10s no plano Hobby) — resolvers
@@ -25,10 +26,19 @@ const server = new ApolloServer<GraphQLContext>({
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest, GraphQLContext>(server, {
-  context: async () => {
+  context: async (req) => {
     try {
-      const session = await auth();
-      if (!session?.user?.id) {
+      // Chave de API (integração externa — MCP server, automações) tem o
+      // mesmo acesso de um ADMIN logado, sem cookie de sessão.
+      const chave = await validarChaveApi(req);
+      const session = chave ? null : await auth();
+
+      const identidade = chave
+        ? { userId: `apikey:${chave.id}`, userRole: "ADMIN" }
+        : session?.user?.id
+          ? { userId: session.user.id, userRole: (session.user as { role?: string }).role }
+          : null;
+      if (!identidade) {
         return { allowedOrgIds: [] };
       }
 
@@ -39,8 +49,7 @@ const handler = startServerAndCreateNextHandler<NextRequest, GraphQLContext>(ser
       });
 
       return {
-        userId: session.user.id,
-        userRole: (session.user as { role?: string }).role,
+        ...identidade,
         allowedOrgIds: orgs.map((o) => o.id),
       };
     } catch {
