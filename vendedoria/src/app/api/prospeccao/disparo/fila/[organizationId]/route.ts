@@ -4,11 +4,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { organizationId } = await params;
 
   const config = await prisma.disparoConfig.findUnique({ where: { organizationId } });

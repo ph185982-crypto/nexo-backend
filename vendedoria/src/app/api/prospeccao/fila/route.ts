@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // GET /api/prospeccao/fila?status=ANALISADO&orgId=...
 // Retorna leads aguardando revisão humana (ou aprovados para spot-check)
 export async function GET(req: NextRequest) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { searchParams } = req.nextUrl;
   const status       = searchParams.get("status") ?? "ANALISADO";
   const orgId        = searchParams.get("orgId")  ?? undefined;

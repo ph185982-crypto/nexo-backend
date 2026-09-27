@@ -70,6 +70,8 @@ _LINE_IS_DISPOSITIVO = re.compile(_MARKER)
 _TRAILING_RUBRIC = re.compile(r"(?<=[;.:])\s+([A-ZÀ-Ý][^.;:!?,]{2,58})$")
 MAX_RUBRIC_WORDS = 7
 
+_LETTERS = re.compile(r"[A-Za-zÀ-ÿ]")
+
 # Cabeçalho de capítulo grudado no fim do texto oficial (o seed traz
 # "... satisfação pessoal. CAPÍTULO II DOS SUJEITOS DO CRIME"). Lido em voz
 # alta vira ruído no meio da frase, então sai.
@@ -262,7 +264,10 @@ def _split_segments(text: str) -> list[dict]:
 
     segments: list[dict] = []
     for piece in raw:
-        if len(piece) <= 1:
+        # Fragmento sem letra suficiente (um "a)" solto de dado malformado)
+        # sintetiza como áudio vazio, e uma fala vazia hoje derruba o episódio
+        # inteiro em synthesize_segment. Fora antes de virar fala.
+        if len(_LETTERS.findall(piece)) < 2:
             continue
         body, rubric = _strip_rubric(piece)
         if body:

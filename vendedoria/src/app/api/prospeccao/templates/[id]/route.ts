@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // PATCH /api/prospeccao/templates/:id — atualiza/ativa template
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { id } = await params;
   const body = await req.json() as {
     nomeTemplateMeta?: string;
@@ -38,9 +41,11 @@ export async function PATCH(
 
 // DELETE /api/prospeccao/templates/:id
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { id } = await params;
   try {
     await prisma.templateProspeccao.delete({ where: { id } });

@@ -5,11 +5,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { getHoraBRT } from "@/lib/prospeccao/disparo";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ organizationId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { organizationId } = await params;
 
   const checks: Array<{ item: string; ok: boolean; detalhe: string }> = [];

@@ -453,6 +453,8 @@ async def synthesize_segment(turns: list[dict]) -> bytes:
             voices.get(t.get("speaker"), voices[HOST_A]).synthesize(t.get("text") or "")
             for t in chunk
         ])
+        if any(not audio for turn, audio in zip(chunk, audios) if (turn.get('text') or '').strip()):
+            raise RuntimeError('Uma fala não pôde ser sintetizada. Tente novamente.')
         parts.extend(a for a in audios if a)
 
     return b"".join(parts)

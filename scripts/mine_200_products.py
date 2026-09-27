@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://nexo_db_wjv3_user:s0yvLJLFSBBd8BbsnFJS5Yq5WnJi2uu9@dpg-d6m1l3fgi27c738atp30-a/nexo_db_wjv3"
+    os.environ["DATABASE_URL"]
 )
 
 TARGETING = {

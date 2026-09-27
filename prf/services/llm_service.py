@@ -68,8 +68,8 @@ async def chat(
         try:
             return await _chat_with(provider, messages, temperature, max_tokens, json_mode)
         except Exception as e:
-            logger.warning(f"[LLM] {provider} failed: {e}")
-            errors.append(f"{provider}: {e}")
+            logger.warning(f"[LLM] {provider} failed: {type(e).__name__}")
+            errors.append(f"{provider}: {type(e).__name__}")
 
     raise LLMUnavailable("; ".join(errors))
 
@@ -144,8 +144,8 @@ async def vision(
         try:
             return await _vision_with(provider, prompt, image_bytes, mime_type, max_tokens)
         except Exception as e:
-            logger.warning(f"[LLM] {provider} vision failed: {e}")
-            errors.append(f"{provider}: {e}")
+            logger.warning(f"[LLM] {provider} vision failed: {type(e).__name__}")
+            errors.append(f"{provider}: {type(e).__name__}")
 
     raise LLMUnavailable("; ".join(errors))
 

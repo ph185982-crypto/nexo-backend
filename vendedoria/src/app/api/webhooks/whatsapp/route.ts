@@ -15,6 +15,7 @@ import { isMaxOwnerNumber } from "@/lib/max/config";
 import { handleMaxMessage } from "@/lib/max/responder";
 import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
+import { retomarDisparosPendentes } from "@/lib/prospeccao/disparo";
 
 // Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
 // default da função para terminar — a Vercel pode congelar a invocação assim que
@@ -109,10 +110,18 @@ export async function POST(req: NextRequest) {
     // o próprio tráfego carrega o reprocessamento: cada mensagem recebida
     // drena alguns itens, em after() (fora do caminho da resposta pra Meta).
     // O guard do RETRY_HEADER evita recursão — um retry não dispara outro.
+    //
+    // retomarDisparosPendentes() é o mesmo caso: existia como cron de 5min
+    // (/api/cron/healthcheck) rodando na VPS antiga via script externo, mas
+    // esse script não existe mais na Vercel e o endpoint nunca ficou nos 2
+    // crons do Hobby — sem isso, um lote de disparo interrompido no meio
+    // (timeout de função, deploy) só retomava no disparo-diario do dia
+    // seguinte. Reaproveita o mesmo tráfego pra cobrir o buraco.
     if (req.headers.get(RETRY_HEADER) !== "1") {
       after(async () => {
         await drainWebhookQueue(5);
         await triggerDueFollowups();
+        await retomarDisparosPendentes().catch((e) => console.error("[Webhook] retomarDisparosPendentes falhou:", e));
       });
     }
 

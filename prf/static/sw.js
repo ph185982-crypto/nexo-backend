@@ -3,15 +3,18 @@
  * Enables offline-first PWA experience with cache-first strategy
  */
 
-const CACHE_NAME = 'prf-estudo-v2';
-const API_CACHE = 'prf-api-v2';
-const ASSETS_CACHE = 'prf-assets-v2';
+const CACHE_NAME = 'prf-estudo-v3';
+const API_CACHE = 'prf-api-v3';
+const ASSETS_CACHE = 'prf-assets-v3';
 
 const CRITICAL_ASSETS = [
   '/',
   '/app',
   '/manifest.json',
-  '/sw.js'
+  '/sw.js',
+  '/api/prf/local/assets/study-state.js',
+  '/api/prf/local/assets/local-client.js',
+  '/api/prf/local/assets/refresh.css'
 ];
 
 // Install: cache critical assets
@@ -55,7 +58,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   // API requests: network-first with cache fallback
-  if (url.pathname.startsWith('/api/')) {
+  if (url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/prf/local/')) return;
+  if (url.pathname.startsWith('/api/prf/local/')) {
     event.respondWith(
       fetch(request)
         .then((response) => {

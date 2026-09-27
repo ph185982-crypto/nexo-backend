@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 interface PesosBody {
   pesoSemSite?: number;
@@ -16,6 +17,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ segmentId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { segmentId } = await params;
   const body = await req.json() as PesosBody;
 

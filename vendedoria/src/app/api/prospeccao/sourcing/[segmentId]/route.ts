@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { processarLoteSourcing, type EstadoSourcing } from "@/lib/prospeccao/sourcing";
 import { criarOrcamento, enfileirar } from "@/lib/jobs/fila";
+import { exigirAcesso } from "@/lib/prospeccao/guard";
 
 // Teto de duração da função. Cada lote para antes disso e encadeia o próximo.
 export const maxDuration = 60;
@@ -40,6 +41,14 @@ export async function POST(
 
   const corpo = await req.json().catch(() => ({}));
   const continuando = Boolean((corpo as { continuar?: boolean }).continuar);
+
+  // Iniciar exige sessão. A continuação encadeada chega sem sessão (e sem
+  // segredo quando CRON_SECRET não está configurado) e só consegue retomar uma
+  // execução que já está em andamento — nunca abrir uma nova.
+  if (!continuando) {
+    const negado = await exigirAcesso(req);
+    if (negado) return negado;
+  }
 
   const ativa = await execucaoAtiva(segmentId);
   const limiteOrfa = new Date(Date.now() - MINUTOS_ATE_ORFA * 60_000);
@@ -163,9 +172,11 @@ export async function POST(
 
 /** GET /api/prospeccao/sourcing/:segmentId — progresso da busca. */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ segmentId: string }> },
 ) {
+  const negado = await exigirAcesso(req);
+  if (negado) return negado;
   const { segmentId } = await params;
 
   const [ativa, ultima] = await Promise.all([
