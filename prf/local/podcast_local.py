@@ -24,6 +24,26 @@ class PodcastLocalError(RuntimeError):
     pass
 
 
+# Com a chave do provedor inválida, cada roteiro pedia dez blocos em paralelo,
+# levava dez 401 e só então caía no roteiro da lei — 2,5s e dez chamadas
+# jogadas fora em toda aula que o candidato abre. O cooldown curto evita isso
+# sem travar a volta do LLM: passados cinco minutos ele tenta de novo, então
+# uma chave nova entra em serviço sozinha, sem deploy.
+_LLM_DOWN_UNTIL = 0.0
+_LLM_COOLDOWN_SECS = 300.0
+
+
+def _llm_worth_trying() -> bool:
+    import time
+    return time.monotonic() >= _LLM_DOWN_UNTIL
+
+
+def _mark_llm_down() -> None:
+    import time
+    global _LLM_DOWN_UNTIL
+    _LLM_DOWN_UNTIL = time.monotonic() + _LLM_COOLDOWN_SECS
+
+
 async def build_script(topic_id: str) -> dict:
     store = get_store()
     topic = store.get_topic(topic_id)
@@ -51,11 +71,14 @@ async def build_script(topic_id: str) -> dict:
     # sempre disponível. Assim que existir chave válida o LLM volta a ganhar,
     # sem mudar nada aqui.
     engine = "llm"
-    try:
-        episode = await podcast_service.generate_episode(topic["name"], subj_name, parts[0])
-    except Exception as e:
-        logger.warning(f"[LOCAL] Roteiro LLM falhou ({e}); usando roteiro da lei")
-        episode = None
+    episode = None
+    if _llm_worth_trying():
+        try:
+            episode = await podcast_service.generate_episode(topic["name"], subj_name, parts[0])
+        except Exception as e:
+            logger.warning(f"[LOCAL] Roteiro LLM falhou ({e}); usando roteiro da lei")
+        if not episode or not episode.get("turns"):
+            _mark_llm_down()
 
     if not episode or not episode.get("turns"):
         from prf.local.script_builder import build_episode
