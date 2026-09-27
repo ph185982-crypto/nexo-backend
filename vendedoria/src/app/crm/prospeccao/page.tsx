@@ -142,7 +142,7 @@ function ProspeccaoHub() {
           <Stepper resumo={resumo} navegar={navegar} />
 
           {/* Abas */}
-          <nav className="flex gap-1 px-2 md:px-4 overflow-x-auto scrollbar-none" aria-label="Seções da prospecção">
+          <nav className="flex gap-1 px-2 md:px-4 overflow-x-auto scrollbar-hide" aria-label="Seções da prospecção">
             {ABAS.map((a) => {
               const ativo = a.id === aba;
               const n = contador[a.id];

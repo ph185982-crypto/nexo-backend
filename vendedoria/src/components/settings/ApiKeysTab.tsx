@@ -89,7 +89,7 @@ export function ApiKeysTab() {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base"><Plug className="w-4 h-4" /> Chaves de API</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base"><Plug className="w-4 h-4" /> Chaves de integração externa</CardTitle>
           <CardDescription>
             Dão acesso total (leitura e edição) ao sistema para ferramentas externas — o servidor MCP
             deste repositório, outro agente de IA, uma automação. Cada chave funciona como um usuário

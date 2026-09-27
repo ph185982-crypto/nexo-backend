@@ -905,12 +905,12 @@ export default function SettingsPage() {
   const orgs: OrgType[] = data?.whatsappBusinessOrganizations ?? [];
 
   return (
-    <div className="p-6 max-w-3xl space-y-6">
+    <div className="p-4 md:p-6 max-w-3xl space-y-6">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
           <Settings className="w-5 h-5 text-primary" />
         </div>
-        <div>
+        <div className="min-w-0">
           <h1 className="text-xl font-bold">Configurações</h1>
           <p className="text-sm text-muted-foreground">Gerencie sua organização, WhatsApp e agente IA</p>
         </div>
@@ -922,32 +922,36 @@ export default function SettingsPage() {
         </div>
       ) : (
         <Tabs defaultValue="whatsapp">
-          <TabsList className="grid grid-cols-7 w-full">
-            <TabsTrigger value="whatsapp" className="gap-1.5 text-xs">
+          {/* Rolagem horizontal no celular — grade de 7 colunas só cabia
+              espremendo cada aba a ~50px, a ponto de "API" sumir no meio do
+              texto cortado das vizinhas. Aqui cada aba mantém tamanho legível
+              e o usuário arrasta para o lado pra ver as demais. */}
+          <TabsList className="flex w-full justify-start gap-1 overflow-x-auto scrollbar-hide md:grid md:grid-cols-7">
+            <TabsTrigger value="whatsapp" className="gap-1.5 text-xs shrink-0">
               <Phone className="w-3.5 h-3.5" />
               WhatsApp
             </TabsTrigger>
-            <TabsTrigger value="integracoes" className="gap-1.5 text-xs">
+            <TabsTrigger value="integracoes" className="gap-1.5 text-xs shrink-0">
               <Calendar className="w-3.5 h-3.5" />
               Integrações
             </TabsTrigger>
-            <TabsTrigger value="agent" className="gap-1.5 text-xs">
+            <TabsTrigger value="agent" className="gap-1.5 text-xs shrink-0">
               <Bot className="w-3.5 h-3.5" />
               Agente IA
             </TabsTrigger>
-            <TabsTrigger value="kanban" className="gap-1.5 text-xs">
+            <TabsTrigger value="kanban" className="gap-1.5 text-xs shrink-0">
               <Settings className="w-3.5 h-3.5" />
               Kanban
             </TabsTrigger>
-            <TabsTrigger value="organization" className="gap-1.5 text-xs">
+            <TabsTrigger value="organization" className="gap-1.5 text-xs shrink-0">
               <Building2 className="w-3.5 h-3.5" />
               Organização
             </TabsTrigger>
-            <TabsTrigger value="api" className="gap-1.5 text-xs">
+            <TabsTrigger value="api" className="gap-1.5 text-xs shrink-0">
               <Plug className="w-3.5 h-3.5" />
               API
             </TabsTrigger>
-            <TabsTrigger value="security" className="gap-1.5 text-xs">
+            <TabsTrigger value="security" className="gap-1.5 text-xs shrink-0">
               <Key className="w-3.5 h-3.5" />
               Segurança
             </TabsTrigger>

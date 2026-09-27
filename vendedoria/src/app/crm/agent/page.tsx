@@ -194,7 +194,7 @@ export default function AgentPage() {
       {toast && <Toast msg={toast} onClose={() => setToast("")} />}
 
       {/* Tabs */}
-      <div className="bg-white border-b flex overflow-x-auto scrollbar-none shrink-0">
+      <div className="bg-white border-b flex overflow-x-auto scrollbar-hide shrink-0">
         {TABS.map((t) => (
           <button
             key={t.id}
