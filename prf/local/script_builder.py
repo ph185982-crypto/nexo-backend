@@ -193,9 +193,10 @@ def build_question_episode(
 
     blocks: list[list[tuple[str, str]]] = [[
         (HOST_A, f"Treino de questões de {topic_name}. Matéria: {subject_name}."),
-        (HOST_B, f"São {len(usable)} questões comentadas. Eu leio a assertiva, "
-                 "você decide de cabeça, e só depois eu dou o gabarito com o "
-                 "motivo. Não adianta ouvir a resposta antes de decidir."),
+        (HOST_B, f"{_count(len(usable), 'uma questão comentada', 'questões comentadas')}. "
+                 "Eu leio a assertiva, você decide de cabeça, e só depois eu dou "
+                 "o gabarito com o motivo. Não adianta ouvir a resposta antes "
+                 "de decidir."),
     ]]
 
     per_block = max(QUESTIONS_PER_BLOCK, -(-len(usable) // MAX_QUESTION_BLOCKS))
@@ -298,7 +299,8 @@ def _opening(topic: str, subject: str, articles: list[dict]) -> list[tuple[str, 
     if numbers:
         turns.append((
             HOST_A,
-            f"São {len(numbers)} dispositivos hoje: {_listing(numbers)}.",
+            f"{_count(len(numbers), 'um dispositivo', 'dispositivos')} hoje: "
+            f"{_listing(numbers)}.",
         ))
     if chapter:
         turns.append((HOST_B, f"Tudo dentro de {_clean(chapter)}."))
@@ -458,6 +460,11 @@ def _main_document(articles: list[dict]) -> Optional[str]:
     if not counts:
         return None
     return max(counts, key=lambda name: counts[name])
+
+
+def _count(total: int, singular: str, plural: str) -> str:
+    """Concordância falada: "São 1 questões" soa como erro de máquina."""
+    return f"É {singular}" if total == 1 else f"São {total} {plural}"
 
 
 def _listing(items: list[str]) -> str:
