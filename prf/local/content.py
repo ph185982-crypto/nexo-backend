@@ -264,17 +264,32 @@ class ContentStore:
 
     # ── Tópico do dia ────────────────────────────────────────────────────
     def pick_study_topic(self, subject_slug: str, exclude_topic_ids: Optional[set] = None) -> Optional[dict]:
-        """Tópico com mais material e áudio-elegível dentro da matéria,
-        excluindo o que já foi descartado hoje (botão de pular missão)."""
+        """Tópico com mais material dentro da matéria, excluindo o que já foi
+        descartado hoje (botão de pular missão).
+
+        Tópico com lei seca vem primeiro: rende a aula mais rica, com leitura
+        comentada do dispositivo. Mas exigir lei seca deixava 90 dos 138
+        tópicos fora da rotação — Direito Administrativo inteiro, Português,
+        Raciocínio Lógico e Informática não têm artigo cadastrado, e matéria
+        sem tópico elegível simplesmente nunca virava missão, mesmo tendo 907
+        questões comentadas no seed. Esses tópicos entram depois dos que têm
+        lei, e o áudio deles é o drill de questões (ver script_builder).
+        """
         exclude_topic_ids = exclude_topic_ids or set()
         candidates = [
             t for t in self.get_topics(subject_slug)
             if str(t["id"]) not in exclude_topic_ids
-            and self._articles_by_topic.get(str(t["id"]))
+            and (
+                self._articles_by_topic.get(str(t["id"]))
+                or self._questions_by_topic.get(str(t["id"]))
+            )
         ]
         if not candidates:
             return None
-        candidates.sort(key=lambda t: -(t.get("weight") or 0))
+        candidates.sort(key=lambda t: (
+            0 if self._articles_by_topic.get(str(t["id"])) else 1,
+            -(t.get("weight") or 0),
+        ))
         return candidates[0]
 
 

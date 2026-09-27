@@ -4404,7 +4404,10 @@ function localAudioChunks(turns) {
     const text = turn.text || '';
     for (let offset = 0; offset < text.length; offset += 3000) {
       const part = { ...turn, text: text.slice(offset, offset + 3000) };
-      if (batch.length && (batch[0].block !== part.block || size + part.text.length > 3000)) {
+      // O servidor recusa lote com mais de 50 falas, então o teto de 50 aqui
+      // é contrato, não precaução: sem ele uma aula com muitas falas curtas
+      // (o bloco de expressões) volta 422 e o áudio não sai.
+      if (batch.length && (batch[0].block !== part.block || size + part.text.length > 3000 || batch.length >= 50)) {
         chunks.push(batch); batch = []; size = 0;
       }
       batch.push(part); size += part.text.length;

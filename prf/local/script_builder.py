@@ -72,6 +72,53 @@ MAX_RUBRIC_WORDS = 7
 
 _LETTERS = re.compile(r"[A-Za-zÀ-ÿ]")
 
+# Teto por fala depois da fusão. O servidor aceita 3000 por fala e 3500 por
+# requisição de áudio, então 1500 deixa folga para o cliente montar os lotes.
+MAX_TURN_CHARS = 1500
+
+
+def _assemble(topic_name: str, blocks: list[list[tuple[str, str]]]) -> dict:
+    """Funde falas seguidas do mesmo apresentador e fecha o episódio.
+
+    Sem a fusão o bloco de expressões virava dezenas de falas de uma palavra,
+    e o endpoint de áudio recusa lote com mais de 50 falas — a aula de Sistema
+    Nacional de Trânsito chegava a 72 e o áudio dela falhava inteiro. Fundir
+    também troca dezenas de chamadas de TTS por poucas, e cada emenda a menos
+    é um ponto a menos onde o episódio pode sair picado.
+    """
+    turns: list[dict] = []
+    for index, block in enumerate(blocks):
+        for speaker, text in _merge_same_speaker(block):
+            turns.append({"speaker": speaker, "text": text, "block": index})
+
+    return {
+        "topic": topic_name,
+        "turns": turns,
+        "blocks": list(range(len(blocks))),
+        "segment_count": len(blocks),
+        "duration_secs": estimate_duration_secs(turns),
+        "word_count": sum(len(t["text"].split()) for t in turns),
+    }
+
+
+def _merge_same_speaker(block: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    merged: list[list[str]] = []
+    for speaker, text in block:
+        text = text.strip()
+        if not text:
+            continue
+        if (
+            merged
+            and merged[-1][0] == speaker
+            and text not in _NO_MERGE
+            and merged[-1][1] not in _NO_MERGE
+            and len(merged[-1][1]) + len(text) + 1 <= MAX_TURN_CHARS
+        ):
+            merged[-1][1] = f"{merged[-1][1]} {text}"
+        else:
+            merged.append([speaker, text])
+    return [(speaker, text) for speaker, text in merged]
+
 # Cabeçalho de capítulo grudado no fim do texto oficial (o seed traz
 # "... satisfação pessoal. CAPÍTULO II DOS SUJEITOS DO CRIME"). Lido em voz
 # alta vira ruído no meio da frase, então sai.
@@ -88,8 +135,7 @@ def build_episode(
     """Monta o episódio inteiro. `articles` no formato do ContentStore."""
     usable = [a for a in articles if _clean(a.get("official_text"))]
     if not usable:
-        return {"topic": topic_name, "turns": [], "blocks": [],
-                "segment_count": 0, "duration_secs": 0, "word_count": 0}
+        return _assemble(topic_name, [])
 
     blocks: list[list[tuple[str, str]]] = [
         _opening(topic_name, subject_name, usable)
@@ -108,19 +154,132 @@ def build_episode(
         blocks.append(terms)
     blocks.append(_recall(topic_name, usable))
 
-    turns = [
-        {"speaker": speaker, "text": text, "block": index}
-        for index, block in enumerate(blocks)
-        for speaker, text in block
-    ]
-    return {
-        "topic": topic_name,
-        "turns": turns,
-        "blocks": list(range(len(blocks))),
-        "segment_count": len(blocks),
-        "duration_secs": estimate_duration_secs(turns),
-        "word_count": sum(len(t["text"].split()) for t in turns),
-    }
+    return _assemble(topic_name, blocks)
+
+
+QUESTIONS_PER_BLOCK = 4
+MAX_QUESTION_BLOCKS = 8
+
+_WAIT = (
+    "Decide antes de ouvir a resposta. Três, dois, um.",
+    "Pensa aí.",
+    "Responde de cabeça. Três, dois, um.",
+    "Certo ou errado? Decide.",
+)
+
+# Deixa de espera não se funde com a fala anterior: fundida, a pergunta e o
+# "decide agora" saem numa tirada só, e o ouvinte não tem intervalo nenhum
+# antes do gabarito — que é justamente o que faz o drill funcionar.
+_RECALL_WAIT = "Pensa antes de ouvir a resposta."
+_NO_MERGE = frozenset(_WAIT) | {_RECALL_WAIT}
+
+
+def build_question_episode(
+    topic_name: str,
+    subject_name: str,
+    questions: list[dict],
+) -> dict:
+    """Aula em áudio para tópico sem lei seca: questão comentada, uma por vez.
+
+    Dois terços do edital não têm artigo cadastrado (Português e Raciocínio
+    Lógico não têm lei nenhuma, por natureza), mas têm questão com
+    explicação. Ler a assertiva, dar tempo de decidir e só então revelar o
+    gabarito é a forma que funciona em escuta passiva — e é conteúdo real do
+    seed, não material inventado.
+    """
+    usable = [q for q in questions if _usable_question(q)]
+    if not usable:
+        return _assemble(topic_name, [])
+
+    blocks: list[list[tuple[str, str]]] = [[
+        (HOST_A, f"Treino de questões de {topic_name}. Matéria: {subject_name}."),
+        (HOST_B, f"São {len(usable)} questões comentadas. Eu leio a assertiva, "
+                 "você decide de cabeça, e só depois eu dou o gabarito com o "
+                 "motivo. Não adianta ouvir a resposta antes de decidir."),
+    ]]
+
+    per_block = max(QUESTIONS_PER_BLOCK, -(-len(usable) // MAX_QUESTION_BLOCKS))
+    previous_context = ""
+    for start in range(0, len(usable), per_block):
+        block: list[tuple[str, str]] = []
+        for offset, question in enumerate(usable[start:start + per_block]):
+            turns, previous_context = _drill_question(
+                question, start + offset, previous_context
+            )
+            block.extend(turns)
+        blocks.append(block)
+
+    blocks.append([
+        (HOST_B, f"Fecha o treino de {topic_name}."),
+        (HOST_A, "O que você errou aqui volta na revisão. Bons estudos."),
+    ])
+
+    return _assemble(topic_name, blocks)
+
+
+def _drill_question(
+    question: dict,
+    position: int,
+    previous_context: str,
+) -> tuple[list[tuple[str, str]], str]:
+    turns: list[tuple[str, str]] = []
+
+    header = f"Questão {position + 1}."
+    origin = _question_origin(question)
+    turns.append((HOST_A, f"{header} {origin}" if origin else header))
+
+    # O enunciado de contexto costuma ser o mesmo para uma série de
+    # assertivas; repetir a cada uma faz o ouvinte desligar.
+    context = _clean(question.get("context_text"))
+    if context and context != previous_context:
+        turns.append((HOST_A, context))
+        previous_context = context
+
+    turns.append((HOST_A, _clean(question.get("text"))))
+
+    alternatives = question.get("alternatives") or []
+    if not _is_true_false(alternatives):
+        for alt in alternatives:
+            letter = _clean(alt.get("letter"))
+            text = _clean(alt.get("text"))
+            if letter and text:
+                turns.append((HOST_A, f"Letra {letter}. {text}"))
+
+    turns.append((HOST_A, _WAIT[position % len(_WAIT)]))
+
+    correct = next((a for a in alternatives if a.get("is_correct")), None)
+    if correct:
+        letter = _clean(correct.get("letter"))
+        text = _clean(correct.get("text"))
+        if _is_true_false(alternatives):
+            turns.append((HOST_B, f"Gabarito: {text.lower()}."))
+        else:
+            turns.append((HOST_B, f"Gabarito: letra {letter}. {text}"))
+
+    explanation = _clean(question.get("explanation"))
+    if explanation:
+        turns.append((HOST_B, explanation))
+
+    return turns, previous_context
+
+
+def _usable_question(question: dict) -> bool:
+    if len(_LETTERS.findall(_clean(question.get("text")))) < 2:
+        return False
+    return any(a.get("is_correct") for a in (question.get("alternatives") or []))
+
+
+def _is_true_false(alternatives: list[dict]) -> bool:
+    letters = {_clean(a.get("letter")).upper() for a in alternatives}
+    return letters == {"C", "E"}
+
+
+def _question_origin(question: dict) -> str:
+    examiner = _clean(question.get("examiner"))
+    year = question.get("year")
+    if examiner and year:
+        return f"{examiner}, {year}."
+    return examiner or ""
 
 
 def _opening(topic: str, subject: str, articles: list[dict]) -> list[tuple[str, str]]:
@@ -217,7 +376,7 @@ def _recall(topic: str, articles: list[dict]) -> list[tuple[str, str]]:
         if not simple or not number:
             continue
         turns.append((HOST_A, f"O que diz o {number}?"))
-        turns.append((HOST_A, "Pensa antes de ouvir a resposta."))
+        turns.append((HOST_A, _RECALL_WAIT))
         turns.append((HOST_B, simple))
         asked += 1
 

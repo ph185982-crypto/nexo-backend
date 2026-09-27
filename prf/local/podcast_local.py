@@ -34,7 +34,7 @@ async def build_script(topic_id: str) -> dict:
 
     arts = store.get_articles(topic_id_=topic_id, limit=100000)
     if not arts:
-        raise PodcastLocalError("Tópico sem lei seca cadastrada")
+        return _question_script(topic, subj_name, store)
 
     from prf.services import podcast_service
 
@@ -75,6 +75,34 @@ async def build_script(topic_id: str) -> dict:
         "word_count": episode["word_count"],
         "total_parts": len(parts),
         "engine": engine,
+    }
+
+
+# Um tópico sem lei seca não é um tópico sem aula: 80 dos 138 não têm artigo
+# cadastrado (Português e Raciocínio Lógico não têm lei nenhuma, por natureza)
+# e têm questão comentada. Antes isso era 503 e o áudio desses tópicos
+# simplesmente não existia.
+def _question_script(topic: dict, subj_name: str, store) -> dict:
+    from prf.local.script_builder import build_question_episode
+
+    questions = store.get_questions(topic_id_=str(topic["id"]), limit=40)
+    if not questions:
+        raise PodcastLocalError("Tópico sem lei seca e sem questões cadastradas")
+
+    episode = build_question_episode(topic["name"], subj_name, questions)
+    if not episode.get("turns"):
+        raise PodcastLocalError("Conteúdo insuficiente para montar a aula deste tópico")
+
+    return {
+        "topic_id": str(topic["id"]),
+        "title": topic["name"],
+        "subject_name": subj_name,
+        "turns": episode["turns"],
+        "segment_count": episode["segment_count"],
+        "duration_secs": episode["duration_secs"],
+        "word_count": episode["word_count"],
+        "total_parts": 1,
+        "engine": "questoes",
     }
 
 
