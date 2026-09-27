@@ -43,9 +43,27 @@ async def build_script(topic_id: str) -> dict:
     if not parts:
         raise PodcastLocalError("Não foi possível planejar a aula")
 
-    episode = await podcast_service.generate_episode(topic["name"], subj_name, parts[0])
+    # O roteiro LLM é o preferido — inventa a ocorrência de rua, a
+    # jurisprudência e a assertiva no estilo da banca, que é o que o seed não
+    # tem. Mas ele é o único pedaço do modo local que depende de credencial, e
+    # com a chave inválida o episódio simplesmente não saía (503). O roteiro
+    # derivado da lei entra no lugar: mais curto, sem material inventado, e
+    # sempre disponível. Assim que existir chave válida o LLM volta a ganhar,
+    # sem mudar nada aqui.
+    engine = "llm"
+    try:
+        episode = await podcast_service.generate_episode(topic["name"], subj_name, parts[0])
+    except Exception as e:
+        logger.warning(f"[LOCAL] Roteiro LLM falhou ({e}); usando roteiro da lei")
+        episode = None
+
+    if not episode or not episode.get("turns"):
+        from prf.local.script_builder import build_episode
+        episode = build_episode(topic["name"], subj_name, parts[0])
+        engine = "lei"
+
     if not episode.get("turns"):
-        raise PodcastLocalError("Geração do roteiro falhou — verifique a chave do provedor de IA")
+        raise PodcastLocalError("Conteúdo insuficiente para montar a aula deste tópico")
 
     return {
         "topic_id": str(topic["id"]),
@@ -56,6 +74,7 @@ async def build_script(topic_id: str) -> dict:
         "duration_secs": episode["duration_secs"],
         "word_count": episode["word_count"],
         "total_parts": len(parts),
+        "engine": engine,
     }
 
 
@@ -78,7 +97,7 @@ async def synthesize_audio(turns: list[dict]) -> tuple[bytes, list[int]]:
     results.sort(key=lambda r: r[0])
 
     if not any(r[1] for r in results):
-        raise PodcastLocalError("Síntese de áudio indisponível — configure OPENAI_API_KEY")
+        raise PodcastLocalError("Síntese de áudio indisponível — nenhuma voz respondeu")
 
     full_audio = b"".join(r[1] for r in results if r[1])
     boundaries: list[int] = []
