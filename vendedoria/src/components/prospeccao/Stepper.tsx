@@ -27,7 +27,7 @@ const DESTINO: Record<(typeof ETAPAS)[number]["id"], { aba: AbaId; params?: Reco
 
 export function Stepper({ resumo, navegar }: { resumo: Resumo | null; navegar: Navegar }) {
   return (
-    <div className="px-4 md:px-6 pb-3 overflow-x-auto scrollbar-none">
+    <div className="px-4 md:px-6 pb-3 overflow-x-auto scrollbar-hide">
       <ol className="flex items-stretch gap-1 min-w-max md:min-w-0">
         {ETAPAS.map((e, i) => {
           const n = resumo?.etapas[e.id] ?? 0;
