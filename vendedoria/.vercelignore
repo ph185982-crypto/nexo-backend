@@ -5,3 +5,6 @@ node_modules
 .env.*.local
 *.log
 .DS_Store
+
+# Servidor MCP — projeto Node separado, não faz parte do deploy do CRM
+mcp-server

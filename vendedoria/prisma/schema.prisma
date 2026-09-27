@@ -1196,6 +1196,24 @@ model IntegrationCredential {
   updatedAt    DateTime @updatedAt
 }
 
+// ─── ApiKey (integração externa — MCP server, automações, outros agentes) ─────
+// Dá acesso total de ADMIN à API GraphQL e à API de Prospecção sem sessão de
+// navegador. A chave em si nunca é armazenada — só o hash (sha256) e um
+// prefixo curto para o usuário reconhecer qual chave é qual na listagem.
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  nome        String
+  prefixo     String // primeiros 8 chars da chave, só para exibição
+  hash        String    @unique
+  criadoPorId String?
+  ultimoUsoEm DateTime?
+  revogadaEm  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([revogadaEm])
+}
+
 model OfertaGerada {
   id                  String    @id @default(cuid())
   produtoId           String
