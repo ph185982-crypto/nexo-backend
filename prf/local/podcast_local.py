@@ -11,9 +11,12 @@ ganhar rotação entre partes; hoje a prioridade é a parte que mais vale.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
+import os
+from functools import lru_cache
+from pathlib import Path
 from typing import Optional
-from uuid import UUID
 
 from prf.local.content import get_store
 
@@ -44,24 +47,75 @@ def _mark_llm_down() -> None:
     _LLM_DOWN_UNTIL = time.monotonic() + _LLM_COOLDOWN_SECS
 
 
-async def build_script(topic_id: str) -> dict:
+# Áudio pronto: gerado uma vez por scripts/gerar_audios.py e publicado na
+# branch `audios` do repositório. O manifesto (só metadados) viaja com o
+# código; o MP3 o celular baixa direto do GitHub, que responde com CORS
+# aberto, e guarda no IndexedDB para tocar offline.
+AUDIO_BASE_URL = os.getenv(
+    "PRF_AUDIO_BASE_URL",
+    "https://raw.githubusercontent.com/ph185982-crypto/nexo-backend/audios/",
+)
+_MANIFEST_PATH = Path(__file__).with_name("audio_manifest.json")
+
+
+@lru_cache(maxsize=1)
+def _audio_manifest() -> dict:
+    try:
+        return json.loads(_MANIFEST_PATH.read_text(encoding="utf-8")).get("episodes") or {}
+    except (OSError, ValueError):
+        return {}
+
+
+def prebuilt_episode(topic_id: str) -> Optional[dict]:
+    episode = _audio_manifest().get(str(topic_id))
+    if not episode:
+        return None
+    return dict(episode, url=AUDIO_BASE_URL + episode["file"])
+
+
+def _load_topic(topic_id: str):
     store = get_store()
     topic = store.get_topic(topic_id)
     if not topic:
         raise PodcastLocalError("Tópico não encontrado")
     subj = store.get_subject(str(topic["subject_id"]))
     subj_name = subj["name"] if subj else ""
-
     arts = store.get_articles(topic_id_=topic_id, limit=100000)
+    return store, topic, subj_name, arts
+
+
+def _plan(arts: list[dict]) -> list[list[dict]]:
+    from prf.services import podcast_service
+
+    parts = podcast_service.plan_parts([_for_podcast(a) for a in arts])
+    if not parts:
+        raise PodcastLocalError("Não foi possível planejar a aula")
+    return parts
+
+
+def build_offline_script(topic_id: str) -> dict:
+    """Roteiro sem IA — o mesmo que gerou o áudio pronto da branch `audios`
+    (scripts/gerar_audios.py). Determinístico: mesmo conteúdo, mesmo roteiro."""
+    from prf.local.script_builder import build_episode
+
+    store, topic, subj_name, arts = _load_topic(topic_id)
+    if not arts:
+        return _question_script(topic, subj_name, store)
+    parts = _plan(arts)
+    episode = build_episode(topic["name"], subj_name, parts[0])
+    if not episode.get("turns"):
+        raise PodcastLocalError("Conteúdo insuficiente para montar a aula deste tópico")
+    return _pack(topic, subj_name, episode, len(parts), "lei")
+
+
+async def build_script(topic_id: str) -> dict:
+    store, topic, subj_name, arts = _load_topic(topic_id)
     if not arts:
         return _question_script(topic, subj_name, store)
 
     from prf.services import podcast_service
 
-    articles_in = [_for_podcast(a) for a in arts]
-    parts = podcast_service.plan_parts(articles_in)
-    if not parts:
-        raise PodcastLocalError("Não foi possível planejar a aula")
+    parts = _plan(arts)
 
     # O roteiro LLM é o preferido — inventa a ocorrência de rua, a
     # jurisprudência e a assertiva no estilo da banca, que é o que o seed não
@@ -81,13 +135,12 @@ async def build_script(topic_id: str) -> dict:
             _mark_llm_down()
 
     if not episode or not episode.get("turns"):
-        from prf.local.script_builder import build_episode
-        episode = build_episode(topic["name"], subj_name, parts[0])
-        engine = "lei"
+        return build_offline_script(topic_id)
 
-    if not episode.get("turns"):
-        raise PodcastLocalError("Conteúdo insuficiente para montar a aula deste tópico")
+    return _pack(topic, subj_name, episode, len(parts), engine)
 
+
+def _pack(topic: dict, subj_name: str, episode: dict, total_parts: int, engine: str) -> dict:
     return {
         "topic_id": str(topic["id"]),
         "title": topic["name"],
@@ -96,7 +149,7 @@ async def build_script(topic_id: str) -> dict:
         "segment_count": episode["segment_count"],
         "duration_secs": episode["duration_secs"],
         "word_count": episode["word_count"],
-        "total_parts": len(parts),
+        "total_parts": total_parts,
         "engine": engine,
     }
 
@@ -115,18 +168,7 @@ def _question_script(topic: dict, subj_name: str, store) -> dict:
     episode = build_question_episode(topic["name"], subj_name, questions)
     if not episode.get("turns"):
         raise PodcastLocalError("Conteúdo insuficiente para montar a aula deste tópico")
-
-    return {
-        "topic_id": str(topic["id"]),
-        "title": topic["name"],
-        "subject_name": subj_name,
-        "turns": episode["turns"],
-        "segment_count": episode["segment_count"],
-        "duration_secs": episode["duration_secs"],
-        "word_count": episode["word_count"],
-        "total_parts": 1,
-        "engine": "questoes",
-    }
+    return _pack(topic, subj_name, episode, 1, "questoes")
 
 
 async def synthesize_audio(turns: list[dict]) -> tuple[bytes, list[int]]:

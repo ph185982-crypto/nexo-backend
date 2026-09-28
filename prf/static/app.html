@@ -2454,10 +2454,10 @@ function viewAudio() {
     <div class="audio-hero fade-in">
       <div class="section-eyebrow">Episódios</div>
       <div class="display-hero">Dois no <em>estúdio</em></div>
-      <div class="pod-sub">Marcos e Júlia debatem a matéria com caso de rua, letra da lei e pegadinha de banca.</div>
+      <div class="pod-sub">Marcos e Júlia leem a lei seca, destrincham cada dispositivo e treinam as questões da banca.</div>
       ${pods.length ? `<div class="chip-row mt-12">
         <span class="level-chip">${pods.length} episódio${pods.length===1?'':'s'}</span>
-        <span class="level-chip">${S.localMode ? 'Gerados ao abrir' : podMin+' min'}</span>
+        <span class="level-chip">${podMin ? (podMin >= 120 ? Math.round(podMin/60)+' h de aula' : podMin+' min') : 'Gerados ao abrir'}</span>
       </div>` : ''}
     </div>
     ${pods.length ? Object.entries(pods.reduce((g, p) => {
@@ -2767,8 +2767,9 @@ function viewPodcastNow() {
     <button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button>
     <span class="title-sub">${esc(S.podKind === 'drill' ? 'Drill de recall' : 'Aula em áudio')}</span>
   </div>`;
-  if (!ep && carregando) return head + `<div class="empty" role="status"><h3>${esc(S.podProgress||'Preparando o roteiro…')}</h3><p>A primeira geração pode levar alguns minutos. As partes concluídas ficam salvas para retomar se necessário.</p><button class="btn btn-ghost" onclick="stopPodcast()">Pausar geração</button></div>`;
-  if (!ep) return head + `<div class="empty">${I.headphones}<h3>Episódio indisponível</h3></div>`;
+  if (!ep && carregando) return head + `<div class="empty" role="status"><h3>${esc(S.podProgress||'Preparando o roteiro…')}</h3><p>Só na primeira vez: depois a aula fica salva e toca direto deste aparelho, até sem internet.</p><button class="btn btn-ghost" onclick="stopPodcast()">Cancelar</button></div>`;
+  if (!ep && S.podFailedId) return head + `<div class="empty">${I.headphones}<h3>Não foi possível carregar a aula</h3><p>Confira a conexão. O que já foi baixado fica salvo neste aparelho.</p><button class="btn btn-primary" onclick="playPodcast('${S.podFailedId}', {tela:true})">Tentar de novo</button></div>`;
+  if (!ep) return head + `<div class="empty">${I.headphones}<h3>Escolha uma aula</h3><p>Volte e toque numa aula da lista para ouvir.</p><button class="btn btn-ghost" onclick="goBack()">Ver aulas</button></div>`;
 
   const total = ep.segment_count || 1;
   const parte = (S.podSeq || 0) + 1;
@@ -4322,9 +4323,17 @@ async function playLocalPodcast(topicId, opts) {
   if (tela) { S.subView = 'podcastNow'; S.tab = 'audio'; }
   render();
 
+  S.podFailedId = null;
   const savedTime = loadPodTime(topicId);
   try {
     let cached = await getLocalEpisode(topicId);
+    // Áudio pronto primeiro: é um download só, em vez de 7 a 12 gerações em
+    // sequência que o iPhone derrubava ao bloquear a tela. A geração abaixo
+    // fica só para aula que ainda não tem arquivo pronto.
+    const pre = await prebuiltInfo(topicId);
+    if (pre && cached?.audio && cached.src !== pre.file) cached = null;
+    const fromDevice = !!cached?.audio;
+    if (!cached?.audio && pre) cached = await downloadPrebuilt(topicId, pre);
     if (!cached?.audio) {
       toast(cached?.script?'Retomando geração salva…':'Gerando roteiro da aula…', 'info');
       const script = cached?.script || await api('/api/prf/local/podcast/script', {
@@ -4363,8 +4372,10 @@ async function playLocalPodcast(topicId, opts) {
         duration_secs: script.duration_secs, boundaries, audio: blob,
       };
       await saveLocalEpisode(cached);
-    } else {
-      toast(savedTime > 0 ? 'Retomando de onde parou' : 'Tocando do cache...', 'info');
+    } else if (savedTime > 0) {
+      toast('Retomando de onde parou', 'info');
+    } else if (fromDevice) {
+      toast('Tocando do aparelho, sem internet', 'info');
     }
     if (S.podId !== topicId) return; // trocou de aula enquanto isso gerava
     S.pod = {
@@ -4391,9 +4402,45 @@ async function playLocalPodcast(topicId, opts) {
     if (S.podId !== topicId) return;
     S.podId = null;
     S.podLoading = false;
-    toast('Não foi possível concluir o áudio. Toque novamente para retomar as partes salvas.', 'error');
+    S.podFailedId = topicId;
+    toast('Não foi possível carregar o áudio. Verifique a conexão e tente de novo.', 'error');
     render();
   }
+}
+
+async function prebuiltInfo(topicId) {
+  try { return await api(`/api/prf/local/podcast/prebuilt/${topicId}`); }
+  catch (e) { return null; }
+}
+
+async function downloadPrebuilt(topicId, pre) {
+  S.podProgress = 'Baixando a aula…'; render();
+  const r = await fetch(pre.url);
+  if (!r.ok) throw new Error(`download ${r.status}`);
+  const total = pre.bytes || Number(r.headers.get('Content-Length')) || 0;
+  let blob;
+  const reader = r.body && r.body.getReader ? r.body.getReader() : null;
+  if (reader) {
+    const chunks = [];
+    let got = 0, shown = -1;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value); got += value.length;
+      const pct = total ? Math.min(99, Math.floor(got * 100 / total)) : 0;
+      if (pct !== shown && S.podId === topicId) { shown = pct; S.podProgress = `Baixando a aula… ${pct}%`; render(); }
+    }
+    blob = new Blob(chunks, { type: 'audio/mpeg' });
+  } else {
+    blob = new Blob([await r.arrayBuffer()], { type: 'audio/mpeg' });
+  }
+  if (!blob.size) throw new Error('empty audio');
+  const episode = {
+    topic_id: topicId, title: pre.title, segment_count: pre.segment_count,
+    duration_secs: pre.duration_secs, boundaries: pre.boundaries || [], audio: blob, src: pre.file,
+  };
+  await saveLocalEpisode(episode);
+  return episode;
 }
 
 function localAudioChunks(turns) {

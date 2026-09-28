@@ -31,6 +31,15 @@ def _mode_for_hour(hour: int, energy: str) -> StudyMode:
     return StudyMode.FOCUS
 
 
+def _episode_mins(topic_id) -> int:
+    """Duração real do áudio pronto; os 40 min fixos faziam a missão prometer
+    uma aula de 40 min que durava 7."""
+    from prf.local.podcast_local import prebuilt_episode
+
+    ready = prebuilt_episode(str(topic_id))
+    return max(1, round(ready["duration_secs"] / 60)) if ready else 40
+
+
 def generate_mission(client_state: dict) -> dict:
     """Gera a missão do dia a partir do estado que o navegador mandou.
 
@@ -125,7 +134,7 @@ def generate_mission(client_state: dict) -> dict:
             # Não existe episódio pré-gravado: o id do tópico é o marcador
             # que o player usa para gerar roteiro + áudio na hora.
             "episode_ids": [topic["id"]],
-            "episode_mins": 40,
+            "episode_mins": _episode_mins(topic["id"]),
             "article_ids": [a["id"] for a in arts],
             "question_ids": [q["id"] for q in qs],
             "flashcard_ids": [c["id"] for c in fcs],

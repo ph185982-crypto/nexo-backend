@@ -160,6 +160,16 @@ async def local_mission(client_state: dict = Body(default_factory=dict)):
         raise HTTPException(500, "Não foi possível gerar a missão. Tente novamente.")
 
 
+@router.get("/podcast/prebuilt/{topic_id}")
+async def local_podcast_prebuilt(topic_id: str):
+    from prf.local.podcast_local import prebuilt_episode
+
+    episode = prebuilt_episode(topic_id)
+    if not episode:
+        raise HTTPException(404, "Esta aula ainda não tem áudio pronto")
+    return episode
+
+
 @router.post("/podcast/script", dependencies=[Depends(guard_ai)])
 async def local_podcast_script(body: dict = Body(...)):
     from prf.local.podcast_local import build_script, PodcastLocalError
