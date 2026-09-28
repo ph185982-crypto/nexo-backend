@@ -46,14 +46,23 @@ async def catalog():
 
 @router.get('/podcasts')
 async def podcasts():
+    from prf.local.podcast_local import prebuilt_episode
+
     store = get_store()
     episodes = []
     for topic in store.topics:
         subject = store.get_subject(str(topic['subject_id']))
-        if not subject or not subject.get('weight_pm') or not store.get_articles(topic_id_=str(topic['id']), limit=1):
+        if not subject or not subject.get('weight_pm'):
             continue
-        episodes.append({'id': str(topic['id']), 'title': topic['name'],
-                         'subject_name': subject['name'], 'on_demand': True})
+        ready = prebuilt_episode(str(topic['id']))
+        if ready:
+            episodes.append({'id': str(topic['id']), 'title': topic['name'],
+                             'subject_name': subject['name'], 'on_demand': False,
+                             'duration_secs': ready['duration_secs'],
+                             'segment_count': ready['segment_count']})
+        elif store.get_articles(topic_id_=str(topic['id']), limit=1):
+            episodes.append({'id': str(topic['id']), 'title': topic['name'],
+                             'subject_name': subject['name'], 'on_demand': True})
     return {'episodes': episodes}
 
 
