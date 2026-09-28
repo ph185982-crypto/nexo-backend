@@ -4332,6 +4332,7 @@ async function playLocalPodcast(topicId, opts) {
     // fica só para aula que ainda não tem arquivo pronto.
     const pre = await prebuiltInfo(topicId);
     if (pre && cached?.audio && cached.src !== pre.file) cached = null;
+    const fromDevice = !!cached?.audio;
     if (!cached?.audio && pre) cached = await downloadPrebuilt(topicId, pre);
     if (!cached?.audio) {
       toast(cached?.script?'Retomando geração salva…':'Gerando roteiro da aula…', 'info');
@@ -4371,8 +4372,10 @@ async function playLocalPodcast(topicId, opts) {
         duration_secs: script.duration_secs, boundaries, audio: blob,
       };
       await saveLocalEpisode(cached);
-    } else {
-      toast(savedTime > 0 ? 'Retomando de onde parou' : 'Tocando do cache...', 'info');
+    } else if (savedTime > 0) {
+      toast('Retomando de onde parou', 'info');
+    } else if (fromDevice) {
+      toast('Tocando do aparelho, sem internet', 'info');
     }
     if (S.podId !== topicId) return; // trocou de aula enquanto isso gerava
     S.pod = {
