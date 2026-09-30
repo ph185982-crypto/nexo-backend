@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { instalarHistoricoFinanceiro } from "@/lib/finance/historico";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -32,5 +33,9 @@ export const prisma =
     datasources: { db: { url: buildDatabaseUrl() } },
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
+
+// Livro-razão do financeiro: grava toda criação/alteração/exclusão dos modelos
+// financeiros (ver lib/finance/historico.ts). Idempotente.
+instalarHistoricoFinanceiro(prisma);
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

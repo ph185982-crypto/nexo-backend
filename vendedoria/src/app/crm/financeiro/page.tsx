@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   Wallet, FileText, Receipt, Landmark,
-  PieChart, TrendingUp, LineChart, ShieldAlert, Loader2,
+  PieChart, TrendingUp, LineChart, ShieldAlert, Loader2, History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OverviewTab } from "@/components/financeiro/OverviewTab";
@@ -14,6 +14,7 @@ import { DividasTab } from "@/components/financeiro/DividasTab";
 import { OrcamentosTab } from "@/components/financeiro/OrcamentosTab";
 import { ReceitasTab } from "@/components/financeiro/ReceitasTab";
 import { ProjecaoTab } from "@/components/financeiro/ProjecaoTab";
+import { HistoricoTab } from "@/components/financeiro/HistoricoTab";
 
 const tabs = [
   { key: "visao-geral", label: "Visao Geral", icon: Wallet },
@@ -23,6 +24,7 @@ const tabs = [
   { key: "orcamentos",  label: "Orcamentos",   icon: PieChart },
   { key: "receitas",    label: "Receitas",      icon: TrendingUp },
   { key: "projecao",    label: "Projecao",      icon: LineChart },
+  { key: "historico",   label: "Historico",     icon: History },
 ] as const;
 
 type TabKey = (typeof tabs)[number]["key"];
@@ -89,6 +91,7 @@ export default function FinanceiroPage() {
         {activeTab === "orcamentos"  && <OrcamentosTab />}
         {activeTab === "receitas"    && <ReceitasTab />}
         {activeTab === "projecao"    && <ProjecaoTab />}
+        {activeTab === "historico"   && <HistoricoTab />}
       </div>
     </div>
   );
