@@ -1331,7 +1331,60 @@ model ReceitaPrevistaMax {
   observacao       String?
   criado_em        DateTime  @default(now())
 
+  // Perda: a receita previsível que não vai mais entrar. Nada é apagado — a
+  // linha fica com status "perdida" (e dá para reverter).
+  motivo_perda     String?
+  data_perda       DateTime?
+
+  // Receitas geradas por um contrato/parcelamento (ver ContratoReceita)
+  contrato_id      String?
+  parcela_numero   Int?
+  parcelas_total   Int?
+
   @@map("max_receitas_previstas")
+  @@index([data_prevista])
+  @@index([contrato_id])
+  @@unique([contrato_id, parcela_numero])
+}
+
+// Contrato de receita recorrente / parcelada. Ao criar, as parcelas mensais
+// (ReceitaPrevistaMax) são geradas automaticamente. duracao_meses = null →
+// contrato por prazo indeterminado: o sistema mantém sempre 12 meses à frente.
+model ContratoReceita {
+  id             String    @id @default(uuid())
+  descricao      String
+  cliente        String?
+  tipo_negocio   String    @default("nexo") // pessoal | nexo | lukaizen | geral
+  modo           String    @default("recorrente") // recorrente | parcelada
+  valor_parcela  Float
+  valor_total    Float?    // só parcelada: total combinado
+  duracao_meses  Int?
+  dia_vencimento Int
+  data_inicio    DateTime  @db.Date
+  status         String    @default("ativo") // ativo | encerrado | cancelado
+  gerado_ate     DateTime? @db.Date // competência da última parcela gerada
+  observacao     String?
+  criado_em      DateTime  @default(now())
+
+  @@map("max_contratos_receita")
+}
+
+// Livro-razão imutável do financeiro: toda criação, alteração e exclusão nos
+// modelos financeiros grava aqui um retrato da linha (antes/depois). É o que
+// garante que nenhum lançamento se perde — mesmo o que foi apagado pode ser
+// consultado e restaurado.
+model HistoricoFinanceiro {
+  id          String   @id @default(uuid())
+  entidade    String   // nome do model: Transacao, ReceitaPrevistaMax, ...
+  entidade_id String
+  acao        String   // criado | atualizado | excluido
+  antes       Json?
+  depois      Json?
+  criado_em   DateTime @default(now())
+
+  @@map("max_historico_financeiro")
+  @@index([entidade, entidade_id])
+  @@index([criado_em])
 }
 
 model TarefaMax {
