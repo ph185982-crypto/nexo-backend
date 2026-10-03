@@ -9,6 +9,7 @@
 
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
+import { bearerValido, origem } from "@/lib/mcp/oauth";
 import { NextRequest, NextResponse } from "next/server";
 import {
   listarLeads, metricasFunil, buscarCliente, listarContratos, LIMITE_REGISTROS,
@@ -103,14 +104,19 @@ const handler = createMcpHandler(
 );
 
 function autenticar(req: NextRequest): NextResponse | null {
-  const segredo = process.env.MCP_SECRET;
-  if (!segredo) {
+  if (!process.env.MCP_SECRET) {
     console.error("[MCP] MCP_SECRET não configurado — recusando todas as chamadas.");
     return NextResponse.json({ error: "Servidor MCP não configurado" }, { status: 500 });
   }
-  const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${segredo}`) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  // Aceita o segredo estático (clientes via header) ou um token OAuth (Claude.ai).
+  if (!bearerValido(req.headers.get("authorization"))) {
+    return NextResponse.json(
+      { error: "Não autorizado" },
+      {
+        status: 401,
+        headers: { "WWW-Authenticate": `Bearer resource_metadata="${origem(req)}/.well-known/oauth-protected-resource/api/mcp"` },
+      },
+    );
   }
   return null;
 }
