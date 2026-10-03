@@ -20,6 +20,17 @@ const nextConfig: NextConfig = {
     "@sparticuz/chromium",
   ],
 
+  // Pastas começando com "." não viram rota no App Router: o discovery OAuth
+  // do MCP (/.well-known/...) é redirecionado internamente para /api/oauth/metadata.
+  async rewrites() {
+    return [
+      { source: "/.well-known/oauth-protected-resource/:path*", destination: "/api/oauth/metadata/recurso" },
+      { source: "/.well-known/oauth-protected-resource", destination: "/api/oauth/metadata/recurso" },
+      { source: "/.well-known/oauth-authorization-server/:path*", destination: "/api/oauth/metadata/servidor" },
+      { source: "/.well-known/oauth-authorization-server", destination: "/api/oauth/metadata/servidor" },
+    ];
+  },
+
   webpack(config, { isServer, nextRuntime }) {
     if (isServer && nextRuntime === "nodejs") {
       const prev = Array.isArray(config.externals)
