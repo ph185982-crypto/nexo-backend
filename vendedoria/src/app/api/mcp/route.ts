@@ -9,6 +9,7 @@
 
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
+import { listarModelos, consultar, agregar, OPERADORES, LIMITE_MAX as LIM } from "@/lib/mcp/consulta";
 import { bearerValido, origem } from "@/lib/mcp/oauth";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -84,6 +85,64 @@ const handler = createMcpHandler(
       },
       async ({ status }) => {
         try { return textoJson(await listarContratos(status)); }
+        catch (e) { return textoErro(e); }
+      },
+    );
+
+    const filtroSchema = z.object({
+      campo: z.string().describe("Nome do campo (veja listar_modelos)."),
+      op: z.enum(OPERADORES).describe("igual, diferente, contem (texto), maior, maior_igual, menor, menor_igual, em (lista), nulo, nao_nulo."),
+      valor: z.any().optional().describe("Valor. Datas no formato AAAA-MM-DD; para 'em' passe uma lista."),
+    });
+
+    server.registerTool(
+      "listar_modelos",
+      {
+        title: "Listar áreas e tabelas",
+        description: "Mostra TODAS as áreas do sistema (Financeiro, Prospecção, CRM/Leads, Conversas, Campanhas, Agenda, Vendas/Produtos, Agente IA, Organização) com cada tabela e seus campos. Chame primeiro para saber o que consultar.",
+        inputSchema: {},
+      },
+      async () => {
+        try { return textoJson(listarModelos()); }
+        catch (e) { return textoErro(e); }
+      },
+    );
+
+    server.registerTool(
+      "consultar",
+      {
+        title: "Consultar qualquer tabela",
+        description: `Lê registros de qualquer tabela do sistema (somente leitura). Ex.: modelo "Transacao" para o extrato do financeiro, "ReceitaPrevistaMax" para receitas previstas, "ContaPagarMax" para contas a pagar, "ProspectLead" para empresas da prospecção, "WhatsappMessage" para mensagens. Filtre por campos, escolha as colunas e pagine com limite (máx ${LIM}) e pular. Campos secretos (senhas, tokens, chaves) nunca são devolvidos.`,
+        inputSchema: {
+          modelo: z.string().describe("Nome da tabela, como em listar_modelos."),
+          filtros: z.array(filtroSchema).optional(),
+          campos: z.array(z.string()).optional().describe("Colunas a devolver. Omita para todas."),
+          ordenar_por: z.string().optional(),
+          direcao: z.enum(["asc", "desc"]).optional(),
+          limite: z.number().int().min(1).max(LIM).optional(),
+          pular: z.number().int().min(0).optional().describe("Quantos registros pular (paginação)."),
+        },
+      },
+      async (args) => {
+        try { return textoJson(await consultar(args)); }
+        catch (e) { return textoErro(e); }
+      },
+    );
+
+    server.registerTool(
+      "agregar",
+      {
+        title: "Somar, contar e agrupar",
+        description: "Contagem, soma e média de qualquer tabela, com filtros e agrupamento. Ex.: total de Transacao por tipo no mês, receitas previstas por status, leads por etapa.",
+        inputSchema: {
+          modelo: z.string(),
+          filtros: z.array(filtroSchema).optional(),
+          somar: z.string().optional().describe("Campo numérico a somar/média (ex.: valor)."),
+          agrupar_por: z.array(z.string()).optional().describe("Campos para agrupar (ex.: tipo, tipo_negocio, status)."),
+        },
+      },
+      async (args) => {
+        try { return textoJson(await agregar(args)); }
         catch (e) { return textoErro(e); }
       },
     );
