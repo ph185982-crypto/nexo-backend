@@ -85,8 +85,41 @@ export function ApiKeysTab() {
     } catch { /* clipboard indisponível — usuário copia manualmente */ }
   };
 
+  const urlMcp = typeof window !== "undefined" ? `${window.location.origin}/api/mcp` : "/api/mcp";
+  const [urlCopiada, setUrlCopiada] = useState(false);
+  const copiarUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(urlMcp);
+      setUrlCopiada(true);
+      setTimeout(() => setUrlCopiada(false), 2000);
+    } catch { /* usuário copia manualmente */ }
+  };
+
   return (
     <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base"><Plug className="w-4 h-4" /> Conectar ao Claude (chat)</CardTitle>
+          <CardDescription>
+            Deixa o Claude consultar leads, funil, clientes e contratos (somente leitura). Não precisa de chave:
+            ao conectar, o Nexo pede só um toque em &quot;Autorizar&quot; com você logado aqui.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center gap-2">
+            <code className="flex-1 min-w-0 truncate rounded-md bg-muted px-3 py-2 text-xs">{urlMcp}</code>
+            <Button size="sm" variant="outline" onClick={() => void copiarUrl()} className="gap-1 shrink-0">
+              {urlCopiada ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} {urlCopiada ? "Copiado" : "Copiar"}
+            </Button>
+          </div>
+          <ol className="list-decimal pl-5 text-sm text-muted-foreground space-y-1">
+            <li>Copie o endereço acima.</li>
+            <li>No Claude: Configurações → Conectores → Adicionar conector personalizado.</li>
+            <li>Cole o endereço, deixe os campos de OAuth em branco e confirme.</li>
+            <li>Na tela do Nexo que abrir, toque em <b>Autorizar</b>.</li>
+          </ol>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base"><Plug className="w-4 h-4" /> Chaves de integração externa</CardTitle>

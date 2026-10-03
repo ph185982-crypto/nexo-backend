@@ -949,7 +949,7 @@ export default function SettingsPage() {
             </TabsTrigger>
             <TabsTrigger value="api" className="gap-1.5 text-xs shrink-0">
               <Plug className="w-3.5 h-3.5" />
-              API
+              API / Claude
             </TabsTrigger>
             <TabsTrigger value="security" className="gap-1.5 text-xs shrink-0">
               <Key className="w-3.5 h-3.5" />

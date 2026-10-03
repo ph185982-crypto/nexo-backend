@@ -29,7 +29,8 @@ export default function LoginPage() {
     });
 
     if (result?.ok) {
-      router.push("/crm");
+      const cb = new URLSearchParams(window.location.search).get("callbackUrl");
+      router.push(cb && cb.startsWith("/") && !cb.startsWith("//") ? cb : "/crm");
     } else {
       const msg =
         result?.error === "CredentialsSignin"
