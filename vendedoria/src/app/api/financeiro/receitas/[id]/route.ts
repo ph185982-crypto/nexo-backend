@@ -1,4 +1,5 @@
 // PATCH /api/financeiro/receitas/:id  — { acao, motivo? }
+//   editar          → altera valor, descrição, data prevista, cliente ou observação (só receita em aberto)
 //   confirmar       → marca como recebida e lança a entrada no extrato (Transacao)
 //   perder          → dá PERDA na receita previsível (não vai mais entrar). Nada é apagado:
 //                     fica com status "perdida", motivo e data — e dá para desfazer.
@@ -7,9 +8,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { parseData } from "@/lib/finance/periodo";
 import { getBrasiliaDateOnly, formatMesUTC } from "@/lib/max/config";
 
-const ACOES = ["confirmar", "perder", "reverter_perda"] as const;
+const ACOES = ["editar", "confirmar", "perder", "reverter_perda"] as const;
 type Acao = (typeof ACOES)[number];
 
 export async function PATCH(
@@ -36,6 +38,35 @@ export async function PATCH(
 
     const aberta = receita.status === "pendente" || receita.status === "atrasada";
     const now = getBrasiliaDateOnly();
+
+    if (acao === "editar") {
+      if (!aberta) {
+        return NextResponse.json(
+          { error: `Só dá para editar receita em aberto (esta está "${receita.status}").` },
+          { status: 409 },
+        );
+      }
+      const data: Record<string, unknown> = {};
+      if (body.valor !== undefined) {
+        const v = Math.round(Number(body.valor) * 100) / 100;
+        if (!Number.isFinite(v) || v <= 0) return NextResponse.json({ error: "Valor deve ser maior que zero." }, { status: 400 });
+        data.valor = v;
+      }
+      if (typeof body.descricao === "string") {
+        if (!body.descricao.trim()) return NextResponse.json({ error: "Descrição não pode ficar vazia." }, { status: 400 });
+        data.descricao = body.descricao.trim().slice(0, 200);
+      }
+      if (body.cliente !== undefined) data.cliente = typeof body.cliente === "string" && body.cliente.trim() ? body.cliente.trim() : null;
+      if (body.observacao !== undefined) data.observacao = typeof body.observacao === "string" && body.observacao.trim() ? body.observacao.trim() : null;
+      if (body.data_prevista !== undefined) {
+        const d = parseData(String(body.data_prevista));
+        if (!d) return NextResponse.json({ error: "Data prevista inválida." }, { status: 400 });
+        data.data_prevista = d;
+        data.status = d < now ? "atrasada" : "pendente";
+      }
+      if (Object.keys(data).length === 0) return NextResponse.json({ error: "Nada para alterar." }, { status: 400 });
+      return NextResponse.json(await prisma.receitaPrevistaMax.update({ where: { id }, data }));
+    }
 
     if (acao === "perder") {
       if (!aberta) {

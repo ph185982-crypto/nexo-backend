@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Loader2, Plus, CheckCircle2, X, ThumbsDown, Undo2, Repeat, CalendarClock, Layers, FileText, ChevronDown,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { TIPO_NEGOCIO_OPTIONS, formatTipoNegocio } from "@/lib/finance/labels";
 import { gerarParcelas } from "@/lib/finance/parcelas";
+import { EditarContratoDialog, EditarReceitaDialog, type ContratoEditavel } from "./EditarDialogs";
 import {
   BRL, fmtData, ParcelaChip, PerdaDialog, StatusReceitaBadge, executarAcaoReceita, type ReceitaItem,
 } from "./receitas-shared";
@@ -63,6 +65,8 @@ export function ReceitasTab() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [perda, setPerda] = useState<ReceitaItem | null>(null);
+  const [editandoReceita, setEditandoReceita] = useState<ReceitaItem | null>(null);
+  const [editandoContrato, setEditandoContrato] = useState<ContratoEditavel | null>(null);
   const [aviso, setAviso] = useState<{ tipo: "ok" | "erro"; msg: string } | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [mostrarContratos, setMostrarContratos] = useState(true);
@@ -208,7 +212,7 @@ export function ReceitasTab() {
                 </div>
                 {(r.status !== "recebida") && (
                   <div className="flex items-center justify-end gap-1 border-t border-border pt-2">
-                    <AcoesReceita r={r} ocupado={ocupado === r.id} onAgir={(id, a) => void agir(id, a)} onPerda={setPerda} rotulos />
+                    <AcoesReceita r={r} ocupado={ocupado === r.id} onAgir={(id, a) => void agir(id, a)} onPerda={setPerda} onEditar={setEditandoReceita} rotulos />
                   </div>
                 )}
               </CardContent>
@@ -248,7 +252,7 @@ export function ReceitasTab() {
                       <td className="p-3"><StatusReceitaBadge r={r} /></td>
                       <td className="p-3">
                         <div className="flex items-center justify-end gap-1">
-                          <AcoesReceita r={r} ocupado={ocupado === r.id} onAgir={(id, a) => void agir(id, a)} onPerda={setPerda} />
+                          <AcoesReceita r={r} ocupado={ocupado === r.id} onAgir={(id, a) => void agir(id, a)} onPerda={setPerda} onEditar={setEditandoReceita} />
                         </div>
                       </td>
                     </tr>
@@ -303,11 +307,16 @@ export function ReceitasTab() {
                           {c.parcelas.perdidas.quantidade > 0 && <> · {c.parcelas.perdidas.quantidade} perdida(s)</>}
                         </p>
                       </div>
-                      {c.status === "ativo" && (
-                        <Button variant="outline" size="sm" disabled={ocupado === c.id} onClick={() => void encerrar(c)} className="gap-1 text-red-500">
-                          <ThumbsDown className="w-3.5 h-3.5" /> Encerrar contrato
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setEditandoContrato(c)} className="gap-1">
+                          <Pencil className="w-3.5 h-3.5" /> Editar valores
                         </Button>
-                      )}
+                        {c.status === "ativo" && (
+                          <Button variant="outline" size="sm" disabled={ocupado === c.id} onClick={() => void encerrar(c)} className="gap-1 text-red-500">
+                            <ThumbsDown className="w-3.5 h-3.5" /> Encerrar contrato
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -317,6 +326,16 @@ export function ReceitasTab() {
         </div>
       )}
 
+      <EditarReceitaDialog
+        receita={editandoReceita}
+        onClose={() => setEditandoReceita(null)}
+        onDone={(msg) => { setAviso({ tipo: "ok", msg }); void carregar(); }}
+      />
+      <EditarContratoDialog
+        contrato={editandoContrato}
+        onClose={() => setEditandoContrato(null)}
+        onDone={(msg) => { setAviso({ tipo: "ok", msg }); void carregar(); }}
+      />
       <PerdaDialog
         receita={perda}
         onClose={() => setPerda(null)}
@@ -326,10 +345,11 @@ export function ReceitasTab() {
   );
 }
 
-function AcoesReceita({ r, ocupado, onAgir, onPerda, rotulos }: {
+function AcoesReceita({ r, ocupado, onAgir, onPerda, onEditar, rotulos }: {
   r: ReceitaItem; ocupado: boolean;
   onAgir: (id: string, acao: "confirmar" | "reverter_perda") => void;
   onPerda: (r: ReceitaItem) => void;
+  onEditar: (r: ReceitaItem) => void;
   rotulos?: boolean;
 }) {
   const aberta = r.status === "pendente" || r.status === "atrasada";
@@ -337,6 +357,9 @@ function AcoesReceita({ r, ocupado, onAgir, onPerda, rotulos }: {
     <>
       {aberta && (
         <>
+          <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onEditar(r)} title="Editar valor, data ou descrição" className="gap-1">
+            <Pencil className="w-4 h-4" /> <span className={rotulos ? "" : "hidden xl:inline"}>Editar</span>
+          </Button>
           <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onAgir(r.id, "confirmar")} title="Confirmar recebimento" className="gap-1 text-green-600 hover:text-green-600">
             <CheckCircle2 className="w-4 h-4" /> <span className={rotulos ? "" : "hidden xl:inline"}>Receber</span>
           </Button>
