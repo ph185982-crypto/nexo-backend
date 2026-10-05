@@ -274,9 +274,10 @@ export async function sendWhatsAppTemplate(
   languageCode: string = "pt_BR",
   components: unknown[] = [],
   accessToken?: string
-): Promise<void> {
+): Promise<string | undefined> {
   const token = resolveToken(accessToken);
-  if (!token) return;
+  // Antes retornava em silêncio — o disparo contava como enviado sem ter saído nada.
+  if (!token) throw new Error("WhatsApp template send failed: access token ausente");
 
   const response = await fetch(`${BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
@@ -290,6 +291,9 @@ export async function sendWhatsAppTemplate(
   });
 
   if (!response.ok) throw new Error(`WhatsApp template send failed: ${await response.text()}`);
+  // O wamid é o que liga esta mensagem aos webhooks de status (entregue/lido/falhou).
+  const data = (await response.json().catch(() => ({}))) as { messages?: Array<{ id?: string }> };
+  return data.messages?.[0]?.id;
 }
 
 /** Send a WhatsApp location pin (shows interactive map to recipient) */

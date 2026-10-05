@@ -1184,6 +1184,30 @@ model DisparoJob {
   @@index([leadId, status])
 }
 
+// ─── DisparoEnvio (rastreio de entrega dos templates de prospecção) ───────────
+// Uma linha por template enviado. O wamid devolvido pela Meta liga o envio aos
+// webhooks de status (sent/delivered/read/failed) — é daqui que vêm a taxa de
+// entrega e o motivo de cada falha (ex.: 131049, 131026).
+
+model DisparoEnvio {
+  id             String    @id @default(cuid())
+  organizationId String
+  leadId         String
+  templateId     String?
+  wamid          String?   @unique
+  tentativa      Int       @default(1)
+  status         String    @default("SENT") // SENT | DELIVERED | READ | FAILED
+  enviadoEm      DateTime  @default(now())
+  entregueEm     DateTime?
+  lidoEm         DateTime?
+  falhouEm       DateTime?
+  erroCodigo     Int?
+  erroMensagem   String?
+
+  @@index([organizationId, enviadoEm])
+  @@index([leadId])
+}
+
 // ─── IntegrationCredential (OAuth do usuário — ex.: Google Calendar) ──────────
 
 model IntegrationCredential {
