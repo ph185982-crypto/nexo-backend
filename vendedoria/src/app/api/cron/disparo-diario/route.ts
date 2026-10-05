@@ -21,7 +21,7 @@ function autorizado(req: NextRequest): boolean {
   return auth === `Bearer ${esperado}` || header === esperado || query === esperado;
 }
 
-async function executar(req: NextRequest, continuacao: boolean) {
+async function executar(req: NextRequest, continuacao: boolean, esperarSegundos = 0) {
   if (!autorizado(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -37,7 +37,11 @@ async function executar(req: NextRequest, continuacao: boolean) {
 
   // O warm-up é semanal e só deve subir uma vez, na primeira leva do dia —
   // por isso as continuações encadeadas não mexem nele.
-  const orcamento = criarOrcamento(maxDuration);
+  // Sem QStash o agendador não honra atraso: quem recebe a continuação espera,
+  // para o intervalo entre envios não ser pulado.
+  const espera = Math.min(Math.max(esperarSegundos, 0), 25);
+  if (espera > 0) await new Promise((r) => setTimeout(r, espera * 1_000));
+  const orcamento = criarOrcamento(maxDuration - espera);
 
   let restantesTotais = 0;
   let esperaSegundos = 0;
@@ -91,5 +95,6 @@ export async function GET(req: NextRequest) {
 // POST — continuação encadeada (QStash ou self-fetch).
 export async function POST(req: NextRequest) {
   const corpo = await req.json().catch(() => ({}));
-  return executar(req, Boolean((corpo as { continuacao?: boolean }).continuacao));
+  const c = corpo as { continuacao?: boolean; esperarSegundos?: number };
+  return executar(req, Boolean(c.continuacao), Number(c.esperarSegundos) || 0);
 }

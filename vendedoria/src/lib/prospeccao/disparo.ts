@@ -1,11 +1,14 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppTemplate, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
+import { registrarEnvio } from "./entrega";
 import { verificarSaudeNumero } from "./saude-numero";
 import { garantirLeadDoProspect, moverLeadPorTipo, colunaPorTentativa } from "@/lib/crm/pipeline-mover";
 
 /** Intervalo anti-bloqueio entre dois envios consecutivos. */
-const ESPERA_MIN_MS = 30_000;
-const ESPERA_MAX_MS = 90_000;
+// Padrão 12–30s: cabe ~3 envios por invocação de 60s (antes 30–90s = 1 por
+// invocação, o que deixava a fila andando dias). Ajustável por env.
+const ESPERA_MIN_MS = Math.max(Number(process.env.DISPARO_ESPERA_MIN_S) || 12, 3) * 1_000;
+const ESPERA_MAX_MS = Math.max(Number(process.env.DISPARO_ESPERA_MAX_S) || 30, Math.ceil(ESPERA_MIN_MS / 1_000)) * 1_000;
 
 function intervaloAleatorioMs(minMs: number, maxMs: number): number {
   return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
@@ -104,13 +107,13 @@ async function enviarTemplateAdaptativo(
   template: { id: string; nomeTemplateMeta: string; idioma: string; variaveis: string[] },
   lead: Parameters<typeof montarComponentesTemplate>[1],
   token: string,
-): Promise<number> {
+): Promise<{ n: number; wamid?: string }> {
   const full = template.variaveis;
   for (let n = full.length; n >= 0; n--) {
     const vars = full.slice(0, n);
     const components = montarComponentesTemplate(vars, lead, { nomeResponsavel: providerConfig.accountName ?? undefined });
     try {
-      await sendWhatsAppTemplate(
+      const wamid = await sendWhatsAppTemplate(
         providerConfig.businessPhoneNumberId, telefone,
         template.nomeTemplateMeta, template.idioma, components, token,
       );
@@ -121,7 +124,7 @@ async function enviarTemplateAdaptativo(
         }).catch(() => {});
         console.log(`[Disparo] Template ${template.nomeTemplateMeta}: contagem ajustada de ${full.length} → ${n} parâmetro(s)`);
       }
-      return n;
+      return { n, wamid };
     } catch (e) {
       const msg = (e instanceof Error ? e.message : String(e)).toLowerCase();
       const contagem = msg.includes("132000") || msg.includes("number of parameters") || msg.includes("expected number of params");
@@ -168,8 +171,9 @@ async function registrarConversaDisparo(params: {
   templateNome: string;
   tentativa: number;
   mensagemTexto?: string | null;
+  wamid?: string | null;
 }): Promise<void> {
-  const { crmLeadId, providerConfigId, telefone, profileName, templateNome, tentativa, mensagemTexto } = params;
+  const { crmLeadId, providerConfigId, telefone, profileName, templateNome, tentativa, mensagemTexto, wamid } = params;
 
   let conversa = await prisma.whatsappConversation.findFirst({
     where: { leadId: crmLeadId, whatsappProviderConfigId: providerConfigId },
@@ -205,6 +209,7 @@ async function registrarConversaDisparo(params: {
       role: "ASSISTANT",
       sentAt: agora,
       status: "SENT",
+      ...(wamid ? { wamid } : {}),
       conversationId: conversa.id,
     },
   });
@@ -411,7 +416,9 @@ async function processarFilaDisparo(
     try {
       const telefoneNormalizado = normalizeBrazilianNumber(lead.telefone.replace(/\D/g, ""));
 
-      await enviarTemplateAdaptativo(providerConfig, telefoneNormalizado, template, lead, token);
+      const { wamid } = await enviarTemplateAdaptativo(providerConfig, telefoneNormalizado, template, lead, token);
+      // Primeiro de tudo: sem isto os webhooks de entrega não acham a mensagem.
+      await registrarEnvio({ organizationId, leadId: lead.id, templateId: template.id, wamid, tentativa: (lead.tentativasDisparo ?? 0) + 1 });
 
       const atualizado = await prisma.prospectLead.update({
         where: { id: lead.id },
@@ -446,6 +453,7 @@ async function processarFilaDisparo(
           templateNome: template.nomeTemplateMeta,
           tentativa: atualizado.tentativasDisparo,
           mensagemTexto,
+          wamid,
         }).catch((e) => console.error(`[Disparo] Falha ao registrar conversa | lead=${lead.id}:`, e));
       }
 
@@ -504,7 +512,7 @@ let retomadaAtiva = false;
  * Retoma jobs QUEUED deixados para trás (restart do PM2 no meio do lote ou
  * janela comercial que fechou). RUNNING órfãos (>15min sem update) voltam a QUEUED.
  */
-export async function retomarDisparosPendentes(): Promise<void> {
+export async function retomarDisparosPendentes(orcamento?: Orcamento): Promise<void> {
   if (retomadaAtiva) return;
   retomadaAtiva = true;
   try {
@@ -537,7 +545,8 @@ export async function retomarDisparosPendentes(): Promise<void> {
       if (!providerConfig || !token || templates.length === 0) continue;
 
       console.log(`[Disparo] Retomando ${p._count} jobs pendentes da org ${organizationId}`);
-      await processarFilaDisparo(organizationId, { config, providerConfig, token, templates });
+      await processarFilaDisparo(organizationId, { config, providerConfig, token, templates }, orcamento);
+      if (orcamento?.estourou()) break;
     }
   } catch (e) {
     console.error("[Disparo] Erro na retomada:", e);

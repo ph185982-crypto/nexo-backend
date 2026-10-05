@@ -16,6 +16,8 @@ import { handleMaxMessage } from "@/lib/max/responder";
 import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 import { retomarDisparosPendentes } from "@/lib/prospeccao/disparo";
+import { aplicarStatusEnvio, type StatusMeta } from "@/lib/prospeccao/entrega";
+import { criarOrcamento } from "@/lib/jobs/fila";
 
 // Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
 // default da função para terminar — a Vercel pode congelar a invocação assim que
@@ -39,6 +41,7 @@ export async function GET(req: NextRequest) {
 
 // ─── Message Processing (POST) ───────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  const t0 = Date.now();
   const signature = req.headers.get("x-hub-signature-256") ?? "";
   const body = await req.text();
 
@@ -121,7 +124,9 @@ export async function POST(req: NextRequest) {
       after(async () => {
         await drainWebhookQueue(5);
         await triggerDueFollowups();
-        await retomarDisparosPendentes().catch((e) => console.error("[Webhook] retomarDisparosPendentes falhou:", e));
+        // Orçamento curto: este trabalho roda dentro do tempo do webhook (60s) e antes
+        // dormia 30–90s entre envios — estourava o limite (timeouts recorrentes).
+        await retomarDisparosPendentes(criarOrcamento(Math.max(maxDuration - (Date.now() - t0) / 1000, 0), 15)).catch((e) => console.error("[Webhook] retomarDisparosPendentes falhou:", e));
       });
     }
 
@@ -547,7 +552,10 @@ async function runAIFlow(
   }
 }
 
-async function handleStatusUpdate(status: { id: string; status: string }) {
+async function handleStatusUpdate(status: StatusMeta) {
+  // Template de prospecção: grava entregue/lido/falhou (+ código de erro da Meta)
+  await aplicarStatusEnvio(status).catch((e) => console.error("[Webhook] aplicarStatusEnvio falhou:", e));
+
   const statusMap: Record<string, string> = {
     sent: "SENT",
     delivered: "DELIVERED",

@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ChecklistDisparo } from "./ChecklistDisparo";
+import { EntregaMensagens } from "./EntregaMensagens";
 import {
   Send, Save, Loader2, Pause, Play,
   ShieldCheck, Clock, MessageSquareText, RefreshCw,
@@ -366,6 +367,7 @@ export default function Disparo({ org }: { org: Org }) {
 
       <div className="flex-1 overflow-auto px-4 md:px-6 py-4 space-y-6 max-w-3xl">
         <ChecklistDisparo orgId={org.id} versao={checklistVersao} />
+        <EntregaMensagens orgId={org.id} versao={checklistVersao} />
         {statusDisparo && (
           <div className="text-sm rounded-lg border border-border bg-card px-4 py-3 text-muted-foreground">
             {statusDisparo}

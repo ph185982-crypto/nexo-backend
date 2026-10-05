@@ -35,7 +35,12 @@ export async function POST(
 
   const { organizationId } = await params;
 
-  if (await pendentes(organizationId) > 0) {
+  // Só recusa se há um envio realmente rodando agora. Jobs QUEUED parados (fila
+  // antiga) não impedem: rodar aqui é justamente o que os faz andar.
+  const rodando = await prisma.disparoJob.count({
+    where: { organizationId, status: "RUNNING", atualizadoEm: { gte: new Date(Date.now() - 2 * 60_000) } },
+  });
+  if (rodando > 0) {
     return NextResponse.json(
       { ok: false, error: "Disparo já em andamento" },
       { status: 409 },
