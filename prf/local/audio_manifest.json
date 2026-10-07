@@ -1,2241 +1,1974 @@
 {
- "generated_at": "2026-09-28T11:04:59Z",
+ "version": 2,
+ "generated_at": "2026-10-07T11:42:29Z",
  "voices": {
-  "MARCOS": "pt-BR-AntonioNeural",
-  "JULIA": "pt-BR-FranciscaNeural"
+  "JULIA": "pt-BR-ThalitaMultilingualNeural",
+  "MARCOS": "pt-BR-AntonioNeural"
  },
- "episodes": {
-  "02fa9a59-a830-5b78-943c-fade990b8af2": {
-   "topic_id": "02fa9a59-a830-5b78-943c-fade990b8af2",
-   "file": "02fa9a59-a830-5b78-943c-fade990b8af2-65753aeb34.mp3",
-   "bytes": 2646864,
-   "duration_secs": 441,
-   "boundaries": [
-    17.98,
-    145.8,
-    257.47,
-    380.59,
-    432.26,
-    441.14
-   ],
-   "segment_count": 6,
-   "title": "Cinemática aplicada ao trânsito",
-   "subject_name": "Física Aplicada",
-   "engine": "questoes"
-  },
-  "0300fa92-3691-5914-b128-f8eaa1627a5e": {
-   "topic_id": "0300fa92-3691-5914-b128-f8eaa1627a5e",
-   "file": "0300fa92-3691-5914-b128-f8eaa1627a5e-503d76b2ea.mp3",
-   "bytes": 4186368,
-   "duration_secs": 698,
-   "boundaries": [
-    19.01,
-    155.45,
-    286.03,
-    411.7,
-    533.93,
-    657.65,
-    688.22,
-    697.73
-   ],
-   "segment_count": 8,
-   "title": "Declaração Universal dos Direitos Humanos",
-   "subject_name": "Direitos Humanos",
-   "engine": "questoes"
-  },
-  "0414f6d1-1be2-5cd9-b5c6-24b7c94acbd7": {
-   "topic_id": "0414f6d1-1be2-5cd9-b5c6-24b7c94acbd7",
-   "file": "0414f6d1-1be2-5cd9-b5c6-24b7c94acbd7-41b2ad6e8f.mp3",
-   "bytes": 3233952,
-   "duration_secs": 539,
-   "boundaries": [
-    18.26,
-    167.81,
-    321.36,
-    530.11,
-    538.99
-   ],
-   "segment_count": 5,
-   "title": "Controle da Administração Pública",
-   "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "052d3986-2f76-5435-9b91-e356f1fbffb1": {
-   "topic_id": "052d3986-2f76-5435-9b91-e356f1fbffb1",
-   "file": "052d3986-2f76-5435-9b91-e356f1fbffb1-d7a02e19f9.mp3",
-   "bytes": 4273776,
-   "duration_secs": 712,
-   "boundaries": [
-    18.53,
-    167.64,
-    322.44,
-    473.93,
-    625.06,
-    703.8,
-    712.3
-   ],
-   "segment_count": 7,
-   "title": "Uso progressivo da força",
-   "subject_name": "Policiamento e Fiscalização",
-   "engine": "questoes"
-  },
-  "05a76ad1-1723-5328-98eb-6534623b4279": {
-   "topic_id": "05a76ad1-1723-5328-98eb-6534623b4279",
-   "file": "05a76ad1-1723-5328-98eb-6534623b4279-13105ef9f2.mp3",
-   "bytes": 2388960,
-   "duration_secs": 398,
-   "boundaries": [
-    17.28,
-    154.85,
-    272.4,
-    390.02,
-    398.16
-   ],
-   "segment_count": 5,
-   "title": "Frenagem e atrito",
-   "subject_name": "Física Aplicada",
-   "engine": "questoes"
-  },
-  "06f547e3-bf61-5900-a97a-f5b51086fba9": {
-   "topic_id": "06f547e3-bf61-5900-a97a-f5b51086fba9",
-   "file": "06f547e3-bf61-5900-a97a-f5b51086fba9-a8eea57e33.mp3",
-   "bytes": 6971904,
-   "duration_secs": 1162,
-   "boundaries": [
-    18.31,
-    171.89,
-    324.48,
-    475.92,
-    657.86,
-    821.64,
-    960.98,
-    1153.46,
-    1161.98
-   ],
-   "segment_count": 9,
-   "title": "Remédios constitucionais",
+ "episodes": [
+  {
+   "id": "direito-constitucional-01",
+   "subject_slug": "direito-constitucional",
    "subject_name": "Direito Constitucional",
-   "engine": "questoes"
-  },
-  "07e2c3d8-03c5-5acf-9220-ae718d970f25": {
-   "topic_id": "07e2c3d8-03c5-5acf-9220-ae718d970f25",
-   "file": "07e2c3d8-03c5-5acf-9220-ae718d970f25-22f29ff00d.mp3",
-   "bytes": 3946320,
-   "duration_secs": 658,
-   "boundaries": [
-    17.86,
-    134.18,
-    264.41,
-    372.41,
-    529.82,
-    649.22,
-    657.72
+   "number": 1,
+   "title": "Direito Constitucional · Episódio 1",
+   "file": "direito-constitucional-01-5fee534867.mp3",
+   "bytes": 16629264,
+   "duration_secs": 2772,
+   "chapters": [
+    {
+     "topic_id": "9a0b341d-1b9d-5fd0-9d50-61e06f68b9ba",
+     "title": "Princípios fundamentais",
+     "start": 0.0
+    },
+    {
+     "topic_id": "a0b006e1-05e8-55b2-ad74-45699ecd687a",
+     "title": "Direitos e garantias fundamentais",
+     "start": 1638.58
+    }
    ],
-   "segment_count": 7,
-   "title": "Regência verbal e nominal",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
-  },
-  "0866493b-222a-5753-a331-ac9cf10cd6b6": {
-   "topic_id": "0866493b-222a-5753-a331-ac9cf10cd6b6",
-   "file": "0866493b-222a-5753-a331-ac9cf10cd6b6-86d35f904e.mp3",
-   "bytes": 4198752,
-   "duration_secs": 700,
    "boundaries": [
-    17.45,
-    314.74,
-    691.78,
-    699.79
+    1638.58,
+    2771.54
    ],
-   "segment_count": 4,
-   "title": "História de Goiás",
-   "subject_name": "Realidade de Goiás",
-   "engine": "questoes"
+   "segment_count": 2
   },
-  "097f794c-6d10-515d-9315-28dec5a74989": {
-   "topic_id": "097f794c-6d10-515d-9315-28dec5a74989",
-   "file": "097f794c-6d10-515d-9315-28dec5a74989-3367c517e4.mp3",
-   "bytes": 2069712,
-   "duration_secs": 345,
-   "boundaries": [
-    17.62,
-    139.87,
-    247.46,
-    336.65,
-    344.95
-   ],
-   "segment_count": 5,
-   "title": "Sequências e padrões",
-   "subject_name": "Raciocínio Lógico",
-   "engine": "questoes"
-  },
-  "0c4e2ac2-4c1e-5860-88d0-100a13596300": {
-   "topic_id": "0c4e2ac2-4c1e-5860-88d0-100a13596300",
-   "file": "0c4e2ac2-4c1e-5860-88d0-100a13596300-9ea234bab9.mp3",
-   "bytes": 3395808,
-   "duration_secs": 566,
-   "boundaries": [
-    19.15,
-    146.95,
-    274.75,
-    400.32,
-    525.34,
-    556.22,
-    565.97
-   ],
-   "segment_count": 7,
-   "title": "Garantias processuais e devido processo legal",
-   "subject_name": "Direitos Humanos",
-   "engine": "questoes"
-  },
-  "0d7cf945-5b83-5883-ab0a-e8a08d1718c8": {
-   "topic_id": "0d7cf945-5b83-5883-ab0a-e8a08d1718c8",
-   "file": "0d7cf945-5b83-5883-ab0a-e8a08d1718c8-9a2b463537.mp3",
-   "bytes": 3016224,
-   "duration_secs": 503,
-   "boundaries": [
-    43.8,
-    353.52,
-    392.81,
-    428.3,
-    502.7
-   ],
-   "segment_count": 5,
-   "title": "Pedestres e condutores de veículos não motorizados",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
-  },
-  "0deb18ce-87e4-5962-8f1b-c266c8af54b7": {
-   "topic_id": "0deb18ce-87e4-5962-8f1b-c266c8af54b7",
-   "file": "0deb18ce-87e4-5962-8f1b-c266c8af54b7-1a7838dbd4.mp3",
-   "bytes": 1442736,
-   "duration_secs": 240,
-   "boundaries": [
-    17.3,
-    127.2,
-    231.67,
-    240.46
-   ],
-   "segment_count": 4,
-   "title": "Formação territorial do Brasil",
-   "subject_name": "Geopolítica Brasileira",
-   "engine": "questoes"
-  },
-  "0e3d00cc-e9f8-5bcf-adea-e566f75734a1": {
-   "topic_id": "0e3d00cc-e9f8-5bcf-adea-e566f75734a1",
-   "file": "0e3d00cc-e9f8-5bcf-adea-e566f75734a1-eb84eb2e7c.mp3",
-   "bytes": 3370320,
-   "duration_secs": 562,
-   "boundaries": [
-    45.84,
-    294.0,
-    397.8,
-    506.64,
-    536.62,
-    561.72
-   ],
-   "segment_count": 6,
-   "title": "Crimes Hediondos (8.072/90)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
-  },
-  "0f163fc9-07d7-5a16-8d1f-bc34163ba1b5": {
-   "topic_id": "0f163fc9-07d7-5a16-8d1f-bc34163ba1b5",
-   "file": "0f163fc9-07d7-5a16-8d1f-bc34163ba1b5-f9f2dcd021.mp3",
-   "bytes": 944496,
-   "duration_secs": 157,
-   "boundaries": [
-    36.86,
-    114.26,
-    131.93,
-    157.42
-   ],
-   "segment_count": 4,
-   "title": "Concurso de pessoas",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "1065303e-27ec-53d2-aa2d-91b6c32e0ce8": {
-   "topic_id": "1065303e-27ec-53d2-aa2d-91b6c32e0ce8",
-   "file": "1065303e-27ec-53d2-aa2d-91b6c32e0ce8-b13261b772.mp3",
-   "bytes": 2470176,
-   "duration_secs": 412,
-   "boundaries": [
-    18.05,
-    153.94,
-    274.63,
-    403.42,
-    411.7
-   ],
-   "segment_count": 5,
-   "title": "Conflito de interesses",
-   "subject_name": "Ética no Serviço Público",
-   "engine": "questoes"
-  },
-  "1619367f-ef69-5335-a493-e9386767a9d8": {
-   "topic_id": "1619367f-ef69-5335-a493-e9386767a9d8",
-   "file": "1619367f-ef69-5335-a493-e9386767a9d8-c0ed3c5122.mp3",
-   "bytes": 1325808,
-   "duration_secs": 221,
-   "boundaries": [
-    19.18,
-    211.85,
-    220.97
-   ],
-   "segment_count": 3,
-   "title": "Regulamento Disciplinar da PMGO",
-   "subject_name": "Legislação Institucional PM",
-   "engine": "questoes"
-  },
-  "16613cdc-8ad9-5e85-a57c-99a74eed39bd": {
-   "topic_id": "16613cdc-8ad9-5e85-a57c-99a74eed39bd",
-   "file": "16613cdc-8ad9-5e85-a57c-99a74eed39bd-5171c875e9.mp3",
-   "bytes": 2853216,
-   "duration_secs": 476,
-   "boundaries": [
-    40.7,
-    231.1,
-    434.09,
-    449.45,
-    475.54
-   ],
-   "segment_count": 5,
-   "title": "Organização do Estado",
+  {
+   "id": "direito-constitucional-02",
+   "subject_slug": "direito-constitucional",
    "subject_name": "Direito Constitucional",
-   "engine": "lei"
-  },
-  "1af3d3c4-1115-5bcd-a11f-36e4b18abfd3": {
-   "topic_id": "1af3d3c4-1115-5bcd-a11f-36e4b18abfd3",
-   "file": "1af3d3c4-1115-5bcd-a11f-36e4b18abfd3-39d6b99e26.mp3",
-   "bytes": 1016640,
-   "duration_secs": 169,
-   "boundaries": [
-    37.2,
-    149.9,
-    169.44
+   "number": 2,
+   "title": "Direito Constitucional · Episódio 2",
+   "file": "direito-constitucional-02-6eb749bf79.mp3",
+   "bytes": 14571360,
+   "duration_secs": 2429,
+   "chapters": [
+    {
+     "topic_id": "a0b006e1-05e8-55b2-ad74-45699ecd687a",
+     "title": "Direitos e garantias fundamentais (continuação)",
+     "start": 0.0
+    }
    ],
-   "segment_count": 3,
-   "title": "Culpabilidade",
+   "boundaries": [
+    2428.56
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "direito-constitucional-03",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 3,
+   "title": "Direito Constitucional · Episódio 3",
+   "file": "direito-constitucional-03-fd61166f42.mp3",
+   "bytes": 16576128,
+   "duration_secs": 2763,
+   "chapters": [
+    {
+     "topic_id": "16613cdc-8ad9-5e85-a57c-99a74eed39bd",
+     "title": "Organização do Estado",
+     "start": 0.0
+    }
+   ],
+   "boundaries": [
+    2762.69
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "direito-constitucional-04",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 4,
+   "title": "Direito Constitucional · Episódio 4",
+   "file": "direito-constitucional-04-2f8a8d796f.mp3",
+   "bytes": 15690528,
+   "duration_secs": 2615,
+   "chapters": [
+    {
+     "topic_id": "16613cdc-8ad9-5e85-a57c-99a74eed39bd",
+     "title": "Organização do Estado (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "d987eaa9-2fb8-5907-8be8-cffddfe952da",
+     "title": "Segurança pública",
+     "start": 700.51
+    }
+   ],
+   "boundaries": [
+    700.51,
+    2615.09
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-constitucional-05",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 5,
+   "title": "Direito Constitucional · Episódio 5",
+   "file": "direito-constitucional-05-53224382da.mp3",
+   "bytes": 16307280,
+   "duration_secs": 2718,
+   "chapters": [
+    {
+     "topic_id": "d987eaa9-2fb8-5907-8be8-cffddfe952da",
+     "title": "Segurança pública (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "82d1d914-9b84-5fbd-8315-08e869c668b8",
+     "title": "Poder Legislativo",
+     "start": 836.66
+    }
+   ],
+   "boundaries": [
+    836.66,
+    2717.88
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-constitucional-06",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 6,
+   "title": "Direito Constitucional · Episódio 6",
+   "file": "direito-constitucional-06-f3f8c68393.mp3",
+   "bytes": 15496128,
+   "duration_secs": 2583,
+   "chapters": [
+    {
+     "topic_id": "82d1d914-9b84-5fbd-8315-08e869c668b8",
+     "title": "Poder Legislativo (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "6d475e6e-51d6-5c54-9705-8461a55d1122",
+     "title": "Poder Executivo",
+     "start": 1815.7
+    }
+   ],
+   "boundaries": [
+    1815.7,
+    2582.69
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-constitucional-07",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 7,
+   "title": "Direito Constitucional · Episódio 7",
+   "file": "direito-constitucional-07-c0291b5cc2.mp3",
+   "bytes": 15580800,
+   "duration_secs": 2597,
+   "chapters": [
+    {
+     "topic_id": "6d475e6e-51d6-5c54-9705-8461a55d1122",
+     "title": "Poder Executivo (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "4e7cc05c-fa3b-512d-85fb-bdf9eeab5794",
+     "title": "Poder Judiciário",
+     "start": 1541.4
+    }
+   ],
+   "boundaries": [
+    1541.4,
+    2596.8
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-constitucional-08",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 8,
+   "title": "Direito Constitucional · Episódio 8",
+   "file": "direito-constitucional-08-2bd7c1b106.mp3",
+   "bytes": 16429824,
+   "duration_secs": 2738,
+   "chapters": [
+    {
+     "topic_id": "4e7cc05c-fa3b-512d-85fb-bdf9eeab5794",
+     "title": "Poder Judiciário (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "96884cfc-7a39-5a82-bb30-64c405286db6",
+     "title": "Administração Pública",
+     "start": 1989.7
+    }
+   ],
+   "boundaries": [
+    1989.7,
+    2738.3
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-constitucional-09",
+   "subject_slug": "direito-constitucional",
+   "subject_name": "Direito Constitucional",
+   "number": 9,
+   "title": "Direito Constitucional · Episódio 9",
+   "file": "direito-constitucional-09-e158045285.mp3",
+   "bytes": 15897888,
+   "duration_secs": 2650,
+   "chapters": [
+    {
+     "topic_id": "96884cfc-7a39-5a82-bb30-64c405286db6",
+     "title": "Administração Pública (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "06f547e3-bf61-5900-a97a-f5b51086fba9",
+     "title": "Remédios constitucionais",
+     "start": 1027.08
+    },
+    {
+     "topic_id": "c9408097-31c4-5009-a593-a604a1adeca6",
+     "title": "Nacionalidade e direitos políticos",
+     "start": 2244.31
+    },
+    {
+     "topic_id": "d126a3e5-30d6-5def-a6f3-7f367e358cad",
+     "title": "Defesa do Estado e das instituições democráticas",
+     "start": 2524.92
+    }
+   ],
+   "boundaries": [
+    1027.08,
+    2244.31,
+    2524.92,
+    2649.65
+   ],
+   "segment_count": 4
+  },
+  {
+   "id": "direito-penal-01",
+   "subject_slug": "direito-penal",
    "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "1be4d05d-f622-5ce4-970d-a2747de84f6c": {
-   "topic_id": "1be4d05d-f622-5ce4-970d-a2747de84f6c",
-   "file": "1be4d05d-f622-5ce4-970d-a2747de84f6c-df08af110a.mp3",
-   "bytes": 4243104,
-   "duration_secs": 707,
-   "boundaries": [
-    38.71,
-    642.6,
-    664.15,
-    707.18
+   "number": 1,
+   "title": "Direito Penal · Episódio 1",
+   "file": "direito-penal-01-7b35f90789.mp3",
+   "bytes": 15225696,
+   "duration_secs": 2538,
+   "chapters": [
+    {
+     "topic_id": "54d74d33-d162-5118-b9e8-80c5ec91d98a",
+     "title": "Princípios do Direito Penal",
+     "start": 0.0
+    },
+    {
+     "topic_id": "ce526efd-0bbe-563f-86c7-53b100956829",
+     "title": "Aplicação da lei penal",
+     "start": 254.45
+    },
+    {
+     "topic_id": "a1a54482-abc9-5cfa-b995-71c75745bed3",
+     "title": "Crime",
+     "start": 922.49
+    }
    ],
-   "segment_count": 4,
-   "title": "Normas gerais de circulação e conduta",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
-  },
-  "1decfdc4-89a9-5374-b9e4-be3fe48cf091": {
-   "topic_id": "1decfdc4-89a9-5374-b9e4-be3fe48cf091",
-   "file": "1decfdc4-89a9-5374-b9e4-be3fe48cf091-b170155141.mp3",
-   "bytes": 4063968,
-   "duration_secs": 677,
    "boundaries": [
-    54.12,
-    220.22,
-    339.12,
-    444.02,
-    593.81,
-    634.63,
-    651.67,
-    677.33
+    254.45,
+    922.49,
+    2537.62
    ],
-   "segment_count": 8,
-   "title": "Competência",
+   "segment_count": 3
+  },
+  {
+   "id": "direito-penal-02",
+   "subject_slug": "direito-penal",
+   "subject_name": "Direito Penal",
+   "number": 2,
+   "title": "Direito Penal · Episódio 2",
+   "file": "direito-penal-02-9fa2d0c375.mp3",
+   "bytes": 16070976,
+   "duration_secs": 2678,
+   "chapters": [
+    {
+     "topic_id": "46dd063f-3f74-51d6-9969-c622cba10a4a",
+     "title": "Excludentes de ilicitude",
+     "start": 0.0
+    },
+    {
+     "topic_id": "1af3d3c4-1115-5bcd-a11f-36e4b18abfd3",
+     "title": "Culpabilidade",
+     "start": 555.77
+    },
+    {
+     "topic_id": "0f163fc9-07d7-5a16-8d1f-bc34163ba1b5",
+     "title": "Concurso de pessoas",
+     "start": 799.7
+    },
+    {
+     "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+     "title": "Penas",
+     "start": 1817.88
+    }
+   ],
+   "boundaries": [
+    555.77,
+    799.7,
+    1817.88,
+    2678.5
+   ],
+   "segment_count": 4
+  },
+  {
+   "id": "direito-penal-03",
+   "subject_slug": "direito-penal",
+   "subject_name": "Direito Penal",
+   "number": 3,
+   "title": "Direito Penal · Episódio 3",
+   "file": "direito-penal-03-64f92c2339.mp3",
+   "bytes": 15812928,
+   "duration_secs": 2635,
+   "chapters": [
+    {
+     "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+     "title": "Penas (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "609dffd1-a2e2-5086-b678-d9076befe676",
+     "title": "Crimes contra a pessoa",
+     "start": 2031.38
+    }
+   ],
+   "boundaries": [
+    2031.38,
+    2635.49
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-penal-04",
+   "subject_slug": "direito-penal",
+   "subject_name": "Direito Penal",
+   "number": 4,
+   "title": "Direito Penal · Episódio 4",
+   "file": "direito-penal-04-a8b28edcae.mp3",
+   "bytes": 15419520,
+   "duration_secs": 2570,
+   "chapters": [
+    {
+     "topic_id": "609dffd1-a2e2-5086-b678-d9076befe676",
+     "title": "Crimes contra a pessoa (continuação)",
+     "start": 0.0
+    }
+   ],
+   "boundaries": [
+    2569.92
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "direito-penal-05",
+   "subject_slug": "direito-penal",
+   "subject_name": "Direito Penal",
+   "number": 5,
+   "title": "Direito Penal · Episódio 5",
+   "file": "direito-penal-05-cfbcc33ed8.mp3",
+   "bytes": 16279200,
+   "duration_secs": 2713,
+   "chapters": [
+    {
+     "topic_id": "609dffd1-a2e2-5086-b678-d9076befe676",
+     "title": "Crimes contra a pessoa (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "81cf5277-8395-5e6c-8a8f-081317fc5d20",
+     "title": "Crimes contra o patrimônio",
+     "start": 860.83
+    }
+   ],
+   "boundaries": [
+    860.83,
+    2713.2
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-penal-06",
+   "subject_slug": "direito-penal",
+   "subject_name": "Direito Penal",
+   "number": 6,
+   "title": "Direito Penal · Episódio 6",
+   "file": "direito-penal-06-cc1f27179c.mp3",
+   "bytes": 15110928,
+   "duration_secs": 2518,
+   "chapters": [
+    {
+     "topic_id": "81cf5277-8395-5e6c-8a8f-081317fc5d20",
+     "title": "Crimes contra o patrimônio (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "91cf94f2-524b-5d65-b6cf-d74d8e7822ff",
+     "title": "Crimes contra a Administração Pública",
+     "start": 1712.47
+    }
+   ],
+   "boundaries": [
+    1712.47,
+    2518.49
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-penal-07",
+   "subject_slug": "direito-penal",
+   "subject_name": "Direito Penal",
+   "number": 7,
+   "title": "Direito Penal · Episódio 7",
+   "file": "direito-penal-07-38e79e2291.mp3",
+   "bytes": 15591456,
+   "duration_secs": 2599,
+   "chapters": [
+    {
+     "topic_id": "91cf94f2-524b-5d65-b6cf-d74d8e7822ff",
+     "title": "Crimes contra a Administração Pública (continuação)",
+     "start": 0.0
+    }
+   ],
+   "boundaries": [
+    2598.58
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "direito-processual-penal-01",
+   "subject_slug": "direito-processual-penal",
    "subject_name": "Direito Processual Penal",
-   "engine": "lei"
-  },
-  "1e299181-318e-58f4-8328-a4db88b8f5a8": {
-   "topic_id": "1e299181-318e-58f4-8328-a4db88b8f5a8",
-   "file": "1e299181-318e-58f4-8328-a4db88b8f5a8-4a93f3e483.mp3",
-   "bytes": 3357648,
-   "duration_secs": 560,
-   "boundaries": [
-    41.42,
-    182.47,
-    347.33,
-    539.04,
-    559.61
+   "number": 1,
+   "title": "Direito Processual Penal · Episódio 1",
+   "file": "direito-processual-penal-01-6fd8345ef5.mp3",
+   "bytes": 14244336,
+   "duration_secs": 2374,
+   "chapters": [
+    {
+     "topic_id": "a0dc56ff-5760-5395-a8b4-81ad5bee115d",
+     "title": "Inquérito policial",
+     "start": 0.0
+    }
    ],
-   "segment_count": 5,
-   "title": "Processo penal militar",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "lei"
-  },
-  "21563082-86e3-505f-9ab5-850db0b57ca1": {
-   "topic_id": "21563082-86e3-505f-9ab5-850db0b57ca1",
-   "file": "21563082-86e3-505f-9ab5-850db0b57ca1-1cbf71bd86.mp3",
-   "bytes": 6635952,
-   "duration_secs": 1106,
    "boundaries": [
-    52.34,
-    419.06,
-    599.11,
-    787.3,
-    855.91,
-    940.87,
-    1105.99
+    2374.06
    ],
-   "segment_count": 7,
-   "title": "Crimes de trânsito",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
+   "segment_count": 1
   },
-  "23725b9b-5a1a-56d4-bde0-db71a28754d2": {
-   "topic_id": "23725b9b-5a1a-56d4-bde0-db71a28754d2",
-   "file": "23725b9b-5a1a-56d4-bde0-db71a28754d2-664bd32e21.mp3",
-   "bytes": 3758688,
-   "duration_secs": 626,
-   "boundaries": [
-    18.77,
-    304.37,
-    617.74,
-    626.45
+  {
+   "id": "direito-processual-penal-02",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 2,
+   "title": "Direito Processual Penal · Episódio 2",
+   "file": "direito-processual-penal-02-58efb56536.mp3",
+   "bytes": 14379696,
+   "duration_secs": 2397,
+   "chapters": [
+    {
+     "topic_id": "a0dc56ff-5760-5395-a8b4-81ad5bee115d",
+     "title": "Inquérito policial (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "b873f91c-88cd-5177-ba9d-b82ccd4f4c96",
+     "title": "Ação penal",
+     "start": 809.47
+    }
    ],
-   "segment_count": 4,
-   "title": "Estatuto dos Militares de GO",
-   "subject_name": "Legislação Institucional PM",
-   "engine": "questoes"
+   "boundaries": [
+    809.47,
+    2396.62
+   ],
+   "segment_count": 2
   },
-  "24dfd979-6c91-50fb-bb12-db45a976b948": {
-   "topic_id": "24dfd979-6c91-50fb-bb12-db45a976b948",
-   "file": "24dfd979-6c91-50fb-bb12-db45a976b948-1c82f67936.mp3",
-   "bytes": 5344560,
-   "duration_secs": 891,
-   "boundaries": [
-    17.9,
-    180.34,
-    337.9,
-    477.17,
-    674.88,
-    882.5,
-    890.76
+  {
+   "id": "direito-processual-penal-03",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 3,
+   "title": "Direito Processual Penal · Episódio 3",
+   "file": "direito-processual-penal-03-74f4502d8c.mp3",
+   "bytes": 13664736,
+   "duration_secs": 2277,
+   "chapters": [
+    {
+     "topic_id": "b873f91c-88cd-5177-ba9d-b82ccd4f4c96",
+     "title": "Ação penal (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "7640e0e5-1652-59bf-9985-be8fca541d16",
+     "title": "Prisão e liberdade provisória",
+     "start": 850.7
+    }
    ],
-   "segment_count": 7,
-   "title": "Servidores públicos",
+   "boundaries": [
+    850.7,
+    2277.46
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-processual-penal-04",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 4,
+   "title": "Direito Processual Penal · Episódio 4",
+   "file": "direito-processual-penal-04-ea4c0481f4.mp3",
+   "bytes": 14944320,
+   "duration_secs": 2491,
+   "chapters": [
+    {
+     "topic_id": "7640e0e5-1652-59bf-9985-be8fca541d16",
+     "title": "Prisão e liberdade provisória (continuação)",
+     "start": 0.0
+    }
+   ],
+   "boundaries": [
+    2490.72
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "direito-processual-penal-05",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 5,
+   "title": "Direito Processual Penal · Episódio 5",
+   "file": "direito-processual-penal-05-b89a07f534.mp3",
+   "bytes": 14580144,
+   "duration_secs": 2430,
+   "chapters": [
+    {
+     "topic_id": "7640e0e5-1652-59bf-9985-be8fca541d16",
+     "title": "Prisão e liberdade provisória (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "af4e8546-3944-5699-a4d8-becd83878115",
+     "title": "Provas",
+     "start": 276.19
+    }
+   ],
+   "boundaries": [
+    276.19,
+    2430.02
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-processual-penal-06",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 6,
+   "title": "Direito Processual Penal · Episódio 6",
+   "file": "direito-processual-penal-06-93ff1610ee.mp3",
+   "bytes": 14011344,
+   "duration_secs": 2335,
+   "chapters": [
+    {
+     "topic_id": "af4e8546-3944-5699-a4d8-becd83878115",
+     "title": "Provas (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "1decfdc4-89a9-5374-b9e4-be3fe48cf091",
+     "title": "Competência",
+     "start": 1277.28
+    }
+   ],
+   "boundaries": [
+    1277.28,
+    2335.22
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-processual-penal-07",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 7,
+   "title": "Direito Processual Penal · Episódio 7",
+   "file": "direito-processual-penal-07-246e39a312.mp3",
+   "bytes": 14254128,
+   "duration_secs": 2376,
+   "chapters": [
+    {
+     "topic_id": "1decfdc4-89a9-5374-b9e4-be3fe48cf091",
+     "title": "Competência (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "fb2d9a36-517c-5759-a360-6a1ff7f7d680",
+     "title": "Recursos no processo penal",
+     "start": 843.86
+    }
+   ],
+   "boundaries": [
+    843.86,
+    2375.69
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-processual-penal-08",
+   "subject_slug": "direito-processual-penal",
+   "subject_name": "Direito Processual Penal",
+   "number": 8,
+   "title": "Direito Processual Penal · Episódio 8",
+   "file": "direito-processual-penal-08-a28a986973.mp3",
+   "bytes": 14341824,
+   "duration_secs": 2390,
+   "chapters": [
+    {
+     "topic_id": "fb2d9a36-517c-5759-a360-6a1ff7f7d680",
+     "title": "Recursos no processo penal (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "62bb47fc-5f98-51d0-9973-3150c912651d",
+     "title": "Citações e intimações",
+     "start": 2184.0
+    }
+   ],
+   "boundaries": [
+    2184.0,
+    2390.3
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-administrativo-01",
+   "subject_slug": "direito-administrativo",
    "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "275ec0ca-a746-554f-8175-e0d156136411": {
-   "topic_id": "275ec0ca-a746-554f-8175-e0d156136411",
-   "file": "275ec0ca-a746-554f-8175-e0d156136411-4a6e909da8.mp3",
-   "bytes": 4656240,
-   "duration_secs": 776,
-   "boundaries": [
-    18.48,
-    170.26,
-    316.18,
-    461.06,
-    767.04,
-    776.04
+   "number": 1,
+   "title": "Direito Administrativo · Episódio 1",
+   "file": "direito-administrativo-01-f54e5a854e.mp3",
+   "bytes": 13282272,
+   "duration_secs": 2214,
+   "chapters": [
+    {
+     "topic_id": "b39aa01d-3dcf-5380-bc89-c0567aad11e7",
+     "title": "Atos administrativos",
+     "start": 0.0
+    },
+    {
+     "topic_id": "aa438456-7ff4-559d-a528-8ab093508e61",
+     "title": "Poderes administrativos",
+     "start": 1259.95
+    }
    ],
-   "segment_count": 6,
-   "title": "Responsabilidade civil do Estado",
+   "boundaries": [
+    1259.95,
+    2213.71
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-administrativo-02",
+   "subject_slug": "direito-administrativo",
    "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "2e7c8062-8f09-5717-afa0-4ec83dd81dbb": {
-   "topic_id": "2e7c8062-8f09-5717-afa0-4ec83dd81dbb",
-   "file": "2e7c8062-8f09-5717-afa0-4ec83dd81dbb-c7c31aa3fe.mp3",
-   "bytes": 2686320,
-   "duration_secs": 448,
-   "boundaries": [
-    17.16,
-    143.23,
-    255.38,
-    364.7,
-    439.68,
-    447.72
+   "number": 2,
+   "title": "Direito Administrativo · Episódio 2",
+   "file": "direito-administrativo-02-bb5c1a24c3.mp3",
+   "bytes": 11752416,
+   "duration_secs": 1959,
+   "chapters": [
+    {
+     "topic_id": "b7cddc33-067c-5a73-bcce-c8dc7f691bcd",
+     "title": "Licitações e contratos",
+     "start": 0.0
+    },
+    {
+     "topic_id": "24dfd979-6c91-50fb-bb12-db45a976b948",
+     "title": "Servidores públicos",
+     "start": 1027.75
+    }
    ],
-   "segment_count": 6,
-   "title": "Dinâmica veicular",
-   "subject_name": "Física Aplicada",
-   "engine": "questoes"
-  },
-  "2edbe4a2-7ff6-5fa5-8efe-eef43d3d1fba": {
-   "topic_id": "2edbe4a2-7ff6-5fa5-8efe-eef43d3d1fba",
-   "file": "2edbe4a2-7ff6-5fa5-8efe-eef43d3d1fba-b97c48f504.mp3",
-   "bytes": 3786768,
-   "duration_secs": 631,
    "boundaries": [
-    19.49,
-    344.26,
-    621.43,
-    631.13
+    1027.75,
+    1958.74
    ],
-   "segment_count": 4,
-   "title": "Prisão e liberdade provisória no CPPM",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "questoes"
+   "segment_count": 2
   },
-  "2f18f1f0-7ba2-505d-a22f-e4715db75762": {
-   "topic_id": "2f18f1f0-7ba2-505d-a22f-e4715db75762",
-   "file": "2f18f1f0-7ba2-505d-a22f-e4715db75762-ccb9bd0e8b.mp3",
-   "bytes": 3504384,
-   "duration_secs": 584,
-   "boundaries": [
-    18.58,
-    137.5,
-    262.68,
-    420.29,
-    547.82,
-    575.26,
-    584.06
+  {
+   "id": "direito-administrativo-03",
+   "subject_slug": "direito-administrativo",
+   "subject_name": "Direito Administrativo",
+   "number": 3,
+   "title": "Direito Administrativo · Episódio 3",
+   "file": "direito-administrativo-03-73f2d5ce38.mp3",
+   "bytes": 13416480,
+   "duration_secs": 2236,
+   "chapters": [
+    {
+     "topic_id": "0414f6d1-1be2-5cd9-b5c6-24b7c94acbd7",
+     "title": "Controle da Administração Pública",
+     "start": 0.0
+    },
+    {
+     "topic_id": "275ec0ca-a746-554f-8175-e0d156136411",
+     "title": "Responsabilidade civil do Estado",
+     "start": 570.82
+    },
+    {
+     "topic_id": "a9313d15-00ba-5d4b-aefe-5902d17af907",
+     "title": "Bens públicos",
+     "start": 1346.59
+    },
+    {
+     "topic_id": "5dd4df99-9565-5076-a0c2-fef2e50027ef",
+     "title": "Princípios da Administração Pública",
+     "start": 1839.5
+    }
    ],
-   "segment_count": 7,
-   "title": "Regime disciplinar do servidor",
-   "subject_name": "Ética no Serviço Público",
-   "engine": "questoes"
+   "boundaries": [
+    570.82,
+    1346.59,
+    1839.5,
+    2236.08
+   ],
+   "segment_count": 4
   },
-  "2f24c33d-c95f-5770-b6d4-1da13383176d": {
-   "topic_id": "2f24c33d-c95f-5770-b6d4-1da13383176d",
-   "file": "2f24c33d-c95f-5770-b6d4-1da13383176d-491b56d50e.mp3",
-   "bytes": 3358800,
-   "duration_secs": 560,
-   "boundaries": [
-    18.86,
-    350.54,
-    550.82,
-    559.8
-   ],
-   "segment_count": 4,
-   "title": "Lei de Organização da PMGO",
-   "subject_name": "Legislação Institucional PM",
-   "engine": "questoes"
-  },
-  "381da94a-cbf0-5f45-873c-d98610c7eb83": {
-   "topic_id": "381da94a-cbf0-5f45-873c-d98610c7eb83",
-   "file": "381da94a-cbf0-5f45-873c-d98610c7eb83-902bcb9e3f.mp3",
-   "bytes": 1332864,
-   "duration_secs": 222,
-   "boundaries": [
-    17.33,
-    213.96,
-    222.14
-   ],
-   "segment_count": 3,
-   "title": "Coesão e coerência",
+  {
+   "id": "lingua-portuguesa-01",
+   "subject_slug": "lingua-portuguesa",
    "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
-  },
-  "382c3dd2-53e2-511c-8385-8a04f04deba4": {
-   "topic_id": "382c3dd2-53e2-511c-8385-8a04f04deba4",
-   "file": "382c3dd2-53e2-511c-8385-8a04f04deba4-8b59a7b47f.mp3",
-   "bytes": 2752128,
-   "duration_secs": 459,
-   "boundaries": [
-    17.4,
-    130.94,
-    247.18,
-    362.38,
-    450.31,
-    458.69
+   "number": 1,
+   "title": "Língua Portuguesa · Episódio 1",
+   "file": "lingua-portuguesa-01-6687be8c4c.mp3",
+   "bytes": 12572352,
+   "duration_secs": 2095,
+   "chapters": [
+    {
+     "topic_id": "46e12dab-4d11-5f07-8564-fc7d9ed52267",
+     "title": "Interpretação de textos",
+     "start": 0.0
+    },
+    {
+     "topic_id": "c60f1581-eb16-53f4-8b85-95d4e7a9f494",
+     "title": "Concordância verbal e nominal",
+     "start": 1289.9
+    }
    ],
-   "segment_count": 6,
-   "title": "Segurança da informação",
+   "boundaries": [
+    1289.9,
+    2095.39
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "lingua-portuguesa-02",
+   "subject_slug": "lingua-portuguesa",
+   "subject_name": "Língua Portuguesa",
+   "number": 2,
+   "title": "Língua Portuguesa · Episódio 2",
+   "file": "lingua-portuguesa-02-cd3847eb31.mp3",
+   "bytes": 8205408,
+   "duration_secs": 1368,
+   "chapters": [
+    {
+     "topic_id": "07e2c3d8-03c5-5acf-9220-ae718d970f25",
+     "title": "Regência verbal e nominal",
+     "start": 0.0
+    },
+    {
+     "topic_id": "f75c6dac-925c-5694-82c0-c861e429eda5",
+     "title": "Pontuação",
+     "start": 709.54
+    }
+   ],
+   "boundaries": [
+    709.54,
+    1367.57
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "lingua-portuguesa-03",
+   "subject_slug": "lingua-portuguesa",
+   "subject_name": "Língua Portuguesa",
+   "number": 3,
+   "title": "Língua Portuguesa · Episódio 3",
+   "file": "lingua-portuguesa-03-b1a1f8b30e.mp3",
+   "bytes": 12587472,
+   "duration_secs": 2098,
+   "chapters": [
+    {
+     "topic_id": "952c6ec4-deb1-5bd2-8875-65da82a34bf7",
+     "title": "Redação oficial",
+     "start": 0.0
+    },
+    {
+     "topic_id": "ed701e2e-120c-5877-b137-e89121ba3eda",
+     "title": "Classes de palavras",
+     "start": 508.85
+    },
+    {
+     "topic_id": "faddb87c-1080-5d8d-b8e2-c522a1407d1b",
+     "title": "Ortografia e acentuação",
+     "start": 1258.7
+    },
+    {
+     "topic_id": "d1d7271d-4d37-5612-a184-a41652f1365f",
+     "title": "Crase",
+     "start": 1476.17
+    },
+    {
+     "topic_id": "381da94a-cbf0-5f45-873c-d98610c7eb83",
+     "title": "Coesão e coerência",
+     "start": 1627.99
+    },
+    {
+     "topic_id": "e82d1135-9a46-5459-8fe7-181506f5a3cd",
+     "title": "Sintaxe do período",
+     "start": 1840.51
+    }
+   ],
+   "boundaries": [
+    508.85,
+    1258.7,
+    1476.17,
+    1627.99,
+    1840.51,
+    2097.91
+   ],
+   "segment_count": 6
+  },
+  {
+   "id": "legislacao-especial-01",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 1,
+   "title": "Legislação Especial · Episódio 1",
+   "file": "legislacao-especial-01-048d813281.mp3",
+   "bytes": 15888528,
+   "duration_secs": 2648,
+   "chapters": [
+    {
+     "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+     "title": "Lei de Drogas (11.343/06)",
+     "start": 0.0
+    }
+   ],
+   "boundaries": [
+    2648.09
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "legislacao-especial-02",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 2,
+   "title": "Legislação Especial · Episódio 2",
+   "file": "legislacao-especial-02-a23453684b.mp3",
+   "bytes": 16377696,
+   "duration_secs": 2730,
+   "chapters": [
+    {
+     "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+     "title": "Lei de Drogas (11.343/06) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "8040384d-c1e8-5c2b-abf3-f8966680c5fb",
+     "title": "Estatuto do Desarmamento (10.826/03)",
+     "start": 1033.85
+    }
+   ],
+   "boundaries": [
+    1033.85,
+    2729.62
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "legislacao-especial-03",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 3,
+   "title": "Legislação Especial · Episódio 3",
+   "file": "legislacao-especial-03-8513a07076.mp3",
+   "bytes": 15764112,
+   "duration_secs": 2627,
+   "chapters": [
+    {
+     "topic_id": "8040384d-c1e8-5c2b-abf3-f8966680c5fb",
+     "title": "Estatuto do Desarmamento (10.826/03) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "3d8881bd-f5d5-530e-a12d-63e2cca169f5",
+     "title": "Lei Maria da Penha (11.340/06)",
+     "start": 1260.5
+    }
+   ],
+   "boundaries": [
+    1260.5,
+    2627.35
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "legislacao-especial-04",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 4,
+   "title": "Legislação Especial · Episódio 4",
+   "file": "legislacao-especial-04-9915a88916.mp3",
+   "bytes": 16037424,
+   "duration_secs": 2673,
+   "chapters": [
+    {
+     "topic_id": "3d8881bd-f5d5-530e-a12d-63e2cca169f5",
+     "title": "Lei Maria da Penha (11.340/06) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "8b9ef0a7-0cc6-518d-b26b-ac8cd16ddc97",
+     "title": "Abuso de Autoridade (13.869/19)",
+     "start": 2105.35
+    }
+   ],
+   "boundaries": [
+    2105.35,
+    2672.9
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "legislacao-especial-05",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 5,
+   "title": "Legislação Especial · Episódio 5",
+   "file": "legislacao-especial-05-2c50908fda.mp3",
+   "bytes": 16261632,
+   "duration_secs": 2710,
+   "chapters": [
+    {
+     "topic_id": "8b9ef0a7-0cc6-518d-b26b-ac8cd16ddc97",
+     "title": "Abuso de Autoridade (13.869/19) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "b66aa3cb-d68b-5e06-8616-e08ee1ef1a5a",
+     "title": "ECA (8.069/90)",
+     "start": 2391.05
+    }
+   ],
+   "boundaries": [
+    2391.05,
+    2710.27
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "legislacao-especial-06",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 6,
+   "title": "Legislação Especial · Episódio 6",
+   "file": "legislacao-especial-06-e65e009106.mp3",
+   "bytes": 16110000,
+   "duration_secs": 2685,
+   "chapters": [
+    {
+     "topic_id": "b66aa3cb-d68b-5e06-8616-e08ee1ef1a5a",
+     "title": "ECA (8.069/90) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "0e3d00cc-e9f8-5bcf-adea-e566f75734a1",
+     "title": "Crimes Hediondos (8.072/90)",
+     "start": 2369.47
+    }
+   ],
+   "boundaries": [
+    2369.47,
+    2685.0
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "legislacao-especial-07",
+   "subject_slug": "legislacao-especial",
+   "subject_name": "Legislação Especial",
+   "number": 7,
+   "title": "Legislação Especial · Episódio 7",
+   "file": "legislacao-especial-07-bb211aec29.mp3",
+   "bytes": 16073568,
+   "duration_secs": 2679,
+   "chapters": [
+    {
+     "topic_id": "0e3d00cc-e9f8-5bcf-adea-e566f75734a1",
+     "title": "Crimes Hediondos (8.072/90) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "a0c2256f-cac2-531e-b8b5-854f078803d3",
+     "title": "Lei de Organização Criminosa (12.850/13)",
+     "start": 434.98
+    },
+    {
+     "topic_id": "fc5cdae9-ed63-5cac-bac3-f55672a14b70",
+     "title": "Lei de Tortura (9.455/97)",
+     "start": 2464.92
+    }
+   ],
+   "boundaries": [
+    434.98,
+    2464.92,
+    2678.93
+   ],
+   "segment_count": 3
+  },
+  {
+   "id": "direitos-humanos-01",
+   "subject_slug": "direitos-humanos",
+   "subject_name": "Direitos Humanos",
+   "number": 1,
+   "title": "Direitos Humanos · Episódio 1",
+   "file": "direitos-humanos-01-ea9040f049.mp3",
+   "bytes": 12743712,
+   "duration_secs": 2124,
+   "chapters": [
+    {
+     "topic_id": "0300fa92-3691-5914-b128-f8eaa1627a5e",
+     "title": "Declaração Universal dos Direitos Humanos",
+     "start": 0.0
+    },
+    {
+     "topic_id": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7",
+     "title": "Pacto de San José da Costa Rica",
+     "start": 763.01
+    },
+    {
+     "topic_id": "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6",
+     "title": "Sistema interamericano de proteção",
+     "start": 1388.62
+    },
+    {
+     "topic_id": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2",
+     "title": "Direitos das minorias e grupos vulneráveis",
+     "start": 1825.97
+    }
+   ],
+   "boundaries": [
+    763.01,
+    1388.62,
+    1825.97,
+    2123.95
+   ],
+   "segment_count": 4
+  },
+  {
+   "id": "direitos-humanos-02",
+   "subject_slug": "direitos-humanos",
+   "subject_name": "Direitos Humanos",
+   "number": 2,
+   "title": "Direitos Humanos · Episódio 2",
+   "file": "direitos-humanos-02-d1e00c54cc.mp3",
+   "bytes": 12642624,
+   "duration_secs": 2107,
+   "chapters": [
+    {
+     "topic_id": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2",
+     "title": "Direitos das minorias e grupos vulneráveis (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "df7322d3-b04f-500f-a33e-d943234e7002",
+     "title": "Proibição da tortura e tratamento degradante",
+     "start": 763.44
+    },
+    {
+     "topic_id": "0c4e2ac2-4c1e-5860-88d0-100a13596300",
+     "title": "Garantias processuais e devido processo legal",
+     "start": 1497.65
+    }
+   ],
+   "boundaries": [
+    763.44,
+    1497.65,
+    2107.1
+   ],
+   "segment_count": 3
+  },
+  {
+   "id": "informatica-01",
+   "subject_slug": "informatica",
    "subject_name": "Informática",
-   "engine": "questoes"
-  },
-  "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca": {
-   "topic_id": "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca",
-   "file": "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca-699b8443db.mp3",
-   "bytes": 4290768,
-   "duration_secs": 715,
-   "boundaries": [
-    20.83,
-    145.9,
-    244.01,
-    347.21,
-    479.26,
-    592.87,
-    704.59,
-    715.13
+   "number": 1,
+   "title": "Informática · Episódio 1",
+   "file": "informatica-01-26b6bf0756.mp3",
+   "bytes": 15620976,
+   "duration_secs": 2603,
+   "chapters": [
+    {
+     "topic_id": "958d8e04-b29c-5cce-9c52-83537372e336",
+     "title": "Sistemas operacionais",
+     "start": 0.0
+    },
+    {
+     "topic_id": "b618269e-62a9-5f77-b5b3-cd5c54bdce55",
+     "title": "Redes de computadores e internet",
+     "start": 420.34
+    },
+    {
+     "topic_id": "382c3dd2-53e2-511c-8385-8a04f04deba4",
+     "title": "Segurança da informação",
+     "start": 851.21
+    },
+    {
+     "topic_id": "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9",
+     "title": "Editores de texto e planilhas",
+     "start": 1341.26
+    },
+    {
+     "topic_id": "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3",
+     "title": "Computação em nuvem",
+     "start": 1760.47
+    },
+    {
+     "topic_id": "8fce0309-caac-559e-8ae9-669b4953a3e1",
+     "title": "Banco de dados",
+     "start": 2191.51
+    }
    ],
-   "segment_count": 8,
-   "title": "Código de Ética (Decreto 1.171/94)",
-   "subject_name": "Ética no Serviço Público",
-   "engine": "questoes"
-  },
-  "3d8881bd-f5d5-530e-a12d-63e2cca169f5": {
-   "topic_id": "3d8881bd-f5d5-530e-a12d-63e2cca169f5",
-   "file": "3d8881bd-f5d5-530e-a12d-63e2cca169f5-4115562468.mp3",
-   "bytes": 4821552,
-   "duration_secs": 804,
    "boundaries": [
-    45.94,
-    476.02,
-    652.92,
-    704.11,
-    803.59
+    420.34,
+    851.21,
+    1341.26,
+    1760.47,
+    2191.51,
+    2603.5
    ],
-   "segment_count": 5,
-   "title": "Lei Maria da Penha (11.340/06)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
+   "segment_count": 6
   },
-  "46dd063f-3f74-51d6-9969-c622cba10a4a": {
-   "topic_id": "46dd063f-3f74-51d6-9969-c622cba10a4a",
-   "file": "46dd063f-3f74-51d6-9969-c622cba10a4a-84e6ba1522.mp3",
-   "bytes": 1756512,
-   "duration_secs": 293,
-   "boundaries": [
-    36.91,
-    207.98,
-    236.98,
-    292.75
-   ],
-   "segment_count": 4,
-   "title": "Excludentes de ilicitude",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "46e12dab-4d11-5f07-8564-fc7d9ed52267": {
-   "topic_id": "46e12dab-4d11-5f07-8564-fc7d9ed52267",
-   "file": "46e12dab-4d11-5f07-8564-fc7d9ed52267-30bb32480c.mp3",
-   "bytes": 7846560,
-   "duration_secs": 1308,
-   "boundaries": [
-    17.81,
-    139.22,
-    266.59,
-    381.0,
-    497.95,
-    619.51,
-    747.6,
-    1055.74,
-    1299.34,
-    1307.76
-   ],
-   "segment_count": 10,
-   "title": "Interpretação de textos",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
-  },
-  "4da720f4-2ab3-5d91-851d-4f72831265dc": {
-   "topic_id": "4da720f4-2ab3-5d91-851d-4f72831265dc",
-   "file": "4da720f4-2ab3-5d91-851d-4f72831265dc-6a30831da0.mp3",
-   "bytes": 4348368,
-   "duration_secs": 725,
-   "boundaries": [
-    52.25,
-    216.1,
-    395.81,
-    493.42,
-    543.77,
-    601.75,
-    724.73
-   ],
-   "segment_count": 7,
-   "title": "Sinalização de trânsito",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
-  },
-  "4e7cc05c-fa3b-512d-85fb-bdf9eeab5794": {
-   "topic_id": "4e7cc05c-fa3b-512d-85fb-bdf9eeab5794",
-   "file": "4e7cc05c-fa3b-512d-85fb-bdf9eeab5794-dbcf60f137.mp3",
-   "bytes": 2142144,
-   "duration_secs": 357,
-   "boundaries": [
-    39.17,
-    336.98,
-    357.02
-   ],
-   "segment_count": 3,
-   "title": "Poder Judiciário",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
-  },
-  "4f0a61a9-e17d-5f71-800d-e502b2c963de": {
-   "topic_id": "4f0a61a9-e17d-5f71-800d-e502b2c963de",
-   "file": "4f0a61a9-e17d-5f71-800d-e502b2c963de-a4d20fbfbd.mp3",
-   "bytes": 2032416,
-   "duration_secs": 339,
-   "boundaries": [
-    17.71,
-    140.28,
-    277.15,
-    330.26,
-    338.74
-   ],
-   "segment_count": 5,
-   "title": "Raciocínio quantitativo",
+  {
+   "id": "raciocinio-logico-01",
+   "subject_slug": "raciocinio-logico",
    "subject_name": "Raciocínio Lógico",
-   "engine": "questoes"
-  },
-  "534a41d5-c28e-53cd-811e-02f89711c733": {
-   "topic_id": "534a41d5-c28e-53cd-811e-02f89711c733",
-   "file": "534a41d5-c28e-53cd-811e-02f89711c733-f821d9aacf.mp3",
-   "bytes": 3446064,
-   "duration_secs": 574,
-   "boundaries": [
-    56.59,
-    121.2,
-    230.4,
-    317.14,
-    489.74,
-    540.62,
-    551.95,
-    574.34
+   "number": 1,
+   "title": "Raciocínio Lógico · Episódio 1",
+   "file": "raciocinio-logico-01-88ade5cb5a.mp3",
+   "bytes": 14126544,
+   "duration_secs": 2354,
+   "chapters": [
+    {
+     "topic_id": "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce",
+     "title": "Proposições e conectivos lógicos",
+     "start": 0.0
+    },
+    {
+     "topic_id": "cc31e11f-9546-5077-83b1-b8a728e53d84",
+     "title": "Tabelas-verdade",
+     "start": 591.14
+    },
+    {
+     "topic_id": "aa663618-6994-5ffa-82f0-3c3fbd38d05e",
+     "title": "Equivalências e negações",
+     "start": 1049.95
+    },
+    {
+     "topic_id": "4f0a61a9-e17d-5f71-800d-e502b2c963de",
+     "title": "Raciocínio quantitativo",
+     "start": 1615.06
+    },
+    {
+     "topic_id": "097f794c-6d10-515d-9315-28dec5a74989",
+     "title": "Sequências e padrões",
+     "start": 1975.49
+    }
    ],
-   "segment_count": 8,
-   "title": "Inquérito policial militar (IPM)",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "lei"
-  },
-  "53862146-8b40-5709-871d-c64b8d0122bd": {
-   "topic_id": "53862146-8b40-5709-871d-c64b8d0122bd",
-   "file": "53862146-8b40-5709-871d-c64b8d0122bd-e039cd4f99.mp3",
-   "bytes": 1613088,
-   "duration_secs": 269,
    "boundaries": [
-    18.12,
-    106.27,
-    191.5,
-    259.78,
-    268.85
+    591.14,
+    1049.95,
+    1615.06,
+    1975.49,
+    2354.42
    ],
-   "segment_count": 5,
-   "title": "Interpretação de textos em espanhol",
-   "subject_name": "Língua Espanhola",
-   "engine": "questoes"
+   "segment_count": 5
   },
-  "54d74d33-d162-5118-b9e8-80c5ec91d98a": {
-   "topic_id": "54d74d33-d162-5118-b9e8-80c5ec91d98a",
-   "file": "54d74d33-d162-5118-b9e8-80c5ec91d98a-dd1b005a8d.mp3",
-   "bytes": 1512288,
-   "duration_secs": 252,
-   "boundaries": [
-    17.54,
-    243.53,
-    252.05
+  {
+   "id": "etica-servico-publico-01",
+   "subject_slug": "etica-servico-publico",
+   "subject_name": "Ética no Serviço Público",
+   "number": 1,
+   "title": "Ética no Serviço Público · Episódio 1",
+   "file": "etica-servico-publico-01-eaadfd9787.mp3",
+   "bytes": 15104448,
+   "duration_secs": 2517,
+   "chapters": [
+    {
+     "topic_id": "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca",
+     "title": "Código de Ética (Decreto 1.171/94)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "2f18f1f0-7ba2-505d-a22f-e4715db75762",
+     "title": "Regime disciplinar do servidor",
+     "start": 794.71
+    },
+    {
+     "topic_id": "a14e387a-1553-528a-b97a-66d2d7caafb0",
+     "title": "Lei de Improbidade Administrativa",
+     "start": 1426.7
+    },
+    {
+     "topic_id": "1065303e-27ec-53d2-aa2d-91b6c32e0ce8",
+     "title": "Conflito de interesses",
+     "start": 2072.26
+    }
    ],
-   "segment_count": 3,
-   "title": "Princípios do Direito Penal",
-   "subject_name": "Direito Penal",
-   "engine": "questoes"
+   "boundaries": [
+    794.71,
+    1426.7,
+    2072.26,
+    2517.41
+   ],
+   "segment_count": 4
   },
-  "564fffc6-181e-516b-b77c-a48485de2b73": {
-   "topic_id": "564fffc6-181e-516b-b77c-a48485de2b73",
-   "file": "564fffc6-181e-516b-b77c-a48485de2b73-48dd044db8.mp3",
-   "bytes": 1030176,
-   "duration_secs": 172,
-   "boundaries": [
-    18.36,
-    120.34,
-    162.74,
-    171.7
-   ],
-   "segment_count": 4,
-   "title": "Integração e blocos regionais",
-   "subject_name": "Geopolítica Brasileira",
-   "engine": "questoes"
-  },
-  "5672d805-add5-5b61-9211-9c477846dd93": {
-   "topic_id": "5672d805-add5-5b61-9211-9c477846dd93",
-   "file": "5672d805-add5-5b61-9211-9c477846dd93-822b4a83f8.mp3",
-   "bytes": 1281168,
-   "duration_secs": 214,
-   "boundaries": [
-    18.43,
-    106.61,
-    204.43,
-    213.53
-   ],
-   "segment_count": 4,
-   "title": "Aspectos geopolíticos e fronteiras",
-   "subject_name": "Geopolítica Brasileira",
-   "engine": "questoes"
-  },
-  "5dd4df99-9565-5076-a0c2-fef2e50027ef": {
-   "topic_id": "5dd4df99-9565-5076-a0c2-fef2e50027ef",
-   "file": "5dd4df99-9565-5076-a0c2-fef2e50027ef-6cfd985d17.mp3",
-   "bytes": 2447136,
-   "duration_secs": 408,
-   "boundaries": [
-    18.48,
-    398.9,
-    407.86
-   ],
-   "segment_count": 3,
-   "title": "Princípios da Administração Pública",
-   "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "609dffd1-a2e2-5086-b678-d9076befe676": {
-   "topic_id": "609dffd1-a2e2-5086-b678-d9076befe676",
-   "file": "609dffd1-a2e2-5086-b678-d9076befe676-c7cb5e36ce.mp3",
-   "bytes": 2626704,
-   "duration_secs": 438,
-   "boundaries": [
-    34.63,
-    400.1,
-    413.02,
-    437.78
-   ],
-   "segment_count": 4,
-   "title": "Crimes contra a pessoa",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "61fed39c-7c1d-5810-af36-f7d009d8de77": {
-   "topic_id": "61fed39c-7c1d-5810-af36-f7d009d8de77",
-   "file": "61fed39c-7c1d-5810-af36-f7d009d8de77-a852ab9acf.mp3",
-   "bytes": 3559392,
-   "duration_secs": 593,
-   "boundaries": [
-    18.7,
-    311.66,
-    584.57,
-    593.23
-   ],
-   "segment_count": 4,
-   "title": "Competência da Justiça Militar",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "questoes"
-  },
-  "62bb47fc-5f98-51d0-9973-3150c912651d": {
-   "topic_id": "62bb47fc-5f98-51d0-9973-3150c912651d",
-   "file": "62bb47fc-5f98-51d0-9973-3150c912651d-afdf308958.mp3",
-   "bytes": 1251792,
-   "duration_secs": 209,
-   "boundaries": [
-    18.07,
-    200.09,
-    208.63
-   ],
-   "segment_count": 3,
-   "title": "Citações e intimações",
-   "subject_name": "Direito Processual Penal",
-   "engine": "questoes"
-  },
-  "64d6e992-55a5-5e95-a789-e12dec7bd66e": {
-   "topic_id": "64d6e992-55a5-5e95-a789-e12dec7bd66e",
-   "file": "64d6e992-55a5-5e95-a789-e12dec7bd66e-11fd884fb8.mp3",
-   "bytes": 4102416,
-   "duration_secs": 684,
-   "boundaries": [
-    18.5,
-    166.66,
-    308.16,
-    452.78,
-    608.33,
-    675.26,
-    683.74
-   ],
-   "segment_count": 7,
-   "title": "Fiscalização de cargas",
-   "subject_name": "Policiamento e Fiscalização",
-   "engine": "questoes"
-  },
-  "66070507-d8d2-5c3f-9ce4-03f010ac8908": {
-   "topic_id": "66070507-d8d2-5c3f-9ce4-03f010ac8908",
-   "file": "66070507-d8d2-5c3f-9ce4-03f010ac8908-1309a8c885.mp3",
-   "bytes": 2124720,
-   "duration_secs": 354,
-   "boundaries": [
-    18.62,
-    345.34,
-    354.12
-   ],
-   "segment_count": 3,
-   "title": "Hierarquia e disciplina militar",
-   "subject_name": "Legislação Institucional PM",
-   "engine": "questoes"
-  },
-  "69d53953-c3e6-51c5-b1da-2d3a3329e2a5": {
-   "topic_id": "69d53953-c3e6-51c5-b1da-2d3a3329e2a5",
-   "file": "69d53953-c3e6-51c5-b1da-2d3a3329e2a5-5ac78b1df8.mp3",
-   "bytes": 5429520,
-   "duration_secs": 905,
-   "boundaries": [
-    18.84,
-    168.31,
-    308.62,
-    458.33,
-    606.67,
-    752.69,
-    896.26,
-    904.92
-   ],
-   "segment_count": 8,
-   "title": "Atribuições da PRF",
-   "subject_name": "Policiamento e Fiscalização",
-   "engine": "questoes"
-  },
-  "6a8eb8a9-751d-50e8-bd67-ad6959cf65a1": {
-   "topic_id": "6a8eb8a9-751d-50e8-bd67-ad6959cf65a1",
-   "file": "6a8eb8a9-751d-50e8-bd67-ad6959cf65a1-b37cbd2945.mp3",
-   "bytes": 1839312,
-   "duration_secs": 307,
-   "boundaries": [
-    18.12,
-    297.89,
-    306.55
-   ],
-   "segment_count": 3,
-   "title": "Segurança pública em Goiás",
-   "subject_name": "Realidade de Goiás",
-   "engine": "questoes"
-  },
-  "6b2aa8e9-c1d0-5679-b5e4-bbdc6dbf121d": {
-   "topic_id": "6b2aa8e9-c1d0-5679-b5e4-bbdc6dbf121d",
-   "file": "6b2aa8e9-c1d0-5679-b5e4-bbdc6dbf121d-029e2d71a9.mp3",
-   "bytes": 3676320,
-   "duration_secs": 613,
-   "boundaries": [
-    38.74,
-    517.18,
-    547.25,
-    612.72
-   ],
-   "segment_count": 4,
-   "title": "Habilitação",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
-  },
-  "6d475e6e-51d6-5c54-9705-8461a55d1122": {
-   "topic_id": "6d475e6e-51d6-5c54-9705-8461a55d1122",
-   "file": "6d475e6e-51d6-5c54-9705-8461a55d1122-f707c0b8dc.mp3",
-   "bytes": 3887424,
-   "duration_secs": 648,
-   "boundaries": [
-    51.14,
-    112.34,
-    191.04,
-    259.87,
-    628.08,
-    647.9
-   ],
-   "segment_count": 6,
-   "title": "Poder Executivo",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
-  },
-  "6f7c3757-9409-564d-9a90-1cd4c1b35eb2": {
-   "topic_id": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2",
-   "file": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2-a9127581dc.mp3",
-   "bytes": 3583440,
-   "duration_secs": 597,
-   "boundaries": [
-    56.54,
-    122.16,
-    238.15,
-    284.59,
-    332.5,
-    373.78,
-    507.19,
-    574.34,
-    597.24
-   ],
-   "segment_count": 9,
-   "title": "Direitos das minorias e grupos vulneráveis",
-   "subject_name": "Direitos Humanos",
-   "engine": "lei"
-  },
-  "75e697cb-59ff-5d5b-b158-3f20e56427b9": {
-   "topic_id": "75e697cb-59ff-5d5b-b158-3f20e56427b9",
-   "file": "75e697cb-59ff-5d5b-b158-3f20e56427b9-cf2677f3df.mp3",
-   "bytes": 2022624,
-   "duration_secs": 337,
-   "boundaries": [
-    17.35,
-    146.42,
-    266.16,
-    328.75,
-    337.1
-   ],
-   "segment_count": 5,
-   "title": "Energia e colisões",
-   "subject_name": "Física Aplicada",
-   "engine": "questoes"
-  },
-  "7640e0e5-1652-59bf-9985-be8fca541d16": {
-   "topic_id": "7640e0e5-1652-59bf-9985-be8fca541d16",
-   "file": "7640e0e5-1652-59bf-9985-be8fca541d16-96f61f13ca.mp3",
-   "bytes": 4252176,
-   "duration_secs": 709,
-   "boundaries": [
-    39.67,
-    619.25,
-    653.93,
-    708.7
-   ],
-   "segment_count": 4,
-   "title": "Prisão e liberdade provisória",
-   "subject_name": "Direito Processual Penal",
-   "engine": "lei"
-  },
-  "7723dc25-46e6-5243-aa4e-d4f62ae9d408": {
-   "topic_id": "7723dc25-46e6-5243-aa4e-d4f62ae9d408",
-   "file": "7723dc25-46e6-5243-aa4e-d4f62ae9d408-56ccd24391.mp3",
-   "bytes": 4156416,
-   "duration_secs": 693,
-   "boundaries": [
-    18.22,
-    165.36,
-    313.13,
-    458.09,
-    611.76,
-    684.53,
-    692.74
-   ],
-   "segment_count": 7,
-   "title": "Abordagem policial",
-   "subject_name": "Policiamento e Fiscalização",
-   "engine": "questoes"
-  },
-  "772b97dd-0071-5f88-9a75-0421da1b1ccd": {
-   "topic_id": "772b97dd-0071-5f88-9a75-0421da1b1ccd",
-   "file": "772b97dd-0071-5f88-9a75-0421da1b1ccd-7249de1e2c.mp3",
-   "bytes": 1752192,
-   "duration_secs": 292,
-   "boundaries": [
-    17.18,
-    129.55,
-    251.35,
-    283.87,
-    292.03
-   ],
-   "segment_count": 5,
-   "title": "Gramática aplicada",
-   "subject_name": "Língua Espanhola",
-   "engine": "questoes"
-  },
-  "77cb5a6e-a53f-570e-9611-e4e3a0629cf7": {
-   "topic_id": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7",
-   "file": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7-e5924f5fb7.mp3",
-   "bytes": 3532464,
-   "duration_secs": 589,
-   "boundaries": [
-    18.46,
-    184.13,
-    316.9,
-    441.0,
-    579.72,
-    588.74
-   ],
-   "segment_count": 6,
-   "title": "Pacto de San José da Costa Rica",
-   "subject_name": "Direitos Humanos",
-   "engine": "questoes"
-  },
-  "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6": {
-   "topic_id": "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6",
-   "file": "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6-ffb00a34b6.mp3",
-   "bytes": 2465280,
-   "duration_secs": 411,
-   "boundaries": [
-    18.26,
-    143.66,
-    270.98,
-    401.86,
-    410.88
-   ],
-   "segment_count": 5,
-   "title": "Sistema interamericano de proteção",
-   "subject_name": "Direitos Humanos",
-   "engine": "questoes"
-  },
-  "7c3bd474-64e4-5eee-b039-2759900e27f3": {
-   "topic_id": "7c3bd474-64e4-5eee-b039-2759900e27f3",
-   "file": "7c3bd474-64e4-5eee-b039-2759900e27f3-968ed79d9c.mp3",
-   "bytes": 1068048,
-   "duration_secs": 178,
-   "boundaries": [
-    18.53,
-    123.5,
-    168.96,
-    178.01
-   ],
-   "segment_count": 4,
-   "title": "Conflitos e segurança nas fronteiras",
-   "subject_name": "Geopolítica Brasileira",
-   "engine": "questoes"
-  },
-  "8040384d-c1e8-5c2b-abf3-f8966680c5fb": {
-   "topic_id": "8040384d-c1e8-5c2b-abf3-f8966680c5fb",
-   "file": "8040384d-c1e8-5c2b-abf3-f8966680c5fb-c4003115ea.mp3",
-   "bytes": 2197152,
-   "duration_secs": 366,
-   "boundaries": [
-    44.02,
-    217.92,
-    260.21,
-    297.22,
-    366.19
-   ],
-   "segment_count": 5,
-   "title": "Estatuto do Desarmamento (10.826/03)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
-  },
-  "81cf5277-8395-5e6c-8a8f-081317fc5d20": {
-   "topic_id": "81cf5277-8395-5e6c-8a8f-081317fc5d20",
-   "file": "81cf5277-8395-5e6c-8a8f-081317fc5d20-f538c85368.mp3",
-   "bytes": 4454208,
-   "duration_secs": 742,
-   "boundaries": [
-    39.65,
-    677.47,
-    701.02,
-    742.37
-   ],
-   "segment_count": 4,
-   "title": "Crimes contra o patrimônio",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "82d1d914-9b84-5fbd-8315-08e869c668b8": {
-   "topic_id": "82d1d914-9b84-5fbd-8315-08e869c668b8",
-   "file": "82d1d914-9b84-5fbd-8315-08e869c668b8-5c75d0be36.mp3",
-   "bytes": 4062528,
-   "duration_secs": 677,
-   "boundaries": [
-    44.09,
-    142.3,
-    637.51,
-    656.86,
-    677.09
-   ],
-   "segment_count": 5,
-   "title": "Poder Legislativo",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
-  },
-  "86e999ab-99ac-5767-b815-9c1cf7430901": {
-   "topic_id": "86e999ab-99ac-5767-b815-9c1cf7430901",
-   "file": "86e999ab-99ac-5767-b815-9c1cf7430901-6bfd277d93.mp3",
-   "bytes": 5573232,
-   "duration_secs": 929,
-   "boundaries": [
-    18.82,
-    165.58,
-    317.95,
-    470.66,
-    619.9,
-    759.38,
-    920.26,
-    928.87
-   ],
-   "segment_count": 8,
-   "title": "Fiscalização de veículos",
-   "subject_name": "Policiamento e Fiscalização",
-   "engine": "questoes"
-  },
-  "8b9ef0a7-0cc6-518d-b26b-ac8cd16ddc97": {
-   "topic_id": "8b9ef0a7-0cc6-518d-b26b-ac8cd16ddc97",
-   "file": "8b9ef0a7-0cc6-518d-b26b-ac8cd16ddc97-7dc3f57fdc.mp3",
-   "bytes": 6062256,
-   "duration_secs": 1010,
-   "boundaries": [
-    52.22,
-    257.14,
-    514.44,
-    673.63,
-    801.53,
-    819.65,
-    892.73,
-    1010.38
-   ],
-   "segment_count": 8,
-   "title": "Abuso de Autoridade (13.869/19)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
-  },
-  "8fce0309-caac-559e-8ae9-669b4953a3e1": {
-   "topic_id": "8fce0309-caac-559e-8ae9-669b4953a3e1",
-   "file": "8fce0309-caac-559e-8ae9-669b4953a3e1-5419689bea.mp3",
-   "bytes": 2282976,
-   "duration_secs": 380,
-   "boundaries": [
-    17.02,
-    141.36,
-    260.28,
-    372.55,
-    380.5
-   ],
-   "segment_count": 5,
-   "title": "Banco de dados",
-   "subject_name": "Informática",
-   "engine": "questoes"
-  },
-  "9042b6b4-a01d-58b9-a6e6-802780182b9e": {
-   "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
-   "file": "9042b6b4-a01d-58b9-a6e6-802780182b9e-e1d1dd916c.mp3",
-   "bytes": 3554640,
-   "duration_secs": 592,
-   "boundaries": [
-    50.23,
-    236.59,
-    327.65,
-    372.07,
-    448.97,
-    573.84,
-    592.44
-   ],
-   "segment_count": 7,
-   "title": "Penas",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "91cf94f2-524b-5d65-b6cf-d74d8e7822ff": {
-   "topic_id": "91cf94f2-524b-5d65-b6cf-d74d8e7822ff",
-   "file": "91cf94f2-524b-5d65-b6cf-d74d8e7822ff-c6c744e188.mp3",
-   "bytes": 4362912,
-   "duration_secs": 727,
-   "boundaries": [
-    70.06,
-    259.68,
-    342.36,
-    424.58,
-    482.52,
-    551.62,
-    645.46,
-    673.85,
-    727.15
-   ],
-   "segment_count": 9,
-   "title": "Crimes contra a Administração Pública",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "952c6ec4-deb1-5bd2-8875-65da82a34bf7": {
-   "topic_id": "952c6ec4-deb1-5bd2-8875-65da82a34bf7",
-   "file": "952c6ec4-deb1-5bd2-8875-65da82a34bf7-e7f91c4640.mp3",
-   "bytes": 2740752,
-   "duration_secs": 457,
-   "boundaries": [
-    17.38,
-    131.62,
-    243.38,
-    358.34,
-    448.8,
-    456.79
-   ],
-   "segment_count": 6,
-   "title": "Redação oficial",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
-  },
-  "956f889c-9d9b-537e-b45b-51d42be73b70": {
-   "topic_id": "956f889c-9d9b-537e-b45b-51d42be73b70",
-   "file": "956f889c-9d9b-537e-b45b-51d42be73b70-f6253a3d3c.mp3",
-   "bytes": 3604464,
-   "duration_secs": 601,
-   "boundaries": [
-    18.89,
-    336.24,
-    591.12,
-    600.74
-   ],
-   "segment_count": 4,
-   "title": "Crimes contra a autoridade e a disciplina militar",
+  {
+   "id": "direito-penal-militar-01",
+   "subject_slug": "direito-penal-militar",
    "subject_name": "Direito Penal Militar",
-   "engine": "questoes"
-  },
-  "958d8e04-b29c-5cce-9c52-83537372e336": {
-   "topic_id": "958d8e04-b29c-5cce-9c52-83537372e336",
-   "file": "958d8e04-b29c-5cce-9c52-83537372e336-9ab0a682b5.mp3",
-   "bytes": 2247120,
-   "duration_secs": 375,
-   "boundaries": [
-    17.5,
-    141.6,
-    251.52,
-    366.1,
-    374.52
+   "number": 1,
+   "title": "Direito Penal Militar · Episódio 1",
+   "file": "direito-penal-militar-01-8b0ec1d116.mp3",
+   "bytes": 15772032,
+   "duration_secs": 2629,
+   "chapters": [
+    {
+     "topic_id": "d1643411-1899-5bf1-bed7-2de1f8c10dc8",
+     "title": "Aplicação da lei penal militar",
+     "start": 0.0
+    },
+    {
+     "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+     "title": "Crime militar",
+     "start": 1167.77
+    }
    ],
-   "segment_count": 5,
-   "title": "Sistemas operacionais",
-   "subject_name": "Informática",
-   "engine": "questoes"
-  },
-  "96884cfc-7a39-5a82-bb30-64c405286db6": {
-   "topic_id": "96884cfc-7a39-5a82-bb30-64c405286db6",
-   "file": "96884cfc-7a39-5a82-bb30-64c405286db6-49f99558eb.mp3",
-   "bytes": 3464640,
-   "duration_secs": 577,
    "boundaries": [
-    42.41,
-    173.14,
-    536.45,
-    550.9,
-    577.44
+    1167.77,
+    2628.67
    ],
-   "segment_count": 5,
-   "title": "Administração Pública",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
+   "segment_count": 2
   },
-  "9766ab4a-22f8-52d8-819e-9951c90a47c8": {
-   "topic_id": "9766ab4a-22f8-52d8-819e-9951c90a47c8",
-   "file": "9766ab4a-22f8-52d8-819e-9951c90a47c8-a14e9cb700.mp3",
-   "bytes": 1010016,
-   "duration_secs": 168,
+  {
+   "id": "direito-penal-militar-02",
+   "subject_slug": "direito-penal-militar",
+   "subject_name": "Direito Penal Militar",
+   "number": 2,
+   "title": "Direito Penal Militar · Episódio 2",
+   "file": "direito-penal-militar-02-1ebb148e2b.mp3",
+   "bytes": 16000992,
+   "duration_secs": 2667,
+   "chapters": [
+    {
+     "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+     "title": "Crime militar (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "d170914e-ade1-5998-a578-6c3c1eb47c61",
+     "title": "Penas militares",
+     "start": 863.78
+    }
+   ],
    "boundaries": [
-    18.53,
-    115.94,
-    159.26,
-    168.34
+    863.78,
+    2666.83
    ],
-   "segment_count": 4,
-   "title": "Políticas públicas e desenvolvimento",
-   "subject_name": "Geopolítica Brasileira",
-   "engine": "questoes"
+   "segment_count": 2
   },
+  {
+   "id": "direito-penal-militar-03",
+   "subject_slug": "direito-penal-militar",
+   "subject_name": "Direito Penal Militar",
+   "number": 3,
+   "title": "Direito Penal Militar · Episódio 3",
+   "file": "direito-penal-militar-03-7a630aa3c6.mp3",
+   "bytes": 15955632,
+   "duration_secs": 2659,
+   "chapters": [
+    {
+     "topic_id": "d170914e-ade1-5998-a578-6c3c1eb47c61",
+     "title": "Penas militares (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "be14370a-00ac-5525-8ca7-99f5ae7c4517",
+     "title": "Crimes militares em espécie",
+     "start": 959.4
+    }
+   ],
+   "boundaries": [
+    959.4,
+    2659.27
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-penal-militar-04",
+   "subject_slug": "direito-penal-militar",
+   "subject_name": "Direito Penal Militar",
+   "number": 4,
+   "title": "Direito Penal Militar · Episódio 4",
+   "file": "direito-penal-militar-04-d6ddafef6e.mp3",
+   "bytes": 15946272,
+   "duration_secs": 2658,
+   "chapters": [
+    {
+     "topic_id": "be14370a-00ac-5525-8ca7-99f5ae7c4517",
+     "title": "Crimes militares em espécie (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "956f889c-9d9b-537e-b45b-51d42be73b70",
+     "title": "Crimes contra a autoridade e a disciplina militar",
+     "start": 1242.36
+    },
+    {
+     "topic_id": "e29be4df-4f98-55f1-bce9-2f854e1c708d",
+     "title": "Crimes contra o serviço e o dever militar",
+     "start": 1835.95
+    },
+    {
+     "topic_id": "b2e39c53-5922-5c32-ac3e-0c4867d033e7",
+     "title": "Crimes contra a Administração Militar",
+     "start": 2183.59
+    }
+   ],
+   "boundaries": [
+    1242.36,
+    1835.95,
+    2183.59,
+    2657.71
+   ],
+   "segment_count": 4
+  },
+  {
+   "id": "direito-processual-penal-militar-01",
+   "subject_slug": "direito-processual-penal-militar",
+   "subject_name": "Direito Processual Penal Militar",
+   "number": 1,
+   "title": "Direito Processual Penal Militar · Episódio 1",
+   "file": "direito-processual-penal-militar-01-bac1413625.mp3",
+   "bytes": 16029360,
+   "duration_secs": 2672,
+   "chapters": [
+    {
+     "topic_id": "534a41d5-c28e-53cd-811e-02f89711c733",
+     "title": "Inquérito policial militar (IPM)",
+     "start": 0.0
+    }
+   ],
+   "boundaries": [
+    2671.56
+   ],
+   "segment_count": 1
+  },
+  {
+   "id": "direito-processual-penal-militar-02",
+   "subject_slug": "direito-processual-penal-militar",
+   "subject_name": "Direito Processual Penal Militar",
+   "number": 2,
+   "title": "Direito Processual Penal Militar · Episódio 2",
+   "file": "direito-processual-penal-militar-02-ad67e0dea9.mp3",
+   "bytes": 15927840,
+   "duration_secs": 2655,
+   "chapters": [
+    {
+     "topic_id": "534a41d5-c28e-53cd-811e-02f89711c733",
+     "title": "Inquérito policial militar (IPM) (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "1e299181-318e-58f4-8328-a4db88b8f5a8",
+     "title": "Processo penal militar",
+     "start": 496.75
+    }
+   ],
+   "boundaries": [
+    496.75,
+    2654.64
+   ],
+   "segment_count": 2
+  },
+  {
+   "id": "direito-processual-penal-militar-03",
+   "subject_slug": "direito-processual-penal-militar",
+   "subject_name": "Direito Processual Penal Militar",
+   "number": 3,
+   "title": "Direito Processual Penal Militar · Episódio 3",
+   "file": "direito-processual-penal-militar-03-6644e55cd9.mp3",
+   "bytes": 15946992,
+   "duration_secs": 2658,
+   "chapters": [
+    {
+     "topic_id": "1e299181-318e-58f4-8328-a4db88b8f5a8",
+     "title": "Processo penal militar (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "61fed39c-7c1d-5810-af36-f7d009d8de77",
+     "title": "Competência da Justiça Militar",
+     "start": 705.38
+    },
+    {
+     "topic_id": "e88c4ea8-1681-5fec-af9c-14f5634b4117",
+     "title": "Ação penal militar",
+     "start": 1266.05
+    },
+    {
+     "topic_id": "2edbe4a2-7ff6-5fa5-8efe-eef43d3d1fba",
+     "title": "Prisão e liberdade provisória no CPPM",
+     "start": 1685.26
+    },
+    {
+     "topic_id": "f4ff9c02-0e7b-510e-b2da-00134c4501f8",
+     "title": "Provas no processo penal militar",
+     "start": 2276.69
+    },
+    {
+     "topic_id": "d4090cc8-770b-5408-a685-47c43f7a5820",
+     "title": "Recursos e ações de impugnação",
+     "start": 2362.22
+    }
+   ],
+   "boundaries": [
+    705.38,
+    1266.05,
+    1685.26,
+    2276.69,
+    2362.22,
+    2657.83
+   ],
+   "segment_count": 6
+  },
+  {
+   "id": "legislacao-institucional-pm-01",
+   "subject_slug": "legislacao-institucional-pm",
+   "subject_name": "Legislação Institucional PM",
+   "number": 1,
+   "title": "Legislação Institucional PM · Episódio 1",
+   "file": "legislacao-institucional-pm-01-707f11f1cc.mp3",
+   "bytes": 10481472,
+   "duration_secs": 1747,
+   "chapters": [
+    {
+     "topic_id": "23725b9b-5a1a-56d4-bde0-db71a28754d2",
+     "title": "Estatuto dos Militares de GO",
+     "start": 0.0
+    },
+    {
+     "topic_id": "1619367f-ef69-5335-a493-e9386767a9d8",
+     "title": "Regulamento Disciplinar da PMGO",
+     "start": 631.87
+    },
+    {
+     "topic_id": "2f24c33d-c95f-5770-b6d4-1da13383176d",
+     "title": "Lei de Organização da PMGO",
+     "start": 847.92
+    },
+    {
+     "topic_id": "66070507-d8d2-5c3f-9ce4-03f010ac8908",
+     "title": "Hierarquia e disciplina militar",
+     "start": 1395.34
+    }
+   ],
+   "boundaries": [
+    631.87,
+    847.92,
+    1395.34,
+    1746.91
+   ],
+   "segment_count": 4
+  },
+  {
+   "id": "realidade-goias-01",
+   "subject_slug": "realidade-goias",
+   "subject_name": "Realidade de Goiás",
+   "number": 1,
+   "title": "Realidade de Goiás · Episódio 1",
+   "file": "realidade-goias-01-d29a595c3f.mp3",
+   "bytes": 9857520,
+   "duration_secs": 1643,
+   "chapters": [
+    {
+     "topic_id": "0866493b-222a-5753-a331-ac9cf10cd6b6",
+     "title": "História de Goiás",
+     "start": 0.0
+    },
+    {
+     "topic_id": "f75b8d6c-e266-5edd-b40a-632d5fe43785",
+     "title": "Geografia de Goiás",
+     "start": 666.48
+    },
+    {
+     "topic_id": "bf41de43-6a0c-5916-9fd9-9a6ee2a66629",
+     "title": "Economia de Goiás",
+     "start": 1306.32
+    }
+   ],
+   "boundaries": [
+    666.48,
+    1306.32,
+    1642.92
+   ],
+   "segment_count": 3
+  },
+  {
+   "id": "realidade-goias-02",
+   "subject_slug": "realidade-goias",
+   "subject_name": "Realidade de Goiás",
+   "number": 2,
+   "title": "Realidade de Goiás · Episódio 2",
+   "file": "realidade-goias-02-66ef6439a7.mp3",
+   "bytes": 10110960,
+   "duration_secs": 1685,
+   "chapters": [
+    {
+     "topic_id": "bf41de43-6a0c-5916-9fd9-9a6ee2a66629",
+     "title": "Economia de Goiás (continuação)",
+     "start": 0.0
+    },
+    {
+     "topic_id": "ee4bcceb-08c4-5d8a-bc68-1b7cbdb05fd2",
+     "title": "Cultura e sociedade goiana",
+     "start": 340.75
+    },
+    {
+     "topic_id": "e24f1a00-deb1-55f2-a610-c055fde62bca",
+     "title": "Política e organização do Estado",
+     "start": 877.03
+    },
+    {
+     "topic_id": "6a8eb8a9-751d-50e8-bd67-ad6959cf65a1",
+     "title": "Segurança pública em Goiás",
+     "start": 1385.45
+    }
+   ],
+   "boundaries": [
+    340.75,
+    877.03,
+    1385.45,
+    1685.16
+   ],
+   "segment_count": 4
+  }
+ ],
+ "topics": {
   "9a0b341d-1b9d-5fd0-9d50-61e06f68b9ba": {
-   "topic_id": "9a0b341d-1b9d-5fd0-9d50-61e06f68b9ba",
-   "file": "9a0b341d-1b9d-5fd0-9d50-61e06f68b9ba-b005eba48e.mp3",
-   "bytes": 2741328,
-   "duration_secs": 457,
-   "boundaries": [
-    37.37,
-    218.98,
-    330.55,
-    371.02,
-    456.89
-   ],
-   "segment_count": 5,
-   "title": "Princípios fundamentais",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
+   "episode": "direito-constitucional-01",
+   "start": 0.0
   },
   "a0b006e1-05e8-55b2-ad74-45699ecd687a": {
-   "topic_id": "a0b006e1-05e8-55b2-ad74-45699ecd687a",
-   "file": "a0b006e1-05e8-55b2-ad74-45699ecd687a-016cd002f1.mp3",
-   "bytes": 3373920,
-   "duration_secs": 562,
-   "boundaries": [
-    38.98,
-    540.7,
-    562.32
-   ],
-   "segment_count": 3,
-   "title": "Direitos e garantias fundamentais",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
+   "episode": "direito-constitucional-01",
+   "start": 1638.58
   },
-  "a0c2256f-cac2-531e-b8b5-854f078803d3": {
-   "topic_id": "a0c2256f-cac2-531e-b8b5-854f078803d3",
-   "file": "a0c2256f-cac2-531e-b8b5-854f078803d3-b816550c46.mp3",
-   "bytes": 3135024,
-   "duration_secs": 522,
-   "boundaries": [
-    43.34,
-    479.95,
-    495.58,
-    522.5
-   ],
-   "segment_count": 4,
-   "title": "Lei de Organização Criminosa (12.850/13)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
-  },
-  "a0dc56ff-5760-5395-a8b4-81ad5bee115d": {
-   "topic_id": "a0dc56ff-5760-5395-a8b4-81ad5bee115d",
-   "file": "a0dc56ff-5760-5395-a8b4-81ad5bee115d-3ccdc44a12.mp3",
-   "bytes": 3893040,
-   "duration_secs": 649,
-   "boundaries": [
-    42.6,
-    357.96,
-    521.35,
-    547.49,
-    583.58,
-    648.84
-   ],
-   "segment_count": 6,
-   "title": "Inquérito policial",
-   "subject_name": "Direito Processual Penal",
-   "engine": "lei"
-  },
-  "a14e387a-1553-528a-b97a-66d2d7caafb0": {
-   "topic_id": "a14e387a-1553-528a-b97a-66d2d7caafb0",
-   "file": "a14e387a-1553-528a-b97a-66d2d7caafb0-c32037ad7a.mp3",
-   "bytes": 3597696,
-   "duration_secs": 600,
-   "boundaries": [
-    18.65,
-    139.03,
-    260.47,
-    375.84,
-    503.28,
-    590.54,
-    599.62
-   ],
-   "segment_count": 7,
-   "title": "Lei de Improbidade Administrativa",
-   "subject_name": "Ética no Serviço Público",
-   "engine": "questoes"
-  },
-  "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565": {
-   "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
-   "file": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565-ec82b84379.mp3",
-   "bytes": 3757248,
-   "duration_secs": 626,
-   "boundaries": [
-    57.62,
-    160.42,
-    233.95,
-    341.62,
-    424.2,
-    526.7,
-    577.61,
-    606.79,
-    626.21
-   ],
-   "segment_count": 9,
-   "title": "Crime militar",
-   "subject_name": "Direito Penal Militar",
-   "engine": "lei"
-  },
-  "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce": {
-   "topic_id": "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce",
-   "file": "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce-3a5c6b0976.mp3",
-   "bytes": 3184704,
-   "duration_secs": 531,
-   "boundaries": [
-    18.58,
-    136.7,
-    243.22,
-    352.87,
-    474.67,
-    521.64,
-    530.78
-   ],
-   "segment_count": 7,
-   "title": "Proposições e conectivos lógicos",
-   "subject_name": "Raciocínio Lógico",
-   "engine": "questoes"
-  },
-  "a1a54482-abc9-5cfa-b995-71c75745bed3": {
-   "topic_id": "a1a54482-abc9-5cfa-b995-71c75745bed3",
-   "file": "a1a54482-abc9-5cfa-b995-71c75745bed3-133f9d5ff9.mp3",
-   "bytes": 2603952,
-   "duration_secs": 434,
-   "boundaries": [
-    44.06,
-    217.22,
-    261.72,
-    355.87,
-    371.62,
-    394.78,
-    433.99
-   ],
-   "segment_count": 7,
-   "title": "Crime",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "a505680e-9b19-5389-a314-243f0ea9cc55": {
-   "topic_id": "a505680e-9b19-5389-a314-243f0ea9cc55",
-   "file": "a505680e-9b19-5389-a314-243f0ea9cc55-9bc750fab9.mp3",
-   "bytes": 6179760,
-   "duration_secs": 1030,
-   "boundaries": [
-    47.45,
-    400.63,
-    866.74,
-    918.1,
-    1029.96
-   ],
-   "segment_count": 5,
-   "title": "Penalidades e medidas administrativas",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
-  },
-  "a9313d15-00ba-5d4b-aefe-5902d17af907": {
-   "topic_id": "a9313d15-00ba-5d4b-aefe-5902d17af907",
-   "file": "a9313d15-00ba-5d4b-aefe-5902d17af907-cfa13c2d66.mp3",
-   "bytes": 2755440,
-   "duration_secs": 459,
-   "boundaries": [
-    17.57,
-    161.5,
-    305.45,
-    451.34,
-    459.24
-   ],
-   "segment_count": 5,
-   "title": "Bens públicos",
-   "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "aa438456-7ff4-559d-a528-8ab093508e61": {
-   "topic_id": "aa438456-7ff4-559d-a528-8ab093508e61",
-   "file": "aa438456-7ff4-559d-a528-8ab093508e61-2bb27f6fee.mp3",
-   "bytes": 5440032,
-   "duration_secs": 907,
-   "boundaries": [
-    18.29,
-    161.62,
-    306.17,
-    459.55,
-    662.78,
-    898.06,
-    906.67
-   ],
-   "segment_count": 7,
-   "title": "Poderes administrativos",
-   "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "aa663618-6994-5ffa-82f0-3c3fbd38d05e": {
-   "topic_id": "aa663618-6994-5ffa-82f0-3c3fbd38d05e",
-   "file": "aa663618-6994-5ffa-82f0-3c3fbd38d05e-3d03c5da90.mp3",
-   "bytes": 3141648,
-   "duration_secs": 524,
-   "boundaries": [
-    18.05,
-    137.59,
-    239.66,
-    343.94,
-    462.72,
-    515.11,
-    523.61
-   ],
-   "segment_count": 7,
-   "title": "Equivalências e negações",
-   "subject_name": "Raciocínio Lógico",
-   "engine": "questoes"
-  },
-  "ad8f5eac-ab71-577c-aa14-c5967809f0fe": {
-   "topic_id": "ad8f5eac-ab71-577c-aa14-c5967809f0fe",
-   "file": "ad8f5eac-ab71-577c-aa14-c5967809f0fe-ce20b17cc8.mp3",
-   "bytes": 2384496,
-   "duration_secs": 397,
-   "boundaries": [
-    16.8,
-    149.42,
-    268.22,
-    389.76,
-    397.42
-   ],
-   "segment_count": 5,
-   "title": "Balística",
-   "subject_name": "Física Aplicada",
-   "engine": "questoes"
-  },
-  "af4e8546-3944-5699-a4d8-becd83878115": {
-   "topic_id": "af4e8546-3944-5699-a4d8-becd83878115",
-   "file": "af4e8546-3944-5699-a4d8-becd83878115-44923e1bd3.mp3",
-   "bytes": 4407408,
-   "duration_secs": 735,
-   "boundaries": [
-    49.27,
-    255.22,
-    397.94,
-    626.26,
-    667.85,
-    734.57
-   ],
-   "segment_count": 6,
-   "title": "Provas",
-   "subject_name": "Direito Processual Penal",
-   "engine": "lei"
-  },
-  "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3": {
-   "topic_id": "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3",
-   "file": "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3-12bc504511.mp3",
-   "bytes": 2431728,
-   "duration_secs": 405,
-   "boundaries": [
-    17.16,
-    165.89,
-    283.61,
-    397.13,
-    405.29
-   ],
-   "segment_count": 5,
-   "title": "Computação em nuvem",
-   "subject_name": "Informática",
-   "engine": "questoes"
-  },
-  "b2e39c53-5922-5c32-ac3e-0c4867d033e7": {
-   "topic_id": "b2e39c53-5922-5c32-ac3e-0c4867d033e7",
-   "file": "b2e39c53-5922-5c32-ac3e-0c4867d033e7-2ba50246ff.mp3",
-   "bytes": 2847744,
-   "duration_secs": 475,
-   "boundaries": [
-    18.38,
-    305.38,
-    465.72,
-    474.62
-   ],
-   "segment_count": 4,
-   "title": "Crimes contra a Administração Militar",
-   "subject_name": "Direito Penal Militar",
-   "engine": "questoes"
-  },
-  "b39aa01d-3dcf-5380-bc89-c0567aad11e7": {
-   "topic_id": "b39aa01d-3dcf-5380-bc89-c0567aad11e7",
-   "file": "b39aa01d-3dcf-5380-bc89-c0567aad11e7-2ec107c2af.mp3",
-   "bytes": 7263216,
-   "duration_secs": 1211,
-   "boundaries": [
-    18.26,
-    157.75,
-    298.1,
-    426.77,
-    567.22,
-    712.49,
-    1030.63,
-    1201.99,
-    1210.54
-   ],
-   "segment_count": 9,
-   "title": "Atos administrativos",
-   "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "b618269e-62a9-5f77-b5b3-cd5c54bdce55": {
-   "topic_id": "b618269e-62a9-5f77-b5b3-cd5c54bdce55",
-   "file": "b618269e-62a9-5f77-b5b3-cd5c54bdce55-af3edd791c.mp3",
-   "bytes": 2429280,
-   "duration_secs": 405,
-   "boundaries": [
-    17.86,
-    154.34,
-    274.32,
-    395.76,
-    404.88
-   ],
-   "segment_count": 5,
-   "title": "Redes de computadores e internet",
-   "subject_name": "Informática",
-   "engine": "questoes"
-  },
-  "b66aa3cb-d68b-5e06-8616-e08ee1ef1a5a": {
-   "topic_id": "b66aa3cb-d68b-5e06-8616-e08ee1ef1a5a",
-   "file": "b66aa3cb-d68b-5e06-8616-e08ee1ef1a5a-2f848c59f4.mp3",
-   "bytes": 2902032,
-   "duration_secs": 484,
-   "boundaries": [
-    42.12,
-    129.72,
-    347.54,
-    412.94,
-    459.41,
-    483.67
-   ],
-   "segment_count": 6,
-   "title": "ECA (8.069/90)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
-  },
-  "b7cddc33-067c-5a73-bcce-c8dc7f691bcd": {
-   "topic_id": "b7cddc33-067c-5a73-bcce-c8dc7f691bcd",
-   "file": "b7cddc33-067c-5a73-bcce-c8dc7f691bcd-7c7e1e43be.mp3",
-   "bytes": 5942304,
-   "duration_secs": 990,
-   "boundaries": [
-    18.24,
-    169.37,
-    319.44,
-    474.17,
-    701.21,
-    981.89,
-    990.38
-   ],
-   "segment_count": 7,
-   "title": "Licitações e contratos",
-   "subject_name": "Direito Administrativo",
-   "engine": "questoes"
-  },
-  "b873f91c-88cd-5177-ba9d-b82ccd4f4c96": {
-   "topic_id": "b873f91c-88cd-5177-ba9d-b82ccd4f4c96",
-   "file": "b873f91c-88cd-5177-ba9d-b82ccd4f4c96-15eac1eab3.mp3",
-   "bytes": 3637440,
-   "duration_secs": 606,
-   "boundaries": [
-    43.63,
-    116.64,
-    551.3,
-    587.02,
-    606.24
-   ],
-   "segment_count": 5,
-   "title": "Ação penal",
-   "subject_name": "Direito Processual Penal",
-   "engine": "lei"
-  },
-  "be14370a-00ac-5525-8ca7-99f5ae7c4517": {
-   "topic_id": "be14370a-00ac-5525-8ca7-99f5ae7c4517",
-   "file": "be14370a-00ac-5525-8ca7-99f5ae7c4517-dac7b6a7e0.mp3",
-   "bytes": 3822048,
-   "duration_secs": 637,
-   "boundaries": [
-    62.23,
-    127.2,
-    201.1,
-    379.8,
-    490.06,
-    595.75,
-    615.91,
-    637.01
-   ],
-   "segment_count": 8,
-   "title": "Crimes militares em espécie",
-   "subject_name": "Direito Penal Militar",
-   "engine": "lei"
-  },
-  "bf41de43-6a0c-5916-9fd9-9a6ee2a66629": {
-   "topic_id": "bf41de43-6a0c-5916-9fd9-9a6ee2a66629",
-   "file": "bf41de43-6a0c-5916-9fd9-9a6ee2a66629-52b51028fb.mp3",
-   "bytes": 4022928,
-   "duration_secs": 670,
-   "boundaries": [
-    17.54,
-    264.22,
-    571.61,
-    662.28,
-    670.49
-   ],
-   "segment_count": 5,
-   "title": "Economia de Goiás",
-   "subject_name": "Realidade de Goiás",
-   "engine": "questoes"
-  },
-  "c02e00fb-8737-52ab-b17c-b3598f7d61d4": {
-   "topic_id": "c02e00fb-8737-52ab-b17c-b3598f7d61d4",
-   "file": "c02e00fb-8737-52ab-b17c-b3598f7d61d4-2e3b231013.mp3",
-   "bytes": 4809456,
-   "duration_secs": 802,
-   "boundaries": [
-    19.06,
-    158.14,
-    310.22,
-    454.56,
-    605.81,
-    756.02,
-    792.58,
-    801.58
-   ],
-   "segment_count": 8,
-   "title": "Policiamento rodoviário ostensivo",
-   "subject_name": "Policiamento e Fiscalização",
-   "engine": "questoes"
-  },
-  "c60f1581-eb16-53f4-8b85-95d4e7a9f494": {
-   "topic_id": "c60f1581-eb16-53f4-8b85-95d4e7a9f494",
-   "file": "c60f1581-eb16-53f4-8b85-95d4e7a9f494-78ed00e1c2.mp3",
-   "bytes": 4506912,
-   "duration_secs": 751,
-   "boundaries": [
-    18.12,
-    131.38,
-    249.17,
-    366.12,
-    493.82,
-    676.51,
-    742.39,
-    751.15
-   ],
-   "segment_count": 8,
-   "title": "Concordância verbal e nominal",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
-  },
-  "c63b53ba-82c4-59cf-9140-f8bb27b9c9ee": {
-   "topic_id": "c63b53ba-82c4-59cf-9140-f8bb27b9c9ee",
-   "file": "c63b53ba-82c4-59cf-9140-f8bb27b9c9ee-7807cef186.mp3",
-   "bytes": 4276944,
-   "duration_secs": 713,
-   "boundaries": [
-    42.1,
-    380.06,
-    591.24,
-    630.94,
-    712.82
-   ],
-   "segment_count": 5,
-   "title": "Registro e licenciamento",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
-  },
-  "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82": {
-   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
-   "file": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82-71ff3d87a8.mp3",
-   "bytes": 5231808,
-   "duration_secs": 872,
-   "boundaries": [
-    46.42,
-    555.36,
-    726.02,
-    775.8,
-    871.97
-   ],
-   "segment_count": 5,
-   "title": "Lei de Drogas (11.343/06)",
-   "subject_name": "Legislação Especial",
-   "engine": "lei"
-  },
-  "c9408097-31c4-5009-a593-a604a1adeca6": {
-   "topic_id": "c9408097-31c4-5009-a593-a604a1adeca6",
-   "file": "c9408097-31c4-5009-a593-a604a1adeca6-aac96eb004.mp3",
-   "bytes": 1783296,
-   "duration_secs": 297,
-   "boundaries": [
-    18.26,
-    288.1,
-    297.22
-   ],
-   "segment_count": 3,
-   "title": "Nacionalidade e direitos políticos",
-   "subject_name": "Direito Constitucional",
-   "engine": "questoes"
-  },
-  "cc31e11f-9546-5077-83b1-b8a728e53d84": {
-   "topic_id": "cc31e11f-9546-5077-83b1-b8a728e53d84",
-   "file": "cc31e11f-9546-5077-83b1-b8a728e53d84-e9f5b60723.mp3",
-   "bytes": 2562912,
-   "duration_secs": 427,
-   "boundaries": [
-    17.47,
-    143.35,
-    251.64,
-    360.22,
-    419.14,
-    427.15
-   ],
-   "segment_count": 6,
-   "title": "Tabelas-verdade",
-   "subject_name": "Raciocínio Lógico",
-   "engine": "questoes"
-  },
-  "ce526efd-0bbe-563f-86c7-53b100956829": {
-   "topic_id": "ce526efd-0bbe-563f-86c7-53b100956829",
-   "file": "ce526efd-0bbe-563f-86c7-53b100956829-fe85e282b3.mp3",
-   "bytes": 3413664,
-   "duration_secs": 569,
-   "boundaries": [
-    46.37,
-    194.18,
-    233.3,
-    458.14,
-    492.72,
-    519.94,
-    568.94
-   ],
-   "segment_count": 7,
-   "title": "Aplicação da lei penal",
-   "subject_name": "Direito Penal",
-   "engine": "lei"
-  },
-  "d126a3e5-30d6-5def-a6f3-7f367e358cad": {
-   "topic_id": "d126a3e5-30d6-5def-a6f3-7f367e358cad",
-   "file": "d126a3e5-30d6-5def-a6f3-7f367e358cad-fe785fefb1.mp3",
-   "bytes": 761760,
-   "duration_secs": 127,
-   "boundaries": [
-    18.72,
-    117.02,
-    126.96
-   ],
-   "segment_count": 3,
-   "title": "Defesa do Estado e das instituições democráticas",
-   "subject_name": "Direito Constitucional",
-   "engine": "questoes"
-  },
-  "d1643411-1899-5bf1-bed7-2de1f8c10dc8": {
-   "topic_id": "d1643411-1899-5bf1-bed7-2de1f8c10dc8",
-   "file": "d1643411-1899-5bf1-bed7-2de1f8c10dc8-38df8f022d.mp3",
-   "bytes": 3778128,
-   "duration_secs": 630,
-   "boundaries": [
-    46.2,
-    110.09,
-    161.3,
-    523.03,
-    608.26,
-    629.69
-   ],
-   "segment_count": 6,
-   "title": "Aplicação da lei penal militar",
-   "subject_name": "Direito Penal Militar",
-   "engine": "lei"
-  },
-  "d170914e-ade1-5998-a578-6c3c1eb47c61": {
-   "topic_id": "d170914e-ade1-5998-a578-6c3c1eb47c61",
-   "file": "d170914e-ade1-5998-a578-6c3c1eb47c61-4ce9830fee.mp3",
-   "bytes": 3873888,
-   "duration_secs": 646,
-   "boundaries": [
-    57.96,
-    141.1,
-    196.46,
-    249.1,
-    489.58,
-    601.56,
-    625.8,
-    645.65
-   ],
-   "segment_count": 8,
-   "title": "Penas militares",
-   "subject_name": "Direito Penal Militar",
-   "engine": "lei"
-  },
-  "d1d7271d-4d37-5612-a184-a41652f1365f": {
-   "topic_id": "d1d7271d-4d37-5612-a184-a41652f1365f",
-   "file": "d1d7271d-4d37-5612-a184-a41652f1365f-7d5b264951.mp3",
-   "bytes": 937584,
-   "duration_secs": 156,
-   "boundaries": [
-    16.66,
-    148.82,
-    156.26
-   ],
-   "segment_count": 3,
-   "title": "Crase",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
-  },
-  "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9": {
-   "topic_id": "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9",
-   "file": "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9-1c421ce80f.mp3",
-   "bytes": 2359584,
-   "duration_secs": 393,
-   "boundaries": [
-    17.71,
-    142.61,
-    261.91,
-    384.55,
-    393.26
-   ],
-   "segment_count": 5,
-   "title": "Editores de texto e planilhas",
-   "subject_name": "Informática",
-   "engine": "questoes"
-  },
-  "d4090cc8-770b-5408-a685-47c43f7a5820": {
-   "topic_id": "d4090cc8-770b-5408-a685-47c43f7a5820",
-   "file": "d4090cc8-770b-5408-a685-47c43f7a5820-a936bdcd3c.mp3",
-   "bytes": 1810800,
-   "duration_secs": 302,
-   "boundaries": [
-    18.91,
-    292.92,
-    301.8
-   ],
-   "segment_count": 3,
-   "title": "Recursos e ações de impugnação",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "questoes"
-  },
-  "d83a48d8-f400-57aa-8790-8df0cad897fd": {
-   "topic_id": "d83a48d8-f400-57aa-8790-8df0cad897fd",
-   "file": "d83a48d8-f400-57aa-8790-8df0cad897fd-ca9504d660.mp3",
-   "bytes": 5575968,
-   "duration_secs": 929,
-   "boundaries": [
-    47.38,
-    287.5,
-    418.39,
-    555.79,
-    781.42,
-    828.86,
-    929.33
-   ],
-   "segment_count": 7,
-   "title": "Sistema Nacional de Trânsito",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
+  "16613cdc-8ad9-5e85-a57c-99a74eed39bd": {
+   "episode": "direito-constitucional-03",
+   "start": 0.0
   },
   "d987eaa9-2fb8-5907-8be8-cffddfe952da": {
-   "topic_id": "d987eaa9-2fb8-5907-8be8-cffddfe952da",
-   "file": "d987eaa9-2fb8-5907-8be8-cffddfe952da-aacdec89da.mp3",
-   "bytes": 2742336,
-   "duration_secs": 457,
-   "boundaries": [
-    36.17,
-    409.82,
-    425.95,
-    457.06
-   ],
-   "segment_count": 4,
-   "title": "Segurança pública",
-   "subject_name": "Direito Constitucional",
-   "engine": "lei"
+   "episode": "direito-constitucional-04",
+   "start": 700.51
   },
-  "df7322d3-b04f-500f-a33e-d943234e7002": {
-   "topic_id": "df7322d3-b04f-500f-a33e-d943234e7002",
-   "file": "df7322d3-b04f-500f-a33e-d943234e7002-59a0bcb821.mp3",
-   "bytes": 1796112,
-   "duration_secs": 299,
-   "boundaries": [
-    37.15,
-    241.3,
-    276.55,
-    299.35
-   ],
-   "segment_count": 4,
-   "title": "Proibição da tortura e tratamento degradante",
-   "subject_name": "Direitos Humanos",
-   "engine": "lei"
+  "82d1d914-9b84-5fbd-8315-08e869c668b8": {
+   "episode": "direito-constitucional-05",
+   "start": 836.66
   },
-  "e24f1a00-deb1-55f2-a610-c055fde62bca": {
-   "topic_id": "e24f1a00-deb1-55f2-a610-c055fde62bca",
-   "file": "e24f1a00-deb1-55f2-a610-c055fde62bca-17d0fb1125.mp3",
-   "bytes": 3369600,
-   "duration_secs": 562,
-   "boundaries": [
-    18.17,
-    297.12,
-    552.58,
-    561.6
-   ],
-   "segment_count": 4,
-   "title": "Política e organização do Estado",
-   "subject_name": "Realidade de Goiás",
-   "engine": "questoes"
+  "6d475e6e-51d6-5c54-9705-8461a55d1122": {
+   "episode": "direito-constitucional-06",
+   "start": 1815.7
   },
-  "e29be4df-4f98-55f1-bce9-2f854e1c708d": {
-   "topic_id": "e29be4df-4f98-55f1-bce9-2f854e1c708d",
-   "file": "e29be4df-4f98-55f1-bce9-2f854e1c708d-95027e47e7.mp3",
-   "bytes": 2182896,
-   "duration_secs": 364,
-   "boundaries": [
-    18.65,
-    354.6,
-    363.82
-   ],
-   "segment_count": 3,
-   "title": "Crimes contra o serviço e o dever militar",
-   "subject_name": "Direito Penal Militar",
-   "engine": "questoes"
+  "4e7cc05c-fa3b-512d-85fb-bdf9eeab5794": {
+   "episode": "direito-constitucional-07",
+   "start": 1541.4
   },
-  "e82d1135-9a46-5459-8fe7-181506f5a3cd": {
-   "topic_id": "e82d1135-9a46-5459-8fe7-181506f5a3cd",
-   "file": "e82d1135-9a46-5459-8fe7-181506f5a3cd-fb7c77bd46.mp3",
-   "bytes": 1466928,
-   "duration_secs": 244,
-   "boundaries": [
-    17.5,
-    236.3,
-    244.49
-   ],
-   "segment_count": 3,
-   "title": "Sintaxe do período",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
+  "96884cfc-7a39-5a82-bb30-64c405286db6": {
+   "episode": "direito-constitucional-08",
+   "start": 1989.7
   },
-  "e883b7d1-7fe9-59d3-840e-1f01dfcc9242": {
-   "topic_id": "e883b7d1-7fe9-59d3-840e-1f01dfcc9242",
-   "file": "e883b7d1-7fe9-59d3-840e-1f01dfcc9242-199df62832.mp3",
-   "bytes": 5498928,
-   "duration_secs": 916,
-   "boundaries": [
-    42.91,
-    526.73,
-    723.67,
-    755.95,
-    807.29,
-    916.49
-   ],
-   "segment_count": 6,
-   "title": "Veículos",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
+  "06f547e3-bf61-5900-a97a-f5b51086fba9": {
+   "episode": "direito-constitucional-09",
+   "start": 1027.08
   },
-  "e88c4ea8-1681-5fec-af9c-14f5634b4117": {
-   "topic_id": "e88c4ea8-1681-5fec-af9c-14f5634b4117",
-   "file": "e88c4ea8-1681-5fec-af9c-14f5634b4117-0fd89e2305.mp3",
-   "bytes": 2640240,
-   "duration_secs": 440,
-   "boundaries": [
-    18.24,
-    352.37,
-    431.95,
-    440.04
-   ],
-   "segment_count": 4,
-   "title": "Ação penal militar",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "questoes"
+  "c9408097-31c4-5009-a593-a604a1adeca6": {
+   "episode": "direito-constitucional-09",
+   "start": 2244.31
   },
-  "ea403d58-2ea9-53c1-bba6-ec0971b1614b": {
-   "topic_id": "ea403d58-2ea9-53c1-bba6-ec0971b1614b",
-   "file": "ea403d58-2ea9-53c1-bba6-ec0971b1614b-d75d29b33b.mp3",
-   "bytes": 7709616,
-   "duration_secs": 1285,
-   "boundaries": [
-    60.31,
-    356.38,
-    533.23,
-    672.26,
-    827.81,
-    958.63,
-    1056.77,
-    1284.94
-   ],
-   "segment_count": 8,
-   "title": "Infrações",
-   "subject_name": "Legislação de Trânsito",
-   "engine": "lei"
+  "d126a3e5-30d6-5def-a6f3-7f367e358cad": {
+   "episode": "direito-constitucional-09",
+   "start": 2524.92
   },
-  "ed701e2e-120c-5877-b137-e89121ba3eda": {
-   "topic_id": "ed701e2e-120c-5877-b137-e89121ba3eda",
-   "file": "ed701e2e-120c-5877-b137-e89121ba3eda-4fc01bbc5e.mp3",
-   "bytes": 4243536,
-   "duration_secs": 707,
-   "boundaries": [
-    17.64,
-    138.02,
-    263.52,
-    377.42,
-    492.82,
-    639.98,
-    699.05,
-    707.26
-   ],
-   "segment_count": 8,
-   "title": "Classes de palavras",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
+  "54d74d33-d162-5118-b9e8-80c5ec91d98a": {
+   "episode": "direito-penal-01",
+   "start": 0.0
   },
-  "ee4bcceb-08c4-5d8a-bc68-1b7cbdb05fd2": {
-   "topic_id": "ee4bcceb-08c4-5d8a-bc68-1b7cbdb05fd2",
-   "file": "ee4bcceb-08c4-5d8a-bc68-1b7cbdb05fd2-1cb2d31a0f.mp3",
-   "bytes": 3344544,
-   "duration_secs": 557,
-   "boundaries": [
-    18.0,
-    288.26,
-    548.86,
-    557.42
-   ],
-   "segment_count": 4,
-   "title": "Cultura e sociedade goiana",
-   "subject_name": "Realidade de Goiás",
-   "engine": "questoes"
+  "ce526efd-0bbe-563f-86c7-53b100956829": {
+   "episode": "direito-penal-01",
+   "start": 254.45
   },
-  "f4ff9c02-0e7b-510e-b2da-00134c4501f8": {
-   "topic_id": "f4ff9c02-0e7b-510e-b2da-00134c4501f8",
-   "file": "f4ff9c02-0e7b-510e-b2da-00134c4501f8-deae8ee3c0.mp3",
-   "bytes": 564048,
-   "duration_secs": 94,
-   "boundaries": [
-    18.24,
-    85.18,
-    94.01
-   ],
-   "segment_count": 3,
-   "title": "Provas no processo penal militar",
-   "subject_name": "Direito Processual Penal Militar",
-   "engine": "questoes"
+  "a1a54482-abc9-5cfa-b995-71c75745bed3": {
+   "episode": "direito-penal-01",
+   "start": 922.49
   },
-  "f75b8d6c-e266-5edd-b40a-632d5fe43785": {
-   "topic_id": "f75b8d6c-e266-5edd-b40a-632d5fe43785",
-   "file": "f75b8d6c-e266-5edd-b40a-632d5fe43785-66a6134a26.mp3",
-   "bytes": 3945168,
-   "duration_secs": 658,
-   "boundaries": [
-    17.66,
-    265.32,
-    562.8,
-    649.25,
-    657.53
-   ],
-   "segment_count": 5,
-   "title": "Geografia de Goiás",
-   "subject_name": "Realidade de Goiás",
-   "engine": "questoes"
+  "46dd063f-3f74-51d6-9969-c622cba10a4a": {
+   "episode": "direito-penal-02",
+   "start": 0.0
   },
-  "f75c6dac-925c-5694-82c0-c861e429eda5": {
-   "topic_id": "f75c6dac-925c-5694-82c0-c861e429eda5",
-   "file": "f75c6dac-925c-5694-82c0-c861e429eda5-22bd62537f.mp3",
-   "bytes": 3730320,
-   "duration_secs": 622,
-   "boundaries": [
-    17.16,
-    132.65,
-    262.06,
-    373.46,
-    540.24,
-    614.09,
-    621.72
-   ],
-   "segment_count": 7,
-   "title": "Pontuação",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
+  "1af3d3c4-1115-5bcd-a11f-36e4b18abfd3": {
+   "episode": "direito-penal-02",
+   "start": 555.77
   },
-  "f9164ef7-6190-55fb-a996-f6bbb4f06b3a": {
-   "topic_id": "f9164ef7-6190-55fb-a996-f6bbb4f06b3a",
-   "file": "f9164ef7-6190-55fb-a996-f6bbb4f06b3a-f2297811d6.mp3",
-   "bytes": 2030112,
-   "duration_secs": 338,
-   "boundaries": [
-    18.05,
-    139.32,
-    269.81,
-    329.3,
-    338.35
-   ],
-   "segment_count": 5,
-   "title": "Vocabulário e falsos cognatos",
-   "subject_name": "Língua Espanhola",
-   "engine": "questoes"
+  "0f163fc9-07d7-5a16-8d1f-bc34163ba1b5": {
+   "episode": "direito-penal-02",
+   "start": 799.7
   },
-  "faddb87c-1080-5d8d-b8e2-c522a1407d1b": {
-   "topic_id": "faddb87c-1080-5d8d-b8e2-c522a1407d1b",
-   "file": "faddb87c-1080-5d8d-b8e2-c522a1407d1b-fa846ad60d.mp3",
-   "bytes": 1264320,
-   "duration_secs": 211,
-   "boundaries": [
-    17.76,
-    202.1,
-    210.72
-   ],
-   "segment_count": 3,
-   "title": "Ortografia e acentuação",
-   "subject_name": "Língua Portuguesa",
-   "engine": "questoes"
+  "9042b6b4-a01d-58b9-a6e6-802780182b9e": {
+   "episode": "direito-penal-02",
+   "start": 1817.88
+  },
+  "609dffd1-a2e2-5086-b678-d9076befe676": {
+   "episode": "direito-penal-03",
+   "start": 2031.38
+  },
+  "81cf5277-8395-5e6c-8a8f-081317fc5d20": {
+   "episode": "direito-penal-05",
+   "start": 860.83
+  },
+  "91cf94f2-524b-5d65-b6cf-d74d8e7822ff": {
+   "episode": "direito-penal-06",
+   "start": 1712.47
+  },
+  "a0dc56ff-5760-5395-a8b4-81ad5bee115d": {
+   "episode": "direito-processual-penal-01",
+   "start": 0.0
+  },
+  "b873f91c-88cd-5177-ba9d-b82ccd4f4c96": {
+   "episode": "direito-processual-penal-02",
+   "start": 809.47
+  },
+  "7640e0e5-1652-59bf-9985-be8fca541d16": {
+   "episode": "direito-processual-penal-03",
+   "start": 850.7
+  },
+  "af4e8546-3944-5699-a4d8-becd83878115": {
+   "episode": "direito-processual-penal-05",
+   "start": 276.19
+  },
+  "1decfdc4-89a9-5374-b9e4-be3fe48cf091": {
+   "episode": "direito-processual-penal-06",
+   "start": 1277.28
   },
   "fb2d9a36-517c-5759-a360-6a1ff7f7d680": {
-   "topic_id": "fb2d9a36-517c-5759-a360-6a1ff7f7d680",
-   "file": "fb2d9a36-517c-5759-a360-6a1ff7f7d680-048eda636d.mp3",
-   "bytes": 4991328,
-   "duration_secs": 832,
-   "boundaries": [
-    65.86,
-    286.2,
-    333.79,
-    425.86,
-    680.14,
-    770.14,
-    790.87,
-    831.89
-   ],
-   "segment_count": 8,
-   "title": "Recursos no processo penal",
-   "subject_name": "Direito Processual Penal",
-   "engine": "lei"
+   "episode": "direito-processual-penal-07",
+   "start": 843.86
+  },
+  "62bb47fc-5f98-51d0-9973-3150c912651d": {
+   "episode": "direito-processual-penal-08",
+   "start": 2184.0
+  },
+  "b39aa01d-3dcf-5380-bc89-c0567aad11e7": {
+   "episode": "direito-administrativo-01",
+   "start": 0.0
+  },
+  "aa438456-7ff4-559d-a528-8ab093508e61": {
+   "episode": "direito-administrativo-01",
+   "start": 1259.95
+  },
+  "b7cddc33-067c-5a73-bcce-c8dc7f691bcd": {
+   "episode": "direito-administrativo-02",
+   "start": 0.0
+  },
+  "24dfd979-6c91-50fb-bb12-db45a976b948": {
+   "episode": "direito-administrativo-02",
+   "start": 1027.75
+  },
+  "0414f6d1-1be2-5cd9-b5c6-24b7c94acbd7": {
+   "episode": "direito-administrativo-03",
+   "start": 0.0
+  },
+  "275ec0ca-a746-554f-8175-e0d156136411": {
+   "episode": "direito-administrativo-03",
+   "start": 570.82
+  },
+  "a9313d15-00ba-5d4b-aefe-5902d17af907": {
+   "episode": "direito-administrativo-03",
+   "start": 1346.59
+  },
+  "5dd4df99-9565-5076-a0c2-fef2e50027ef": {
+   "episode": "direito-administrativo-03",
+   "start": 1839.5
+  },
+  "46e12dab-4d11-5f07-8564-fc7d9ed52267": {
+   "episode": "lingua-portuguesa-01",
+   "start": 0.0
+  },
+  "c60f1581-eb16-53f4-8b85-95d4e7a9f494": {
+   "episode": "lingua-portuguesa-01",
+   "start": 1289.9
+  },
+  "07e2c3d8-03c5-5acf-9220-ae718d970f25": {
+   "episode": "lingua-portuguesa-02",
+   "start": 0.0
+  },
+  "f75c6dac-925c-5694-82c0-c861e429eda5": {
+   "episode": "lingua-portuguesa-02",
+   "start": 709.54
+  },
+  "952c6ec4-deb1-5bd2-8875-65da82a34bf7": {
+   "episode": "lingua-portuguesa-03",
+   "start": 0.0
+  },
+  "ed701e2e-120c-5877-b137-e89121ba3eda": {
+   "episode": "lingua-portuguesa-03",
+   "start": 508.85
+  },
+  "faddb87c-1080-5d8d-b8e2-c522a1407d1b": {
+   "episode": "lingua-portuguesa-03",
+   "start": 1258.7
+  },
+  "d1d7271d-4d37-5612-a184-a41652f1365f": {
+   "episode": "lingua-portuguesa-03",
+   "start": 1476.17
+  },
+  "381da94a-cbf0-5f45-873c-d98610c7eb83": {
+   "episode": "lingua-portuguesa-03",
+   "start": 1627.99
+  },
+  "e82d1135-9a46-5459-8fe7-181506f5a3cd": {
+   "episode": "lingua-portuguesa-03",
+   "start": 1840.51
+  },
+  "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82": {
+   "episode": "legislacao-especial-01",
+   "start": 0.0
+  },
+  "8040384d-c1e8-5c2b-abf3-f8966680c5fb": {
+   "episode": "legislacao-especial-02",
+   "start": 1033.85
+  },
+  "3d8881bd-f5d5-530e-a12d-63e2cca169f5": {
+   "episode": "legislacao-especial-03",
+   "start": 1260.5
+  },
+  "8b9ef0a7-0cc6-518d-b26b-ac8cd16ddc97": {
+   "episode": "legislacao-especial-04",
+   "start": 2105.35
+  },
+  "b66aa3cb-d68b-5e06-8616-e08ee1ef1a5a": {
+   "episode": "legislacao-especial-05",
+   "start": 2391.05
+  },
+  "0e3d00cc-e9f8-5bcf-adea-e566f75734a1": {
+   "episode": "legislacao-especial-06",
+   "start": 2369.47
+  },
+  "a0c2256f-cac2-531e-b8b5-854f078803d3": {
+   "episode": "legislacao-especial-07",
+   "start": 434.98
   },
   "fc5cdae9-ed63-5cac-bac3-f55672a14b70": {
-   "topic_id": "fc5cdae9-ed63-5cac-bac3-f55672a14b70",
-   "file": "fc5cdae9-ed63-5cac-bac3-f55672a14b70-674fdfc6a1.mp3",
-   "bytes": 1199088,
-   "duration_secs": 200,
-   "boundaries": [
-    20.21,
-    188.88,
-    199.85
-   ],
-   "segment_count": 3,
-   "title": "Lei de Tortura (9.455/97)",
-   "subject_name": "Legislação Especial",
-   "engine": "questoes"
+   "episode": "legislacao-especial-07",
+   "start": 2464.92
+  },
+  "0300fa92-3691-5914-b128-f8eaa1627a5e": {
+   "episode": "direitos-humanos-01",
+   "start": 0.0
+  },
+  "77cb5a6e-a53f-570e-9611-e4e3a0629cf7": {
+   "episode": "direitos-humanos-01",
+   "start": 763.01
+  },
+  "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6": {
+   "episode": "direitos-humanos-01",
+   "start": 1388.62
+  },
+  "6f7c3757-9409-564d-9a90-1cd4c1b35eb2": {
+   "episode": "direitos-humanos-01",
+   "start": 1825.97
+  },
+  "df7322d3-b04f-500f-a33e-d943234e7002": {
+   "episode": "direitos-humanos-02",
+   "start": 763.44
+  },
+  "0c4e2ac2-4c1e-5860-88d0-100a13596300": {
+   "episode": "direitos-humanos-02",
+   "start": 1497.65
+  },
+  "958d8e04-b29c-5cce-9c52-83537372e336": {
+   "episode": "informatica-01",
+   "start": 0.0
+  },
+  "b618269e-62a9-5f77-b5b3-cd5c54bdce55": {
+   "episode": "informatica-01",
+   "start": 420.34
+  },
+  "382c3dd2-53e2-511c-8385-8a04f04deba4": {
+   "episode": "informatica-01",
+   "start": 851.21
+  },
+  "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9": {
+   "episode": "informatica-01",
+   "start": 1341.26
+  },
+  "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3": {
+   "episode": "informatica-01",
+   "start": 1760.47
+  },
+  "8fce0309-caac-559e-8ae9-669b4953a3e1": {
+   "episode": "informatica-01",
+   "start": 2191.51
+  },
+  "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce": {
+   "episode": "raciocinio-logico-01",
+   "start": 0.0
+  },
+  "cc31e11f-9546-5077-83b1-b8a728e53d84": {
+   "episode": "raciocinio-logico-01",
+   "start": 591.14
+  },
+  "aa663618-6994-5ffa-82f0-3c3fbd38d05e": {
+   "episode": "raciocinio-logico-01",
+   "start": 1049.95
+  },
+  "4f0a61a9-e17d-5f71-800d-e502b2c963de": {
+   "episode": "raciocinio-logico-01",
+   "start": 1615.06
+  },
+  "097f794c-6d10-515d-9315-28dec5a74989": {
+   "episode": "raciocinio-logico-01",
+   "start": 1975.49
+  },
+  "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca": {
+   "episode": "etica-servico-publico-01",
+   "start": 0.0
+  },
+  "2f18f1f0-7ba2-505d-a22f-e4715db75762": {
+   "episode": "etica-servico-publico-01",
+   "start": 794.71
+  },
+  "a14e387a-1553-528a-b97a-66d2d7caafb0": {
+   "episode": "etica-servico-publico-01",
+   "start": 1426.7
+  },
+  "1065303e-27ec-53d2-aa2d-91b6c32e0ce8": {
+   "episode": "etica-servico-publico-01",
+   "start": 2072.26
+  },
+  "d1643411-1899-5bf1-bed7-2de1f8c10dc8": {
+   "episode": "direito-penal-militar-01",
+   "start": 0.0
+  },
+  "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565": {
+   "episode": "direito-penal-militar-01",
+   "start": 1167.77
+  },
+  "d170914e-ade1-5998-a578-6c3c1eb47c61": {
+   "episode": "direito-penal-militar-02",
+   "start": 863.78
+  },
+  "be14370a-00ac-5525-8ca7-99f5ae7c4517": {
+   "episode": "direito-penal-militar-03",
+   "start": 959.4
+  },
+  "956f889c-9d9b-537e-b45b-51d42be73b70": {
+   "episode": "direito-penal-militar-04",
+   "start": 1242.36
+  },
+  "e29be4df-4f98-55f1-bce9-2f854e1c708d": {
+   "episode": "direito-penal-militar-04",
+   "start": 1835.95
+  },
+  "b2e39c53-5922-5c32-ac3e-0c4867d033e7": {
+   "episode": "direito-penal-militar-04",
+   "start": 2183.59
+  },
+  "534a41d5-c28e-53cd-811e-02f89711c733": {
+   "episode": "direito-processual-penal-militar-01",
+   "start": 0.0
+  },
+  "1e299181-318e-58f4-8328-a4db88b8f5a8": {
+   "episode": "direito-processual-penal-militar-02",
+   "start": 496.75
+  },
+  "61fed39c-7c1d-5810-af36-f7d009d8de77": {
+   "episode": "direito-processual-penal-militar-03",
+   "start": 705.38
+  },
+  "e88c4ea8-1681-5fec-af9c-14f5634b4117": {
+   "episode": "direito-processual-penal-militar-03",
+   "start": 1266.05
+  },
+  "2edbe4a2-7ff6-5fa5-8efe-eef43d3d1fba": {
+   "episode": "direito-processual-penal-militar-03",
+   "start": 1685.26
+  },
+  "f4ff9c02-0e7b-510e-b2da-00134c4501f8": {
+   "episode": "direito-processual-penal-militar-03",
+   "start": 2276.69
+  },
+  "d4090cc8-770b-5408-a685-47c43f7a5820": {
+   "episode": "direito-processual-penal-militar-03",
+   "start": 2362.22
+  },
+  "23725b9b-5a1a-56d4-bde0-db71a28754d2": {
+   "episode": "legislacao-institucional-pm-01",
+   "start": 0.0
+  },
+  "1619367f-ef69-5335-a493-e9386767a9d8": {
+   "episode": "legislacao-institucional-pm-01",
+   "start": 631.87
+  },
+  "2f24c33d-c95f-5770-b6d4-1da13383176d": {
+   "episode": "legislacao-institucional-pm-01",
+   "start": 847.92
+  },
+  "66070507-d8d2-5c3f-9ce4-03f010ac8908": {
+   "episode": "legislacao-institucional-pm-01",
+   "start": 1395.34
+  },
+  "0866493b-222a-5753-a331-ac9cf10cd6b6": {
+   "episode": "realidade-goias-01",
+   "start": 0.0
+  },
+  "f75b8d6c-e266-5edd-b40a-632d5fe43785": {
+   "episode": "realidade-goias-01",
+   "start": 666.48
+  },
+  "bf41de43-6a0c-5916-9fd9-9a6ee2a66629": {
+   "episode": "realidade-goias-01",
+   "start": 1306.32
+  },
+  "ee4bcceb-08c4-5d8a-bc68-1b7cbdb05fd2": {
+   "episode": "realidade-goias-02",
+   "start": 340.75
+  },
+  "e24f1a00-deb1-55f2-a610-c055fde62bca": {
+   "episode": "realidade-goias-02",
+   "start": 877.03
+  },
+  "6a8eb8a9-751d-50e8-bd67-ad6959cf65a1": {
+   "episode": "realidade-goias-02",
+   "start": 1385.45
   }
  }
 }

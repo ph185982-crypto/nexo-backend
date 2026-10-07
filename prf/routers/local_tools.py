@@ -54,9 +54,8 @@ async def podcasts():
     for ep in prebuilt_episodes():
         titles = []
         for chapter in ep['chapters']:
-            base = chapter['title'].split(' (parte ')[0]
-            if base not in titles:
-                titles.append(base)
+            if chapter['title'] not in titles:
+                titles.append(chapter['title'])
         episodes.append({'id': ep['id'], 'title': f"Episódio {ep['number']}",
                          'subtitle': ', '.join(titles), 'subject_name': ep['subject_name'],
                          'on_demand': False, 'duration_secs': ep['duration_secs'],
