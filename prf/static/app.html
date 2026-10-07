@@ -492,6 +492,7 @@ button { font-family:inherit; }
 .pod-info { min-width:0; flex:1; }
 .pod-title { font-family:var(--serif); font-size:16px; font-weight:500; line-height:1.35; }
 .pod-meta { display:flex; flex-wrap:wrap; gap:5px; align-items:center; font-size:12px; color:var(--ink-3); margin-top:5px; }
+.pod-topics { font-size:13px; color:var(--ink-2); line-height:1.4; margin-top:3px; }
 .pod-meta .pod-dur { font-variant-numeric:tabular-nums; font-weight:600; color:var(--primary); }
 .pod-progress { font-size:11px; color:var(--primary); font-weight:600; margin-top:6px; }
 .audio-list { padding:8px 20px 20px; display:flex; flex-direction:column; gap:10px; }
@@ -2456,7 +2457,7 @@ function viewAudio() {
       <div class="display-hero">Dois no <em>estúdio</em></div>
       <div class="pod-sub">Marcos e Júlia leem a lei seca, destrincham cada dispositivo e treinam as questões da banca.</div>
       ${pods.length ? `<div class="chip-row mt-12">
-        <span class="level-chip">${pods.length} episódio${pods.length===1?'':'s'}</span>
+        <span class="level-chip">${pods.length} episódio${pods.length===1?'':'s'} de trajeto</span>
         <span class="level-chip">${podMin ? (podMin >= 120 ? Math.round(podMin/60)+' h de aula' : podMin+' min') : 'Gerados ao abrir'}</span>
       </div>` : ''}
     </div>
@@ -2476,8 +2477,9 @@ function viewAudio() {
             <div class="pod-play">${S.podLoading && active ? I.refresh : playing ? I.pause : I.play}</div>
             <div class="pod-info">
               <div class="pod-title">${esc(p.title)}</div>
+              ${p.subtitle ? `<div class="pod-topics">${esc(p.subtitle)}</div>` : ''}
               <div class="pod-meta">
-                ${p.on_demand ? '<span>Gerar aula em áudio</span>' : `<span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span><span>·</span><span>${p.segment_count||0} partes</span>`}
+                ${p.on_demand ? '<span>Gerar aula em áudio</span>' : `<span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span><span>·</span><span>${p.segment_count||0} ${p.subtitle ? 'tópicos' : 'partes'}</span>`}
               </div>
               ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>`
                 : (loadPodProgress(p.id) > 0 ? `<div class="pod-progress">Retomar na parte ${loadPodProgress(p.id)+1}</div>` : '')}
@@ -2775,11 +2777,12 @@ function viewPodcastNow() {
   const parte = (S.podSeq || 0) + 1;
   const pct = S.audioDur > 0 ? (S.audioPos / S.audioDur) * 100 : 0;
   const tocando = S.audioPlaying;
+  const capitulo = ep.chapters?.[S.podSeq || 0]?.title;
 
   return head + `<div class="pn-wrap fade-in">
     <div class="pn-art">${I.headphones}</div>
     <div class="pn-title">${esc(ep.title || '')}</div>
-    ${ep.description ? `<div class="pn-desc">${esc(ep.description)}</div>` : ''}
+    ${capitulo ? `<div class="pn-desc">Agora: ${esc(capitulo)}</div>` : ep.description ? `<div class="pn-desc">${esc(ep.description)}</div>` : ''}
     <div class="pn-chips">
       <span class="level-chip">${Math.round((ep.duration_secs||0)/60)} min</span>
       <span class="level-chip">Parte ${parte} de ${total}</span>
@@ -2802,7 +2805,7 @@ function viewPodcastNow() {
       </div>
       <div class="pn-parts">${Array.from({length: total}, (_, i) =>
         `<div class="pn-part ${i < S.podSeq ? 'done' : ''} ${i === S.podSeq ? 'on' : ''}"
-              onclick="playPodSegment(${i})" title="Parte ${i+1}"></div>`).join('')}</div>
+              onclick="playPodSegment(${i})" title="${esc(ep.chapters?.[i]?.title || `Parte ${i+1}`)}"></div>`).join('')}</div>
     `}
     ${S.missionBlockId ? `<button class="btn btn-primary btn-full mt-16" onclick="confirmFinishPodcastBlock()">Já ouvi — concluir etapa</button>` : ''}
   </div>`;
@@ -4139,11 +4142,15 @@ function seekAudio(ev) {
 let _podLastSave = 0;
 audioEl.addEventListener('timeupdate', () => {
   S.audioPos = audioEl.currentTime; S.audioDur = audioEl.duration || 0;
-  const fill = document.querySelector('.pb-fill');
-  const times = document.querySelectorAll('.pb-time');
-  if (fill && S.audioDur > 0) fill.style.width = `${(S.audioPos / S.audioDur) * 100}%`;
-  if (times[0]) times[0].textContent = fmtTime(S.audioPos);
-  if (times[1]) times[1].textContent = fmtTime(S.audioDur);
+  // Mini-barra e tela do episódio: sem a segunda, o relógio do player
+  // ficava em 0:00 até o próximo render.
+  for (const [fillSel, timeSel] of [['.pb-fill', '.pb-time'], ['.pn-fill', '.pn-time']]) {
+    const fill = document.querySelector(fillSel);
+    const times = document.querySelectorAll(timeSel);
+    if (fill && S.audioDur > 0) fill.style.width = `${(S.audioPos / S.audioDur) * 100}%`;
+    if (times[0]) times[0].textContent = fmtTime(S.audioPos);
+    if (times[1]) times[1].textContent = fmtTime(S.audioDur);
+  }
 
   // Episódio de podcast: o arquivo é um só, então "segmento atual" é só
   // uma leitura de posição contra os limites, não mais um arquivo à parte.
@@ -4324,13 +4331,26 @@ async function playLocalPodcast(topicId, opts) {
   render();
 
   S.podFailedId = null;
-  const savedTime = loadPodTime(topicId);
   try {
-    let cached = await getLocalEpisode(topicId);
     // Áudio pronto primeiro: é um download só, em vez de 7 a 12 gerações em
     // sequência que o iPhone derrubava ao bloquear a tela. A geração abaixo
     // fica só para aula que ainda não tem arquivo pronto.
+    //
+    // O id pode ser de um episódio (lista da aba Áudio) ou de um tópico
+    // (bloco de áudio da missão). Pelo tópico, abre o episódio de ~40 min
+    // que o contém, já no minuto em que o tópico começa. Daqui em diante o
+    // id é o do episódio: progresso, cache e destaque na lista ficam juntos.
     const pre = await prebuiltInfo(topicId);
+    if (pre) rememberPodEpisode(topicId, pre.id);
+    const key = pre ? pre.id : podEpisodeOf(topicId);
+    if (key && key !== topicId) { topicId = key; S.podId = key; }
+    const savedTime = loadPodTime(topicId);
+    let startAt = savedTime;
+    if (pre && pre.topic_id) {
+      const end = (pre.boundaries || []).find(b => b > pre.start + 0.5) ?? Infinity;
+      if (!(savedTime >= pre.start && savedTime < end)) startAt = pre.start;
+    }
+    let cached = await getLocalEpisode(topicId);
     if (pre && cached?.audio && cached.src !== pre.file) cached = null;
     const fromDevice = !!cached?.audio;
     if (!cached?.audio && pre) cached = await downloadPrebuilt(topicId, pre);
@@ -4380,19 +4400,19 @@ async function playLocalPodcast(topicId, opts) {
     if (S.podId !== topicId) return; // trocou de aula enquanto isso gerava
     S.pod = {
       title: cached.title, segment_count: cached.segment_count,
-      duration_secs: cached.duration_secs, description: '',
+      duration_secs: cached.duration_secs, description: '', chapters: cached.chapters || [],
     };
     S.podBoundaries = cached.boundaries || [];
     S.podLoading = false;
     audioEl.src = URL.createObjectURL(cached.audio);
     const resume = () => {
       const dur = audioEl.duration || 0;
-      if (savedTime > 0 && savedTime < dur) audioEl.currentTime = savedTime;
+      if (startAt > 0 && startAt < dur) audioEl.currentTime = startAt;
       audioEl.removeEventListener('loadedmetadata', resume);
     };
     audioEl.addEventListener('loadedmetadata', resume);
     if (S.podBoundaries.length) {
-      const idx = S.podBoundaries.findIndex(b => savedTime < b);
+      const idx = S.podBoundaries.findIndex(b => startAt < b);
       S.podSeq = idx === -1 ? 0 : idx;
     }
     try { await audioEl.play(); S.audioPlaying = true; }
@@ -4406,6 +4426,14 @@ async function playLocalPodcast(topicId, opts) {
     toast('Não foi possível carregar o áudio. Verifique a conexão e tente de novo.', 'error');
     render();
   }
+}
+
+function rememberPodEpisode(id, episodeId) {
+  if (id === episodeId) return;
+  try { localStorage.setItem(`pod_ep_${id}`, episodeId); } catch (e) {}
+}
+function podEpisodeOf(id) {
+  try { return localStorage.getItem(`pod_ep_${id}`); } catch (e) { return null; }
 }
 
 async function prebuiltInfo(topicId) {
@@ -4437,7 +4465,8 @@ async function downloadPrebuilt(topicId, pre) {
   if (!blob.size) throw new Error('empty audio');
   const episode = {
     topic_id: topicId, title: pre.title, segment_count: pre.segment_count,
-    duration_secs: pre.duration_secs, boundaries: pre.boundaries || [], audio: blob, src: pre.file,
+    duration_secs: pre.duration_secs, boundaries: pre.boundaries || [], chapters: pre.chapters || [],
+    audio: blob, src: pre.file,
   };
   await saveLocalEpisode(episode);
   return episode;

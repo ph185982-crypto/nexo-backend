@@ -59,18 +59,37 @@ _MANIFEST_PATH = Path(__file__).with_name("audio_manifest.json")
 
 
 @lru_cache(maxsize=1)
-def _audio_manifest() -> dict:
+def _audio_manifest() -> tuple[dict, dict]:
+    """(episódios por id, tópico → {episode, start}). Episódios de trajeto
+    têm ~40 min e juntam vários tópicos da mesma matéria, ver
+    scripts/gerar_audios.py."""
     try:
-        return json.loads(_MANIFEST_PATH.read_text(encoding="utf-8")).get("episodes") or {}
+        data = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return {}
+        return {}, {}
+    if data.get("version") != 2:
+        return {}, {}
+    episodes = {e["id"]: e for e in data.get("episodes") or []}
+    return episodes, data.get("topics") or {}
 
 
-def prebuilt_episode(topic_id: str) -> Optional[dict]:
-    episode = _audio_manifest().get(str(topic_id))
-    if not episode:
+def prebuilt_episodes() -> list[dict]:
+    return [dict(e, url=AUDIO_BASE_URL + e["file"]) for e in _audio_manifest()[0].values()]
+
+
+def prebuilt_episode(key: str) -> Optional[dict]:
+    """Aceita o id do episódio ou o de um tópico. Pelo tópico (bloco de áudio
+    da missão), devolve o episódio que o contém e o segundo em que ele começa,
+    para o player abrir direto na matéria do dia."""
+    episodes, topics = _audio_manifest()
+    key = str(key)
+    if key in episodes:
+        episode, start, topic_id = episodes[key], 0.0, None
+    elif key in topics and topics[key]["episode"] in episodes:
+        episode, start, topic_id = episodes[topics[key]["episode"]], topics[key]["start"], key
+    else:
         return None
-    return dict(episode, url=AUDIO_BASE_URL + episode["file"])
+    return dict(episode, url=AUDIO_BASE_URL + episode["file"], start=start, topic_id=topic_id)
 
 
 def _load_topic(topic_id: str):

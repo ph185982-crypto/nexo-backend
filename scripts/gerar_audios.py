@@ -1,31 +1,40 @@
 #!/usr/bin/env python3
 """
-Gera o áudio pronto de todas as aulas e o manifesto que o app usa para tocar
-sem gerar nada no celular.
+Gera os episódios de trajeto (~40 min) de todas as matérias da PMGO e o
+manifesto que o app usa para tocar sem gerar nada no celular.
 
-Gerar no aparelho eram 7 a 12 chamadas em sequência por aula; no iPhone,
-bloquear a tela no meio derrubava a geração e o player ficava em "Episódio
-indisponível". Aqui o áudio sai uma vez, fica na branch `audios` do
-repositório, e o app só baixa o arquivo pronto.
+Cada matéria vira uma sequência de episódios de ~40 min — um para a ida, um
+para a volta. Os tópicos entram inteiros (toda a lei do tópico e todas as
+questões comentadas, ver prf/local/trajeto.py) e o corte entre episódios é
+decidido pela duração real do áudio, nunca no meio de um artigo ou de uma
+questão.
 
 Uso:
     python scripts/gerar_audios.py <pasta_saida>
 
-Retoma de onde parou: aula já gerada (mesmo roteiro, mesmas vozes) é pulada.
-O nome do arquivo leva o hash do roteiro, então conteúdo alterado gera
-arquivo novo e o cache do celular não serve áudio velho.
+Retoma de onde parou: cada trecho sintetizado fica em <pasta>/.unidades com
+o hash do texto e da voz, e não é sintetizado de novo. O nome de cada
+episódio leva o hash do conteúdo, então mudança de conteúdo gera arquivo novo
+e o celular não toca áudio velho do cache.
+
+Dependências só da geração: edge-tts (vozes), lameenc (silêncio das pausas),
+miniaudio (conferência: cada episódio é decodificado inteiro antes de entrar
+no manifesto).
 
 EDGE_TTS_CA_BUNDLE: CA extra para ambientes com proxy TLS (o edge-tts fixa o
 bundle do certifi ao ser importado).
 """
 from __future__ import annotations
 
+import array
 import asyncio
 import hashlib
 import json
+import math
 import os
 import sys
 import time
+from functools import lru_cache
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -37,12 +46,34 @@ if os.getenv("EDGE_TTS_CA_BUNDLE"):
     certifi.where = lambda: _bundle
 
 from prf.local.content import get_store  # noqa: E402
-from prf.local.podcast_local import PodcastLocalError, build_offline_script  # noqa: E402
+from prf.local.podcast_local import _for_podcast  # noqa: E402
+from prf.local.trajeto import (  # noqa: E402
+    Unit,
+    continuation_intro,
+    episode_intro,
+    episode_outro,
+    topic_units,
+)
+from prf.services import podcast_service  # noqa: E402
 from prf.services.podcast_service import HOST_A, HOST_B  # noqa: E402
 
-VOICES = {HOST_A: "pt-BR-AntonioNeural", HOST_B: "pt-BR-FranciscaNeural"}
-CONCURRENCY = int(os.getenv("TTS_CONCURRENCY", "6"))
-ATTEMPTS = 5
+# Thalita é a voz pt-BR mais nova e natural do serviço; conduz a aula. O
+# Antônio é a única voz masculina pt-BR e fica com as deixas e as questões.
+VOICES = {HOST_B: "pt-BR-ThalitaMultilingualNeural", HOST_A: "pt-BR-AntonioNeural"}
+# Lei se lê mais devagar que conversa: é leitura literal, palavra por palavra.
+RATES = {
+    (HOST_B, "lei"): "-10%",
+    (HOST_B, "fala"): "-4%",
+    (HOST_A, "lei"): "-6%",
+    (HOST_A, "fala"): "-2%",
+}
+TARGET_SECS = 40 * 60
+MAX_TOPIC_SECS = 46 * 60
+CONCURRENCY = int(os.getenv("TTS_CONCURRENCY", "8"))
+# Para testar com uma matéria só: MATERIAS=direito-penal,lingua-portuguesa
+ONLY = {s for s in os.getenv("MATERIAS", "").split(",") if s}
+ATTEMPTS = 6
+SAMPLE_RATE = 24000  # o edge-tts entrega MP3 24 kHz, 48 kbps, mono
 
 _MP3_BITRATES_V1 = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
 _MP3_BITRATES_V2 = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160]
@@ -73,7 +104,25 @@ def mp3_duration(data: bytes) -> float:
     return secs
 
 
-async def synth(text: str, voice: str, sem: asyncio.Semaphore) -> bytes:
+@lru_cache(maxsize=None)
+def silence(secs: float) -> bytes:
+    """Silêncio real no mesmo formato do edge-tts. O serviço gratuito não
+    aceita <break> no SSML, e sem pausa o gabarito vinha colado na pergunta —
+    o ouvinte não tinha tempo de decidir."""
+    import lameenc
+
+    if secs <= 0:
+        return b""
+    enc = lameenc.Encoder()
+    enc.set_bit_rate(48)
+    enc.set_in_sample_rate(SAMPLE_RATE)
+    enc.set_channels(1)
+    enc.set_quality(2)
+    pcm = array.array("h", [0] * int(SAMPLE_RATE * secs)).tobytes()
+    return enc.encode(pcm) + enc.flush()
+
+
+async def synth(text: str, voice: str, rate: str, sem: asyncio.Semaphore) -> bytes:
     import edge_tts
 
     error: object = None
@@ -81,7 +130,7 @@ async def synth(text: str, voice: str, sem: asyncio.Semaphore) -> bytes:
         async with sem:
             try:
                 buf = bytearray()
-                async for msg in edge_tts.Communicate(text, voice).stream():
+                async for msg in edge_tts.Communicate(text, voice, rate=rate).stream():
                     if msg["type"] == "audio":
                         buf += msg["data"]
                 if buf:
@@ -89,103 +138,198 @@ async def synth(text: str, voice: str, sem: asyncio.Semaphore) -> bytes:
                 error = "áudio vazio"
             except Exception as e:  # rede, throttling do serviço
                 error = e
-        await asyncio.sleep(2 ** attempt)
+        await asyncio.sleep(min(30, 2 ** attempt))
     raise RuntimeError(f"TTS falhou após {ATTEMPTS} tentativas: {error}")
 
 
-async def render(script: dict, sem: asyncio.Semaphore) -> tuple[bytes, list[float]]:
-    parts: list[bytes] = []
-    boundaries: list[float] = []
-    elapsed = 0.0
-    for block in sorted({t["block"] for t in script["turns"]}):
-        turns = [t for t in script["turns"] if t["block"] == block]
-        audios = await asyncio.gather(*[
-            synth(t["text"], VOICES.get(t["speaker"], VOICES[HOST_A]), sem) for t in turns
-        ])
-        audio = b"".join(audios)
-        parts.append(audio)
-        elapsed += mp3_duration(audio)
-        boundaries.append(round(elapsed, 2))
-    return b"".join(parts), boundaries
+def unit_key(unit: Unit) -> str:
+    payload = json.dumps({"turns": unit.turns, "voices": VOICES, "rates": sorted(RATES.items())},
+                         ensure_ascii=False, sort_keys=True)
+    return hashlib.sha1(payload.encode()).hexdigest()[:16]
 
 
-def script_hash(script: dict) -> str:
-    payload = json.dumps({"turns": script["turns"], "voices": VOICES}, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha1(payload.encode()).hexdigest()[:10]
+async def render_unit(unit: Unit, cache: Path, sem: asyncio.Semaphore) -> bytes:
+    path = cache / f"{unit_key(unit)}.mp3"
+    if path.exists():
+        return path.read_bytes()
+    audios = await asyncio.gather(*[
+        synth(text, VOICES[speaker], RATES[(speaker, style)], sem)
+        for speaker, text, style, _pause in unit.turns
+    ])
+    audio = b"".join(a + silence(turn[3]) for a, turn in zip(audios, unit.turns))
+    tmp = path.with_suffix(".tmp")
+    tmp.write_bytes(audio)
+    tmp.replace(path)
+    return audio
+
+
+def material(store, topic: dict) -> tuple[list[dict], list[dict]]:
+    """Toda a lei do tópico que cabe nas partes do plano (as de maior
+    incidência, até 4 partes de ~7 mil caracteres) e todas as questões."""
+    tid = str(topic["id"])
+    articles = store.get_articles(topic_id_=tid, limit=100000)
+    chosen: set[str] = set()
+    if articles:
+        for part in podcast_service.plan_parts([_for_podcast(a) for a in articles]):
+            chosen.update(a["id"] for a in part)
+    return ([a for a in articles if str(a["id"]) in chosen],
+            store.get_questions(topic_id_=tid, limit=1000))
+
+
+def pack(pieces: list[dict]) -> list[list[dict]]:
+    """Agrupa os trechos da matéria em episódios de ~40 min, em ordem."""
+    total = sum(p["secs"] for p in pieces)
+    # Nenhum episódio passa de ~45 min: 59 min numa matéria só estourava o
+    # trajeto de 40.
+    count = max(1, math.ceil(total / (TARGET_SECS * 1.12)))
+    target = total / count
+    episodes: list[list[dict]] = [[]]
+    for piece in pieces:
+        current = sum(p["secs"] for p in episodes[-1])
+        if episodes[-1] and current + piece["secs"] > target * 1.12:
+            episodes.append([])
+        episodes[-1].append(piece)
+    return episodes
+
+
+def split_topic(topic: dict, units: list[Unit], secs: list[float]) -> list[dict]:
+    """Tópico maior que um episódio vira partes, cortadas entre unidades."""
+    if sum(secs) <= MAX_TOPIC_SECS:
+        return [{"topic": topic, "units": units, "secs": sum(secs), "part": 1}]
+    parts: list[dict] = []
+    current: list[Unit] = []
+    current_secs = 0.0
+    for unit, s in zip(units, secs):
+        if current and current_secs + s > TARGET_SECS:
+            parts.append({"topic": topic, "units": current, "secs": current_secs, "part": len(parts) + 1})
+            current, current_secs = [], 0.0
+        current.append(unit)
+        current_secs += s
+    if current:
+        parts.append({"topic": topic, "units": current, "secs": current_secs, "part": len(parts) + 1})
+    return parts
 
 
 async def main(out_dir: Path) -> int:
+    import miniaudio
+
     out_dir.mkdir(parents=True, exist_ok=True)
-    meta_dir = out_dir / ".meta"
-    meta_dir.mkdir(exist_ok=True)
-
+    cache = out_dir / ".unidades"
+    cache.mkdir(exist_ok=True)
     store = get_store()
-    scripts = []
-    for subject in store.get_subjects():
-        for topic in store.get_topics(subject["slug"]):
-            try:
-                scripts.append(build_offline_script(str(topic["id"])))
-            except PodcastLocalError:
-                continue  # tópico sem lei e sem questão: não há aula a gerar
-
     sem = asyncio.Semaphore(CONCURRENCY)
     started = time.monotonic()
+
+    subjects = []
+    for subject in store.get_subjects():
+        if not subject.get("weight_pm"):
+            continue
+        if ONLY and subject["slug"] not in ONLY:
+            continue
+        topics = []
+        for topic in store.get_topics(subject["slug"]):
+            articles, questions = material(store, topic)
+            units = topic_units(topic, subject["name"], articles, questions)
+            if units:
+                topics.append((topic, units))
+        if topics:
+            subjects.append((subject, topics))
+
+    all_units = [u for _, topics in subjects for _, units in topics for u in units]
+    print(f"{len(subjects)} matérias, {sum(len(t) for _, t in subjects)} tópicos, "
+          f"{len(all_units)} trechos, {sum(len(u.turns) for u in all_units)} falas", flush=True)
+
     done = 0
-    failed: list[str] = []
 
-    async def one(script: dict) -> None:
+    async def timed(unit: Unit) -> float:
         nonlocal done
-        name = f"{script['topic_id']}-{script_hash(script)}.mp3"
-        meta_path = meta_dir / f"{name}.json"
-        if (out_dir / name).exists() and meta_path.exists():
-            done += 1
-            return
-        try:
-            audio, boundaries = await render(script, sem)
-        except RuntimeError as e:
-            failed.append(f"{script['title']}: {e}")
-            return
-        (out_dir / name).write_bytes(audio)
-        meta_path.write_text(json.dumps({
-            "topic_id": script["topic_id"],
-            "file": name,
-            "bytes": len(audio),
-            "duration_secs": round(boundaries[-1]),
-            "boundaries": boundaries,
-            "segment_count": len(boundaries),
-            "title": script["title"],
-            "subject_name": script["subject_name"],
-            "engine": script["engine"],
-        }, ensure_ascii=False))
+        audio = await render_unit(unit, cache, sem)
         done += 1
-        mins = (time.monotonic() - started) / 60
-        print(f"[{done}/{len(scripts)}] {mins:5.1f} min | {script['subject_name']} / {script['title']} "
-              f"| {boundaries[-1] / 60:.1f} min de áudio, {len(audio) / 1e6:.1f} MB", flush=True)
+        if done % 200 == 0:
+            print(f"  {done}/{len(all_units)} trechos | {(time.monotonic() - started) / 60:.1f} min", flush=True)
+        return mp3_duration(audio)
 
-    await asyncio.gather(*[one(s) for s in scripts])
+    durations = await asyncio.gather(*[timed(u) for u in all_units])
+    secs_of = {id(u): d for u, d in zip(all_units, durations)}
 
-    wanted = {f"{s['topic_id']}-{script_hash(s)}.mp3" for s in scripts}
-    episodes = {}
-    for meta_path in sorted(meta_dir.glob("*.json")):
-        meta = json.loads(meta_path.read_text())
-        if meta["file"] in wanted:
-            episodes[meta["topic_id"]] = meta
+    episodes_out = []
+    topic_index: dict[str, dict] = {}
+    for subject, topics in subjects:
+        pieces = []
+        for topic, units in topics:
+            pieces.extend(split_topic(topic, units, [secs_of[id(u)] for u in units]))
+        grouped = pack(pieces)
+        for number, group in enumerate(grouped, start=1):
+            titles = []
+            for piece in group:
+                title = piece["topic"]["name"]
+                if title not in titles:
+                    titles.append(title)
+            following = grouped[number][0]["topic"]["name"] if number < len(grouped) else None
+
+            sequence: list[tuple[str, Unit, dict | None]] = [("intro", episode_intro(subject["name"], number, titles), None)]
+            for piece in group:
+                lead = [continuation_intro(piece["topic"]["name"])] if piece["part"] > 1 else []
+                for i, unit in enumerate(lead + piece["units"]):
+                    sequence.append(("piece", unit, piece if i == 0 else None))
+            sequence.append(("outro", episode_outro(subject["name"], number, following), None))
+
+            chunks: list[bytes] = []
+            chapters: list[dict] = []
+            elapsed = 0.0
+            for kind, unit, starts in sequence:
+                audio = await render_unit(unit, cache, sem)
+                if starts is not None:
+                    title = starts["topic"]["name"] + (f" (parte {starts['part']})" if starts["part"] > 1 else "")
+                    chapters.append({"topic_id": str(starts["topic"]["id"]), "title": title,
+                                     "start": round(elapsed if chapters else 0.0, 2)})
+                chunks.append(audio)
+                elapsed += mp3_duration(audio)
+
+            data = b"".join(chunks)
+            boundaries = [c["start"] for c in chapters[1:]] + [round(elapsed, 2)]
+            digest = hashlib.sha1(json.dumps([unit_key(u) for _, u, _ in sequence]).encode()).hexdigest()[:10]
+            episode_id = f"{subject['slug']}-{number:02d}"
+            name = f"{episode_id}-{digest}.mp3"
+
+            decoded = miniaudio.decode(data, nchannels=1, sample_rate=SAMPLE_RATE,
+                                       output_format=miniaudio.SampleFormat.SIGNED16)
+            decoded_secs = len(decoded.samples) / SAMPLE_RATE
+            if abs(decoded_secs - elapsed) > 3:
+                raise RuntimeError(f"{name}: decodifica {decoded_secs:.0f}s, esperado {elapsed:.0f}s")
+
+            (out_dir / name).write_bytes(data)
+            episodes_out.append({
+                "id": episode_id,
+                "subject_slug": subject["slug"],
+                "subject_name": subject["name"],
+                "number": number,
+                "title": f"{subject['name']} · Episódio {number}",
+                "file": name,
+                "bytes": len(data),
+                "duration_secs": round(elapsed),
+                "chapters": chapters,
+                "boundaries": boundaries,
+                "segment_count": len(chapters),
+            })
+            for chapter in chapters:
+                topic_index.setdefault(chapter["topic_id"], {"episode": episode_id, "start": chapter["start"]})
+            print(f"[{len(episodes_out)}] {episode_id}: {elapsed / 60:.1f} min, {len(chapters)} tópicos, "
+                  f"{len(data) / 1e6:.1f} MB | {', '.join(titles)}", flush=True)
 
     manifest = {
+        "version": 2,
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "voices": VOICES,
-        "episodes": episodes,
+        "episodes": episodes_out,
+        "topics": topic_index,
     }
     (out_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1))
-
-    total_h = sum(e["duration_secs"] for e in episodes.values()) / 3600
-    total_mb = sum(e["bytes"] for e in episodes.values()) / 1e6
-    print(f"\nmanifesto: {len(episodes)} aulas, {total_h:.1f} h, {total_mb:.0f} MB")
-    if failed:
-        print(f"{len(failed)} falharam (rode de novo para retomar):")
-        for line in failed:
-            print("  " + line)
-    return 1 if failed else 0
+    total_h = sum(e["duration_secs"] for e in episodes_out) / 3600
+    total_mb = sum(e["bytes"] for e in episodes_out) / 1e6
+    print(f"\nmanifesto: {len(episodes_out)} episódios, {total_h:.1f} h, {total_mb:.0f} MB, "
+          f"{len(topic_index)} tópicos | {(time.monotonic() - started) / 60:.1f} min")
+    return 0
 
 
 if __name__ == "__main__":

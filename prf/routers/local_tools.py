@@ -46,23 +46,21 @@ async def catalog():
 
 @router.get('/podcasts')
 async def podcasts():
-    from prf.local.podcast_local import prebuilt_episode
+    """Episódios de trajeto (~40 min cada), na ordem do edital de cada
+    matéria. O subtítulo lista os tópicos que o episódio cobre."""
+    from prf.local.podcast_local import prebuilt_episodes
 
-    store = get_store()
     episodes = []
-    for topic in store.topics:
-        subject = store.get_subject(str(topic['subject_id']))
-        if not subject or not subject.get('weight_pm'):
-            continue
-        ready = prebuilt_episode(str(topic['id']))
-        if ready:
-            episodes.append({'id': str(topic['id']), 'title': topic['name'],
-                             'subject_name': subject['name'], 'on_demand': False,
-                             'duration_secs': ready['duration_secs'],
-                             'segment_count': ready['segment_count']})
-        elif store.get_articles(topic_id_=str(topic['id']), limit=1):
-            episodes.append({'id': str(topic['id']), 'title': topic['name'],
-                             'subject_name': subject['name'], 'on_demand': True})
+    for ep in prebuilt_episodes():
+        titles = []
+        for chapter in ep['chapters']:
+            base = chapter['title'].split(' (parte ')[0]
+            if base not in titles:
+                titles.append(base)
+        episodes.append({'id': ep['id'], 'title': f"Episódio {ep['number']}",
+                         'subtitle': ', '.join(titles), 'subject_name': ep['subject_name'],
+                         'on_demand': False, 'duration_secs': ep['duration_secs'],
+                         'segment_count': ep['segment_count']})
     return {'episodes': episodes}
 
 
