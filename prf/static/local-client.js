@@ -117,7 +117,7 @@ async function inspectProgressFile(input){
   const file=input.files?.[0];if(!file)return;
   try{
     if(file.size>20000000)throw Error('O arquivo deve ter até 20 MB');
-    const state=StudyState.parseBackup(await file.text());S.pendingImport=state;render();
+    const state=StudyState.parseBackup(await file.text());S.pendingImport=state;S.pendingImportMeta=null;render();
   }catch(e){S.pendingImport=null;toast('Backup recusado: '+e.message,'error');}
 }
 function restoreProgress(){
@@ -125,7 +125,7 @@ function restoreProgress(){
   try{
     // A single setItem is atomic; retain the previous state for undo.
     localStorage.setItem('prf_backup_before_restore',JSON.stringify(localState()));
-    saveLocalState(S.pendingImport);S.pendingImport=null;
+    saveLocalState(S.pendingImport);if(S.pendingImportMeta&&S.pendingImportMeta.state===S.pendingImport&&!S.pendingImportMeta.previous){try{localStorage.setItem(CLOUD_CODE_KEY,S.pendingImportMeta.code);if(S.pendingImportMeta.updated_at)localStorage.setItem(CLOUD_LAST_KEY,S.pendingImportMeta.updated_at);}catch(e){}if(S.cloud){S.cloud.last=S.pendingImportMeta.updated_at||S.cloud.last;S.cloud.dirty=false;}}S.pendingImport=null;S.pendingImportMeta=null;
     const active=localState().active_exam;
     if(active&&!active.is_completed)localStorage.setItem(SIM_ID_KEY,active.id);else localStorage.removeItem(SIM_ID_KEY);
     S.mission=null;S.dashboard=localDashboard();S.trilha=null;S.plano=null;S.history=null;S.reviewSummary=null;S.studyProfile=null;S.taf=null;S.checklist=null;S.essayHistory=null;S.sim=null;S.simResult=null;S.simAnswers={};S.pendingSimBlockId=null;S.simQuestions={};clearInterval(timerInterval);
@@ -136,20 +136,136 @@ function undoRestore(){
   try{const previous=localStorage.getItem('prf_backup_before_restore');if(!previous)return;S.pendingImport=StudyState.normalize(JSON.parse(previous));restoreProgress();}
   catch(e){toast('Não foi possível recuperar o backup anterior','error');}
 }
-function openBackup(){S.tab='more';S.subView='backup';S.pendingImport=null;render();scrollTop();}
+function openBackup(){S.tab='more';S.subView='backup';S.pendingImport=null;S.pendingImportMeta=null;render();scrollTop();if(cloud().available===null)cloudStatus();}
 function viewBackup(){
   const state=localState(),incoming=S.pendingImport;
   return `<div class="topbar-sub"><button class="back-btn" aria-label="Voltar" onclick="goBack()">${I.back}</button><span class="title-sub">Seu progresso, protegido</span></div>
   <div class="settings-section backup-panel"><div class="section-eyebrow">Backup e troca de aparelho</div><h1 class="section-title">Leve seu estudo com você.</h1>
-  <p>Respostas, redações, rotina, TAF e simulado ficam neste navegador. Exporte um arquivo para guardar uma cópia ou transferir para outro aparelho. Não há sincronização automática.</p>
+  <p>Respostas, redações, rotina, TAF e simulado ficam neste navegador. O backup automático envia uma cópia ao servidor; o arquivo abaixo é a segunda cópia, que fica com você.</p>
+  ${cloudPanel()}
   <div class="backup-stats"><strong>${state.history.length}</strong> respostas <strong>${state.essays?.length||0}</strong> redações</div>
   <button class="btn btn-primary btn-full" onclick="exportProgress()">Exportar meu progresso</button>
   <p class="muted">${state.backup_at?'Última exportação: '+esc(new Date(state.backup_at).toLocaleString('pt-BR')):'Você ainda não exportou um backup.'} O áudio baixado não entra no arquivo e pode ser gerado novamente.</p>
   <label class="backup-import">Restaurar um backup<input type="file" accept="application/json,.json" onchange="inspectProgressFile(this)"></label>
-  ${incoming?`<div class="import-preview"><h2>Conferir antes de restaurar</h2><p>${incoming.history.length} respostas · ${incoming.essays?.length||0} redações · ${incoming.xp} XP.</p><p>O arquivo substituirá o progresso atual. Uma cópia anterior ficará disponível para desfazer.</p><button class="btn btn-primary" onclick="restoreProgress()">Restaurar este backup</button><button class="btn btn-ghost" onclick="S.pendingImport=null;render()">Cancelar</button></div>`:''}
+  ${incoming?`<div class="import-preview"><h2>Conferir antes de restaurar</h2><p>${incoming.history.length} respostas · ${incoming.essays?.length||0} redações · ${incoming.xp} XP.${S.pendingImportMeta?.updated_at?' Salvo em '+esc(new Date(S.pendingImportMeta.updated_at).toLocaleString('pt-BR'))+'.':''}</p><p>Isto substituirá o progresso atual. Uma cópia anterior ficará disponível para desfazer.</p><button class="btn btn-primary" onclick="restoreProgress()">Restaurar este backup</button><button class="btn btn-ghost" onclick="S.pendingImport=null;S.pendingImportMeta=null;render()">Cancelar</button></div>`:''}
   ${localStorage.getItem('prf_backup_before_restore')?'<button class="btn btn-ghost btn-full" onclick="undoRestore()">Recuperar estado anterior à restauração</button>':''}
   </div>`;
 }
+/* ===== Backup automático (servidor) =====
+   O progresso mora neste navegador; limpar os dados do site ou trocar de
+   aparelho o apagava. Aqui uma cópia vai sozinha ao servidor, e um código de
+   recuperação, que só a pessoa conhece, traz tudo de volta em qualquer
+   aparelho. Sem armazenamento no servidor, tudo isto fica quieto e o app segue
+   só com o navegador. */
+const CLOUD_CODE_KEY='prf_cloud_code', CLOUD_LAST_KEY='prf_cloud_last', CLOUD_ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function cloud(){
+  if(!S.cloud){let last=null;try{last=localStorage.getItem(CLOUD_LAST_KEY);}catch(e){}S.cloud={available:null,busy:false,error:null,last,retryAt:0,dirty:false};}
+  return S.cloud;
+}
+function cloudCode(create){
+  try{
+    let c=localStorage.getItem(CLOUD_CODE_KEY);
+    if(!c&&create){c=[...crypto.getRandomValues(new Uint8Array(12))].map(x=>CLOUD_ALPHABET[x%32]).join('');localStorage.setItem(CLOUD_CODE_KEY,c);}
+    return c||null;
+  }catch(e){return null;}
+}
+function formatCloudCode(c){return c?c.replace(/(.{4})(?=.)/g,'$1-'):'';}
+function cloudHasProgress(){const s=localState();return (s.history?.length||0)>0||s.xp>0;}
+function cloudMessage(e){
+  const raw=String(e&&e.message||e||'');
+  try{const d=JSON.parse(raw).detail;if(typeof d==='string')return d;}catch(_){}
+  return raw;
+}
+function cloudAgo(iso){
+  const t=Date.parse(iso);if(!Number.isFinite(t))return '';
+  const m=Math.max(0,Math.round((Date.now()-t)/60000));
+  if(m<2)return 'agora há pouco';if(m<60)return 'há '+m+' min';
+  const h=Math.round(m/60);if(h<24)return 'há '+h+' h';
+  const d=Math.round(h/24);return 'há '+d+(d===1?' dia':' dias');
+}
+function cloudNoteText(){
+  try{const last=localStorage.getItem(CLOUD_LAST_KEY);if(last)return '● Backup automático · '+cloudAgo(last);}catch(e){}
+  return '● Progresso salvo neste navegador';
+}
+function cloudRefresh(){if(S.subView==='backup')render();}
+let _cloudTimer;
+function scheduleCloudBackup(){
+  cloud().dirty=true;
+  clearTimeout(_cloudTimer);
+  _cloudTimer=setTimeout(()=>cloudBackupNow({silent:true}),20000);
+}
+async function cloudStatus(){
+  const c=cloud();
+  try{c.available=!!(await api('/api/prf/local/backup/status')).available;}catch(e){c.available=false;}
+  cloudRefresh();
+}
+async function cloudBackupNow(opts={}){
+  const c=cloud();
+  if(c.busy)return;
+  if(opts.silent&&(!navigator.onLine||Date.now()<c.retryAt))return;
+  if(!cloudHasProgress()){if(!opts.silent)toast('Responda algumas questões antes: ainda não há progresso para guardar.','info');return;}
+  c.busy=true;cloudRefresh();
+  try{
+    const code=cloudCode(true);
+    await ensureAuth();
+    const r=await api('/api/prf/local/backup',{method:'PUT',json:{code,backup:StudyState.exportBackup(localState())}});
+    c.available=true;c.error=null;c.dirty=false;c.last=r.updated_at;c.retryAt=0;
+    try{localStorage.setItem(CLOUD_LAST_KEY,r.updated_at);}catch(e){}
+    if(!opts.silent)toast('Backup enviado.','success');
+  }catch(e){
+    const msg=cloudMessage(e);
+    const unavailable=/indispon/i.test(msg);
+    if(unavailable)c.available=false;
+    c.error=msg;c.retryAt=Date.now()+(unavailable?30*60000:2*60000);
+    if(!opts.silent)toast(unavailable?'Backup automático indisponível: o servidor ainda não tem armazenamento ligado.':'Não foi possível enviar agora: '+msg,'error');
+  }finally{c.busy=false;cloudRefresh();}
+}
+async function cloudCopyCode(){
+  const code=formatCloudCode(cloudCode(false));if(!code)return;
+  try{await navigator.clipboard.writeText(code);toast('Código copiado. Guarde em um lugar seguro.','success');}
+  catch(e){toast('Selecione o código e copie manualmente.','info');}
+}
+async function cloudFetch(previous){
+  const input=document.getElementById('cloud-code-input');
+  const raw=(input?input.value:'')||'';
+  if(raw.replace(/[^A-Za-z0-9]/g,'').length!==12){toast('O código tem 12 letras e números.','error');return;}
+  const c=cloud();c.busy=true;cloudRefresh();
+  try{
+    await ensureAuth();
+    const r=await api('/api/prf/local/backup/restore',{method:'POST',json:{code:raw,previous:!!previous}});
+    const state=StudyState.parseBackup(JSON.stringify(r.backup));
+    S.pendingImport=state;
+    S.pendingImportMeta={code:raw.replace(/[^A-Za-z0-9]/g,'').toUpperCase(),state,updated_at:r.updated_at,previous:!!previous};
+    toast(previous?'Versão anterior encontrada. Confira antes de restaurar.':'Backup encontrado. Confira antes de restaurar.','success');
+  }catch(e){
+    S.pendingImport=null;S.pendingImportMeta=null;
+    const msg=cloudMessage(e);
+    toast(/404|Nenhum backup/.test(String(e&&e.message)+msg)?'Nenhum backup com este código.':'Não foi possível buscar: '+msg,'error');
+  }finally{c.busy=false;cloudRefresh();}
+}
+function cloudPanel(){
+  const c=cloud(),code=cloudCode(false);
+  const input=`<label class="backup-import">Restaurar com o código<input id="cloud-code-input" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="20" placeholder="XXXX-XXXX-XXXX" class="cloud-input"></label>
+    <div class="cloud-actions"><button class="btn btn-primary" ${c.busy?'disabled':''} onclick="cloudFetch(false)">Buscar meu backup</button><button class="btn btn-ghost" ${c.busy?'disabled':''} onclick="cloudFetch(true)">Buscar a versão anterior</button></div>`;
+  if(c.available===false)return `<div class="cloud-box"><div class="section-eyebrow">Backup automático</div><h2>Ainda não está ligado</h2>
+    <p class="muted">O servidor ainda não tem armazenamento, então seu progresso fica só neste navegador. Enquanto isso, exporte o arquivo abaixo para ter uma cópia. Quando o armazenamento for ligado, o envio passa a ser automático e o código aparece aqui.</p>
+    <button class="btn btn-ghost" onclick="cloud().available=null;cloudStatus()">Verificar de novo</button></div>`;
+  if(c.available===null&&!code)return `<div class="cloud-box"><div class="section-eyebrow">Backup automático</div><p class="muted">Verificando…</p></div>`;
+  const last=c.last||(()=>{try{return localStorage.getItem(CLOUD_LAST_KEY);}catch(e){return null;}})();
+  // Aparelho novo, sem progresso e sem código: quem chega aqui quer restaurar,
+  // não gerar um código novo. O formulário de restauração vem primeiro.
+  const freshDevice=!code&&!cloudHasProgress();
+  return `<div class="cloud-box"><div class="section-eyebrow">Backup automático</div>
+    ${freshDevice?`<h2>Trocou de aparelho?</h2><p class="muted">Digite o código de recuperação do seu aparelho anterior para trazer seu progresso de volta.</p>${input}<p class="muted">Primeira vez aqui? Responda algumas questões e volte: o código é gerado quando há progresso para guardar.</p></div>`:`
+    <h2>${last?'Ativo':'Pronto para ativar'}</h2>
+    <p class="muted">${last?'Último envio '+esc(cloudAgo(last))+'.':'O primeiro envio acontece depois da sua primeira resposta.'} Uma cópia vai sozinha ao servidor a cada alteração. <strong>Anote o código abaixo:</strong> é a única forma de recuperar tudo em outro aparelho, ou se você limpar os dados do navegador.</p>
+    ${code?`<div class="cloud-code" aria-label="Código de recuperação">${esc(formatCloudCode(code))}</div><div class="cloud-actions"><button class="btn btn-ghost" onclick="cloudCopyCode()">Copiar código</button><button class="btn btn-ghost" ${c.busy?'disabled':''} onclick="cloudBackupNow()">${c.busy?'Enviando…':'Enviar agora'}</button></div>`
+      :`<div class="cloud-actions"><button class="btn btn-primary" ${c.busy?'disabled':''} onclick="cloudBackupNow()">${c.busy?'Enviando…':'Ativar e gerar meu código'}</button></div>`}
+    ${c.error?`<p class="muted cloud-error">Último erro: ${esc(c.error)}</p>`:''}
+    ${input}</div>`}`;
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&S.cloud?.dirty)cloudBackupNow({silent:true});});
+setTimeout(()=>{try{if(cloudHasProgress()&&!(S.cloud&&S.cloud.dirty===false&&S.cloud.last))cloudBackupNow({silent:true});}catch(e){}},8000);
 function downloadStudyReminder(){
   const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
   const start=localToday().replaceAll('-','')+'T190000';

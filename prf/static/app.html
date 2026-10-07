@@ -1426,6 +1426,7 @@ function _localDefault() {
 function saveLocalState(s) {
   try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); }
   catch (e) { toast('Não foi possível salvar. Exporte um backup antes de continuar.', 'error'); throw e; }
+  try { scheduleCloudBackup(); } catch (e) {}
   return s;
 }
 function localToday() { return new Intl.DateTimeFormat('en-CA', {timeZone:'America/Sao_Paulo', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date()); }
@@ -1961,7 +1962,7 @@ function viewDashboard() {
         <span class="level-chip">${S.targetExam || 'PMGO'}</span>
       </div>
     </div>
-    <div class="storage-note"><span>● Progresso salvo neste navegador</span><button onclick="openBackup()">Fazer backup ${I.chevRight||'→'}</button></div>
+    <div class="storage-note"><span>${cloudNoteText()}</span><button onclick="openBackup()">${localStorage.getItem('prf_cloud_last')?'Ver código':'Fazer backup'} ${I.chevRight||'→'}</button></div>
     <div class="stat-row">
       <div class="stat-cell"><div class="stat-eyebrow">Questões</div><div class="stat-num">${d.questions_today || 0}</div></div>
       <div class="stat-cell"><div class="stat-eyebrow">Acerto</div><div class="stat-num">${Math.round(d.accuracy_today||0)}<span class="stat-num-sm">%</span></div></div>

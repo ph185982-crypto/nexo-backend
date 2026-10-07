@@ -21,6 +21,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, model_validator
+from prf.routers.deps import get_current_user_id
 from prf.routers.usage_guard import guard_ai
 from fastapi.responses import StreamingResponse
 
@@ -243,3 +244,65 @@ async def local_podcast_audio(body: AudioInput):
             "Cache-Control": "no-store",
         },
     )
+
+
+# ── Backup automático do progresso ──────────────────────────────────────────
+# Dormente sem armazenamento: responde 503 "indisponível" em milissegundos e o
+# app segue só com o navegador. Ver prf/local/backup.py.
+
+class BackupInput(BaseModel):
+    code: str = Field(min_length=12, max_length=20)
+    backup: dict
+
+
+class RestoreInput(BaseModel):
+    code: str = Field(min_length=12, max_length=20)
+    previous: bool = False
+
+
+def _backup_errors():
+    from prf.local import backup as store
+
+    return store.BackupUnavailable, store.BackupRejected
+
+
+@router.get("/backup/status")
+async def backup_status():
+    from prf.local import backup as store
+
+    return {"available": await store.available()}
+
+
+@router.put("/backup")
+async def backup_save(body: BackupInput, user_id=Depends(get_current_user_id)):
+    from prf.local import backup as store
+
+    Unavailable, Rejected = _backup_errors()
+    try:
+        return {"ok": True, "updated_at": await store.save(str(user_id), body.code, body.backup)}
+    except Unavailable:
+        raise HTTPException(503, "Backup automático indisponível no momento.")
+    except Rejected as e:
+        raise HTTPException(422, str(e))
+    except Exception as e:
+        logger.error("[BACKUP] save: %s", type(e).__name__)
+        raise HTTPException(503, "Não foi possível salvar o backup agora.")
+
+
+@router.post("/backup/restore")
+async def backup_restore(body: RestoreInput, user_id=Depends(get_current_user_id)):
+    from prf.local import backup as store
+
+    Unavailable, Rejected = _backup_errors()
+    try:
+        found = await store.restore(str(user_id), body.code, previous=body.previous)
+    except Unavailable:
+        raise HTTPException(503, "Backup automático indisponível no momento.")
+    except Rejected as e:
+        raise HTTPException(422, str(e))
+    except Exception as e:
+        logger.error("[BACKUP] restore: %s", type(e).__name__)
+        raise HTTPException(503, "Não foi possível buscar o backup agora.")
+    if not found:
+        raise HTTPException(404, "Nenhum backup com este código.")
+    return found
