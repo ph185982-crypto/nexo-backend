@@ -2468,7 +2468,7 @@ function viewAudio() {
       <div class="pod-group">
         <div class="pod-group-head">
           <span class="pod-group-name">${esc(subj)}</span>
-          <span class="pod-group-count">${items.length} aula${items.length===1?'':'s'}</span>
+          <span class="pod-group-count">${items.length} ${items[0].subtitle ? 'episódio' : 'aula'}${items.length===1?'':'s'}</span>
         </div>
         <div class="pod-list">${items.map(p => {
           const active = S.podId === p.id;
@@ -2479,7 +2479,7 @@ function viewAudio() {
               <div class="pod-title">${esc(p.title)}</div>
               ${p.subtitle ? `<div class="pod-topics">${esc(p.subtitle)}</div>` : ''}
               <div class="pod-meta">
-                ${p.on_demand ? '<span>Gerar aula em áudio</span>' : `<span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span><span>·</span><span>${p.segment_count||0} ${p.subtitle ? 'tópicos' : 'partes'}</span>`}
+                ${p.on_demand ? '<span>Gerar aula em áudio</span>' : `<span class="pod-dur">${Math.round((p.duration_secs||0)/60)} min</span><span>·</span><span>${p.segment_count||0} ${p.subtitle ? (p.segment_count===1 ? 'tópico' : 'tópicos') : 'partes'}</span>`}
               </div>
               ${active && S.pod ? `<div class="pod-progress">Parte ${S.podSeq+1} de ${S.pod.segment_count}</div>`
                 : (loadPodProgress(p.id) > 0 ? `<div class="pod-progress">Retomar na parte ${loadPodProgress(p.id)+1}</div>` : '')}
