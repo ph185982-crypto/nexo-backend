@@ -68,7 +68,10 @@ RATES = {
     (HOST_A, "fala"): "-2%",
 }
 TARGET_SECS = 40 * 60
-MAX_TOPIC_SECS = 46 * 60
+# Um corte até 4 min mais longe do ponto ideal vale a pena se cair na troca
+# de tópico: o episódio começa e termina em assunto inteiro.
+TOPIC_CUT_BONUS_SECS = 4 * 60
+CUT_WINDOW_SECS = 8 * 60
 CONCURRENCY = int(os.getenv("TTS_CONCURRENCY", "8"))
 # Para testar com uma matéria só: MATERIAS=direito-penal,lingua-portuguesa
 ONLY = {s for s in os.getenv("MATERIAS", "").split(",") if s}
@@ -176,38 +179,39 @@ def material(store, topic: dict) -> tuple[list[dict], list[dict]]:
             store.get_questions(topic_id_=tid, limit=1000))
 
 
-def pack(pieces: list[dict]) -> list[list[dict]]:
-    """Agrupa os trechos da matéria em episódios de ~40 min, em ordem."""
-    total = sum(p["secs"] for p in pieces)
-    # Nenhum episódio passa de ~45 min: 59 min numa matéria só estourava o
-    # trajeto de 40.
+def partition(items: list[dict]) -> list[list[dict]]:
+    """Divide a matéria em episódios de duração parecida, em ordem.
+
+    Cortar tópico grande primeiro e agrupar depois deixava sobras de 5 a 13
+    min virando episódio sozinho, e juntava partes até passar de 49 min.
+    Aqui o número de episódios sai da duração total (nenhum acima de ~45
+    min) e cada corte cai perto do ponto ideal, de preferência na troca de
+    tópico — nunca no meio de um artigo ou de uma questão.
+    """
+    total = sum(i["secs"] for i in items)
     count = max(1, math.ceil(total / (TARGET_SECS * 1.12)))
-    target = total / count
-    episodes: list[list[dict]] = [[]]
-    for piece in pieces:
-        current = sum(p["secs"] for p in episodes[-1])
-        if episodes[-1] and current + piece["secs"] > target * 1.12:
-            episodes.append([])
-        episodes[-1].append(piece)
-    return episodes
+    if count == 1:
+        return [items]
+    elapsed_before = [0.0]
+    for item in items:
+        elapsed_before.append(elapsed_before[-1] + item["secs"])
 
-
-def split_topic(topic: dict, units: list[Unit], secs: list[float]) -> list[dict]:
-    """Tópico maior que um episódio vira partes, cortadas entre unidades."""
-    if sum(secs) <= MAX_TOPIC_SECS:
-        return [{"topic": topic, "units": units, "secs": sum(secs), "part": 1}]
-    parts: list[dict] = []
-    current: list[Unit] = []
-    current_secs = 0.0
-    for unit, s in zip(units, secs):
-        if current and current_secs + s > TARGET_SECS:
-            parts.append({"topic": topic, "units": current, "secs": current_secs, "part": len(parts) + 1})
-            current, current_secs = [], 0.0
-        current.append(unit)
-        current_secs += s
-    if current:
-        parts.append({"topic": topic, "units": current, "secs": current_secs, "part": len(parts) + 1})
-    return parts
+    cuts: list[int] = []
+    last = 0
+    for k in range(1, count):
+        ideal = total * k / count
+        best = None
+        for i in range(last + 1, len(items) - (count - k) + 1):
+            distance = abs(elapsed_before[i] - ideal)
+            if distance > CUT_WINDOW_SECS and best is not None:
+                continue
+            score = distance - (TOPIC_CUT_BONUS_SECS if items[i]["starts_topic"] else 0)
+            if best is None or score < best[0]:
+                best = (score, i)
+        cuts.append(best[1])
+        last = best[1]
+    bounds = [0, *cuts, len(items)]
+    return [items[a:b] for a, b in zip(bounds, bounds[1:])]
 
 
 async def main(out_dir: Path) -> int:
@@ -255,23 +259,29 @@ async def main(out_dir: Path) -> int:
     episodes_out = []
     topic_index: dict[str, dict] = {}
     for subject, topics in subjects:
-        pieces = []
-        for topic, units in topics:
-            pieces.extend(split_topic(topic, units, [secs_of[id(u)] for u in units]))
-        grouped = pack(pieces)
+        items = [
+            {"topic": topic, "unit": unit, "secs": secs_of[id(unit)], "starts_topic": i == 0}
+            for topic, units in topics
+            for i, unit in enumerate(units)
+        ]
+        grouped = partition(items)
         for number, group in enumerate(grouped, start=1):
             titles = []
-            for piece in group:
-                title = piece["topic"]["name"]
-                if title not in titles:
-                    titles.append(title)
-            following = grouped[number][0]["topic"]["name"] if number < len(grouped) else None
+            for item in group:
+                if item["topic"]["name"] not in titles:
+                    titles.append(item["topic"]["name"])
+            following = None
+            if number < len(grouped):
+                nxt = grouped[number][0]
+                following = nxt["topic"]["name"] + ("" if nxt["starts_topic"] else ", continuação")
 
             sequence: list[tuple[str, Unit, dict | None]] = [("intro", episode_intro(subject["name"], number, titles), None)]
-            for piece in group:
-                lead = [continuation_intro(piece["topic"]["name"])] if piece["part"] > 1 else []
-                for i, unit in enumerate(lead + piece["units"]):
-                    sequence.append(("piece", unit, piece if i == 0 else None))
+            if not group[0]["starts_topic"]:
+                sequence.append(("piece", continuation_intro(group[0]["topic"]["name"]),
+                                 {"topic": group[0]["topic"], "cont": True}))
+            for item in group:
+                chapter = {"topic": item["topic"], "cont": False} if item["starts_topic"] else None
+                sequence.append(("piece", item["unit"], chapter))
             sequence.append(("outro", episode_outro(subject["name"], number, following), None))
 
             chunks: list[bytes] = []
@@ -280,7 +290,7 @@ async def main(out_dir: Path) -> int:
             for kind, unit, starts in sequence:
                 audio = await render_unit(unit, cache, sem)
                 if starts is not None:
-                    title = starts["topic"]["name"] + (f" (parte {starts['part']})" if starts["part"] > 1 else "")
+                    title = starts["topic"]["name"] + (" (continuação)" if starts["cont"] else "")
                     chapters.append({"topic_id": str(starts["topic"]["id"]), "title": title,
                                      "start": round(elapsed if chapters else 0.0, 2)})
                 chunks.append(audio)
