@@ -4,6 +4,7 @@ import { GraphQLScalarType, Kind } from "graphql";
 import bcrypt from "bcryptjs";
 import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { criarEventoReuniao } from "@/lib/integrations/google-calendar";
+import { aoLeadMudarDeColunaAgendado } from "@/lib/meta-capi-hook";
 
 interface ResolverContext {
   userId?: string;
@@ -772,6 +773,9 @@ export const resolvers = {
           ...(input.profileName !== undefined && { profileName: input.profileName as string | null }),
           ...(input.email !== undefined && { email: input.email as string | null }),
           ...(input.leadOrigin !== undefined && { leadOrigin: input.leadOrigin as string }),
+          ...(input.valorContrato !== undefined && {
+            valorContrato: input.valorContrato === null ? null : Math.max(Number(input.valorContrato), 0) || null,
+          }),
           lastActivityAt: new Date(),
         },
         include: { kanbanColumn: true, tags: { include: { tag: true } } },
@@ -784,6 +788,7 @@ export const resolvers = {
       ctx: ResolverContext
     ) => {
       await requireLeadAccess(ctx, leadId);
+      const anterior = await prisma.lead.findUnique({ where: { id: leadId }, select: { kanbanColumnId: true } });
       const result = await prisma.lead.update({
         where: { id: leadId },
         data: { kanbanColumnId: columnId, lastActivityAt: new Date() },
@@ -796,6 +801,10 @@ export const resolvers = {
           create: { leadId },
           update: {},
         }).catch(() => {});
+      }
+      // API de Conversões da Meta (arrastar manual passa por aqui, não pelo moverLeadPorTipo)
+      if (result.kanbanColumn && anterior?.kanbanColumnId !== columnId) {
+        await aoLeadMudarDeColunaAgendado(leadId, { type: result.kanbanColumn.type, name: result.kanbanColumn.name });
       }
       return result;
     },

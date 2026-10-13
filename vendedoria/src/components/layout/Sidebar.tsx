@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
   Settings, X, Zap, Radar, Wallet, ChevronLeft, ChevronRight, Trophy,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -45,6 +46,7 @@ const navItems = [
   { href: "/crm/lead/kanban",   label: "CRM",             icon: Kanban },
   { href: "/crm/delivery",      label: "Funil de Entrega", icon: Trophy },
   { href: "/crm/prospeccao",    label: "Prospecções",     icon: Radar },
+  { href: "/crm/anuncios",      label: "Anúncios",        icon: Megaphone },
   { href: "/crm/calendar",      label: "Calendário",      icon: Calendar },
   { href: "/crm/configure-agent", label: "Agente",        icon: Bot },
   { href: "/crm/financeiro",    label: "Financeiro",      icon: Wallet },

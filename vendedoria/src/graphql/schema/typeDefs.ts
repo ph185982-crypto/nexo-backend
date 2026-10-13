@@ -96,6 +96,11 @@ export const typeDefs = `#graphql
     escalations: [LeadEscalation!]
     createdAt: DateTime!
     lastActivityAt: DateTime
+    adSourceId: String
+    adHeadline: String
+    adSourceUrl: String
+    adReferralAt: DateTime
+    valorContrato: Float
   }
 
   type KanbanColumnInfo {
@@ -373,6 +378,7 @@ export const typeDefs = `#graphql
     profileName: String
     email: String
     leadOrigin: LeadOrigin
+    valorContrato: Float
   }
 
   input CreateCampaignInput {

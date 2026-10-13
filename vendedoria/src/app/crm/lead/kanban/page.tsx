@@ -35,7 +35,7 @@ const GET_KANBAN = gql`
       columns {
         id name order type color isDefaultEntry totalLeadsCount hasMoreLeads nextCursor
         leads {
-          id phoneNumber profileName leadOrigin status createdAt lastActivityAt
+          id phoneNumber profileName leadOrigin status createdAt lastActivityAt adSourceId adHeadline valorContrato
           kanbanColumn { name color type }
           tags { id name color kind }
         }
@@ -48,6 +48,14 @@ const MOVE_LEAD = gql`
   mutation MoveLead($leadId: String!, $columnId: String!) {
     updateLeadKanbanColumn(leadId: $leadId, columnId: $columnId) {
       id kanbanColumnId
+    }
+  }
+`;
+
+const SET_VALOR_CONTRATO = gql`
+  mutation SetValorContrato($leadId: String!, $input: UpdateLeadInput!) {
+    updateLead(leadId: $leadId, input: $input) {
+      id
     }
   }
 `;
@@ -74,6 +82,9 @@ interface Lead {
   status: string;
   createdAt: string;
   lastActivityAt?: string;
+  adSourceId?: string | null;
+  adHeadline?: string | null;
+  valorContrato?: number | null;
   kanbanColumn?: { name: string; color: string; type: string };
   tags?: Array<{ id: string; name: string; color: string; kind: string }>;
 }
@@ -106,6 +117,16 @@ function LeadCard({
     id: lead.id,
     data: { lead },
   });
+  const [salvarValor] = useMutation(SET_VALOR_CONTRATO, { refetchQueries: ["GetKanban"] });
+  const definirValorContrato = () => {
+    const atual = lead.valorContrato ? String(lead.valorContrato).replace(".", ",") : "";
+    const resp = window.prompt("Valor do contrato (R$) — usado no evento de compra da Meta e no resultado dos anúncios:", atual);
+    if (resp === null) return;
+    const t = resp.trim();
+    const valor = t === "" ? null : Number(t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t);
+    if (valor !== null && !(valor > 0)) { window.alert("Informe um valor maior que zero."); return; }
+    void salvarValor({ variables: { leadId: lead.id, input: { valorContrato: valor } } });
+  };
 
   const initials = getInitials(lead.profileName ?? lead.phoneNumber);
   const avatarColor = getAvatarColor(lead.profileName);
@@ -135,6 +156,14 @@ function LeadCard({
             <Phone className="w-3 h-3" />
             {formatPhone(lead.phoneNumber)}
           </p>
+          {(lead.adHeadline || lead.adSourceId) && (
+            <p
+              className="text-[11px] text-primary mt-0.5 truncate"
+              title={`Veio do anúncio${lead.adHeadline ? `: ${lead.adHeadline}` : ""}${lead.adSourceId ? ` (ID ${lead.adSourceId})` : ""}`}
+            >
+              📣 {lead.adHeadline ?? `Anúncio ${lead.adSourceId}`}
+            </p>
+          )}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -150,6 +179,9 @@ function LeadCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onClick={onClick}>Ver detalhes</DropdownMenuItem>
+            <DropdownMenuItem onClick={definirValorContrato}>
+              {lead.valorContrato ? `Valor do contrato: R$ ${lead.valorContrato.toLocaleString("pt-BR")}` : "Definir valor do contrato"}
+            </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Mover para</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
