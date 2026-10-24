@@ -101,6 +101,15 @@ export const typeDefs = `#graphql
     adSourceUrl: String
     adReferralAt: DateTime
     valorContrato: Float
+    empresa: String
+    segmento: String
+    faturamentoMensal: Float
+    lojaFisica: String
+    cnpjStatus: String
+    dorPrincipal: String
+    icpStatus: String
+    scoreSdr: Int
+    reuniaoEm: DateTime
   }
 
   type KanbanColumnInfo {

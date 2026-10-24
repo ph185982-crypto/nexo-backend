@@ -274,6 +274,17 @@ model Lead {
   adReferralAt   DateTime? // quando o referral foi capturado
   valorContrato  Float?    // valor do contrato fechado; vai no evento Purchase
 
+  // ── Qualificação (CRM) — sincronizado pelo SDR a cada turno ──────────────
+  empresa           String?
+  segmento          String?
+  faturamentoMensal Float?    // em reais, lido do que o lead disse
+  lojaFisica        String?   // SIM | NAO
+  cnpjStatus        String?   // TEM | NAO_TEM
+  dorPrincipal      String?   @db.Text
+  icpStatus         String?   // QUALIFICADO | FORA | PENDENTE
+  scoreSdr          Int?
+  reuniaoEm         DateTime? // ligação marcada com o especialista
+
   @@index([adSourceId])
   @@index([ctwaClid])
 }

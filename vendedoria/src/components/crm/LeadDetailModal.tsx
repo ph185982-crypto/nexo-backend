@@ -62,6 +62,18 @@ interface Lead {
   escalations?: Array<{ id: string; reason?: string; status: string; createdAt: string }>;
   createdAt: string;
   lastActivityAt?: string;
+  adHeadline?: string | null;
+  adSourceId?: string | null;
+  valorContrato?: number | null;
+  empresa?: string | null;
+  segmento?: string | null;
+  faturamentoMensal?: number | null;
+  lojaFisica?: string | null;
+  cnpjStatus?: string | null;
+  dorPrincipal?: string | null;
+  icpStatus?: string | null;
+  scoreSdr?: number | null;
+  reuniaoEm?: string | null;
 }
 
 interface Conversation {
@@ -301,6 +313,28 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                   <InfoRow icon={Phone} label="Telefone" value={formatPhone(lead.phoneNumber)} />
                   <InfoRow icon={Mail} label="Email" value={lead.email ?? "—"} />
                   <InfoRow icon={User} label="Nome" value={lead.profileName ?? "—"} />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Qualificação (SDR) */}
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                  Qualificação
+                </h3>
+                <div className="space-y-2.5">
+                  <InfoRow icon={Tag} label="ICP" value={lead.icpStatus === "QUALIFICADO" ? "✓ Qualificado" : lead.icpStatus === "FORA" ? "Fora do perfil" : "Em descoberta"} />
+                  <InfoRow icon={User} label="Empresa" value={lead.empresa ?? "—"} />
+                  <InfoRow icon={ChevronRight} label="Vende" value={lead.segmento ?? "—"} />
+                  <InfoRow icon={ChevronRight} label="Faturamento" value={lead.faturamentoMensal ? `R$ ${lead.faturamentoMensal.toLocaleString("pt-BR")}/mês` : "—"} />
+                  <InfoRow icon={MapPin} label="Loja física" value={lead.lojaFisica === "SIM" ? "Sim" : lead.lojaFisica === "NAO" ? "Não" : "—"} />
+                  <InfoRow icon={ChevronRight} label="CNPJ" value={lead.cnpjStatus === "TEM" ? "Tem" : lead.cnpjStatus === "NAO_TEM" ? "Não tem" : "—"} />
+                  <InfoRow icon={ChevronRight} label="Dor" value={lead.dorPrincipal ?? "—"} />
+                  <InfoRow icon={Calendar} label="Ligação" value={lead.reuniaoEm ? formatDateTime(lead.reuniaoEm) : "—"} />
+                  {typeof lead.scoreSdr === "number" && <InfoRow icon={ChevronRight} label="Score" value={`${lead.scoreSdr} pts`} />}
+                  {lead.adHeadline && <InfoRow icon={ChevronRight} label="Anúncio" value={lead.adHeadline} />}
+                  {lead.valorContrato ? <InfoRow icon={ChevronRight} label="Contrato" value={`R$ ${lead.valorContrato.toLocaleString("pt-BR")}`} /> : null}
                 </div>
               </div>
 

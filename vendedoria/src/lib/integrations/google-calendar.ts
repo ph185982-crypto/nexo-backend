@@ -217,6 +217,28 @@ export async function verificarDisponibilidade(
   }
 }
 
+// ── Intervalos ocupados (freebusy) ────────────────────────────────────────────
+// null = Google não conectado ou falhou (quem chama decide o que fazer).
+export async function buscarOcupados(inicio: Date, fim: Date): Promise<Array<{ start: number; end: number }> | null> {
+  const token = await getAccessToken();
+  if (!token) return null;
+  const calendarId = await getCalendarId();
+  try {
+    const res = await fetch(`${CALENDAR_API}/freeBusy`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ timeMin: inicio.toISOString(), timeMax: fim.toISOString(), timeZone: "America/Sao_Paulo", items: [{ id: calendarId }] }),
+      signal: AbortSignal.timeout(6_000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as { calendars?: Record<string, { busy?: Array<{ start: string; end: string }> }> };
+    return (data.calendars?.[calendarId]?.busy ?? []).map((b) => ({ start: new Date(b.start).getTime(), end: new Date(b.end).getTime() }));
+  } catch (e) {
+    console.error("[GoogleCalendar] Erro ao buscar ocupados:", e);
+    return null;
+  }
+}
+
 // ── Retorna próximos slots disponíveis ────────────────────────────────────────
 
 export async function buscarSlotsDisponiveis(quantidade = 5): Promise<SlotDisponivel[]> {

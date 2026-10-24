@@ -28,6 +28,31 @@ export function EntregaMensagens({ orgId, versao }: { orgId: string; versao: num
   const [dias, setDias] = useState(7);
   const [d, setD] = useState<Entrega | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [naoEntregues, setNaoEntregues] = useState(0);
+  const [recuperando, setRecuperando] = useState(false);
+  const [avisoRecup, setAvisoRecup] = useState<string | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    api<{ encontrados: number }>(`/api/prospeccao/disparo/recuperar/${orgId}`)
+      .then((r) => { if (vivo) setNaoEntregues(r.encontrados); })
+      .catch(() => {});
+    return () => { vivo = false; };
+  }, [orgId, versao]);
+
+  const recuperar = async () => {
+    if (!confirm(`Devolver ${naoEntregues} empresa(s) para a fila de disparo? Elas foram marcadas como abordadas mas nunca receberam a mensagem.`)) return;
+    setRecuperando(true);
+    try {
+      const r = await api<{ recuperados: number }>(`/api/prospeccao/disparo/recuperar/${orgId}`, { method: "POST" });
+      setAvisoRecup(`${r.recuperados} empresa(s) voltaram para a fila.`);
+      setNaoEntregues(0);
+    } catch (e) {
+      setAvisoRecup(e instanceof Error ? e.message : "Erro ao recuperar");
+    } finally {
+      setRecuperando(false);
+    }
+  };
 
   useEffect(() => {
     let vivo = true;
@@ -67,6 +92,23 @@ export function EntregaMensagens({ orgId, versao }: { orgId: string; versao: num
             <Num rotulo="Falharam" valor={d.falhas} tom={d.falhas ? "text-red-500" : undefined} />
             <Num rotulo="Sem confirmação" valor={d.semConfirmacao} tom={d.semConfirmacao ? "text-amber-500" : undefined} />
           </div>
+
+          {naoEntregues > 0 && (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 space-y-2">
+              <p className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                {naoEntregues} empresa(s) estão marcadas como abordadas, mas nunca receberam a mensagem — a Meta recusou por problema na conta (ex.: pagamento pendente).
+                Resolva a conta primeiro e depois devolva essas empresas para a fila.
+              </p>
+              <button
+                type="button" onClick={() => void recuperar()} disabled={recuperando}
+                className="text-xs font-medium rounded-md border border-amber-500/50 px-3 py-1.5 hover:bg-amber-500/10 disabled:opacity-50"
+              >
+                {recuperando ? "Recuperando…" : `Devolver ${naoEntregues} para a fila`}
+              </button>
+            </div>
+          )}
+          {avisoRecup && <p className="text-xs text-green-600 dark:text-green-400">{avisoRecup}</p>}
 
           {!d.recebeuStatusAlgumaVez && (
             <p className="flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400">

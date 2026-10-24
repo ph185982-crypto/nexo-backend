@@ -13,7 +13,7 @@ export const ERROS_META: Record<number, string> = {
   131048: "Limite de spam: a qualidade do número está baixa.",
   131056: "Limite de envios para este par de números — tente depois.",
   130472: "Número incluído em experimento da Meta (não entregue).",
-  131042: "Problema de pagamento na conta WhatsApp Business.",
+  131042: "Conta do WhatsApp Business com pagamento pendente — nenhum template sai até regularizar no Billing Hub da Meta (business.facebook.com/billing_hub).",
   131053: "Falha ao processar a mídia do template.",
   132000: "Quantidade de parâmetros diferente do template aprovado.",
   132001: "Template não existe ou não está aprovado neste idioma.",
@@ -21,6 +21,12 @@ export const ERROS_META: Record<number, string> = {
   132016: "Template desativado pela Meta.",
   133010: "Número do remetente não registrado.",
 };
+
+/**
+ * Falhas da CONTA (não do destinatário): enquanto durarem, nenhum envio chega.
+ * O disparo pausa sozinho e o lead volta para a fila sem gastar tentativa.
+ */
+export const ERROS_DE_CONTA = new Set([131042, 131031, 131048, 368]);
 
 export function explicarErroMeta(codigo: number | null | undefined, mensagem?: string | null): string {
   if (codigo != null && ERROS_META[codigo]) return ERROS_META[codigo];
@@ -66,6 +72,11 @@ export async function aplicarStatusEnvio(s: StatusMeta): Promise<boolean> {
       where: { id: envio.id },
       data: { status: "FAILED", falhouEm: quando, erroCodigo: e?.code ?? null, erroMensagem: mensagem },
     });
+    // Falha da conta: pausa o disparo e devolve o lead para a fila (não foi culpa dele).
+    if (e?.code != null && ERROS_DE_CONTA.has(e.code)) {
+      await tratarFalhaDeConta(envio.organizationId, envio.leadId, e.code, mensagem);
+      return true;
+    }
     // Número sem WhatsApp: não adianta tentar de novo.
     if (e?.code === 131026) {
       await prisma.prospectLead.updateMany({
@@ -87,4 +98,77 @@ export async function aplicarStatusEnvio(s: StatusMeta): Promise<boolean> {
     },
   });
   return true;
+}
+
+/** Pausa o disparo (uma vez, com aviso ao dono) e devolve o lead para APROVADO. */
+async function tratarFalhaDeConta(organizationId: string, leadId: string, codigo: number, mensagem: string | null): Promise<void> {
+  const motivo = `Pausado automaticamente: ${explicarErroMeta(codigo)} [erro ${codigo}]`;
+  const pausou = await prisma.disparoConfig.updateMany({
+    where: { organizationId, pausadoManualmente: false },
+    data: { pausadoManualmente: true, motivoPausa: motivo.slice(0, 300) },
+  }).catch(() => ({ count: 0 }));
+  if (pausou.count > 0) {
+    console.error(`[Entrega] ⛔ Disparo pausado na org ${organizationId}: erro de conta ${codigo}`);
+    await prisma.ownerNotification.create({
+      data: {
+        type: "INFO",
+        title: "⛔ Disparos pausados: a Meta está recusando por problema na conta",
+        body: `${explicarErroMeta(codigo)}\n\n${mensagem ?? ""}\n\nDepois de resolver, retome em Prospecção → Disparo. Os leads afetados voltaram para a fila.`.slice(0, 2000),
+        organizationId,
+      },
+    }).catch(() => {});
+  }
+  const lead = await prisma.prospectLead.findUnique({ where: { id: leadId }, select: { status: true, tentativasDisparo: true } });
+  if (lead && ["ABORDADO", "ERRO_ENVIO"].includes(lead.status)) {
+    await prisma.prospectLead.update({
+      where: { id: leadId },
+      data: {
+        status: "APROVADO",
+        dataAbordagem: null,
+        tentativasDisparo: Math.max((lead.tentativasDisparo ?? 1) - 1, 0),
+        motivoAnaliseIA: `Não entregue (erro ${codigo} da conta) — voltou para a fila`,
+      },
+    }).catch(() => {});
+  }
+}
+
+/**
+ * Leads marcados como abordados que NUNCA receberam nada: todos os envios
+ * rastreados falharam por erro de conta. `aplicar=false` só conta.
+ */
+export async function recuperarLeadsNaoEntregues(organizationId: string, aplicar: boolean): Promise<{ encontrados: number; recuperados: number }> {
+  const codigos = Array.from(ERROS_DE_CONTA);
+  const falhas = await prisma.disparoEnvio.findMany({
+    where: { organizationId, status: "FAILED", erroCodigo: { in: codigos } },
+    select: { leadId: true },
+    distinct: ["leadId"],
+  });
+  const candidatos = falhas.map((f) => f.leadId);
+  if (candidatos.length === 0) return { encontrados: 0, recuperados: 0 };
+
+  // Exclui quem tem QUALQUER envio que não seja falha de conta (chegou, ou falhou por outro motivo)
+  const outros = await prisma.disparoEnvio.findMany({
+    where: {
+      leadId: { in: candidatos },
+      NOT: { status: "FAILED", erroCodigo: { in: codigos } },
+    },
+    select: { leadId: true },
+    distinct: ["leadId"],
+  });
+  const excluir = new Set(outros.map((o) => o.leadId));
+  const ids = candidatos.filter((id) => !excluir.has(id));
+  const elegiveis = await prisma.prospectLead.count({
+    where: { id: { in: ids }, status: { in: ["ABORDADO", "ERRO_ENVIO"] } },
+  });
+  if (!aplicar) return { encontrados: elegiveis, recuperados: 0 };
+
+  let recuperados = 0;
+  for (let i = 0; i < ids.length; i += 500) {
+    const r = await prisma.prospectLead.updateMany({
+      where: { id: { in: ids.slice(i, i + 500) }, status: { in: ["ABORDADO", "ERRO_ENVIO"] } },
+      data: { status: "APROVADO", dataAbordagem: null, tentativasDisparo: 0, motivoAnaliseIA: "Recuperado: nunca recebeu a mensagem (falha da conta na Meta)" },
+    });
+    recuperados += r.count;
+  }
+  return { encontrados: elegiveis, recuperados };
 }

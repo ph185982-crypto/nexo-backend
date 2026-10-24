@@ -1,0 +1,32 @@
+name: Cron Vendedoria (follow-ups)
+
+# O plano Hobby da Vercel só permite 2 crons diários, e os follow-ups dependiam
+# de chegar mensagem no webhook para serem disparados — de madrugada e no fim de
+# semana ficavam parados. Este agendamento chama o processador a cada 10 min.
+# Requer o secret CRON_SECRET no repositório (o mesmo valor da Vercel).
+# Agendamentos do GitHub só rodam a partir da branch padrão (master).
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  followup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Processar follow-ups vencidos
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ vars.VENDEDORIA_URL || 'https://nexo-vendedoria.vercel.app' }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::warning::Secret CRON_SECRET não configurado — follow-ups não foram acionados"
+            exit 0
+          fi
+          code=$(curl -s -o resposta.json -w "%{http_code}" --max-time 75 \
+            -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/followup")
+          echo "HTTP $code"
+          head -c 500 resposta.json; echo
+          test "$code" = "200"

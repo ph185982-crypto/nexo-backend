@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
-import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { sendWhatsAppMessage, sendWhatsAppTemplate } from "@/lib/whatsapp/send";
+import { planejarEnvio, proximoEnvio, templateFollowup } from "@/lib/followup/janela";
+import { promptFollowupSdr, fallbackFollowupSdr, primeiroNome } from "@/lib/followup/conteudo";
+import { loadSdrSession } from "@/lib/ai/sdr/session";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { drainWebhookQueue } from "@/lib/jobs/webhook-queue";
 
@@ -138,6 +141,42 @@ function fallbackFollowupMessage(step: number, totalSteps: number, name: string 
   ];
 }
 
+
+/**
+ * A janela de 24h fechou e não há template configurado: não dá mais para falar
+ * com o lead por mensagem automática. Encerra o follow-up e avisa o dono no CRM
+ * (notificação), para ele ligar — o lead não some em silêncio.
+ */
+async function encerrarSemCanal(
+  followUpId: string,
+  conversationId: string,
+  leadName: string | null,
+  telefone: string,
+  step?: number,
+): Promise<void> {
+  await prisma.conversationFollowUp.update({
+    where: { id: followUpId },
+    data: { status: "DONE", ...(step ? { step } : {}) },
+  }).catch(() => {});
+  const conv = await prisma.whatsappConversation.findUnique({
+    where: { id: conversationId },
+    select: { leadId: true, provider: { select: { organizationId: true } } },
+  }).catch(() => null);
+  if (!conv) return;
+  await prisma.ownerNotification.create({
+    data: {
+      type: "INFO",
+      title: `📞 Lead parou de responder — ligue para ${leadName ?? telefone}`,
+      body: `A janela de 24h do WhatsApp fechou e ${templateFollowup() ? "o template falhou" : "não há template de follow-up configurado (FOLLOWUP_TEMPLATE_NAME)"}. ` +
+        `Mensagem automática não chega mais. Telefone: +${telefone}.`,
+      organizationId: conv.provider.organizationId,
+      leadId: conv.leadId,
+      conversationId,
+    },
+  }).catch(() => {});
+  console.log(`[FollowUp] Janela fechada sem template — dono avisado | conv ${conversationId}`);
+}
+
 export const maxDuration = 60;
 
 export async function GET(req: Request) {
@@ -218,22 +257,52 @@ export async function GET(req: Request) {
         where: { conversationId: fu.conversationId },
         orderBy: { sentAt: "desc" },
         take: 15,
-        select: { role: true, content: true },
+        select: { role: true, content: true, sentAt: true },
       });
+      const ultimaDoCliente = messages.find((m) => m.role === "USER")?.sentAt ?? null;
       const history = messages.reverse().map((m) => ({ role: m.role, content: m.content }));
 
-      const aiMsg = await generateFollowupMessage(fu.step, maxFollowUps, agentName, followUpPrompt, fu.leadName, history);
-      const msgs: string[] = aiMsg ? [aiMsg] : fallbackFollowupMessage(fu.step, maxFollowUps, fu.leadName);
+      // SDR (B2B): conteúdo a partir do que já foi qualificado, nunca o texto de e-commerce
+      const agenteConv = await prisma.whatsappConversation.findUnique({
+        where: { id: fu.conversationId },
+        select: { provider: { select: { agent: { select: { systemPrompt: true } } } } },
+      }).catch(() => null);
+      const ehSdr = !!agenteConv?.provider?.agent?.systemPrompt?.trimStart().startsWith("[SDR]");
+      const sessaoSdr = ehSdr ? await loadSdrSession(fu.conversationId).catch(() => null) : null;
 
-      if (!msgs.length) continue;
-
+      // Janela de 24h: texto livre só dentro dela; fora, só template aprovado.
+      const plano = planejarEnvio(ultimaDoCliente, new Date());
       const token = fu.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? undefined;
-      for (let i = 0; i < msgs.length; i++) {
-        if (i > 0) await new Promise((r) => setTimeout(r, 800));
-        await sendWhatsAppMessage(fu.phoneNumberId, fu.phoneNumber, msgs[i], token);
+
+      if (plano.modo === "sem_canal") {
+        await encerrarSemCanal(fu.id, fu.conversationId, fu.leadName, fu.phoneNumber);
+        results.closed++;
+        continue;
+      }
+
+      if (plano.modo === "template") {
+        const nome = primeiroNome(sessaoSdr?.nome ?? fu.leadName) ?? "tudo bem";
+        const components = plano.template.comNome ? [{ type: "body", parameters: [{ type: "text", text: nome }] }] : [];
+        const wamid = await sendWhatsAppTemplate(fu.phoneNumberId, fu.phoneNumber, plano.template.nome, plano.template.idioma, components, token);
         await prisma.whatsappMessage.create({
-          data: { content: msgs[i], type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId: fu.conversationId },
+          data: { content: `📤 Follow-up ${fu.step} (template "${plano.template.nome}")`, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId: fu.conversationId, ...(wamid ? { wamid } : {}) },
         });
+      } else {
+        const aiMsg = ehSdr
+          ? await generateFollowupMessage(fu.step, maxFollowUps, agentName, promptFollowupSdr(fu.step, maxFollowUps, sessaoSdr), sessaoSdr?.nome || fu.leadName, history)
+          : await generateFollowupMessage(fu.step, maxFollowUps, agentName, followUpPrompt, fu.leadName, history);
+        const msgs: string[] = aiMsg
+          ? [aiMsg]
+          : ehSdr ? [fallbackFollowupSdr(fu.step, maxFollowUps, sessaoSdr?.nome || fu.leadName)] : fallbackFollowupMessage(fu.step, maxFollowUps, fu.leadName);
+        if (!msgs.length) continue;
+
+        for (let i = 0; i < msgs.length; i++) {
+          if (i > 0) await new Promise((r) => setTimeout(r, 800));
+          const wamid = await sendWhatsAppMessage(fu.phoneNumberId, fu.phoneNumber, msgs[i], token);
+          await prisma.whatsappMessage.create({
+            data: { content: msgs[i], type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId: fu.conversationId, ...(wamid ? { wamid } : {}) },
+          });
+        }
       }
 
       // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato.
@@ -274,10 +343,17 @@ export async function GET(req: Request) {
         // toque enviado depois do intervalo previsto (nutrição de 7/30 dias, ou
         // lead do SDR agendado pra 24h com a tabela em 4h) já nascia vencido e
         // o cliente recebia o próximo follow-up minutos depois do anterior.
-        const nextSendAt = new Date(
+        const desejado = new Date(
           Math.max(fu.aiMessageAt.getTime() + intervalMs, Date.now() + intervalMs),
         );
-        await prisma.conversationFollowUp.update({ where: { id: fu.id }, data: { step: nextStep, nextSendAt } });
+        // Sem template, o próximo toque precisa caber na janela de 24h — se não
+        // couber, encerra e avisa o dono para ligar (nenhum lead some em silêncio).
+        const nextSendAt = proximoEnvio(desejado, ultimaDoCliente, new Date());
+        if (nextSendAt) {
+          await prisma.conversationFollowUp.update({ where: { id: fu.id }, data: { step: nextStep, nextSendAt } });
+        } else {
+          await encerrarSemCanal(fu.id, fu.conversationId, fu.leadName, fu.phoneNumber, nextStep);
+        }
       }
 
       results.sent++;

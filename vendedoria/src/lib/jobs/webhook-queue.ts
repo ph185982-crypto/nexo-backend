@@ -15,6 +15,7 @@
 // atômico (UPDATE ... FOR UPDATE SKIP LOCKED), então cada item é processado
 // por exatamente uma invocação — nunca duas respostas pro mesmo cliente.
 
+import { urlBase } from "@/lib/jobs/fila";
 import { prisma } from "@/lib/prisma/client";
 import { createHmac } from "crypto";
 
@@ -167,9 +168,12 @@ export async function triggerDueFollowups(): Promise<boolean> {
     });
     if (dueCount === 0) return false;
 
-    const baseUrl = process.env.NEXTAUTH_URL;
+    const baseUrl = urlBase();
     const secret = process.env.CRON_SECRET;
-    if (!baseUrl || !secret) return false;
+    if (!secret) {
+      console.warn("[FollowUp] CRON_SECRET ausente — follow-ups vencidos não podem ser acionados");
+      return false;
+    }
 
     console.log(`[FollowUp] ${dueCount} follow-up(s) vencido(s) — acionando processamento`);
     const res = await fetch(`${baseUrl}/api/cron/followup`, {
