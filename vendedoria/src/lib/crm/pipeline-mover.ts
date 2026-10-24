@@ -13,6 +13,8 @@
 
 import { prisma } from "@/lib/prisma/client";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
+import { ALVOS_COLUNA, normalizarNome } from "@/lib/crm/funil-config";
+import { aoLeadMudarDeColunaAgendado } from "@/lib/meta-capi-hook";
 
 export type FunilTipo =
   | "CONTATO_1"
@@ -62,6 +64,39 @@ export function canonicalizarTipo(tipo: string): FunilCanonico {
   return (MAPA_CANONICO as Record<string, FunilCanonico>)[tipo] ?? "TRIAGE";
 }
 
+
+/**
+ * Acha a coluna de destino. Ordem (a primeira que existir):
+ *  1. tipo canônico do destino — o comportamento original, inalterado;
+ *  2. o tipo pedido, como está (ex.: ESCALATED → "Handoff enviado");
+ *  3. tipos e nomes configurados em funil-config.ts — cobre o layout legado,
+ *     onde "Em qualificação" e "Qualificados" são colunas CUSTOM e a busca só
+ *     por tipo nunca as encontrava (os leads ficavam parados em "Novos").
+ */
+async function resolverColuna(organizationId: string, tipo: string) {
+  const colunas = await prisma.kanbanColumn.findMany({
+    where: { organizationId },
+    orderBy: { order: "asc" },
+  });
+  const porTipo = (t: string) => colunas.find((c) => c.type === t);
+
+  const alvo = canonicalizarTipo(tipo);
+  const direta = porTipo(alvo) ?? porTipo(tipo);
+  if (direta) return direta;
+
+  const cfg = ALVOS_COLUNA[tipo] ?? ALVOS_COLUNA[alvo];
+  if (!cfg) return null;
+  for (const t of cfg.tipos) {
+    const c = porTipo(t);
+    if (c) return c;
+  }
+  for (const n of cfg.nomes) {
+    const c = colunas.find((x) => normalizarNome(x.name) === n);
+    if (c) return c;
+  }
+  return null;
+}
+
 /**
  * Move um lead para a coluna do funil identificada por `tipo` — canonicalizado
  * para uma das 5 colunas reais antes da busca (ver MAPA_CANONICO acima).
@@ -75,13 +110,9 @@ export async function moverLeadPorTipo(
 ): Promise<boolean> {
   try {
     const alvo = canonicalizarTipo(tipo);
-    let coluna = await prisma.kanbanColumn.findFirst({
-      where: { organizationId, type: alvo },
-    });
+    let coluna = await resolverColuna(organizationId, tipo);
     if (!coluna && fallback) {
-      coluna = await prisma.kanbanColumn.findFirst({
-        where: { organizationId, type: canonicalizarTipo(fallback) },
-      });
+      coluna = await resolverColuna(organizationId, fallback);
     }
     if (!coluna) {
       console.warn(`[PipelineMover] Coluna ${alvo} (de ${tipo}) não existe na org ${organizationId}`);
@@ -108,6 +139,10 @@ export async function moverLeadPorTipo(
     }).catch(() => {});
 
     console.log(`[PipelineMover] Lead ${leadId} → ${coluna.name} (${tipo} → ${alvo})`);
+
+    // API de Conversões da Meta: LeadSubmitted / Purchase conforme a coluna.
+    // Só envia para lead INBOUND com ctwa_clid; nunca lança nem atrasa a resposta.
+    await aoLeadMudarDeColunaAgendado(leadId, { type: coluna.type, name: coluna.name });
 
     // Ao mover para GANHO: cria rascunho do diagnóstico se ainda não existir
     if (tipo === "GANHO") {

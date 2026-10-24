@@ -5,6 +5,7 @@ import { detectDesinteresse } from "@/lib/ai/agent";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { loadSdrSession, saveSdrSession } from "./session";
+import { avaliarQualificacao } from "./qualificacao";
 import { buildSdrSystemPrompt } from "./prompt";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
@@ -559,6 +560,27 @@ async function runSdrResponse(
     console.error("[SDR] Falha ao salvar sessão parcial:", e),
   );
 
+  // ── Qualificação (loja física + faturamento ≥ mínimo + CNPJ) ─────────────────
+  // Quando os três critérios batem, o lead vai para "Qualificados" — o que também
+  // dispara o evento LeadSubmitted da API de Conversões (se veio de anúncio).
+  const qualificacao = avaliarQualificacao(newSession);
+  // Só na transição (1ª vez que bate os critérios): depois disso o lead pode ser
+  // movido à mão ou seguir para outras etapas sem o SDR arrastá-lo de volta.
+  const acabouDeQualificar = qualificacao.qualificado && !session.qualificado_em;
+  if (acabouDeQualificar) {
+    newSession.qualificado_em = new Date().toISOString();
+    await saveSdrSession(conversationId, newSession).catch((e) =>
+      console.error("[SDR] Falha ao salvar qualificação:", e),
+    );
+  }
+  const jaQualificado = Boolean(newSession.qualificado_em);
+  if (acabouDeQualificar && parsed.action !== "close") {
+    await moverLeadPorTipo(
+      lead.id, provider.organizationId, "QUALIFICADO",
+      `Lead qualificado pelo SDR (loja física + faturamento ≥ R$ 40 mil/mês + CNPJ) — faturamento lido: R$ ${qualificacao.faturamentoMensal?.toLocaleString("pt-BR")}`,
+    );
+  }
+
   // ── Enviar mensagens em blocos ───────────────────────────────────────────────
   if (!agent.sandboxMode) {
     let bubbleIndex = 0;
@@ -674,7 +696,8 @@ async function runSdrResponse(
       // Reflete a qualificação em andamento no Kanban — moverLeadPorTipo já é
       // idempotente (não faz nada se o lead já está na coluna), seguro chamar
       // a cada turno em vez de só na transição novo→em_qualificacao.
-      if (newSession.status === "em_qualificacao") {
+      // Lead já qualificado NÃO volta para "Em qualificação" a cada turno.
+      if (newSession.status === "em_qualificacao" && !jaQualificado) {
         await moverLeadPorTipo(lead.id, provider.organizationId, "EM_QUALIFICACAO");
       }
       // Agenda follow-up para leads qualificados que param de responder

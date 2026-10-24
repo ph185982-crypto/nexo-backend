@@ -265,6 +265,40 @@ model Lead {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
+
+  // ── Origem de anúncio Click-to-WhatsApp (messages[].referral do webhook) ──
+  ctwaClid       String?   // ID do clique — o que a API de Conversões da Meta exige
+  adSourceId     String?   // ID do anúncio (referral.source_id)
+  adHeadline     String?
+  adSourceUrl    String?
+  adReferralAt   DateTime? // quando o referral foi capturado
+  valorContrato  Float?    // valor do contrato fechado; vai no evento Purchase
+
+  @@index([adSourceId])
+  @@index([ctwaClid])
+}
+
+// ─── MetaConversionEvent (API de Conversões da Meta — Business Messaging) ─────
+// Um evento por (lead, nome). A unicidade é a nossa deduplicação: a Meta não
+// deduplica eventos desse canal. status: PENDING | SENT | FAILED | DRY_RUN |
+// SKIPPED_NO_CONFIG. O payload é guardado SEM o token (que só vai na URL).
+
+model MetaConversionEvent {
+  id           String    @id @default(cuid())
+  leadId       String
+  eventName    String    // LeadSubmitted | Purchase
+  eventId      String    // `${leadId}:${eventName}`
+  status       String    @default("PENDING")
+  httpStatus   Int?
+  resposta     String?   @db.Text
+  payload      Json?
+  tentativas   Int       @default(0)
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  @@unique([leadId, eventName])
+  @@index([status, createdAt])
 }
 
 // ─── Funil de Entrega ──────────────────────────────────────────────────────

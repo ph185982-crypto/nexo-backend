@@ -229,7 +229,7 @@ Retorne APENAS um JSON válido, sem markdown, sem texto fora do JSON:
 
 Regras do JSON:
 - "messages": 2 a 4 itens. Delays: 0, 1500, 2500, 3500. Máximo 4.
-- "updateSession": apenas os campos que mudaram nesta interação.
+- "updateSession": apenas os campos que mudaram nesta interação. Quando o lead disser se tem loja física, grave tem_loja_fisica (true/false); grave faturamento_total com o valor que ele falou (ex.: "50 mil por mês").
 - "action": "continue" | "handoff" | "nurture" | "close"
 - Nunca retorne texto fora do JSON.`;
 }

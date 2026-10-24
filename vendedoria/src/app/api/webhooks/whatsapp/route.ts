@@ -15,6 +15,8 @@ import { isMaxOwnerNumber } from "@/lib/max/config";
 import { handleMaxMessage } from "@/lib/max/responder";
 import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
+import { parseReferral } from "@/lib/meta-referral";
+import { registrarOrigemAnuncio } from "@/lib/crm/origem-anuncio";
 import { retomarDisparosPendentes } from "@/lib/prospeccao/disparo";
 import { aplicarStatusEnvio, type StatusMeta } from "@/lib/prospeccao/entrega";
 import { criarOrcamento } from "@/lib/jobs/fila";
@@ -168,6 +170,8 @@ async function handleIncomingMessage(
       org?: { company?: string; title?: string };
     }>;
     timestamp: string;
+    /** Só vem na 1ª mensagem de quem clicou num anúncio Click-to-WhatsApp. */
+    referral?: Record<string, unknown>;
   },
   contact: { profile?: { name?: string } } | undefined,
   providerConfig: {
@@ -342,6 +346,14 @@ async function handleIncomingMessage(
         lastMessageAt: sentAt,
       },
     });
+  }
+
+  // Origem de anúncio Click-to-WhatsApp (messages[].referral). Isolado: se falhar,
+  // o processamento da mensagem segue normalmente.
+  const origemAnuncio = parseReferral(message);
+  if (origemAnuncio) {
+    await registrarOrigemAnuncio(lead.id, conversation.id, origemAnuncio, sentAt)
+      .catch((e) => console.error("[Webhook] Falha ao registrar origem do anúncio:", e));
   }
 
   // Atualiza ProspectLead ABORDADO → RESPONDEU quando o lead responde

@@ -24,6 +24,8 @@ export interface SDRSession {
     | "handoff_enviado"
     | "inativo";
   etapa: string;
+  /** ISO da 1ª vez em que o lead bateu os 3 critérios (loja física + faturamento + CNPJ). */
+  qualificado_em?: string;
 }
 
 export interface SDRMessage {
