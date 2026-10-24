@@ -36,6 +36,7 @@ const GET_KANBAN = gql`
         id name order type color isDefaultEntry totalLeadsCount hasMoreLeads nextCursor
         leads {
           id phoneNumber profileName leadOrigin status createdAt lastActivityAt adSourceId adHeadline valorContrato
+          empresa segmento faturamentoMensal lojaFisica cnpjStatus dorPrincipal icpStatus scoreSdr reuniaoEm
           kanbanColumn { name color type }
           tags { id name color kind }
         }
@@ -85,6 +86,15 @@ interface Lead {
   adSourceId?: string | null;
   adHeadline?: string | null;
   valorContrato?: number | null;
+  empresa?: string | null;
+  segmento?: string | null;
+  faturamentoMensal?: number | null;
+  lojaFisica?: string | null;
+  cnpjStatus?: string | null;
+  dorPrincipal?: string | null;
+  icpStatus?: string | null;
+  scoreSdr?: number | null;
+  reuniaoEm?: string | null;
   kanbanColumn?: { name: string; color: string; type: string };
   tags?: Array<{ id: string; name: string; color: string; kind: string }>;
 }
@@ -156,6 +166,16 @@ function LeadCard({
             <Phone className="w-3 h-3" />
             {formatPhone(lead.phoneNumber)}
           </p>
+          {(lead.empresa || lead.faturamentoMensal) && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
+              🏢 {lead.empresa ?? lead.segmento ?? "empresa"}{lead.faturamentoMensal ? ` · R$ ${Math.round(lead.faturamentoMensal / 1000)} mil/mês` : ""}
+            </p>
+          )}
+          {lead.reuniaoEm && (
+            <p className="text-[11px] text-green-600 dark:text-green-400 mt-0.5 truncate">
+              📅 Ligação {new Date(lead.reuniaoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+            </p>
+          )}
           {(lead.adHeadline || lead.adSourceId) && (
             <p
               className="text-[11px] text-primary mt-0.5 truncate"
@@ -213,6 +233,15 @@ function LeadCard({
         >
           {lead.leadOrigin === "INBOUND" ? "Entrada" : "Saída"}
         </Badge>
+        {lead.icpStatus === "QUALIFICADO" && (
+          <Badge variant="success" className="text-xs px-1.5 py-0" title="Loja física + faturamento ≥ R$ 40 mil/mês + CNPJ">ICP ✓</Badge>
+        )}
+        {lead.icpStatus === "FORA" && (
+          <Badge variant="muted" className="text-xs px-1.5 py-0" title="Respondeu, mas não bate o perfil (loja física, R$ 40 mil/mês, CNPJ)">Fora do ICP</Badge>
+        )}
+        {typeof lead.scoreSdr === "number" && lead.scoreSdr > 0 && (
+          <span className="text-[10px] text-muted-foreground" title="Score do SDR">{lead.scoreSdr} pts</span>
+        )}
         {lead.tags?.slice(0, 2).map((tag) => (
           <span
             key={tag.id}

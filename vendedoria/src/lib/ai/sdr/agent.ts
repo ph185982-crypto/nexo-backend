@@ -6,6 +6,12 @@ import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { avaliarQualificacao } from "./qualificacao";
+import { decidirHandoff, faltandoParaHandoff, type ItemHandoff } from "./handoff-gate";
+import { perfilComunicacao } from "./estilo";
+import { sincronizarQualificacaoNoLead } from "./sincronizar-crm";
+import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
+import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
+import { proximoEnvio } from "@/lib/followup/janela";
 import { buildSdrSystemPrompt } from "./prompt";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
@@ -75,7 +81,7 @@ const CAMPOS_EDITAVEIS_PELO_LLM = [
   "nome", "canais_atuais", "tem_loja_fisica", "faturamento_total",
   "ja_vende_marketplace", "marketplace_atual", "problema_principal", "cnpj",
   "opera_com_equipe", "disponibilidade", "score", "rota", "produto_indicado",
-  "objecoes_mencionadas", "etapa",
+  "objecoes_mencionadas", "etapa", "empresa", "segmento", "loja_fisica", "horario_reuniao",
 ] as const satisfies ReadonlyArray<keyof SDRSession>;
 
 const CAMPOS_LISTA = ["canais_atuais", "marketplace_atual", "objecoes_mencionadas"] as const;
@@ -120,28 +126,60 @@ function mergeSdrSession(
 }
 
 // Formato de handoff enviado ao especialista
-export function formatHandoffMessage(phone: string, session: SDRSession): string {
+export function formatHandoffMessage(
+  phone: string,
+  session: SDRSession,
+  reuniao?: { label: string; meetLink?: string } | null,
+): string {
   const canais: string[] = [];
   if (session.canais_atuais.length > 0) canais.push(...session.canais_atuais);
-  if (session.tem_loja_fisica) canais.push("Loja física");
   if (session.marketplace_atual.length > 0) canais.push(...session.marketplace_atual);
-  const canaisStr = canais.length > 0 ? canais.join(", ") : "não informado";
+  const canaisStr = canais.length > 0 ? Array.from(new Set(canais)).join(", ") : "não informado";
+  const icp = avaliarQualificacao({ ...session, tem_loja_fisica: session.loja_fisica === "sim" || session.tem_loja_fisica });
+  const fat = icp.faturamentoMensal != null ? `R$ ${icp.faturamentoMensal.toLocaleString("pt-BR")}/mês` : "não informado";
 
-  return `🔥 NOVO LEAD — PASSAGEM DE BASTÃO
+  return `🔥 NOVO LEAD QUALIFICADO — LIGAÇÃO MARCADA
 
-👤 Nome: ${session.nome || "não informado"}
+📅 Ligação: ${reuniao?.label ?? session.disponibilidade ?? "a combinar"}${reuniao?.meetLink ? `\n🎥 Meet: ${reuniao.meetLink}` : ""}
+
+👤 ${session.nome || "não informado"} — ${session.empresa || "empresa não informada"}
 📱 WhatsApp: +${phone}
-⏰ Melhor período para contato: ${session.disponibilidade || "não informado"}
+🛍️ Vende: ${session.segmento || "não informado"}
+🏪 Canais: ${canaisStr}
 
-💰 Faturamento: ${session.faturamento_total || "não informado"}
-🏪 Canais de atuação: ${canaisStr}
-🎯 Necessidade / Problema principal: ${session.problema_principal || "não informado"}
-${session.objecoes_mencionadas.length > 0 ? `\n⚠️ Pontos de atenção: ${session.objecoes_mencionadas.join(", ")}` : ""}
+✅ ICP: loja física ${session.loja_fisica === "sim" || session.tem_loja_fisica ? "SIM" : "NÃO"} · faturamento ${fat} · CNPJ ${session.cnpj || "?"}
+🎯 Dor: ${session.problema_principal || "não informada"}
+📊 Score: ${session.score ?? 0}${session.objecoes_mencionadas.length > 0 ? `\n⚠️ Atenção: ${session.objecoes_mencionadas.join(", ")}` : ""}${session.produto_indicado ? `\n💡 Indicado: ${session.produto_indicado}` : ""}`;
+}
 
-${session.produto_indicado ? `✅ Produto indicado: ${session.produto_indicado}` : ""}
-${session.cnpj ? `📄 CNPJ: ${session.cnpj}` : ""}
+/** Pergunta direta (reserva) quando a IA tentou encerrar sem ter o item. */
+const PERGUNTA_NATURAL: Record<ItemHandoff, string> = {
+  nome: "como é seu nome?",
+  empresa: "qual o nome da sua empresa?",
+  segmento: "o que vocês vendem hoje?",
+  dor: "hoje, o que mais trava as vendas de vocês?",
+  faturamento: "pra eu entender o porte: quanto o negócio fatura por mês, mais ou menos?",
+  loja_fisica: "vocês têm loja física?",
+  cnpj: "a empresa já tem CNPJ ativo?",
+  horario: "qual horário fica melhor pra uma ligação de 20 min com o Pedro?",
+};
 
-⚡ Ação: Entrar em contato no período informado para agendar diagnóstico gratuito (20 min).`;
+function mensagensDeReserva(acao: string, faltando: ItemHandoff[], slots: Slot[]): Array<{ text: string; delay: number }> {
+  if (acao === "nurture") {
+    return [
+      { text: "Entendi o seu momento, obrigado por me contar", delay: 0 },
+      { text: "Agora a consultoria ainda não é o melhor passo pra vocês, mas posso te mandar uns conteúdos que ajudam bastante", delay: 1500 },
+      { text: "E quando o negócio crescer mais um pouco, me chama aqui que a gente monta a estratégia certinha", delay: 2500 },
+    ];
+  }
+  const item = faltando[0] ?? "horario";
+  const pergunta = item === "horario" && slots.length >= 2
+    ? `qual fica melhor pra uma ligação de 20 min com o Pedro: ${slots[0].label} ou ${slots[1].label}?`
+    : PERGUNTA_NATURAL[item];
+  return [
+    { text: "Antes de eu te passar pro nosso fundador, só preciso entender mais uma coisa", delay: 0 },
+    { text: pergunta.charAt(0).toUpperCase() + pergunta.slice(1), delay: 1500 },
+  ];
 }
 
 // Notifica o especialista sobre um handoff por TODOS os canais disponíveis —
@@ -307,7 +345,9 @@ async function scheduleNurtureFollowups(
   accessToken: string | null | undefined,
 ): Promise<void> {
   const now = new Date();
-  const primeiroToque = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  // O cliente acabou de falar (esta run responde a ele): a janela vai até now+24h.
+  const primeiroToque = proximoEnvio(new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), now, now);
+  if (!primeiroToque) return;
 
   await prisma.conversationFollowUp.upsert({
     where: { conversationId },
@@ -334,7 +374,8 @@ async function scheduleQualifiedFollowup(
   leadName: string | null,
 ): Promise<void> {
   const now = new Date();
-  const nextSendAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  const nextSendAt = proximoEnvio(new Date(now.getTime() + 24 * 60 * 60 * 1000), now, now);
+  if (!nextSendAt) return;
 
   await prisma.conversationFollowUp.upsert({
     where: { conversationId },
@@ -351,6 +392,23 @@ async function scheduleQualifiedFollowup(
       accessToken: accessToken ?? undefined,
     },
   });
+}
+
+/**
+ * Coerência da sessão depois do merge: loja_fisica ↔ tem_loja_fisica, e
+ * horário da ligação só se for um horário aceitável (futuro, dia útil,
+ * expediente) — senão mantém o anterior.
+ */
+function normalizarSessao(s: SDRSession, anterior: SDRSession): SDRSession {
+  const out = { ...s };
+  if (out.loja_fisica === "sim") out.tem_loja_fisica = true;
+  else if (out.loja_fisica === "nao") out.tem_loja_fisica = false;
+  else if (out.tem_loja_fisica === true) out.loja_fisica = "sim";
+  if (out.horario_reuniao && out.horario_reuniao !== anterior.horario_reuniao) {
+    const ok = horarioAceitavel(out.horario_reuniao);
+    out.horario_reuniao = ok ? ok.toISOString() : anterior.horario_reuniao;
+  }
+  return out;
 }
 
 export async function processSdrResponse(
@@ -517,7 +575,24 @@ async function runSdrResponse(
   } catch { /* não crítico */ }
 
   // ── Construir system prompt ─────────────────────────────────────────────────
-  const systemPrompt = buildSdrSystemPrompt(session, lead.profileName);
+  // Estilo do lead (para a IA espelhar), o que falta descobrir, o ICP e — só
+  // para quem já está no ICP — os horários livres reais para a ligação.
+  // (recentMessages já está em ordem cronológica: o .reverse() acima é in-place)
+  const perfil = perfilComunicacao(recentMessages.filter((m) => m.role === "USER").map((m) => m.content));
+  const sessaoLoja = { ...session, tem_loja_fisica: session.loja_fisica === "sim" ? true : session.loja_fisica === "nao" ? false : session.tem_loja_fisica };
+  const icpAtual = avaliarQualificacao(sessaoLoja);
+  const faltandoAtual = faltandoParaHandoff(session);
+  const respondeuIcp = !faltandoAtual.some((i) => i === "faturamento" || i === "loja_fisica" || i === "cnpj");
+  const icpEstado = icpAtual.qualificado ? "qualificado" : respondeuIcp ? "fora" : "pendente";
+  const slots: Slot[] = icpEstado === "qualificado"
+    ? await buscarSlotsReuniao(provider.organizationId).catch(() => [])
+    : [];
+  const motivoForaIcp = icpEstado === "fora"
+    ? icpAtual.faltando.map((f) => (f === "faturamento" ? "faturamento abaixo de R$ 40 mil/mês" : f === "loja_fisica" ? "sem loja física" : "sem CNPJ ativo")).join(", ")
+    : undefined;
+  const systemPrompt = buildSdrSystemPrompt(session, lead.profileName, {
+    perfil, slots, faltando: faltandoAtual, icp: icpEstado, motivoForaIcp,
+  });
 
   // ── Chamar LLM ──────────────────────────────────────────────────────────────
   // Orçamento único pra toda a fase de LLM (tentativas + fallback de provider).
@@ -548,7 +623,32 @@ async function runSdrResponse(
   }
 
   // ── Atualizar sessão ─────────────────────────────────────────────────────────
-  const newSession = mergeSdrSession(session, parsed.updateSession);
+  let newSession = normalizarSessao(mergeSdrSession(session, parsed.updateSession), session);
+
+  // ── Portão do handoff: dados completos + ICP, verificado no código ─────────
+  // Se o modelo tentou encerrar antes da hora, pede UMA vez para ele refazer a
+  // resposta (mantendo o tom natural); se ainda insistir ou não houver tempo,
+  // usa uma pergunta direta. Nunca manda a mensagem de "o Pedro vai te ligar"
+  // para quem não está pronto.
+  let decisao = decidirHandoff(parsed.action, newSession);
+  if (decisao.correcao) {
+    console.log(`[SDR] Handoff barrado (${decisao.motivo}) | lead=${lead.id}`);
+    let refeito: SDRLLMResponse | null = null;
+    if (Date.now() < llmDeadline - 4_000) {
+      const raw2 = await callSdrLLM(`${systemPrompt}\n\n${decisao.correcao}`, history, userMessage, agent.aiProvider, agent.aiModel, llmDeadline);
+      refeito = raw2 ? parseSdrResponse(raw2) : null;
+    }
+    if (refeito && refeito.action !== "handoff") {
+      parsed.messages = refeito.messages;
+      parsed.action = refeito.action === "close" && decisao.acao === "nurture" ? "nurture" : refeito.action;
+      newSession = normalizarSessao(mergeSdrSession(session, { ...parsed.updateSession, ...refeito.updateSession }), session);
+    } else {
+      parsed.messages = mensagensDeReserva(decisao.acao, decisao.faltando, slots);
+      parsed.action = decisao.acao;
+    }
+    decisao = decidirHandoff(parsed.action, newSession);
+    if (parsed.action === "handoff" && decisao.acao !== "handoff") parsed.action = decisao.acao;
+  }
 
   // Persiste o que foi coletado ANTES de enviar os balões. O envio leva de 12 a
   // 20s (delays + "digitando..."), e se a invocação for cortada nesse meio a
@@ -640,16 +740,35 @@ async function runSdrResponse(
         break;
       }
 
+      // Ligação combinada → reunião no CRM (e no Google Agenda, se conectado)
+      let reuniao: { label: string; meetLink?: string } | null = null;
+      const inicioReuniao = horarioAceitavel(newSession.horario_reuniao);
+      if (inicioReuniao) {
+        try {
+          const r = await marcarReuniao({
+            organizationId: provider.organizationId,
+            leadId: lead.id,
+            inicio: inicioReuniao,
+            nome: newSession.nome || lead.profileName || phone,
+            empresa: newSession.empresa,
+            telefone: phone,
+            resumo: formatHandoffMessage(phone, newSession),
+          });
+          newSession.reuniao_evento_id = r.eventoId;
+          reuniao = { label: r.label, meetLink: r.meetLink };
+        } catch (e) {
+          console.error("[SDR] Falha ao marcar a ligação:", e);
+        }
+      }
+
       if (!agent.sandboxMode) {
-        const bastao = formatHandoffMessage(phone, newSession);
+        const bastao = formatHandoffMessage(phone, newSession, reuniao ?? (inicioReuniao ? { label: rotuloSlot(inicioReuniao) } : null));
         await notificarHandoff(bastao, phoneNumberId, token, provider.organizationId, lead.id, conversationId);
       }
-      // Usa o helper em vez de findFirst inline: se a org não tiver a coluna
-      // ESCALATED, o helper loga o aviso e tenta o fallback, em vez de deixar o
-      // lead marcado como escalado mas visualmente parado na coluna anterior.
+      // Com ligação marcada vai para "Reunião Agendada"; sem, para o handoff.
       await moverLeadPorTipo(
-        lead.id, provider.organizationId, "ESCALATED",
-        "Lead escalado para especialista pelo SDR", "QUALIFICADO",
+        lead.id, provider.organizationId, reuniao ? "REUNIAO_AGENDADA" : "ESCALATED",
+        reuniao ? `Ligação marcada pelo SDR: ${reuniao.label}` : "Lead escalado para especialista pelo SDR", "ESCALATED",
       );
       await prisma.leadActivity.create({
         data: { leadId: lead.id, type: "STATUS_CHANGE", description: "Lead escalado para especialista pelo SDR", createdBy: "AI_AGENT" },
@@ -706,8 +825,9 @@ async function runSdrResponse(
           conversationId, phone, phoneNumberId, token, lead.profileName ?? null
         ).catch(() => {});
       } else {
-        // Follow-up padrão SDR (24h) para leads em qualificação
-        const nextSendAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        // Follow-up padrão SDR: 4h depois (dentro da janela de 24h do WhatsApp —
+        // antes era 24h, exatamente quando a janela fecha, e não chegava).
+        const nextSendAt = proximoEnvio(new Date(now.getTime() + 4 * 60 * 60 * 1000), now, now) ?? new Date(now.getTime() + 4 * 60 * 60 * 1000);
         await prisma.conversationFollowUp.upsert({
           where: { conversationId },
           update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead.profileName ?? null },
@@ -730,6 +850,7 @@ async function runSdrResponse(
 
   // ── Salvar sessão atualizada ─────────────────────────────────────────────────
   await saveSdrSession(conversationId, newSession);
+  await sincronizarQualificacaoNoLead(lead.id, newSession);
 
   // ── Atualizar lastMessageAt da conversa ──────────────────────────────────────
   await prisma.whatsappConversation.update({

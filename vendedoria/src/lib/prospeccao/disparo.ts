@@ -301,7 +301,22 @@ export async function executarDisparoDiario(
   //    já passaram do intervalo entre tentativas (2ª/3ª tentativa).
   //    Nunca dispara para telefone FIXO (template WhatsApp só chega em celular).
   const cutoffRetentativa = new Date(Date.now() - config.diasEntreTentativas * 24 * 60 * 60 * 1000);
-  const leads = await prisma.prospectLead.findMany({
+
+  // Limite diário DE VERDADE: cada continuação da fila chama esta função de novo,
+  // e antes cada chamada puxava mais `limiteDiarioAtual` leads — o limite valia
+  // por chamada, não por dia. Agora desconta o que já saiu hoje (Brasília) e o
+  // que já está na fila.
+  const inicioDoDiaBRT = (() => {
+    const b = new Date(Date.now() - 3 * 3_600_000);
+    return new Date(Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), b.getUTCDate()) + 3 * 3_600_000);
+  })();
+  const [enviadosHoje, naFila] = await Promise.all([
+    prisma.disparoEnvio.count({ where: { organizationId, enviadoEm: { gte: inicioDoDiaBRT } } }),
+    prisma.disparoJob.count({ where: { organizationId, status: { in: ["QUEUED", "RUNNING"] } } }),
+  ]);
+  const vagasHoje = Math.max(config.limiteDiarioAtual - enviadosHoje - naFila, 0);
+
+  const leads = vagasHoje === 0 ? [] : await prisma.prospectLead.findMany({
     where: {
       organizationId,
       NOT: { tipoTelefone: "FIXO" },
@@ -319,11 +334,14 @@ export async function executarDisparoDiario(
       ],
     },
     orderBy: [{ tentativasDisparo: "asc" }, { score: "desc" }],
-    take: config.limiteDiarioAtual,
+    take: vagasHoje,
   });
 
-  if (leads.length === 0) {
-    return { ...resultado, motivo: "nenhum lead APROVADO ou retentativa disponível" };
+  if (leads.length === 0 && naFila === 0) {
+    return {
+      ...resultado,
+      motivo: vagasHoje === 0 ? `limite diário atingido (${enviadosHoje}/${config.limiteDiarioAtual} hoje)` : "nenhum lead APROVADO ou retentativa disponível",
+    };
   }
 
   console.log(`[Disparo] ${leads.length} leads para disparar | templates=${templates.map((t) => t.nomeTemplateMeta).join(",")} | limite=${config.limiteDiarioAtual}`);
@@ -381,6 +399,14 @@ async function processarFilaDisparo(
       const restantes = await prisma.disparoJob.count({ where: { organizationId, status: "QUEUED" } });
       if (restantes > 0) console.log(`[Disparo] Janela fechou — ${restantes} jobs ficam na fila`);
       // Fora da janela não se reagenda: a retomada periódica cuida do resto.
+      resultado.restantes = 0;
+      break;
+    }
+
+    // Pausa que chegou no meio do lote (ex.: webhook de falha de conta da Meta)
+    const pausa = await prisma.disparoConfig.findUnique({ where: { organizationId }, select: { pausadoManualmente: true, motivoPausa: true } });
+    if (pausa?.pausadoManualmente) {
+      resultado.motivo = pausa.motivoPausa ?? "pausado";
       resultado.restantes = 0;
       break;
     }
