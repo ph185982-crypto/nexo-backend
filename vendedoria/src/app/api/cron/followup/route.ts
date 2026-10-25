@@ -5,13 +5,8 @@ import { planejarEnvio, proximoEnvio, templateFollowup } from "@/lib/followup/ja
 import { promptFollowupSdr, fallbackFollowupSdr, primeiroNome } from "@/lib/followup/conteudo";
 import { loadSdrSession } from "@/lib/ai/sdr/session";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
+import { MAX_FOLLOWUPS, dataDoToque } from "@/lib/followup/cadencia";
 import { drainWebhookQueue } from "@/lib/jobs/webhook-queue";
-
-function parseFollowUpIntervals(hoursStr: string): number[] {
-  const parsed = hoursStr.split(",").map((h) => parseFloat(h.trim())).filter((h) => !isNaN(h) && h > 0);
-  if (parsed.length === 0) return [4, 24, 48, 72].map((h) => h * 3600_000);
-  return parsed.map((h) => h * 3600_000);
-}
 
 const DEFAULT_FOLLOWUP_PROMPT = `Você é um vendedor fazendo follow-up com um cliente que parou de responder.
 
@@ -192,8 +187,7 @@ export async function GET(req: Request) {
 
   // Load AgentConfig for dynamic intervals, maxFollowUps, followUpPrompt, agentName
   const agentConfig = await prisma.agentConfig.findFirst().catch(() => null);
-  const maxFollowUps = agentConfig?.maxFollowUps ?? 4;
-  const intervals = parseFollowUpIntervals(agentConfig?.followUpHours ?? "4,24,48,72");
+  const maxFollowUps = MAX_FOLLOWUPS;
   const followUpPrompt = (agentConfig as typeof agentConfig & { followUpPrompt?: string | null })?.followUpPrompt ?? null;
   const agentName = agentConfig?.agentName ?? "Pedro";
 
@@ -338,14 +332,8 @@ export async function GET(req: Request) {
         results.closed++;
       } else {
         const nextStep = fu.step + 1;
-        const intervalMs = intervals[nextStep - 1] ?? intervals[intervals.length - 1];
-        // Nunca agenda no passado. Calculando só a partir de aiMessageAt, um
-        // toque enviado depois do intervalo previsto (nutrição de 7/30 dias, ou
-        // lead do SDR agendado pra 24h com a tabela em 4h) já nascia vencido e
-        // o cliente recebia o próximo follow-up minutos depois do anterior.
-        const desejado = new Date(
-          Math.max(fu.aiMessageAt.getTime() + intervalMs, Date.now() + intervalMs),
-        );
+        // Cadência fixa 2h/12h/24h/48h, sempre contada da mensagem da IA que abriu a sequência.
+        const desejado = dataDoToque(nextStep, fu.aiMessageAt);
         // Sem template, o próximo toque precisa caber na janela de 24h — se não
         // couber, encerra e avisa o dono para ligar (nenhum lead some em silêncio).
         const nextSendAt = proximoEnvio(desejado, ultimaDoCliente, new Date());
