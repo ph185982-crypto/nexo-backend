@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:nexo": "tsx prisma/seed-nexo.ts",
-    "test:capi": "tsx --test tests/meta-referral.test.ts tests/sdr-qualificacao.test.ts tests/meta-capi.test.ts tests/pipeline-mover-legado.test.ts tests/sdr-vendas.test.ts tests/sdr-crm-disparo.test.ts tests/sdr-fluxo.test.ts tests/followup-cadencia.test.ts"
+    "test:capi": "tsx --test tests/meta-referral.test.ts tests/sdr-qualificacao.test.ts tests/meta-capi.test.ts tests/pipeline-mover-legado.test.ts tests/sdr-vendas.test.ts tests/sdr-crm-disparo.test.ts tests/sdr-fluxo.test.ts tests/followup-cadencia.test.ts tests/sdr-anti-repeticao.test.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",

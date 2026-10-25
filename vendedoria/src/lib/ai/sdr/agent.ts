@@ -8,6 +8,7 @@ import { loadSdrSession, saveSdrSession } from "./session";
 import { avaliarQualificacao } from "./qualificacao";
 import { decidirHandoff, faltandoParaHandoff, type ItemHandoff } from "./handoff-gate";
 import { perfilComunicacao } from "./estilo";
+import { filtrarRepetidas, pareceFechamento } from "./anti-repeticao";
 import { sincronizarQualificacaoNoLead } from "./sincronizar-crm";
 import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
 import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
@@ -649,6 +650,34 @@ async function runSdrResponse(
     }
     decisao = decidirHandoff(parsed.action, newSession);
     if (parsed.action === "handoff" && decisao.acao !== "handoff") parsed.action = decisao.acao;
+  }
+
+  // Mesmo sem o modelo pedir "handoff", ele às vezes escreve "o especialista vai
+  // te ligar / vamos deixar agendado" com action=continue — e a cada mensagem do
+  // lead repetia esse fechamento sem que nada fosse de fato encaminhado.
+  if (parsed.action === "continue" && parsed.messages.some((m) => pareceFechamento(m.text))) {
+    const pendentes = faltandoParaHandoff(newSession);
+    if (pendentes.length > 0) {
+      console.log(`[SDR] Fechamento sem handoff substituído por pergunta | lead=${lead.id} | falta=${pendentes.join(",")}`);
+      parsed.messages = mensagensDeReserva("continue", pendentes, slots);
+    }
+  }
+
+  // Nunca repete ao lead algo que a IA já disse nas últimas mensagens.
+  const jaEnviadas = recentMessages.filter((m) => m.role === "ASSISTANT").slice(0, 8).map((m) => m.content);
+  const originais = parsed.messages.length;
+  parsed.messages = filtrarRepetidas(parsed.messages, jaEnviadas);
+  if (parsed.messages.length === 0 && originais > 0 && parsed.action === "continue") {
+    const pendentes = faltandoParaHandoff(newSession);
+    if (pendentes.length > 0) {
+      parsed.messages = filtrarRepetidas(
+        [{ text: PERGUNTA_NATURAL[pendentes[0]].charAt(0).toUpperCase() + PERGUNTA_NATURAL[pendentes[0]].slice(1), delay: 0 }],
+        jaEnviadas,
+      );
+    }
+  }
+  if (parsed.messages.length < originais) {
+    console.log(`[SDR] ${originais - parsed.messages.length} balão(ões) repetido(s) barrado(s) | lead=${lead.id}`);
   }
 
   // Persiste o que foi coletado ANTES de enviar os balões. O envio leva de 12 a
