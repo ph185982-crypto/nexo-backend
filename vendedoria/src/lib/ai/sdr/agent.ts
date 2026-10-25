@@ -12,6 +12,7 @@ import { sincronizarQualificacaoNoLead } from "./sincronizar-crm";
 import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
 import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
 import { proximoEnvio } from "@/lib/followup/janela";
+import { dataDoToque } from "@/lib/followup/cadencia";
 import { buildSdrSystemPrompt } from "./prompt";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
@@ -346,7 +347,7 @@ async function scheduleNurtureFollowups(
 ): Promise<void> {
   const now = new Date();
   // O cliente acabou de falar (esta run responde a ele): a janela vai até now+24h.
-  const primeiroToque = proximoEnvio(new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), now, now);
+  const primeiroToque = proximoEnvio(dataDoToque(1, now, now), now, now);
   if (!primeiroToque) return;
 
   await prisma.conversationFollowUp.upsert({
@@ -374,7 +375,7 @@ async function scheduleQualifiedFollowup(
   leadName: string | null,
 ): Promise<void> {
   const now = new Date();
-  const nextSendAt = proximoEnvio(new Date(now.getTime() + 24 * 60 * 60 * 1000), now, now);
+  const nextSendAt = proximoEnvio(dataDoToque(1, now, now), now, now);
   if (!nextSendAt) return;
 
   await prisma.conversationFollowUp.upsert({
@@ -825,9 +826,8 @@ async function runSdrResponse(
           conversationId, phone, phoneNumberId, token, lead.profileName ?? null
         ).catch(() => {});
       } else {
-        // Follow-up padrão SDR: 4h depois (dentro da janela de 24h do WhatsApp —
-        // antes era 24h, exatamente quando a janela fecha, e não chegava).
-        const nextSendAt = proximoEnvio(new Date(now.getTime() + 4 * 60 * 60 * 1000), now, now) ?? new Date(now.getTime() + 4 * 60 * 60 * 1000);
+        // Follow-up padrão SDR: 1º toque 2h depois, seguido de 12h, 24h e 48h (cadência fixa).
+        const nextSendAt = proximoEnvio(dataDoToque(1, now, now), now, now) ?? dataDoToque(1, now, now);
         await prisma.conversationFollowUp.upsert({
           where: { conversationId },
           update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead.profileName ?? null },

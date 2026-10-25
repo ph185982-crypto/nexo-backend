@@ -8,14 +8,16 @@ import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 
+import { prazoDoToque } from "@/lib/followup/cadencia";
+
 const QUEUE_NAME = "followup";
 
 // ── Intervalos por step ────────────────────────────────────────────────────────
 const STEP_INTERVALS_MS: Record<number, number> = {
-  1: 4  * 60 * 60 * 1000,   // step 1 — 4h
-  2: 24 * 60 * 60 * 1000,   // step 2 — 24h
-  3: 48 * 60 * 60 * 1000,   // step 3 — 48h
-  4: 72 * 60 * 60 * 1000,   // step 4 — 72h
+  1: prazoDoToque(1),   // 2h
+  2: prazoDoToque(2),   // 12h
+  3: prazoDoToque(3),   // 24h
+  4: prazoDoToque(4),   // 48h
 };
 
 // ── Mensagens por step (prospecção B2B — Nexo) ───────────────────────────────
