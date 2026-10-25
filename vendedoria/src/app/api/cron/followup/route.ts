@@ -148,6 +148,7 @@ async function encerrarSemCanal(
   leadName: string | null,
   telefone: string,
   step?: number,
+  motivo?: { titulo: string; corpo: string },
 ): Promise<void> {
   await prisma.conversationFollowUp.update({
     where: { id: followUpId },
@@ -161,8 +162,8 @@ async function encerrarSemCanal(
   await prisma.ownerNotification.create({
     data: {
       type: "INFO",
-      title: `📞 Lead parou de responder — ligue para ${leadName ?? telefone}`,
-      body: `A janela de 24h do WhatsApp fechou e ${templateFollowup() ? "o template falhou" : "não há template de follow-up configurado (FOLLOWUP_TEMPLATE_NAME)"}. ` +
+      title: motivo?.titulo ?? `📞 Lead parou de responder — ligue para ${leadName ?? telefone}`,
+      body: motivo?.corpo ?? `A janela de 24h do WhatsApp fechou e ${templateFollowup() ? "o template falhou" : "não há template de follow-up configurado (FOLLOWUP_TEMPLATE_NAME)"}. ` +
         `Mensagem automática não chega mais. Telefone: +${telefone}.`,
       organizationId: conv.provider.organizationId,
       leadId: conv.leadId,
@@ -263,6 +264,17 @@ export async function GET(req: Request) {
       }).catch(() => null);
       const ehSdr = !!agenteConv?.provider?.agent?.systemPrompt?.trimStart().startsWith("[SDR]");
       const sessaoSdr = ehSdr ? await loadSdrSession(fu.conversationId).catch(() => null) : null;
+
+      // Lead que já ouviu "vamos te chamar" não recebe "ficou alguma dúvida?":
+      // quem precisa agir é o dono. Encerra a sequência e avisa para ligar.
+      if (sessaoSdr?.etapa === "encerramento_handoff") {
+        await encerrarSemCanal(fu.id, fu.conversationId, fu.leadName, fu.phoneNumber, undefined, {
+          titulo: `📞 Ligação combinada — ligue para ${sessaoSdr.nome || fu.leadName || fu.phoneNumber}`,
+          corpo: `O lead combinou uma ligação${sessaoSdr.disponibilidade ? ` (${sessaoSdr.disponibilidade})` : ""} mas ainda não foi passado ao especialista. Telefone: +${fu.phoneNumber}.`,
+        });
+        results.closed++;
+        continue;
+      }
 
       // Janela de 24h: texto livre só dentro dela; fora, só template aprovado.
       const plano = planejarEnvio(ultimaDoCliente, new Date());
