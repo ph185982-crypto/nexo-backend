@@ -9,6 +9,7 @@ import { avaliarQualificacao } from "./qualificacao";
 import { decidirHandoff, faltandoParaHandoff, type ItemHandoff } from "./handoff-gate";
 import { perfilComunicacao } from "./estilo";
 import { filtrarRepetidas, pareceFechamento } from "./anti-repeticao";
+import { forcarProximoPasso, leadPerguntou, perguntaCombinada } from "./fluxo-rapido";
 import { sincronizarQualificacaoNoLead } from "./sincronizar-crm";
 import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
 import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
@@ -174,14 +175,7 @@ function mensagensDeReserva(acao: string, faltando: ItemHandoff[], slots: Slot[]
       { text: "E quando o negócio crescer mais um pouco, me chama aqui que a gente monta a estratégia certinha", delay: 2500 },
     ];
   }
-  const item = faltando[0] ?? "horario";
-  const pergunta = item === "horario" && slots.length >= 2
-    ? `qual fica melhor pra uma ligação de 20 min com o Pedro: ${slots[0].label} ou ${slots[1].label}?`
-    : PERGUNTA_NATURAL[item];
-  return [
-    { text: "Antes de eu te passar pro nosso fundador, só preciso entender mais uma coisa", delay: 0 },
-    { text: pergunta.charAt(0).toUpperCase() + pergunta.slice(1), delay: 1500 },
-  ];
+  return [{ text: perguntaCombinada(faltando.length ? faltando : ["horario"], slots), delay: 0 }];
 }
 
 // Notifica o especialista sobre um handoff por TODOS os canais disponíveis —
@@ -660,6 +654,23 @@ async function runSdrResponse(
     if (pendentes.length > 0) {
       console.log(`[SDR] Fechamento sem handoff substituído por pergunta | lead=${lead.id} | falta=${pendentes.join(",")}`);
       parsed.messages = mensagensDeReserva("continue", pendentes, slots);
+    }
+  }
+
+  // Fluxo rápido: lead já dentro do ICP → nada de pergunta fora do roteiro. O código
+  // escolhe a próxima pergunta (nome/empresa/dor/horário) e, se o lead não perguntou
+  // nada, mantém só a reação curta do modelo.
+  if (parsed.action === "continue") {
+    const sessaoIcp = { ...newSession, tem_loja_fisica: newSession.loja_fisica === "sim" ? true : newSession.loja_fisica === "nao" ? false : newSession.tem_loja_fisica };
+    if (avaliarQualificacao(sessaoIcp).qualificado && !leadPerguntou(userMessage)) {
+      const pendentes = faltandoParaHandoff(newSession);
+      if (pendentes.length > 0) {
+        const slotsAgora = pendentes[0] === "horario" && slots.length === 0
+          ? await buscarSlotsReuniao(provider.organizationId).catch(() => [])
+          : slots;
+        console.log(`[SDR] Lead no ICP — forçando próximo passo (${pendentes[0]}) | lead=${lead.id}`);
+        parsed.messages = forcarProximoPasso(parsed.messages, pendentes, slotsAgora);
+      }
     }
   }
 
