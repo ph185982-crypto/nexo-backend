@@ -5,6 +5,7 @@
 
 import type { SDRSession } from "@/lib/ai/sdr/types";
 import { faltandoParaHandoff, PERGUNTA_POR_ITEM, pareceNomeDePessoa } from "@/lib/ai/sdr/handoff-gate";
+import { avaliarQualificacao } from "@/lib/ai/sdr/qualificacao";
 
 export function primeiroNome(nome: string | null | undefined): string | null {
   if (!pareceNomeDePessoa(nome)) return null;
@@ -21,9 +22,12 @@ export function promptFollowupSdr(step: number, totalSteps: number, s: SDRSessio
     s.problema_principal && `dor que ele contou: ${s.problema_principal}`,
     s.faturamento_total && `faturamento: ${s.faturamento_total}`,
   ].filter(Boolean).join(" | ") : "";
-  const objetivo = faltando.length
-    ? `O próximo passo é descobrir ${PERGUNTA_POR_ITEM[faltando[0]]}.`
-    : "O próximo passo é ele escolher um horário para a ligação de 20 min com o Pedro, fundador da Nexo.";
+  const noIcp = s ? avaliarQualificacao({ ...s, tem_loja_fisica: s.loja_fisica === "sim" ? true : s.loja_fisica === "nao" ? false : s.tem_loja_fisica }).qualificado : false;
+  const objetivo = noIcp
+    ? "Ele já está no perfil: convide direto para a ligação de 20 min com o Pedro, fundador da Nexo, e pergunte o melhor dia e horário (hoje ou amanhã). Não faça nenhuma outra pergunta."
+    : faltando.length
+      ? `O próximo passo é descobrir ${PERGUNTA_POR_ITEM[faltando[0]]}.`
+      : "O próximo passo é ele escolher um horário para a ligação de 20 min com o Pedro, fundador da Nexo.";
   const tom = step === 1 ? "toque leve, retomando exatamente o ponto em que a conversa parou"
     : step >= totalSteps ? "último toque: sem pressão, deixe a porta aberta e diga que pode chamar quando quiser"
     : step === 2 ? "traga um ganho concreto ligado à dor dele (sem inventar números)"
@@ -39,7 +43,7 @@ ${objetivo}
 Termine com UMA pergunta simples de responder.
 
 Regras: não fale preço; não prometa resultado; não use "prezado", "certamente", negrito ou listas;
-não repita uma pergunta que ele já respondeu; não fale de estoque nem de promoção.
+não repita uma pergunta que ele já respondeu nem a última que a Nexo fez na conversa (traga um ângulo novo); não fale de estoque nem de promoção.
 Responda só com a mensagem.`;
 }
 
