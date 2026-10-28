@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2448ff">
+  <meta name="description" content="Encontre seu preço de venda e entenda o que sobra em cada venda. Uma calculadora de marketplaces simples, rápida e gratuita da Avanteza.">
+  <title>Calculadora de marketplaces | Avanteza</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232448ff'/%3E%3Ctext x='17' y='47' font-family='Arial' font-weight='bold' font-size='46' fill='%23dfff70'%3Ea%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="engine.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.5"/></symbol>
+    <symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></symbol>
+    <symbol id="tiktok-mark" viewBox="0 0 24 24"><path d="M14 3v13a5 5 0 1 1-4-4.9v3a2.1 2.1 0 1 0 1 1.9V3h3c.5 2.4 2.1 4 5 4.5v3c-2-.1-3.7-.8-5-2"/></symbol>
+    <symbol id="bag" viewBox="0 0 24 24"><path d="M5 7h14l1 14H4L5 7Z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/><path d="M14 11c-4-2-6 2-2 3s2 5-2 3"/></symbol>
+    <symbol id="box" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 5v10l9 5 9-5V8M12 13v10M7 5.8l9 5"/></symbol>
+    <symbol id="truck" viewBox="0 0 24 24"><path d="M3 5h11v12H3V5Zm11 5h4l4 4v3h-8"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="reset-icon" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 8M4 4v6h6"/></symbol>
+    <symbol id="sliders" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></symbol>
+    <symbol id="spark" viewBox="0 0 24 24"><path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4L12 3Z"/></symbol>
+  </defs></svg>
+  <header class="header wrap">
+    <a class="brand" href="#" aria-label="Avanteza — início">
+      <svg viewBox="0 0 245 67" role="img" aria-label="Avanteza Consultoria e Estratégia"><image href="assets/avanteza.jpg" width="245" height="67"/></svg>
+    </a>
+    <span class="header-tag">FERRAMENTAS PARA IR ALÉM<span class="lime-dot"></span></span>
+    <button class="how-button" id="howOpen"><svg class="icon"><use href="#info"/></svg> Como funciona</button>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="pageTitle">
+      <div>
+        <p class="eyebrow"><span class="mini-bracket">[ ]</span> CALCULADORA DE MARKETPLACES</p>
+        <h1 id="pageTitle">Seu preço certo.<br><span>Seu negócio além.</span></h1>
+        <p class="intro">Chega de vender sem saber o que sobra. Descubra seu preço<br class="desktop-break"> de venda, visualize os custos e proteja sua margem.</p>
+      </div>
+      <div class="hero-note"><span class="hero-arrow">↗</span><p>Menos achismo.<br><strong>Mais resultado.</strong></p><span class="small-note">Uma decisão melhor, a cada venda.</span></div>
+    </section>
+
+    <div class="workspace-heading"><div><span class="online-dot"></span> Sua próxima venda começa aqui</div><span><svg class="icon"><use href="#spark"/></svg> Os resultados atualizam enquanto você digita</span></div>
+    <div class="calculator-grid">
+      <section class="form-panel" aria-label="Configurar simulação">
+        <div class="mode-tabs" role="tablist" aria-label="Objetivo do cálculo">
+          <button role="tab" aria-selected="true" aria-controls="modeContent" id="suggestTab" class="mode active" data-mode="suggest"><svg class="icon"><use href="#spark"/></svg> Encontrar meu preço</button>
+          <button role="tab" aria-selected="false" aria-controls="modeContent" id="checkTab" class="mode" data-mode="check">Testar um preço de venda</button>
+        </div>
+        <form id="calculator" autocomplete="off" novalidate>
+          <div id="modeContent" role="tabpanel" aria-labelledby="suggestTab">
+            <section class="form-section marketplace-section">
+              <div class="section-title"><span class="step">01</span><h2>Onde você vai vender?</h2></div>
+              <div class="marketplaces" role="group" aria-label="Marketplace">
+                <button type="button" class="marketplace selected" data-market="shopee" aria-pressed="true"><span class="market-mark shopee"><svg class="icon"><use href="#bag"/></svg></span><span>Shopee</span><span class="selected-tick">✓</span></button>
+                <button type="button" class="marketplace" data-market="ml" aria-pressed="false"><span class="market-mark ml"><svg class="icon"><use href="#box"/></svg></span><span>Mercado Livre</span><span class="selected-tick">✓</span></button>
+                <button type="button" class="marketplace" data-market="amazon" aria-pressed="false"><span class="market-mark amazon">a<span>⌣</span></span><span>Amazon</span><span class="selected-tick">✓</span></button>
+                <button type="button" class="marketplace" data-market="magalu" aria-pressed="false"><span class="market-mark magalu">m</span><span>Magalu</span><span class="selected-tick">✓</span></button>
+                <button type="button" class="marketplace" data-market="tiktok" aria-pressed="false"><span class="market-mark tiktok" aria-hidden="true"><svg class="icon"><use href="#tiktok-mark"/></svg></span><span>TikTok Shop</span><span class="selected-tick">✓</span></button>
+                <button type="button" class="marketplace other-market" data-market="other" aria-pressed="false"><span class="market-mark other">+</span><span>Outro</span><span class="selected-tick">✓</span></button>
+              </div>
+              <div id="channelOptions" class="channel-options" hidden>
+                <div id="mlOptions" hidden><label for="mlPlan">Tipo de anúncio</label><select id="mlPlan"><option value="classic">Clássico · referência de 12%</option><option value="premium">Premium · referência de 17%</option></select></div>
+                <div id="amazonOptions" class="two-cols" hidden><div><label for="amazonPlan">Plano de venda</label><select id="amazonPlan"><option value="individual">Individual · R$ 2 por item</option><option value="professional">Profissional</option></select></div><div><label for="category">Categoria do produto</label><select id="category"></select></div><label class="checkbox-label full"><input id="installments" type="checkbox"> Incluir parcelamento sem juros (+1,5% a partir de R$ 40)</label></div>
+                <div id="tiktokOptions" hidden><label class="checkbox-label"><input id="tiktokSfp" type="checkbox" checked> Incluir programa de frete TikTok · 6%, até R$ 50 por produto</label><p class="field-help">Afiliados: informe a porcentagem em “Anúncios e afiliados”. O frete abaixo deve conter apenas custos adicionais por sua conta.</p></div>
+              </div>
+              <div class="tariff-line"><span><svg class="icon"><use href="#info"/></svg> <span id="tariffBrief">Tarifas por faixa de preço</span></span><button type="button" class="text-button" id="ratesToggle" aria-expanded="false" aria-controls="rateSettings">Ajustar taxas <svg class="icon"><use href="#sliders"/></svg></button></div>
+              <div class="rate-settings" id="rateSettings" hidden>
+                <p class="field-help" id="channelHelp"></p>
+                <label class="checkbox-label"><input type="checkbox" id="custom"> Usar minhas próprias tarifas</label>
+                <div class="two-cols rate-inputs"><div><label for="commission">Comissão</label><div class="input-wrap suffix"><input id="commission" type="text" inputmode="decimal" value="16"><span>%</span></div></div><div><label for="fixed">Tarifa fixa por item</label><div class="input-wrap"><span>R$</span><input id="fixed" type="text" inputmode="decimal" value="0,00"></div></div></div>
+                <p class="field-help" id="rateExtra"></p>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <div class="section-title"><span class="step">02</span><h2>Quanto custa o seu produto?</h2></div>
+              <div class="two-cols"><div><label for="cost">Custo do produto <span class="required">*</span></label><div class="input-wrap"><span>R$</span><input id="cost" type="text" inputmode="decimal" value="30,00" aria-describedby="costHelp"></div><p class="field-help" id="costHelp">O que você paga para comprar ou produzir.</p></div><div><label for="packaging">Embalagem por unidade</label><div class="input-wrap"><span>R$</span><input id="packaging" type="text" inputmode="decimal" value="2,00"></div><p class="field-help">Caixa, envelope, etiqueta e proteção.</p></div></div>
+              <div class="shipping-box">
+                <div class="shipping-top"><label for="shipping"><svg class="icon"><use href="#truck"/></svg> Frete por sua conta</label><span id="shippingBadge" class="small-badge">Reserva estimada</span></div>
+                <div class="shipping-fields"><select id="shippingMode" aria-label="Forma de considerar o frete"><option value="estimate">Estimar pelo peso</option><option value="manual">Informar meu frete</option><option value="covered">Sem custo para mim</option></select><select id="weight" aria-label="Peso do pacote"><option value="light">Até 500 g</option><option value="medium">500 g a 2 kg</option><option value="heavy">Acima de 2 kg</option></select><div class="input-wrap"><span>R$</span><input id="shipping" type="text" inputmode="decimal" value="12,00"></div></div>
+                <p class="field-help" id="shippingHelp">Reserva ilustrativa por peso. Troque pelo custo real do seu anúncio.</p>
+              </div>
+              <button type="button" id="extraToggle" class="expand-button" aria-expanded="false" aria-controls="extraSettings"><span>Impostos, anúncios e outros custos <span class="default-tax" id="extraBrief">4% de imposto</span></span><svg class="icon"><use href="#chevron"/></svg></button>
+              <div id="extraSettings" class="extra-settings" hidden><div class="two-cols"><div><label for="tax">Imposto sobre a venda</label><div class="input-wrap suffix"><input id="tax" type="text" inputmode="decimal" value="4"><span>%</span></div></div><div><label for="ads">Anúncios e afiliados</label><div class="input-wrap suffix"><input id="ads" type="text" inputmode="decimal" value="0"><span>%</span></div></div><div class="full"><label for="extra">Outros custos por unidade</label><div class="input-wrap"><span>R$</span><input id="extra" type="text" inputmode="decimal" value="0,00"></div><p class="field-help">Inclua operação, devoluções previstas, armazenagem e mensalidades rateadas.</p></div></div><p class="field-help">Os 4% são um exemplo editável. Use a alíquota efetiva da sua empresa.</p></div>
+            </section>
+
+            <section class="form-section goal-section">
+              <div class="section-title"><span class="step">03</span><h2 id="goalTitle">Qual margem você quer ter?</h2></div>
+              <div id="targetFields"><div class="margin-top"><p>Seu lucro como porcentagem<br>do preço de venda.</p><div class="margin-input"><input type="number" id="target" min="0" max="99" step="0.5" value="20" aria-label="Margem desejada"><span>%</span></div></div><input type="range" id="targetRange" min="0" max="60" step="0.5" value="20" aria-label="Ajustar margem desejada"><div class="range-labels"><span>0%</span><span>30%</span><span>60%</span></div></div>
+              <div id="priceFields" hidden><label for="price">Preço que você pretende anunciar</label><div class="input-wrap sale-input"><span>R$</span><input type="text" inputmode="decimal" id="price" value="99,90"></div><p class="field-help">Veja quanto sobra depois dos custos informados.</p></div>
+            </section>
+          </div>
+          <p class="form-error" id="formError" role="alert" hidden></p>
+          <div class="form-bottom"><span><svg class="icon"><use href="#check"/></svg> Seus dados ficam neste navegador</span><button type="button" class="text-button reset-button" id="reset"><svg class="icon"><use href="#reset-icon"/></svg> Recomeçar</button></div>
+        </form>
+      </section>
+
+      <aside class="results" id="results" aria-label="Resultado da simulação" aria-live="polite" aria-atomic="true">
+        <div class="price-card"><div class="result-eyebrow"><span id="resultLabel">SEU PREÇO SUGERIDO</span><span class="live-label"><span></span> AO VIVO</span></div><div class="price-display"><span class="price-currency">R$</span><span id="resultPrice">96,78</span><svg class="price-arrow icon"><use href="#arrow"/></svg></div><p class="price-caption" id="priceCaption">Para alcançar sua margem de 20% na Shopee.</p><div class="profit-row"><div><span>Lucro por unidade</span><strong id="resultProfit">R$ 19,36</strong></div><div><span>Margem de lucro</span><strong id="resultMargin">20,0%</strong></div></div><div class="result-status" id="resultStatus"><svg class="icon"><use href="#check"/></svg> Seu preço, com estratégia.</div><span class="decor-bracket" aria-hidden="true">]</span></div>
+
+        <section class="breakdown"><div class="breakdown-heading"><h2>Para onde vai cada real</h2><span id="resultChannel" class="channel-badge">Shopee</span></div><div class="distribution" id="distribution" aria-label="Distribuição do preço de venda"></div><dl class="cost-list"><div><dt><i class="legend product"></i>Produto + embalagem</dt><dd id="outProduct"></dd></div><div><dt><i class="legend fees"></i>Comissão <span id="outRate"></span></dt><dd id="outCommission"></dd></div><div><dt><i class="legend fees"></i>Tarifa fixa por item</dt><dd id="outFixed"></dd></div><div id="tiktokServiceRow" hidden><dt><i class="legend fees"></i>Programa de frete TikTok</dt><dd id="outService"></dd></div><div><dt><i class="legend shipping"></i>Frete <span id="outShippingType"></span></dt><dd id="outShipping"></dd></div><div><dt><i class="legend tax"></i>Impostos + anúncios</dt><dd id="outTax"></dd></div><div id="otherRow" hidden><dt><i class="legend tax"></i>Outros custos</dt><dd id="outOther"></dd></div><div class="cost-total"><dt>Custo total por venda</dt><dd id="outTotal"></dd></div></dl><div class="minimum"><div><span>Preço mínimo para não perder</span><strong id="outMinimum"></strong></div><svg class="icon"><use href="#info"/></svg></div><button id="copySummary" class="copy-button"><svg class="icon"><use href="#copy"/></svg> Copiar resumo da simulação <svg class="icon"><use href="#arrow"/></svg></button><p class="result-footnote">Simulação por unidade, com os custos informados.<br>Revise tarifas e frete no painel do marketplace.</p></section>
+      </aside>
+    </div>
+
+    <section class="compare-panel"><button type="button" id="compareToggle" aria-expanded="false" aria-controls="comparison"><span class="compare-icon"><svg class="icon"><use href="#sliders"/></svg></span><span><strong>Mesmo produto. Outras possibilidades.</strong><span>Compare o preço para sua margem nos outros canais.</span></span><span class="compare-action">Comparar canais <svg class="icon"><use href="#arrow"/></svg></span></button><div id="comparison" hidden><p class="field-help">Mesmos custos, frete e margem. Cada canal usa suas tarifas de referência; ajustes manuais valem apenas para o canal selecionado. Não é uma cotação oficial.</p><div class="comparison-grid" id="comparisonGrid"></div></div></section>
+    <div class="method-note"><svg class="icon"><use href="#info"/></svg><p>Uma boa precificação começa com custos reais. As tarifas são referências editáveis, e o frete por peso é uma reserva ilustrativa. <button id="sourcesOpen" class="text-button">Entenda as premissas e veja as fontes <span>↗</span></button></p></div>
+  </main>
+
+  <footer class="footer wrap"><span>Uma ferramenta <strong>avanteza</strong><span class="lime-dot"></span></span><span>Consultoria e estratégia <span class="footer-separator">/</span> Visão para ir além.</span><span>© 2026 Avanteza</span></footer>
+
+  <dialog id="helpDialog"><div class="dialog-header"><span class="eyebrow">PRECIFICAÇÃO COM CLAREZA</span><button class="close-dialog" aria-label="Fechar">×</button></div><h2>Do custo ao preço.<br><span>Sem complicar.</span></h2><div class="help-steps"><p><span class="step">01</span><span><strong>Escolha onde vender.</strong> O canal define as tarifas de referência. Ajuste para as condições da sua loja.</span></p><p><span class="step">02</span><span><strong>Coloque os seus custos.</strong> Informe produto, embalagem, frete e despesas por unidade.</span></p><p><span class="step">03</span><span><strong>Defina o que quer ganhar.</strong> Em “Encontrar meu preço”, escolha sua margem. Em “Testar um preço”, veja o resultado do valor que já tem em mente.</span></p></div><div class="dialog-callout"><strong>Margem não é markup.</strong><p>Vender a R$ 100 e lucrar R$ 20 significa margem de 20%. A conta considera os custos e percentuais informados.</p></div><button class="primary-button close-help">Vamos calcular <svg class="icon"><use href="#arrow"/></svg></button></dialog>
+
+  <dialog id="sourcesDialog"><div class="dialog-header"><span class="eyebrow">COMO A CONTA É FEITA</span><button class="close-dialog" aria-label="Fechar">×</button></div><h2>Uma conta aberta.<br><span>Para decidir melhor.</span></h2><div class="source-copy"><p><strong>Lucro por unidade</strong> = preço de venda − produto − embalagem − frete do vendedor − comissão − tarifa fixa − programa de frete, quando aplicável − impostos − anúncios − outros custos.</p><p><strong>Preço sugerido:</strong> o menor valor em centavos que atinge a margem desejada dentro das premissas. A calculadora considera as mudanças de faixa da Shopee. O preço mínimo usa margem zero.</p><p><strong>Shopee:</strong> referência para CNPJ de outubro/2026: abaixo de R$ 80, 20% + R$ 4,50; de R$ 80 a R$ 99,99, 14% + R$ 16; de R$ 100 a R$ 199,99, 14% + R$ 20; a partir de R$ 200, 14% + R$ 26. Abaixo de R$ 9, o fixo é metade do preço. CPF e campanhas podem ter adicionais: substitua pelas tarifas do seu extrato. A página oficial depende de conteúdo dinâmico; a tabela foi confrontada com publicações de outubro/2026.</p><p><a href="https://seller.shopee.com.br/edu/article/26839" target="_blank" rel="noopener noreferrer">Política da Shopee ↗</a> · <a href="https://www.tuecommerce.com.br/blog/comissao-shopee-vendedor" target="_blank" rel="noopener noreferrer">Tabela consultada ↗</a></p><p><strong>Mercado Livre:</strong> 12% no Clássico e 17% no Premium são exemplos dentro das faixas por categoria, não uma tarifa universal. Não presumimos uma tarifa fixa. Informe os custos de envio e por unidade do anúncio, evitando somar o mesmo custo duas vezes.</p><p><a href="https://vendedores.mercadolivre.com.br/nota/como-funcionam-as-taxas-do-mercado-livre" target="_blank" rel="noopener noreferrer">Tarifas do Mercado Livre ↗</a> · <a href="https://www.mercadolivre.com.br/simulador-de-custos" target="_blank" rel="noopener noreferrer">Simulador oficial ↗</a></p><p><strong>Amazon:</strong> comissão por categoria, mínimo de R$ 2 nas categorias disponíveis aqui e R$ 2 por item no plano Individual. Acessórios e móveis têm comissão progressiva. A opção de parcelamento soma 1,5% a partir de R$ 40. No Profissional, inclua mensalidade rateada em “Outros custos”. Simulação com frete do vendedor absorvido no preço; não inclui FBA/DBA ou frete cobrado à parte do comprador.</p><p><a href="https://venda.amazon.com.br/precos" target="_blank" rel="noopener noreferrer">Tabela de preços da Amazon ↗</a></p><p><strong>Magalu:</strong> 18% é um exemplo de simulação. Sua comissão, tarifa por item e incentivos dependem do contrato. Use “Ajustar taxas” para refletir seu painel.</p><p><a href="https://universo.magalu.com/blog/artigo/comissaonovosvendedores" target="_blank" rel="noopener noreferrer">Condições e incentivos Magalu ↗</a></p><p><strong>TikTok Shop:</strong> referência vigente desde 15/07/2026: abaixo de R$ 50, comissão de 10% e R$ 4 por item; a partir de R$ 50, 6% e R$ 6 por item. Use o preço após os descontos do vendedor. O programa de frete, ativado inicialmente nesta simulação, soma 6%, com teto de R$ 50 por produto. Desative se sua loja não participa. Informe afiliados em “Anúncios e afiliados” e apenas o frete adicional por sua conta no campo de frete. Tarifas manuais substituem comissão e fixo; o programa de frete continua separado.</p><p><a href="https://seller-br.tiktok.com/university/essay?knowledge_id=24428156307201" target="_blank" rel="noopener noreferrer">Comissões do TikTok Shop ↗</a> · <a href="https://seller-br.tiktok.com/university/essay?knowledge_id=5665577566734097&amp;lang=pt-BR" target="_blank" rel="noopener noreferrer">Programa de taxas de envio ↗</a></p><p><strong>Frete e impostos:</strong> R$ 12 até 500 g, R$ 18 até 2 kg e R$ 28 acima de 2 kg são reservas ilustrativas criadas para esta ferramenta, sem cotação por CEP ou integração logística. Não são tarifas dos marketplaces. Os 4% de imposto são um exemplo. Inclua particularidades fiscais, promoções, devoluções, armazenagem e custos adicionais nos campos disponíveis.</p><p class="field-help">Referências consultadas em 28/10/2026. Sem sincronização automática com marketplaces. Não há envio dos dados digitados para servidores.</p></div></dialog>
+  <dialog id="copyDialog"><div class="dialog-header"><h2>Seu resumo</h2><button class="close-dialog" aria-label="Fechar">×</button></div><p>Copie o texto abaixo para guardar a sua simulação.</p><textarea id="copyText" rows="14" readonly aria-label="Resumo para copiar"></textarea></dialog>
+  <a class="mobile-summary" id="mobileSummary" href="#results" aria-label="Ver resultado completo"><span><small id="mobileLabel">Preço sugerido</small><strong id="mobilePrice">R$ 96,78</strong></span><span><small>Lucro por venda</small><strong id="mobileProfit">R$ 19,36</strong></span><span class="mobile-cta">Ver cálculo <svg class="icon"><use href="#arrow"/></svg></span></a>
+  <div id="toast" role="status" class="toast" hidden><svg class="icon"><use href="#check"/></svg><span></span></div>
+  <noscript><p class="noscript">Ative o JavaScript no navegador para usar a calculadora.</p></noscript>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a51c56179ad91c3f',t:'MTc5MzIxNTYzMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
