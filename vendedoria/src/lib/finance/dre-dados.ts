@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma/client";
 import { whereEscopo, whereEscopoReceita, type Escopo } from "./escopo";
 import { mesDe, periodoAnterior, somarMeses, toISODate, type Periodo } from "./periodo";
 import {
-  agruparLinhas, chaveCategoria, classificar, ehGrupoDre, gerarInsights, grupoInfo, montarDre, resumoDoMes,
+  agruparLinhas, chaveCategoria, chaveLancamento, classificar, ehGrupoDre, gerarInsights, grupoInfo, montarDre, resumoDoMes,
   type GrupoDre, type ItemClassificacao, type LinhaAgregada, type MapaClassificacao, type RelatorioDre, type TipoLancamento,
 } from "./dre";
 
@@ -25,57 +25,71 @@ export async function carregarMapaClassificacao(): Promise<MapaClassificacao> {
   return m;
 }
 
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+/** Um item por lançamento do extrato: a descrição decide a linha da DRE. */
 async function linhasDoPeriodo(p: Periodo, escopo: Escopo): Promise<LinhaAgregada[]> {
-  const rows = await prisma.transacao.groupBy({
-    by: ["tipo", "categoria"],
+  const rows = await prisma.transacao.findMany({
     where: { ...whereTransacaoPeriodo(p), ...whereEscopo(escopo) },
-    _sum: { valor: true },
-    _count: { _all: true },
+    select: { id: true, tipo: true, categoria: true, descricao: true, valor: true, data_transacao: true },
   });
   return rows
     .filter((r) => ehTipo(r.tipo))
-    .map((r) => ({ tipo: r.tipo as TipoLancamento, categoria: r.categoria, total: r._sum.valor ?? 0, quantidade: r._count._all }));
+    .map((r) => ({
+      tipo: r.tipo as TipoLancamento,
+      categoria: r.categoria,
+      total: r.valor,
+      quantidade: 1,
+      id: r.id,
+      descricao: r.descricao,
+      data: iso(r.data_transacao),
+    }));
 }
 
 /** Receitas previstas em aberto e contas a pagar pendentes do período (modo Projetado). */
 async function previstosDoPeriodo(p: Periodo, escopo: Escopo) {
   const noPeriodo = { gte: p.de, lte: p.ate };
-  const receitas = await prisma.receitaPrevistaMax.aggregate({
+  const receitas = await prisma.receitaPrevistaMax.findMany({
     where: { AND: [whereEscopoReceita(escopo), { data_prevista: noPeriodo }, { status: { in: ["pendente", "atrasada"] } }] },
-    _sum: { valor: true },
-    _count: true,
+    select: { descricao: true, cliente: true, valor: true, data_prevista: true },
   });
-  const contas = await prisma.contaPagarMax.groupBy({
-    by: ["categoria"],
+  const contas = await prisma.contaPagarMax.findMany({
     where: { status: "pendente", data_vencimento: noPeriodo, ...whereEscopo(escopo) },
-    _sum: { valor: true },
-    _count: { _all: true },
+    select: { descricao: true, categoria: true, valor: true, data_vencimento: true },
   });
 
-  const linhas: LinhaAgregada[] = [];
-  const totalReceitas = receitas._sum.valor ?? 0;
   // Mesma categoria que a confirmação cria no extrato ("Receita Prevista"):
   // uma classificação manual dela vale para o realizado e para o previsto.
-  if (totalReceitas > 0) linhas.push({ tipo: "receita", categoria: "Receita Prevista", total: totalReceitas, quantidade: receitas._count, previsto: true });
-  let totalDespesas = 0;
-  let qtdDespesas = 0;
-  for (const c of contas) {
-    const v = c._sum.valor ?? 0;
-    totalDespesas += v;
-    qtdDespesas += c._count._all;
-    linhas.push({ tipo: "despesa", categoria: c.categoria, total: v, quantidade: c._count._all, previsto: true });
-  }
-  return { linhas, receitas: totalReceitas, receitasQtd: receitas._count, despesas: totalDespesas, despesasQtd: qtdDespesas };
+  const linhas: LinhaAgregada[] = [
+    ...receitas.map((r) => ({
+      tipo: "receita" as const,
+      categoria: "Receita Prevista",
+      total: r.valor,
+      quantidade: 1,
+      previsto: true,
+      descricao: r.cliente ? `${r.descricao} — ${r.cliente}` : r.descricao,
+      data: iso(r.data_prevista),
+    })),
+    ...contas.map((c) => ({
+      tipo: "despesa" as const,
+      categoria: c.categoria,
+      total: c.valor,
+      quantidade: 1,
+      previsto: true,
+      descricao: c.descricao,
+      data: iso(c.data_vencimento),
+    })),
+  ];
+  const soma = (xs: Array<{ valor: number }>) => xs.reduce((acc, x) => acc + x.valor, 0);
+  return { linhas, receitas: soma(receitas), receitasQtd: receitas.length, despesas: soma(contas), despesasQtd: contas.length };
 }
 
 /** 12 meses até `mesFim` (realizado) + acumulado do ano de `mesFim`. */
 async function serieMensal(mesFim: string, escopo: Escopo, mapa: MapaClassificacao) {
   const meses = Array.from({ length: 12 }, (_, i) => somarMeses(mesFim, i - 11));
-  const rows = await prisma.transacao.groupBy({
-    by: ["mes", "tipo", "categoria"],
+  const rows = await prisma.transacao.findMany({
     where: { mes: { in: meses }, ...whereEscopo(escopo) },
-    _sum: { valor: true },
-    _count: { _all: true },
+    select: { id: true, mes: true, tipo: true, categoria: true, descricao: true, valor: true },
   });
   const ano = Number(mesFim.slice(0, 4));
   const inicioAno = `${ano}-01`;
@@ -84,7 +98,7 @@ async function serieMensal(mesFim: string, escopo: Escopo, mapa: MapaClassificac
   const mesesComMovimento = new Set<string>();
   for (const r of rows) {
     if (!ehTipo(r.tipo)) continue;
-    const linha: LinhaAgregada = { tipo: r.tipo, categoria: r.categoria, total: r._sum.valor ?? 0, quantidade: r._count._all };
+    const linha: LinhaAgregada = { tipo: r.tipo, categoria: r.categoria, total: r.valor, quantidade: 1, id: r.id, descricao: r.descricao };
     if (!porMes.has(r.mes)) porMes.set(r.mes, []);
     porMes.get(r.mes)!.push(linha);
     if (r.mes >= inicioAno && r.mes <= mesFim) {
@@ -140,6 +154,27 @@ export async function definirClassificacao(tipo: TipoLancamento, categoria: stri
   await prisma.dreClassificacaoMax.upsert({
     where: { tipo_categoria: { tipo, categoria: chave } },
     create: { tipo, categoria: chave, grupo },
+    update: { grupo },
+  });
+}
+
+/**
+ * Move UM lançamento do extrato para outra linha da DRE (ou, com grupo null,
+ * devolve à regra automática). O lançamento em si não muda.
+ */
+export async function definirClassificacaoLancamento(id: string, grupo: GrupoDre | null): Promise<void> {
+  const t = await prisma.transacao.findUnique({ where: { id }, select: { tipo: true } });
+  if (!t) throw new Error("Lançamento não encontrado");
+  if (!ehTipo(t.tipo)) throw new Error("Lançamento sem tipo receita/despesa");
+  const chave = chaveLancamento(id);
+  if (grupo === null) {
+    await prisma.dreClassificacaoMax.deleteMany({ where: { tipo: t.tipo, categoria: chave } });
+    return;
+  }
+  if (grupoInfo(grupo).tipo !== t.tipo) throw new Error(`O grupo "${grupoInfo(grupo).label}" não é de ${t.tipo}`);
+  await prisma.dreClassificacaoMax.upsert({
+    where: { tipo_categoria: { tipo: t.tipo, categoria: chave } },
+    create: { tipo: t.tipo, categoria: chave, grupo },
     update: { grupo },
   });
 }

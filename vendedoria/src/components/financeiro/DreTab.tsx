@@ -22,7 +22,7 @@ import { FiltroPeriodo, Seg, filtroInicial, filtroParaQuery, type EscopoFiltro, 
 import { VariacaoBadge } from "./OverviewTab";
 import {
   ESTRUTURA_DRE, GRUPOS_DRE, analiseVertical, variacaoPct, dreParaCsv, grupoInfo, gruposDoTipo, labelMesCurto,
-  type CategoriasPorGrupo, type Dre, type GrupoDre, type ItemClassificacao, type PontoSerie, type RelatorioDre,
+  type CategoriasPorGrupo, type Dre, type GrupoDre, type ItemClassificacao, type ItemLancamento, type PontoSerie, type RelatorioDre,
 } from "@/lib/finance/dre";
 
 const TOOLTIP_STYLE = {
@@ -121,6 +121,29 @@ export function DreTab() {
     }
   };
 
+  const moverLancamento = async (l: ItemLancamento, grupo: GrupoDre | null) => {
+    if (!l.id) return;
+    setOcupado(l.id);
+    try {
+      const r = await fetch("/api/financeiro/dre/classificacao", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lancamentoId: l.id, grupo }),
+      });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        setAviso(j.error ?? "Não foi possível mover o lançamento.");
+        return;
+      }
+      setAviso(grupo ? `"${l.descricao}" agora entra em ${grupoInfo(grupo).label}.` : `"${l.descricao}" voltou para a regra automática.`);
+      await carregar();
+    } catch {
+      setAviso("Sem conexão com o servidor.");
+    } finally {
+      setOcupado(null);
+    }
+  };
+
   if (!data && (loading || !pronto)) {
     return <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
   }
@@ -211,10 +234,10 @@ export function DreTab() {
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Demonstração do resultado — {projetado ? "projetada" : "realizada"}</CardTitle>
-            <p className="text-xs text-muted-foreground">Clique numa linha para abrir as categorias que a compõem.</p>
+            <p className="text-xs text-muted-foreground">Clique numa linha para abrir as categorias e, nelas, os lançamentos. Um lançamento no lugar errado pode ser movido ali mesmo.</p>
           </CardHeader>
           <CardContent>
-            <TabelaDre dre={dre} anterior={ant} porGrupo={porGrupo} rotAtual={data.periodo.label} rotAnt={rotAnt} comparar={!projetado} />
+            <TabelaDre dre={dre} anterior={ant} porGrupo={porGrupo} rotAtual={data.periodo.label} rotAnt={rotAnt} comparar={!projetado} ocupado={ocupado} onMover={moverLancamento} />
           </CardContent>
         </Card>
 
@@ -259,7 +282,9 @@ export function DreTab() {
       <p className="text-xs text-muted-foreground flex items-start gap-1.5">
         <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
         <span>
-          Como ler: regime de caixa — entram só as entradas e saídas confirmadas no extrato, agrupadas pela categoria de cada lançamento.
+          Como ler: regime de caixa — entram só as entradas e saídas confirmadas no extrato. Cada lançamento cai numa linha pela descrição
+          (ex.: &quot;Saneago&quot; → Ocupação, &quot;Salário&quot; → Pessoal) e, se ela não disser nada, pela categoria. Pagamento de dívidas e cartões,
+          investimentos e empréstimos recebidos ficam abaixo do resultado: mexem no caixa, não no lucro.
           AV % é a participação sobre a receita líquida; Var. % compara com {rotAnt}. No modo Projetado somam-se as receitas previstas em
           aberto e as contas a pagar pendentes do período. Esta aba não altera nenhum lançamento.
         </span>
@@ -298,8 +323,9 @@ function VariacaoCel({ pct, inv }: { pct: number | null; inv: boolean }) {
   );
 }
 
-function TabelaDre({ dre, anterior, porGrupo, rotAtual, rotAnt, comparar }: {
+function TabelaDre({ dre, anterior, porGrupo, rotAtual, rotAnt, comparar, ocupado, onMover }: {
   dre: Dre; anterior: Dre; porGrupo: CategoriasPorGrupo; rotAtual: string; rotAnt: string; comparar: boolean;
+  ocupado: string | null; onMover: (l: ItemLancamento, grupo: GrupoDre | null) => void;
 }) {
   const [abertos, setAbertos] = useState<Set<string>>(() => new Set());
   const toggle = (k: string) => setAbertos((s) => {
@@ -388,18 +414,31 @@ function TabelaDre({ dre, anterior, porGrupo, rotAtual, rotAnt, comparar }: {
                           )}
                         </tr>
                       )}
-                      {itens.map((it) => (
-                        <tr key={`${g}|${it.categoria}|${it.previsto ? "p" : "r"}`} className="border-b border-border/40 text-xs">
-                          <td className={cn("py-1 text-muted-foreground", varios ? "pl-11" : "pl-7")}>
-                            {it.categoria}
-                            {it.previsto && <Badge variant="warning" className="ml-1.5 text-[10px] py-0">previsto</Badge>}
-                            <span className="ml-1.5 text-[10px] opacity-70">{it.quantidade} lanç.</span>
-                          </td>
-                          <td className="py-1 text-right tabular-nums text-muted-foreground">{BRL.format(it.total)}</td>
-                          <td className="py-1 pl-3 text-right tabular-nums text-muted-foreground">{fmtPct(analiseVertical(it.total, dre.receitaLiquida))}</td>
-                          {comparar && <td colSpan={2} />}
-                        </tr>
-                      ))}
+                      {itens.map((it) => {
+                        const k = `${g}|${it.categoria}|${it.previsto ? "p" : "r"}`;
+                        const abertoCat = abertos.has(k);
+                        return (
+                          <React.Fragment key={k}>
+                            <tr className="border-b border-border/40 text-xs">
+                              <td className={cn("py-1 text-muted-foreground", varios ? "pl-11" : "pl-7")}>
+                                <button type="button" onClick={() => toggle(k)} aria-expanded={abertoCat} className="inline-flex items-center gap-1 text-left hover:text-foreground">
+                                  {abertoCat ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
+                                  {it.categoria}
+                                </button>
+                                {it.previsto && <Badge variant="warning" className="ml-1.5 text-[10px] py-0">previsto</Badge>}
+                                <span className="ml-1.5 text-[10px] opacity-70">{it.quantidade} lanç.</span>
+                              </td>
+                              <td className="py-1 text-right tabular-nums text-muted-foreground">{BRL.format(it.total)}</td>
+                              <td className="py-1 pl-3 text-right tabular-nums text-muted-foreground">{fmtPct(analiseVertical(it.total, dre.receitaLiquida))}</td>
+                              {comparar && <td colSpan={2} />}
+                            </tr>
+                            {abertoCat && it.lancamentos.map((l, i) => (
+                              <LinhaLancamento key={l.id ?? `${k}|${i}`} l={l} grupo={g} recuo={varios ? "pl-16" : "pl-12"} cols={cols}
+                                ocupado={!!l.id && ocupado === l.id} onMover={onMover} />
+                            ))}
+                          </React.Fragment>
+                        );
+                      })}
                       {!varios && itens.length === 0 && (
                         <tr className="text-xs">
                           <td colSpan={cols} className="py-1 pl-7 text-muted-foreground italic">Nenhuma categoria neste grupo no período.</td>
@@ -415,6 +454,59 @@ function TabelaDre({ dre, anterior, porGrupo, rotAtual, rotAnt, comparar }: {
       </table>
     </div>
   );
+}
+
+const ORIGEM_LABEL: Record<ItemLancamento["origem"], string> = {
+  lancamento: "movido à mão",
+  categoria: "pela categoria (à mão)",
+  descricao: "pela descrição",
+  padrao: "pela categoria",
+};
+
+function LinhaLancamento({ l, grupo, recuo, cols, ocupado, onMover }: {
+  l: ItemLancamento; grupo: GrupoDre; recuo: string; cols: number; ocupado: boolean;
+  onMover: (l: ItemLancamento, grupo: GrupoDre | null) => void;
+}) {
+  const tipo = grupoInfo(grupo).tipo;
+  return (
+    <tr className="border-b border-border/30 text-[11px] bg-muted/10">
+      <td colSpan={cols} className={cn("py-1 pr-2", recuo)}>
+        <div className="flex items-center justify-between gap-3">
+          <span className="min-w-0 flex-1 text-foreground/80">
+            {l.descricao}
+            {l.data && <span className="ml-1.5 text-muted-foreground">{fmtDataCurta(l.data)}</span>}
+            <span className="ml-1.5 tabular-nums text-muted-foreground">{BRL.format(l.valor)}</span>
+            <span className="ml-1.5 text-[10px] text-muted-foreground/70">{ORIGEM_LABEL[l.origem]}</span>
+          </span>
+          {l.id && !l.previsto && (
+            <span className="flex items-center gap-1.5 shrink-0">
+              {ocupado && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+              <select
+                className="h-7 w-[200px] rounded-md border border-input bg-background px-1.5 text-[11px] text-foreground outline-none focus:border-primary"
+                value={grupo}
+                disabled={ocupado}
+                aria-label={`Mover ${l.descricao} para outra linha da DRE`}
+                onChange={(e) => onMover(l, e.target.value as GrupoDre)}
+              >
+                {gruposDoTipo(tipo).map((g) => <option key={g.key} value={g.key}>{g.label}</option>)}
+              </select>
+              {l.origem === "lancamento" && (
+                <button type="button" disabled={ocupado} onClick={() => onMover(l, null)} title="Voltar para a regra automática"
+                  className="inline-flex items-center gap-0.5 text-[10px] text-primary hover:underline">
+                  <RotateCcw className="w-3 h-3" /> automático
+                </button>
+              )}
+            </span>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function fmtDataCurta(iso: string): string {
+  const [, m, d] = iso.split("-");
+  return `${d}/${m}`;
 }
 
 /** Tira os meses sem movimento do começo da série (mantém ao menos os 6 últimos). */
@@ -569,8 +661,8 @@ function ClassificacaoCard({ itens, manuais, ocupado, onChange }: {
       {aberto && (
         <CardContent className="space-y-3">
           <p className="text-xs text-muted-foreground">
-            Por padrão a categoria cai no grupo pela palavra-chave (ex.: &quot;Assinaturas&quot; → Tecnologia). Se alguma estiver no lugar errado,
-            troque aqui: a DRE recalcula na hora e nenhum lançamento muda.
+            Aqui você fixa a linha de uma categoria inteira (vale para todos os lançamentos dela, acima da regra pela descrição). Para um caso
+            isolado, abra a linha na tabela e mova só aquele lançamento. A DRE recalcula na hora e nenhum lançamento muda.
           </p>
           <div className="relative max-w-xs">
             <Search className="w-3.5 h-3.5 absolute left-2 top-2.5 text-muted-foreground" />

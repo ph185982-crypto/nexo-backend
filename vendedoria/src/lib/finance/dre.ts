@@ -2,27 +2,36 @@
 // sem Prisma, usadas no servidor (API) e no navegador (tabela, gráficos, CSV).
 //
 // Regime de caixa: a DRE "realizada" soma o que está no extrato (Transacao).
-// Cada categoria do extrato cai em um grupo da DRE — por padrão pela palavra-
-// chave (classificarPadrao) e, quando o usuário mudou à mão na aba DRE, pela
-// tabela DreClassificacaoMax. Nenhum lançamento é alterado: só a leitura muda.
+// Cada LANÇAMENTO cai numa linha da DRE, nesta ordem de prioridade:
+//   1. o lançamento foi movido à mão na aba DRE;
+//   2. a categoria foi classificada à mão na aba DRE;
+//   3. a descrição bate numa regra (ex.: "Salário da Layane" → Pessoal,
+//      "Saneago" → Ocupação, "empréstimo com Fernando" → não operacional);
+//   4. a categoria bate numa regra (ex.: "Assinaturas" → Tecnologia);
+//   5. sobra: receita operacional / despesas administrativas.
+// A descrição vem antes da categoria porque as categorias do extrato são
+// genéricas ("Dívidas/Parcelas" guarda água, internet, cartão e até salário).
+// Nenhum lançamento é alterado: só a leitura muda.
 
 export type TipoLancamento = "receita" | "despesa";
 
 export const GRUPOS_DRE = [
-  { key: "receita_operacional", tipo: "receita", label: "Receita operacional",           descricao: "Serviços, vendas, contratos e salário" },
-  { key: "receita_outras",      tipo: "receita", label: "Outras receitas",               descricao: "Reembolsos, prêmios e entradas eventuais" },
-  { key: "receita_financeira",  tipo: "receita", label: "Receitas financeiras",          descricao: "Rendimentos, juros recebidos e cashback" },
-  { key: "deducoes",            tipo: "despesa", label: "Deduções da receita",           descricao: "Impostos sobre vendas (DAS), taxas de plataforma e devoluções" },
-  { key: "custos",              tipo: "despesa", label: "Custos diretos",                descricao: "Mercadorias, fornecedores, frete e insumos da entrega" },
-  { key: "pessoal",             tipo: "despesa", label: "Pessoal",                       descricao: "Salários, pró-labore, freelancers e encargos" },
-  { key: "marketing",           tipo: "despesa", label: "Marketing e vendas",            descricao: "Anúncios, tráfego pago e comissões" },
-  { key: "tecnologia",          tipo: "despesa", label: "Tecnologia e assinaturas",      descricao: "Software, internet, telefone e hospedagem" },
-  { key: "ocupacao",            tipo: "despesa", label: "Ocupação e utilidades",         descricao: "Aluguel, condomínio, água, luz e moradia" },
-  { key: "administrativas",     tipo: "despesa", label: "Administrativas e gerais",      descricao: "Contabilidade, escritório e o que não tem grupo próprio" },
-  { key: "pessoais",            tipo: "despesa", label: "Dia a dia e pessoais",          descricao: "Alimentação, transporte, saúde, lazer e vestuário" },
-  { key: "financeiras",         tipo: "despesa", label: "Despesas financeiras",          descricao: "Juros, tarifas, parcelas de dívidas e cartão" },
-  { key: "impostos_resultado",  tipo: "despesa", label: "Impostos sobre o resultado",    descricao: "IRPJ, CSLL e imposto de renda" },
-  { key: "investimentos",       tipo: "despesa", label: "Investimentos e não operacionais", descricao: "Equipamentos, aplicações, reservas e transferências" },
+  { key: "receita_operacional",     tipo: "receita", label: "Receita operacional",              descricao: "Serviços, vendas, contratos e salário" },
+  { key: "receita_outras",          tipo: "receita", label: "Outras receitas",                  descricao: "Reembolsos, prêmios e entradas eventuais" },
+  { key: "receita_financeira",      tipo: "receita", label: "Receitas financeiras",             descricao: "Rendimentos, juros recebidos e cashback" },
+  { key: "receita_nao_operacional", tipo: "receita", label: "Entradas não operacionais",        descricao: "Empréstimos recebidos, aportes, resgates e transferências — entram no caixa, não no resultado" },
+  { key: "deducoes",                tipo: "despesa", label: "Deduções da receita",              descricao: "Impostos sobre vendas (DAS), taxas de plataforma e devoluções" },
+  { key: "custos",                  tipo: "despesa", label: "Custos diretos",                   descricao: "Mercadorias, fornecedores, frete e insumos da entrega" },
+  { key: "pessoal",                 tipo: "despesa", label: "Pessoal",                          descricao: "Salários, pró-labore, freelancers e encargos" },
+  { key: "marketing",               tipo: "despesa", label: "Marketing e vendas",               descricao: "Anúncios, tráfego pago e comissões" },
+  { key: "tecnologia",              tipo: "despesa", label: "Tecnologia e assinaturas",         descricao: "Software, internet, telefone e hospedagem" },
+  { key: "ocupacao",                tipo: "despesa", label: "Ocupação e utilidades",            descricao: "Aluguel, condomínio, água, luz e moradia" },
+  { key: "administrativas",         tipo: "despesa", label: "Administrativas e gerais",         descricao: "Contabilidade, escritório e o que não tem grupo próprio" },
+  { key: "pessoais",                tipo: "despesa", label: "Dia a dia e pessoais",             descricao: "Alimentação, transporte, saúde, lazer e vestuário" },
+  { key: "financeiras",             tipo: "despesa", label: "Despesas financeiras",             descricao: "Juros, multas, IOF, tarifas e anuidades" },
+  { key: "impostos_resultado",      tipo: "despesa", label: "Impostos sobre o resultado",       descricao: "IRPJ, CSLL e imposto de renda" },
+  { key: "dividas",                 tipo: "despesa", label: "Pagamento de dívidas e cartões",   descricao: "Faturas de cartão, parcelas de financiamento e empréstimos pagos — saem do caixa, não do resultado" },
+  { key: "investimentos",           tipo: "despesa", label: "Investimentos",                    descricao: "Equipamentos, aplicações, reservas e aportes" },
 ] as const;
 
 export type GrupoDre = (typeof GRUPOS_DRE)[number]["key"];
@@ -58,37 +67,79 @@ export function chaveClassificacao(tipo: TipoLancamento, categoria: string): str
   return `${tipo}|${chaveCategoria(categoria)}`;
 }
 
-// ─── Classificação padrão por palavra-chave (sempre sobre a chave normalizada) ──
+// ─── Regras por palavra-chave (sempre sobre o texto normalizado) ───────────────
 
-const REGRAS_RECEITA: ReadonlyArray<readonly [RegExp, GrupoDre]> = [
+type Regras = ReadonlyArray<readonly [RegExp, GrupoDre]>;
+
+// Descrição do lançamento — só termos inequívocos; a primeira que bater vence.
+const DESCRICAO_RECEITA: Regras = [
+  [/emprestimo|emprestad|aporte|resgate|transferencia (entre|de conta|propria)|devolucao de emprestimo/, "receita_nao_operacional"],
+  [/rendiment|juros|dividend|cashback/, "receita_financeira"],
+  [/reembols|estorno/, "receita_outras"],
+];
+
+const DESCRICAO_DESPESA: Regras = [
+  [/\bjuros\b|\bmulta\b|\biof\b|tarifa|anuidade/, "financeiras"],
+  [/salari|pro[- ]?labore|freela|diaria|folha de pagamento|\binss\b|\bfgts\b/, "pessoal"],
+  [/trafego|anuncio|\bads\b|impulsion|patrocin|influenc/, "marketing"],
+  [/saneago|sabesp|copasa|equatorial|\benel\b|cemig|copel|celesc|energia|\bluz\b|conta de agua|^agua\b|\bagua\b|condomin|aluguel|iptu|\bgas\b/, "ocupacao"],
+  [/internet|telefone|celular (plano|conta)|plano (de )?celular|\bvivo\b|\bclaro\b|\btim\b|hospedag|dominio|claude|chatgpt|openai|anthropic|vercel|google workspace|canva|notion|assinatura/, "tecnologia"],
+  [/gasolina|etanol|combustiv|\buber\b|\b99\b|pedagio|estacionamento|detran|ipva|licenciamento|onibus|passagem/, "pessoais"],
+  [/fatura|\bcartao\b|parcela|financiamento|emprestimo|consorcio|\bmrv\b|acordo|divida/, "dividas"],
+  [/investiment|aplicac|poupanc|\bcdb\b|tesouro|cripto|bitcoin|reserva de emergencia/, "investimentos"],
+];
+
+// Categoria — usada quando a descrição não diz nada específico.
+const CATEGORIA_RECEITA: Regras = [
   [/rendiment|juros|invest|dividend|cashback|aplicac|poupanc|\bcdb\b|tesouro|rentabil/, "receita_financeira"],
+  [/emprestimo|aporte|transferencia/, "receita_nao_operacional"],
   [/\boutr|reembols|presente|premi|eventual|doac|venda de (bem|item|usado)/, "receita_outras"],
 ];
 
-// A ordem importa: a primeira regra que bater vence.
-const REGRAS_DESPESA: ReadonlyArray<readonly [RegExp, GrupoDre]> = [
+const CATEGORIA_DESPESA: Regras = [
   [/\birpf\b|\birpj\b|\bcsll\b|imposto de renda|\bir\b/, "impostos_resultado"],
   [/impost|tribut|^das\b|\bdas[- ]?(mei|simples)\b|simples nacional|\bmei\b|taxa de venda|taxa d[aeo]s? (marketplace|plataforma|shopee|mercado livre)|devolu|estorno|nota fiscal|\bnf\b|\biss\b|\bicms\b|\bpis\b|cofins/, "deducoes"],
   [/custo|\bcmv\b|mercadoria|fornecedor|frete|embalag|insumo|materia[- ]prima|\bproduto/, "custos"],
   [/salari|pro[- ]?labore|freelanc|funcionari|folha|\binss\b|\bfgts\b|encargo|terceiriz|colaborador|\brh\b|vale[- ]/, "pessoal"],
   [/marketing|anunci|\bads\b|trafego|\bmidia\b|publicidad|propaganda|impulsion|patrocin|comiss|influenc/, "marketing"],
-  [/assinatur|software|\bsaas\b|internet|telefon|celular|hospedag|dominio|ferramenta|tecnolog|\bapi\b|openai|anthropic|vercel|google|\bmeta\b|nuvem|cloud|streaming|\bchip\b/, "tecnologia"],
-  [/moradia|aluguel|condomin|\bagua\b|\bluz\b|energia|\bgas\b|iptu|escritori|coworking|\bsala\b|limpeza|manutencao/, "ocupacao"],
-  [/divida|parcela|emprestimo|financiamento|juros|tarifa|cartao|\bbanco\b|\biof\b|multa|cheque|consorcio|anuidade/, "financeiras"],
+  [/assinatur|software|\bsaas\b|internet|telefon|celular|hospedag|dominio|ferramenta|tecnolog|\bapi\b|nuvem|cloud|streaming|\bchip\b/, "tecnologia"],
+  [/moradia|\bcasa\b|aluguel|condomin|\bagua\b|\bluz\b|energia|\bgas\b|iptu|escritori|coworking|\bsala\b|limpeza|manutencao/, "ocupacao"],
+  [/juros|tarifa|\biof\b|multa|anuidade|\bbanco\b/, "financeiras"],
+  [/divida|parcela|emprestimo|financiamento|cartao|consorcio|cheque/, "dividas"],
   [/alimenta|\bmercado\b(?! livre)|supermercado|restaurante|ifood|lanche|padaria|lazer|vestuari|roupa|saude|farmac|medic|academia|beleza|barbe|salao|\bpet\b|educa|curso|escola|faculdade|viagem|presente|transporte|combustiv|gasolina|\buber\b|\b99\b|estacionamento|pedagio|onibus|\bcarro\b|\bmoto\b|cinema/, "pessoais"],
-  [/investimento|aplicac|reserva|poupanc|\bcdb\b|tesouro|\bacoes\b|cripto|bitcoin|equipamento|maquina|computador|notebook|transferencia|aporte/, "investimentos"],
+  [/investimento|aplicac|reserva|poupanc|\bcdb\b|tesouro|\bacoes\b|cripto|bitcoin|equipamento|maquina|computador|notebook|aporte/, "investimentos"],
 ];
 
-export function classificarPadrao(tipo: TipoLancamento, categoria: string): GrupoDre {
-  const chave = chaveCategoria(categoria);
-  const regras = tipo === "receita" ? REGRAS_RECEITA : REGRAS_DESPESA;
-  for (const [re, grupo] of regras) if (re.test(chave)) return grupo;
-  return tipo === "receita" ? "receita_operacional" : "administrativas";
+function aplicar(regras: Regras, texto: string): GrupoDre | null {
+  for (const [re, grupo] of regras) if (re.test(texto)) return grupo;
+  return null;
 }
 
-/** Mapa de classificações manuais: chaveClassificacao(tipo, categoria) → grupo. */
+/** Linha da DRE só pela categoria (padrão do editor de categorias). */
+export function classificarPadrao(tipo: TipoLancamento, categoria: string): GrupoDre {
+  const g = aplicar(tipo === "receita" ? CATEGORIA_RECEITA : CATEGORIA_DESPESA, chaveCategoria(categoria));
+  return g ?? (tipo === "receita" ? "receita_operacional" : "administrativas");
+}
+
+/** Linha da DRE pela descrição do lançamento — null quando ela não diz nada específico. */
+export function classificarPorDescricao(tipo: TipoLancamento, descricao: string | null | undefined): GrupoDre | null {
+  if (!descricao) return null;
+  return aplicar(tipo === "receita" ? DESCRICAO_RECEITA : DESCRICAO_DESPESA, chaveCategoria(descricao));
+}
+
+/**
+ * Mapa de classificações manuais:
+ *  • `${tipo}|${chaveCategoria}`          → grupo de uma categoria inteira
+ *  • `${tipo}|#l:${idDoLancamento}`       → grupo de um lançamento específico
+ */
 export type MapaClassificacao = ReadonlyMap<string, GrupoDre>;
 
+export const PREFIXO_LANCAMENTO = "#l:";
+export const chaveLancamento = (id: string) => `${PREFIXO_LANCAMENTO}${id}`;
+
+export type OrigemLancamento = "lancamento" | "categoria" | "descricao" | "padrao";
+
+/** Classificação de uma categoria inteira (editor de categorias). */
 export function classificar(
   tipo: TipoLancamento,
   categoria: string,
@@ -97,6 +148,21 @@ export function classificar(
   const manual = mapa?.get(chaveClassificacao(tipo, categoria));
   if (manual && grupoInfo(manual).tipo === tipo) return { grupo: manual, origem: "manual" };
   return { grupo: classificarPadrao(tipo, categoria), origem: "padrao" };
+}
+
+/** Classificação de um lançamento — a regra completa (ver topo do arquivo). */
+export function classificarLancamento(
+  l: { tipo: TipoLancamento; categoria: string; descricao?: string | null; id?: string | null },
+  mapa?: MapaClassificacao,
+): { grupo: GrupoDre; origem: OrigemLancamento } {
+  const doTipo = (g: GrupoDre | undefined | null): g is GrupoDre => !!g && grupoInfo(g).tipo === l.tipo;
+  const doLancamento = l.id ? mapa?.get(`${l.tipo}|${chaveLancamento(l.id)}`) : undefined;
+  if (doTipo(doLancamento)) return { grupo: doLancamento, origem: "lancamento" };
+  const daCategoria = mapa?.get(chaveClassificacao(l.tipo, l.categoria));
+  if (doTipo(daCategoria)) return { grupo: daCategoria, origem: "categoria" };
+  const daDescricao = classificarPorDescricao(l.tipo, l.descricao);
+  if (daDescricao) return { grupo: daDescricao, origem: "descricao" };
+  return { grupo: classificarPadrao(l.tipo, l.categoria), origem: "padrao" };
 }
 
 // ─── Agrupamento das linhas do extrato nos grupos da DRE ────────────────────────
@@ -108,6 +174,19 @@ export interface LinhaAgregada {
   quantidade: number;
   /** true = ainda não aconteceu (receita prevista em aberto / conta a pagar pendente) */
   previsto?: boolean;
+  /** Presentes quando a linha é um lançamento só (permite classificar pela descrição e mover). */
+  id?: string;
+  descricao?: string | null;
+  data?: string;
+}
+
+export interface ItemLancamento {
+  id: string | null;
+  descricao: string;
+  data: string | null;
+  valor: number;
+  origem: OrigemLancamento;
+  previsto: boolean;
 }
 
 export interface ItemCategoria {
@@ -115,6 +194,8 @@ export interface ItemCategoria {
   total: number;
   quantidade: number;
   previsto: boolean;
+  /** Lançamentos desta categoria que caíram neste grupo (maiores primeiro). */
+  lancamentos: ItemLancamento[];
 }
 
 export type ValoresPorGrupo = Record<GrupoDre, number>;
@@ -137,21 +218,25 @@ export function agruparLinhas(
 
   for (const l of linhas) {
     if (l.tipo !== "receita" && l.tipo !== "despesa") continue;
-    const { grupo } = classificar(l.tipo, l.categoria, mapa);
+    const { grupo, origem } = classificarLancamento(l, mapa);
     const previsto = Boolean(l.previsto);
-    const chave = `${chaveClassificacao(l.tipo, l.categoria)}|${previsto ? "p" : "r"}`;
-    const atual = itens.get(chave);
-    if (atual) {
-      atual.total += l.total;
-      atual.quantidade += l.quantidade;
-    } else {
-      itens.set(chave, { categoria: l.categoria.trim(), total: l.total, quantidade: l.quantidade, previsto, grupo });
+    const chave = `${grupo}|${chaveClassificacao(l.tipo, l.categoria)}|${previsto ? "p" : "r"}`;
+    let it = itens.get(chave);
+    if (!it) {
+      it = { categoria: l.categoria.trim(), total: 0, quantidade: 0, previsto, grupo, lancamentos: [] };
+      itens.set(chave, it);
+    }
+    it.total += l.total;
+    it.quantidade += l.quantidade;
+    if (l.descricao != null || l.id) {
+      it.lancamentos.push({ id: l.id ?? null, descricao: (l.descricao ?? "").trim() || l.categoria, data: l.data ?? null, valor: arred(l.total), origem, previsto });
     }
     valores[grupo] += l.total;
   }
 
   for (const it of itens.values()) {
-    porGrupo[it.grupo].push({ categoria: it.categoria, total: arred(it.total), quantidade: it.quantidade, previsto: it.previsto });
+    it.lancamentos.sort((a, b) => b.valor - a.valor);
+    porGrupo[it.grupo].push({ categoria: it.categoria, total: arred(it.total), quantidade: it.quantidade, previsto: it.previsto, lancamentos: it.lancamentos });
   }
   for (const g of GRUPOS_DRE) {
     valores[g.key] = arred(valores[g.key]);
@@ -176,9 +261,12 @@ export interface Dre {
   resultadoAntesImpostos: number;
   impostos: number;
   resultadoLiquido: number;
+  /** Abaixo do resultado: amortização de dívidas, investimentos e entradas não operacionais. */
+  dividas: number;
   investimentos: number;
+  entradasNaoOperacionais: number;
   sobraCaixa: number;
-  /** Tudo que sai antes de investimentos (deduções + custos + operacionais + financeiras + impostos). */
+  /** Tudo que entra no resultado como saída (deduções + custos + operacionais + financeiras + impostos). */
   totalSaidas: number;
   /** Margens em % da receita líquida; null quando não há receita líquida. */
   margemBruta: number | null;
@@ -202,8 +290,10 @@ export function montarDre(v: Partial<ValoresPorGrupo>): Dre {
   const resultadoAntesImpostos = resultadoOperacional + receitasFinanceiras - despesasFinanceiras;
   const impostos = grupos.impostos_resultado;
   const resultadoLiquido = resultadoAntesImpostos - impostos;
+  const dividas = grupos.dividas;
   const investimentos = grupos.investimentos;
-  const sobraCaixa = resultadoLiquido - investimentos;
+  const entradasNaoOperacionais = grupos.receita_nao_operacional;
+  const sobraCaixa = resultadoLiquido - dividas - investimentos + entradasNaoOperacionais;
   const totalSaidas = deducoes + custos + despesasOperacionais + despesasFinanceiras + impostos;
   const margem = (x: number) => (receitaLiquida > 0 ? arred1((x / receitaLiquida) * 100) : null);
 
@@ -221,7 +311,9 @@ export function montarDre(v: Partial<ValoresPorGrupo>): Dre {
     resultadoAntesImpostos: arred(resultadoAntesImpostos),
     impostos: arred(impostos),
     resultadoLiquido: arred(resultadoLiquido),
+    dividas: arred(dividas),
     investimentos: arred(investimentos),
+    entradasNaoOperacionais: arred(entradasNaoOperacionais),
     sobraCaixa: arred(sobraCaixa),
     totalSaidas: arred(totalSaidas),
     margemBruta: margem(lucroBruto),
@@ -260,7 +352,9 @@ export const ESTRUTURA_DRE: readonly LinhaEstrutura[] = [
   { campo: "resultadoAntesImpostos", label: "Resultado antes dos impostos",     prefixo: "=",   nivel: "total",    saida: false },
   { campo: "impostos",               label: "Impostos sobre o resultado",       prefixo: "(−)", nivel: "grupo",    grupos: ["impostos_resultado"], saida: true },
   { campo: "resultadoLiquido",       label: "Resultado líquido",                prefixo: "=",   nivel: "total",    margem: "margemLiquida", saida: false },
-  { campo: "investimentos",          label: "Investimentos e não operacionais", prefixo: "(−)", nivel: "grupo",    grupos: ["investimentos"], saida: true },
+  { campo: "dividas",                label: "Pagamento de dívidas e cartões",   prefixo: "(−)", nivel: "grupo",    grupos: ["dividas"], saida: true },
+  { campo: "investimentos",          label: "Investimentos",                    prefixo: "(−)", nivel: "grupo",    grupos: ["investimentos"], saida: true },
+  { campo: "entradasNaoOperacionais", label: "Entradas não operacionais",       prefixo: "(+)", nivel: "grupo",    grupos: ["receita_nao_operacional"], saida: false },
   { campo: "sobraCaixa",             label: "Sobra de caixa",                   prefixo: "=",   nivel: "total",    saida: false },
 ];
 
@@ -316,7 +410,7 @@ export function gerarInsights(args: { atual: Dre; anterior: Dre; serie: PontoSer
   const { atual, anterior, serie, rotuloAnterior } = args;
   const out: string[] = [];
 
-  if (atual.receitaBruta === 0 && atual.totalSaidas === 0 && atual.investimentos === 0) {
+  if (atual.receitaBruta === 0 && atual.totalSaidas === 0 && atual.investimentos === 0 && atual.dividas === 0 && atual.entradasNaoOperacionais === 0) {
     return ["Nenhum lançamento no período com os filtros atuais."];
   }
 
@@ -337,7 +431,7 @@ export function gerarInsights(args: { atual: Dre; anterior: Dre; serie: PontoSer
   }
 
   const saidas = GRUPOS_DRE
-    .filter((g) => g.tipo === "despesa" && g.key !== "investimentos" && atual.grupos[g.key] > 0)
+    .filter((g) => g.tipo === "despesa" && g.key !== "investimentos" && g.key !== "dividas" && atual.grupos[g.key] > 0)
     .sort((a, b) => atual.grupos[b.key] - atual.grupos[a.key]);
   if (saidas.length > 0) {
     const maior = saidas[0];
@@ -373,8 +467,12 @@ export function gerarInsights(args: { atual: Dre; anterior: Dre; serie: PontoSer
     );
   }
 
-  if (atual.investimentos > 0) {
-    out.push(`Investimentos e não operacionais: ${BRL.format(atual.investimentos)} fora do resultado — sobra de caixa de ${BRL.format(atual.sobraCaixa)}.`);
+  const foraDoResultado: string[] = [];
+  if (atual.dividas > 0) foraDoResultado.push(`${BRL.format(atual.dividas)} em dívidas e cartões`);
+  if (atual.investimentos > 0) foraDoResultado.push(`${BRL.format(atual.investimentos)} em investimentos`);
+  if (atual.entradasNaoOperacionais > 0) foraDoResultado.push(`${BRL.format(atual.entradasNaoOperacionais)} de entradas não operacionais (empréstimos, aportes)`);
+  if (foraDoResultado.length > 0) {
+    out.push(`Fora do resultado, mas no caixa: ${foraDoResultado.join(", ")} — sobra de caixa de ${BRL.format(atual.sobraCaixa)}.`);
   }
 
   return out;
