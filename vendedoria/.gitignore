@@ -10,7 +10,6 @@ cloudflared.exe
 out/
 
 # Prisma
-prisma/migrations/
 
 # Environment
 .env

@@ -1,0 +1,42 @@
+name: Backup Vendedoria (banco)
+
+# Supabase no plano gratuito não faz backup automático. Este agendamento faz um
+# pg_dump diário, criptografa com senha e guarda como artefato por 30 dias.
+# Requer dois secrets no repositório:
+#   VENDEDORIA_DIRECT_URL  — conexão direta (porta 5432) do Supabase, a mesma DIRECT_URL da Vercel
+#   BACKUP_PASSPHRASE      — senha para criptografar o arquivo (guarde fora do GitHub)
+# Restaurar: gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Dump + criptografia
+        env:
+          DIRECT_URL: ${{ secrets.VENDEDORIA_DIRECT_URL }}
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$DIRECT_URL" ] || [ -z "$PASSPHRASE" ]; then
+            echo "::warning::Secrets VENDEDORIA_DIRECT_URL/BACKUP_PASSPHRASE não configurados — backup não executado"
+            exit 0
+          fi
+          # pg_dump 17 (imagem oficial) para cobrir qualquer versão do Supabase
+          docker run --rm -e PGPASSWORD -e DIRECT_URL postgres:17-alpine \
+            sh -c 'pg_dump --no-owner --no-privileges "$DIRECT_URL"' | gzip -9 > backup.sql.gz
+          test -s backup.sql.gz
+          gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASSPHRASE" -o backup.sql.gz.gpg backup.sql.gz
+          rm -f backup.sql.gz
+          ls -la backup.sql.gz.gpg
+      - name: Guardar artefato (30 dias)
+        if: hashFiles('backup.sql.gz.gpg') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-vendedoria-${{ github.run_id }}
+          path: backup.sql.gz.gpg
+          retention-days: 30
