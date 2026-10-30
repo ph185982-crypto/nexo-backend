@@ -1514,3 +1514,13 @@ model WebhookEventMax {
   @@map("max_webhook_events")
   @@index([msg_id])
 }
+
+// ─── Segurança: tentativas de login (limite por e-mail e por IP) ─────────────
+// Só registra FALHAS; o sucesso apaga as do e-mail. Tabela nova, aditiva.
+model LoginAttempt {
+  id       String   @id @default(cuid())
+  chave    String   // "email:<email>" ou "ip:<ip>"
+  criadoEm DateTime @default(now())
+
+  @@index([chave, criadoEm])
+}
