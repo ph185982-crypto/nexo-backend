@@ -3,6 +3,10 @@ export async function register() {
   // Only run in Node.js runtime (not Edge)
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
+  // Avisos de depreciação de dependências (url.parse() em web-push etc.) saíam
+  // como "erro" na Vercel — 189 por semana — e escondiam os erros de verdade.
+  process.noDeprecation = true;
+
   // Validate required environment variables on startup
   const { validarConfig } = await import("@/lib/config/env");
   validarConfig();
