@@ -202,13 +202,34 @@ Retorne APENAS um JSON válido, sem markdown, sem texto fora do JSON:
     {"text": "segunda mensagem", "delay": 1500}
   ],
   "updateSession": {
-    "nome": "nome da pessoa — do perfil do WhatsApp se já for nome de pessoa, ou coletado na conversa",
+    "nome": "nome da PESSOA — do perfil do WhatsApp se já for nome de pessoa, ou coletado na conversa",
+    "empresa": "nome da empresa/loja/marca do lead (se tiver mais de uma, separe com ' / ')",
+    "segmento": "o que a empresa vende (ex.: 'calçados femininos / peças de moto')",
+    "canais_atuais": ["onde vende hoje: 'loja física', 'WhatsApp', 'Instagram', 'Shopee'..."],
+    "faturamento_total": "faturamento mensal como o lead disse (ex.: '30 mil', '150000', '10 a 20 mil')",
+    "loja_fisica": "'sim' ou 'nao' — SÓ quando o lead responder; fábrica/ateliê/escritório sem venda ao público = 'nao'",
+    "cnpj": "'tem', 'nao tem' ou 'vai regularizar' — só quando o lead responder",
+    "problema_principal": "a dor real do negócio em uma frase específica",
+    "disponibilidade": "dia/período que o lead disse poder falar",
+    "horario_reuniao": "quando o lead escolher um horário concreto para a ligação, copie como ele falou (ex.: 'amanhã 09:00', 'quinta 15h')",
     "etapa": "etapa_atual",
     "score": 35,
     "status": "em_qualificacao"
   },
   "action": "continue"
 }
+
+REGRA DE CAPTURA — OBRIGATÓRIA: toda informação que o lead der vai para o campo
+correspondente NO MESMO TURNO, mesmo que venha misturada ou fora de ordem:
+- nome de loja/marca/CNPJ/link do Instagram da empresa → "empresa" (o nome que aparece)
+- "não tenho loja", "fechei a loja", "só tenho a fábrica" → "loja_fisica": "nao"
+- "tenho loja", "loja de rua", "ponto físico" → "loja_fisica": "sim"
+- "sim" respondendo se tem CNPJ → "cnpj": "tem"
+- qualquer valor de faturamento → "faturamento_total"
+- dia/horário para a ligação → "disponibilidade" e "horario_reuniao"
+O que já está em SESSÃO ATUAL DO LEAD foi respondido: NUNCA pergunte de novo.
+Se o lead respondeu e você não encontrou o campo certo, use o mais próximo — nunca
+repita a pergunta.
 
 Regras do JSON:
 - "messages": 1 a 3 itens. Delays: 0, 1500, 2500. Máximo 3.

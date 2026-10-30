@@ -32,3 +32,13 @@ const FECHAMENTO = /(especialista vai|fundador vai|vamos deixar agendado|deixar 
 export function pareceFechamento(texto: string): boolean {
   return FECHAMENTO.test(normalizarTexto(texto));
 }
+
+/**
+ * As N últimas mensagens da IA, em ordem cronológica. `recentMessages` chega em
+ * ordem cronológica (o agente faz reverse() do findMany desc) — por isso é
+ * slice(-n), não slice(0, n): com slice(0, n) o filtro olhava as mensagens mais
+ * ANTIGAS da janela e deixava passar a mesma pergunta 4 vezes seguidas (28/10).
+ */
+export function ultimasDaIA(mensagens: Array<{ role: string; content: string }>, n = 8): string[] {
+  return mensagens.filter((m) => m.role === "ASSISTANT").slice(-n).map((m) => m.content);
+}
