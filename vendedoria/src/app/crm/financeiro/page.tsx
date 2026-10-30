@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   Wallet, FileText, Receipt, Landmark,
-  PieChart, TrendingUp, LineChart, ShieldAlert, Loader2, History,
+  PieChart, TrendingUp, LineChart, ShieldAlert, Loader2, History, BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OverviewTab } from "@/components/financeiro/OverviewTab";
@@ -15,9 +15,11 @@ import { OrcamentosTab } from "@/components/financeiro/OrcamentosTab";
 import { ReceitasTab } from "@/components/financeiro/ReceitasTab";
 import { ProjecaoTab } from "@/components/financeiro/ProjecaoTab";
 import { HistoricoTab } from "@/components/financeiro/HistoricoTab";
+import { DreTab } from "@/components/financeiro/DreTab";
 
 const tabs = [
   { key: "visao-geral", label: "Visao Geral", icon: Wallet },
+  { key: "dre",         label: "DRE",         icon: BarChart3 },
   { key: "extrato",     label: "Extrato",     icon: FileText },
   { key: "contas",      label: "Contas",       icon: Receipt },
   { key: "dividas",     label: "Dividas",      icon: Landmark },
@@ -85,6 +87,7 @@ export default function FinanceiroPage() {
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6">
         {activeTab === "visao-geral" && <OverviewTab />}
+        {activeTab === "dre"         && <DreTab />}
         {activeTab === "extrato"     && <ExtratoTab />}
         {activeTab === "contas"      && <ContasTab />}
         {activeTab === "dividas"     && <DividasTab />}

@@ -1503,6 +1503,23 @@ model OrcamentoMax {
   @@map("max_orcamentos")
 }
 
+// Aba DRE do financeiro: em qual linha da DRE cada categoria do extrato entra.
+// Só existe linha para o que o usuário mudou à mão na tela — o resto segue o
+// padrão por palavra-chave em lib/finance/dre.ts. `categoria` guarda a chave
+// normalizada (minúsculas, sem acento). Nenhum lançamento é alterado por isso:
+// é só uma forma de ler o extrato.
+model DreClassificacaoMax {
+  id            String   @id @default(uuid())
+  tipo          String   // receita | despesa
+  categoria     String   // chave normalizada da categoria do extrato
+  grupo         String   // ver GRUPOS_DRE em lib/finance/dre.ts
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @default(now()) @updatedAt
+
+  @@unique([tipo, categoria])
+  @@map("max_dre_classificacoes")
+}
+
 model WebhookEventMax {
   id          String   @id @default(uuid())
   from_number String?

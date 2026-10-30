@@ -61,7 +61,7 @@ interface OverviewData {
 }
 
 // Pra despesas, variação positiva (gastou mais) é ruim → inverte a cor.
-function VariacaoBadge({ pct, rotulo, invertColor }: { pct: number | null | undefined; rotulo: string; invertColor?: boolean }) {
+export function VariacaoBadge({ pct, rotulo, invertColor }: { pct: number | null | undefined; rotulo: string; invertColor?: boolean }) {
   if (pct == null) return null;
   const isUp = pct > 0;
   const isFlat = pct === 0;
