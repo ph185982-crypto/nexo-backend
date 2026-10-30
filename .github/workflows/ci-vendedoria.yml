@@ -1,0 +1,56 @@
+name: CI Vendedoria
+
+# Tipos, lint, migrações num banco limpo e testes — em todo PR e push na master
+# que toque a vendedoria. Antes não existia nenhuma verificação automática.
+
+on:
+  pull_request:
+    paths: ["vendedoria/**", ".github/workflows/ci-vendedoria.yml"]
+  push:
+    branches: [master]
+    paths: ["vendedoria/**", ".github/workflows/ci-vendedoria.yml"]
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: vendedoria
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: pw
+          POSTGRES_DB: vendedoria_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:pw@localhost:5432/vendedoria_ci
+      DIRECT_URL: postgresql://postgres:pw@localhost:5432/vendedoria_ci
+      NEXTAUTH_SECRET: ci-secret
+      OWNER_WHATSAPP_NUMBER: "5562900000001"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vendedoria/package-lock.json
+      - name: Instalar
+        run: npm ci --no-audit --no-fund
+      - name: Migrações (banco limpo)
+        run: node scripts/db-deploy.mjs && npx prisma generate
+      - name: Tipos
+        run: npx tsc --noEmit -p .
+      - name: Lint
+        run: npx next lint
+      - name: Testes
+        run: npm test
+      - name: Vulnerabilidades críticas (informativo)
+        run: npm audit --omit=dev --audit-level=critical || true
