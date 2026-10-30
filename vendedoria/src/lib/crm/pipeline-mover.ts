@@ -192,7 +192,12 @@ export async function garantirLeadDoProspect(prospect: {
       return existente.id;
     }
 
+    // Tipo cru PRIMEIRO: canonicalizarTipo("CONTATO_1") devolve "TRIAGE", e a
+    // busca pelo canônico achava "Novos" — os 1.000 leads de prospecção caíram
+    // lá em vez de "1º Contato" (diagnóstico de 30/10).
     const colunaEntrada = await prisma.kanbanColumn.findFirst({
+      where: { organizationId: prospect.organizationId, type: "CONTATO_1" },
+    }) ?? await prisma.kanbanColumn.findFirst({
       where: { organizationId: prospect.organizationId, type: canonicalizarTipo("CONTATO_1") },
     }) ?? await prisma.kanbanColumn.findFirst({
       where: { organizationId: prospect.organizationId, isDefaultEntry: true },

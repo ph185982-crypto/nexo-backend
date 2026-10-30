@@ -5,8 +5,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Settings, Phone, Bot, Plus, Save, Eye, EyeOff,
   CheckCircle2, XCircle, Loader2, RefreshCw, Wifi, WifiOff,
-  Building2, Key, MessageSquare, Zap, Calendar, Unplug, Plug,
-} from "lucide-react";
+  Building2, Key, MessageSquare, Zap, Calendar, Unplug, Plug, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ApiKeysTab } from "@/components/settings/ApiKeysTab";
+import { ManutencaoTab } from "@/components/settings/ManutencaoTab";
 import { cn } from "@/lib/utils";
 
 // ─── GraphQL ──────────────────────────────────────────────────────────────
@@ -926,7 +926,7 @@ export default function SettingsPage() {
               espremendo cada aba a ~50px, a ponto de "API" sumir no meio do
               texto cortado das vizinhas. Aqui cada aba mantém tamanho legível
               e o usuário arrasta para o lado pra ver as demais. */}
-          <TabsList className="flex w-full justify-start gap-1 overflow-x-auto scrollbar-hide md:grid md:grid-cols-7">
+          <TabsList className="flex w-full justify-start gap-1 overflow-x-auto scrollbar-hide md:grid md:grid-cols-8">
             <TabsTrigger value="whatsapp" className="gap-1.5 text-xs shrink-0">
               <Phone className="w-3.5 h-3.5" />
               WhatsApp
@@ -955,6 +955,10 @@ export default function SettingsPage() {
               <Key className="w-3.5 h-3.5" />
               Segurança
             </TabsTrigger>
+            <TabsTrigger value="manutencao" className="gap-1.5 text-xs shrink-0">
+              <Wrench className="w-3.5 h-3.5" />
+              Manutenção
+            </TabsTrigger>
           </TabsList>
 
           <div className="mt-6">
@@ -978,6 +982,9 @@ export default function SettingsPage() {
             </TabsContent>
             <TabsContent value="security">
               <SecurityTab />
+            </TabsContent>
+            <TabsContent value="manutencao">
+              <ManutencaoTab orgId={orgs?.[0]?.id ?? ""} />
             </TabsContent>
           </div>
         </Tabs>
