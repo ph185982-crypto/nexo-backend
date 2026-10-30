@@ -35,3 +35,13 @@
 ```
 gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 ```
+
+## Financeiro → aba DRE (30/10/2026)
+
+- Fica logo depois de "Visão Geral". Mostra a demonstração do resultado em **regime de caixa**: lê só o extrato (o que já foi confirmado) e agrupa cada categoria numa linha da DRE.
+- Cascata: receita bruta → deduções → receita líquida → custos diretos → lucro bruto → despesas operacionais → resultado operacional → financeiras → impostos → resultado líquido → investimentos → sobra de caixa.
+- Traz AV % (parte da receita líquida), variação contra o período anterior, margens, 12 meses de evolução, acumulado do ano e uma leitura automática em frases. Botão CSV abre no Excel.
+- **Realizado × Projetado**: o projetado soma ao realizado as receitas previstas em aberto e as contas a pagar pendentes com vencimento no período.
+- O filtro de negócio abre em **Nexo** (a DRE é da empresa) e a escolha fica salva no navegador.
+- "Em que linha cada categoria entra": o padrão é por palavra-chave (ex.: Assinaturas → Tecnologia; categoria desconhecida → Administrativas). Se uma estiver no lugar errado, troque ali. Isso não altera nenhum lançamento e cada troca fica no Histórico financeiro.
+- Banco: só uma tabela nova (`max_dre_classificacoes`), criada pela migração `20261030160000_dre_classificacao` no próximo deploy. Nada existente é alterado.

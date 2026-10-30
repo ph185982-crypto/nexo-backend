@@ -45,7 +45,7 @@ function somarDiasStr(dia: string, n: number): string {
   return dt.toISOString().slice(0, 10);
 }
 
-function Seg<T extends string>({
+export function Seg<T extends string>({
   valor, opcoes, onChange, ariaLabel,
 }: {
   valor: T;
