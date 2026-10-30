@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
   Settings, X, Zap, Radar, Wallet, ChevronLeft, ChevronRight, Trophy,
-  Megaphone,
+  Megaphone, PhoneCall,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -43,6 +43,7 @@ interface SidebarProps {
 
 const navItems = [
   { href: "/crm/conversations", label: "Conversas",       icon: MessageSquare },
+  { href: "/crm/ligacoes",      label: "Ligações",        icon: PhoneCall },
   { href: "/crm/lead/kanban",   label: "CRM",             icon: Kanban },
   { href: "/crm/delivery",      label: "Funil de Entrega", icon: Trophy },
   { href: "/crm/prospeccao",    label: "Prospecções",     icon: Radar },
