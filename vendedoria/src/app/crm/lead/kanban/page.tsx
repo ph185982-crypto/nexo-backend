@@ -320,11 +320,26 @@ export default function KanbanPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [novaOpen, setNovaOpen] = useState(false);
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
+  // Dois funis no mesmo quadro (inbound SDR e prospecção): por padrão mostra
+  // só os leads de entrada — os 1.000 de prospecção escondiam o trabalho do
+  // SDR. A escolha fica guardada no navegador.
   const [filters, setFilters] = useState<{
     leadStatus?: string;
     leadOrigin?: string;
     periodDays?: number;
-  }>({});
+  }>(() => {
+    if (typeof window === "undefined") return { leadOrigin: "INBOUND" };
+    try {
+      const salvo = window.localStorage.getItem("kanban.leadOrigin");
+      if (salvo === "all") return {};
+      return { leadOrigin: salvo || "INBOUND" };
+    } catch {
+      return { leadOrigin: "INBOUND" };
+    }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem("kanban.leadOrigin", filters.leadOrigin ?? "all"); } catch { /* sem storage */ }
+  }, [filters.leadOrigin]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -512,8 +527,8 @@ export default function KanbanPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
-                  <SelectItem value="INBOUND">Entrada</SelectItem>
-                  <SelectItem value="OUTBOUND">Saída</SelectItem>
+                  <SelectItem value="INBOUND">Entrada (SDR / anúncios)</SelectItem>
+                  <SelectItem value="OUTBOUND">Saída (prospecção)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

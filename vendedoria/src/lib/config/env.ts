@@ -10,19 +10,16 @@ export const config = {
 };
 
 export function validarConfig(): void {
-  const obrigatorias = [
-    "OWNER_WHATSAPP_NUMBER",
-    "ANTHROPIC_API_KEY",
-    "RENDER_EXTERNAL_URL",
-    "CEP_ORIGEM",
-  ];
-
+  // Obrigatórias para o CRM/SDR funcionar.
+  const obrigatorias = ["OWNER_WHATSAPP_NUMBER", "DATABASE_URL", "META_WHATSAPP_APP_SECRET"];
   const faltando = obrigatorias.filter((k) => !process.env[k]);
-
   if (faltando.length > 0) {
     console.error(`[CONFIG] ❌ Variáveis obrigatórias faltando: ${faltando.join(", ")}`);
-    console.error("[CONFIG] Configure essas variáveis no painel do Render antes de usar o sistema.");
-  } else {
-    console.log("[CONFIG] ✅ Todas as variáveis obrigatórias configuradas.");
+  }
+  // Só o fluxo antigo de e-commerce (checkout, frete, Mercado Pago) usa estas —
+  // aviso, não erro: antes isso aparecia como erro a cada início de instância.
+  const ecommerce = ["CEP_ORIGEM", "MERCADO_PAGO_ACCESS_TOKEN", "MELHOR_ENVIO_TOKEN"].filter((k) => !process.env[k]);
+  if (ecommerce.length > 0) {
+    console.log(`[CONFIG] e-commerce desativado (sem ${ecommerce.join(", ")})`);
   }
 }

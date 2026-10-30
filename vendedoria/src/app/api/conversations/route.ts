@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { acionarFollowupsSePreciso } from "@/lib/followup/gatilho";
 
 const CONV_SELECT = {
   id: true,
@@ -27,6 +28,8 @@ const CONV_SELECT = {
 };
 
 export async function GET(req: NextRequest) {
+  // Tela do CRM aberta = follow-ups vencidos saem (ver lib/followup/gatilho.ts).
+  acionarFollowupsSePreciso("crm").catch(() => {});
   try {
     await requireAdmin();
   } catch {

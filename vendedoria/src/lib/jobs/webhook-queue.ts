@@ -167,19 +167,13 @@ export async function triggerDueFollowups(): Promise<boolean> {
       where: { status: "ACTIVE", nextSendAt: { lte: new Date() } },
     });
     if (dueCount === 0) return false;
-
-    const baseUrl = urlBase();
-    const secret = process.env.CRON_SECRET;
-    if (!secret) {
-      console.warn("[FollowUp] CRON_SECRET ausente — follow-ups vencidos não podem ser acionados");
-      return false;
-    }
-
-    console.log(`[FollowUp] ${dueCount} follow-up(s) vencido(s) — acionando processamento`);
-    const res = await fetch(`${baseUrl}/api/cron/followup`, {
-      headers: { authorization: `Bearer ${secret}` },
-    });
-    return res.ok;
+    // Chamada direta (antes era um fetch para /api/cron/followup com CRON_SECRET,
+    // que ficava em silêncio quando o segredo faltava). Já roda dentro do
+    // after() do webhook, com orçamento curto para não estourar os 60s.
+    console.log(`[FollowUp] ${dueCount} follow-up(s) vencido(s) — processando`);
+    const { processarFollowupsVencidos } = await import("@/lib/followup/processar");
+    const r = await processarFollowupsVencidos({ orcamentoMs: 20_000 });
+    return r.sent > 0 || r.closed > 0;
   } catch (e) {
     console.error("[FollowUp] Erro ao acionar follow-ups:", e);
     return false;

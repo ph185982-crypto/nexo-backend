@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma/client';
 import { consultarStatus } from '@/lib/pagamento/mercado-pago';
+import { validarAssinaturaMercadoPago } from '@/lib/pagamento/assinatura-webhook';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/send';
 import { config as envConfig } from '@/lib/config/env';
 
@@ -11,6 +12,23 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    // Assinatura do Mercado Pago. Com MERCADO_PAGO_WEBHOOK_SECRET definido, pedido
+    // sem assinatura válida é recusado; sem o segredo configurado, avisa no log
+    // (o status ainda é reconsultado na API do MP antes de qualquer ação).
+    const secret = process.env.MERCADO_PAGO_WEBHOOK_SECRET;
+    if (secret) {
+      const dataId = req.nextUrl.searchParams.get('data.id') ?? (body?.data?.id != null ? String(body.data.id) : null);
+      const ok = validarAssinaturaMercadoPago({
+        xSignature: req.headers.get('x-signature'), xRequestId: req.headers.get('x-request-id'), dataId, secret,
+      });
+      if (!ok) {
+        console.warn('[MP WEBHOOK] Assinatura inválida — ignorado');
+        return NextResponse.json({ error: 'assinatura inválida' }, { status: 401 });
+      }
+    } else {
+      console.warn('[MP WEBHOOK] MERCADO_PAGO_WEBHOOK_SECRET não configurado — assinatura não verificada');
+    }
     console.log('[MP WEBHOOK] Recebido:', JSON.stringify(body));
 
     if (body.type === 'payment' && body.data?.id) {

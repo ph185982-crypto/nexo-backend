@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
+import { decidirAcessoApi } from "./rotas-publicas";
 
 // Edge-safe config: sem imports de Prisma ou bcrypt.
 // Usado pelo middleware (Edge runtime) e estendido em index.ts com os providers.
@@ -13,8 +14,13 @@ export const authConfig: NextAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
+    authorized({ auth, request }) {
+      const { nextUrl } = request;
       const isLoggedIn = !!auth?.user;
+      if (nextUrl.pathname.startsWith("/api/")) {
+        if (decidirAcessoApi(nextUrl.pathname, isLoggedIn, request.headers) === "permitir") return true;
+        return Response.json({ error: "Não autenticado" }, { status: 401 });
+      }
       const isOnCrm = nextUrl.pathname.startsWith("/crm");
       if (isOnCrm) {
         if (isLoggedIn) return true;

@@ -6,10 +6,11 @@ import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { avaliarQualificacao } from "./qualificacao";
-import { decidirHandoff, faltandoParaHandoff, type ItemHandoff } from "./handoff-gate";
+import { decidirHandoff, faltandoParaHandoff, pareceNomeDePessoa, type ItemHandoff } from "./handoff-gate";
 import { perfilComunicacao } from "./estilo";
-import { filtrarRepetidas, pareceFechamento } from "./anti-repeticao";
+import { filtrarRepetidas, pareceFechamento, ultimasDaIA } from "./anti-repeticao";
 import { forcarProximoPasso, leadPerguntou, perguntaCombinada } from "./fluxo-rapido";
+import { detectarPedidoHumano, mensagemDeTransferencia, type MotivoHumano } from "./humano";
 import { sincronizarQualificacaoNoLead } from "./sincronizar-crm";
 import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
 import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
@@ -125,6 +126,15 @@ function mergeSdrSession(
     (merged[campo] as unknown) = valor;
   }
 
+  // O prompt antigo só conhecia o booleano tem_loja_fisica — e o padrão da sessão
+  // vazia também é false, então "false" sozinho não dizia se o lead respondeu
+  // "não" ou se ninguém perguntou. Quando o modelo manda o booleano
+  // EXPLICITAMENTE neste turno, é resposta: vira loja_fisica "sim"/"nao" e o
+  // portão do handoff para de pedir o que o lead já disse (caso Ana, 28/10).
+  if (typeof update.tem_loja_fisica === "boolean" && !update.loja_fisica) {
+    merged.loja_fisica = update.tem_loja_fisica ? "sim" : "nao";
+  }
+
   return merged;
 }
 
@@ -235,6 +245,85 @@ export async function notificarHandoff(
   }).catch((e) => console.error("[SDR] Falha ao enviar push do handoff:", e));
 
   return { whatsappOk, erroWhatsapp, janelaFechada };
+}
+
+// A IA sai de cena e o Pedro assume: usado quando o lead pede uma pessoa, se
+// mostra frustrado, ou quando a própria IA não tem nada novo a dizer (todas as
+// respostas que ela montou já tinham sido enviadas — ou seja, travou numa
+// pergunta). Antes disso não existia saída: a conversa ficava em loop até o
+// lead desistir. Marca o lead como escalado (sem o bastão "NOVO LEAD", que
+// exige dados completos), avisa por notificação + push + WhatsApp e cancela os
+// follow-ups — ninguém quer "ficou alguma dúvida?" em cima de um lead irritado.
+async function transferirParaHumano(args: {
+  conversationId: string;
+  motivo: MotivoHumano | "ia_travou";
+  session: SDRSession;
+  lead: { id: string; phoneNumber: string; profileName: string | null };
+  provider: { businessPhoneNumberId: string; accessToken: string | null; organizationId: string };
+  ultimaMensagem: string;
+}): Promise<void> {
+  const { conversationId, motivo, lead, provider, ultimaMensagem } = args;
+  // Sessão pode ter sido gravada por versão antiga (sem as listas) — completa.
+  const session: SDRSession = { ...SDR_EMPTY_SESSION, ...args.session, mode: "SDR" };
+  const token = provider.accessToken ?? undefined;
+  const now = new Date();
+
+  // 1) Humano assume ANTES de qualquer envio — a próxima mensagem do lead já não
+  //    chega à IA, mesmo que o resto desta função falhe no meio.
+  await prisma.whatsappConversation.update({
+    where: { id: conversationId },
+    data: { humanTakeover: true, aiLockUntil: null },
+  }).catch((e) => console.error("[SDR] Falha ao marcar humanTakeover:", e));
+
+  const nome = session.nome || (pareceNomeDePessoa(lead.profileName) ? lead.profileName : null);
+  const texto = motivo === "ia_travou"
+    ? `${nome ? `${nome.split(/\s+/)[0]}, ` : ""}pra não te fazer repetir nada, vou te passar direto pro Pedro — ele continua a conversa daqui 🙏`
+    : mensagemDeTransferencia(motivo, nome);
+  try {
+    const wamid = await sendWhatsAppMessage(provider.businessPhoneNumberId, lead.phoneNumber, texto, token);
+    await prisma.whatsappMessage.create({
+      data: { wamid, content: texto, type: "TEXT", role: "ASSISTANT", sentAt: now, status: "SENT", conversationId },
+    }).catch(() => {});
+  } catch (e) {
+    console.error("[SDR] Erro ao avisar o lead da transferência:", e);
+  }
+
+  // 2) Lead vira escalado no CRM (uma vez só) e vai para a coluna de handoff.
+  const claim = await prisma.lead.updateMany({
+    where: { id: lead.id, status: { not: "ESCALATED" } },
+    data: { status: "ESCALATED", lastActivityAt: now },
+  }).catch(() => ({ count: 0 }));
+  const motivoTexto = motivo === "pediu_humano" ? "Lead pediu para falar com uma pessoa"
+    : motivo === "frustrado" ? "Lead demonstrou frustração com a IA"
+    : "IA travou (sem resposta nova para dar)";
+  await moverLeadPorTipo(lead.id, provider.organizationId, "ESCALATED", `${motivoTexto} — Pedro assume a conversa`, "ESCALATED");
+  await prisma.leadActivity.create({
+    data: { leadId: lead.id, type: "STATUS_CHANGE", description: `${motivoTexto} — IA saiu, humano assumiu`, createdBy: "AI_AGENT" },
+  }).catch(() => {});
+
+  // 3) Follow-ups automáticos param.
+  await prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "DONE" } }).catch(() => {});
+  await cancelFollowUpJobs(conversationId).catch(() => {});
+
+  // 4) Avisa o Pedro com o que já foi coletado + as últimas falas do lead.
+  const ultimas = await prisma.whatsappMessage.findMany({
+    where: { conversationId, role: "USER" }, orderBy: { sentAt: "desc" }, take: 3, select: { content: true },
+  }).catch(() => [] as Array<{ content: string }>);
+  const falas = ultimas.reverse().map((m) => `• ${m.content.slice(0, 160)}`).join("\n") || `• ${ultimaMensagem.slice(0, 160)}`;
+  const resumo = `⚠️ ${motivoTexto.toUpperCase()} — assuma a conversa\n\n${formatHandoffMessage(lead.phoneNumber, session)}\n\nÚltimas mensagens do lead:\n${falas}`;
+  if (claim.count > 0) {
+    await notificarHandoff(resumo, provider.businessPhoneNumberId, token, provider.organizationId, lead.id, conversationId);
+  } else {
+    await prisma.ownerNotification.create({
+      data: { type: "ESCALATION", title: `⚠️ ${motivoTexto} — assuma a conversa`, body: resumo, organizationId: provider.organizationId, leadId: lead.id, conversationId },
+    }).catch(() => {});
+  }
+
+  // 5) Sessão reflete o estado final.
+  const final: SDRSession = { ...session, status: "handoff_enviado", etapa: "humano_assumiu" };
+  await saveSdrSession(conversationId, final).catch(() => {});
+  await sincronizarQualificacaoNoLead(lead.id, final).catch(() => {});
+  console.log(`[SDR] 👤 Humano assumiu (${motivo}) | lead=${lead.id} | conv=${conversationId}`);
 }
 
 // Chama o LLM com fallback chain. `deadline` (epoch ms) corta a cadeia de
@@ -549,6 +638,14 @@ async function runSdrResponse(
   // ── Carregar sessão SDR ─────────────────────────────────────────────────────
   const session = await loadSdrSession(conversationId);
 
+  // ── Lead pediu uma pessoa ou mostrou que a IA travou → humano assume ─────────
+  const motivoHumano = detectarPedidoHumano(userMessage);
+  if (motivoHumano) {
+    console.log(`[SDR] Pedido de humano/frustração detectado (${motivoHumano}) | conv=${conversationId}`);
+    await transferirParaHumano({ conversationId, motivo: motivoHumano, session, lead, provider, ultimaMensagem: userMessage });
+    return;
+  }
+
   // ── Carregar histórico de mensagens (últimas 20) ─────────────────────────────
   const recentMessages = await prisma.whatsappMessage.findMany({
     where: { conversationId },
@@ -675,7 +772,7 @@ async function runSdrResponse(
   }
 
   // Nunca repete ao lead algo que a IA já disse nas últimas mensagens.
-  const jaEnviadas = recentMessages.filter((m) => m.role === "ASSISTANT").slice(0, 8).map((m) => m.content);
+  const jaEnviadas = ultimasDaIA(recentMessages, 8);
   const originais = parsed.messages.length;
   parsed.messages = filtrarRepetidas(parsed.messages, jaEnviadas);
   if (parsed.messages.length === 0 && originais > 0 && parsed.action === "continue") {
@@ -689,6 +786,13 @@ async function runSdrResponse(
   }
   if (parsed.messages.length < originais) {
     console.log(`[SDR] ${originais - parsed.messages.length} balão(ões) repetido(s) barrado(s) | lead=${lead.id}`);
+  }
+  // Tudo que a IA quis dizer já tinha sido dito (inclusive a pergunta de reserva):
+  // ela está travada. Silêncio ou a 5ª repetição queimam o lead — o Pedro assume.
+  if (parsed.messages.length === 0 && originais > 0 && parsed.action === "continue") {
+    await saveSdrSession(conversationId, newSession).catch(() => {});
+    await transferirParaHumano({ conversationId, motivo: "ia_travou", session: newSession, lead, provider, ultimaMensagem: userMessage });
+    return;
   }
 
   // Persiste o que foi coletado ANTES de enviar os balões. O envio leva de 12 a

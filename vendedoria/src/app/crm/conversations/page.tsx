@@ -1,4 +1,5 @@
 "use client";
+import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 
 import React, { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
@@ -429,10 +430,7 @@ function ConversationsContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchConversations(true); }, [orgId, search, statusFilter]);
 
-  useEffect(() => {
-    const t = setInterval(() => fetchConversations(true), 5000);
-    return () => clearInterval(t);
-  }, [fetchConversations]);
+  useIntervaloVisivel(() => fetchConversations(true), 8_000);
 
   // ── Fetch messages ────────────────────────────────────────────────────────────
   const fetchMessages = useCallback(async (convId: string, silent = false) => {
@@ -514,11 +512,7 @@ function ConversationsContent() {
     }
   }, [selectedId, fetchMessages]);
 
-  useEffect(() => {
-    if (!selectedId) return;
-    const t = setInterval(() => fetchMessages(selectedId, true), 3000);
-    return () => clearInterval(t);
-  }, [selectedId, fetchMessages]);
+  useIntervaloVisivel(() => { if (selectedId) fetchMessages(selectedId, true); }, 4_000, Boolean(selectedId));
 
   // ── Select conversation ───────────────────────────────────────────────────────
   const selectConversation = useCallback((id: string, conv?: Conversation) => {

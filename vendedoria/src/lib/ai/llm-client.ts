@@ -1,3 +1,4 @@
+import { alertarCotaEsgotada, ehErroDeCota } from "@/lib/ai/alerta-cota";
 // ─── Shared LLM client — used by DecisionService and Responder ───────────────
 
 export interface LLMMessage {
@@ -41,7 +42,12 @@ export async function callOpenAI(
         ...(opts.responseFormat ? { response_format: { type: opts.responseFormat } } : {}),
       }),
     });
-    if (!res.ok) { console.error("[OpenAI]", await res.text()); return null; }
+    if (!res.ok) {
+      const texto = await res.text();
+      console.error("[OpenAI]", texto);
+      if (ehErroDeCota(texto)) void alertarCotaEsgotada("OpenAI", texto);
+      return null;
+    }
     const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     return data.choices?.[0]?.message?.content?.trim() ?? null;
   } catch (e) { console.error("[OpenAI]", e); return null; }
@@ -71,7 +77,12 @@ export async function callAnthropic(
         max_tokens: opts.maxTokens ?? 400,
       }),
     });
-    if (!res.ok) { console.error("[Anthropic]", await res.text()); return null; }
+    if (!res.ok) {
+      const texto = await res.text();
+      console.error("[Anthropic]", texto);
+      if (ehErroDeCota(texto)) void alertarCotaEsgotada("Anthropic", texto);
+      return null;
+    }
     const data = (await res.json()) as { content?: Array<{ text?: string }> };
     return data.content?.[0]?.text?.trim() ?? null;
   } catch (e) { console.error("[Anthropic]", e); return null; }

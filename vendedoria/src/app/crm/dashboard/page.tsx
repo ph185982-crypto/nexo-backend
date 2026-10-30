@@ -1,4 +1,5 @@
 "use client";
+import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useQuery, gql } from "@apollo/client";
@@ -66,7 +67,7 @@ export default function DashboardPage() {
   }, [orgId]);
 
   useEffect(() => { void fetchData(); }, [fetchData]);
-  useEffect(() => { const t = setInterval(() => void fetchData(), 30000); return () => clearInterval(t); }, [fetchData]);
+  useIntervaloVisivel(() => void fetchData(), 30_000);
 
   const m = data?.metricas;
   const maxFunil = Math.max(...(data?.funil?.map(f => f.count) ?? [1]), 1);

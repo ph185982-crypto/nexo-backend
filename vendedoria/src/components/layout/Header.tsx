@@ -1,4 +1,5 @@
 "use client";
+import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { Menu, LogOut, User, Bell, ShoppingBag, AlertTriangle, BellOff } from "lucide-react";
@@ -92,11 +93,8 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     } catch { /* silent */ }
   }, [orgId]);
 
-  useEffect(() => {
-    fetchNotifications();
-    const t = setInterval(fetchNotifications, 15000);
-    return () => clearInterval(t);
-  }, [fetchNotifications]);
+  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+  useIntervaloVisivel(fetchNotifications, 30_000);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
