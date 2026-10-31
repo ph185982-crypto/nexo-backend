@@ -1,9 +1,12 @@
-// Portão do handoff: o lead só chega ao Pedro com os dados completos E dentro
-// do ICP. O prompt pede isso, mas o modelo encerrava assim mesmo (em 23/10 dois
-// handoffs seguidos: R$ 5 mil sem loja física, e "DJ$" sem CNPJ). Agora é regra
-// no código — o LLM não consegue furar.
+// Portão do handoff, regra no código (o LLM não consegue furar):
+//  • Com dados faltando, o modelo não encerra: volta a perguntar o que falta.
+//  • Respondeu TODAS as perguntas → está qualificado e vai para o Pedro, sem
+//    corte de faturamento, loja física, CNPJ, capital ou experiência. Vale mesmo
+//    se o modelo tentar descartar ("não faz sentido te passar pro especialista")
+//    ou mandar para nutrição. (31/10: o Ozias respondeu tudo, disse que podia
+//    falar "agora" e a IA o desqualificou por "falta de capital".)
 
-import { avaliarQualificacao, temCnpjConfirmado, parseFaturamentoMensal } from "./qualificacao";
+import { parseFaturamentoMensal } from "./qualificacao";
 import { horarioAceitavel } from "@/lib/agenda/slots";
 import type { SDRSession } from "./types";
 
@@ -44,7 +47,7 @@ export const PERGUNTA_POR_ITEM: Record<ItemHandoff, string> = {
   faturamento: "o faturamento mensal aproximado do negócio inteiro (valor em reais)",
   loja_fisica: "se tem loja física (sim ou não)",
   cnpj: "se a empresa tem CNPJ ativo",
-  horario: "o horário da ligação com o Pedro — ofereça os horários livres listados",
+  horario: "o melhor dia e horário para a ligação com o Pedro",
 };
 
 /** O que ainda falta para poder passar o lead (na ordem em que convém perguntar). */
@@ -54,69 +57,70 @@ export function faltandoParaHandoff(s: SDRSession, agora: Date = new Date()): It
   if (!(s.empresa ?? "").trim()) f.push("empresa");
   if (!(s.segmento ?? "").trim() && s.canais_atuais.length === 0) f.push("segmento");
   if (!dorEspecifica(s.problema_principal)) f.push("dor");
-  if (parseFaturamentoMensal(s.faturamento_total) === null) f.push("faturamento");
+  if (!faturamentoRespondido(s.faturamento_total)) f.push("faturamento");
   if (s.loja_fisica !== "sim" && s.loja_fisica !== "nao" && s.tem_loja_fisica !== true) f.push("loja_fisica");
   if (!(s.cnpj ?? "").trim()) f.push("cnpj");
-  if (!horarioAceitavel(s.horario_reuniao, agora)) f.push("horario");
+  if (!temHorario(s, agora)) f.push("horario");
   return f;
+}
+
+/** Respondeu sobre faturamento? Um valor, ou que ainda não fatura ("zero", "ainda não", "tô começando"). */
+export function faturamentoRespondido(v: string | null | undefined): boolean {
+  if (parseFaturamentoMensal(v) !== null) return true;
+  const t = (v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return /\b(nao fatur|ainda nao|zero|nada|nenhum|sem faturamento|comecando|iniciando|nao vend)/.test(t);
+}
+
+/**
+ * O lead já disse quando pode falar? Vale um horário da agenda (vira reunião no
+ * CRM) ou qualquer disponibilidade dita por ele ("agora", "amanhã de manhã") —
+ * o Pedro recebe isso no bastão e combina o horário exato.
+ */
+export function temHorario(s: SDRSession, agora: Date = new Date()): boolean {
+  return Boolean(horarioAceitavel(s.horario_reuniao, agora)) || (s.disponibilidade ?? "").trim().length >= 2;
 }
 
 export type AcaoSdr = "continue" | "handoff" | "nurture" | "close";
 
 export interface DecisaoHandoff {
   acao: AcaoSdr;
-  /** Instrução para o modelo refazer a resposta (só quando o handoff foi barrado). */
+  /** Instrução para o modelo refazer a resposta (quando o código mudou a ação dele). */
   correcao?: string;
   faltando: ItemHandoff[];
-  foraDoIcp: boolean;
   motivo: string;
 }
 
 /**
- * Decide a ação final. Só mexe quando o modelo pediu handoff:
- * - faltam dados → continue (perguntar o primeiro que falta);
- * - dados completos mas fora do ICP → nurture (nunca vai para a agenda do Pedro);
- * - completo e no ICP → handoff.
- * Horário só é exigido de quem está no ICP.
+ * Decide a ação final a partir da ação pedida pelo modelo:
+ * - respondeu tudo → handoff, qualquer que seja a ação pedida;
+ * - pediu handoff ou nutrição com dados faltando → continue (perguntar o que falta);
+ * - "close" (o lead disse que não tem interesse) e "continue" ficam como estão.
  */
 export function decidirHandoff(pedida: AcaoSdr, s: SDRSession, agora: Date = new Date()): DecisaoHandoff {
-  const sessaoLoja = { ...s, tem_loja_fisica: s.loja_fisica === "sim" ? true : s.loja_fisica === "nao" ? false : s.tem_loja_fisica };
-  const icp = avaliarQualificacao(sessaoLoja);
-  const faltandoTudo = faltandoParaHandoff(s, agora);
-  const faltandoDados = faltandoTudo.filter((i) => i !== "horario");
-  const respondeuIcp = !faltandoDados.some((i) => i === "faturamento" || i === "loja_fisica" || i === "cnpj");
-  const foraDoIcp = respondeuIcp && !icp.qualificado;
+  const faltando = faltandoParaHandoff(s, agora);
 
-  if (pedida !== "handoff") {
-    return { acao: pedida, faltando: faltandoTudo, foraDoIcp, motivo: "ação do modelo mantida" };
-  }
-
-  if (foraDoIcp) {
-    const porque = icp.faltando.map((f) => (
-      f === "faturamento" ? `faturamento abaixo de R$ 40 mil/mês (lido: ${icp.faturamentoMensal ?? "?"})`
-        : f === "loja_fisica" ? "não tem loja física"
-        : "não tem CNPJ ativo"
-    )).join(", ");
+  if (faltando.length === 0) {
+    if (pedida === "handoff") return { acao: "handoff", faltando, motivo: "respondeu todas as perguntas" };
     return {
-      acao: "nurture", faltando: faltandoTudo, foraDoIcp: true, motivo: `fora do ICP: ${porque}`,
+      acao: "handoff", faltando, motivo: `respondeu todas as perguntas (modelo pediu ${pedida})`,
       correcao:
-        `SISTEMA: este lead NÃO está no perfil atendido agora (${porque}). NÃO faça handoff, NÃO marque ligação ` +
-        `e NÃO diga que o especialista vai chamar. Agradeça, explique com respeito que neste momento a consultoria ` +
-        `não é o melhor passo pra ele, deixe a porta aberta e ofereça mandar conteúdo útil. Use action="nurture".`,
+        `SISTEMA: o lead já respondeu todas as perguntas — ele está QUALIFICADO e vai para o Pedro agora. ` +
+        `NÃO desqualifique, NÃO fale de capital, experiência ou "momento", NÃO faça mais perguntas. ` +
+        `Envie agora a mensagem de ENCERRAMENTO HANDOFF completa e use action="handoff".`,
     };
   }
 
-  const faltando = icp.qualificado ? faltandoTudo : faltandoDados;
-  if (faltando.length > 0) {
+  if (pedida === "handoff" || pedida === "nurture") {
     const primeiro = faltando[0];
     return {
-      acao: "continue", faltando, foraDoIcp: false, motivo: `faltam: ${faltando.join(", ")}`,
+      acao: "continue", faltando, motivo: `modelo pediu ${pedida}, mas faltam: ${faltando.join(", ")}`,
       correcao:
-        `SISTEMA: você tentou encerrar (handoff), mas ainda falta: ${faltando.map((i) => PERGUNTA_POR_ITEM[i]).join("; ")}. ` +
-        `NÃO encerre, NÃO diga que vai passar para o especialista. Responda ao que o lead acabou de dizer e pergunte ` +
-        `de forma natural sobre ${PERGUNTA_POR_ITEM[primeiro]}. Use action="continue".`,
+        `SISTEMA: você tentou ${pedida === "handoff" ? "encerrar (handoff)" : "mandar o lead para nutrição"}, mas ainda falta: ` +
+        `${faltando.map((i) => PERGUNTA_POR_ITEM[i]).join("; ")}. Todo lead que responde as perguntas é qualificado — ` +
+        `NÃO encerre, NÃO desqualifique e NÃO diga que vai passar para o especialista ainda. Responda ao que o lead ` +
+        `acabou de dizer e pergunte de forma natural sobre ${PERGUNTA_POR_ITEM[primeiro]}. Use action="continue".`,
     };
   }
 
-  return { acao: "handoff", faltando: [], foraDoIcp: false, motivo: "dados completos e dentro do ICP" };
+  return { acao: pedida, faltando, motivo: "ação do modelo mantida" };
 }

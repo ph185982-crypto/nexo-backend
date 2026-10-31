@@ -33,16 +33,38 @@ const completo = (extra: Partial<SDRSession> = {}): SDRSession => ({
   ...extra,
 });
 
-test("handoff: lead real de 23/10 (R$ 5 mil, sem loja) vira nurture, nunca handoff", () => {
+test("handoff: quem respondeu tudo vai para o Pedro, sem corte de faturamento/loja (Geovana 23/10, Ozias 31/10)", () => {
   const geovana: SDRSession = {
     ...SDR_EMPTY_SESSION, nome: "Geovana Martins", cnpj: "tem", canais_atuais: ["WhatsApp", "Instagram", "Shopee"],
     disponibilidade: "9 hrs", tem_loja_fisica: false, loja_fisica: "nao", faturamento_total: "5.000,00",
     problema_principal: "Vendeu na Shopee por um mês e depois parou, sem mais vendas", empresa: "Gê Acessórios",
   };
-  const d = decidirHandoff("handoff", geovana, AGORA);
-  assert.equal(d.acao, "nurture");
-  assert.equal(d.foraDoIcp, true);
-  assert.match(d.correcao ?? "", /NÃO faça handoff/);
+  assert.equal(decidirHandoff("handoff", geovana, AGORA).acao, "handoff");
+
+  // Sessão real do Ozias: respondeu tudo, disse "agora", e o modelo mandou o texto de desqualificação
+  const ozias: SDRSession = {
+    ...SDR_EMPTY_SESSION, nome: "Ozias Antônio", empresa: "L m modas", segmento: "confecção infantil", cnpj: "tem",
+    loja_fisica: "nao", tem_loja_fisica: false, faturamento_total: "30 mil", disponibilidade: "agora",
+    problema_principal: "crescimento online pós-pandemia",
+  };
+  for (const pedida of ["close", "nurture", "continue"] as const) {
+    const d = decidirHandoff(pedida, ozias, AGORA);
+    assert.equal(d.acao, "handoff", `modelo pediu ${pedida}`);
+    assert.match(d.correcao ?? "", /QUALIFICADO/);
+  }
+});
+
+test("handoff: faturamento zero ou 'ainda não fatura' conta como respondido", () => {
+  for (const f of ["ainda não faturo", "zero", "tô começando agora", "0"]) {
+    assert.ok(!faltandoParaHandoff(completo({ faturamento_total: f }), AGORA).includes("faturamento"), f);
+  }
+  assert.ok(faltandoParaHandoff(completo({ faturamento_total: "" }), AGORA).includes("faturamento"));
+});
+
+test("handoff: nutrição com dados faltando volta a perguntar (não descarta)", () => {
+  const d = decidirHandoff("nurture", completo({ faturamento_total: "", horario_reuniao: undefined }), AGORA);
+  assert.equal(d.acao, "continue");
+  assert.deepEqual(d.faltando, ["faturamento", "horario"]);
 });
 
 test("handoff: lead real 'DJ$' (apelido, sem faturamento) continua qualificando", () => {
@@ -56,16 +78,17 @@ test("handoff: lead real 'DJ$' (apelido, sem faturamento) continua qualificando"
   assert.ok(d.faltando.includes("faturamento"));
 });
 
-test("handoff: tudo completo e no ICP com horário → handoff; sem horário → continue pedindo horário", () => {
+test("handoff: tudo completo com horário → handoff; sem horário nem disponibilidade → continue pedindo horário", () => {
   assert.equal(decidirHandoff("handoff", completo(), AGORA).acao, "handoff");
   const semHora = decidirHandoff("handoff", completo({ horario_reuniao: undefined }), AGORA);
   assert.equal(semHora.acao, "continue");
   assert.deepEqual(semHora.faltando, ["horario"]);
 });
 
-test("handoff: só intervém quando o modelo pediu handoff", () => {
-  assert.equal(decidirHandoff("continue", completo(), AGORA).acao, "continue");
+test("handoff: respondeu tudo → handoff mesmo sem o modelo pedir; 'close' sem dados fica (lead sem interesse)", () => {
+  assert.equal(decidirHandoff("continue", completo(), AGORA).acao, "handoff");
   assert.equal(decidirHandoff("close", { ...SDR_EMPTY_SESSION }, AGORA).acao, "close");
+  assert.equal(decidirHandoff("continue", { ...SDR_EMPTY_SESSION }, AGORA).acao, "continue");
 });
 
 test("faltandoParaHandoff: sessão vazia pede tudo, na ordem", () => {
