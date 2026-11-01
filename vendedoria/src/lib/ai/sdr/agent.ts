@@ -17,6 +17,7 @@ import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
 import { proximoEnvio } from "@/lib/followup/janela";
 import { dataDoToque } from "@/lib/followup/cadencia";
 import { buildSdrSystemPrompt, formatarTelefoneOwner } from "./prompt";
+import { MENSAGEM_FALHA_SDR } from "./fallback";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
@@ -46,7 +47,7 @@ async function notifySdrFailure(
   leadName: string | null,
   detalhe: string,
 ): Promise<void> {
-  const fallbackMsg = "opa, tive um probleminha aqui pra processar sua mensagem — já já te respondo, um segundo 🙏";
+  const fallbackMsg = MENSAGEM_FALHA_SDR;
   try {
     await sendWhatsAppMessage(phoneNumberId, customerPhone, fallbackMsg, token);
     await prisma.whatsappMessage.create({
