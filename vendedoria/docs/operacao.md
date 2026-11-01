@@ -43,5 +43,7 @@ gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 - Traz AV % (parte da receita líquida), variação contra o período anterior, margens, 12 meses de evolução, acumulado do ano e uma leitura automática em frases. Botão CSV abre no Excel.
 - **Realizado × Projetado**: o projetado soma ao realizado as receitas previstas em aberto e as contas a pagar pendentes com vencimento no período.
 - O filtro de negócio abre em **Nexo** (a DRE é da empresa) e a escolha fica salva no navegador.
-- "Em que linha cada categoria entra": o padrão é por palavra-chave (ex.: Assinaturas → Tecnologia; categoria desconhecida → Administrativas). Se uma estiver no lugar errado, troque ali. Isso não altera nenhum lançamento e cada troca fica no Histórico financeiro.
+- Cada **lançamento** cai numa linha nesta ordem: movido à mão > categoria fixada à mão > descrição (ex.: "Salário da Layane" → Pessoal, "Saneago" → Ocupação, "Cartão Nubank" → Dívidas) > categoria (ex.: Assinaturas → Tecnologia) > Administrativas. A descrição vem antes porque as categorias do extrato são genéricas ("Dívidas/Parcelas" guardava água, internet, cartão e salário).
+- Pagamento de dívidas e cartões, investimentos e entradas não operacionais (empréstimos recebidos, aportes) ficam **abaixo do resultado**: mexem na sobra de caixa, não no lucro.
+- Para corrigir um caso: abra a linha na tabela, abra a categoria e mova o lançamento. Para uma categoria inteira, use "Em que linha cada categoria entra". Nada altera os lançamentos e cada troca fica no Histórico financeiro.
 - Banco: só uma tabela nova (`max_dre_classificacoes`), criada pela migração `20261030160000_dre_classificacao` no próximo deploy. Nada existente é alterado.

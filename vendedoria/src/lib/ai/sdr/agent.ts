@@ -16,7 +16,8 @@ import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
 import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
 import { proximoEnvio } from "@/lib/followup/janela";
 import { dataDoToque } from "@/lib/followup/cadencia";
-import { buildSdrSystemPrompt } from "./prompt";
+import { buildSdrSystemPrompt, formatarTelefoneOwner } from "./prompt";
+import { MENSAGEM_FALHA_SDR } from "./fallback";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
@@ -46,7 +47,7 @@ async function notifySdrFailure(
   leadName: string | null,
   detalhe: string,
 ): Promise<void> {
-  const fallbackMsg = "opa, tive um probleminha aqui pra processar sua mensagem — já já te respondo, um segundo 🙏";
+  const fallbackMsg = MENSAGEM_FALHA_SDR;
   try {
     await sendWhatsAppMessage(phoneNumberId, customerPhone, fallbackMsg, token);
     await prisma.whatsappMessage.create({
@@ -153,7 +154,7 @@ export function formatHandoffMessage(
 
   return `🔥 NOVO LEAD QUALIFICADO — LIGAÇÃO MARCADA
 
-📅 Ligação: ${reuniao?.label ?? session.disponibilidade ?? "a combinar"}${reuniao?.meetLink ? `\n🎥 Meet: ${reuniao.meetLink}` : ""}
+📅 Ligação: ${reuniao?.label || session.disponibilidade?.trim() || "a combinar"}${reuniao?.meetLink ? `\n🎥 Meet: ${reuniao.meetLink}` : ""}
 
 👤 ${session.nome || "não informado"} — ${session.empresa || "empresa não informada"}
 📱 WhatsApp: +${phone}
@@ -176,6 +177,23 @@ const PERGUNTA_NATURAL: Record<ItemHandoff, string> = {
   cnpj: "a empresa já tem CNPJ ativo?",
   horario: "qual horário fica melhor pra uma ligação de 20 min com o Pedro?",
 };
+
+/** Fechamento do handoff escrito pelo código — só quando o modelo não o escreveu. */
+function mensagensDeHandoff(s: SDRSession): Array<{ text: string; delay: number }> {
+  const primeiro = (s.nome ?? "").trim().split(/\s+/)[0];
+  const inicio = horarioAceitavel(s.horario_reuniao);
+  const quando = inicio
+    ? `Ele te chama ${rotuloSlot(inicio)} pra conversar`
+    : (s.disponibilidade ?? "").trim()
+      ? `Já avisei ele que você pode falar ${s.disponibilidade.trim()} — ele te chama pra combinar`
+      : "Ele te chama em breve pra combinar o melhor horário";
+  return [
+    { text: `Perfeito${primeiro ? `, ${primeiro}` : ""}, já tenho tudo que preciso`, delay: 0 },
+    { text: "Vou te passar pro Pedro, fundador da Nexo — ele estruturou a operação de mais de 600 empresas e vai conduzir a conversa pessoalmente", delay: 1500 },
+    { text: `Já salva o contato dele: 📲 Pedro | Nexo: ${formatarTelefoneOwner()}`, delay: 1500 },
+    { text: quando, delay: 1500 },
+  ];
+}
 
 function mensagensDeReserva(acao: string, faltando: ItemHandoff[], slots: Slot[]): Array<{ text: string; delay: number }> {
   if (acao === "nurture") {
@@ -677,7 +695,9 @@ async function runSdrResponse(
   const faltandoAtual = faltandoParaHandoff(session);
   const respondeuIcp = !faltandoAtual.some((i) => i === "faturamento" || i === "loja_fisica" || i === "cnpj");
   const icpEstado = icpAtual.qualificado ? "qualificado" : respondeuIcp ? "fora" : "pendente";
-  const slots: Slot[] = icpEstado === "qualificado"
+  // Todo lead que responde as perguntas vai para o Pedro: os horários livres são
+  // oferecidos a quem já respondeu faturamento, loja física e CNPJ.
+  const slots: Slot[] = respondeuIcp
     ? await buscarSlotsReuniao(provider.organizationId).catch(() => [])
     : [];
   const motivoForaIcp = icpEstado === "fora"
@@ -723,24 +743,29 @@ async function runSdrResponse(
   // resposta (mantendo o tom natural); se ainda insistir ou não houver tempo,
   // usa uma pergunta direta. Nunca manda a mensagem de "o Pedro vai te ligar"
   // para quem não está pronto.
-  let decisao = decidirHandoff(parsed.action, newSession);
+  const decisao = decidirHandoff(parsed.action, newSession);
   if (decisao.correcao) {
-    console.log(`[SDR] Handoff barrado (${decisao.motivo}) | lead=${lead.id}`);
+    console.log(`[SDR] Ação do modelo corrigida (${decisao.motivo}) → ${decisao.acao} | lead=${lead.id}`);
     let refeito: SDRLLMResponse | null = null;
     if (Date.now() < llmDeadline - 4_000) {
       const raw2 = await callSdrLLM(`${systemPrompt}\n\n${decisao.correcao}`, history, userMessage, agent.aiProvider, agent.aiModel, llmDeadline);
       refeito = raw2 ? parseSdrResponse(raw2) : null;
     }
-    if (refeito && refeito.action !== "handoff") {
+    if (refeito && refeito.action === decisao.acao && refeito.messages.length > 0) {
       parsed.messages = refeito.messages;
-      parsed.action = refeito.action === "close" && decisao.acao === "nurture" ? "nurture" : refeito.action;
       newSession = normalizarSessao(mergeSdrSession(session, { ...parsed.updateSession, ...refeito.updateSession }), session);
+    } else if (decisao.acao === "handoff") {
+      parsed.messages = mensagensDeHandoff(newSession);
     } else {
       parsed.messages = mensagensDeReserva(decisao.acao, decisao.faltando, slots);
-      parsed.action = decisao.acao;
     }
-    decisao = decidirHandoff(parsed.action, newSession);
-    if (parsed.action === "handoff" && decisao.acao !== "handoff") parsed.action = decisao.acao;
+    parsed.action = decisao.acao;
+    // A resposta refeita pode ter mudado a sessão: confere de novo.
+    const final = decidirHandoff(parsed.action, newSession);
+    if (final.acao !== parsed.action) {
+      parsed.action = final.acao;
+      parsed.messages = final.acao === "handoff" ? mensagensDeHandoff(newSession) : mensagensDeReserva(final.acao, final.faltando, slots);
+    }
   }
 
   // Mesmo sem o modelo pedir "handoff", ele às vezes escreve "o especialista vai
@@ -758,14 +783,15 @@ async function runSdrResponse(
   // escolhe a próxima pergunta (nome/empresa/dor/horário) e, se o lead não perguntou
   // nada, mantém só a reação curta do modelo.
   if (parsed.action === "continue") {
-    const sessaoIcp = { ...newSession, tem_loja_fisica: newSession.loja_fisica === "sim" ? true : newSession.loja_fisica === "nao" ? false : newSession.tem_loja_fisica };
-    if (avaliarQualificacao(sessaoIcp).qualificado && !leadPerguntou(userMessage)) {
+    const pendentesAgora = faltandoParaHandoff(newSession);
+    const jaRespondeuQualificacao = !pendentesAgora.some((i) => i === "faturamento" || i === "loja_fisica" || i === "cnpj");
+    if (jaRespondeuQualificacao && !leadPerguntou(userMessage)) {
       const pendentes = faltandoParaHandoff(newSession);
       if (pendentes.length > 0) {
         const slotsAgora = pendentes[0] === "horario" && slots.length === 0
           ? await buscarSlotsReuniao(provider.organizationId).catch(() => [])
           : slots;
-        console.log(`[SDR] Lead no ICP — forçando próximo passo (${pendentes[0]}) | lead=${lead.id}`);
+        console.log(`[SDR] Qualificação respondida — forçando próximo passo (${pendentes[0]}) | lead=${lead.id}`);
         parsed.messages = forcarProximoPasso(parsed.messages, pendentes, slotsAgora);
       }
     }

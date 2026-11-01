@@ -3,7 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  agruparLinhas, analiseVertical, chaveCategoria, classificar, classificarPadrao, dreParaCsv, ESTRUTURA_DRE,
+  agruparLinhas, analiseVertical, chaveCategoria, chaveLancamento, classificar, classificarLancamento, classificarPadrao, dreParaCsv, ESTRUTURA_DRE,
   gerarInsights, GRUPOS_DRE, montarDre, variacaoPct, valoresVazios,
   type LinhaAgregada, type MapaClassificacao,
 } from "@/lib/finance/dre";
@@ -29,8 +29,11 @@ test("classificação padrão das categorias reais do extrato", () => {
     ["despesa", "Lazer", "pessoais"],
     ["despesa", "Assinaturas", "tecnologia"],
     ["despesa", "Moradia", "ocupacao"],
-    ["despesa", "Dívidas/Parcelas", "financeiras"],
-    ["despesa", "Cartão de crédito ", "financeiras"],
+    ["despesa", "Dívidas/Parcelas", "dividas"],
+    ["despesa", "Cartão de crédito ", "dividas"],
+    ["despesa", "Cartão de credito", "dividas"],
+    ["despesa", "Divida", "dividas"],
+    ["despesa", "Casa", "ocupacao"],
     ["despesa", "Negócios", "administrativas"],
     ["despesa", "Outros", "administrativas"],
     ["despesa", "Tráfego pago", "marketing"],
@@ -51,6 +54,66 @@ test("classificação manual vence o padrão, mas só se o grupo for do mesmo ti
   ]);
   assert.deepEqual(classificar("despesa", "Negócios", mapa), { grupo: "marketing", origem: "manual" });
   assert.deepEqual(classificar("despesa", "Alimentação", mapa), { grupo: "pessoais", origem: "padrao" });
+});
+
+test("descrição decide antes da categoria (casos reais do extrato)", () => {
+  const casos: Array<["receita" | "despesa", string, string, string]> = [
+    ["despesa", "Dívidas/Parcelas", "Salário da Layane", "pessoal"],
+    ["despesa", "Dívidas/Parcelas", "Saneago", "ocupacao"],
+    ["despesa", "Dívidas/Parcelas", "Internet", "tecnologia"],
+    ["despesa", "Dívidas/Parcelas", "parcela de casa", "dividas"],
+    ["despesa", "Dívidas/Parcelas", "Cartão Nubank", "dividas"],
+    ["despesa", "Dívidas/Parcelas", "Parcela cartão Fábio - compra do carro", "dividas"],
+    ["despesa", "Moradia", "Equatorial", "ocupacao"],
+    ["despesa", "Negócios", "Hospedagem Arquiplan", "tecnologia"],
+    ["despesa", "Negócios", "serviço Lorena", "administrativas"],
+    ["despesa", "Outros", "taxa Detran", "pessoais"],
+    ["despesa", "Cartão de crédito ", "Conta: Cartão PicPay Layane", "dividas"],
+    ["despesa", "Alimentação", "lanche", "pessoais"],
+    ["receita", "Renda Variável", "empréstimo com Fernando", "receita_nao_operacional"],
+    ["receita", "Receita Prevista", "Receita: Assessoria Shopee — parcela 1/12", "receita_operacional"],
+    ["receita", "Salário", "Salário IEL", "receita_operacional"],
+  ];
+  for (const [tipo, categoria, descricao, esperado] of casos) {
+    assert.equal(classificarLancamento({ tipo, categoria, descricao }).grupo, esperado, `${categoria} / ${descricao}`);
+  }
+});
+
+test("prioridade: lançamento movido > categoria fixada > descrição > categoria", () => {
+  const l = { tipo: "despesa" as const, categoria: "Dívidas/Parcelas", descricao: "Saneago", id: "abc" };
+  assert.deepEqual(classificarLancamento(l), { grupo: "ocupacao", origem: "descricao" });
+  const porCategoria: MapaClassificacao = new Map([["despesa|dividas/parcelas", "financeiras"]]);
+  assert.deepEqual(classificarLancamento(l, porCategoria), { grupo: "financeiras", origem: "categoria" });
+  const porLancamento: MapaClassificacao = new Map([["despesa|dividas/parcelas", "financeiras"], [`despesa|${chaveLancamento("abc")}`, "pessoais"]]);
+  assert.deepEqual(classificarLancamento(l, porLancamento), { grupo: "pessoais", origem: "lancamento" });
+  assert.deepEqual(classificarLancamento({ ...l, descricao: "xyz" }), { grupo: "dividas", origem: "padrao" });
+});
+
+test("dívidas, investimentos e empréstimos recebidos ficam fora do resultado, dentro do caixa", () => {
+  const v = valoresVazios();
+  v.receita_operacional = 5_000;
+  v.pessoais = 1_000;
+  v.dividas = 1_500;
+  v.investimentos = 500;
+  v.receita_nao_operacional = 450;
+  const d = montarDre(v);
+  assert.equal(d.receitaBruta, 5_000, "empréstimo não é receita");
+  assert.equal(d.resultadoLiquido, 4_000, "amortização não é despesa do resultado");
+  assert.equal(d.totalSaidas, 1_000);
+  assert.equal(d.sobraCaixa, 4_000 - 1_500 - 500 + 450);
+});
+
+test("agruparLinhas guarda os lançamentos e separa a mesma categoria em grupos diferentes", () => {
+  const { valores, porGrupo } = agruparLinhas([
+    { tipo: "despesa", categoria: "Dívidas/Parcelas", descricao: "Saneago", total: 237.02, quantidade: 1, id: "1", data: "2026-10-05" },
+    { tipo: "despesa", categoria: "Dívidas/Parcelas", descricao: "Cartão Nubank", total: 405.21, quantidade: 1, id: "2" },
+    { tipo: "despesa", categoria: "Dívidas/Parcelas", descricao: "parcela de casa", total: 700, quantidade: 1, id: "3" },
+  ]);
+  assert.equal(valores.ocupacao, 237.02);
+  assert.equal(valores.dividas, 1105.21);
+  assert.equal(porGrupo.dividas[0].lancamentos.length, 2);
+  assert.equal(porGrupo.dividas[0].lancamentos[0].descricao, "parcela de casa", "maior primeiro");
+  assert.equal(porGrupo.ocupacao[0].lancamentos[0].origem, "descricao");
 });
 
 test("todo grupo tem tipo e a estrutura cobre cada grupo exatamente uma vez", () => {
@@ -222,6 +285,19 @@ test("relatório do banco: realizado, projetado, escopo e classificação manual
     const padrao = await montarRelatorioDre(periodo, "nexo", hoje);
     assert.equal(padrao.realizado.atual.custos, 0);
 
+    // Mover um lançamento só: "Tráfego pago" (marketing) → custos; depois volta
+    const { definirClassificacaoLancamento } = await import("@/lib/finance/dre-dados");
+    const trafego = criadas[1];
+    await definirClassificacaoLancamento(trafego.id, "custos");
+    const movido = await montarRelatorioDre(periodo, "nexo", hoje);
+    assert.equal(movido.realizado.atual.grupos.marketing, 0);
+    assert.equal(movido.realizado.atual.custos, 1_000);
+    const itemMovido = movido.realizado.porGrupo.custos.flatMap((c) => c.lancamentos).find((l) => l.id === trafego.id);
+    assert.equal(itemMovido?.origem, "lancamento");
+    await assert.rejects(() => definirClassificacaoLancamento(trafego.id, "receita_operacional"), /não é de despesa/);
+    await definirClassificacaoLancamento(trafego.id, null);
+    assert.equal((await montarRelatorioDre(periodo, "nexo", hoje)).realizado.atual.grupos.marketing, 1_000);
+
     // Nenhum lançamento foi criado ou apagado pela DRE
     assert.equal(await prisma.transacao.count(), contagemAntes);
 
@@ -229,7 +305,9 @@ test("relatório do banco: realizado, projetado, escopo e classificação manual
     const hist = await prisma.historicoFinanceiro.count({ where: { entidade: "DreClassificacaoMax" } });
     assert.ok(hist >= 2, `histórico da classificação: ${hist}`);
   } finally {
-    await prisma.dreClassificacaoMax.deleteMany({ where: { categoria: { contains: tag.toLowerCase() } } });
+    await prisma.dreClassificacaoMax.deleteMany({
+      where: { OR: [{ categoria: { contains: tag.toLowerCase() } }, { categoria: { in: criadas.map((c) => chaveLancamento(c.id)) } }] },
+    });
     await prisma.transacao.deleteMany({ where: { id: { in: criadas.map((c) => c.id) } } });
     await prisma.contaPagarMax.delete({ where: { id: conta.id } });
     await prisma.receitaPrevistaMax.delete({ where: { id: prevista.id } });
