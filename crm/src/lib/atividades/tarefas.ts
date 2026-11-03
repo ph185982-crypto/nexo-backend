@@ -2,11 +2,9 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { limitesDoDia, somarRecorrencia } from "./tempo";
 
-export const TIPOS_TAREFA = ["TAREFA", "LIGACAO", "EMAIL", "WHATSAPP", "REUNIAO"] as const;
-export const PRIORIDADES = ["BAIXA", "NORMAL", "ALTA"] as const;
-export const RECORRENCIAS = ["DIARIA", "SEMANAL", "MENSAL"] as const;
-export type Visao = "hoje" | "atrasadas" | "proximos7" | "abertas" | "concluidas";
-export const VISOES: readonly Visao[] = ["hoje", "atrasadas", "proximos7", "abertas", "concluidas"];
+import { PRIORIDADES, RECORRENCIAS, TIPOS_TAREFA, VISOES, type Visao } from "./constantes";
+export { PRIORIDADES, RECORRENCIAS, TIPOS_TAREFA, VISOES };
+export type { Visao };
 
 export interface ItemChecklist { texto: string; feito: boolean }
 

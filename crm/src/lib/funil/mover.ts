@@ -31,6 +31,8 @@ export interface MudancaEtapa {
 
 export interface ResultadoMudanca {
   mudou: boolean;
+  /** Natureza da etapa de destino (ABERTA, GANHA, PERDIDA). */
+  paraTipo?: string;
   de: { etapaId: string; etapaNome: string; funilNome: string } | null;
 }
 
@@ -46,7 +48,7 @@ export async function moverOportunidade(m: MudancaEtapa, db?: Db): Promise<Resul
     if (!op) throw new Error("Oportunidade não encontrada");
     if (!destino) throw new Error("Etapa não encontrada");
     const de = { etapaId: op.etapa.id, etapaNome: op.etapa.nome, funilNome: op.etapa.funil.nome };
-    if (op.etapaId === destino.id) return { mudou: false, de };
+    if (op.etapaId === destino.id) return { mudou: false, de, paraTipo: destino.tipo };
     if (!destino.funil.ativo) throw new Error("Funil desativado");
 
     const agora = m.quando ?? new Date();
@@ -93,9 +95,24 @@ export async function moverOportunidade(m: MudancaEtapa, db?: Db): Promise<Resul
     });
     // Ganhou: a entrega nasce na mesma transação (idempotente: ganhar de novo não duplica).
     if (destino.tipo === "GANHA") await criarEntregaDaOportunidade(tx, m.oportunidadeId, agora);
-    return { mudou: true, de };
+    return { mudou: true, de, paraTipo: destino.tipo };
   };
-  return db ? run(db) : prisma.$transaction(run);
+  if (db) return run(db);
+  const r = await prisma.$transaction(run);
+  // Automações disparam depois de confirmar a transação; as de ação de automação não encadeiam (sem laço).
+  if (r.mudou && m.origem !== "AUTOMACAO") await dispararAutomacoes(m.oportunidadeId, r.paraTipo ?? "ABERTA", false);
+  return r;
+}
+
+/** Depois do commit; nunca derruba quem chamou. Import dinâmico: o motor importa este módulo. */
+async function dispararAutomacoes(oportunidadeId: string, paraTipo: string, criada: boolean) {
+  try {
+    const { dispararEvento, gatilhosDaMudanca } = await import("@/lib/automacao/motor");
+    if (criada) await dispararEvento("OPORTUNIDADE_CRIADA", oportunidadeId);
+    else for (const g of gatilhosDaMudanca(paraTipo)) await dispararEvento(g, oportunidadeId);
+  } catch (e) {
+    console.error("[automacao] falha ao disparar:", e);
+  }
 }
 
 export interface NovaOportunidade {
@@ -163,5 +180,8 @@ export async function criarOportunidade(n: NovaOportunidade, db?: Db) {
     if (etapa.tipo === "GANHA") await criarEntregaDaOportunidade(tx, op.id, agora); // criada já ganha
     return op;
   };
-  return db ? run(db) : prisma.$transaction(run);
+  if (db) return run(db);
+  const op = await prisma.$transaction(run);
+  if (n.origemHistorico !== "AUTOMACAO") await dispararAutomacoes(op.id, "ABERTA", true); // depois do commit
+  return op;
 }

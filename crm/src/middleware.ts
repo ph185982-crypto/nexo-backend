@@ -1,10 +1,10 @@
-// Tudo exige login, exceto: tela de login, /api/login, /api/health e /api/integracoes/*
-// (esta última valida a chave de serviço dentro da própria rota).
+// Tudo exige login, exceto: tela de login, /api/login, /api/health, /api/integracoes/* (chave de serviço)
+// e /api/cron/* (CRON_SECRET) — as duas últimas validam a credencial dentro da própria rota.
 import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_SESSAO, verificarSessao } from "@/lib/auth/sessao";
 
 const PUBLICOS = ["/login", "/api/login", "/api/health"];
-const PUBLICO_PREFIXOS = ["/api/integracoes/", "/brand/", "/_next/"];
+const PUBLICO_PREFIXOS = ["/api/integracoes/", "/api/cron/", "/brand/", "/_next/"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

@@ -21,6 +21,10 @@ const ITENS = [
     icone: <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9" />,
   },
   {
+    href: "/automacoes", rotulo: "Automações",
+    icone: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
+  },
+  {
     href: "/contatos", rotulo: "Contatos",
     icone: <path d="M4 21V6l8-3 8 3v15M9 21v-4h6v4M8 9h2m4 0h2m-8 4h2m4 0h2" />,
   },

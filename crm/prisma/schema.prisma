@@ -356,3 +356,43 @@ model EntregaCartao {
 
   @@index([entregaId, coluna, ordem])
 }
+
+// ─── Automações: gatilho → critérios → ações (com espera opcional) ───────────
+model Automacao {
+  id          String   @id @default(cuid())
+  nome        String
+  descricao   String?  @db.Text
+  ativo       Boolean  @default(true)
+  // OPORTUNIDADE_CRIADA | OPORTUNIDADE_MOVIDA | OPORTUNIDADE_GANHA | OPORTUNIDADE_PERDIDA
+  // | OPORTUNIDADE_ESTAGNADA | OPORTUNIDADE_SEM_INTERACAO (estas duas por varredura agendada)
+  gatilho     String
+  criterios   Json     @default("[]") // [{ "campo": "diasNaEtapa", "operador": ">=", "valor": 3 }]
+  acoes       Json     @default("[]") // [{ "tipo": "CRIAR_TAREFA", "titulo": "…", "esperaHoras": 0 }]
+  criadaPorId String?
+  criadoEm    DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  execucoes AutomacaoExecucao[]
+
+  @@index([ativo, gatilho])
+}
+
+// Uma linha por ação a executar. chave única = a mesma ação nunca roda duas vezes para o mesmo fato.
+model AutomacaoExecucao {
+  id             String   @id @default(cuid())
+  automacaoId    String
+  automacao      Automacao @relation(fields: [automacaoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  gatilho        String
+  indice         Int // posição da ação na automação
+  acaoTipo       String
+  chave          String   @unique
+  status         String   @default("PENDENTE") // PENDENTE | EXECUTADA | IGNORADA | ERRO
+  executarEm     DateTime @default(now())
+  executadaEm    DateTime?
+  detalhe        String?  @db.Text
+  criadoEm       DateTime @default(now())
+
+  @@index([status, executarEm])
+  @@index([automacaoId, criadoEm])
+}
