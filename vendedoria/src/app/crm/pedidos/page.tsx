@@ -88,7 +88,7 @@ export default function PedidosNacionaisPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Package className="w-5 h-5 text-emerald-500" />
+          <Package className="w-5 h-5 text-emerald-400" />
           <h1 className="text-lg font-semibold text-foreground">Pedidos Nacionais</h1>
           <span className="text-sm text-muted-foreground">({pedidos.length} pedidos)</span>
         </div>
@@ -210,7 +210,7 @@ function PedidoCard({
           href={`https://wa.me/${pedido.telefoneCliente}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-emerald-500 hover:underline"
+          className="text-xs text-emerald-400 hover:underline"
         >
           {pedido.telefoneCliente}
         </a>

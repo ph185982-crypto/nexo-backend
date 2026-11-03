@@ -151,7 +151,7 @@ export default function WorkUnitsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={selectedOrgId} onValueChange={setSelectedOrgId}>
-            <SelectTrigger className="w-44 bg-white">
+            <SelectTrigger className="w-44 bg-card">
               <SelectValue placeholder="Organização" />
             </SelectTrigger>
             <SelectContent>
@@ -174,7 +174,7 @@ export default function WorkUnitsPage() {
           placeholder="Buscar por nome ou endereço..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 bg-white"
+          className="pl-9 bg-card"
         />
       </div>
 

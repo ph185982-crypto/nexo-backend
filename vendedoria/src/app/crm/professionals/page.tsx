@@ -195,7 +195,7 @@ function ProfessionalDetailModal({
                     key={day}
                     className={cn(
                       "flex items-center justify-between p-2.5 rounded-lg border",
-                      avail?.isActive ? "border-green-200 bg-green-50" : "border-gray-100 bg-gray-50"
+                      avail?.isActive ? "border-green-200 bg-green-50" : "border-border bg-muted/50"
                     )}
                   >
                     <span className="text-sm font-medium w-20">{DAYS_SHORT[day]}</span>
@@ -314,7 +314,7 @@ export default function ProfessionalsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={selectedOrgId} onValueChange={setSelectedOrgId}>
-            <SelectTrigger className="w-44 bg-white">
+            <SelectTrigger className="w-44 bg-card">
               <SelectValue placeholder="Organização" />
             </SelectTrigger>
             <SelectContent>
@@ -337,7 +337,7 @@ export default function ProfessionalsPage() {
           placeholder="Buscar por nome ou especialidade..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 bg-white"
+          className="pl-9 bg-card"
         />
       </div>
 

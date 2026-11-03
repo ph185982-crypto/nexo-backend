@@ -36,7 +36,7 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 };
 
 const TYPE_COLOR: Record<string, string> = {
-  ORDER: "text-emerald-500",
+  ORDER: "text-emerald-400",
   ESCALATION: "text-orange-500",
   OPT_OUT: "text-red-500",
 };

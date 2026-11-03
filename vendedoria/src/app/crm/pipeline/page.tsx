@@ -9,12 +9,12 @@ import { cn } from "@/lib/utils";
 const GET_ORGS = gql`query { whatsappBusinessOrganizations { id name } }`;
 
 const ETAPAS = [
-  { id: "NOVO",                label: "Novo",            color: "bg-gray-100 border-gray-300" },
-  { id: "PRODUTO_IDENTIFICADO",label: "Qualificando",    color: "bg-blue-50 border-blue-300" },
-  { id: "NEGOCIANDO",          label: "Negociando",      color: "bg-yellow-50 border-yellow-300" },
-  { id: "COLETANDO_DADOS",     label: "Coletando dados", color: "bg-orange-50 border-orange-300" },
-  { id: "PEDIDO_CONFIRMADO",   label: "Confirmado",      color: "bg-green-50 border-green-300" },
-  { id: "PERDIDO",             label: "Perdido",         color: "bg-red-50 border-red-300" },
+  { id: "NOVO",                label: "Novo",            color: "border-t-gray-400" },
+  { id: "PRODUTO_IDENTIFICADO",label: "Qualificando",    color: "border-t-primary" },
+  { id: "NEGOCIANDO",          label: "Negociando",      color: "border-t-avz-laranja" },
+  { id: "COLETANDO_DADOS",     label: "Coletando dados", color: "border-t-orange-300" },
+  { id: "PEDIDO_CONFIRMADO",   label: "Confirmado",      color: "border-t-green-500" },
+  { id: "PERDIDO",             label: "Perdido",         color: "border-t-red-500" },
 ] as const;
 
 const AVG_PRICE = 539.99;
@@ -94,9 +94,9 @@ export default function PipelinePage() {
   const getProduto = (l: Lead) => l.conversations[0]?.produtoInteresse;
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-[var(--fundo)]">
-      <div className="bg-white border-b px-4 py-3 flex items-center gap-3 shrink-0">
-        <h1 className="font-semibold text-[var(--texto)]">Pipeline</h1>
+    <div className="flex flex-col h-full min-h-0 bg-background">
+      <div className="bg-card border-b border-border px-4 py-3 flex items-center gap-3 shrink-0">
+        <h1 className="font-semibold text-foreground">Pipeline</h1>
         {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
       </div>
 
@@ -108,18 +108,18 @@ export default function PipelinePage() {
             return (
               <div
                 key={etapa.id}
-                className={cn("flex flex-col rounded-xl border-2 bg-white w-64 shrink-0 overflow-hidden", etapa.color)}
+                className={cn("flex flex-col rounded-xl border border-border border-t-4 bg-muted/40 w-64 shrink-0 overflow-hidden", etapa.color)}
                 onDragOver={e => { e.preventDefault(); }}
                 onDrop={async () => { if (dragId) { await moveCard(dragId, etapa.id); setDragId(null); } }}
               >
                 {/* Column header */}
-                <div className="px-3 py-2.5 border-b bg-white/80">
+                <div className="px-3 py-2.5 border-b border-border bg-card">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-[var(--texto)]">{etapa.label}</span>
-                    <span className="text-xs font-bold bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">{colLeads.length}</span>
+                    <span className="text-sm font-semibold text-foreground">{etapa.label}</span>
+                    <span className="text-xs font-bold bg-muted text-muted-foreground rounded-full px-2 py-0.5">{colLeads.length}</span>
                   </div>
                   {colLeads.length > 0 && (
-                    <p className="text-[11px] text-[var(--texto-secundario)] mt-0.5">
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
                       R$ {(valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </p>
                   )}
@@ -139,28 +139,28 @@ export default function PipelinePage() {
                         onDragEnd={() => setDragId(null)}
                         onClick={() => router.push(`/crm/conversations?id=${conv?.id ?? ""}`)}
                         className={cn(
-                          "bg-white rounded-lg border p-2.5 cursor-pointer shadow-sm hover:shadow-md transition-all select-none",
+                          "bg-card rounded-lg border border-border p-2.5 cursor-pointer shadow-sm hover:shadow-md transition-all select-none",
                           stale && "border-red-300 animate-pulse ring-1 ring-red-200",
                           dragId === lead.id && "opacity-50"
                         )}
                       >
                         <div className="flex items-center gap-2 mb-1.5">
-                          <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-primary-100 text-primary-700 text-xs font-bold flex items-center justify-center shrink-0">
                             {(lead.profileName ?? lead.phoneNumber)?.[0]?.toUpperCase() ?? "?"}
                           </div>
-                          <p className="text-sm font-medium text-[var(--texto)] truncate flex-1">
+                          <p className="text-sm font-medium text-foreground truncate flex-1">
                             {lead.profileName ?? formatPhone(lead.phoneNumber)}
                           </p>
                         </div>
 
                         {produto && (
-                          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-medium mb-1">
+                          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-primary-50 text-primary-700 font-medium mb-1">
                             🔧 {produto.replace("_", " ")}
                           </span>
                         )}
 
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={cn("text-[10px] flex items-center gap-0.5", stale ? "text-red-600 font-semibold" : "text-[var(--texto-terciario)]")}>
+                          <span className={cn("text-[10px] flex items-center gap-0.5", stale ? "text-red-600 font-semibold" : "text-muted-foreground")}>
                             ⏱ {timeAgo(conv?.lastMessageAt ?? null)}
                           </span>
                           {conv?.localizacaoRecebida && <span className="text-[10px] text-emerald-600">📍</span>}
@@ -170,7 +170,7 @@ export default function PipelinePage() {
                     );
                   })}
                   {colLeads.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-8 text-[var(--texto-terciario)]">
+                    <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                       <MessageSquare className="w-6 h-6 mb-1 opacity-30" />
                       <p className="text-xs">Vazio</p>
                     </div>

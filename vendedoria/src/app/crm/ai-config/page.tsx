@@ -70,7 +70,7 @@ export default function AIConfigPage() {
     <div className="flex flex-col h-full overflow-hidden bg-background">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b bg-white flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b bg-card flex-shrink-0">
         <Brain className="w-5 h-5 text-primary flex-shrink-0" />
         <h1 className="font-semibold text-lg">Configurações da IA</h1>
         <VersionBadge key={versionKey} />
@@ -78,7 +78,7 @@ export default function AIConfigPage() {
 
       {/* ── Tabs ── */}
       <Tabs defaultValue="persona" className="flex flex-col flex-1 min-h-0">
-        <div className="border-b bg-white px-4 flex-shrink-0">
+        <div className="border-b bg-card px-4 flex-shrink-0">
           <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none">
             {[
               { value: "persona",     label: "Persona" },

@@ -15,16 +15,39 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          50: "#e6f2f0",
-          100: "#b3d9d3",
-          200: "#80bfb7",
-          300: "#4da69b",
-          400: "#1a8c7e",
-          500: "#004c3f",
-          600: "#003d33",
-          700: "#002e26",
-          800: "#001f1a",
-          900: "#00100d",
+          50: "#EEF1FF",
+          100: "#DDE3FF",
+          200: "#BCC8FF",
+          300: "#8FA2FF",
+          400: "#5C77FF",
+          500: "#2448FF",
+          600: "#1D3AD6",
+          700: "#172EAB",
+          800: "#122480",
+          900: "#0D1A5C",
+        },
+        // Identidade Avanteza. O verde antigo (emerald) era a cor de destaque da marca
+        // espalhada pelas telas; remapeado para o azul, sem caçar classe por classe.
+        // Verde de "sucesso" continua em green-*.
+        emerald: {
+          50: "#EEF1FF",
+          100: "#DDE3FF",
+          200: "#BCC8FF",
+          300: "#8FA2FF",
+          400: "#5C77FF",
+          500: "#2448FF",
+          600: "#1D3AD6",
+          700: "#172EAB",
+          800: "#122480",
+          900: "#0D1A5C",
+          950: "#08103A",
+        },
+        avz: {
+          azul: "#2448FF",
+          laranja: "#FF7043", // só preenchimento, com texto grafite
+          bq: "#F6F5F0",
+          grafite: "#18191D",
+          cinza: "#686A73",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -71,7 +94,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "Arial", "system-ui", "sans-serif"],
+        titulo: ["var(--font-manrope)", "Montserrat", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "monospace"],
       },
       animation: {

@@ -23,7 +23,7 @@ const ETAPA_LABEL: Record<string, string> = {
 
 function MetricCard({ icon: Icon, label, value, sub, color }: { icon: React.ElementType; label: string; value: string; sub?: string; color: string }) {
   return (
-    <div className="bg-white rounded-xl border p-4 flex items-start gap-3">
+    <div className="bg-card rounded-xl border p-4 flex items-start gap-3">
       <div className={cn("p-2 rounded-lg shrink-0", color)}>
         <Icon className="w-5 h-5" />
       </div>
@@ -90,7 +90,7 @@ export default function DashboardPage() {
 
       {/* Alertas */}
       {(data?.alertas?.length ?? 0) > 0 && (
-        <div className="bg-white rounded-xl border p-4">
+        <div className="bg-card rounded-xl border p-4">
           <h2 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[var(--texto)]">
             <AlertCircle className="w-4 h-4 text-amber-500" />
             Atenção necessária ({data!.alertas.length})
@@ -115,13 +115,13 @@ export default function DashboardPage() {
       )}
 
       {/* Funil */}
-      <div className="bg-white rounded-xl border p-4">
+      <div className="bg-card rounded-xl border p-4">
         <h2 className="font-semibold text-sm mb-3 text-[var(--texto)]">Funil de conversão</h2>
         <div className="space-y-2">
           {(data?.funil ?? []).filter(f => f.count > 0 || f.etapa !== "PERDIDO").map((f) => (
             <div key={f.etapa} className="flex items-center gap-3">
               <span className="text-xs text-[var(--texto-secundario)] w-28 shrink-0">{ETAPA_LABEL[f.etapa] ?? f.etapa}</span>
-              <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+              <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
                 <div
                   className="h-full bg-[var(--primaria)] rounded-full transition-all"
                   style={{ width: `${Math.round((f.count / maxFunil) * 100)}%` }}
@@ -135,13 +135,13 @@ export default function DashboardPage() {
 
       {/* Gráfico 7d — simples sem deps externas */}
       {(data?.conversao7d?.length ?? 0) > 0 && (
-        <div className="bg-white rounded-xl border p-4">
+        <div className="bg-card rounded-xl border p-4">
           <h2 className="font-semibold text-sm mb-3 text-[var(--texto)]">Conversão — últimos 7 dias</h2>
           <div className="flex items-end gap-2 h-24">
             {data!.conversao7d.map((d) => (
               <div key={d.date} className="flex flex-col items-center flex-1 gap-1">
                 <span className="text-[10px] text-[var(--texto-secundario)]">{d.taxa}%</span>
-                <div className="w-full bg-gray-100 rounded-t overflow-hidden" style={{ height: 64 }}>
+                <div className="w-full bg-muted rounded-t overflow-hidden" style={{ height: 64 }}>
                   <div
                     className="bg-[var(--acento)] w-full rounded-t transition-all"
                     style={{ height: `${Math.max(d.taxa, 2)}%`, marginTop: `${100 - Math.max(d.taxa, 2)}%` }}

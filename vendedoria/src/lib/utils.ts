@@ -70,7 +70,7 @@ export function formatTime(date: string | Date): string {
 }
 
 const AVATAR_COLORS = [
-  "#004c3f", "#0891b2", "#7c3aed", "#c2410c",
+  "#2448FF", "#0891b2", "#7c3aed", "#c2410c",
   "#be185d", "#0f766e", "#1d4ed8", "#b45309",
 ];
 

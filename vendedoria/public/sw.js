@@ -6,7 +6,7 @@
  *   - Push notifications: existing handler preserved
  */
 
-const CACHE_VERSION = 'nexo-v2';
+const CACHE_VERSION = 'nexo-v3'; // v3: identidade Avanteza (ícones e offline novos)
 const STATIC_CACHE  = `${CACHE_VERSION}-static`;
 const OFFLINE_URL   = '/offline.html';
 

@@ -111,7 +111,7 @@ export function StrategyTab({ onSave, onError }: Props) {
       </div>
 
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-gray-50 space-y-4">
+        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium">{editing ? `Editar: ${editing.name}` : "Nova Estratégia"}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -188,7 +188,7 @@ export function StrategyTab({ onSave, onError }: Props) {
             <div
               key={p.id}
               className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border bg-white",
+                "flex items-start gap-3 p-4 rounded-xl border bg-card",
                 p.isActive && "border-primary/30 ring-1 ring-primary/20"
               )}
             >

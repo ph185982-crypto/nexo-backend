@@ -142,7 +142,7 @@ export function ObjectionsTab({ onSave, onError }: Props) {
       </div>
 
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-gray-50 space-y-4">
+        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium">
             {editing ? `Editar: "${editing.keyword}"` : "Nova Regra de Objeção"}
           </p>
@@ -216,12 +216,12 @@ export function ObjectionsTab({ onSave, onError }: Props) {
           <p className="text-sm">Nenhuma regra de objeção. Crie a primeira!</p>
         </div>
       ) : (
-        <div className="divide-y divide-border rounded-xl border bg-white overflow-hidden">
+        <div className="divide-y divide-border rounded-xl border bg-card overflow-hidden">
           {rules.map(rule => (
             <div key={rule.id} className={cn("flex items-start gap-3 px-4 py-3", !rule.isActive && "opacity-50")}>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <code className="text-xs bg-gray-100 px-2 py-0.5 rounded font-mono text-gray-700">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono text-foreground">
                     {rule.keyword}
                   </code>
                   <Badge variant="outline" className={cn("text-xs", OBJ_BADGE[rule.objectionType])}>

@@ -4,66 +4,86 @@
 
 @layer base {
   :root {
-    /* Light mode — clean slate with subtle warmth */
-    --background: 220 20% 97%;
-    --foreground: 220 15% 10%;
+    /* Identidade Avanteza — claro.
+       azul #2448FF · laranja #FF7043 (só preenchimento, texto grafite) · branco quente #F6F5F0
+       grafite #18191D · cinza #686A73. tests/marca.test.ts confere os contrastes. */
+    --background: 50 25% 95%;          /* branco quente */
+    --foreground: 228 9% 10%;          /* grafite */
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 10%;
+    --card-foreground: 228 9% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 10%;
-    --primary: 160 84% 30%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 94%;
-    --secondary-foreground: 220 14% 22%;
-    --muted: 220 14% 94%;
-    --muted-foreground: 220 10% 48%;
-    --accent: 160 84% 39%;
-    --accent-foreground: 160 84% 15%;
-    --destructive: 0 84% 58%;
+    --popover-foreground: 228 9% 10%;
+    --primary: 230 100% 57%;           /* azul */
+    --primary-foreground: 50 25% 95%;
+    --primary-texto: 230 100% 57%;
+    --secondary: 47 20% 91%;
+    --secondary-foreground: 228 9% 10%;
+    --muted: 47 20% 91%;
+    --muted-foreground: 229 5% 43%;    /* cinza */
+    --accent: 47 20% 91%;              /* fundo de hover/foco (neutro quente) */
+    --accent-foreground: 228 9% 10%;
+    --laranja: 14 100% 63%;
+    --destructive: 0 74% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 88%;
-    --input: 220 13% 88%;
-    --ring: 160 84% 30%;
+    --border: 45 19% 88%;
+    --input: 45 19% 88%;
+    --ring: 230 100% 57%;
     --radius: 0.625rem;
-    --sidebar-bg: 222 25% 9%;
-    --sidebar-fg: 0 0% 100%;
+    --sidebar-bg: 230 100% 57%;        /* azul: fundo de impacto */
+    --sidebar-fg: 50 25% 95%;
     --glass-bg: 0 0% 100% / 0.7;
-    --glass-border: 220 13% 88% / 0.6;
+    --glass-border: 45 19% 88% / 0.6;
   }
 
   .dark {
-    /* Dark mode — Vercel/Linear aesthetic */
-    --background: 222 20% 8%;
-    --foreground: 210 20% 94%;
-    --card: 222 18% 11%;
-    --card-foreground: 210 20% 94%;
-    --popover: 222 18% 11%;
-    --popover-foreground: 210 20% 94%;
-    --primary: 151 80% 40%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 16% 15%;
-    --secondary-foreground: 210 15% 75%;
-    --muted: 222 16% 14%;
-    --muted-foreground: 220 10% 52%;
-    --accent: 151 80% 45%;
-    --accent-foreground: 222 20% 8%;
-    --destructive: 0 75% 55%;
+    /* Escuro (padrão do app): grafite com azul. Texto em azul usa um tom mais claro
+       (--primary-texto) porque o azul cheio sobre grafite não passa em contraste. */
+    --background: 225 10% 8%;
+    --foreground: 50 25% 95%;
+    --card: 230 10% 12%;
+    --card-foreground: 50 25% 95%;
+    --popover: 230 10% 12%;
+    --popover-foreground: 50 25% 95%;
+    --primary: 230 100% 57%;
+    --primary-foreground: 50 25% 95%;
+    --primary-texto: 230 100% 74%;
+    --secondary: 225 10% 16%;
+    --secondary-foreground: 50 10% 85%;
+    --muted: 225 10% 16%;
+    --muted-foreground: 228 5% 63%;
+    --accent: 225 10% 18%;
+    --accent-foreground: 50 25% 95%;
+    --laranja: 14 100% 63%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 16% 18%;
-    --input: 222 16% 18%;
-    --ring: 151 80% 40%;
-    --sidebar-bg: 222 22% 6%;
-    --sidebar-fg: 0 0% 100%;
-    --glass-bg: 222 20% 10% / 0.75;
-    --glass-border: 222 16% 20% / 0.5;
+    --border: 228 10% 20%;
+    --input: 228 10% 20%;
+    --ring: 230 100% 74%;
+    --sidebar-bg: 228 9% 10%;          /* grafite */
+    --sidebar-fg: 50 25% 95%;
+    --glass-bg: 225 10% 10% / 0.75;
+    --glass-border: 228 10% 22% / 0.5;
   }
+}
+
+/* Nomes antigos (src/styles/design-system.css nunca foi importado; algumas telas
+   ainda usam var(--texto) etc.). Apontam para os tokens do tema: funcionam no claro e no escuro. */
+:root, .dark {
+  --fundo: hsl(var(--background));
+  --superficie: hsl(var(--card));
+  --texto: hsl(var(--foreground));
+  --texto-secundario: hsl(var(--muted-foreground));
+  --texto-terciario: hsl(var(--muted-foreground));
+  --borda: hsl(var(--border));
+  --primaria: hsl(var(--primary));
+  --acento: hsl(var(--laranja));
 }
 
 @layer base {
   * { @apply border-border; }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: var(--font-poppins), system-ui, sans-serif;
+    font-family: var(--font-inter), Arial, system-ui, sans-serif;
     overflow-x: hidden;
     /* iOS: impede o "rubber band" da página inteira ao rolar listas internas */
     overscroll-behavior-y: none;
@@ -75,6 +95,7 @@
     text-size-adjust: 100%;
   }
   button, a { -webkit-tap-highlight-color: transparent; }
+  h1, h2, h3 { font-family: var(--font-manrope), Montserrat, system-ui, sans-serif; }
 
   /* iOS Safari dá zoom automático ao focar campos com fonte < 16px.
      16px é o mínimo para manter o layout estável ao abrir o teclado. */
@@ -92,7 +113,7 @@
     border: 1px solid hsl(var(--glass-border));
   }
   .glass-dark {
-    background: rgba(10, 12, 20, 0.7);
+    background: rgba(24, 25, 29, 0.75);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -163,21 +184,21 @@
    daqui brigavam com o `max-w-[80%] px-3.5 py-2` aplicado no elemento. */
 .msg-bubble-sent {
   @apply rounded-br-md;
-  background: #d9fdd3;
-  color: #111b21;
+  background: #DDE3FF;
+  color: #18191D;
 }
 .dark .msg-bubble-sent {
-  background: #144d37;
-  color: #d1fae5;
+  background: #172EAB;
+  color: #F6F5F0;
 }
 .msg-bubble-received {
   @apply rounded-bl-md;
   background: #ffffff;
-  color: #111b21;
+  color: #18191D;
 }
 .dark .msg-bubble-received {
-  background: hsl(222 18% 15%);
-  color: hsl(210 20% 94%);
+  background: hsl(225 10% 16%);
+  color: hsl(50 25% 95%);
 }
 
 /* Kanban */
@@ -185,3 +206,7 @@
 .kanban-card {
   @apply bg-card rounded-xl border border-border p-3 cursor-pointer hover:shadow-md transition-shadow;
 }
+
+/* Texto em azul no tema escuro: tom claro do azul (o cheio não passa em contraste sobre grafite). */
+.dark .text-primary,
+.dark .hover\:text-primary:hover { color: hsl(var(--primary-texto)); }

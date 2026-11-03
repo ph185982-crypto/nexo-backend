@@ -895,7 +895,7 @@ function ConversationsContent() {
         onTouchEnd={handleTouchEnd}
         className={cn(
           "flex-col overflow-hidden relative",
-          "bg-[#f0f2f5] dark:bg-[#0d1117]",
+          "bg-[#EDEBE4] dark:bg-[#121316]",
         "md:flex md:flex-1",
         mobilePanel === "chat" ? "flex flex-1 w-full" : "hidden",
       )}>
@@ -1346,12 +1346,12 @@ function ConversationsContent() {
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <Zap className="w-4 h-4 text-emerald-500" />
+          <Zap className="w-4 h-4 text-emerald-400" />
           {selected.humanTakeover
             ? <UserCheck className="w-4 h-4 text-blue-500" />
             : selected.lead?.status === "ESCALATED"
             ? <AlertTriangle className="w-4 h-4 text-orange-500" />
-            : <Bot className="w-4 h-4 text-emerald-500" />
+            : <Bot className="w-4 h-4 text-emerald-400" />
           }
         </div>
       )}
@@ -1361,7 +1361,7 @@ function ConversationsContent() {
           <div className="p-4 border-b border-border flex items-start justify-between gap-2">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Zap className="w-4 h-4 text-emerald-500" />
+                <Zap className="w-4 h-4 text-emerald-400" />
                 <h3 className="text-sm font-semibold">Inteligência IA</h3>
               </div>
               <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
@@ -1483,7 +1483,7 @@ function ConversationsContent() {
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Última atividade</p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <TrendingUp className="w-3.5 h-3.5 flex-shrink-0 text-emerald-500" />
+                <TrendingUp className="w-3.5 h-3.5 flex-shrink-0 text-emerald-400" />
                 <span>{timeAgo(selected.lastMessageAt)}</span>
               </div>
             </div>

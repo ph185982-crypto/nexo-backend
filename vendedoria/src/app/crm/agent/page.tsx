@@ -194,7 +194,7 @@ export default function AgentPage() {
       {toast && <Toast msg={toast} onClose={() => setToast("")} />}
 
       {/* Tabs */}
-      <div className="bg-white border-b flex overflow-x-auto scrollbar-hide shrink-0">
+      <div className="bg-card border-b flex overflow-x-auto scrollbar-hide shrink-0">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -202,7 +202,7 @@ export default function AgentPage() {
             className={cn(
               "px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
               tab === t.id
-                ? "border-[var(--primaria)] text-[var(--primaria)]"
+                ? "border-[var(--primaria)] text-primary"
                 : "border-transparent text-[var(--texto-secundario)] hover:text-[var(--texto)]"
             )}
           >
@@ -251,7 +251,7 @@ export default function AgentPage() {
           {/* History modal */}
           {showHistory && (
             <div className="fixed inset-0 z-50 bg-black/40 flex items-end md:items-center justify-center p-4" onClick={() => setShowHistory(false)}>
-              <div className="bg-white rounded-xl w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="bg-card rounded-xl w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b">
                   <h3 className="font-semibold">Histórico de versões</h3>
                   <button onClick={() => setShowHistory(false)}><X className="w-4 h-4" /></button>
@@ -278,7 +278,7 @@ export default function AgentPage() {
           {/* History detail modal */}
           {historyDetail && (
             <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4" onClick={() => setHistoryDetail(null)}>
-              <div className="bg-white rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="bg-card rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b">
                   <h3 className="font-semibold">v.{historyDetail.version} — {fmtDate(historyDetail.createdAt)}</h3>
                   <button onClick={() => setHistoryDetail(null)}><X className="w-4 h-4" /></button>
@@ -308,7 +308,7 @@ export default function AgentPage() {
                   "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap",
                   m.role === "user"
                     ? "bg-[var(--primaria)] text-white rounded-tr-sm"
-                    : "bg-white border text-[var(--texto)] rounded-tl-sm shadow-sm"
+                    : "bg-card border text-[var(--texto)] rounded-tl-sm shadow-sm"
                 )}>
                   {m.content}
                 </div>
@@ -316,7 +316,7 @@ export default function AgentPage() {
             ))}
             {chatLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
+                <div className="bg-card border rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
                   <Loader2 className="w-4 h-4 animate-spin text-[var(--texto-secundario)]" />
                 </div>
               </div>
@@ -325,7 +325,7 @@ export default function AgentPage() {
           </div>
 
           {/* Input */}
-          <div className="bg-white border-t p-3 flex gap-2 items-end shrink-0">
+          <div className="bg-card border-t p-3 flex gap-2 items-end shrink-0">
             <Textarea
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
@@ -384,7 +384,7 @@ export default function AgentPage() {
       {tab === "config" && (
         <div className="flex-1 overflow-y-auto p-4">
           <div className="max-w-lg mx-auto space-y-4">
-            <div className="bg-white rounded-xl border p-4 space-y-3">
+            <div className="bg-card rounded-xl border p-4 space-y-3">
               <h3 className="font-semibold text-sm">Identidade do agente</h3>
               <label className="block">
                 <span className="text-xs text-[var(--texto-secundario)]">Nome do agente</span>
@@ -396,7 +396,7 @@ export default function AgentPage() {
               </label>
             </div>
 
-            <div className="bg-white rounded-xl border p-4 space-y-3">
+            <div className="bg-card rounded-xl border p-4 space-y-3">
               <h3 className="font-semibold text-sm">Horário de entrega</h3>
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
@@ -422,7 +422,7 @@ export default function AgentPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border p-4 space-y-3">
+            <div className="bg-card rounded-xl border p-4 space-y-3">
               <h3 className="font-semibold text-sm">Follow-up</h3>
               <label className="block">
                 <span className="text-xs text-[var(--texto-secundario)]">Máximo de follow-ups</span>
@@ -435,7 +435,7 @@ export default function AgentPage() {
               </label>
             </div>
 
-            <div className="bg-white rounded-xl border p-4 space-y-3">
+            <div className="bg-card rounded-xl border p-4 space-y-3">
               <h3 className="font-semibold text-sm">Área de entrega</h3>
               <p className="text-xs text-[var(--texto-secundario)]">Uma cidade por linha</p>
               <Textarea

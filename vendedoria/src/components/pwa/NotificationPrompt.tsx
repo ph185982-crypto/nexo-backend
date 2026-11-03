@@ -46,7 +46,7 @@ export function NotificationPrompt() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={dismiss} />
 
       {/* Card */}
-      <div className="relative w-full max-w-sm rounded-2xl border border-emerald-800/50 bg-[#0d1f17] p-6 shadow-2xl">
+      <div className="relative w-full max-w-sm rounded-2xl border border-emerald-800/50 bg-[#18191D] p-6 shadow-2xl">
         <button
           onClick={dismiss}
           className="absolute right-4 top-4 rounded-lg p-1 text-slate-400 hover:text-slate-200"

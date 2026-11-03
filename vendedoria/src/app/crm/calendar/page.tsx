@@ -75,7 +75,7 @@ function statusColor(status: string) {
     case "SCHEDULED": return "bg-blue-100 text-blue-700";
     case "COMPLETED": return "bg-green-100 text-green-700";
     case "CANCELLED": return "bg-red-100 text-red-700";
-    default: return "bg-gray-100 text-gray-700";
+    default: return "bg-muted text-foreground";
   }
 }
 
@@ -312,7 +312,7 @@ export default function CalendarPage() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-7 gap-px bg-gray-200">
+              <div className="grid grid-cols-7 gap-px bg-border">
                 {calendarDays.map((cell, i) => {
                   const isToday =
                     cell.day === today.getDate() &&
@@ -322,8 +322,8 @@ export default function CalendarPage() {
                     <div
                       key={i}
                       className={cn(
-                        "bg-white min-h-[80px] p-1.5",
-                        !cell.day && "bg-gray-50"
+                        "bg-card min-h-[80px] p-1.5",
+                        !cell.day && "bg-muted/50"
                       )}
                     >
                       {cell.day && (

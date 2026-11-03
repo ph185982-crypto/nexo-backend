@@ -688,7 +688,7 @@ export default function ConfigureAgentPage() {
             <ModuleHeader icon={Brain} title="Script do Agente" desc="Roteiro base, argumentos e persona" />
             <div className="flex items-center gap-2 ml-4">
               {scriptModified && <Badge variant="outline" className="text-xs text-amber-500 border-amber-700/50">modificado</Badge>}
-              {saveSuccess  && <Badge variant="outline" className="text-xs text-emerald-500 border-emerald-700/50"><CheckCircle2 className="w-3 h-3 mr-1" />salvo!</Badge>}
+              {saveSuccess  && <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-700/50"><CheckCircle2 className="w-3 h-3 mr-1" />salvo!</Badge>}
               <Button
                 variant="ghost" size="sm" onClick={() => setShowVersions((v) => !v)}
                 className="text-xs h-7 gap-1 text-muted-foreground"
@@ -794,7 +794,7 @@ export default function ConfigureAgentPage() {
         )}
 
         {selectedAgent && (
-          <Badge variant="outline" className="text-xs text-emerald-500 border-emerald-800/50 bg-emerald-950/40 hidden sm:flex">
+          <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-800/50 bg-emerald-950/40 hidden sm:flex">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
             {selectedAgent.displayName}
           </Badge>
@@ -858,7 +858,7 @@ export default function ConfigureAgentPage() {
           {/* Chat Configurador */}
           <div className={cn("flex flex-col border-b border-border", mobileView === "test" ? "hidden md:flex md:h-[55%]" : "flex-1 md:h-[55%]")}>
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-card flex-shrink-0">
-              <Bot className="w-4 h-4 text-emerald-500" />
+              <Bot className="w-4 h-4 text-emerald-400" />
               <span className="text-sm font-medium">Chat com o Configurador</span>
             </div>
 

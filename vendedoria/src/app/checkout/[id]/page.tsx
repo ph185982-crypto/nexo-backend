@@ -231,21 +231,21 @@ export default function CheckoutPage() {
         {/* Indicador de etapas */}
         <div style={s.etapasRow}>
           <div style={{ ...s.etapaItem, opacity: etapa === 'dados' ? 1 : 0.5 }}>
-            <div style={{ ...s.etapaBola, background: etapa !== 'dados' ? '#10B981' : '#F5C400' }}>
+            <div style={{ ...s.etapaBola, background: etapa !== 'dados' ? '#10B981' : '#FF7043' }}>
               {etapa !== 'dados' ? '✓' : '1'}
             </div>
             <span>Dados</span>
           </div>
           <div style={s.etapaLinha} />
           <div style={{ ...s.etapaItem, opacity: ['pagamento', 'pix', 'boleto', 'sucesso'].includes(etapa) ? 1 : 0.4 }}>
-            <div style={{ ...s.etapaBola, background: ['pix', 'boleto', 'sucesso'].includes(etapa) ? '#10B981' : etapa === 'pagamento' ? '#F5C400' : '#D1D5DB' }}>
+            <div style={{ ...s.etapaBola, background: ['pix', 'boleto', 'sucesso'].includes(etapa) ? '#10B981' : etapa === 'pagamento' ? '#FF7043' : '#D1D5DB' }}>
               {['pix', 'boleto', 'sucesso'].includes(etapa) ? '✓' : '2'}
             </div>
             <span>Pagamento</span>
           </div>
           <div style={s.etapaLinha} />
           <div style={{ ...s.etapaItem, opacity: ['pix', 'boleto', 'sucesso'].includes(etapa) ? 1 : 0.4 }}>
-            <div style={{ ...s.etapaBola, background: ['pix', 'boleto'].includes(etapa) ? '#F5C400' : '#D1D5DB' }}>
+            <div style={{ ...s.etapaBola, background: ['pix', 'boleto'].includes(etapa) ? '#FF7043' : '#D1D5DB' }}>
               3
             </div>
             <span>Confirmar</span>
@@ -323,7 +323,7 @@ export default function CheckoutPage() {
             </div>
 
             <button onClick={pagarPix} disabled={loading}
-              style={{ ...s.btnOpcao, background: '#00B894' }}>
+              style={{ ...s.btnOpcao, background: '#2448FF' }}>
               <div style={s.btnOpcaoIcon}>💠</div>
               <div>
                 <div style={s.btnOpcaoTitulo}>Pagar com Pix</div>
@@ -413,7 +413,7 @@ export default function CheckoutPage() {
         {/* ── PIX ── */}
         {etapa === 'pix' && pixData && (
           <div>
-            <h3 style={{ ...s.titulo, color: '#00B894' }}>💠 Pague com Pix</h3>
+            <h3 style={{ ...s.titulo, color: '#2448FF' }}>💠 Pague com Pix</h3>
             <div style={s.resumo}>
               <strong>R$ 197,00</strong> · Aprovação imediata
             </div>
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
                 <img
                   src={`data:image/png;base64,${pixData.pixQrCodeBase64}`}
                   alt="QR Code Pix"
-                  style={{ width: '200px', height: '200px', borderRadius: '12px', border: '4px solid #00B894' }}
+                  style={{ width: '200px', height: '200px', borderRadius: '12px', border: '4px solid #2448FF' }}
                 />
               </div>
             )}
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
             </div>
 
             <button onClick={copiarPix}
-              style={{ ...s.btnPrincipal, background: copiado ? '#10B981' : '#00B894' }}>
+              style={{ ...s.btnPrincipal, background: copiado ? '#10B981' : '#2448FF' }}>
               {copiado ? '✅ Código copiado!' : '📋 Copiar código Pix'}
             </button>
 
@@ -468,7 +468,7 @@ export default function CheckoutPage() {
 const s: Record<string, React.CSSProperties> = {
   bg: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)',
+    background: '#2448FF',
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
@@ -493,7 +493,7 @@ const s: Record<string, React.CSSProperties> = {
     fontWeight: 900,
     fontSize: '18px',
     letterSpacing: '4px',
-    color: '#1A1A2E',
+    color: '#18191D',
     marginBottom: '8px',
   },
   selosRow: { display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' },
@@ -520,8 +520,8 @@ const s: Record<string, React.CSSProperties> = {
   produtoDesc: { fontSize: '12px', color: '#6B7280', marginTop: '2px' },
   frete: { fontSize: '12px', color: '#059669', fontWeight: 600, marginTop: '4px' },
   produtoPreco: { display: 'flex', alignItems: 'flex-start', gap: '2px' },
-  precoLabel: { fontSize: '14px', fontWeight: 700, color: '#1A1A2E', marginTop: '4px' },
-  precoValor: { fontSize: '36px', fontWeight: 900, color: '#1A1A2E', lineHeight: 1 },
+  precoLabel: { fontSize: '14px', fontWeight: 700, color: '#18191D', marginTop: '4px' },
+  precoValor: { fontSize: '36px', fontWeight: 900, color: '#18191D', lineHeight: 1 },
   garantia: {
     background: '#FFF7ED',
     border: '1px solid #FED7AA',
@@ -565,7 +565,7 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     fontSize: '13px',
     fontWeight: 700,
-    color: '#1A1A2E',
+    color: '#18191D',
   },
   etapaLinha: { flex: 1, height: '2px', background: '#E5E7EB', maxWidth: '40px' },
   titulo: { fontSize: '18px', fontWeight: 700, color: '#111827', marginBottom: '16px' },
@@ -610,8 +610,8 @@ const s: Record<string, React.CSSProperties> = {
   btnOpcaoSub: { fontSize: '12px', opacity: 0.85, marginTop: '2px' },
   btnPrincipal: {
     width: '100%',
-    background: '#F5C400',
-    color: '#1A1A2E',
+    background: '#FF7043',
+    color: '#18191D',
     border: 'none',
     borderRadius: '14px',
     padding: '16px',
