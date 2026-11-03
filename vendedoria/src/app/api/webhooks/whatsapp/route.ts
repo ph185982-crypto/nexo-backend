@@ -11,6 +11,7 @@ import { transcribeAudio } from "@/lib/ai/transcription";
 import { normalizeBrazilianNumber, brazilianNumberVariants } from "@/lib/whatsapp/send";
 import { isManagerNumber, handleManagerMessage, type IncomingMediaInfo } from "@/lib/manager/handler";
 import { vincularProspectAoLead } from "@/lib/crm/pipeline-mover";
+import { registrarCriacaoLead } from "@/lib/crm/historico-etapa";
 import { isMaxOwnerNumber } from "@/lib/max/config";
 import { handleMaxMessage } from "@/lib/max/responder";
 import { drainWebhookQueue, triggerDueFollowups, RETRY_HEADER } from "@/lib/jobs/webhook-queue";
@@ -323,6 +324,7 @@ async function handleIncomingMessage(
         kanbanColumnId: defaultColumn.id,
       },
     });
+    await registrarCriacaoLead({ leadId: lead.id, coluna: defaultColumn, ator: "webhook" });
     console.log("[WhatsApp Webhook] Novo lead criado:", lead.id, "| telefone:", phone);
     // Prospecção: vincula ao ProspectLead abordado (se existir) pelo telefone
     vincularProspectAoLead(lead.id, providerConfig.organizationId, phone).catch(() => {});

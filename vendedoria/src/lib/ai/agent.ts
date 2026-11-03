@@ -11,6 +11,8 @@ import { buscarSessaoProspeccao, atualizarSessaoProspeccao, type SessaoProspecca
 import { criarEventoReuniao, verificarDisponibilidade, buscarSlotsDisponiveis } from "@/lib/integrations/google-calendar";
 import { config } from "@/lib/config/env";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
+import { aplicarMudancaDeEtapa } from "@/lib/crm/historico-etapa";
+import { MOTIVO, motivoIdPorNome } from "@/lib/crm/motivos";
 import { callLLM } from "@/lib/ai/llm-client";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
@@ -637,11 +639,19 @@ export async function processAIResponse(
       }).catch(() => null) ?? await prisma.kanbanColumn.findFirst({
         where: { organizationId: orgId, type: "LOST" },
       }).catch(() => null);
+      const motivoPerdaId = await motivoIdPorNome(orgId, "PERDA", MOTIVO.SEM_INTERESSE);
       await Promise.all([
-        prisma.lead.update({
-          where: { id: conversation.leadId! },
-          data: { status: "BLOCKED", ...(lostColumn ? { kanbanColumnId: lostColumn.id } : {}) },
-        }),
+        lostColumn
+          ? aplicarMudancaDeEtapa({
+              leadId: conversation.leadId!,
+              coluna: lostColumn,
+              origem: "IA",
+              ator: "AI_AGENT",
+              motivo: "Desinteresse detectado na conversa",
+              motivoEncerramentoId: motivoPerdaId,
+              dadosLead: { status: "BLOCKED" },
+            })
+          : prisma.lead.update({ where: { id: conversation.leadId! }, data: { status: "BLOCKED" } }),
         prisma.conversationFollowUp.updateMany({
           where: { conversationId, status: "ACTIVE" },
           data: { status: "OPT_OUT" },
@@ -1181,7 +1191,9 @@ export async function processAIResponse(
       ]);
       await cancelFollowUpJobs(conversationId).catch(() => {});
       if (orgTipo === "PROSPECCAO" && conversation.leadId) {
-        await moverLeadPorTipo(conversation.leadId, orgId, "DESCARTADO", "Opt-out solicitado pelo contato", "LOST");
+        await moverLeadPorTipo(conversation.leadId, orgId, "DESCARTADO", "Opt-out solicitado pelo contato", "LOST", {
+          motivoEncerramento: MOTIVO.OPT_OUT, ator: "AI_AGENT", origem: "IA",
+        });
       }
     }
 
@@ -1871,7 +1883,11 @@ async function handleEscalation(leadId: string, conversationId: string, reason: 
 
   const escalatedColumn = await prisma.kanbanColumn.findFirst({ where: { organizationId: lead.organizationId, type: "ESCALATED" } });
   if (escalatedColumn) {
-    await prisma.lead.update({ where: { id: leadId }, data: { kanbanColumnId: escalatedColumn.id, status: "ESCALATED", lastActivityAt: new Date() } });
+    await aplicarMudancaDeEtapa({
+      leadId, coluna: escalatedColumn, origem: "IA", ator: "AI_AGENT",
+      motivo: "Escalado para vendedor humano pela IA",
+      dadosLead: { status: "ESCALATED", lastActivityAt: new Date() },
+    });
   }
 
   await prisma.leadEscalation.create({ data: { leadId, reason: reason.replace(/^\[ESCALAR\]\s*/i, "").substring(0, 500), status: "PENDING" } });

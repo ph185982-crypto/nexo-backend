@@ -285,8 +285,61 @@ model Lead {
   scoreSdr          Int?
   reuniaoEm         DateTime? // ligação marcada com o especialista
 
+  // ── Funil: tempo na etapa e encerramento ─────────────────────────────────
+  // Gravados só por src/lib/crm/historico-etapa.ts (aplicarMudancaDeEtapa).
+  etapaDesdeEm         DateTime @default(now()) // quando entrou na etapa atual
+  encerradoEm          DateTime?                // quando entrou numa etapa final; null = em aberto
+  motivoEncerramentoId String?
+  motivoEncerramento   MotivoEncerramento? @relation(fields: [motivoEncerramentoId], references: [id], onDelete: SetNull)
+  motivoDetalhe        String?  @db.Text
+  stageHistory         LeadStageHistory[]
+
   @@index([adSourceId])
   @@index([ctwaClid])
+  @@index([motivoEncerramentoId])
+}
+
+// ─── LeadStageHistory — uma linha por passagem do lead por uma etapa ─────────
+// Sem FK para a coluna: a consolidação do funil apaga colunas legadas e o
+// histórico precisa sobreviver a isso (guarda nome e tipo da época).
+// exitedAt null = etapa atual. Linhas origem=BACKFILL têm entrada aproximada
+// (a data real não foi gravada antes desta tabela existir).
+
+model LeadStageHistory {
+  id           String    @id @default(cuid())
+  leadId       String
+  lead         Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  fromColumnId String?
+  fromName     String?
+  toColumnId   String
+  toName       String
+  toType       String
+  enteredAt    DateTime  @default(now())
+  exitedAt     DateTime?
+  origem       String    // CRIACAO | PIPELINE | MANUAL | IA | SINCRONIZACAO | BACKFILL
+  ator         String?
+  motivo       String?   @db.Text
+
+  @@index([leadId, enteredAt])
+  @@index([toColumnId, enteredAt])
+  @@index([toType, enteredAt])
+}
+
+// ─── MotivoEncerramento — catálogo de motivos de ganho e de perda ────────────
+// Editável por organização; "ativo=false" some da lista sem perder o histórico.
+
+model MotivoEncerramento {
+  id             String   @id @default(cuid())
+  organizationId String
+  tipo           String   // GANHO | PERDA
+  nome           String
+  ordem          Int      @default(0)
+  ativo          Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  leads          Lead[]
+
+  @@unique([organizationId, tipo, nome])
+  @@index([organizationId, tipo, ativo])
 }
 
 // ─── MetaConversionEvent (API de Conversões da Meta — Business Messaging) ─────

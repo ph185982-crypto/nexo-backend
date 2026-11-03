@@ -47,3 +47,12 @@ gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 - Pagamento de dívidas e cartões, investimentos e entradas não operacionais (empréstimos recebidos, aportes) ficam **abaixo do resultado**: mexem na sobra de caixa, não no lucro.
 - Para corrigir um caso: abra a linha na tabela, abra a categoria e mova o lançamento. Para uma categoria inteira, use "Em que linha cada categoria entra". Nada altera os lançamentos e cada troca fica no Histórico financeiro.
 - Banco: só uma tabela nova (`max_dre_classificacoes`), criada pela migração `20261030160000_dre_classificacao` no próximo deploy. Nada existente é alterado.
+
+## Funil → histórico de etapa e motivos (03/11/2026)
+
+- **Toda troca de etapa de um lead passa por `aplicarMudancaDeEtapa`** (`src/lib/crm/historico-etapa.ts`): arrastar no kanban, IA do SDR, opt-out, escalonamento, sincronização do Kanban e `moverLeadPorTipo`. Ela grava, na mesma transação, a coluna, `Lead.etapaDesdeEm`, `Lead.encerradoEm` e uma linha em `LeadStageHistory` (de, para, entrada, saída, origem, ator). Lead novo abre a primeira linha com `registrarCriacaoLead`.
+- **Regra do projeto:** nenhum outro arquivo escreve `kanbanColumnId` num lead existente. `tests/historico-etapa.test.ts` lê o código e falha se alguém fizer isso (ou criar lead sem registrar o histórico).
+- **Linhas `origem = BACKFILL`** são aproximadas: a migração preencheu os leads que já existiam usando a data da última troca de etapa registrada em `LeadActivity` (ou a criação do lead). Para medir tempo em etapa, filtre-as fora ou trate como estimativa. O histórico verdadeiro começa no deploy.
+- **Motivos de ganho e perda** (`MotivoEncerramento`): catálogo por organização, criado na primeira consulta (`src/lib/crm/motivos.ts`). Mover um card para Ganho/Perdido no kanban pergunta o motivo (dá para pular). A IA preenche sozinha: "Sem interesse", "Fora do perfil (ICP)" e "Pediu para não receber mensagens". Motivo de tipo errado, de outra organização ou desativado é ignorado; reabrir o negócio limpa o motivo.
+- **Cartão do kanban:** mostra "⏱ Nd na etapa" (âmbar a partir de 7 dias, vermelho a partir de 14) e "Nd sem atividade"; nas etapas finais mostra o motivo.
+- **Deploy:** a migração `20261103131923_funil_historico_etapa` só adiciona tabelas e colunas e preenche os leads existentes; nada é alterado ou apagado.

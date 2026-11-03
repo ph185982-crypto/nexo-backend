@@ -4,6 +4,7 @@ import { sendWhatsAppMessage, simulateTypingDelay } from "@/lib/whatsapp/send";
 import { detectDesinteresse } from "@/lib/ai/agent";
 import { cancelFollowUpJobs } from "@/lib/queue/followup-queue";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
+import { MOTIVO } from "@/lib/crm/motivos";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { avaliarQualificacao } from "./qualificacao";
 import { decidirHandoff, faltandoParaHandoff, pareceNomeDePessoa, type ItemHandoff } from "./handoff-gate";
@@ -965,7 +966,9 @@ async function runSdrResponse(
 
     case "close": {
       newSession.status = "fora";
-      await moverLeadPorTipo(lead.id, provider.organizationId, "LOST", "Lead fora do ICP — encerrado pelo SDR");
+      await moverLeadPorTipo(lead.id, provider.organizationId, "LOST", "Lead fora do ICP — encerrado pelo SDR", undefined, {
+        motivoEncerramento: MOTIVO.FORA_ICP, ator: "AI_AGENT", origem: "IA",
+      });
       await prisma.conversationFollowUp.updateMany({
         where: { conversationId, status: "ACTIVE" },
         data: { status: "DONE" },

@@ -110,6 +110,18 @@ export const typeDefs = `#graphql
     icpStatus: String
     scoreSdr: Int
     reuniaoEm: DateTime
+    etapaDesdeEm: DateTime!
+    encerradoEm: DateTime
+    motivoEncerramento: MotivoEncerramento
+    motivoDetalhe: String
+  }
+
+  type MotivoEncerramento {
+    id: ID!
+    tipo: String!
+    nome: String!
+    ordem: Int!
+    ativo: Boolean!
   }
 
   type KanbanColumnInfo {
@@ -520,6 +532,7 @@ export const typeDefs = `#graphql
 
     # Organization
     whatsappBusinessOrganizations(input: OrganizationFilter): [WhatsappBusinessOrganization!]!
+    motivosEncerramento(organizationId: String!, tipo: String): [MotivoEncerramento!]!
     whatsappAccounts(organizationId: String!): [WhatsappProviderConfig!]!
     hierarchyItems(organizationId: String!): [OrgHierarchyItem!]!
 
@@ -581,7 +594,7 @@ export const typeDefs = `#graphql
     # Leads
     createLead(input: CreateLeadInput!): Lead!
     updateLead(leadId: String!, input: UpdateLeadInput!): Lead!
-    updateLeadKanbanColumn(leadId: String!, columnId: String!): Lead!
+    updateLeadKanbanColumn(leadId: String!, columnId: String!, motivoEncerramentoId: String, motivoDetalhe: String): Lead!
     updateLeadTags(leadId: String!, tagIds: [String!]!): Lead!
     blockLead(leadId: String!, reason: String): Lead!
     closeLead(leadId: String!): Lead!
