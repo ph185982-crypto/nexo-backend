@@ -78,6 +78,10 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
         {c.status !== "EM_ANDAMENTO" && <Item rotulo="Motivo">{c.motivo ?? "Sem motivo registrado"}</Item>}
       </div>
 
+      {c.entregaId && (
+        <a href={`/entrega/${c.entregaId}`} className="mx-5 mt-4 flex items-center justify-between rounded-xl border border-azul px-3.5 py-2.5 text-[13px] font-bold text-azul">Abrir a entrega <span aria-hidden>→</span></a>
+      )}
+
       {c.vendedorIaLeadId && (
         <>
           <h3 className="px-5 pb-1 pt-5 text-[13px] font-extrabold">Conversa</h3>

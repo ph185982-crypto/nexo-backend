@@ -25,6 +25,8 @@ export interface CartaoDTO {
   motivo: string | null;
   motivoDetalhe: string | null;
   vendedorIaLeadId: string | null;
+  /** Id da entrega, quando a oportunidade foi ganha. */
+  entregaId: string | null;
   /** Próximo prazo entre tarefas abertas e compromissos futuros; null se nada à vista. */
   proximaAtividade: { tipo: "TAREFA" | "COMPROMISSO"; quando: string | null } | null;
 }
@@ -71,6 +73,8 @@ export async function montarQuadro(funilId: string, agora: Date = new Date()): P
     prisma.tarefa.findMany({ where: { oportunidadeId: { in: ids }, status: "ABERTA" }, select: { oportunidadeId: true, prazoEm: true }, orderBy: { prazoEm: { sort: "asc", nulls: "last" } } }),
     prisma.compromisso.findMany({ where: { oportunidadeId: { in: ids }, status: "AGENDADO", inicio: { gte: agora } }, select: { oportunidadeId: true, inicio: true }, orderBy: { inicio: "asc" } }),
   ]);
+  const entregas = await prisma.entrega.findMany({ where: { oportunidadeId: { in: ops.filter((o) => o.status === "GANHA").map((o) => o.id) } }, select: { id: true, oportunidadeId: true } });
+  const entregaDe = new Map(entregas.map((e) => [e.oportunidadeId, e.id]));
   const proxima = new Map<string, CartaoDTO["proximaAtividade"]>();
   for (const t of tarefasAbertas) if (t.oportunidadeId && !proxima.has(t.oportunidadeId)) proxima.set(t.oportunidadeId, { tipo: "TAREFA", quando: t.prazoEm?.toISOString() ?? null });
   for (const c of compromissosFuturos) {
@@ -102,6 +106,7 @@ export async function montarQuadro(funilId: string, agora: Date = new Date()): P
     motivo: o.motivo?.nome ?? null,
     motivoDetalhe: o.motivoDetalhe,
     vendedorIaLeadId: o.vendedorIaLeadId,
+    entregaId: entregaDe.get(o.id) ?? null,
     proximaAtividade: proxima.get(o.id) ?? null,
   });
 

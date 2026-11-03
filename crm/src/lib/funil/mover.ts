@@ -9,6 +9,7 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { statusDaEtapa, tipoMotivoDaEtapa } from "./encerramento";
+import { criarEntregaDaOportunidade } from "@/lib/entrega/criar";
 
 type Db = Prisma.TransactionClient;
 
@@ -90,6 +91,8 @@ export async function moverOportunidade(m: MudancaEtapa, db?: Db): Promise<Resul
         ...(motivoMuda && { motivoId: motivoValido, motivoDetalhe: motivoValido ? (m.motivoDetalhe?.trim().slice(0, 500) || null) : null }),
       },
     });
+    // Ganhou: a entrega nasce na mesma transação (idempotente: ganhar de novo não duplica).
+    if (destino.tipo === "GANHA") await criarEntregaDaOportunidade(tx, m.oportunidadeId, agora);
     return { mudou: true, de };
   };
   return db ? run(db) : prisma.$transaction(run);
@@ -157,6 +160,7 @@ export async function criarOportunidade(n: NovaOportunidade, db?: Db) {
         paraTipo: etapa.tipo, entrouEm: agora, origem: n.origemHistorico ?? "CRIACAO", ator: n.ator ?? null,
       },
     });
+    if (etapa.tipo === "GANHA") await criarEntregaDaOportunidade(tx, op.id, agora); // criada já ganha
     return op;
   };
   return db ? run(db) : prisma.$transaction(run);

@@ -24,6 +24,7 @@ model Usuario {
   oportunidades Oportunidade[]
   tarefas       Tarefa[]
   compromissos  Compromisso[]
+  cartoesEntrega EntregaCartao[]
 }
 
 // ─── Contato: empresa ou pessoa. O negócio mora em Oportunidade. ─────────────
@@ -53,6 +54,7 @@ model Contato {
   feedbacks       Feedback[]
   tarefas         Tarefa[]
   compromissos    Compromisso[]
+  entregas        Entrega[]
 
   @@index([tipo, nome])
   @@index([telefone])
@@ -130,6 +132,7 @@ model Oportunidade {
   feedbacks    Feedback[]
   tarefas      Tarefa[]
   compromissos Compromisso[]
+  entrega      Entrega?
 
   @@index([funilId, status, etapaId])
   @@index([contatoId])
@@ -277,4 +280,79 @@ model Compromisso {
 
   @@index([inicio])
   @@index([oportunidadeId, status])
+}
+
+// ─── Entrega: o que acontece depois de ganhar ────────────────────────────────
+// Nasce sozinha quando a oportunidade vira Ganha (funil/mover.ts), com os cartões do
+// modelo padrão. Uma entrega por oportunidade ganha.
+model ModeloEntrega {
+  id        String  @id @default(cuid())
+  nome      String  @unique
+  descricao String? @db.Text
+  padrao    Boolean @default(false) // aplicado automaticamente ao ganhar
+  ativo     Boolean @default(true)
+
+  itens    ModeloEntregaItem[]
+  entregas Entrega[]
+}
+
+model ModeloEntregaItem {
+  id        String        @id @default(cuid())
+  modeloId  String
+  modelo    ModeloEntrega @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+  titulo    String
+  descricao String?       @db.Text
+  pilar     String // COMERCIAL | PRODUTO | MARKETING | OPERACAO | FINANCEIRO | TECNOLOGIA
+  prazoDias Int? // dias depois do início da entrega
+  cliente   Boolean       @default(false) // o cartão depende do cliente
+  ordem     Int           @default(0)
+  checklist Json          @default("[]")
+
+  @@index([modeloId, ordem])
+}
+
+model Entrega {
+  id             String        @id @default(cuid())
+  oportunidadeId String        @unique
+  oportunidade   Oportunidade  @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId      String
+  contato        Contato       @relation(fields: [contatoId], references: [id])
+  nome           String
+  status         String        @default("EM_ANDAMENTO") // EM_ANDAMENTO | PAUSADA | CONCLUIDA | CANCELADA
+  inicioEm       DateTime      @default(now())
+  fimPrevistoEm  DateTime?
+  renovacaoEm    DateTime?
+  valorMensal    Decimal       @default(0) @db.Decimal(14, 2) // MRR herdado da oportunidade
+  modeloId       String?
+  modelo         ModeloEntrega? @relation(fields: [modeloId], references: [id], onDelete: SetNull)
+  // Diagnóstico por pilar: { COMERCIAL: "texto", PRODUTO: "…", … }
+  diagnostico    Json          @default("{}")
+  criadoEm       DateTime      @default(now())
+  atualizadoEm   DateTime      @updatedAt
+
+  cartoes EntregaCartao[]
+
+  @@index([status, renovacaoEm])
+  @@index([contatoId])
+}
+
+model EntregaCartao {
+  id            String   @id @default(cuid())
+  entregaId     String
+  entrega       Entrega  @relation(fields: [entregaId], references: [id], onDelete: Cascade)
+  titulo        String
+  descricao     String?  @db.Text
+  pilar         String   @default("COMERCIAL")
+  coluna        String   @default("BACKLOG") // BACKLOG | ESSA_SEMANA | EM_ANDAMENTO | AGUARDANDO_CLIENTE | CONCLUIDO
+  ordem         Int      @default(0)
+  dataAlvo      DateTime?
+  cliente       Boolean  @default(false) // quem executa é o cliente
+  responsavelId String?
+  responsavel   Usuario? @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  checklist     Json     @default("[]")
+  colunaDesdeEm DateTime @default(now()) // para "aguardando o cliente há N dias"
+  concluidoEm   DateTime?
+  criadoEm      DateTime @default(now())
+
+  @@index([entregaId, coluna, ordem])
 }

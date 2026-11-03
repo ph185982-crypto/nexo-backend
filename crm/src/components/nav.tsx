@@ -17,6 +17,10 @@ const ITENS = [
     icone: <><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" /><path d="M8 3v4m8-4v4M3.5 10h17" /></>,
   },
   {
+    href: "/entrega", rotulo: "Entrega",
+    icone: <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9" />,
+  },
+  {
     href: "/contatos", rotulo: "Contatos",
     icone: <path d="M4 21V6l8-3 8 3v15M9 21v-4h6v4M8 9h2m4 0h2m-8 4h2m4 0h2" />,
   },

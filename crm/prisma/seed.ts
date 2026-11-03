@@ -7,6 +7,7 @@ import { garantirMotivosPadrao } from "../src/lib/funil/motivos";
 import { criarOportunidade, moverOportunidade } from "../src/lib/funil/mover";
 import { criarTarefa } from "../src/lib/atividades/tarefas";
 import { criarCompromisso } from "../src/lib/atividades/compromissos";
+import { garantirModeloPadrao } from "../src/lib/entrega/modelo";
 
 const ETAPAS = [
   { nome: "Leads", tipo: "ABERTA", descricao: "Contato novo, ainda sem conversa qualificada. AÇÃO: confirmar se o Vendedor IA já abriu a conversa; se não, abordar em até 1 hora." },
@@ -40,6 +41,7 @@ async function main() {
     });
   }
   await garantirMotivosPadrao();
+  await garantirModeloPadrao();
   console.log("Funil Vendas e motivos padrão prontos.");
 
   if (process.env.SEED_DEMO === "true" && (await prisma.oportunidade.count({ where: { funilId: funil.id } })) === 0) {
@@ -65,6 +67,17 @@ async function main() {
       // Duas oportunidades com próxima atividade; as outras ficam "sem próxima atividade" (é o aviso que o cartão mostra).
       if (i === 2) await criarTarefa({ titulo: "Ligar para o dono e confirmar a proposta", tipo: "LIGACAO", prioridade: "ALTA", prazoEm: new Date(Date.now() + 3 * 3_600_000), oportunidadeId: op.id, responsavelId: admin.id, checklist: [{ texto: "Revisar a conversa do Vendedor IA", feito: true }, { texto: "Levar o diagnóstico de margem", feito: false }] });
       if (i === 5) await criarCompromisso({ assunto: "Reunião de assinatura do contrato", inicio: new Date(Date.now() + 26 * 3_600_000), fim: new Date(Date.now() + 27 * 3_600_000), oportunidadeId: op.id, responsavelId: admin.id, local: "Google Meet" });
+    }
+    // Uma oportunidade ganha com valor mensal: abre a entrega com os cartões do modelo (alguns atrasados de propósito).
+    const contatoG = await prisma.contato.create({ data: { tipo: "EMPRESA", nome: "Mercado Alvorada", responsavelId: admin.id, origem: "Demo" } });
+    const ganha = await criarOportunidade({ nome: "Mercado Alvorada — implantação", contatoId: contatoG.id, funilId: funil.id, etapaId: porNome("Leads").id, responsavelId: admin.id, valorUnico: 8000, valorMensal: 2500, origem: "Demo", tags: ["demo"], ator: "seed" });
+    await moverOportunidade({ oportunidadeId: ganha.id, etapaId: porNome("Ganha").id, origem: "MANUAL", ator: "seed" });
+    const entrega = await prisma.entrega.findUniqueOrThrow({ where: { oportunidadeId: ganha.id }, include: { cartoes: { orderBy: { ordem: "asc" } } } });
+    const inicio = new Date(Date.now() - 12 * 86_400_000);
+    await prisma.entrega.update({ where: { id: entrega.id }, data: { inicioEm: inicio, renovacaoEm: new Date(Date.now() + 40 * 86_400_000) } });
+    for (const [i, k] of entrega.cartoes.entries()) {
+      const coluna = i === 0 ? "CONCLUIDO" : i === 1 ? "AGUARDANDO_CLIENTE" : i === 2 ? "EM_ANDAMENTO" : "BACKLOG";
+      await prisma.entregaCartao.update({ where: { id: k.id }, data: { coluna, dataAlvo: k.dataAlvo ? new Date(inicio.getTime() + (k.dataAlvo.getTime() - entrega.inicioEm.getTime())) : null, colunaDesdeEm: new Date(Date.now() - (i === 1 ? 9 : 2) * 86_400_000), concluidoEm: coluna === "CONCLUIDO" ? new Date() : null } });
     }
     console.log("Oportunidades fictícias criadas (SEED_DEMO).");
   }
