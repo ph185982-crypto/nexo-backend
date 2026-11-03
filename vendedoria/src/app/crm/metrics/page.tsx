@@ -35,7 +35,7 @@ const SDR_STATUS_ORDER: Array<{ key: string; label: string; color: string }> = [
   { key: "novo",            label: "Novo",              color: "#64748b" },
   { key: "em_qualificacao", label: "Em qualificação",   color: "#0891b2" },
   { key: "qualificado",     label: "Qualificado",       color: "#22c55e" },
-  { key: "handoff_enviado", label: "Handoff enviado",   color: "#004c3f" },
+  { key: "handoff_enviado", label: "Handoff enviado",   color: "#2448FF" },
   { key: "morno",           label: "Morno (parou)",     color: "#f59e0b" },
   { key: "frio",            label: "Frio (parou)",      color: "#94a3b8" },
   { key: "fora",            label: "Fora do ICP",       color: "#ef4444" },
@@ -127,7 +127,7 @@ export default function MetricsPage() {
               <SelectContent>{orgs.map(o => <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>)}</SelectContent>
             </Select>
           )}
-          <div className="flex border border-border rounded-md overflow-hidden bg-white">
+          <div className="flex border border-border rounded-md overflow-hidden bg-card">
             {PERIODS.map(p => (
               <button
                 key={p.value}
@@ -169,7 +169,7 @@ export default function MetricsPage() {
               value={metrics.orders}
               sub="passagens de bastão"
               icon={ShoppingBag}
-              color="#004c3f"
+              color="#2448FF"
               trend="up"
             />
             <StatCard
@@ -230,7 +230,7 @@ export default function MetricsPage() {
                 { label: "Conversas iniciadas", value: metrics.totalConversations, color: "#0891b2" },
                 { label: "Conversas ativas (48h)", value: metrics.activeConversations, color: "#22c55e" },
                 { label: "Escaladas para humano", value: metrics.escalations, color: "#f97316" },
-                { label: "Pedidos fechados (IA)", value: metrics.orders, color: "#004c3f" },
+                { label: "Pedidos fechados (IA)", value: metrics.orders, color: "#2448FF" },
               ].map((row, i) => {
                 const pct = metrics.totalConversations > 0
                   ? Math.round((row.value / metrics.totalConversations) * 100)

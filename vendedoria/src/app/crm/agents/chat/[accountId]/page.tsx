@@ -88,7 +88,7 @@ function ConversationItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100",
+        "w-full text-left px-4 py-3 hover:bg-muted transition-colors border-b border-border",
         selected && "bg-primary/5 border-l-2 border-l-primary"
       )}
     >
@@ -150,7 +150,7 @@ function MessageBubble({ message }: { message: Message }) {
           "max-w-[70%] px-3 py-2 rounded-2xl text-sm shadow-sm",
           isSent
             ? "bg-[#dcf8c6] rounded-br-sm"
-            : "bg-white rounded-bl-sm border border-gray-100"
+            : "bg-card rounded-bl-sm border border-border"
         )}
       >
         {message.type === "LOCATION" ? (() => {
@@ -169,11 +169,11 @@ function MessageBubble({ message }: { message: Message }) {
           );
         })() : <p className="whitespace-pre-wrap break-words">{message.content}</p>}
         <div className={cn("flex items-center gap-1 mt-1", isSent ? "justify-end" : "justify-start")}>
-          <span className="text-[10px] text-gray-400">{formatTime(message.sentAt)}</span>
+          <span className="text-[10px] text-muted-foreground">{formatTime(message.sentAt)}</span>
           {isSent && (
             message.status === "READ"
               ? <CheckCheck className="w-3 h-3 text-blue-500" />
-              : <Check className="w-3 h-3 text-gray-400" />
+              : <Check className="w-3 h-3 text-muted-foreground" />
           )}
         </div>
       </div>
@@ -261,18 +261,18 @@ export default function ChatPage() {
     "Contato";
 
   return (
-    <div className="flex h-full overflow-hidden bg-white">
+    <div className="flex h-full overflow-hidden bg-card">
       {/* Left Panel: Conversations */}
-      <div className="w-80 flex-shrink-0 border-r border-gray-200 flex flex-col">
+      <div className="w-80 flex-shrink-0 border-r border-border flex flex-col">
         {/* Search */}
-        <div className="p-3 border-b border-gray-100">
+        <div className="p-3 border-b border-border">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Buscar conversa..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-gray-50 border-gray-200"
+              className="pl-9 bg-muted/50 border-border"
             />
           </div>
         </div>
@@ -304,7 +304,7 @@ export default function ChatPage() {
       {selectedConvId && selectedConv ? (
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Chat Header */}
-          <div className="h-16 border-b border-gray-200 px-4 flex items-center justify-between flex-shrink-0 bg-white">
+          <div className="h-16 border-b border-border px-4 flex items-center justify-between flex-shrink-0 bg-card">
             <div className="flex items-center gap-3">
               <Avatar className="w-9 h-9">
                 <AvatarFallback
@@ -383,7 +383,7 @@ export default function ChatPage() {
           </div>
 
           {/* Message Input */}
-          <div className="border-t border-gray-200 p-3 flex items-end gap-2 bg-white flex-shrink-0">
+          <div className="border-t border-border p-3 flex items-end gap-2 bg-card flex-shrink-0">
             <Button variant="ghost" size="icon" className="text-muted-foreground flex-shrink-0">
               <Smile className="w-5 h-5" />
             </Button>
@@ -411,7 +411,7 @@ export default function ChatPage() {
         </div>
       ) : (
         /* Empty State */
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-gray-50">
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-muted/50">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
             <Bot className="w-10 h-10 text-primary" />
           </div>

@@ -28,6 +28,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials, getAvatarColor, formatPhone } from "@/lib/utils";
 import { LeadDetailModal } from "@/components/crm/LeadDetailModal";
 import { Label } from "@/components/ui/label";
+import { tipoEncerramento } from "@/lib/crm/encerramento";
+
+// Cartão em aberto parado há tanto tempo na mesma etapa muda de cor.
+const PARADO_ATENCAO_DIAS = 7;
+const PARADO_CRITICO_DIAS = 14;
+
+function diasDesde(iso?: string | null): number {
+  if (!iso) return 0;
+  return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
+}
 
 const GET_KANBAN = gql`
   query GetKanban($organizationId: String!, $leadsPerColumn: Int, $filters: KanbanFilter) {
@@ -36,6 +46,7 @@ const GET_KANBAN = gql`
         id name order type color isDefaultEntry totalLeadsCount hasMoreLeads nextCursor
         leads {
           id phoneNumber profileName leadOrigin status createdAt lastActivityAt adSourceId adHeadline valorContrato
+          etapaDesdeEm encerradoEm motivoDetalhe motivoEncerramento { id nome tipo }
           empresa segmento faturamentoMensal lojaFisica cnpjStatus dorPrincipal icpStatus scoreSdr reuniaoEm
           kanbanColumn { name color type }
           tags { id name color kind }
@@ -46,10 +57,16 @@ const GET_KANBAN = gql`
 `;
 
 const MOVE_LEAD = gql`
-  mutation MoveLead($leadId: String!, $columnId: String!) {
-    updateLeadKanbanColumn(leadId: $leadId, columnId: $columnId) {
+  mutation MoveLead($leadId: String!, $columnId: String!, $motivoEncerramentoId: String, $motivoDetalhe: String) {
+    updateLeadKanbanColumn(leadId: $leadId, columnId: $columnId, motivoEncerramentoId: $motivoEncerramentoId, motivoDetalhe: $motivoDetalhe) {
       id kanbanColumnId
     }
+  }
+`;
+
+const GET_MOTIVOS = gql`
+  query MotivosEncerramento($organizationId: String!, $tipo: String) {
+    motivosEncerramento(organizationId: $organizationId, tipo: $tipo) { id nome tipo }
   }
 `;
 
@@ -95,6 +112,10 @@ interface Lead {
   icpStatus?: string | null;
   scoreSdr?: number | null;
   reuniaoEm?: string | null;
+  etapaDesdeEm?: string | null;
+  encerradoEm?: string | null;
+  motivoDetalhe?: string | null;
+  motivoEncerramento?: { id: string; nome: string; tipo: string } | null;
   kanbanColumn?: { name: string; color: string; type: string };
   tags?: Array<{ id: string; name: string; color: string; kind: string }>;
 }
@@ -140,6 +161,13 @@ function LeadCard({
 
   const initials = getInitials(lead.profileName ?? lead.phoneNumber);
   const avatarColor = getAvatarColor(lead.profileName);
+  const encerrado = lead.kanbanColumn ? tipoEncerramento(lead.kanbanColumn.type) : null;
+  const diasNaEtapa = diasDesde(lead.etapaDesdeEm);
+  const diasSemAtividade = diasDesde(lead.lastActivityAt ?? lead.createdAt);
+  const corParado =
+    diasNaEtapa >= PARADO_CRITICO_DIAS ? "text-red-600 dark:text-red-400 font-medium"
+    : diasNaEtapa >= PARADO_ATENCAO_DIAS ? "text-amber-600 dark:text-amber-400 font-medium"
+    : "text-muted-foreground";
 
   return (
     <div
@@ -252,6 +280,23 @@ function LeadCard({
           </span>
         ))}
       </div>
+
+      {encerrado ? (
+        <p
+          className="text-[11px] mt-2 text-muted-foreground truncate"
+          title={lead.motivoDetalhe ?? undefined}
+        >
+          {lead.motivoEncerramento ? `Motivo: ${lead.motivoEncerramento.nome}` : "Sem motivo registrado"}
+        </p>
+      ) : (
+        <p
+          className={`text-[11px] mt-2 truncate ${corParado}`}
+          title={`Na etapa desde ${lead.etapaDesdeEm ? new Date(lead.etapaDesdeEm).toLocaleString("pt-BR") : "—"} · criado há ${diasDesde(lead.createdAt)} dia(s)`}
+        >
+          ⏱ {diasNaEtapa === 0 ? "hoje" : `${diasNaEtapa}d`} na etapa
+          {diasSemAtividade >= 2 ? ` · ${diasSemAtividade}d sem atividade` : ""}
+        </p>
+      )}
     </div>
   );
 }
@@ -377,7 +422,16 @@ export default function KanbanPage() {
 
   const columns: Column[] = data?.getKanbanBoard?.columns ?? [];
 
+  // Mover para Ganho/Perdido pergunta o motivo antes (dá para pular).
+  const [pendente, setPendente] = useState<{ leadId: string; leadNome: string; coluna: Column } | null>(null);
+
   const handleMove = (leadId: string, columnId: string) => {
+    const destino = columns.find((c) => c.id === columnId);
+    if (destino && tipoEncerramento(destino.type)) {
+      const lead = columns.flatMap((c) => c.leads).find((l) => l.id === leadId);
+      setPendente({ leadId, leadNome: lead?.profileName ?? lead?.phoneNumber ?? "lead", coluna: destino });
+      return;
+    }
     void moveLead({ variables: { leadId, columnId } });
   };
 
@@ -476,6 +530,21 @@ export default function KanbanPage() {
         </DndContext>
       )}
 
+      {/* Motivo de ganho/perda */}
+      {pendente && (
+        <MotivoEncerramentoDialog
+          key={`${pendente.leadId}:${pendente.coluna.id}`}
+          organizationId={orgId}
+          leadNome={pendente.leadNome}
+          coluna={pendente.coluna}
+          onCancel={() => setPendente(null)}
+          onConfirm={(motivoEncerramentoId, motivoDetalhe) => {
+            void moveLead({ variables: { leadId: pendente.leadId, columnId: pendente.coluna.id, motivoEncerramentoId, motivoDetalhe } });
+            setPendente(null);
+          }}
+        />
+      )}
+
       {/* Lead Detail Modal */}
       <LeadDetailModal
         lead={selectedLead}
@@ -567,6 +636,70 @@ export default function KanbanPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function MotivoEncerramentoDialog({
+  organizationId,
+  leadNome,
+  coluna,
+  onCancel,
+  onConfirm,
+}: {
+  organizationId: string;
+  leadNome: string;
+  coluna: Column;
+  onCancel: () => void;
+  onConfirm: (motivoEncerramentoId: string | null, motivoDetalhe: string | null) => void;
+}) {
+  const tipo = tipoEncerramento(coluna.type) ?? "PERDA";
+  const { data, loading } = useQuery(GET_MOTIVOS, { variables: { organizationId, tipo }, skip: !organizationId });
+  const motivos: Array<{ id: string; nome: string }> = data?.motivosEncerramento ?? [];
+  const [motivoId, setMotivoId] = useState("");
+  const [detalhe, setDetalhe] = useState("");
+
+  return (
+    <Dialog open onOpenChange={(aberto) => { if (!aberto) onCancel(); }}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>{tipo === "GANHO" ? "Por que ganhamos?" : "Por que perdemos?"}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {leadNome} → <strong>{coluna.name}</strong>. O motivo alimenta o relatório de ganhos e perdas.
+          </p>
+          <div className="space-y-2">
+            <Label>Motivo</Label>
+            <Select value={motivoId} onValueChange={setMotivoId} disabled={loading}>
+              <SelectTrigger>
+                <SelectValue placeholder={loading ? "Carregando…" : "Escolha o motivo"} />
+              </SelectTrigger>
+              <SelectContent>
+                {motivos.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Detalhe (opcional)</Label>
+            <Input
+              value={detalhe}
+              maxLength={500}
+              onChange={(e) => setDetalhe(e.target.value)}
+              placeholder="Ex.: achou caro frente ao concorrente X"
+            />
+          </div>
+          <div className="flex gap-2 pt-2">
+            <Button variant="outline" className="flex-1" onClick={onCancel}>Cancelar</Button>
+            <Button variant="outline" className="flex-1" onClick={() => onConfirm(null, null)}>Mover sem motivo</Button>
+            <Button className="flex-1" disabled={!motivoId} onClick={() => onConfirm(motivoId, detalhe.trim() || null)}>
+              Confirmar
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

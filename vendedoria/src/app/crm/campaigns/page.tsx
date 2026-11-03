@@ -136,7 +136,7 @@ function CampaignCard({
         </div>
 
         {/* KPIs */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-gray-100">
+        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border">
           <div className="text-center">
             <p className="text-lg font-bold text-primary">{campaign.sentCount}</p>
             <p className="text-xs text-muted-foreground">Enviados</p>
@@ -218,7 +218,7 @@ export default function CampaignsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={selectedOrgId} onValueChange={setSelectedOrgId}>
-            <SelectTrigger className="w-44 bg-white">
+            <SelectTrigger className="w-44 bg-card">
               <SelectValue placeholder="Organização" />
             </SelectTrigger>
             <SelectContent>
@@ -242,11 +242,11 @@ export default function CampaignsPage() {
             placeholder="Buscar por nome..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 w-56 bg-white"
+            className="pl-9 w-56 bg-card"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-44 bg-white">
+          <SelectTrigger className="w-44 bg-card">
             <SelectValue placeholder="Todos os Status" />
           </SelectTrigger>
           <SelectContent>
@@ -259,7 +259,7 @@ export default function CampaignsPage() {
         </Select>
 
         {/* Period tabs */}
-        <div className="flex bg-white border border-border rounded-md overflow-hidden">
+        <div className="flex bg-card border border-border rounded-md overflow-hidden">
           {PERIOD_FILTERS.map((f) => (
             <button
               key={f.value}
@@ -295,7 +295,7 @@ export default function CampaignsPage() {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Bar dataKey="enviados" fill="#004c3f" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="enviados" fill="#2448FF" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

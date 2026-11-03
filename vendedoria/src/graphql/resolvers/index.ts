@@ -5,6 +5,9 @@ import bcrypt from "bcryptjs";
 import { sendWhatsAppMessage, sendWhatsAppImage, sendWhatsAppVideo, normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { criarEventoReuniao } from "@/lib/integrations/google-calendar";
 import { aoLeadMudarDeColunaAgendado } from "@/lib/meta-capi-hook";
+import { aplicarMudancaDeEtapa, registrarCriacaoLead } from "@/lib/crm/historico-etapa";
+import { listarMotivos } from "@/lib/crm/motivos";
+import { emitirEventoCrm, tipoEventoDaEtapa } from "@/lib/crm-externo/eventos";
 
 interface ResolverContext {
   userId?: string;
@@ -200,6 +203,15 @@ export const resolvers = {
 
     // Kanban
     // ─── Conversas / Kanban / IA ─────────────────────────────────────────────
+    motivosEncerramento: async (
+      _: unknown,
+      { organizationId, tipo }: { organizationId: string; tipo?: string | null },
+      ctx: ResolverContext
+    ) => {
+      requireOrgAccess(ctx, organizationId);
+      return listarMotivos(organizationId, tipo);
+    },
+
     getKanbanBoard: async (
       _: unknown,
       {
@@ -245,7 +257,7 @@ export const resolvers = {
         columns.map((col) =>
           prisma.lead.findMany({
             where: { kanbanColumnId: col.id, ...leadWhere },
-            include: { tags: { include: { tag: true } } },
+            include: { tags: { include: { tag: true } }, motivoEncerramento: true },
             orderBy: { createdAt: "desc" },
             take: leadsPerColumn + 1,
             ...(cursor && { cursor: { id: cursor }, skip: 1 }),
@@ -753,7 +765,8 @@ export const resolvers = {
         },
       });
       // Cria rascunho do diagnóstico quando criado diretamente em GANHO
-      const col = await prisma.kanbanColumn.findUnique({ where: { id: kanbanColumnId }, select: { type: true } });
+      const col = await prisma.kanbanColumn.findUnique({ where: { id: kanbanColumnId }, select: { id: true, name: true, type: true } });
+      if (col) await registrarCriacaoLead({ leadId: lead.id, coluna: col, origem: "MANUAL", ator: ctx.userId ?? null });
       if (col?.type === "GANHO") {
         prisma.clientDiagnosis.upsert({ where: { leadId: lead.id }, create: { leadId: lead.id }, update: {} }).catch(() => {});
       }
@@ -784,16 +797,33 @@ export const resolvers = {
 
     updateLeadKanbanColumn: async (
       _: unknown,
-      { leadId, columnId }: { leadId: string; columnId: string },
+      { leadId, columnId, motivoEncerramentoId, motivoDetalhe }: {
+        leadId: string; columnId: string; motivoEncerramentoId?: string | null; motivoDetalhe?: string | null;
+      },
       ctx: ResolverContext
     ) => {
       await requireLeadAccess(ctx, leadId);
-      const anterior = await prisma.lead.findUnique({ where: { id: leadId }, select: { kanbanColumnId: true } });
-      const result = await prisma.lead.update({
-        where: { id: leadId },
-        data: { kanbanColumnId: columnId, lastActivityAt: new Date() },
-        include: { kanbanColumn: true },
+      const [anterior, destino] = await Promise.all([
+        prisma.lead.findUnique({ where: { id: leadId }, select: { kanbanColumnId: true, organizationId: true } }),
+        prisma.kanbanColumn.findUnique({ where: { id: columnId }, select: { id: true, name: true, type: true, organizationId: true } }),
+      ]);
+      if (!destino || destino.organizationId !== anterior?.organizationId) throw new Error("Coluna não encontrada");
+      await aplicarMudancaDeEtapa({
+        leadId,
+        coluna: destino,
+        origem: "MANUAL",
+        ator: ctx.userId ?? null,
+        motivoEncerramentoId,
+        motivoDetalhe,
+        dadosLead: { lastActivityAt: new Date() },
       });
+      const result = await prisma.lead.findUniqueOrThrow({
+        where: { id: leadId },
+        include: { kanbanColumn: true, motivoEncerramento: true },
+      });
+      // Arrasto manual também avisa o CRM Avanteza (ganho, perda, escalada…).
+      const tipoEvento = anterior?.kanbanColumnId !== columnId ? tipoEventoDaEtapa(destino.type) : null;
+      if (tipoEvento) await emitirEventoCrm({ tipo: tipoEvento, leadId, motivo: result.motivoEncerramento?.nome ?? null });
       // Auto-create diagnosis draft when moved to GANHO
       if (result.kanbanColumn?.type === "GANHO") {
         prisma.clientDiagnosis.upsert({

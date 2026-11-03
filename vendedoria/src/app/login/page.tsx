@@ -49,14 +49,14 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
-            <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-              <Bot className="w-7 h-7 text-accent" />
+            <div className="w-12 h-12 bg-avz-laranja rounded-xl flex items-center justify-center">
+              <Bot className="w-7 h-7 text-avz-grafite" />
             </div>
           </div>
           <div className="flex items-center justify-center gap-1">
-            <span className="text-3xl font-bold text-white">NEXO</span>
+            <span className="font-titulo text-3xl font-extrabold text-white">NEXO</span>
           </div>
-          <p className="text-white/60 text-sm">CRM Inteligente para WhatsApp</p>
+          <p className="text-white/85 text-sm">CRM Inteligente para WhatsApp</p>
         </div>
 
         <Card className="border-0 shadow-2xl">

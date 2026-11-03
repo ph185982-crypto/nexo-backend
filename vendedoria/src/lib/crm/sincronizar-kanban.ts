@@ -5,6 +5,7 @@
 // muda nada na segunda.
 import { prisma } from "@/lib/prisma/client";
 import { canonicalizarTipo } from "./pipeline-mover";
+import { aplicarMudancaDeEtapaEmLote } from "./historico-etapa";
 
 export type EscopoSincronizacao = "escalados" | "outbound";
 
@@ -54,14 +55,12 @@ export async function aplicarSincronizacao(organizationId: string, escopo: Escop
   const leads = await prisma.lead.findMany({ where: alvo.whereLead, select: { id: true } });
   if (leads.length === 0) return { escopo, destino: col.name, movidos: 0 };
   const ids = leads.map((l) => l.id);
-  await prisma.$transaction([
-    prisma.lead.updateMany({ where: { id: { in: ids } }, data: { kanbanColumnId: col.id } }),
-    prisma.leadActivity.createMany({
-      data: ids.map((leadId) => ({
-        leadId, type: "STATUS_CHANGE", createdBy: "ADMIN",
-        description: `Movido para "${col.name}" pela sincronização do Kanban (${alvo.descricao})`,
-      })),
-    }),
-  ]);
-  return { escopo, destino: col.name, movidos: ids.length };
+  const descricao = `Movido para "${col.name}" pela sincronização do Kanban (${alvo.descricao})`;
+  const movidos = await aplicarMudancaDeEtapaEmLote({
+    leadIds: ids, coluna: col, origem: "SINCRONIZACAO", ator: "ADMIN", motivo: descricao,
+  });
+  await prisma.leadActivity.createMany({
+    data: ids.map((leadId) => ({ leadId, type: "STATUS_CHANGE", createdBy: "ADMIN", description: descricao })),
+  });
+  return { escopo, destino: col.name, movidos };
 }

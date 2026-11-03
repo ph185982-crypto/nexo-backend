@@ -77,7 +77,7 @@ const ETAPA_ICON: Record<Etapa, React.ReactNode> = {
   QUALIFICANDO:        <span className="text-amber-400">●</span>,
   NEGOCIANDO:          <span className="text-orange-400">●</span>,
   COLETANDO_DADOS:     <span className="text-violet-400">●</span>,
-  PEDIDO_CONFIRMADO:   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />,
+  PEDIDO_CONFIRMADO:   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />,
   PERDIDO:             <XCircle className="w-3.5 h-3.5 text-red-500" />,
 };
 
@@ -142,7 +142,7 @@ function StatCard({ etapa, count, active, onClick }: { etapa: Etapa; count: numb
       onClick={onClick}
       className={cn(
         "flex flex-col gap-1 p-3 rounded-xl border text-left transition-all hover:shadow-sm",
-        active ? "border-primary/40 ring-1 ring-primary/30 bg-primary/5" : "bg-white hover:border-primary/20"
+        active ? "border-primary/40 ring-1 ring-primary/30 bg-primary/5" : "bg-card hover:border-primary/20"
       )}
     >
       <div className="flex items-center justify-between">
@@ -158,7 +158,7 @@ function StatCard({ etapa, count, active, onClick }: { etapa: Etapa; count: numb
 
 function ConversationCard({ conv }: { conv: Conversation }) {
   return (
-    <div className="flex items-start gap-3 p-4 rounded-xl border bg-white hover:shadow-sm transition-shadow">
+    <div className="flex items-start gap-3 p-4 rounded-xl border bg-card hover:shadow-sm transition-shadow">
       <Avatar name={conv.profileName} id={conv.id} />
 
       <div className="flex-1 min-w-0">
@@ -166,7 +166,7 @@ function ConversationCard({ conv }: { conv: Conversation }) {
           <span className="font-medium text-sm truncate max-w-[140px]">
             {conv.profileName ?? "Cliente"}
           </span>
-          <Badge variant="outline" className={cn("text-xs flex-shrink-0", ETAPA_COLOR[conv.etapa as Etapa] ?? "bg-gray-100 text-gray-700 border-gray-200")}>
+          <Badge variant="outline" className={cn("text-xs flex-shrink-0", ETAPA_COLOR[conv.etapa as Etapa] ?? "bg-muted text-foreground border-border")}>
             {ETAPA_LABEL[conv.etapa as Etapa] ?? conv.etapa}
           </Badge>
           {conv.humanTakeover && (
@@ -243,7 +243,7 @@ export default function AILeadsPage() {
     <div className="flex flex-col h-full overflow-hidden bg-background">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b bg-white flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b bg-card flex-shrink-0">
         <Activity className="w-5 h-5 text-primary flex-shrink-0" />
         <h1 className="font-semibold text-lg">Monitor de Leads</h1>
 
@@ -291,7 +291,7 @@ export default function AILeadsPage() {
                 "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                 !filterEtapa && !humanOnly
                   ? "bg-primary text-white border-primary"
-                  : "bg-white text-muted-foreground border-border hover:border-primary/40"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/40"
               )}
             >
               <Users className="w-3 h-3 inline mr-1" />
@@ -304,7 +304,7 @@ export default function AILeadsPage() {
                 "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                 humanOnly
                   ? "bg-red-600 text-white border-red-600"
-                  : "bg-white text-muted-foreground border-border hover:border-red-300"
+                  : "bg-card text-muted-foreground border-border hover:border-red-300"
               )}
             >
               <AlertTriangle className="w-3 h-3 inline mr-1" />
@@ -322,7 +322,7 @@ export default function AILeadsPage() {
                     "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                     filterEtapa === etapa
                       ? "bg-primary text-white border-primary"
-                      : "bg-white text-muted-foreground border-border hover:border-primary/40"
+                      : "bg-card text-muted-foreground border-border hover:border-primary/40"
                   )}
                 >
                   {ETAPA_LABEL[etapa]} ({count})

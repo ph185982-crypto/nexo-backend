@@ -1,16 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
 import { InstallBanner } from "@/components/pwa/InstallBanner";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-poppins",
-  display: "swap",
-});
+// Identidade Avanteza: Manrope nos títulos, Inter no texto.
+const manrope = Manrope({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-manrope", display: "swap" });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Nexo — Prospecção Inteligente para Marketplaces",
@@ -37,8 +34,8 @@ export const viewport: Viewport = {
   // auto-zoom ao focar input é evitado via font-size 16px no globals.css,
   // que resolve a causa sem tirar o zoom de quem precisa.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d1117" },
+    { media: "(prefers-color-scheme: light)", color: "#F6F5F0" },
+    { media: "(prefers-color-scheme: dark)", color: "#18191D" },
   ],
 };
 
@@ -50,7 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={poppins.variable}
+      className={`${manrope.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
       <head>

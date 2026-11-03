@@ -1,4 +1,5 @@
 vendedoria/
+crm/
 node_modules/
 .git/
 scrapers/

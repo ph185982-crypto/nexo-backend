@@ -15,6 +15,12 @@ import { prisma } from "@/lib/prisma/client";
 import { normalizeBrazilianNumber } from "@/lib/whatsapp/send";
 import { ALVOS_COLUNA, normalizarNome } from "@/lib/crm/funil-config";
 import { aoLeadMudarDeColunaAgendado } from "@/lib/meta-capi-hook";
+import {
+  aplicarMudancaDeEtapa, registrarCriacaoLead, fundirColuna, tipoEncerramento,
+  type OrigemEtapa,
+} from "@/lib/crm/historico-etapa";
+import { motivoIdPorNome } from "@/lib/crm/motivos";
+import { emitirEventoCrm, tipoEventoDaEtapa, type EmitirEvento } from "@/lib/crm-externo/eventos";
 
 export type FunilTipo =
   | "CONTATO_1"
@@ -107,8 +113,22 @@ export async function moverLeadPorTipo(
   tipo: FunilTipo,
   motivo?: string,
   fallback?: FunilTipo,
+  /** motivoEncerramento: nome de um motivo do catálogo (ver motivos.ts), usado só em coluna de ganho/perda. */
+  opcoes?: { motivoEncerramento?: string; ator?: string; origem?: OrigemEtapa; dadosCrm?: EmitirEvento["dados"] },
 ): Promise<boolean> {
   try {
+    // CRM Avanteza: o evento segue a INTENÇÃO pedida (qualificado, escalado, perdido, ganho), não a
+    // mudança de coluna — no mapa canônico ESCALATED e QUALIFICADO caem na mesma coluna, e um
+    // movimento sem efeito não pode engolir o aviso. Chave por hora: repetir na hora colapsa; o
+    // CRM também deduplica por conteúdo. Outbox, nunca lança.
+    const tipoEvento = tipoEventoDaEtapa(tipo);
+    if (tipoEvento) {
+      await emitirEventoCrm({
+        tipo: tipoEvento, leadId, motivo: opcoes?.motivoEncerramento ?? null, dados: opcoes?.dadosCrm,
+        chave: `${tipoEvento}:${leadId}:${new Date().toISOString().slice(0, 13)}`,
+      });
+    }
+
     const alvo = canonicalizarTipo(tipo);
     let coluna = await resolverColuna(organizationId, tipo);
     if (!coluna && fallback) {
@@ -125,10 +145,20 @@ export async function moverLeadPorTipo(
     });
     if (!lead || lead.kanbanColumnId === coluna.id) return false;
 
-    await prisma.lead.update({
-      where: { id: leadId },
-      data: { kanbanColumnId: coluna.id, lastActivityAt: new Date() },
+    const encerramento = tipoEncerramento(coluna.type);
+    const motivoEncerramentoId = encerramento && opcoes?.motivoEncerramento
+      ? await motivoIdPorNome(organizationId, encerramento, opcoes.motivoEncerramento)
+      : null;
+    const { mudou } = await aplicarMudancaDeEtapa({
+      leadId,
+      coluna,
+      origem: opcoes?.origem ?? "PIPELINE",
+      ator: opcoes?.ator ?? "sistema",
+      motivo: motivo ?? null,
+      motivoEncerramentoId,
+      dadosLead: { lastActivityAt: new Date() },
     });
+    if (!mudou) return false;
     await prisma.leadActivity.create({
       data: {
         leadId,
@@ -217,6 +247,7 @@ export async function garantirLeadDoProspect(prospect: {
         prospectLeadId: prospect.id,
       },
     });
+    await registrarCriacaoLead({ leadId: lead.id, coluna: colunaEntrada, ator: "prospeccao" });
     console.log(`[PipelineMover] Lead criado do prospect ${prospect.id}: ${lead.id}`);
     return lead.id;
   } catch (e) {
@@ -328,10 +359,7 @@ export async function consolidarColunasEm5Etapas(organizationId: string): Promis
       const colunaDestino = porTipo.get(alvoTipo);
       if (!colunaDestino) continue; // não deveria acontecer após o passo 1
 
-      const { count } = await prisma.lead.updateMany({
-        where: { kanbanColumnId: legada.id },
-        data: { kanbanColumnId: colunaDestino.id },
-      });
+      const count = await fundirColuna(legada.id, colunaDestino);
       await prisma.kanbanColumn.delete({ where: { id: legada.id } }).catch((e) =>
         console.error(`[PipelineMover] Falha ao remover coluna legada ${legada.name}:`, e),
       );

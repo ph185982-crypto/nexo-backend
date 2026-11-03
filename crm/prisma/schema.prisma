@@ -1,0 +1,412 @@
+// CRM Avanteza — banco próprio, separado do Vendedor IA.
+// A ligação com o Vendedor IA é por API/eventos (ver docs/integracao.md), nunca por tabela compartilhada.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  senhaHash String
+  papel     String   @default("ADMIN") // ADMIN | VENDEDOR
+  ativo     Boolean  @default(true)
+  criadoEm  DateTime @default(now())
+
+  contatos      Contato[]
+  oportunidades Oportunidade[]
+  tarefas       Tarefa[]
+  compromissos  Compromisso[]
+  cartoesEntrega EntregaCartao[]
+}
+
+// ─── Contato: empresa ou pessoa. O negócio mora em Oportunidade. ─────────────
+model Contato {
+  id           String   @id @default(cuid())
+  tipo         String // EMPRESA | PESSOA
+  nome         String
+  telefone     String? // só dígitos, com DDI (ex.: 5562984465388)
+  email        String?
+  documento    String? // CNPJ ou CPF
+  segmento     String?
+  cargo        String?
+  cicloDeVida  String   @default("LEAD") // LEAD | PROSPECT | CLIENTE | DESCARTADO
+  origem       String?
+  empresaId    String? // pessoa → empresa em que trabalha
+  empresa      Contato? @relation("PessoaEmpresa", fields: [empresaId], references: [id], onDelete: SetNull)
+  pessoas      Contato[] @relation("PessoaEmpresa")
+  responsavelId String?
+  responsavel  Usuario? @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  // Id do lead no Vendedor IA — chave de idempotência da integração.
+  vendedorIaLeadId String? @unique
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  oportunidades   Oportunidade[] @relation("OportunidadeContato")
+  comoPessoaEm    Oportunidade[] @relation("OportunidadePessoa")
+  feedbacks       Feedback[]
+  tarefas         Tarefa[]
+  compromissos    Compromisso[]
+  entregas        Entrega[]
+
+  @@index([tipo, nome])
+  @@index([telefone])
+  @@index([cicloDeVida])
+}
+
+// ─── Funil e etapas ──────────────────────────────────────────────────────────
+// A natureza da etapa (aberta, ganha, perdida) é dado da etapa, não do nome.
+model Funil {
+  id     String  @id @default(cuid())
+  nome   String  @unique
+  ordem  Int     @default(0)
+  padrao Boolean @default(false) // funil em que a integração cria oportunidades
+  ativo  Boolean @default(true)
+
+  etapas        Etapa[]
+  oportunidades Oportunidade[]
+}
+
+model Etapa {
+  id        String @id @default(cuid())
+  funilId   String
+  funil     Funil  @relation(fields: [funilId], references: [id], onDelete: Cascade)
+  nome      String
+  ordem     Int
+  tipo      String @default("ABERTA") // ABERTA | GANHA | PERDIDA
+  // Texto de orientação ao vendedor: definição da etapa + "AÇÃO: …".
+  descricao String? @db.Text
+
+  oportunidades Oportunidade[]
+
+  @@unique([funilId, nome])
+  @@index([funilId, ordem])
+}
+
+// ─── Oportunidade ────────────────────────────────────────────────────────────
+model Oportunidade {
+  id      String @id @default(cuid())
+  numero  Int    @unique @default(autoincrement()) // código exibido: 00000012/2026
+  nome    String
+  contatoId String
+  contato Contato @relation("OportunidadeContato", fields: [contatoId], references: [id])
+  pessoaId String? // contato relacionado (quem fala pela empresa)
+  pessoa  Contato? @relation("OportunidadePessoa", fields: [pessoaId], references: [id], onDelete: SetNull)
+
+  funilId String
+  funil   Funil  @relation(fields: [funilId], references: [id])
+  etapaId String
+  etapa   Etapa  @relation(fields: [etapaId], references: [id])
+  status  String @default("EM_ANDAMENTO") // EM_ANDAMENTO | GANHA | PERDIDA
+
+  responsavelId String?
+  responsavel   Usuario? @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  valorUnico   Decimal  @default(0) @db.Decimal(14, 2)
+  valorMensal  Decimal  @default(0) @db.Decimal(14, 2)
+  probabilidade String? // RISCO_ALTO | FRIA | MORNA | QUENTE
+  origem       String?
+  tags         String[]
+  finalizaEm   DateTime? // data de fechamento esperada
+
+  // Relógio do funil — gravados só por src/lib/funil/mover.ts
+  etapaDesdeEm  DateTime  @default(now())
+  encerradaEm   DateTime?
+  motivoId      String?
+  motivo        MotivoEncerramento? @relation(fields: [motivoId], references: [id], onDelete: SetNull)
+  motivoDetalhe String?   @db.Text
+
+  ultimaAtividadeEm DateTime @default(now())
+  vendedorIaLeadId  String?
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
+
+  historico    HistoricoEtapa[]
+  feedbacks    Feedback[]
+  tarefas      Tarefa[]
+  compromissos Compromisso[]
+  entrega      Entrega?
+
+  @@index([funilId, status, etapaId])
+  @@index([contatoId])
+  @@index([vendedorIaLeadId])
+  @@index([encerradaEm])
+}
+
+// Uma linha por passagem da oportunidade por uma etapa. Sem FK para a etapa:
+// o histórico guarda nome e natureza da época e sobrevive a mudanças no funil.
+model HistoricoEtapa {
+  id             String       @id @default(cuid())
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  deEtapaId      String?
+  deFunilNome    String?
+  deEtapaNome    String?
+  paraEtapaId    String
+  paraFunilNome  String
+  paraEtapaNome  String
+  paraTipo       String // ABERTA | GANHA | PERDIDA
+  entrouEm       DateTime     @default(now())
+  saiuEm         DateTime?
+  origem         String // CRIACAO | MANUAL | INTEGRACAO | AUTOMACAO | IMPORTACAO
+  ator           String?
+  motivo         String?      @db.Text
+
+  @@index([oportunidadeId, entrouEm])
+  @@index([paraEtapaId, entrouEm])
+  @@index([paraTipo, entrouEm])
+}
+
+model MotivoEncerramento {
+  id    String  @id @default(cuid())
+  tipo  String // GANHO | PERDA
+  nome  String
+  ordem Int     @default(0)
+  ativo Boolean @default(true)
+
+  oportunidades Oportunidade[]
+
+  @@unique([tipo, nome])
+}
+
+// ─── Integração com o Vendedor IA ────────────────────────────────────────────
+model ChaveIntegracao {
+  id          String    @id @default(cuid())
+  nome        String
+  prefixo     String // primeiros caracteres, só para exibição
+  hash        String    @unique // sha256 da chave
+  criadaEm    DateTime  @default(now())
+  ultimoUsoEm DateTime?
+  revogadaEm  DateTime?
+}
+
+// Todo evento recebido fica registrado; eventoId único = o mesmo evento nunca é processado duas vezes.
+model EventoIntegracao {
+  id         String   @id @default(cuid())
+  eventoId   String   @unique
+  origem     String // vendedor-ia
+  tipo       String
+  payload    Json
+  status     String // PROCESSADO | IGNORADO | ERRO
+  detalhe    String?  @db.Text
+  recebidoEm DateTime @default(now())
+
+  @@index([tipo, recebidoEm])
+}
+
+// Limite de tentativas de login: 10 falhas por e-mail ou 30 por IP em 15 minutos.
+model TentativaLogin {
+  id       String   @id @default(cuid())
+  chave    String // "email:…" ou "ip:…"
+  criadaEm DateTime @default(now())
+
+  @@index([chave, criadaEm])
+}
+
+// ─── Atividades: feedback (linha do tempo), tarefas e compromissos ───────────
+model Feedback {
+  id             String        @id @default(cuid())
+  oportunidadeId String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId      String?
+  contato        Contato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  tipo           String // NOTA | LIGACAO | WHATSAPP | EMAIL | REUNIAO | SISTEMA
+  texto          String        @db.Text
+  intencao       String? // um dos 13 sinais (src/lib/atividades/intencoes.ts)
+  importante     Boolean       @default(false)
+  autor          String? // id do usuário, "vendedor-ia", "automacao"…
+  autorNome      String?
+  criadoEm       DateTime      @default(now())
+
+  @@index([oportunidadeId, criadoEm])
+  @@index([contatoId, criadoEm])
+  @@index([intencao, criadoEm])
+}
+
+model Tarefa {
+  id             String        @id @default(cuid())
+  titulo         String
+  descricao      String?       @db.Text
+  tipo           String        @default("TAREFA") // TAREFA | LIGACAO | EMAIL | WHATSAPP | REUNIAO
+  prioridade     String        @default("NORMAL") // BAIXA | NORMAL | ALTA
+  prazoEm        DateTime?
+  status         String        @default("ABERTA") // ABERTA | CONCLUIDA | CANCELADA
+  concluidaEm    DateTime?
+  recorrencia    String? // DIARIA | SEMANAL | MENSAL
+  checklist      Json          @default("[]") // [{ "texto": "…", "feito": false }]
+  origem         String        @default("MANUAL") // MANUAL | AUTOMACAO | INTEGRACAO
+  responsavelId  String?
+  responsavel    Usuario?      @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  contatoId      String?
+  contato        Contato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  paiId          String? // subtarefa
+  pai            Tarefa?       @relation("Subtarefa", fields: [paiId], references: [id], onDelete: Cascade)
+  subtarefas     Tarefa[]      @relation("Subtarefa")
+  criadoEm       DateTime      @default(now())
+  atualizadoEm   DateTime      @updatedAt
+
+  @@index([status, prazoEm])
+  @@index([responsavelId, status])
+  @@index([oportunidadeId, status])
+}
+
+model Compromisso {
+  id             String        @id @default(cuid())
+  assunto        String
+  tipo           String        @default("REUNIAO") // REUNIAO | LIGACAO | VISITA | OUTRO
+  inicio         DateTime
+  fim            DateTime
+  local          String?
+  descricao      String?       @db.Text
+  status         String        @default("AGENDADO") // AGENDADO | REALIZADO | CANCELADO
+  participantes  String[] // e-mails
+  origem         String        @default("MANUAL") // MANUAL | INTEGRACAO
+  responsavelId  String?
+  responsavel    Usuario?      @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  contatoId      String?
+  contato        Contato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  criadoEm       DateTime      @default(now())
+
+  @@index([inicio])
+  @@index([oportunidadeId, status])
+}
+
+// ─── Entrega: o que acontece depois de ganhar ────────────────────────────────
+// Nasce sozinha quando a oportunidade vira Ganha (funil/mover.ts), com os cartões do
+// modelo padrão. Uma entrega por oportunidade ganha.
+model ModeloEntrega {
+  id        String  @id @default(cuid())
+  nome      String  @unique
+  descricao String? @db.Text
+  padrao    Boolean @default(false) // aplicado automaticamente ao ganhar
+  ativo     Boolean @default(true)
+
+  itens    ModeloEntregaItem[]
+  entregas Entrega[]
+}
+
+model ModeloEntregaItem {
+  id        String        @id @default(cuid())
+  modeloId  String
+  modelo    ModeloEntrega @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+  titulo    String
+  descricao String?       @db.Text
+  pilar     String // COMERCIAL | PRODUTO | MARKETING | OPERACAO | FINANCEIRO | TECNOLOGIA
+  prazoDias Int? // dias depois do início da entrega
+  cliente   Boolean       @default(false) // o cartão depende do cliente
+  ordem     Int           @default(0)
+  checklist Json          @default("[]")
+
+  @@index([modeloId, ordem])
+}
+
+model Entrega {
+  id             String        @id @default(cuid())
+  oportunidadeId String        @unique
+  oportunidade   Oportunidade  @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId      String
+  contato        Contato       @relation(fields: [contatoId], references: [id])
+  nome           String
+  status         String        @default("EM_ANDAMENTO") // EM_ANDAMENTO | PAUSADA | CONCLUIDA | CANCELADA
+  inicioEm       DateTime      @default(now())
+  fimPrevistoEm  DateTime?
+  renovacaoEm    DateTime?
+  valorMensal    Decimal       @default(0) @db.Decimal(14, 2) // MRR herdado da oportunidade
+  modeloId       String?
+  modelo         ModeloEntrega? @relation(fields: [modeloId], references: [id], onDelete: SetNull)
+  // Diagnóstico por pilar: { COMERCIAL: "texto", PRODUTO: "…", … }
+  diagnostico    Json          @default("{}")
+  criadoEm       DateTime      @default(now())
+  atualizadoEm   DateTime      @updatedAt
+
+  cartoes EntregaCartao[]
+
+  @@index([status, renovacaoEm])
+  @@index([contatoId])
+}
+
+model EntregaCartao {
+  id            String   @id @default(cuid())
+  entregaId     String
+  entrega       Entrega  @relation(fields: [entregaId], references: [id], onDelete: Cascade)
+  titulo        String
+  descricao     String?  @db.Text
+  pilar         String   @default("COMERCIAL")
+  coluna        String   @default("BACKLOG") // BACKLOG | ESSA_SEMANA | EM_ANDAMENTO | AGUARDANDO_CLIENTE | CONCLUIDO
+  ordem         Int      @default(0)
+  dataAlvo      DateTime?
+  cliente       Boolean  @default(false) // quem executa é o cliente
+  responsavelId String?
+  responsavel   Usuario? @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  checklist     Json     @default("[]")
+  colunaDesdeEm DateTime @default(now()) // para "aguardando o cliente há N dias"
+  concluidoEm   DateTime?
+  criadoEm      DateTime @default(now())
+
+  @@index([entregaId, coluna, ordem])
+}
+
+// ─── Automações: gatilho → critérios → ações (com espera opcional) ───────────
+model Automacao {
+  id          String   @id @default(cuid())
+  nome        String
+  descricao   String?  @db.Text
+  ativo       Boolean  @default(true)
+  // OPORTUNIDADE_CRIADA | OPORTUNIDADE_MOVIDA | OPORTUNIDADE_GANHA | OPORTUNIDADE_PERDIDA
+  // | OPORTUNIDADE_ESTAGNADA | OPORTUNIDADE_SEM_INTERACAO (estas duas por varredura agendada)
+  gatilho     String
+  criterios   Json     @default("[]") // [{ "campo": "diasNaEtapa", "operador": ">=", "valor": 3 }]
+  acoes       Json     @default("[]") // [{ "tipo": "CRIAR_TAREFA", "titulo": "…", "esperaHoras": 0 }]
+  criadaPorId String?
+  criadoEm    DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  execucoes AutomacaoExecucao[]
+
+  @@index([ativo, gatilho])
+}
+
+// Uma linha por ação a executar. chave única = a mesma ação nunca roda duas vezes para o mesmo fato.
+model AutomacaoExecucao {
+  id             String   @id @default(cuid())
+  automacaoId    String
+  automacao      Automacao @relation(fields: [automacaoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  gatilho        String
+  indice         Int // posição da ação na automação
+  acaoTipo       String
+  chave          String   @unique
+  status         String   @default("PENDENTE") // PENDENTE | EXECUTADA | IGNORADA | ERRO
+  executarEm     DateTime @default(now())
+  executadaEm    DateTime?
+  detalhe        String?  @db.Text
+  criadoEm       DateTime @default(now())
+
+  @@index([status, executarEm])
+  @@index([automacaoId, criadoEm])
+}
+
+// ─── Metas: meta × realizado por mês. valor 0 ou ausente = SEM META (nunca 100%). ──
+model Meta {
+  id     String   @id @default(cuid())
+  escopo String   @default("TODOS") // "TODOS" ou o id de um funil
+  ano    Int
+  mes    Int // 1–12
+  tipo   String   @default("TOTAL") // TOTAL (único + mensal) | UNICO | MENSAL
+  valor  Decimal  @db.Decimal(14, 2)
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([escopo, ano, mes, tipo])
+}

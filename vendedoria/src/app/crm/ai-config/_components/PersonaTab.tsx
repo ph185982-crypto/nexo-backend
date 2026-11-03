@@ -115,7 +115,7 @@ export function PersonaTab({ onSave, onError }: Props) {
 
       {/* Inline create / edit form */}
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-gray-50 space-y-4">
+        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium text-foreground">
             {editing ? `Editar: ${editing.name}` : "Nova Persona"}
           </p>
@@ -199,7 +199,7 @@ export function PersonaTab({ onSave, onError }: Props) {
             <div
               key={p.id}
               className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border bg-white transition-colors",
+                "flex items-start gap-3 p-4 rounded-xl border bg-card transition-colors",
                 p.isActive && "border-primary/30 ring-1 ring-primary/20"
               )}
             >

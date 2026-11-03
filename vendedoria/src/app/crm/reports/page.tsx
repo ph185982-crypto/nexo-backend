@@ -117,7 +117,7 @@ function MetricCard({
   return (
     <div className={cn(
       "rounded-xl border p-4",
-      accent ? "bg-primary text-white border-primary" : "bg-white"
+      accent ? "bg-primary text-white border-primary" : "bg-card"
     )}>
       <p className={cn("text-xs font-medium mb-1", accent ? "text-white/70" : "text-muted-foreground")}>
         {label}
@@ -167,7 +167,7 @@ function TabConversao({ data }: { data: DashboardData }) {
       </div>
 
       {/* 7-day chart */}
-      <div className="bg-white rounded-xl border p-4">
+      <div className="bg-card rounded-xl border p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold">Leads × Pedidos — últimos 7 dias</h3>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -181,7 +181,7 @@ function TabConversao({ data }: { data: DashboardData }) {
       </div>
 
       {/* Funnel */}
-      <div className="bg-white rounded-xl border p-4">
+      <div className="bg-card rounded-xl border p-4">
         <h3 className="text-sm font-semibold mb-3">Funil de vendas</h3>
         <div className="space-y-2">
           {funil.map(({ etapa, count }) => (
@@ -241,7 +241,7 @@ function TabProdutos({ orgId }: { orgId: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-xl border p-4">
+      <div className="bg-card rounded-xl border p-4">
         <h3 className="text-sm font-semibold mb-4">Interesse por produto</h3>
         <div className="space-y-3">
           {rows.map(r => (
@@ -270,7 +270,7 @@ function TabProdutos({ orgId }: { orgId: string }) {
       </div>
 
       {/* Conversion by product table */}
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="bg-card rounded-xl border overflow-hidden">
         <div className="px-4 py-3 border-b">
           <h3 className="text-sm font-semibold">Conversão por produto</h3>
         </div>
@@ -373,22 +373,22 @@ function TabFollowup({ orgId }: { orgId: string }) {
     <div className="space-y-4">
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white rounded-xl border p-4 text-center">
+        <div className="bg-card rounded-xl border p-4 text-center">
           <div className="text-2xl font-bold text-amber-600">{active.length}</div>
           <div className="text-xs text-muted-foreground mt-0.5">Ativos</div>
         </div>
-        <div className="bg-white rounded-xl border p-4 text-center">
+        <div className="bg-card rounded-xl border p-4 text-center">
           <div className="text-2xl font-bold text-emerald-600">{done.length}</div>
           <div className="text-xs text-muted-foreground mt-0.5">Concluídos</div>
         </div>
-        <div className="bg-white rounded-xl border p-4 text-center">
-          <div className="text-2xl font-bold text-gray-400">{canceled.length}</div>
+        <div className="bg-card rounded-xl border p-4 text-center">
+          <div className="text-2xl font-bold text-muted-foreground">{canceled.length}</div>
           <div className="text-xs text-muted-foreground mt-0.5">Cancelados</div>
         </div>
       </div>
 
       {/* Active follow-ups */}
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="bg-card rounded-xl border overflow-hidden">
         <div className="px-4 py-3 border-b flex items-center gap-2">
           <Clock className="w-4 h-4 text-amber-500" />
           <h3 className="text-sm font-semibold">Follow-ups ativos</h3>
@@ -432,18 +432,18 @@ function TabFollowup({ orgId }: { orgId: string }) {
       {/* Done / Canceled summary */}
       {(done.length > 0 || canceled.length > 0) && (
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-xl border p-4">
+          <div className="bg-card rounded-xl border p-4">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
               <h4 className="text-sm font-semibold">Concluídos</h4>
             </div>
             <p className="text-xs text-muted-foreground">
               {done.length} leads responderam ou compraram durante o fluxo.
             </p>
           </div>
-          <div className="bg-white rounded-xl border p-4">
+          <div className="bg-card rounded-xl border p-4">
             <div className="flex items-center gap-2 mb-2">
-              <XCircle className="w-4 h-4 text-gray-400" />
+              <XCircle className="w-4 h-4 text-muted-foreground" />
               <h4 className="text-sm font-semibold">Cancelados</h4>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -486,7 +486,7 @@ export default function ReportsPage() {
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden bg-background">
       {/* Page header */}
-      <div className="bg-white border-b px-4 py-3 flex items-center gap-3 flex-shrink-0">
+      <div className="bg-card border-b px-4 py-3 flex items-center gap-3 flex-shrink-0">
         <BarChart2 className="w-5 h-5 text-primary shrink-0" />
         <h1 className="text-base font-semibold flex-1">Relatórios</h1>
         {orgs.length > 1 && (
@@ -502,7 +502,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b bg-white flex-shrink-0">
+      <div className="border-b bg-card flex-shrink-0">
         <div className="flex px-4">
           {TABS.map(tab => {
             const Icon = tab.icon;

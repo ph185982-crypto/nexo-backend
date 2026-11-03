@@ -260,7 +260,7 @@ export default function CampaignViewPage() {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Bar dataKey="sent" name="Enviados" fill="#004c3f" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="sent" name="Enviados" fill="#2448FF" radius={[2, 2, 0, 0]} />
               <Bar dataKey="replied" name="Responderam" fill="#00ff87" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

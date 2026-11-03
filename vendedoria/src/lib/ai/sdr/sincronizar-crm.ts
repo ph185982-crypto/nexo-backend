@@ -29,6 +29,15 @@ export function camposCrmDaSessao(s: SDRSession): Record<string, unknown> {
   return dados;
 }
 
+/** Dados da sessão que o CRM Avanteza precisa, antes de a sincronização com o Lead rodar. */
+export function dadosParaEventoCrm(s: SDRSession) {
+  const c = camposCrmDaSessao(s);
+  return {
+    nome: pareceNomeDePessoa(s.nome) ? s.nome.trim() : undefined,
+    empresa: c.empresa, segmento: c.segmento, faturamentoMensal: c.faturamentoMensal, dorPrincipal: c.dorPrincipal, scoreSdr: c.scoreSdr,
+  };
+}
+
 export async function sincronizarQualificacaoNoLead(leadId: string, s: SDRSession): Promise<void> {
   const dados = camposCrmDaSessao(s);
   if (pareceNomeDePessoa(s.nome)) dados.profileName = s.nome.trim();

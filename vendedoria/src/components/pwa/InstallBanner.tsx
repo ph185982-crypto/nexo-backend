@@ -52,7 +52,7 @@ export function InstallBanner() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 rounded-2xl border border-emerald-800/60 bg-[#0d1f17]/95 px-4 py-3 shadow-2xl backdrop-blur-md"
+      className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 rounded-2xl border border-emerald-800/60 bg-[#18191D]/95 px-4 py-3 shadow-2xl backdrop-blur-md"
       role="banner"
     >
       <img

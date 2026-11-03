@@ -1,13 +1,13 @@
 :root {
-  --primaria: #1A1A2E;
-  --acento: #F5C400;
-  --acento-hover: #D4A900;
-  --fundo: #F8F9FA;
+  --primaria: #2448FF;
+  --acento: #FF7043; /* só preenchimento, texto grafite */
+  --acento-hover: #F25F30;
+  --fundo: #F6F5F0;
   --superficie: #FFFFFF;
-  --texto: #111827;
-  --texto-secundario: #6B7280;
+  --texto: #18191D;
+  --texto-secundario: #686A73;
   --texto-terciario: #9CA3AF;
-  --borda: #E5E7EB;
+  --borda: #E6E3DA;
   --sucesso: #10B981;
   --sucesso-fundo: #ECFDF5;
   --aviso: #F59E0B;

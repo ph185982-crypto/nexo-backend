@@ -88,12 +88,12 @@ export function Sidebar({
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/8 flex-shrink-0">
-        <div className="flex-shrink-0 w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center ring-1 ring-white/10">
-          <Zap className="w-4 h-4 text-emerald-400" />
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10 flex-shrink-0">
+        <div className="flex-shrink-0 w-8 h-8 bg-avz-laranja rounded-xl flex items-center justify-center">
+          <Zap className="w-4 h-4 text-avz-grafite" />
         </div>
         <div className={cn("flex items-baseline gap-1 flex-1 min-w-0", collapsed && "md:hidden")}>
-          <span className="font-bold text-lg tracking-tight text-white truncate">NEXO</span>
+          <span className="font-titulo font-extrabold text-lg tracking-tight text-white truncate">NEXO</span>
         </div>
         <button
           onClick={onMobileClose}
@@ -128,13 +128,13 @@ export function Sidebar({
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   active
                     ? "bg-white/15 text-white"
-                    : "text-white/55 hover:bg-white/8 hover:text-white/90"
+                    : "text-white/85 hover:bg-white/10 hover:text-white"
                 )}
               >
-                <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-emerald-400" : "")} />
+                <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-white" : "")} />
                 <span className={cn(collapsed && "md:hidden")}>{item.label}</span>
                 {active && !collapsed && (
-                  <span className="ml-auto w-1 h-4 rounded-full bg-emerald-400 flex-shrink-0" />
+                  <span className="ml-auto w-1 h-4 rounded-full bg-avz-laranja flex-shrink-0" />
                 )}
               </Link>
             );
@@ -143,12 +143,12 @@ export function Sidebar({
       </ScrollArea>
 
       {/* Status do WhatsApp + Configurações */}
-      <div className="border-t border-white/8 p-2 flex-shrink-0 space-y-1">
+      <div className="border-t border-white/10 p-2 flex-shrink-0 space-y-1">
         {conta && (
-          <div className={cn("flex items-center gap-2 px-3 py-2 text-xs text-white/40", collapsed && "md:hidden")}>
+          <div className={cn("flex items-center gap-2 px-3 py-2 text-xs text-white/75", collapsed && "md:hidden")}>
             <span className={cn(
               "w-2 h-2 rounded-full flex-shrink-0",
-              conta.status === "CONNECTED" ? "bg-emerald-400" : "bg-red-400"
+              conta.status === "CONNECTED" ? "bg-green-400" : "bg-red-400"
             )} />
             <span className="truncate">WhatsApp {conta.displayPhoneNumber}</span>
           </div>
@@ -156,7 +156,7 @@ export function Sidebar({
         <Link
           href="/crm/settings"
           onClick={handleNavClick}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/50 hover:bg-white/8 hover:text-white transition-colors"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/85 hover:bg-white/10 hover:text-white transition-colors"
         >
           <Settings className="w-4 h-4 flex-shrink-0" />
           <span className={cn(collapsed && "md:hidden")}>Configurações</span>
