@@ -1,12 +1,24 @@
 // Eventos que o Vendedor IA envia ao CRM. Contrato em docs/integracao.md.
 // Idempotente: o mesmo eventoId nunca é processado duas vezes.
 import { prisma } from "@/lib/prisma";
-import { criarOportunidade } from "@/lib/funil/mover";
+import { criarOportunidade, moverOportunidade } from "@/lib/funil/mover";
+import { motivoIdPorNome } from "@/lib/funil/motivos";
+import { criarTarefa } from "@/lib/atividades/tarefas";
+import { criarCompromisso } from "@/lib/atividades/compromissos";
+import { registrarFeedback } from "@/lib/atividades/feedback";
+import { INTENCOES, type Intencao } from "@/lib/atividades/intencoes";
 
 export interface EventoVendedorIa {
   eventoId: string;
   tipo: string;
   ocorridoEm?: string;
+  /** lead.perdido / lead.ganho: nome do motivo do catálogo. */
+  motivo?: string | null;
+  /** reuniao.agendada: horário da ligação (ISO). */
+  reuniaoEm?: string | null;
+  /** intencao.detectada: um dos 13 sinais (ex.: OBJECAO_PRECO) e o trecho da mensagem que o gerou. */
+  intencao?: string | null;
+  texto?: string | null;
   lead?: {
     id: string;
     telefone?: string | null;
@@ -29,6 +41,8 @@ export function validarEvento(corpo: unknown): { ok: true; evento: EventoVendedo
   if (typeof e.eventoId !== "string" || e.eventoId.length < 8 || e.eventoId.length > 120) return { ok: false, erro: "eventoId obrigatório (8–120 caracteres)" };
   if (typeof e.tipo !== "string" || !/^[a-z]+(\.[a-z_]+)+$/.test(e.tipo)) return { ok: false, erro: "tipo inválido" };
   if (e.lead !== undefined && (typeof e.lead !== "object" || e.lead === null || typeof e.lead.id !== "string" || !e.lead.id)) return { ok: false, erro: "lead.id obrigatório quando lead é enviado" };
+  if (e.intencao != null && !(INTENCOES as readonly string[]).includes(e.intencao as string)) return { ok: false, erro: "intencao desconhecida" };
+  if (e.reuniaoEm != null && Number.isNaN(new Date(e.reuniaoEm).getTime())) return { ok: false, erro: "reuniaoEm inválido" };
   return { ok: true, evento: e as EventoVendedorIa };
 }
 
@@ -45,7 +59,7 @@ export async function processarEventoVendedorIa(evento: EventoVendedorIa): Promi
 
   let resultado: ResultadoEvento;
   try {
-    resultado = evento.tipo === "lead.qualificado" && evento.lead ? await leadQualificado(evento.lead) : { status: "IGNORADO", detalhe: `tipo ${evento.tipo} ainda não tratado` };
+    resultado = await tratar(evento);
   } catch (e) {
     await prisma.eventoIntegracao.create({ data: { eventoId: evento.eventoId, origem: "vendedor-ia", tipo: evento.tipo, payload: evento as object, status: "ERRO", detalhe: String(e).slice(0, 500) } });
     throw e;
@@ -98,6 +112,86 @@ async function leadQualificado(lead: NonNullable<EventoVendedorIa["lead"]>): Pro
     vendedorIaLeadId: lead.id,
     origemHistorico: "INTEGRACAO",
     ator: "vendedor-ia",
+  });
+  return { status: "PROCESSADO", oportunidadeId: op.id };
+}
+
+
+type Lead = NonNullable<EventoVendedorIa["lead"]>;
+
+async function tratar(e: EventoVendedorIa): Promise<ResultadoEvento> {
+  if (!e.lead) return { status: "IGNORADO", detalhe: `tipo ${e.tipo} sem lead` };
+  switch (e.tipo) {
+    case "lead.qualificado": return leadQualificado(e.lead);
+    case "lead.escalado": return leadEscalado(e.lead);
+    case "reuniao.agendada": return reuniaoAgendada(e.lead, e.reuniaoEm);
+    case "lead.perdido": return encerrar(e.lead, "PERDIDA", e.motivo);
+    case "lead.ganho": return encerrar(e.lead, "GANHA", e.motivo);
+    case "intencao.detectada": return intencaoDetectada(e.lead, e.intencao, e.texto);
+    default: return { status: "IGNORADO", detalhe: `tipo ${e.tipo} ainda não tratado` };
+  }
+}
+
+const abertaDoLead = (leadId: string) => prisma.oportunidade.findFirst({ where: { vendedorIaLeadId: leadId, status: "EM_ANDAMENTO" }, orderBy: { criadoEm: "desc" } });
+
+/** Oportunidade em andamento do lead; se não houver, cria como em lead.qualificado. */
+async function garantirAberta(lead: Lead): Promise<{ id: string; criada: boolean }> {
+  const a = await abertaDoLead(lead.id);
+  if (a) return { id: a.id, criada: false };
+  const r = await leadQualificado(lead);
+  if (!r.oportunidadeId) throw new Error("não foi possível abrir a oportunidade");
+  return { id: r.oportunidadeId, criada: true };
+}
+
+async function primeiroAdmin() {
+  return prisma.usuario.findFirst({ where: { papel: "ADMIN", ativo: true }, orderBy: { criadoEm: "asc" }, select: { id: true } });
+}
+
+async function leadEscalado(lead: Lead): Promise<ResultadoEvento> {
+  const op = await garantirAberta(lead);
+  const ja = await prisma.tarefa.findFirst({ where: { oportunidadeId: op.id, origem: "INTEGRACAO", status: "ABERTA", titulo: { startsWith: "Assumir a conversa" } }, select: { id: true } });
+  if (ja) return { status: "IGNORADO", detalhe: "já existe tarefa de assumir a conversa", oportunidadeId: op.id };
+  const admin = await primeiroAdmin();
+  await registrarFeedback({ oportunidadeId: op.id, tipo: "SISTEMA", texto: "O Vendedor IA passou a conversa para uma pessoa.", autor: "vendedor-ia", autorNome: "Vendedor IA" });
+  await criarTarefa({
+    titulo: `Assumir a conversa de ${lead.nome?.trim() || "lead sem nome"}`, tipo: "WHATSAPP", prioridade: "ALTA",
+    prazoEm: new Date(Date.now() + 3_600_000), oportunidadeId: op.id, responsavelId: admin?.id ?? null, origem: "INTEGRACAO",
+  });
+  return { status: "PROCESSADO", oportunidadeId: op.id };
+}
+
+async function reuniaoAgendada(lead: Lead, reuniaoEm?: string | null): Promise<ResultadoEvento> {
+  if (!reuniaoEm) return { status: "IGNORADO", detalhe: "reuniaoEm ausente" };
+  const op = await garantirAberta(lead);
+  const inicio = new Date(reuniaoEm);
+  const existe = await prisma.compromisso.findFirst({ where: { oportunidadeId: op.id, inicio, origem: "INTEGRACAO" }, select: { id: true } });
+  if (existe) return { status: "IGNORADO", detalhe: "compromisso já existe", oportunidadeId: op.id };
+  const admin = await primeiroAdmin();
+  await criarCompromisso({
+    assunto: `Ligação com ${lead.nome?.trim() || lead.empresa?.trim() || "lead"}`, tipo: "LIGACAO", inicio, fim: new Date(inicio.getTime() + 30 * 60_000),
+    descricao: lead.dorPrincipal ? `Dor principal: ${lead.dorPrincipal}` : null, responsavelId: admin?.id ?? null, oportunidadeId: op.id, origem: "INTEGRACAO",
+  });
+  await registrarFeedback({ oportunidadeId: op.id, tipo: "SISTEMA", texto: "O Vendedor IA marcou a ligação com o especialista.", autor: "vendedor-ia", autorNome: "Vendedor IA" });
+  return { status: "PROCESSADO", oportunidadeId: op.id };
+}
+
+async function encerrar(lead: Lead, natureza: "GANHA" | "PERDIDA", motivo?: string | null): Promise<ResultadoEvento> {
+  const op = await abertaDoLead(lead.id);
+  if (!op) return { status: "IGNORADO", detalhe: "sem oportunidade em andamento para este lead" };
+  const etapa = await prisma.etapa.findFirst({ where: { funilId: op.funilId, tipo: natureza }, orderBy: { ordem: "asc" } });
+  if (!etapa) return { status: "IGNORADO", detalhe: `funil sem etapa ${natureza}`, oportunidadeId: op.id };
+  const motivoId = motivo ? await motivoIdPorNome(natureza === "GANHA" ? "GANHO" : "PERDA", motivo) : null;
+  await moverOportunidade({ oportunidadeId: op.id, etapaId: etapa.id, origem: "INTEGRACAO", ator: "vendedor-ia", motivo: motivo ? `Vendedor IA: ${motivo}` : "Vendedor IA", motivoId });
+  return { status: "PROCESSADO", oportunidadeId: op.id };
+}
+
+async function intencaoDetectada(lead: Lead, intencao?: string | null, texto?: string | null): Promise<ResultadoEvento> {
+  if (!intencao) return { status: "IGNORADO", detalhe: "intencao ausente" };
+  const op = await abertaDoLead(lead.id);
+  if (!op) return { status: "IGNORADO", detalhe: "sem oportunidade em andamento para este lead" };
+  await registrarFeedback({
+    oportunidadeId: op.id, tipo: "WHATSAPP", texto: (texto ?? "").trim().slice(0, 500) || "Sinal detectado na conversa.",
+    intencao: intencao as Intencao, autor: "vendedor-ia", autorNome: "Vendedor IA",
   });
   return { status: "PROCESSADO", oportunidadeId: op.id };
 }

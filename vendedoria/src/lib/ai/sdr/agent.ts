@@ -12,7 +12,8 @@ import { perfilComunicacao } from "./estilo";
 import { filtrarRepetidas, pareceFechamento, ultimasDaIA } from "./anti-repeticao";
 import { forcarProximoPasso, leadPerguntou, perguntaCombinada } from "./fluxo-rapido";
 import { detectarPedidoHumano, mensagemDeTransferencia, type MotivoHumano } from "./humano";
-import { sincronizarQualificacaoNoLead } from "./sincronizar-crm";
+import { dadosParaEventoCrm, sincronizarQualificacaoNoLead } from "./sincronizar-crm";
+import { emitirEventoCrm, emitirIntencoesDaMensagem } from "@/lib/crm-externo/eventos";
 import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
 import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
 import { proximoEnvio } from "@/lib/followup/janela";
@@ -638,6 +639,7 @@ async function runSdrResponse(
     await moverLeadPorTipo(
       lead.id, provider.organizationId, "DESCARTADO",
       "Lead pediu para não ser mais contatado (opt-out)", "LOST",
+      { motivoEncerramento: MOTIVO.OPT_OUT, ator: "AI_AGENT", origem: "IA" },
     );
     await prisma.conversationFollowUp.updateMany({
       where: { conversationId, status: "ACTIVE" },
@@ -653,6 +655,9 @@ async function runSdrResponse(
     }
     return;
   }
+
+  // ── Sinais de intenção da mensagem → CRM Avanteza (regras, sem chamar o modelo; em segundo plano) ──
+  void emitirIntencoesDaMensagem(lead.id, userMessage).catch(() => {});
 
   // ── Carregar sessão SDR ─────────────────────────────────────────────────────
   const session = await loadSdrSession(conversationId);
@@ -850,6 +855,7 @@ async function runSdrResponse(
     await moverLeadPorTipo(
       lead.id, provider.organizationId, "QUALIFICADO",
       `Lead qualificado pelo SDR (loja física + faturamento ≥ R$ 40 mil/mês + CNPJ) — faturamento lido: R$ ${qualificacao.faturamentoMensal?.toLocaleString("pt-BR")}`,
+      undefined, { dadosCrm: dadosParaEventoCrm(newSession) },
     );
   }
 
@@ -941,7 +947,12 @@ async function runSdrResponse(
       await moverLeadPorTipo(
         lead.id, provider.organizationId, reuniao ? "REUNIAO_AGENDADA" : "ESCALATED",
         reuniao ? `Ligação marcada pelo SDR: ${reuniao.label}` : "Lead escalado para especialista pelo SDR", "ESCALATED",
+        { dadosCrm: dadosParaEventoCrm(newSession) },
       );
+      // Ligação marcada: o CRM recebe o horário (cria o compromisso). O escalonamento sem ligação já saiu pelo moverLeadPorTipo.
+      if (reuniao && inicioReuniao) {
+        await emitirEventoCrm({ tipo: "reuniao.agendada", leadId: lead.id, reuniaoEm: inicioReuniao.toISOString(), dados: dadosParaEventoCrm(newSession) });
+      }
       await prisma.leadActivity.create({
         data: { leadId: lead.id, type: "STATUS_CHANGE", description: "Lead escalado para especialista pelo SDR", createdBy: "AI_AGENT" },
       }).catch(() => {});

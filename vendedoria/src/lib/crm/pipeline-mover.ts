@@ -20,6 +20,7 @@ import {
   type OrigemEtapa,
 } from "@/lib/crm/historico-etapa";
 import { motivoIdPorNome } from "@/lib/crm/motivos";
+import { emitirEventoCrm, tipoEventoDaEtapa, type EmitirEvento } from "@/lib/crm-externo/eventos";
 
 export type FunilTipo =
   | "CONTATO_1"
@@ -113,9 +114,21 @@ export async function moverLeadPorTipo(
   motivo?: string,
   fallback?: FunilTipo,
   /** motivoEncerramento: nome de um motivo do catálogo (ver motivos.ts), usado só em coluna de ganho/perda. */
-  opcoes?: { motivoEncerramento?: string; ator?: string; origem?: OrigemEtapa },
+  opcoes?: { motivoEncerramento?: string; ator?: string; origem?: OrigemEtapa; dadosCrm?: EmitirEvento["dados"] },
 ): Promise<boolean> {
   try {
+    // CRM Avanteza: o evento segue a INTENÇÃO pedida (qualificado, escalado, perdido, ganho), não a
+    // mudança de coluna — no mapa canônico ESCALATED e QUALIFICADO caem na mesma coluna, e um
+    // movimento sem efeito não pode engolir o aviso. Chave por hora: repetir na hora colapsa; o
+    // CRM também deduplica por conteúdo. Outbox, nunca lança.
+    const tipoEvento = tipoEventoDaEtapa(tipo);
+    if (tipoEvento) {
+      await emitirEventoCrm({
+        tipo: tipoEvento, leadId, motivo: opcoes?.motivoEncerramento ?? null, dados: opcoes?.dadosCrm,
+        chave: `${tipoEvento}:${leadId}:${new Date().toISOString().slice(0, 13)}`,
+      });
+    }
+
     const alvo = canonicalizarTipo(tipo);
     let coluna = await resolverColuna(organizationId, tipo);
     if (!coluna && fallback) {

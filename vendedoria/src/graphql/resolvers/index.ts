@@ -7,6 +7,7 @@ import { criarEventoReuniao } from "@/lib/integrations/google-calendar";
 import { aoLeadMudarDeColunaAgendado } from "@/lib/meta-capi-hook";
 import { aplicarMudancaDeEtapa, registrarCriacaoLead } from "@/lib/crm/historico-etapa";
 import { listarMotivos } from "@/lib/crm/motivos";
+import { emitirEventoCrm, tipoEventoDaEtapa } from "@/lib/crm-externo/eventos";
 
 interface ResolverContext {
   userId?: string;
@@ -820,6 +821,9 @@ export const resolvers = {
         where: { id: leadId },
         include: { kanbanColumn: true, motivoEncerramento: true },
       });
+      // Arrasto manual também avisa o CRM Avanteza (ganho, perda, escalada…).
+      const tipoEvento = anterior?.kanbanColumnId !== columnId ? tipoEventoDaEtapa(destino.type) : null;
+      if (tipoEvento) await emitirEventoCrm({ tipo: tipoEvento, leadId, motivo: result.motivoEncerramento?.nome ?? null });
       // Auto-create diagnosis draft when moved to GANHO
       if (result.kanbanColumn?.type === "GANHO") {
         prisma.clientDiagnosis.upsert({

@@ -1594,3 +1594,24 @@ model LoginAttempt {
 
   @@index([chave, criadoEm])
 }
+
+// ─── Eventos para o CRM Avanteza (outbox) ────────────────────────────────────
+// Cada evento é gravado aqui antes de ser enviado: se o CRM estiver fora do ar,
+// o envio é refeito (health e novos eventos reprocessam). eventoId é a chave de
+// idempotência dos dois lados.
+model CrmEventoOutbox {
+  id                String    @id @default(cuid())
+  eventoId          String    @unique
+  tipo              String
+  leadId            String
+  payload           Json
+  status            String    @default("PENDENTE") // PENDENTE | ENVIADO | FALHOU
+  tentativas        Int       @default(0)
+  proximaTentativaEm DateTime @default(now())
+  ultimoErro        String?
+  criadoEm          DateTime  @default(now())
+  enviadoEm         DateTime?
+
+  @@index([status, proximaTentativaEm])
+  @@index([leadId, criadoEm])
+}

@@ -13,6 +13,7 @@ import { config } from "@/lib/config/env";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { aplicarMudancaDeEtapa } from "@/lib/crm/historico-etapa";
 import { MOTIVO, motivoIdPorNome } from "@/lib/crm/motivos";
+import { emitirEventoCrm } from "@/lib/crm-externo/eventos";
 import { callLLM } from "@/lib/ai/llm-client";
 
 // ─── Follow-up intervals ─────────────────────────────────────────────────────
@@ -1888,6 +1889,7 @@ async function handleEscalation(leadId: string, conversationId: string, reason: 
       motivo: "Escalado para vendedor humano pela IA",
       dadosLead: { status: "ESCALATED", lastActivityAt: new Date() },
     });
+    await emitirEventoCrm({ tipo: "lead.escalado", leadId });
   }
 
   await prisma.leadEscalation.create({ data: { leadId, reason: reason.replace(/^\[ESCALAR\]\s*/i, "").substring(0, 500), status: "PENDING" } });

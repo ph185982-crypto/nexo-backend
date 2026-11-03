@@ -44,17 +44,17 @@ com origem de histórico `INTEGRACAO` e ator `vendedor-ia`. Se já existe oportu
 Campos obrigatórios: `eventoId` (8–120 caracteres), `tipo` (`dominio.acao`), e `lead.id` quando `lead` é enviado.
 Telefone: só dígitos; com 10 ou 11 dígitos assume DDI 55.
 
-### Outros tipos
+### Demais tipos (implementados)
 
-Qualquer tipo com formato válido é **registrado** em `EventoIntegracao` e respondido como `IGNORADO`
-("tipo ainda não tratado"). Nada se perde, e o tratamento entra quando o tipo for definido:
+Todos exigem `lead.id`. Tipo com formato válido mas desconhecido é registrado em `EventoIntegracao` e respondido `IGNORADO`.
 
-| Tipo previsto | Efeito previsto no CRM |
+| Tipo | Efeito no CRM |
 |---|---|
-| `lead.escalado` | marcar a oportunidade como "precisa de humano" |
-| `reuniao.agendada` | criar compromisso/tarefa ligados à oportunidade |
-| `intencao.detectada` | registrar um dos 13 sinais de intenção como feedback (alimenta a saúde do negócio) |
-| `lead.perdido` | mover para "Perdida" com motivo do catálogo |
+| `lead.escalado` | Garante a oportunidade, registra feedback do sistema e cria a tarefa **"Assumir a conversa de …"** (prioridade alta, prazo de 1 hora, origem `INTEGRACAO`, responsável o primeiro administrador). Só uma tarefa aberta por oportunidade. |
+| `reuniao.agendada` (`reuniaoEm`) | Garante a oportunidade e cria um compromisso de **ligação** de 30 min no horário (origem `INTEGRACAO`). Mesmo horário não duplica. Sem `reuniaoEm`: ignorado. |
+| `lead.perdido` (`motivo`) | Move a oportunidade em andamento para a etapa **Perdida** do funil dela, com o motivo se existir no catálogo (ex.: `Sem interesse`, `Fora do perfil (ICP)`, `Pediu para não receber mensagens`). Sem oportunidade em andamento: ignorado (lead que nunca qualificou não vira oportunidade). |
+| `lead.ganho` (`motivo`) | Idem, para a etapa **Ganha**. |
+| `intencao.detectada` (`intencao`, `texto`) | Feedback de WhatsApp com o sinal (um dos 13 de `src/lib/atividades/intencoes.ts`); atualiza a atividade e a saúde do negócio. Sem oportunidade em andamento: ignorado. `intencao` fora da lista: `400`. |
 
 ## CRM → Vendedor IA (previsto, ainda não implementado)
 
@@ -65,8 +65,18 @@ Qualquer tipo com formato válido é **registrado** em `EventoIntegracao` e resp
 O Vendedor IA já tem chaves de API (`Authorization: Bearer nexo_live_…`), então o caminho é expor essas
 operações lá e chamá-las daqui com uma chave guardada em variável de ambiente.
 
-## O que falta do lado do Vendedor IA
+## Lado do Vendedor IA (implementado)
 
-Nada foi alterado no `vendedoria/` por esta integração. Falta enviar o evento: quando o SDR marca o lead como
-qualificado (hoje `moverLeadPorTipo(..., "QUALIFICADO")`), disparar o `POST` acima em segundo plano, sem
-nunca atrasar ou derrubar a conversa (mesma regra de fail-safe do `pipeline-mover`).
+`vendedoria/src/lib/crm-externo/`. Variáveis de ambiente: `CRM_URL` (ex.: `https://crm.exemplo.com`) e `CRM_API_KEY`
+(a chave `avz_live_…`). **Sem as duas, nada é enviado** e nada é gravado: o Vendedor IA segue como está.
+
+- **Outbox:** cada evento é gravado em `CrmEventoOutbox` antes de enviar. Falha de rede, timeout, `5xx`, `401`, `429`:
+  reenvia com espera crescente (1 min, 5 min, 30 min, 2 h, 6 h, 12 h, 24 h), até 8 tentativas. `400` (formato recusado) não é refeito.
+  O `GET /api/health` (chamado de hora em hora) reenvia os pendentes e mostra `crm` no JSON.
+- **Quando emite:** `moverLeadPorTipo` segue a **intenção** pedida (qualificado, escalado, perdido, ganho), mesmo que a coluna não mude
+  (no mapa canônico `ESCALATED` e `QUALIFICADO` caem na mesma coluna). Chave por hora, então repetir na mesma hora colapsa; o CRM também deduplica por conteúdo.
+  O SDR envia `reuniao.agendada` à parte, com o horário. O arrasto manual no kanban do Vendedor IA também emite (ganho, perda, escalada).
+- **Intenção:** detector por regras (`intencoes.ts`), sem chamar o modelo, na mensagem do lead. Padrões conservadores, no máximo 2 sinais
+  por mensagem e 1 por lead, sinal e dia. Cobre 9 dos 13 sinais; os outros 4 (`DECISOR_ENGAJADO`, `ESCOPO_MUDOU`, `NAO_COMPARECEU`, `SEM_RETORNO`)
+  dependem de contexto e ficam para o registro manual no CRM.
+- **Falha nunca derruba o atendimento:** `emitirEventoCrm` não lança.

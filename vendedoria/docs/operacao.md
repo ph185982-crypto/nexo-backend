@@ -56,3 +56,9 @@ gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 - **Motivos de ganho e perda** (`MotivoEncerramento`): catálogo por organização, criado na primeira consulta (`src/lib/crm/motivos.ts`). Mover um card para Ganho/Perdido no kanban pergunta o motivo (dá para pular). A IA preenche sozinha: "Sem interesse", "Fora do perfil (ICP)" e "Pediu para não receber mensagens". Motivo de tipo errado, de outra organização ou desativado é ignorado; reabrir o negócio limpa o motivo.
 - **Cartão do kanban:** mostra "⏱ Nd na etapa" (âmbar a partir de 7 dias, vermelho a partir de 14) e "Nd sem atividade"; nas etapas finais mostra o motivo.
 - **Deploy:** a migração `20261103131923_funil_historico_etapa` só adiciona tabelas e colunas e preenche os leads existentes; nada é alterado ou apagado.
+
+## Eventos para o CRM Avanteza (03/11/2026)
+
+- O Vendedor IA avisa o CRM (`crm/`, ferramenta separada) quando um lead é qualificado, escalado, perdido ou ganho, quando marca ligação e quando a mensagem do lead traz um sinal de intenção (preço, urgência, "quero contratar"…). Contrato e detalhes: `crm/docs/integracao.md`.
+- **Liga com duas variáveis na Vercel:** `CRM_URL` e `CRM_API_KEY` (chave criada no CRM com `npm run chave:criar -- "Vendedor IA"`). Sem elas, nada muda.
+- Tabela `CrmEventoOutbox`: eventos pendentes/enviados/falhos. Se o CRM cair, o `/api/health` reenvia (campo `crm` no JSON). `FALHOU` = recusado pelo CRM (`400`) ou 8 tentativas esgotadas: veja `ultimoErro`.
