@@ -36,11 +36,17 @@ const PADRAO: Record<TipoEncerramento, string[]> = {
 };
 
 /** Cria os motivos padrão que ainda não existem. Idempotente. */
+const garantidoAte = new Map<string, number>();
+const VALIDADE_MS = 10 * 60_000;
+
 export async function garantirMotivosPadrao(organizationId: string): Promise<void> {
+  if ((garantidoAte.get(organizationId) ?? 0) > Date.now()) return; // evita um INSERT ... ON CONFLICT a cada leitura/movimento
   const data = (Object.keys(PADRAO) as TipoEncerramento[]).flatMap((tipo) =>
     PADRAO[tipo].map((nome, ordem) => ({ organizationId, tipo, nome, ordem })),
   );
   await prisma.motivoEncerramento.createMany({ data, skipDuplicates: true });
+  if (garantidoAte.size > 200) garantidoAte.clear();
+  garantidoAte.set(organizationId, Date.now() + VALIDADE_MS);
 }
 
 export async function listarMotivos(organizationId: string, tipo?: string | null) {

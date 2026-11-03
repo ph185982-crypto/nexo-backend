@@ -27,7 +27,7 @@ export async function GET() {
   const recuperacao = dbStatus === "connected" ? acionarRecuperacaoSePreciso("health") : "sem-banco";
 
   // Eventos para o CRM Avanteza que ficaram pendentes (CRM fora do ar, timeout…).
-  const crm = dbStatus !== "connected" ? "sem-banco" : !crmConfigurado() ? "desligado" : await despacharOutboxCrm({ limite: 20 }).catch(() => "erro" as const);
+  const crm = dbStatus !== "connected" ? "sem-banco" : !crmConfigurado() ? "desligado" : await despacharOutboxCrm({ limite: 5, orcamentoMs: 15_000 }).catch(() => "erro" as const);
 
   return NextResponse.json(
     {

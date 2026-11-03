@@ -2,6 +2,7 @@
 // Cada ação vira uma linha em AutomacaoExecucao com chave única (o mesmo fato nunca roda duas vezes)
 // e horário (espera). Automação NÃO dispara a partir de ação de automação: sem laço.
 import { prisma } from "@/lib/prisma";
+import { depoisDaResposta } from "@/lib/segundo-plano";
 import { executarAcao } from "./acoes";
 import { avaliarCriterios, contextoDaOportunidade } from "./criterios";
 import { GATILHOS_DE_TEMPO, type Acao, type Criterio, type Gatilho } from "./modelo";
@@ -33,7 +34,12 @@ export async function dispararEvento(gatilho: Gatilho, oportunidadeId: string, a
   const marcador = String(op.etapaDesdeEm.getTime());
   let agendadas = 0;
   for (const a of automacoes) if (avaliarCriterios(a.criterios as unknown as Criterio[], ctx)) agendadas += await agendar(a, op.id, marcador, agora);
-  if (agendadas > 0) await processarVencidas(agora);
+  if (agendadas > 0) {
+    // Na requisição do usuário só roda o que é rápido e desta oportunidade (acesso ao banco). O webhook (até 8 s)
+    // vai para depois da resposta; fora de requisição (teste/script) fica para a próxima rodada, que o chamador decide.
+    await processarVencidas(agora, 50, { oportunidadeId: op.id, sem: ["DISPARAR_WEBHOOK"] });
+    depoisDaResposta(() => processarVencidas(new Date(), 20, { oportunidadeId: op.id }));
+  }
   return { agendadas };
 }
 
@@ -59,11 +65,16 @@ export async function varrerTempo(agora: Date = new Date()): Promise<{ avaliadas
 }
 
 /** Executa as ações que já venceram. Cada linha é reivindicada antes (execuções simultâneas não duplicam). */
-export async function processarVencidas(agora: Date = new Date(), limite = 50): Promise<{ executadas: number; ignoradas: number; erros: number }> {
+export interface FiltroExecucao { /** só linhas desta oportunidade */ oportunidadeId?: string; /** tipos de ação a deixar para depois */ sem?: string[] }
+
+export async function processarVencidas(agora: Date = new Date(), limite = 50, filtro: FiltroExecucao = {}): Promise<{ executadas: number; ignoradas: number; erros: number }> {
   // Linha reivindicada há mais de 10 min e nunca concluída = processo caiu no meio: volta para a fila.
   await prisma.automacaoExecucao.updateMany({ where: { status: "EXECUTANDO", executarEm: { lt: new Date(agora.getTime() - 10 * 60_000) } }, data: { status: "PENDENTE" } });
   const res = { executadas: 0, ignoradas: 0, erros: 0 };
-  const devidas = await prisma.automacaoExecucao.findMany({ where: { status: "PENDENTE", executarEm: { lte: agora } }, orderBy: { executarEm: "asc" }, take: limite });
+  const devidas = await prisma.automacaoExecucao.findMany({
+    where: { status: "PENDENTE", executarEm: { lte: agora }, ...(filtro.oportunidadeId ? { oportunidadeId: filtro.oportunidadeId } : {}), ...(filtro.sem?.length ? { acaoTipo: { notIn: filtro.sem } } : {}) },
+    orderBy: { executarEm: "asc" }, take: limite,
+  });
   for (const e of devidas) {
     const claim = await prisma.automacaoExecucao.updateMany({ where: { id: e.id, status: "PENDENTE" }, data: { status: "EXECUTANDO", executarEm: agora } });
     if (claim.count === 0) continue;

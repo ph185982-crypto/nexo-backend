@@ -60,3 +60,15 @@ test("sessão de usuário desativado ou removido para de valer na API (não só 
     assert.equal(await usuarioDaRequisicao(req()), null, "removido: não vale");
   } finally { await prisma.usuario.deleteMany({ where: { id: u.id } }); }
 });
+
+test("login: tentativas com mais de 24 h são apagadas (a tabela não cresce para sempre)", async () => {
+  const email = `purga${Date.now()}@teste.local`;
+  const velha = await prisma.tentativaLogin.create({ data: { chave: `email:${email}`, criadaEm: new Date(Date.now() - 30 * 3_600_000) } });
+  const recente = await prisma.tentativaLogin.create({ data: { chave: `email:${email}`, criadaEm: new Date(Date.now() - 3_600_000) } });
+  const ip = `10.7.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`;
+  try {
+    assert.equal((await login(post({ email, senha: "errada" }, ip))).status, 401);
+    assert.equal(await prisma.tentativaLogin.findUnique({ where: { id: velha.id } }), null, "a de 30 h foi apagada");
+    assert.ok(await prisma.tentativaLogin.findUnique({ where: { id: recente.id } }), "a de 1 h continua valendo para o limite");
+  } finally { await prisma.tentativaLogin.deleteMany({ where: { OR: [{ chave: `email:${email}` }, { chave: `ip:${ip}` }] } }); }
+});

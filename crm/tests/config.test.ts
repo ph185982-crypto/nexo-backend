@@ -260,3 +260,29 @@ test("modelo de entrega: padrão exclusivo e desativar", async () => {
     await a.limpar();
   }
 });
+
+test("não exclui etapa nem funil usados por automação (critério ou ação), e libera depois", async () => {
+  const marca = `r${Date.now()}`;
+  const a = await atores(marca);
+  const c = await cenario();
+  const ids: string[] = [];
+  try {
+    const mk = async (criterios: unknown[], acoes: unknown[]) => { const x = await prisma.automacao.create({ data: { nome: `Auto ${marca} ${ids.length}`, gatilho: "OPORTUNIDADE_MOVIDA", criterios, acoes } as never }); ids.push(x.id); return x; };
+    const porCriterio = await mk([{ campo: "etapaId", operador: "=", valor: c.proposta.id }], [{ tipo: "REGISTRAR_ALERTA", mensagem: "x", esperaHoras: 0 }]);
+    const porAcao = await mk([], [{ tipo: "MOVER_ETAPA", etapaId: c.qualif.id, esperaHoras: 0 }]);
+    const r1 = await delEtapa(a.req(a.comoAdmin, "/x", "DELETE"), p(c.proposta.id));
+    assert.equal(r1.status, 400);
+    assert.match((await r1.json()).erro, new RegExp(`"${porCriterio.nome}"`));
+    assert.equal((await delEtapa(a.req(a.comoAdmin, "/x", "DELETE"), p(c.qualif.id))).status, 400, "etapa de destino de MOVER_ETAPA");
+    assert.equal((await delEtapa(a.req(a.comoAdmin, "/x", "DELETE"), p(c.leads.id))).status, 200, "etapa sem referência exclui");
+    // funil: critério por funilId também segura
+    const porFunil = await mk([{ campo: "funilId", operador: "=", valor: c.funil.id }], [{ tipo: "REGISTRAR_ALERTA", mensagem: "x", esperaHoras: 0 }]);
+    const padraoAntes = await prisma.funil.findFirst({ where: { padrao: true } });
+    const rf = await delFunil(a.req(a.comoAdmin, "/x", "DELETE"), p(c.funil.id));
+    assert.equal(rf.status, 400);
+    assert.match((await rf.json()).erro, /Usada por as automações/);
+    await prisma.automacao.deleteMany({ where: { id: { in: [porCriterio.id, porAcao.id, porFunil.id] } } });
+    assert.equal((await delEtapa(a.req(a.comoAdmin, "/x", "DELETE"), p(c.proposta.id))).status, 200, "sem a automação, libera");
+    assert.equal(padraoAntes?.id !== c.funil.id, true);
+  } finally { await prisma.automacao.deleteMany({ where: { id: { in: ids } } }); await c.limpar(); await a.limpar(); }
+});

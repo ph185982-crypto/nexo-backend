@@ -17,11 +17,16 @@ const PADRAO: Record<TipoMotivo, string[]> = {
   GANHO: ["Dor confirmada e urgente", "Prova de valor aceita", "Preço e condições", "Indicação ou confiança", "Atendimento rápido"],
 };
 
+let garantidoAte = 0;
+const VALIDADE_MS = 10 * 60_000;
+
 export async function garantirMotivosPadrao(): Promise<void> {
+  if (Date.now() < garantidoAte) return; // evita um INSERT ... ON CONFLICT a cada leitura
   const data = (Object.keys(PADRAO) as TipoMotivo[]).flatMap((tipo) =>
     PADRAO[tipo].map((nome, ordem) => ({ tipo, nome, ordem })),
   );
   await prisma.motivoEncerramento.createMany({ data, skipDuplicates: true });
+  garantidoAte = Date.now() + VALIDADE_MS;
 }
 
 export async function listarMotivos(tipo?: string | null) {

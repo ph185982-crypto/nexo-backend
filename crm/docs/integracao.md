@@ -72,7 +72,9 @@ operações lá e chamá-las daqui com uma chave guardada em variável de ambien
 
 - **Outbox:** cada evento é gravado em `CrmEventoOutbox` antes de enviar. Falha de rede, timeout, `5xx`, `401`, `429`:
   reenvia com espera crescente (1 min, 5 min, 30 min, 2 h, 6 h, 12 h, 24 h), até 8 tentativas. `400` (formato recusado) não é refeito.
-  O `GET /api/health` (chamado de hora em hora) reenvia os pendentes e mostra `crm` no JSON.
+  O `GET /api/health` (chamado de hora em hora) reenvia os pendentes e mostra `crm` no JSON. Ali o envio tem **orçamento de 15 s** (5 eventos,
+  timeout de 8 s cada, para de começar envios ao estourar): CRM travado não derruba o health check; o resto fica para a próxima rodada.
+- **Reprocessamento:** no CRM, evento já gravado como `ERRO` é reprocessado quando o Vendedor IA reenviar o mesmo `eventoId`; só `PROCESSADO`/`IGNORADO` viram `DUPLICADO`.
 - **Quando emite:** `moverLeadPorTipo` segue a **intenção** pedida (qualificado, escalado, perdido, ganho), mesmo que a coluna não mude
   (no mapa canônico `ESCALATED` e `QUALIFICADO` caem na mesma coluna). Chave por hora, então repetir na mesma hora colapsa; o CRM também deduplica por conteúdo.
   O SDR envia `reuniao.agendada` à parte, com o horário. O arrasto manual no kanban do Vendedor IA também emite (ganho, perda, escalada).

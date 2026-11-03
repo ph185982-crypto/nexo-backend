@@ -26,6 +26,7 @@ export async function POST(req: Request) {
   const ok = await bcrypt.compare(senha, usuario?.senhaHash ?? HASH_FALSO);
   if (!usuario || !usuario.ativo || !ok) {
     await prisma.tentativaLogin.createMany({ data: [{ chave: `email:${email}` }, { chave: `ip:${ip}` }] });
+    await prisma.tentativaLogin.deleteMany({ where: { criadaEm: { lt: new Date(Date.now() - 24 * 3_600_000) } } }); // não deixa a tabela crescer
     return Response.json({ erro: "E-mail ou senha incorretos" }, { status: 401 });
   }
   await prisma.tentativaLogin.deleteMany({ where: { chave: `email:${email}` } });

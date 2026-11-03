@@ -135,3 +135,29 @@ test("eventos escalado, reunião, intenção, perdido e ganho: efeito no CRM e i
     await c.limpar();
   }
 });
+
+test("evento que deu ERRO é reprocessado no reenvio (não vira DUPLICADO)", async () => {
+  const { processarEventoVendedorIa } = await import("@/lib/integracao/vendedor-ia");
+  const c = await cenario(true);
+  const funisAtivos = await prisma.funil.findMany({ where: { padrao: true }, select: { id: true } });
+  const evento = { eventoId: `erro:${c.marca}`, tipo: "lead.qualificado", lead: { id: `lead-${c.marca}`, telefone: "62984465388", nome: `Dono ${c.marca}`, empresa: `Oficina ${c.marca}`, origem: c.marca } } as never;
+  try {
+    await prisma.funil.updateMany({ where: { padrao: true }, data: { padrao: false } }); // sem funil padrão: o handler lança
+    await assert.rejects(processarEventoVendedorIa(evento), /Nenhum funil padrão/);
+    assert.equal((await prisma.eventoIntegracao.findUnique({ where: { eventoId: `erro:${c.marca}` } }))!.status, "ERRO");
+    await assert.rejects(processarEventoVendedorIa(evento), /Nenhum funil padrão/, "reenvio com o problema ainda presente falha de novo, sem virar DUPLICADO");
+
+    await prisma.funil.update({ where: { id: c.funil.id }, data: { padrao: true } }); // problema resolvido
+    const r = await processarEventoVendedorIa(evento);
+    assert.equal(r.status, "PROCESSADO", "o mesmo eventoId agora é processado");
+    const reg = (await prisma.eventoIntegracao.findUnique({ where: { eventoId: `erro:${c.marca}` } }))!;
+    assert.deepEqual([reg.status, reg.detalhe], ["PROCESSADO", null], "o registro único foi atualizado");
+    assert.equal(await prisma.eventoIntegracao.count({ where: { eventoId: `erro:${c.marca}` } }), 1);
+    assert.equal((await processarEventoVendedorIa(evento)).status, "DUPLICADO", "depois de processado, aí sim é duplicado");
+  } finally {
+    await prisma.funil.updateMany({ where: { padrao: true }, data: { padrao: false } });
+    for (const f of funisAtivos) await prisma.funil.updateMany({ where: { id: f.id }, data: { padrao: true } });
+    await prisma.eventoIntegracao.deleteMany({ where: { eventoId: { contains: c.marca } } });
+    await c.limpar();
+  }
+});

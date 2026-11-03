@@ -598,6 +598,11 @@ async function runSdrResponse(
   token: string | undefined,
   phoneNumberId: string,
 ): Promise<void> {
+  // ── Sinais de intenção da mensagem → CRM Avanteza (regras, sem chamar o modelo; em segundo plano) ──
+  // ANTES do debounce: numa rajada ("tá caro" e logo "ok") as execuções das mensagens antigas abortam
+  // no debounce; se o gancho ficasse depois, só a última mensagem seria analisada e o sinal se perderia.
+  void emitirIntencoesDaMensagem(lead.id, userMessage).catch(() => {});
+
   // ── Debounce ──────────────────────────────────────────────────────────────
   // Espera o cliente terminar de digitar antes de responder. Se uma mensagem
   // mais nova chegar nesse meio-tempo, esta execução aborta — a execução da
@@ -655,9 +660,6 @@ async function runSdrResponse(
     }
     return;
   }
-
-  // ── Sinais de intenção da mensagem → CRM Avanteza (regras, sem chamar o modelo; em segundo plano) ──
-  void emitirIntencoesDaMensagem(lead.id, userMessage).catch(() => {});
 
   // ── Carregar sessão SDR ─────────────────────────────────────────────────────
   const session = await loadSdrSession(conversationId);

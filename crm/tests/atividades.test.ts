@@ -144,6 +144,13 @@ test("rotas: sem sessão 401, entrada inválida 400, criar/listar/concluir taref
     assert.equal((await postTarefa(req("/api/tarefas", "POST", { titulo: "x", prazoEm: "ontem-ish" }))).status, 400);
     assert.equal((await postTarefa(req("/api/tarefas", "POST", { titulo: "x", oportunidadeId: "nao-existe" }))).status, 404);
     assert.equal((await getTarefas(req("/api/tarefas?visao=semana"))).status, 400);
+    for (const corpo of [{ titulo: "x", contatoId: "nao-existe" }, { titulo: "x", responsavelId: "nao-existe" }, { titulo: "x", paiId: "nao-existe" }]) {
+      const r = await postTarefa(req("/api/tarefas", "POST", corpo));
+      assert.equal(r.status, 400, `FK inválida: ${JSON.stringify(corpo)}`);
+      assert.match((await r.json()).erro, /Referência inválida/);
+    }
+    const ini2 = new Date(Date.now() + DIA).toISOString();
+    assert.equal((await postCompromisso(req("/api/compromissos", "POST", { assunto: "x", inicio: ini2, fim: new Date(Date.now() + DIA + 3_600_000).toISOString(), contatoId: "nao-existe" }))).status, 400);
 
     const criada = await postTarefa(req("/api/tarefas", "POST", { titulo: "Ligar para o dono", oportunidadeId: op.id, prazoEm: new Date(Date.now() + 3_600_000).toISOString(), prioridade: "ALTA", recorrencia: "DIARIA" }));
     assert.equal(criada.status, 201);

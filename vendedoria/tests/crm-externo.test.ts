@@ -200,3 +200,63 @@ test("ganchos: moverLeadPorTipo emite qualificado/escalado/perdido; reunião nã
     assert.ok(await esperar(async () => (await c.prisma.crmEventoOutbox.count({ where: { leadId: c.lead.id, status: "ENVIADO" } })) === 5), "tudo entregue ao CRM falso");
   } finally { await crm.fechar(); delete process.env.CRM_URL; delete process.env.CRM_API_KEY; await c.limpar(); }
 });
+
+test("outbox: orçamento de tempo e timeout curto — CRM travado não prende quem despacha", { skip: !temBanco }, async () => {
+  const { despacharOutboxCrm } = await import("@/lib/crm-externo/outbox");
+  const c = await cenario();
+  // Servidor que aceita e nunca responde.
+  const sockets = new Set<import("node:net").Socket>();
+  const travado = http.createServer(() => {});
+  travado.on("connection", (s) => { sockets.add(s); s.on("close", () => sockets.delete(s)); });
+  await new Promise<void>((r) => travado.listen(0, "127.0.0.1", r));
+  const url = `http://127.0.0.1:${(travado.address() as AddressInfo).port}`;
+  try {
+    process.env.CRM_URL = url; process.env.CRM_API_KEY = "avz_live_teste";
+    for (const id of ["t1", "t2", "t3"]) {
+      await c.prisma.crmEventoOutbox.create({ data: { eventoId: `${id}:${c.lead.id}`, tipo: "lead.escalado", leadId: c.lead.id, payload: { eventoId: `${id}:${c.lead.id}`, tipo: "lead.escalado", lead: { id: c.lead.id } } } });
+    }
+    const t = Date.now();
+    const r = await despacharOutboxCrm({ timeoutMs: 300, orcamentoMs: 400 });
+    const gasto = Date.now() - t;
+    assert.ok(gasto < 1500, `volta no prazo (levou ${gasto}ms)`);
+    assert.equal(r.adiados, 2, "só 2 de 3 começaram: o orçamento cortou o resto");
+    const pend = await c.prisma.crmEventoOutbox.findMany({ where: { leadId: c.lead.id }, orderBy: { eventoId: "asc" } });
+    assert.deepEqual(pend.map((p) => [p.status, p.tentativas]), [["PENDENTE", 1], ["PENDENTE", 1], ["PENDENTE", 0]], "o que não começou fica intocado para a próxima rodada");
+  } finally {
+    for (const s of sockets) s.destroy();
+    await new Promise<void>((r) => travado.close(() => r()));
+    delete process.env.CRM_URL; delete process.env.CRM_API_KEY; await c.limpar();
+  }
+});
+
+test("SDR: o gancho de intenção roda antes do debounce (rajada não perde sinal)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const fonte = readFileSync("src/lib/ai/sdr/agent.ts", "utf8");
+  const corpo = fonte.slice(fonte.indexOf("async function runSdrResponse("));
+  const gancho = corpo.indexOf("emitirIntencoesDaMensagem(");
+  const espera = corpo.indexOf("setTimeout(r, DEBOUNCE_MS)");
+  assert.ok(gancho > 0 && espera > 0, "os dois pontos existem");
+  assert.ok(gancho < espera, "gancho vem antes do debounce");
+});
+
+test("motivos: catálogo padrão é garantido uma vez por organização (cache) e recriado se for outra", { skip: !temBanco }, async () => {
+  const { garantirMotivosPadrao, listarMotivos } = await import("@/lib/crm/motivos");
+  const c = await cenario();
+  try {
+    await garantirMotivosPadrao(c.org.id);
+    const n = await c.prisma.motivoEncerramento.count({ where: { organizationId: c.org.id } });
+    assert.ok(n >= 15, "catálogo criado");
+    // Apaga por fora: dentro da validade do cache, não é recriado (prova que o cache evita o INSERT).
+    await c.prisma.motivoEncerramento.deleteMany({ where: { organizationId: c.org.id } });
+    await garantirMotivosPadrao(c.org.id);
+    assert.equal(await c.prisma.motivoEncerramento.count({ where: { organizationId: c.org.id } }), 0, "segunda chamada não toca o banco");
+    // Outra organização não é afetada pelo cache da primeira.
+    const outra = await c.prisma.whatsappBusinessOrganization.create({ data: { name: `o${Date.now()}`, documentId: "2", documentType: "CNPJ" } });
+    try {
+      assert.ok((await listarMotivos(outra.id)).length >= 15, "organização nova recebe o catálogo");
+    } finally {
+      await c.prisma.motivoEncerramento.deleteMany({ where: { organizationId: outra.id } });
+      await c.prisma.whatsappBusinessOrganization.delete({ where: { id: outra.id } });
+    }
+  } finally { await c.limpar(); }
+});

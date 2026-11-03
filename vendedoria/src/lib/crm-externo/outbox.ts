@@ -8,14 +8,14 @@ const TIMEOUT_MS = 8_000;
 
 export const esperaAposTentativa = (tentativas: number) => ESPERA_MIN[Math.min(tentativas - 1, ESPERA_MIN.length - 1)] * 60_000;
 
-async function enviar(payload: unknown): Promise<{ ok: true } | { ok: false; definitivo: boolean; erro: string }> {
+async function enviar(payload: unknown, timeoutMs: number): Promise<{ ok: true } | { ok: false; definitivo: boolean; erro: string }> {
   const base = process.env.CRM_URL?.trim().replace(/\/+$/, "");
   const chave = process.env.CRM_API_KEY?.trim();
   if (!base || !chave) return { ok: false, definitivo: false, erro: "CRM_URL/CRM_API_KEY não configurados" };
   try {
     const r = await fetch(`${base}/api/integracoes/vendedor-ia/eventos`, {
       method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${chave}` },
-      body: JSON.stringify(payload), signal: AbortSignal.timeout(TIMEOUT_MS),
+      body: JSON.stringify(payload), signal: AbortSignal.timeout(timeoutMs),
     });
     if (r.ok) return { ok: true };
     const corpo = (await r.text().catch(() => "")).slice(0, 200);
@@ -27,17 +27,21 @@ async function enviar(payload: unknown): Promise<{ ok: true } | { ok: false; def
 }
 
 /** Envia os eventos vencidos. Seguro para chamar em paralelo (cada linha é reivindicada antes de enviar). */
-export async function despacharOutboxCrm(o: { limite?: number; agora?: Date } = {}): Promise<{ enviados: number; falhas: number; adiados: number }> {
+export async function despacharOutboxCrm(
+  o: { limite?: number; agora?: Date; /** para de começar envios depois deste tempo (quem chama tem prazo, ex.: health) */ orcamentoMs?: number; timeoutMs?: number } = {},
+): Promise<{ enviados: number; falhas: number; adiados: number }> {
   const agora = o.agora ?? new Date();
+  const inicio = Date.now();
   const res = { enviados: 0, falhas: 0, adiados: 0 };
   const devidos = await prisma.crmEventoOutbox.findMany({
     where: { status: "PENDENTE", proximaTentativaEm: { lte: agora } }, orderBy: { criadoEm: "asc" }, take: o.limite ?? 20,
   });
   for (const ev of devidos) {
+    if (o.orcamentoMs !== undefined && Date.now() - inicio >= o.orcamentoMs) break; // o resto fica para a próxima rodada
     // Reivindica: só quem muda proximaTentativaEm a partir do valor lido envia.
     const claim = await prisma.crmEventoOutbox.updateMany({ where: { id: ev.id, status: "PENDENTE", proximaTentativaEm: ev.proximaTentativaEm }, data: { proximaTentativaEm: new Date(agora.getTime() + TRAVA_MS) } });
     if (claim.count === 0) continue;
-    const r = await enviar(ev.payload);
+    const r = await enviar(ev.payload, o.timeoutMs ?? TIMEOUT_MS);
     if (r.ok) {
       await prisma.crmEventoOutbox.update({ where: { id: ev.id }, data: { status: "ENVIADO", enviadoEm: new Date(), tentativas: { increment: 1 }, ultimoErro: null } });
       res.enviados++;

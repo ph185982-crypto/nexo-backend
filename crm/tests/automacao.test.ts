@@ -257,6 +257,11 @@ test("ações com erro viram ERRO sem derrubar as demais; webhook interno é blo
     ] } as never });
     ids.push(a.id);
     const op = await criarOportunidade({ nome: "Erros", contatoId: c.contato.id, funilId: c.funil.id, valorUnico: 1500, tags: ["t"] });
+    // Na requisição só rodam as ações rápidas; o webhook fica para depois da resposta (fora de requisição, para a rodada seguinte).
+    const na_hora = await prisma.automacaoExecucao.findMany({ where: { automacaoId: a.id }, orderBy: { indice: "asc" } });
+    assert.deepEqual(na_hora.map((e) => e.status), ["PENDENTE", "PENDENTE", "ERRO", "EXECUTADA"], "webhooks aguardam; as ações de banco já rodaram");
+    assert.equal(t.chamadas.length, 0, "nenhum webhook saiu dentro da requisição");
+    await processarVencidas();
     const ex = await prisma.automacaoExecucao.findMany({ where: { automacaoId: a.id }, orderBy: { indice: "asc" } });
     assert.deepEqual(ex.map((e) => e.status), ["ERRO", "EXECUTADA", "ERRO", "EXECUTADA"]);
     assert.match(ex[0].detalhe!, /Endereço interno não permitido/);
@@ -276,6 +281,7 @@ test("ações com erro viram ERRO sem derrubar as demais; webhook interno é blo
       const b = await prisma.automacao.create({ data: { nome: `t:${c.funil.id}`, gatilho: "OPORTUNIDADE_CRIADA", criterios: [{ campo: "funilId", operador: "=", valor: c.funil.id }], acoes: [{ tipo: "DISPARAR_WEBHOOK", url: "https://203.0.113.10/hook", esperaHoras: 0 }] } as never });
       ids.push(b.id);
       await criarOportunidade({ nome: `Erro ${status}`, contatoId: c.contato.id, funilId: c.funil.id });
+      await processarVencidas();
       assert.match((await prisma.automacaoExecucao.findFirst({ where: { automacaoId: b.id } }))!.detalhe!, re);
       t2.restaurar();
       await prisma.automacao.delete({ where: { id: b.id } });
@@ -337,4 +343,39 @@ test("rotas: sessão, validação, etapa inexistente, ativar/desativar revalida,
     assert.equal((await delAuto(req("/x", "DELETE"), p(id))).status, 200);
     assert.equal(await prisma.automacaoExecucao.count({ where: { automacaoId: id } }), 0, "execuções caem junto");
   } finally { delete process.env.CRON_SECRET; await prisma.automacao.deleteMany({ where: { id: { in: ids } } }); await prisma.usuario.delete({ where: { id: u.id } }).catch(() => {}); await c.limpar(); }
+});
+
+test("motor: evento só processa as linhas da própria oportunidade; tarefa sem responsável vai para o administrador", async () => {
+  const { primeiroAdminAtivo } = await import("@/lib/auth/admin");
+  const c = await cenario();
+  const ids: string[] = [];
+  let criouAdmin: string | null = null;
+  try {
+    if (!(await primeiroAdminAtivo())) criouAdmin = (await prisma.usuario.create({ data: { nome: "Adm teste", email: `adm${c.marca}@t.local`, papel: "ADMIN", senhaHash: "x" } })).id;
+    const admin = (await primeiroAdminAtivo())!;
+    // uma linha vencida de OUTRA oportunidade não pode ser executada por causa deste evento
+    const velha = await criarOportunidade({ nome: "Outra", contatoId: c.contato.id, funilId: c.funil.id });
+    const a0 = await prisma.automacao.create({ data: { nome: `t:${c.funil.id}`, gatilho: "OPORTUNIDADE_MOVIDA", criterios: [{ campo: "etapaId", operador: "=", valor: c.proposta.id }], acoes: [{ tipo: "REGISTRAR_ALERTA", mensagem: "alheia", esperaHoras: 0 }] } as never });
+    ids.push(a0.id);
+    const pendenteAlheia = await prisma.automacaoExecucao.create({ data: { automacaoId: a0.id, oportunidadeId: velha.id, gatilho: "OPORTUNIDADE_MOVIDA", indice: 0, acaoTipo: "REGISTRAR_ALERTA", chave: `alheia:${c.marca}`, executarEm: new Date(Date.now() - 3_600_000) } });
+
+    const a1 = await prisma.automacao.create({ data: { nome: `t:${c.funil.id}`, gatilho: "OPORTUNIDADE_CRIADA", criterios: [{ campo: "funilId", operador: "=", valor: c.funil.id }], acoes: [{ tipo: "CRIAR_TAREFA", titulo: "sem dono", prazoHoras: 1, prioridade: "NORMAL", tipoTarefa: "TAREFA", esperaHoras: 0 }] } as never });
+    ids.push(a1.id);
+    const semDono = await criarOportunidade({ nome: "Sem dono", contatoId: c.contato.id, funilId: c.funil.id, responsavelId: null });
+    assert.equal((await prisma.automacaoExecucao.findUnique({ where: { id: pendenteAlheia.id } }))!.status, "PENDENTE", "linha de outra oportunidade intocada");
+    assert.equal((await prisma.tarefa.findFirst({ where: { oportunidadeId: semDono.id } }))!.responsavelId, admin.id, "sem responsável: vai para o administrador");
+
+    const u = await prisma.usuario.create({ data: { nome: "Dona", email: `dona${c.marca}@t.local`, senhaHash: "x" } });
+    try {
+      const comDono = await criarOportunidade({ nome: "Com dono", contatoId: c.contato.id, funilId: c.funil.id, responsavelId: u.id });
+      assert.equal((await prisma.tarefa.findFirst({ where: { oportunidadeId: comDono.id } }))!.responsavelId, u.id, "com responsável: fica com ele");
+    } finally { await prisma.oportunidade.deleteMany({ where: { responsavelId: u.id } }); await prisma.usuario.delete({ where: { id: u.id } }); }
+  } finally { await prisma.automacao.deleteMany({ where: { id: { in: ids } } }); await c.limpar(); if (criouAdmin) await prisma.usuario.delete({ where: { id: criouAdmin } }); }
+});
+
+test("depoisDaResposta: fora de uma requisição devolve false (sem lançar)", async () => {
+  const { depoisDaResposta } = await import("@/lib/segundo-plano");
+  let rodou = false;
+  assert.equal(depoisDaResposta(async () => { rodou = true; }), false);
+  assert.equal(rodou, false);
 });

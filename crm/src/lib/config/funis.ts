@@ -45,11 +45,26 @@ export async function atualizarFunil(id: string, d: { nome?: string; ativo?: boo
   } catch (e) { if (duplicado(e)) throw new ErroEntrada("Já existe um funil com esse nome"); throw e; }
 }
 
+/** Automações cujo critério ou ação aponta para alguma destas etapas ou funis (os ids ficam dentro de JSON). */
+export async function automacoesQueUsam(o: { etapaIds: string[]; funilId?: string }): Promise<string[]> {
+  const todas = await prisma.automacao.findMany({ select: { nome: true, criterios: true, acoes: true } });
+  const etapas = new Set(o.etapaIds);
+  return todas.filter((a) =>
+    (a.criterios as Array<{ campo?: string; valor?: unknown }>).some((c) => (c.campo === "etapaId" && etapas.has(String(c.valor))) || (c.campo === "funilId" && o.funilId !== undefined && c.valor === o.funilId))
+    || (a.acoes as Array<{ tipo?: string; etapaId?: string }>).some((x) => x.tipo === "MOVER_ETAPA" && x.etapaId !== undefined && etapas.has(x.etapaId)),
+  ).map((a) => a.nome);
+}
+
+const avisoAutomacoes = (nomes: string[]) => new ErroEntrada(`Usada por ${nomes.length === 1 ? "a automação" : "as automações"} ${nomes.map((n) => `"${n}"`).join(", ")}. Edite ou exclua ${nomes.length === 1 ? "essa automação" : "essas automações"} antes.`);
+
 export async function excluirFunil(id: string): Promise<boolean> {
   const f = await prisma.funil.findUnique({ where: { id }, select: { padrao: true, _count: { select: { oportunidades: true } } } });
   if (!f) return false;
   if (f.padrao) throw new ErroEntrada("O funil padrão não pode ser excluído");
   if (f._count.oportunidades > 0) throw new ErroEntrada(`Há ${f._count.oportunidades} oportunidade(s) neste funil. Desative-o em vez de excluir.`);
+  const etapaIds = (await prisma.etapa.findMany({ where: { funilId: id }, select: { id: true } })).map((e) => e.id);
+  const usam = await automacoesQueUsam({ etapaIds, funilId: id });
+  if (usam.length) throw avisoAutomacoes(usam);
   await prisma.funil.delete({ where: { id } });
   return true;
 }
@@ -91,6 +106,8 @@ export async function excluirEtapa(id: string): Promise<boolean> {
   if (!e) return false;
   if (e._count.oportunidades > 0) throw new ErroEntrada(`Há ${e._count.oportunidades} oportunidade(s) nesta etapa. Mova-as antes de excluir.`);
   if (e.tipo === "ABERTA" && (await prisma.etapa.count({ where: { funilId: e.funilId, tipo: "ABERTA", id: { not: id } } })) === 0) throw new ErroEntrada("O funil precisa de ao menos uma etapa aberta");
+  const usam = await automacoesQueUsam({ etapaIds: [id] });
+  if (usam.length) throw avisoAutomacoes(usam);
   await prisma.etapa.delete({ where: { id } });
   return true;
 }

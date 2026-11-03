@@ -32,12 +32,13 @@ export const dataObrig = (v: unknown, campo: string): Date => {
   return d;
 };
 
-/** Executa o handler e converte ErroEntrada em 400. */
+/** Executa o handler e converte ErroEntrada em 400, e id que não existe (violação de chave estrangeira) em 400 também. */
 export async function comEntrada(fn: () => Promise<Response>): Promise<Response> {
   try {
     return await fn();
   } catch (e) {
     if (e instanceof ErroEntrada) return Response.json({ erro: e.message }, { status: 400 });
+    if ((e as { code?: string } | null)?.code === "P2003") return Response.json({ erro: "Referência inválida: um dos registros informados não existe" }, { status: 400 });
     throw e;
   }
 }

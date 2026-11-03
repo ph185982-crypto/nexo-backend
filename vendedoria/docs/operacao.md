@@ -61,4 +61,4 @@ gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 
 - O Vendedor IA avisa o CRM (`crm/`, ferramenta separada) quando um lead é qualificado, escalado, perdido ou ganho, quando marca ligação e quando a mensagem do lead traz um sinal de intenção (preço, urgência, "quero contratar"…). Contrato e detalhes: `crm/docs/integracao.md`.
 - **Liga com duas variáveis na Vercel:** `CRM_URL` e `CRM_API_KEY` (chave criada no CRM com `npm run chave:criar -- "Vendedor IA"`). Sem elas, nada muda.
-- Tabela `CrmEventoOutbox`: eventos pendentes/enviados/falhos. Se o CRM cair, o `/api/health` reenvia (campo `crm` no JSON). `FALHOU` = recusado pelo CRM (`400`) ou 8 tentativas esgotadas: veja `ultimoErro`.
+- Tabela `CrmEventoOutbox`: eventos pendentes/enviados/falhos. Se o CRM cair, o `/api/health` reenvia (campo `crm` no JSON), com orçamento de 15 s por chamada para não travar o check. `FALHOU` = recusado pelo CRM (`400`) ou 8 tentativas esgotadas: veja `ultimoErro`.

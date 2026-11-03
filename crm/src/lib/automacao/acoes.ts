@@ -5,6 +5,7 @@ import { registrarFeedback } from "@/lib/atividades/feedback";
 import { codigoOportunidade } from "@/lib/funil/encerramento";
 import type { Acao } from "./modelo";
 import { enviarWebhook, verificarUrlWebhook } from "./url-segura";
+import { primeiroAdminAtivo } from "@/lib/auth/admin";
 
 export interface OportunidadeParaAcao { id: string; numero: number; criadoEm: Date; nome: string; responsavelId: string | null; tags: string[]; valorUnico: { toString(): string }; valorMensal: { toString(): string }; contato: { id: string; nome: string }; etapa: { nome: string; funil: { nome: string } } }
 
@@ -12,7 +13,10 @@ export interface OportunidadeParaAcao { id: string; numero: number; criadoEm: Da
 export async function executarAcao(acao: Acao, op: OportunidadeParaAcao, automacao: { id: string; nome: string }, gatilho: string, agora: Date = new Date()): Promise<string> {
   switch (acao.tipo) {
     case "CRIAR_TAREFA": {
-      const t = await criarTarefa({ titulo: acao.titulo, prioridade: acao.prioridade, tipo: acao.tipoTarefa, prazoEm: new Date(agora.getTime() + acao.prazoHoras * 3_600_000), oportunidadeId: op.id, responsavelId: op.responsavelId, origem: "AUTOMACAO" });
+      // Oportunidade sem responsável (Vendedor IA, importação): a tarefa vai para o administrador. Sem dono ela
+      // sumiria das visões "Minhas" e ninguém a veria.
+      const responsavelId = op.responsavelId ?? (await primeiroAdminAtivo())?.id ?? null;
+      const t = await criarTarefa({ titulo: acao.titulo, prioridade: acao.prioridade, tipo: acao.tipoTarefa, prazoEm: new Date(agora.getTime() + acao.prazoHoras * 3_600_000), oportunidadeId: op.id, responsavelId, origem: "AUTOMACAO" });
       return `Tarefa criada (${t.id})`;
     }
     case "MOVER_ETAPA": {

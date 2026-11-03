@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { cenario } from "./_cenario";
 import { criarOportunidade, moverOportunidade } from "@/lib/funil/mover";
+import { prisma } from "@/lib/prisma";
 import { listarMotivos, motivoIdPorNome, MOTIVO } from "@/lib/funil/motivos";
 import { montarQuadro } from "@/lib/funil/quadro";
 import { codigoOportunidade } from "@/lib/funil/encerramento";
@@ -128,4 +129,30 @@ test("quadro: etapas abertas com totais e finalizadas só do mês", async () => 
     assert.deepEqual(q.finalizadas.etapas.map((e) => [e.nome, e.quantidade]), [["Ganha", 1], ["Perdida", 0]], "a perdida de 2024 fica fora do mês");
     assert.equal(await montarQuadro("nao-existe"), null);
   } finally { await c.limpar(); }
+});
+
+test("quadro: 'Finalizadas do mês' é o mês de Brasília (mesmo critério dos relatórios)", async () => {
+  const c = await cenario();
+  try {
+    const op = await criarOportunidade({ nome: "Novembro", contatoId: c.contato.id, funilId: c.funil.id });
+    await moverOportunidade({ oportunidadeId: op.id, etapaId: c.ganha.id, origem: "MANUAL", quando: new Date("2026-11-15T15:00:00Z") });
+    // 01/12 01:00 UTC = 30/11 22:00 em Brasília: ainda é novembro. Em UTC já seria dezembro e a ganha de novembro sumiria.
+    const q = (await montarQuadro(c.funil.id, new Date("2026-12-01T01:00:00Z")))!;
+    assert.equal(q.finalizadas.mes, "2026-11");
+    assert.equal(q.finalizadas.etapas.find((e) => e.tipo === "GANHA")!.quantidade, 1);
+    const dez = (await montarQuadro(c.funil.id, new Date("2026-12-01T04:00:00Z")))!; // 01:00 em Brasília: dezembro
+    assert.equal(dez.finalizadas.mes, "2026-12");
+    assert.equal(dez.finalizadas.etapas.find((e) => e.tipo === "GANHA")!.quantidade, 0);
+  } finally { await prisma.entrega.deleteMany({ where: { oportunidade: { funilId: c.funil.id } } }); await c.limpar(); }
+});
+
+test("catálogo padrão de motivos é gravado uma vez por processo, não a cada leitura", async () => {
+  await listarMotivos(); // garante o estado "já gravado" neste processo
+  const alvo = await prisma.motivoEncerramento.findUnique({ where: { tipo_nome: { tipo: "PERDA", nome: "Contato inválido ou spam" } } });
+  assert.ok(alvo);
+  await prisma.motivoEncerramento.delete({ where: { id: alvo.id } });
+  try {
+    await listarMotivos(); await listarMotivos("PERDA"); await motivoIdPorNome("PERDA", MOTIVO.FORA_ICP);
+    assert.equal(await prisma.motivoEncerramento.count({ where: { tipo: "PERDA", nome: "Contato inválido ou spam" } }), 0, "as leituras seguintes não regravam o catálogo");
+  } finally { await prisma.motivoEncerramento.create({ data: { tipo: alvo.tipo, nome: alvo.nome, ordem: alvo.ordem } }); }
 });

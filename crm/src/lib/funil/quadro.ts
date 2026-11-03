@@ -1,6 +1,7 @@
 // Dados do kanban: etapas abertas + coluna "Finalizadas no mês" (ganhas e perdidas).
 import { prisma } from "@/lib/prisma";
 import { codigoOportunidade } from "./encerramento";
+import { lerPeriodo } from "@/lib/relatorios/periodo";
 
 export interface CartaoDTO {
   id: string;
@@ -58,7 +59,7 @@ export async function montarQuadro(funilId: string, agora: Date = new Date()): P
   });
   if (!funil) return null;
 
-  const inicioMes = new Date(Date.UTC(agora.getUTCFullYear(), agora.getUTCMonth(), 1));
+  const inicioMes = lerPeriodo(null, null, agora).de; // mês de Brasília, o mesmo dos relatórios e metas
   const ops = await prisma.oportunidade.findMany({
     where: {
       funilId,
@@ -119,7 +120,7 @@ export async function montarQuadro(funilId: string, agora: Date = new Date()): P
     funil: { id: funil.id, nome: funil.nome },
     etapas: funil.etapas.filter((e) => e.tipo === "ABERTA").map(porEtapa),
     finalizadas: {
-      mes: `${agora.getUTCFullYear()}-${String(agora.getUTCMonth() + 1).padStart(2, "0")}`,
+      mes: `${inicioMes.getUTCFullYear()}-${String(inicioMes.getUTCMonth() + 1).padStart(2, "0")}`, // dia 1 às 03:00 UTC: ano e mês de Brasília
       etapas: funil.etapas.filter((e) => e.tipo !== "ABERTA").map(porEtapa),
     },
   };

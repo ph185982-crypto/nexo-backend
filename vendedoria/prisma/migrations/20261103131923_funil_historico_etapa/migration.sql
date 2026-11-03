@@ -63,11 +63,19 @@ ALTER TABLE "LeadStageHistory" ADD CONSTRAINT "LeadStageHistory_leadId_fkey" FOR
 -- A data real de entrada não foi gravada até hoje; usa a última mudança de
 -- etapa registrada em LeadActivity (STATUS_CHANGE) ou, na falta, a criação do
 -- lead. origem = 'BACKFILL' marca essas linhas como aproximadas.
+-- Uma única varredura agrupada de LeadActivity (a tabela não tem índice em leadId: uma subconsulta
+-- correlacionada por lead varreria a tabela inteira para cada lead).
+UPDATE "Lead" SET "etapaDesdeEm" = "createdAt";
+
 UPDATE "Lead" l
-SET "etapaDesdeEm" = COALESCE(
-  (SELECT MAX(a."createdAt") FROM "LeadActivity" a WHERE a."leadId" = l."id" AND a."type" = 'STATUS_CHANGE'),
-  l."createdAt"
-);
+SET "etapaDesdeEm" = u."ultima"
+FROM (
+  SELECT "leadId", MAX("createdAt") AS "ultima"
+  FROM "LeadActivity"
+  WHERE "type" = 'STATUS_CHANGE'
+  GROUP BY "leadId"
+) u
+WHERE u."leadId" = l."id";
 
 INSERT INTO "LeadStageHistory" ("id", "leadId", "toColumnId", "toName", "toType", "enteredAt", "origem")
 SELECT 'bf_' || l."id", l."id", c."id", c."name", c."type", l."etapaDesdeEm", 'BACKFILL'

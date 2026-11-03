@@ -42,7 +42,16 @@ Primeiro acesso: rode `npm run db:seed` uma vez contra o banco de produção com
 
 ## O que existe e o que falta
 
-Existe: login, kanban com funis e etapas (arrastar, motivo de ganho/perda, painel com histórico), contatos (empresa/pessoa),
-recebimento de `lead.qualificado` do Vendedor IA.
-Falta: tarefas e agenda, funil de entrega (diagnóstico, checklist, renovação), automações, relatórios,
-importação, edição de funis/etapas pela tela, versão para celular, e enviar os eventos do lado do Vendedor IA.
+Existe: login (cookie HMAC, bloqueio por tentativas, usuário desativado perde acesso na hora), kanban com funis e etapas editáveis
+(arrastar, motivo de ganho/perda, painel com histórico), contatos (empresa/pessoa, importação/exportação CSV, duplicados e mesclagem),
+tarefas e agenda, funil de entrega pós-venda (checklists por modelo, upsell), automações (gatilho, critérios, ações com espera,
+webhook com defesa SSRF), relatórios (funil cumulativo, ciclo, motivos, metas), configuração (funis, etapas, motivos, usuários,
+chaves de integração), e integração com o Vendedor IA nos dois lados (eventos com outbox e reenvio).
+
+Variáveis extras: `CRON_SECRET` (protege `/api/cron/automacoes`, que o `vercel.json` chama uma vez por dia; o varredor também roda
+a cada abertura de tela e a cada evento, então o cron diário é só rede de segurança). Em produção o `next.config.ts` envia
+cabeçalhos de segurança e CSP; `/api/*` responde com `no-store`.
+
+Limites conhecidos: o detector de intenção do Vendedor IA cobre 9 dos 13 sinais (4 ficam manuais); caches de usuário ativo (10 s) e de
+motivos (10 min) são por processo; `npm audit` aponta `postcss` dentro do `next` (aceito: só afeta quem processa CSS de terceiros no build, e não há versão corrigida compatível com o Next 15.5).
+Falta: versão para celular e a ligação para ler/pausar a conversa do WhatsApp a partir do CRM (ver `docs/integracao.md`).

@@ -7,6 +7,7 @@ import { criarTarefa } from "@/lib/atividades/tarefas";
 import { criarCompromisso } from "@/lib/atividades/compromissos";
 import { registrarFeedback } from "@/lib/atividades/feedback";
 import { INTENCOES, type Intencao } from "@/lib/atividades/intencoes";
+import { primeiroAdminAtivo } from "@/lib/auth/admin";
 
 export interface EventoVendedorIa {
   eventoId: string;
@@ -54,19 +55,23 @@ export function normalizarTelefone(t: string | null | undefined): string | null 
 }
 
 export async function processarEventoVendedorIa(evento: EventoVendedorIa): Promise<ResultadoEvento> {
+  // Só o que já foi processado ou ignorado é duplicado. Evento que deu ERRO volta a ser processado no reenvio
+  // (o outbox do Vendedor IA reenvia o mesmo eventoId depois de um 500).
   const ja = await prisma.eventoIntegracao.findUnique({ where: { eventoId: evento.eventoId } });
-  if (ja) return { status: "DUPLICADO", detalhe: `já recebido como ${ja.status}` };
+  if (ja && ja.status !== "ERRO") return { status: "DUPLICADO", detalhe: `já recebido como ${ja.status}` };
+  const registrar = (status: string, detalhe: string | null) => {
+    const dados = { origem: "vendedor-ia", tipo: evento.tipo, payload: evento as object, status, detalhe };
+    return prisma.eventoIntegracao.upsert({ where: { eventoId: evento.eventoId }, create: { eventoId: evento.eventoId, ...dados }, update: { ...dados, recebidoEm: new Date() } });
+  };
 
   let resultado: ResultadoEvento;
   try {
     resultado = await tratar(evento);
   } catch (e) {
-    await prisma.eventoIntegracao.create({ data: { eventoId: evento.eventoId, origem: "vendedor-ia", tipo: evento.tipo, payload: evento as object, status: "ERRO", detalhe: String(e).slice(0, 500) } });
+    await registrar("ERRO", String(e).slice(0, 500));
     throw e;
   }
-  await prisma.eventoIntegracao.create({
-    data: { eventoId: evento.eventoId, origem: "vendedor-ia", tipo: evento.tipo, payload: evento as object, status: resultado.status, detalhe: resultado.detalhe ?? null },
-  });
+  await registrar(resultado.status, resultado.detalhe ?? null);
   return resultado;
 }
 
@@ -143,15 +148,12 @@ async function garantirAberta(lead: Lead): Promise<{ id: string; criada: boolean
   return { id: r.oportunidadeId, criada: true };
 }
 
-async function primeiroAdmin() {
-  return prisma.usuario.findFirst({ where: { papel: "ADMIN", ativo: true }, orderBy: { criadoEm: "asc" }, select: { id: true } });
-}
 
 async function leadEscalado(lead: Lead): Promise<ResultadoEvento> {
   const op = await garantirAberta(lead);
   const ja = await prisma.tarefa.findFirst({ where: { oportunidadeId: op.id, origem: "INTEGRACAO", status: "ABERTA", titulo: { startsWith: "Assumir a conversa" } }, select: { id: true } });
   if (ja) return { status: "IGNORADO", detalhe: "já existe tarefa de assumir a conversa", oportunidadeId: op.id };
-  const admin = await primeiroAdmin();
+  const admin = await primeiroAdminAtivo();
   await registrarFeedback({ oportunidadeId: op.id, tipo: "SISTEMA", texto: "O Vendedor IA passou a conversa para uma pessoa.", autor: "vendedor-ia", autorNome: "Vendedor IA" });
   await criarTarefa({
     titulo: `Assumir a conversa de ${lead.nome?.trim() || "lead sem nome"}`, tipo: "WHATSAPP", prioridade: "ALTA",
@@ -166,7 +168,7 @@ async function reuniaoAgendada(lead: Lead, reuniaoEm?: string | null): Promise<R
   const inicio = new Date(reuniaoEm);
   const existe = await prisma.compromisso.findFirst({ where: { oportunidadeId: op.id, inicio, origem: "INTEGRACAO" }, select: { id: true } });
   if (existe) return { status: "IGNORADO", detalhe: "compromisso já existe", oportunidadeId: op.id };
-  const admin = await primeiroAdmin();
+  const admin = await primeiroAdminAtivo();
   await criarCompromisso({
     assunto: `Ligação com ${lead.nome?.trim() || lead.empresa?.trim() || "lead"}`, tipo: "LIGACAO", inicio, fim: new Date(inicio.getTime() + 30 * 60_000),
     descricao: lead.dorPrincipal ? `Dor principal: ${lead.dorPrincipal}` : null, responsavelId: admin?.id ?? null, oportunidadeId: op.id, origem: "INTEGRACAO",
