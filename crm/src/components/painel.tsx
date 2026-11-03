@@ -37,7 +37,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
   }, [c.id, c.etapaId]);
 
   return (
-    <aside className="h-full w-[400px] flex-none overflow-y-auto border-l border-linha bg-superficie" aria-label="Resumo da oportunidade">
+    <aside className="fixed inset-0 z-40 overflow-y-auto bg-superficie lg:static lg:z-auto lg:h-full lg:w-[400px] lg:flex-none lg:border-l lg:border-linha" aria-label="Resumo da oportunidade">
       <div className="flex items-start justify-between gap-3 px-5 pt-4">
         <div className="min-w-0">
           <h2 className="text-[15px] font-extrabold leading-tight">{c.nome}</h2>

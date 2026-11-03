@@ -34,7 +34,12 @@ const ITENS = [
   },
 ];
 
-export function Nav({ nome }: { nome: string }) {
+const CONFIG = {
+  href: "/configuracao", rotulo: "Configuração",
+  icone: <><circle cx="12" cy="12" r="3" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1" /></>,
+};
+
+export function Nav({ nome, admin }: { nome: string; admin: boolean }) {
   const caminho = usePathname();
   const router = useRouter();
   const sair = async () => {
@@ -45,7 +50,7 @@ export function Nav({ nome }: { nome: string }) {
   return (
     <>
       <nav className="flex flex-col gap-1" aria-label="Módulos">
-        {ITENS.map((i) => {
+        {[...ITENS, ...(admin ? [CONFIG] : [])].map((i) => {
           const ativo = caminho.startsWith(i.href);
           return (
             <Link
