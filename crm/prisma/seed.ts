@@ -79,6 +79,8 @@ async function main() {
       const coluna = i === 0 ? "CONCLUIDO" : i === 1 ? "AGUARDANDO_CLIENTE" : i === 2 ? "EM_ANDAMENTO" : "BACKLOG";
       await prisma.entregaCartao.update({ where: { id: k.id }, data: { coluna, dataAlvo: k.dataAlvo ? new Date(inicio.getTime() + (k.dataAlvo.getTime() - entrega.inicioEm.getTime())) : null, colunaDesdeEm: new Date(Date.now() - (i === 1 ? 9 : 2) * 86_400_000), concluidoEm: coluna === "CONCLUIDO" ? new Date() : null } });
     }
+    const hoje = new Date();
+    await prisma.meta.upsert({ where: { escopo_ano_mes_tipo: { escopo: "TODOS", ano: hoje.getFullYear(), mes: hoje.getMonth() + 1, tipo: "TOTAL" } }, update: {}, create: { escopo: "TODOS", ano: hoje.getFullYear(), mes: hoje.getMonth() + 1, tipo: "TOTAL", valor: 50_000 } });
     console.log("Oportunidades fictícias criadas (SEED_DEMO).");
   }
 }

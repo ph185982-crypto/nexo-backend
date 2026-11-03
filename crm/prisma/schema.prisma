@@ -396,3 +396,17 @@ model AutomacaoExecucao {
   @@index([status, executarEm])
   @@index([automacaoId, criadoEm])
 }
+
+// ─── Metas: meta × realizado por mês. valor 0 ou ausente = SEM META (nunca 100%). ──
+model Meta {
+  id     String   @id @default(cuid())
+  escopo String   @default("TODOS") // "TODOS" ou o id de um funil
+  ano    Int
+  mes    Int // 1–12
+  tipo   String   @default("TOTAL") // TOTAL (único + mensal) | UNICO | MENSAL
+  valor  Decimal  @db.Decimal(14, 2)
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([escopo, ano, mes, tipo])
+}
