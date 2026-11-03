@@ -46,7 +46,7 @@ test("só administrador ativo acessa a configuração", async () => {
       const f = chamar as unknown as (c: string | null) => Promise<Response>;
       assert.equal((await f(null)).status, 401, `${nome} sem sessão`);
       assert.equal((await f(a.comoVend)).status, 403, `${nome} vendedor`);
-      assert.equal((await f(a.comoInativo)).status, 403, `${nome} administrador desativado`);
+      assert.equal((await f(a.comoInativo)).status, 401, `${nome} administrador desativado: a sessão não vale mais`);
       assert.equal((await f(a.comoAdmin)).status, 200, `${nome} administrador`);
     }
     assert.equal((await postFunil(a.req(a.comoVend, "/x", "POST", { nome: "Invasor" }))).status, 403);
@@ -210,7 +210,7 @@ test("usuários: senha mínima, e-mail único, último admin e auto-desativaçã
     await prisma.usuario.update({ where: { id: a.admin.id }, data: { ativo: true } });
     assert.equal((await patchUsuario(a.req(cookie2, "/x", "PATCH", { ativo: false }), p(a.admin.id))).status, 200, "segundo admin desativa o primeiro, sobrando ele");
     assert.equal((await patchUsuario(a.req(cookie2, "/x", "PATCH", { papel: "VENDEDOR" }), p(segundo.id))).status, 400, "e não pode se rebaixar");
-    assert.equal((await patchUsuario(a.req(a.comoAdmin, "/x", "PATCH", { nome: "x" }), p("nao-existe"))).status, 403, "primeiro admin foi desativado: perdeu o acesso");
+    assert.equal((await patchUsuario(a.req(a.comoAdmin, "/x", "PATCH", { nome: "x" }), p("nao-existe"))).status, 401, "primeiro admin foi desativado: a sessão dele não vale mais");
   } finally {
     await prisma.usuario.updateMany({ where: { id: { in: outrosAdmins.map((u) => u.id) } }, data: { ativo: true } });
     await prisma.tentativaLogin.deleteMany({ where: { chave: { startsWith: "email:nova" } } });

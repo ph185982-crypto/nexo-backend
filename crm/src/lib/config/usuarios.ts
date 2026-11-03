@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ErroEntrada } from "@/lib/validar";
+import { invalidarCacheUsuario } from "@/lib/auth/requisicao";
 
 export const PAPEIS = ["ADMIN", "VENDEDOR"] as const;
 export const SENHA_MINIMA = 10;
@@ -27,6 +28,7 @@ export async function atualizarUsuario(id: string, quemFaz: string, d: { nome?: 
     if ((await prisma.usuario.count({ where: { papel: "ADMIN", ativo: true, id: { not: id } } })) === 0) throw new ErroEntrada("O sistema precisa de ao menos um administrador ativo");
   }
   if (d.senha !== undefined && d.senha.length < SENHA_MINIMA) throw new ErroEntrada(`A senha precisa ter ao menos ${SENHA_MINIMA} caracteres`);
+  invalidarCacheUsuario(id); // desativar vale na hora neste processo
   return prisma.usuario.update({
     where: { id }, select: publico,
     data: { ...(d.nome !== undefined && { nome: d.nome }), ...(d.papel !== undefined && { papel: d.papel }), ...(d.ativo !== undefined && { ativo: d.ativo }), ...(d.senha !== undefined && { senhaHash: await bcrypt.hash(d.senha, 10) }) },

@@ -39,3 +39,24 @@ test("login: sucesso devolve cookie de sessão válido; senha errada e limite de
     await prisma.usuario.delete({ where: { id: u.id } });
   }
 });
+
+test("sessão de usuário desativado ou removido para de valer na API (não só na tela)", async () => {
+  const { usuarioDaRequisicao, invalidarCacheUsuario } = await import("@/lib/auth/requisicao");
+  const { assinarSessao } = await import("@/lib/auth/sessao");
+  const u = await prisma.usuario.create({ data: { nome: "Saiu", email: `saiu${Date.now()}@teste.local`, senhaHash: "x" } });
+  const cookie = `${COOKIE_SESSAO}=${await assinarSessao(u.id, process.env.SESSION_SECRET!)}`;
+  const req = () => new Request("http://x", { headers: { cookie } });
+  try {
+    assert.equal(await usuarioDaRequisicao(req()), u.id);
+    await prisma.usuario.update({ where: { id: u.id }, data: { ativo: false } });
+    assert.equal(await usuarioDaRequisicao(req()), u.id, "dentro da janela do cache ainda vale (10 s)");
+    invalidarCacheUsuario(u.id);
+    assert.equal(await usuarioDaRequisicao(req()), null, "desativado: cookie assinado não vale mais");
+    await prisma.usuario.update({ where: { id: u.id }, data: { ativo: true } });
+    invalidarCacheUsuario(u.id);
+    assert.equal(await usuarioDaRequisicao(req()), u.id, "reativado volta a valer");
+    await prisma.usuario.delete({ where: { id: u.id } });
+    invalidarCacheUsuario(u.id);
+    assert.equal(await usuarioDaRequisicao(req()), null, "removido: não vale");
+  } finally { await prisma.usuario.deleteMany({ where: { id: u.id } }); }
+});

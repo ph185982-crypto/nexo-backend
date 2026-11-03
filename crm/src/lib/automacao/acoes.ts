@@ -4,7 +4,7 @@ import { criarTarefa } from "@/lib/atividades/tarefas";
 import { registrarFeedback } from "@/lib/atividades/feedback";
 import { codigoOportunidade } from "@/lib/funil/encerramento";
 import type { Acao } from "./modelo";
-import { verificarUrlWebhook } from "./url-segura";
+import { enviarWebhook, verificarUrlWebhook } from "./url-segura";
 
 export interface OportunidadeParaAcao { id: string; numero: number; criadoEm: Date; nome: string; responsavelId: string | null; tags: string[]; valorUnico: { toString(): string }; valorMensal: { toString(): string }; contato: { id: string; nome: string }; etapa: { nome: string; funil: { nome: string } } }
 
@@ -33,14 +33,11 @@ export async function executarAcao(acao: Acao, op: OportunidadeParaAcao, automac
     }
     case "DISPARAR_WEBHOOK": {
       await verificarUrlWebhook(acao.url);
-      const r = await fetch(acao.url, {
-        method: "POST", headers: { "content-type": "application/json", "user-agent": "avanteza-crm" }, redirect: "manual", signal: AbortSignal.timeout(8000),
-        body: JSON.stringify({
-          automacao: { id: automacao.id, nome: automacao.nome }, gatilho,
-          oportunidade: { id: op.id, codigo: codigoOportunidade(op.numero, op.criadoEm), nome: op.nome, etapa: op.etapa.nome, funil: op.etapa.funil.nome, valorTotal: Number(op.valorUnico.toString()) + Number(op.valorMensal.toString()), tags: op.tags, contato: op.contato },
-        }),
-      });
-      if (!r.ok) throw new Error(`Webhook respondeu HTTP ${r.status}`);
+      const r = await enviarWebhook(acao.url, JSON.stringify({
+        automacao: { id: automacao.id, nome: automacao.nome }, gatilho,
+        oportunidade: { id: op.id, codigo: codigoOportunidade(op.numero, op.criadoEm), nome: op.nome, etapa: op.etapa.nome, funil: op.etapa.funil.nome, valorTotal: Number(op.valorUnico.toString()) + Number(op.valorMensal.toString()), tags: op.tags, contato: op.contato },
+      }));
+      if (r.status < 200 || r.status >= 300) throw new Error(`Webhook respondeu HTTP ${r.status}`);
       return `Webhook respondeu HTTP ${r.status}`;
     }
   }

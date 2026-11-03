@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { criarOportunidade, moverOportunidade } from "@/lib/funil/mover";
 import { validarAcao, validarAutomacao, normalizarTag } from "@/lib/automacao/modelo";
 import { avaliarCriterios, type ContextoOportunidade } from "@/lib/automacao/criterios";
-import { ipPrivado, verificarUrlWebhook } from "@/lib/automacao/url-segura";
+import https from "node:https";
+import { enviarWebhook, ipPrivado, lookupSeguro, verificarUrlWebhook } from "@/lib/automacao/url-segura";
 import { dispararEvento, processarVencidas, varrerTempo } from "@/lib/automacao/motor";
 import { assinarSessao, COOKIE_SESSAO } from "@/lib/auth/sessao";
 import { GET as getLista, POST as postAuto } from "@/app/api/automacoes/route";
@@ -208,13 +209,46 @@ test("motor: varredura de tempo (parada na etapa, sem interação), uma vez por 
   } finally { await prisma.automacao.deleteMany({ where: { id: { in: ids } } }); await c.limpar(); }
 });
 
+/** Troca https.request por um falso que devolve `status` e guarda o que foi enviado. */
+function transporteFalso(status: number) {
+  const chamadas: Array<{ url: string; opcoes: Record<string, unknown>; corpo: Record<string, unknown> }> = [];
+  const original = https.request;
+  (https as unknown as { request: unknown }).request = (url: string, opcoes: Record<string, unknown>, cb: (res: unknown) => void) => {
+    const ouvintes: Record<string, (...x: unknown[]) => void> = {};
+    return {
+      on(ev: string, fn: (...x: unknown[]) => void) { ouvintes[ev] = fn; return this; },
+      end(corpo: string) {
+        chamadas.push({ url: String(url), opcoes, corpo: JSON.parse(corpo) });
+        const fim: Record<string, () => void> = {};
+        cb({ statusCode: status, resume() {}, on(ev: string, fn: () => void) { fim[ev] = fn; return this; } });
+        setImmediate(() => fim.end?.());
+      },
+      destroy() {},
+    };
+  };
+  return { chamadas, restaurar: () => { (https as unknown as { request: unknown }).request = original; } };
+}
+
+test("lookup seguro barra IP interno na conexão (anti DNS rebinding)", async () => {
+  const resolver = (host: string, todos = false) => new Promise<{ err: Error | null; r: unknown }>((ok) => lookupSeguro(host, { all: todos }, (err, r) => ok({ err, r })));
+  const local = await resolver("localhost");
+  assert.match(local.err?.message ?? "", /Endereço interno não permitido/, "localhost resolve para 127.0.0.1 e é barrado");
+  assert.match((await resolver("localhost", true)).err?.message ?? "", /Endereço interno/, "também com all:true");
+  assert.match((await resolver("127.0.0.1")).err?.message ?? "", /Endereço interno/);
+  assert.match((await resolver("169.254.169.254")).err?.message ?? "", /Endereço interno/, "metadados de nuvem");
+  const publico = await resolver("203.0.113.10");
+  assert.equal(publico.err, null);
+  assert.equal(publico.r, "203.0.113.10");
+  const lista = await resolver("203.0.113.10", true);
+  assert.deepEqual((lista.r as Array<{ address: string }>).map((x) => x.address), ["203.0.113.10"]);
+  await assert.rejects(enviarWebhook("https://localhost:9/x", "{}", 3000), /Endereço interno não permitido/, "conexão real a localhost nem chega a abrir");
+});
+
 test("ações com erro viram ERRO sem derrubar as demais; webhook interno é bloqueado e o público é chamado", async () => {
   const c = await cenario();
   const ids: string[] = [];
-  const realFetch = globalThis.fetch;
-  const chamadas: Array<{ url: string; corpo: Record<string, unknown>; redirect?: string }> = [];
+  const t = transporteFalso(200);
   try {
-    globalThis.fetch = (async (url: string, init?: RequestInit) => { chamadas.push({ url: String(url), corpo: JSON.parse(String(init?.body)), redirect: init?.redirect }); return new Response("ok", { status: 200 }); }) as typeof fetch;
     const a = await prisma.automacao.create({ data: { nome: `t:${c.funil.id}`, gatilho: "OPORTUNIDADE_CRIADA", criterios: [{ campo: "funilId", operador: "=", valor: c.funil.id }], acoes: [
       { tipo: "DISPARAR_WEBHOOK", url: "https://127.0.0.1/interno", esperaHoras: 0 },
       { tipo: "DISPARAR_WEBHOOK", url: "https://203.0.113.10/hook", esperaHoras: 0 },
@@ -227,20 +261,26 @@ test("ações com erro viram ERRO sem derrubar as demais; webhook interno é blo
     assert.deepEqual(ex.map((e) => e.status), ["ERRO", "EXECUTADA", "ERRO", "EXECUTADA"]);
     assert.match(ex[0].detalhe!, /Endereço interno não permitido/);
     assert.match(ex[2].detalhe!, /Etapa não encontrada/);
-    assert.equal(chamadas.length, 1, "o endereço interno nunca foi chamado");
-    assert.equal(chamadas[0].url, "https://203.0.113.10/hook");
-    assert.equal(chamadas[0].redirect, "manual", "não segue redirecionamento");
-    const corpo = chamadas[0].corpo as { gatilho: string; automacao: { nome: string }; oportunidade: { nome: string; funil: string; etapa: string; valorTotal: number; contato: { nome: string } } };
+    assert.equal(t.chamadas.length, 1, "o endereço interno nunca foi chamado");
+    assert.equal(t.chamadas[0].url, "https://203.0.113.10/hook");
+    assert.equal(t.chamadas[0].opcoes.method, "POST");
+    assert.equal(t.chamadas[0].opcoes.lookup, lookupSeguro, "a conexão usa o lookup que valida o IP");
+    const corpo = t.chamadas[0].corpo as { gatilho: string; automacao: { nome: string }; oportunidade: { nome: string; funil: string; etapa: string; valorTotal: number; contato: { nome: string } } };
     assert.deepEqual([corpo.gatilho, corpo.oportunidade.nome, corpo.oportunidade.funil, corpo.oportunidade.etapa, corpo.oportunidade.valorTotal, corpo.oportunidade.contato.nome], ["OPORTUNIDADE_CRIADA", "Erros", c.funil.nome, "Leads", 1500, c.contato.nome]);
     assert.equal(await prisma.feedback.count({ where: { oportunidadeId: op.id, texto: "ainda roda" } }), 1);
 
-    // webhook que responde 500 vira ERRO
-    globalThis.fetch = (async () => new Response("x", { status: 500 })) as typeof fetch;
-    const b = await prisma.automacao.create({ data: { nome: `t:${c.funil.id}`, gatilho: "OPORTUNIDADE_CRIADA", criterios: [{ campo: "funilId", operador: "=", valor: c.funil.id }], acoes: [{ tipo: "DISPARAR_WEBHOOK", url: "https://203.0.113.10/hook", esperaHoras: 0 }] } as never });
-    ids.push(b.id);
-    await criarOportunidade({ nome: "Erro 500", contatoId: c.contato.id, funilId: c.funil.id });
-    assert.match((await prisma.automacaoExecucao.findFirst({ where: { automacaoId: b.id } }))!.detalhe!, /HTTP 500/);
-  } finally { globalThis.fetch = realFetch; await prisma.automacao.deleteMany({ where: { id: { in: ids } } }); await c.limpar(); }
+    // 500 e 302 (redirecionamento não é seguido) viram ERRO
+    for (const [status, re] of [[500, /HTTP 500/], [302, /HTTP 302/]] as const) {
+      t.restaurar();
+      const t2 = transporteFalso(status);
+      const b = await prisma.automacao.create({ data: { nome: `t:${c.funil.id}`, gatilho: "OPORTUNIDADE_CRIADA", criterios: [{ campo: "funilId", operador: "=", valor: c.funil.id }], acoes: [{ tipo: "DISPARAR_WEBHOOK", url: "https://203.0.113.10/hook", esperaHoras: 0 }] } as never });
+      ids.push(b.id);
+      await criarOportunidade({ nome: `Erro ${status}`, contatoId: c.contato.id, funilId: c.funil.id });
+      assert.match((await prisma.automacaoExecucao.findFirst({ where: { automacaoId: b.id } }))!.detalhe!, re);
+      t2.restaurar();
+      await prisma.automacao.delete({ where: { id: b.id } });
+    }
+  } finally { t.restaurar(); await prisma.automacao.deleteMany({ where: { id: { in: ids } } }); await c.limpar(); }
 });
 
 test("rotas: sessão, validação, etapa inexistente, ativar/desativar revalida, execuções, varrer e cron", async () => {
