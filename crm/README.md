@@ -1,0 +1,48 @@
+# CRM Avanteza
+
+Funil de vendas, contatos e (em breve) entrega. Ferramenta própria da Avanteza, **separada do Vendedor IA**
+(`../vendedoria`), com banco próprio e ligação por eventos (ver [docs/integracao.md](docs/integracao.md)).
+
+Identidade visual: azul `#2448FF`, laranja `#FF7043`, branco quente `#F6F5F0`, grafite `#18191D`, cinza `#686A73`;
+Manrope (títulos) e Inter (texto). As cores vivem só em `src/app/globals.css`; componentes usam tokens do Tailwind.
+O laranja é **preenchimento com texto grafite**, nunca texto (contraste 2,5:1 sobre claro). `tests/marca.test.ts` protege isso.
+Logo: `public/brand/` (arquivo enviado pela marca; `avanteza-logo-original.webp` é o original intacto).
+
+## Rodar local
+
+```bash
+cp .env.example .env        # preencha DATABASE_URL, DIRECT_URL, SESSION_SECRET, SEED_ADMIN_EMAIL
+npm install
+npx prisma migrate deploy
+SEED_DEMO=true npm run db:seed    # usuário, funil "Vendas", motivos e 5 oportunidades fictícias
+npm run dev                       # http://localhost:3100
+npm test                          # precisa de DATABASE_URL e SESSION_SECRET
+```
+
+## Regras do projeto
+
+- **Só `src/lib/funil/mover.ts` cria oportunidade ou troca a etapa dela.** Cada troca grava, numa transação, a etapa,
+  o relógio da etapa, o encerramento (ganha/perdida e motivo) e uma linha em `HistoricoEtapa`. É isso que permite medir
+  conversão por etapa, tempo parado e ciclo de vendas. `tests/funil-guarda.test.ts` lê o código e falha se alguém escrever
+  etapa/funil/status direto.
+- **A natureza da etapa é dado da etapa** (`ABERTA`, `GANHA`, `PERDIDA`), não o nome. Dá para criar funis novos sem mexer no código.
+- **Toda rota `/api/*` exige login** (cookie assinado), exceto `/api/login`, `/api/health` e `/api/integracoes/*`
+  (esta valida a chave de serviço). O login bloqueia após 10 falhas por e-mail ou 30 por IP em 15 minutos.
+- **Schema muda por migração**: edite `prisma/schema.prisma`, rode `npm run db:migrate:new -- --name descricao` e commite `prisma/migrations/`.
+
+## Deploy (Vercel)
+
+Projeto próprio com **Root Directory = `crm`**. Variáveis: `DATABASE_URL`, `DIRECT_URL`, `SESSION_SECRET`,
+`NEXT_PUBLIC_VENDEDOR_IA_URL`. O build aplica as migrações (`scripts/db-deploy.mjs`).
+Primeiro acesso: rode `npm run db:seed` uma vez contra o banco de produção com `SEED_ADMIN_EMAIL` (e, de preferência,
+`SEED_ADMIN_SENHA`; se faltar, o seed gera uma senha e mostra uma única vez).
+
+> Armadilha já vista no `vendedoria/`: o `.vercelignore` da **raiz** lista as pastas dos outros projetos. Por isso `crm/.vercelignore`
+> precisa existir (senão o projeto cai no da raiz e faz deploy vazio, com build `READY` e todas as rotas 404), e o da raiz lista `crm/`.
+
+## O que existe e o que falta
+
+Existe: login, kanban com funis e etapas (arrastar, motivo de ganho/perda, painel com histórico), contatos (empresa/pessoa),
+recebimento de `lead.qualificado` do Vendedor IA.
+Falta: tarefas e agenda, funil de entrega (diagnóstico, checklist, renovação), automações, relatórios,
+importação, edição de funis/etapas pela tela, versão para celular, e enviar os eventos do lado do Vendedor IA.

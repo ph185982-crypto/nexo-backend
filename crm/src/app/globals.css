@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Paleta oficial Avanteza */
+  --azul: #2448FF;       /* capas, fundos de impacto, títulos, reconhecimento */
+  --laranja: #FF7043;    /* destaque pontual: só como preenchimento, com texto grafite */
+  --bq: #F6F5F0;         /* branco quente: fundo claro e texto sobre azul */
+  --grafite: #18191D;    /* texto sobre fundo claro ou laranja */
+  --cinza: #686A73;      /* informação secundária sobre fundo claro */
+
+  /* Derivados funcionais (fora da paleta oficial; necessários numa ferramenta de trabalho) */
+  --superficie: #FFFFFF;
+  --linha: #E6E3DA;
+  --azul-08: rgba(36, 72, 255, 0.08);
+  --critico: #C42B1C;    /* só atraso grave (parado há 14 dias ou mais) */
+  --ok: #1F7A4D;         /* só ponto de "ativo"/"ganha" */
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--bq);
+  color: var(--grafite);
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-manrope), Montserrat, system-ui, sans-serif; }
+
+:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+dialog::backdrop { background: rgba(24, 25, 29, 0.45); }
