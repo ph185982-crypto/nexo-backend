@@ -178,7 +178,7 @@ export default function OportunidadesPage() {
         </div>
       </div>
 
-      {selecionado && <Painel c={selecionado} etapaNome={todasEtapas.find((e) => e.id === selecionado.etapaId)?.nome ?? ""} etapas={todasEtapas} onMover={(etapaId) => pedirMover(selecionado, etapaId)} onFechar={() => setAberto(null)} />}
+      {selecionado && <Painel c={selecionado} etapaNome={todasEtapas.find((e) => e.id === selecionado.etapaId)?.nome ?? ""} etapas={todasEtapas} onMover={(etapaId) => pedirMover(selecionado, etapaId)} onFechar={() => setAberto(null)} onAtividade={() => void carregar()} />}
 
       {pendente && (
         <DialogoMotivo

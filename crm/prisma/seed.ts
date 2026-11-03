@@ -5,6 +5,8 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "../src/lib/prisma";
 import { garantirMotivosPadrao } from "../src/lib/funil/motivos";
 import { criarOportunidade, moverOportunidade } from "../src/lib/funil/mover";
+import { criarTarefa } from "../src/lib/atividades/tarefas";
+import { criarCompromisso } from "../src/lib/atividades/compromissos";
 
 const ETAPAS = [
   { nome: "Leads", tipo: "ABERTA", descricao: "Contato novo, ainda sem conversa qualificada. AÇÃO: confirmar se o Vendedor IA já abriu a conversa; se não, abordar em até 1 hora." },
@@ -50,7 +52,9 @@ async function main() {
       ["Clínica Vitta — implantação", "Clínica Vitta", "Qualificação", 38_000, "RISCO_ALTO", 26],
       ["Mercado União — gestão", "Mercado União", "Contrato", 3_000, "QUENTE", 3],
     ];
+    let i = 0;
     for (const [nome, empresa, etapa, valor, prob, dias] of demo) {
+      i++;
       const contato = await prisma.contato.create({ data: { tipo: "EMPRESA", nome: empresa, responsavelId: admin.id, origem: "Demo" } });
       const op = await criarOportunidade({ nome, contatoId: contato.id, funilId: funil.id, etapaId: porNome("Leads").id, responsavelId: admin.id, valorUnico: valor, probabilidade: prob, origem: "Demo", tags: ["demo"], ator: "seed" });
       if (etapa !== "Leads") await moverOportunidade({ oportunidadeId: op.id, etapaId: porNome(etapa).id, origem: "MANUAL", ator: "seed", quando: new Date(Date.now() - dias * 86_400_000) });
@@ -58,6 +62,9 @@ async function main() {
       const criadaEm = new Date(Date.now() - (dias + 3) * 86_400_000);
       await prisma.oportunidade.update({ where: { id: op.id }, data: { criadoEm: criadaEm, etapaDesdeEm: new Date(Date.now() - dias * 86_400_000), ultimaAtividadeEm: new Date(Date.now() - Math.floor(dias * 0.8) * 86_400_000) } });
       await prisma.historicoEtapa.updateMany({ where: { oportunidadeId: op.id, deEtapaId: null }, data: { entrouEm: criadaEm } });
+      // Duas oportunidades com próxima atividade; as outras ficam "sem próxima atividade" (é o aviso que o cartão mostra).
+      if (i === 2) await criarTarefa({ titulo: "Ligar para o dono e confirmar a proposta", tipo: "LIGACAO", prioridade: "ALTA", prazoEm: new Date(Date.now() + 3 * 3_600_000), oportunidadeId: op.id, responsavelId: admin.id, checklist: [{ texto: "Revisar a conversa do Vendedor IA", feito: true }, { texto: "Levar o diagnóstico de margem", feito: false }] });
+      if (i === 5) await criarCompromisso({ assunto: "Reunião de assinatura do contrato", inicio: new Date(Date.now() + 26 * 3_600_000), fim: new Date(Date.now() + 27 * 3_600_000), oportunidadeId: op.id, responsavelId: admin.id, local: "Google Meet" });
     }
     console.log("Oportunidades fictícias criadas (SEED_DEMO).");
   }

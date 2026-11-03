@@ -4,6 +4,7 @@ import { useDraggable } from "@dnd-kit/core";
 import type { CartaoDTO } from "@/lib/funil/quadro";
 import { diasDesde } from "@/lib/funil/encerramento";
 import { data, moeda, nivelParado } from "@/lib/formatar";
+import { prazoTexto } from "@/lib/formatar-atividades";
 
 function Indicador({ dias, titulo, avaliar }: { dias: number; titulo: string; avaliar: boolean }) {
   const nivel = avaliar ? nivelParado(dias) : "ok";
@@ -34,13 +35,19 @@ export function Cartao({ c, selecionado, onAbrir, sobreposto }: { c: CartaoDTO; 
           {c.tags.slice(0, 3).map((t) => <span key={t} className="rounded-full bg-azul-8 px-2 py-0.5 text-[10px] font-semibold text-azul">#{t}</span>)}
         </div>
       )}
-      <p className="text-[13px] font-semibold leading-tight">{c.nome}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[13px] font-semibold leading-tight">{c.nome}</p>
+        {aberta && !c.proximaAtividade && <span title="Nenhuma tarefa aberta nem compromisso futuro" className="flex-none whitespace-nowrap rounded-full bg-laranja px-2 py-1 text-[10px] font-bold leading-none text-grafite">Sem próxima atividade</span>}
+      </div>
       <p className="mb-2 mt-0.5 text-[12px] font-semibold text-azul">{c.contato.nome}</p>
       <p className="text-[11.5px] leading-[1.55] text-cinza">
         {c.codigo}
         <br />
         Criada {data(c.criadoEm)}{c.finalizaEm ? ` · Finaliza ${data(c.finalizaEm)}` : ""}
       </p>
+      {aberta && c.proximaAtividade?.quando && (
+        <p className="mt-1 text-[11.5px] text-cinza">Próxima: <span className={prazoTexto(c.proximaAtividade.quando).atrasada ? "font-bold text-critico" : "font-semibold text-grafite"}>{prazoTexto(c.proximaAtividade.quando).texto}</span></p>
+      )}
       {!aberta && (
         <p className="mt-1 truncate text-[11.5px] text-cinza" title={c.motivoDetalhe ?? undefined}>
           {c.motivo ? `Motivo: ${c.motivo}` : "Sem motivo registrado"}

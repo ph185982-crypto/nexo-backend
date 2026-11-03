@@ -9,6 +9,14 @@ const ITENS = [
     icone: <><circle cx="12" cy="12" r="9" /><path d="M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 1.9 0 2.6 5 1.2 5 3.9 0 1.1-1.1 1.9-2.5 1.9-1.1 0-2-.5-2.6-1.3M12 6.5V8m0 8v1.5" /></>,
   },
   {
+    href: "/tarefas", rotulo: "Tarefas",
+    icone: <><circle cx="12" cy="12" r="9" /><path d="m8 12.5 2.8 2.8L16 9.5" /></>,
+  },
+  {
+    href: "/agenda", rotulo: "Agenda",
+    icone: <><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" /><path d="M8 3v4m8-4v4M3.5 10h17" /></>,
+  },
+  {
     href: "/contatos", rotulo: "Contatos",
     icone: <path d="M4 21V6l8-3 8 3v15M9 21v-4h6v4M8 9h2m4 0h2m-8 4h2m4 0h2" />,
   },

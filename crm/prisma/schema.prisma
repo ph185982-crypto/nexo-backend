@@ -22,6 +22,8 @@ model Usuario {
 
   contatos      Contato[]
   oportunidades Oportunidade[]
+  tarefas       Tarefa[]
+  compromissos  Compromisso[]
 }
 
 // ─── Contato: empresa ou pessoa. O negócio mora em Oportunidade. ─────────────
@@ -48,6 +50,9 @@ model Contato {
 
   oportunidades   Oportunidade[] @relation("OportunidadeContato")
   comoPessoaEm    Oportunidade[] @relation("OportunidadePessoa")
+  feedbacks       Feedback[]
+  tarefas         Tarefa[]
+  compromissos    Compromisso[]
 
   @@index([tipo, nome])
   @@index([telefone])
@@ -121,7 +126,10 @@ model Oportunidade {
   criadoEm      DateTime @default(now())
   atualizadoEm  DateTime @updatedAt
 
-  historico HistoricoEtapa[]
+  historico    HistoricoEtapa[]
+  feedbacks    Feedback[]
+  tarefas      Tarefa[]
+  compromissos Compromisso[]
 
   @@index([funilId, status, etapaId])
   @@index([contatoId])
@@ -197,4 +205,76 @@ model TentativaLogin {
   criadaEm DateTime @default(now())
 
   @@index([chave, criadaEm])
+}
+
+// ─── Atividades: feedback (linha do tempo), tarefas e compromissos ───────────
+model Feedback {
+  id             String        @id @default(cuid())
+  oportunidadeId String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId      String?
+  contato        Contato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  tipo           String // NOTA | LIGACAO | WHATSAPP | EMAIL | REUNIAO | SISTEMA
+  texto          String        @db.Text
+  intencao       String? // um dos 13 sinais (src/lib/atividades/intencoes.ts)
+  importante     Boolean       @default(false)
+  autor          String? // id do usuário, "vendedor-ia", "automacao"…
+  autorNome      String?
+  criadoEm       DateTime      @default(now())
+
+  @@index([oportunidadeId, criadoEm])
+  @@index([contatoId, criadoEm])
+  @@index([intencao, criadoEm])
+}
+
+model Tarefa {
+  id             String        @id @default(cuid())
+  titulo         String
+  descricao      String?       @db.Text
+  tipo           String        @default("TAREFA") // TAREFA | LIGACAO | EMAIL | WHATSAPP | REUNIAO
+  prioridade     String        @default("NORMAL") // BAIXA | NORMAL | ALTA
+  prazoEm        DateTime?
+  status         String        @default("ABERTA") // ABERTA | CONCLUIDA | CANCELADA
+  concluidaEm    DateTime?
+  recorrencia    String? // DIARIA | SEMANAL | MENSAL
+  checklist      Json          @default("[]") // [{ "texto": "…", "feito": false }]
+  origem         String        @default("MANUAL") // MANUAL | AUTOMACAO | INTEGRACAO
+  responsavelId  String?
+  responsavel    Usuario?      @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  contatoId      String?
+  contato        Contato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  paiId          String? // subtarefa
+  pai            Tarefa?       @relation("Subtarefa", fields: [paiId], references: [id], onDelete: Cascade)
+  subtarefas     Tarefa[]      @relation("Subtarefa")
+  criadoEm       DateTime      @default(now())
+  atualizadoEm   DateTime      @updatedAt
+
+  @@index([status, prazoEm])
+  @@index([responsavelId, status])
+  @@index([oportunidadeId, status])
+}
+
+model Compromisso {
+  id             String        @id @default(cuid())
+  assunto        String
+  tipo           String        @default("REUNIAO") // REUNIAO | LIGACAO | VISITA | OUTRO
+  inicio         DateTime
+  fim            DateTime
+  local          String?
+  descricao      String?       @db.Text
+  status         String        @default("AGENDADO") // AGENDADO | REALIZADO | CANCELADO
+  participantes  String[] // e-mails
+  origem         String        @default("MANUAL") // MANUAL | INTEGRACAO
+  responsavelId  String?
+  responsavel    Usuario?      @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  contatoId      String?
+  contato        Contato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  criadoEm       DateTime      @default(now())
+
+  @@index([inicio])
+  @@index([oportunidadeId, status])
 }

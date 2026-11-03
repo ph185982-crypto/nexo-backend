@@ -25,6 +25,8 @@ export interface CartaoDTO {
   motivo: string | null;
   motivoDetalhe: string | null;
   vendedorIaLeadId: string | null;
+  /** Próximo prazo entre tarefas abertas e compromissos futuros; null se nada à vista. */
+  proximaAtividade: { tipo: "TAREFA" | "COMPROMISSO"; quando: string | null } | null;
 }
 
 export interface EtapaDTO {
@@ -64,6 +66,19 @@ export async function montarQuadro(funilId: string, agora: Date = new Date()): P
     orderBy: { etapaDesdeEm: "asc" },
   });
 
+  const ids = ops.filter((o) => o.status === "EM_ANDAMENTO").map((o) => o.id);
+  const [tarefasAbertas, compromissosFuturos] = await Promise.all([
+    prisma.tarefa.findMany({ where: { oportunidadeId: { in: ids }, status: "ABERTA" }, select: { oportunidadeId: true, prazoEm: true }, orderBy: { prazoEm: { sort: "asc", nulls: "last" } } }),
+    prisma.compromisso.findMany({ where: { oportunidadeId: { in: ids }, status: "AGENDADO", inicio: { gte: agora } }, select: { oportunidadeId: true, inicio: true }, orderBy: { inicio: "asc" } }),
+  ]);
+  const proxima = new Map<string, CartaoDTO["proximaAtividade"]>();
+  for (const t of tarefasAbertas) if (t.oportunidadeId && !proxima.has(t.oportunidadeId)) proxima.set(t.oportunidadeId, { tipo: "TAREFA", quando: t.prazoEm?.toISOString() ?? null });
+  for (const c of compromissosFuturos) {
+    if (!c.oportunidadeId) continue;
+    const atual = proxima.get(c.oportunidadeId);
+    if (!atual || !atual.quando || c.inicio.toISOString() < atual.quando) proxima.set(c.oportunidadeId, { tipo: "COMPROMISSO", quando: c.inicio.toISOString() });
+  }
+
   const cartao = (o: (typeof ops)[number]): CartaoDTO => ({
     id: o.id,
     codigo: codigoOportunidade(o.numero, o.criadoEm),
@@ -87,6 +102,7 @@ export async function montarQuadro(funilId: string, agora: Date = new Date()): P
     motivo: o.motivo?.nome ?? null,
     motivoDetalhe: o.motivoDetalhe,
     vendedorIaLeadId: o.vendedorIaLeadId,
+    proximaAtividade: proxima.get(o.id) ?? null,
   });
 
   const porEtapa = (e: (typeof funil.etapas)[number]): EtapaDTO => {
