@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { botaoPrimario, botaoSecundario, campo, Dialogo } from "./dialogo";
 import {
-  CAMPOS, GATILHOS, OPERADORES_DO_CAMPO, ROTULO_ACAO, ROTULO_CAMPO, ROTULO_GATILHO, TIPOS_ACAO, GATILHOS_DE_TEMPO,
+  CAMPOS_NUMERICOS, CAMPOS_SIM_NAO, GATILHOS, OPERADORES_DO_CAMPO, ROTULO_ACAO, ROTULO_CAMPO, ROTULO_GATILHO, TIPOS_ACAO, GATILHOS_DE_TEMPO,
+  camposDoGatilho, criterioExigido, ehGatilhoDeEntrega,
   type Campo, type Gatilho, type TipoAcao,
 } from "@/lib/automacao/modelo";
+import { PILARES, ROTULO_PILAR } from "@/lib/entrega/constantes";
 import { PRIORIDADES, TIPOS_TAREFA } from "@/lib/atividades/constantes";
 import { ROTULO_PRIORIDADE, ROTULO_TIPO_TAREFA } from "@/lib/formatar-atividades";
 
@@ -26,6 +28,11 @@ export function modelos(funis: FunilOpcao[]): Array<{ rotulo: string; form: Auto
     { rotulo: "Sem interação há 7 dias → alerta na linha do tempo", form: { ...base, nome: "Cliente sumiu", gatilho: "OPORTUNIDADE_SEM_INTERACAO", criterios: [{ campo: "diasSemAtividade", operador: ">=", valor: "7" }], acoes: [{ ...acaoVazia("REGISTRAR_ALERTA"), mensagem: "Sete dias sem nenhuma atividade. Retome o contato ou encerre com motivo." }] } },
     { rotulo: "Ganhou → tarefa de primeiro pagamento", form: { ...base, nome: "Confirmar primeiro pagamento", gatilho: "OPORTUNIDADE_GANHA", criterios: [], acoes: [{ ...acaoVazia(), titulo: "Confirmar o primeiro pagamento e liberar o kickoff", prioridade: "ALTA", prazoHoras: "48" }] } },
     { rotulo: "Perdeu → reativar em 90 dias", form: { ...base, nome: "Reativar perdidas", gatilho: "OPORTUNIDADE_PERDIDA", criterios: [], acoes: [{ ...acaoVazia(), titulo: "Reativar: perguntar se o cenário mudou", tipoTarefa: "WHATSAPP", esperaHoras: "2160", prazoHoras: "72" }] } },
+    { rotulo: "Entrega: cliente travou um cartão há 3 dias → cobrar", form: { ...base, nome: "Cobrar o cliente", gatilho: "ENTREGA_AGUARDANDO_CLIENTE", criterios: [{ campo: "diasAguardandoCliente", operador: ">=", valor: "3" }], acoes: [{ ...acaoVazia(), titulo: "Cobrar {cliente}: {cartao} (parado há {dias} dias)", tipoTarefa: "WHATSAPP", prioridade: "ALTA", prazoHoras: "24" }] } },
+    { rotulo: "Entrega: cartão atrasado → alerta e tarefa", form: { ...base, nome: "Cartão atrasado", gatilho: "ENTREGA_CARTAO_ATRASADO", criterios: [], acoes: [{ ...acaoVazia("REGISTRAR_ALERTA"), mensagem: "Cartão atrasado: {cartao} ({dias} dias)." }, { ...acaoVazia(), titulo: "Destravar o cartão atrasado: {cartao}", prioridade: "ALTA", prazoHoras: "24" }] } },
+    { rotulo: "Entrega: cliente em risco → tarefa urgente", form: { ...base, nome: "Cliente em risco", gatilho: "ENTREGA_EM_RISCO", criterios: [], acoes: [{ ...acaoVazia(), titulo: "{cliente} em risco: revisar a entrega e ligar para o dono", tipoTarefa: "LIGACAO", prioridade: "ALTA", prazoHoras: "24" }] } },
+    { rotulo: "Entrega: renovação em 30 dias → ligar para o cliente", form: { ...base, nome: "Renovação em 30 dias", gatilho: "ENTREGA_RENOVACAO_PROXIMA", criterios: [{ campo: "diasParaRenovar", operador: "<=", valor: "30" }], acoes: [{ ...acaoVazia(), titulo: "Ligar para {cliente}: renovação em {dias} dias", tipoTarefa: "LIGACAO", prioridade: "ALTA", prazoHoras: "72" }] } },
+    { rotulo: "Entrega concluída → pedir depoimento em 7 dias", form: { ...base, nome: "Depoimento do cliente", gatilho: "ENTREGA_CONCLUIDA", criterios: [], acoes: [{ ...acaoVazia(), titulo: "Pedir depoimento e indicação para {cliente}", tipoTarefa: "WHATSAPP", esperaHoras: "168", prazoHoras: "72" }] } },
   ];
 }
 
@@ -34,7 +41,7 @@ const num = (v: string) => (v.trim() === "" ? undefined : Number(v));
 export function formParaApi(f: AutomacaoForm) {
   return {
     nome: f.nome, descricao: f.descricao || null, ativo: f.ativo, gatilho: f.gatilho,
-    criterios: f.criterios.map((c) => ({ campo: c.campo, operador: c.operador, valor: c.campo === "semResponsavel" ? c.valor === "true" : c.valor })),
+    criterios: f.criterios.map((c) => ({ campo: c.campo, operador: c.operador, valor: CAMPOS_SIM_NAO.includes(c.campo) ? c.valor === "true" : c.valor })),
     acoes: f.acoes.map((a) => {
       const espera = { esperaHoras: num(a.esperaHoras) };
       switch (a.tipo) {
@@ -55,6 +62,15 @@ export function FormAutomacao({ inicial, id, funis, onFechar, onSalvo }: { inici
   const etapas = funis.flatMap((fu) => fu.etapas.map((e) => ({ ...e, rotulo: funis.length > 1 ? `${fu.nome} · ${e.nome}` : e.nome })));
   const setCriterio = (i: number, p: Partial<CriterioForm>) => setF((x) => ({ ...x, criterios: x.criterios.map((c, j) => (j === i ? { ...c, ...p } : c)) }));
   const setAcao = (i: number, p: Partial<AcaoForm>) => setF((x) => ({ ...x, acoes: x.acoes.map((a, j) => (j === i ? { ...a, ...p } : a)) }));
+  const campos = camposDoGatilho(f.gatilho);
+  const exigido = criterioExigido(f.gatilho);
+  const deEntrega = ehGatilhoDeEntrega(f.gatilho);
+  // Trocar de gatilho descarta critérios que não valem mais (ex.: "dias de atraso" fora dos gatilhos de cartão).
+  const trocarGatilho = (g: Gatilho) => setF((x) => ({ ...x, gatilho: g, criterios: x.criterios.filter((c) => camposDoGatilho(g).includes(c.campo)) }));
+  const novoCriterio = (): CriterioForm => {
+    const campoNovo: Campo = exigido && !f.criterios.some((c) => c.campo === exigido.campo) ? exigido.campo : "origem";
+    return { campo: campoNovo, operador: exigido?.campo === campoNovo ? exigido.operador : OPERADORES_DO_CAMPO[campoNovo][0], valor: "" };
+  };
 
   const salvar = async (e: React.FormEvent) => {
     e.preventDefault(); setSalvando(true); setErro(null);
@@ -76,24 +92,31 @@ export function FormAutomacao({ inicial, id, funis, onFechar, onSalvo }: { inici
         )}
         <label className="block"><span className={rotulo}>Nome</span><input required maxLength={120} value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} className={mini} /></label>
         <label className="block"><span className={rotulo}>Quando</span>
-          <select value={f.gatilho} onChange={(e) => setF({ ...f, gatilho: e.target.value as Gatilho })} className={mini}>{GATILHOS.map((g) => <option key={g} value={g}>{ROTULO_GATILHO[g]}</option>)}</select>
-          {GATILHOS_DE_TEMPO.includes(f.gatilho) && <span className="mt-1 block text-[11.5px] text-cinza">Gatilho de tempo: roda na varredura diária ou em "Executar agora". Exige o critério de dias com "≥".</span>}</label>
+          <select value={f.gatilho} onChange={(e) => trocarGatilho(e.target.value as Gatilho)} className={mini}>
+            <optgroup label="Oportunidades">{GATILHOS.filter((g) => !ehGatilhoDeEntrega(g)).map((g) => <option key={g} value={g}>{ROTULO_GATILHO[g]}</option>)}</optgroup>
+            <optgroup label="Funil de entrega">{GATILHOS.filter(ehGatilhoDeEntrega).map((g) => <option key={g} value={g}>{ROTULO_GATILHO[g]}</option>)}</optgroup>
+          </select>
+          {GATILHOS_DE_TEMPO.includes(f.gatilho) && <span className="mt-1 block text-[11.5px] text-cinza">Gatilho de tempo: roda na varredura diária ou em &quot;Executar agora&quot;.{exigido && ` Exige o critério "${ROTULO_CAMPO[exigido.campo]}" com "${exigido.operador === ">=" ? "≥" : "≤"}".`}</span>}
+          {deEntrega && <span className="mt-1 block text-[11.5px] text-cinza">As ações valem para a oportunidade ganha que abriu a entrega; a tarefa vai para quem cuida do cartão. Nos textos, use {"{cliente}"}, {"{entrega}"}, {"{cartao}"} e {"{dias}"}.</span>}</label>
 
         <fieldset className="space-y-2"><legend className={rotulo}>Se (todos precisam valer)</legend>
           {f.criterios.map((c, i) => {
             const ops = OPERADORES_DO_CAMPO[c.campo];
-            const lista = c.campo === "etapaId" ? etapas.map((e) => ({ v: e.id, r: e.rotulo })) : c.campo === "funilId" ? funis.map((fu) => ({ v: fu.id, r: fu.nome })) : c.campo === "probabilidade" ? [["RISCO_ALTO", "Risco alto"], ["FRIA", "Fria"], ["MORNA", "Morna"], ["QUENTE", "Quente"]].map(([v, r]) => ({ v, r })) : c.campo === "semResponsavel" ? [{ v: "true", r: "Sim" }, { v: "false", r: "Não" }] : null;
+            const lista = c.campo === "etapaId" ? etapas.map((e) => ({ v: e.id, r: e.rotulo })) : c.campo === "funilId" ? funis.map((fu) => ({ v: fu.id, r: fu.nome }))
+              : c.campo === "probabilidade" ? [["RISCO_ALTO", "Risco alto"], ["FRIA", "Fria"], ["MORNA", "Morna"], ["QUENTE", "Quente"]].map(([v, r]) => ({ v, r }))
+              : c.campo === "pilar" ? PILARES.map((p) => ({ v: p, r: ROTULO_PILAR[p] }))
+              : CAMPOS_SIM_NAO.includes(c.campo) ? [{ v: "true", r: "Sim" }, { v: "false", r: "Não" }] : null;
             return (
               <div key={i} className="flex gap-2">
-                <select aria-label="Campo" value={c.campo} onChange={(e) => { const campoNovo = e.target.value as Campo; setCriterio(i, { campo: campoNovo, operador: OPERADORES_DO_CAMPO[campoNovo][0], valor: campoNovo === "semResponsavel" ? "true" : "" }); }} className={mini}>{CAMPOS.map((k) => <option key={k} value={k}>{ROTULO_CAMPO[k]}</option>)}</select>
+                <select aria-label="Campo" value={c.campo} onChange={(e) => { const campoNovo = e.target.value as Campo; setCriterio(i, { campo: campoNovo, operador: OPERADORES_DO_CAMPO[campoNovo][0], valor: CAMPOS_SIM_NAO.includes(campoNovo) ? "true" : "" }); }} className={mini}>{campos.map((k) => <option key={k} value={k}>{ROTULO_CAMPO[k]}</option>)}</select>
                 <select aria-label="Operador" value={c.operador} onChange={(e) => setCriterio(i, { operador: e.target.value })} className={`${mini} !w-20 flex-none`}>{ops.map((o) => <option key={o} value={o}>{o === ">=" ? "≥" : o === "<=" ? "≤" : o === "!=" ? "≠" : "="}</option>)}</select>
                 {lista ? <select aria-label="Valor" value={c.valor} onChange={(e) => setCriterio(i, { valor: e.target.value })} className={mini}><option value="">Escolha…</option>{lista.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}</select>
-                  : <input aria-label="Valor" value={c.valor} inputMode={["valorTotal", "diasNaEtapa", "diasSemAtividade"].includes(c.campo) ? "numeric" : "text"} onChange={(e) => setCriterio(i, { valor: e.target.value })} className={mini} />}
+                  : <input aria-label="Valor" value={c.valor} inputMode={CAMPOS_NUMERICOS.includes(c.campo) ? "numeric" : "text"} onChange={(e) => setCriterio(i, { valor: e.target.value })} className={mini} />}
                 <button type="button" aria-label="Remover critério" onClick={() => setF({ ...f, criterios: f.criterios.filter((_, j) => j !== i) })} className="flex-none px-1.5 text-[18px] text-cinza">×</button>
               </div>
             );
           })}
-          <button type="button" className="text-[12px] font-bold text-azul" onClick={() => setF({ ...f, criterios: [...f.criterios, { campo: "origem", operador: "=", valor: "" }] })}>+ critério</button>
+          <button type="button" className="text-[12px] font-bold text-azul" onClick={() => setF({ ...f, criterios: [...f.criterios, novoCriterio()] })}>+ critério</button>
         </fieldset>
 
         <fieldset className="space-y-3"><legend className={rotulo}>Então</legend>

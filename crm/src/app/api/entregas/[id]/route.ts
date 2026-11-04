@@ -20,7 +20,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
   const c = (await req.json().catch(() => null)) as Record<string, unknown> | null;
   if (!c) return Response.json({ erro: "Corpo inválido" }, { status: 400 });
   return comEntrada(async () => {
-    const atual = await prisma.entrega.findUnique({ where: { id }, select: { diagnostico: true } });
+    const atual = await prisma.entrega.findUnique({ where: { id }, select: { diagnostico: true, status: true } });
     if (!atual) return Response.json({ erro: "Entrega não encontrada" }, { status: 404 });
     let diagnostico: Prisma.InputJsonValue | undefined;
     if (c.diagnostico !== undefined) {
@@ -32,15 +32,21 @@ export async function PATCH(req: Request, ctx: Ctx) {
       }
       diagnostico = merged;
     }
+    const status = c.status !== undefined ? escolha(c.status, "status", STATUS_ENTREGA) : undefined;
     await prisma.entrega.update({
       where: { id },
       data: {
-        ...(c.status !== undefined && { status: escolha(c.status, "status", STATUS_ENTREGA) }),
+        // Concluir à mão: grava quando e (logo abaixo) dispara "Entrega concluída". Sair de concluída zera a data.
+        ...(status !== undefined && status !== atual.status && { status, concluidaEm: status === "CONCLUIDA" ? new Date() : null }),
         ...(c.renovacaoEm !== undefined && { renovacaoEm: dataOpc(c.renovacaoEm, "Renovação") }),
         ...(c.fimPrevistoEm !== undefined && { fimPrevistoEm: dataOpc(c.fimPrevistoEm, "Fim previsto") }),
         ...(diagnostico !== undefined && { diagnostico }),
       },
     });
+    if (status === "CONCLUIDA" && atual.status !== "CONCLUIDA") {
+      const { dispararEventoEntrega } = await import("@/lib/automacao/motor");
+      await dispararEventoEntrega("ENTREGA_CONCLUIDA", id, null);
+    }
     return Response.json({ ok: true });
   });
 }

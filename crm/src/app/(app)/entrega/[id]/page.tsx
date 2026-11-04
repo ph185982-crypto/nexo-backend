@@ -12,6 +12,7 @@ import type { RotuloSaudeEntrega } from "@/lib/entrega/saude";
 interface Cartao { id: string; titulo: string; descricao: string | null; pilar: Pilar; coluna: Coluna; ordem: number; dataAlvo: string | null; cliente: boolean; checklist: Array<{ texto: string; feito: boolean }> }
 interface Detalhe {
   id: string; nome: string; status: string; renovacaoEm: string | null; valorMensal: number; oportunidadeId: string; diagnostico: Record<string, string>;
+  concluidaEm: string | null; renovacaoOportunidadeId: string | null;
   contato: { id: string; nome: string }; cartoes: Cartao[];
   saude: { nota: number; rotulo: RotuloSaudeEntrega; progresso: number; total: number; concluidos: number; atrasados: number; esperandoCliente: number };
 }
@@ -114,6 +115,12 @@ export default function EntregaPage() {
               <input type="date" value={diaIso(d.renovacaoEm)} onChange={(e) => patch({ renovacaoEm: e.target.value || null })} className="rounded-lg border border-linha bg-superficie px-2 py-1 text-grafite" /></label>
             <button onClick={upsell} className={botaoSecundario}>Abrir upsell</button>
           </div>
+          {(d.concluidaEm || (d.renovacaoOportunidadeId && !d.renovacaoOportunidadeId.startsWith("reservando:"))) && (
+            <p className="w-full text-[12px] text-cinza" role="status">
+              {d.concluidaEm && <>Concluída em {new Date(d.concluidaEm).toLocaleDateString("pt-BR")}. </>}
+              {d.renovacaoOportunidadeId && !d.renovacaoOportunidadeId.startsWith("reservando:") && <>A rotina já abriu a <b className="text-grafite">oportunidade de renovação</b> no funil de vendas, com tarefa para preparar a proposta.</>}
+            </p>
+          )}
         </div>
         {erro && <p role="alert" className="mt-2 text-[13px] font-semibold text-critico">{erro}</p>}
         <div role="tablist" className="mt-3 flex items-center gap-5 border-b border-linha">

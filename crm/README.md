@@ -40,11 +40,29 @@ Primeiro acesso: rode `npm run db:seed` uma vez contra o banco de produção com
 > Armadilha já vista no `vendedoria/`: o `.vercelignore` da **raiz** lista as pastas dos outros projetos. Por isso `crm/.vercelignore`
 > precisa existir (senão o projeto cai no da raiz e faz deploy vazio, com build `READY` e todas as rotas 404), e o da raiz lista `crm/`.
 
+## Funil de entrega automático
+
+Ao ganhar uma oportunidade, a entrega abre com os cartões do modelo padrão, já com o dono da oportunidade como
+responsável, e o contato vira **Cliente**. Daí em diante:
+
+- **Rotina diária** (`src/lib/entrega/rotina.ts`, roda no cron e em "Executar agora", sem configurar nada):
+  cartão sem dono herda o responsável; cartão do Backlog com prazo em até 7 dias vai para "Essa semana" (uma vez:
+  se alguém o devolver, a rotina respeita); entrega com tudo concluído é fechada; **60 dias antes da renovação**
+  abre a oportunidade "Renovação — …" no funil padrão, com o valor mensal e tarefa para a proposta 30 dias antes.
+- **Concluir e reabrir** (`src/lib/entrega/ciclo.ts`): o último cartão concluído fecha a entrega; um cartão que sai
+  de "Concluído" a reabre.
+- **Gatilhos de entrega nas automações**: cartão atrasado, aguardando o cliente há N dias, cliente em risco
+  (nota de saúde abaixo de 50, no máximo um aviso por semana), renovação em até N dias, cartão concluído e entrega
+  concluída. Critérios extras: nota de saúde, dias para renovar, pilar, dias de atraso, dias aguardando, cartão do
+  cliente. As ações agem sobre a oportunidade ganha; a tarefa vai para quem cuida do cartão; os textos aceitam
+  `{cliente}`, `{oportunidade}`, `{entrega}`, `{cartao}` e `{dias}`. Com espera, a ação só roda se o fato continuar
+  verdadeiro (ex.: o cartão ainda está esperando o cliente). Há modelos prontos na tela de Automações.
+
 ## O que existe e o que falta
 
 Existe: login (cookie HMAC, bloqueio por tentativas, usuário desativado perde acesso na hora), kanban com funis e etapas editáveis
 (arrastar, motivo de ganho/perda, painel com histórico), contatos (empresa/pessoa, importação/exportação CSV, duplicados e mesclagem),
-tarefas e agenda, funil de entrega pós-venda (checklists por modelo, upsell), automações (gatilho, critérios, ações com espera,
+tarefas e agenda, funil de entrega pós-venda (checklists por modelo, upsell, rotina e gatilhos automáticos), automações (gatilho, critérios, ações com espera,
 webhook com defesa SSRF), relatórios (funil cumulativo, ciclo, motivos, metas), configuração (funis, etapas, motivos, usuários,
 chaves de integração), e integração com o Vendedor IA nos dois lados (eventos com outbox e reenvio).
 
