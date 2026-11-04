@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { acionarFollowupsSePreciso } from "@/lib/followup/gatilho";
 import { acionarRecuperacaoSePreciso } from "@/lib/ai/sdr/recuperar-falhas";
+import { acionarAvisoContasSePreciso } from "@/lib/max/crons/contas-vespera";
 import { despacharOutboxCrm } from "@/lib/crm-externo/outbox";
 import { crmConfigurado } from "@/lib/crm-externo/eventos";
 
@@ -25,6 +26,8 @@ export async function GET() {
   const followups = dbStatus === "connected" ? await acionarFollowupsSePreciso("health").catch(() => "erro" as const) : "sem-banco";
   // Conversas em que a IA falhou e o cliente ficou só com a mensagem de espera.
   const recuperacao = dbStatus === "connected" ? acionarRecuperacaoSePreciso("health") : "sem-banco";
+  // Aviso de véspera das contas a pagar (o Max avisa o dono um dia antes).
+  const avisoContas = dbStatus === "connected" ? acionarAvisoContasSePreciso("health") : "sem-banco";
 
   // Eventos para o CRM Avanteza que ficaram pendentes (CRM fora do ar, timeout…).
   const crm = dbStatus !== "connected" ? "sem-banco" : !crmConfigurado() ? "desligado" : await despacharOutboxCrm({ limite: 5, orcamentoMs: 15_000 }).catch(() => "erro" as const);
@@ -38,6 +41,7 @@ export async function GET() {
       auth: authOk ? "configured" : "MISSING — NEXTAUTH_SECRET/AUTH_SECRET nao definido",
       followups,
       recuperacao,
+      avisoContas,
       env: process.env.NODE_ENV,
       ts: new Date().toISOString(),
     },
