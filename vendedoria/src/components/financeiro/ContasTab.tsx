@@ -11,6 +11,7 @@ import { TIPO_NEGOCIO_OPTIONS, formatTipoNegocio } from "@/lib/finance/labels";
 import { fmtData } from "./receitas-shared";
 import { hojeBR } from "./FiltroPeriodo";
 import { EditarContaDialog, ExcluirContaDialog } from "./ContaDialogs";
+import { ContratosDespesaPanel } from "./ContratosDespesaPanel";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -22,11 +23,15 @@ interface Conta {
   categoria: string;
   tipo_negocio?: string | null;
   status: "pendente" | "paga" | "vencida";
+  parcela_numero?: number | null;
+  parcelas_total?: number | null;
+  estimada?: boolean;
 }
 
 export function ContasTab() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [carregouUmaVez, setCarregouUmaVez] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ descricao: "", valor: "", vencimento: "", categoria: "", tipo_negocio: "pessoal" });
   const [submitting, setSubmitting] = useState(false);
@@ -44,6 +49,7 @@ export function ContasTab() {
       // silently fail
     } finally {
       setLoading(false);
+      setCarregouUmaVez(true);
     }
   }, []);
 
@@ -84,7 +90,7 @@ export function ContasTab() {
   // As datas vêm como "só data" em UTC: compara a data com o dia de hoje em Brasília.
   const isOverdue = (vencimento: string) => vencimento.slice(0, 10) < hojeBR();
 
-  if (loading) {
+  if (loading && !carregouUmaVez) {
     return (
       <div className="flex justify-center py-20">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -101,6 +107,8 @@ export function ContasTab() {
           {showForm ? "Cancelar" : "Nova conta"}
         </Button>
       </div>
+
+      <ContratosDespesaPanel onChange={() => void fetchContas()} />
 
       {aviso && (
         <div role="status" className="flex items-start justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm">
@@ -179,6 +187,8 @@ export function ContasTab() {
                         {conta.status === "paga" && (
                           <Badge variant="success">Paga</Badge>
                         )}
+                        {conta.parcela_numero === 0 && <Badge variant="info" className="text-[10px]">Entrada</Badge>}
+                        {conta.estimada && <Badge variant="warning" className="text-[10px]" title="Valor aproximado: edite com o valor real da fatura">Valor aproximado</Badge>}
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">{BRL.format(conta.valor)}</span>

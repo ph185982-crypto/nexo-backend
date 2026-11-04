@@ -32,6 +32,7 @@ const ENTIDADES: Record<string, string> = {
   OrcamentoMax: "Orçamento",
   MetaFinanceiraMax: "Meta",
   ContratoReceita: "Contrato de receita",
+  ContratoDespesa: "Contrato de despesa",
   DreClassificacaoMax: "Classificação DRE",
   FinancialTransaction: "Transação (financeiro)",
   RecurringBill: "Conta recorrente",
