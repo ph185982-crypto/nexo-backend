@@ -327,6 +327,9 @@ model Entrega {
   modelo         ModeloEntrega? @relation(fields: [modeloId], references: [id], onDelete: SetNull)
   // Diagnóstico por pilar: { COMERCIAL: "texto", PRODUTO: "…", … }
   diagnostico    Json          @default("{}")
+  concluidaEm    DateTime? // quando todos os cartões foram concluídos (ou alguém marcou como concluída)
+  // Oportunidade de renovação aberta pela rotina da entrega (60 dias antes de renovacaoEm). Evita abrir duas.
+  renovacaoOportunidadeId String?
   criadoEm       DateTime      @default(now())
   atualizadoEm   DateTime      @updatedAt
 
@@ -351,6 +354,8 @@ model EntregaCartao {
   responsavel   Usuario? @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
   checklist     Json     @default("[]")
   colunaDesdeEm DateTime @default(now()) // para "aguardando o cliente há N dias"
+  // Preenchido quando a rotina (ou uma pessoa) já decidiu a coluna do cartão: a rotina não o move de novo.
+  planejadoEm   DateTime?
   concluidoEm   DateTime?
   criadoEm      DateTime @default(now())
 
@@ -383,6 +388,9 @@ model AutomacaoExecucao {
   automacaoId    String
   automacao      Automacao @relation(fields: [automacaoId], references: [id], onDelete: Cascade)
   oportunidadeId String?
+  // Gatilhos de entrega: id do cartão (cartão atrasado, aguardando o cliente, concluído) ou da entrega.
+  // Permite reconferir a condição depois da espera e montar o texto da ação ({cartao}, {dias}…).
+  referenciaId   String?
   gatilho        String
   indice         Int // posição da ação na automação
   acaoTipo       String

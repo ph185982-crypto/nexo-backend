@@ -192,7 +192,8 @@ test("motor: varredura de tempo (parada na etapa, sem interação), uma vez por 
     // desativada: nada agenda
     await prisma.automacao.update({ where: { id: parada.id }, data: { ativo: false } });
     await prisma.oportunidade.update({ where: { id: velha.id }, data: { etapaDesdeEm: new Date(Date.now() - 9 * DIA) } });
-    assert.deepEqual(await varrerTempo(), { avaliadas: (await prisma.oportunidade.count({ where: { status: "EM_ANDAMENTO" } })), agendadas: 0 });
+    const v0 = await varrerTempo();
+    assert.deepEqual([v0.avaliadas, v0.agendadas], [await prisma.oportunidade.count({ where: { status: "EM_ANDAMENTO" } }), 0]);
     assert.equal(muda.id !== parada.id, true);
 
     // concorrência: duas rodadas simultâneas, uma execução só

@@ -4,6 +4,7 @@ import { criarOportunidade } from "@/lib/funil/mover";
 import { normalizarChecklist } from "@/lib/atividades/tarefas";
 import { COLUNAS, PILARES, type Coluna } from "./constantes";
 import { calcularSaudeEntrega } from "./saude";
+import { depoisDeMoverCartao } from "./ciclo";
 
 const num = (d: { toString(): string }) => Number(d.toString());
 
@@ -41,24 +42,30 @@ export async function criarCartao(n: NovoCartao) {
   });
 }
 
-/** Move o cartão para a coluna (na posição indicada, ou no fim) e renumera as duas colunas. */
+/**
+ * Move o cartão para a coluna (na posição indicada, ou no fim) e renumera as duas colunas. Mudar de coluna marca o
+ * cartão como planejado (a rotina não o move mais) e, depois de gravar, dispara "cartão concluído" e conclui ou
+ * reabre a entrega.
+ */
 export async function moverCartao(cartaoId: string, coluna: Coluna, posicao?: number, agora: Date = new Date()) {
   if (!(COLUNAS as readonly string[]).includes(coluna)) throw new Error("Coluna inválida");
-  return prisma.$transaction(async (tx) => {
+  const r = await prisma.$transaction(async (tx) => {
     const c = await tx.entregaCartao.findUnique({ where: { id: cartaoId } });
     if (!c) throw new Error("Cartão não encontrado");
     const destino = (await tx.entregaCartao.findMany({ where: { entregaId: c.entregaId, coluna, id: { not: c.id } }, orderBy: { ordem: "asc" }, select: { id: true } })).map((x) => x.id);
     const pos = posicao === undefined ? destino.length : Math.max(0, Math.min(posicao, destino.length));
     destino.splice(pos, 0, c.id);
     const mudouColuna = c.coluna !== coluna;
-    await tx.entregaCartao.update({ where: { id: c.id }, data: { coluna, ...(mudouColuna && { colunaDesdeEm: agora, concluidoEm: coluna === "CONCLUIDO" ? agora : null }) } });
+    await tx.entregaCartao.update({ where: { id: c.id }, data: { coluna, ...(mudouColuna && { colunaDesdeEm: agora, planejadoEm: agora, concluidoEm: coluna === "CONCLUIDO" ? agora : null }) } });
     for (const [i, id] of destino.entries()) await tx.entregaCartao.update({ where: { id }, data: { ordem: i } });
     if (mudouColuna) {
       const origem = await tx.entregaCartao.findMany({ where: { entregaId: c.entregaId, coluna: c.coluna }, orderBy: { ordem: "asc" }, select: { id: true } });
       for (const [i, o] of origem.entries()) await tx.entregaCartao.update({ where: { id: o.id }, data: { ordem: i } });
     }
-    return { mudouColuna };
+    return { mudouColuna, de: c.coluna };
   });
+  if (r.mudouColuna) await depoisDeMoverCartao(cartaoId, r.de, coluna, agora);
+  return { mudouColuna: r.mudouColuna };
 }
 
 export const PILARES_VALIDOS = PILARES;
