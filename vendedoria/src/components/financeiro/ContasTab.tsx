@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Loader2, Plus, CheckCircle2, AlertTriangle, X } from "lucide-react";
+import { Loader2, Plus, CheckCircle2, AlertTriangle, X, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { TIPO_NEGOCIO_OPTIONS, formatTipoNegocio } from "@/lib/finance/labels";
+import { fmtData } from "./receitas-shared";
+import { hojeBR } from "./FiltroPeriodo";
+import { EditarContaDialog, ExcluirContaDialog } from "./ContaDialogs";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -27,6 +30,9 @@ export function ContasTab() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ descricao: "", valor: "", vencimento: "", categoria: "", tipo_negocio: "pessoal" });
   const [submitting, setSubmitting] = useState(false);
+  const [editando, setEditando] = useState<Conta | null>(null);
+  const [excluindo, setExcluindo] = useState<Conta | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
 
   const fetchContas = useCallback(async () => {
     setLoading(true);
@@ -75,7 +81,8 @@ export function ContasTab() {
     }
   };
 
-  const isOverdue = (vencimento: string) => new Date(vencimento) < new Date();
+  // As datas vêm como "só data" em UTC: compara a data com o dia de hoje em Brasília.
+  const isOverdue = (vencimento: string) => vencimento.slice(0, 10) < hojeBR();
 
   if (loading) {
     return (
@@ -94,6 +101,13 @@ export function ContasTab() {
           {showForm ? "Cancelar" : "Nova conta"}
         </Button>
       </div>
+
+      {aviso && (
+        <div role="status" className="flex items-start justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm">
+          <span>{aviso}</span>
+          <button onClick={() => setAviso(null)} aria-label="Fechar aviso" className="text-muted-foreground">×</button>
+        </div>
+      )}
 
       {/* New bill form */}
       {showForm && (
@@ -168,21 +182,44 @@ export function ContasTab() {
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">{BRL.format(conta.valor)}</span>
-                        <span>Vence: {new Date(conta.vencimento).toLocaleDateString("pt-BR")}</span>
+                        <span>Vence: {fmtData(conta.vencimento)}</span>
                         {conta.categoria && <span>{conta.categoria}</span>}
                         <span>{formatTipoNegocio(conta.tipo_negocio)}</span>
                       </div>
                     </div>
-                    {conta.status === "pendente" && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {conta.status === "pendente" && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => marcarComoPaga(conta.id)}
+                            className="gap-1"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Paga
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon-sm"
+                            onClick={() => setEditando(conta)}
+                            title="Editar conta"
+                            aria-label={`Editar ${conta.descricao}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Button>
+                        </>
+                      )}
                       <Button
                         variant="outline"
-                        size="sm"
-                        onClick={() => marcarComoPaga(conta.id)}
-                        className="gap-1 shrink-0"
+                        size="icon-sm"
+                        onClick={() => setExcluindo(conta)}
+                        title="Excluir conta"
+                        aria-label={`Excluir ${conta.descricao}`}
+                        className="text-red-500 hover:text-red-500"
                       >
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Paga
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
-                    )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -190,6 +227,9 @@ export function ContasTab() {
           })}
         </div>
       )}
+
+      <EditarContaDialog conta={editando} onClose={() => setEditando(null)} onDone={(m) => { setAviso(m); void fetchContas(); }} />
+      <ExcluirContaDialog conta={excluindo} onClose={() => setExcluindo(null)} onDone={(m) => { setAviso(m); void fetchContas(); }} />
     </div>
   );
 }

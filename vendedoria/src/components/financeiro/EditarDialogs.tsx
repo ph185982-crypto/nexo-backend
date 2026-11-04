@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { BRL, type ReceitaItem } from "./receitas-shared";
 
-const inputCls =
+export const inputCls =
   "h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-primary";
 
-function Campo({ label, dica, children }: { label: string; dica?: string; children: React.ReactNode }) {
+export function Campo({ label, dica, children }: { label: string; dica?: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
@@ -25,15 +25,15 @@ function Campo({ label, dica, children }: { label: string; dica?: string; childr
 }
 
 /** "1.234,56" ou "1234.56" → 1234.56 (NaN se inválido). */
-function parseValor(s: string): number {
+export function parseValor(s: string): number {
   const t = s.trim();
   if (!t) return NaN;
   const norm = t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t;
   return Number(norm);
 }
-const fmtInput = (n: number) => String(n).replace(".", ",");
+export const fmtInput = (n: number) => String(n).replace(".", ",");
 
-async function patch(url: string, corpo: Record<string, unknown>): Promise<{ ok: boolean; erro?: string; dados?: Record<string, unknown> }> {
+export async function patch(url: string, corpo: Record<string, unknown>): Promise<{ ok: boolean; erro?: string; dados?: Record<string, unknown> }> {
   try {
     const res = await fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
     const j = await res.json().catch(() => ({}));
