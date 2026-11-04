@@ -45,7 +45,11 @@ test("avisarContasDeAmanha: horário, só amanhã, uma vez por vencimento, e nov
   await mk("paga", "2026-11-05", "paga");
 
   const entregas: string[][] = [];
-  const entregar = async (_m: string, itens: Array<{ descricao: string }>) => { entregas.push(itens.map((i) => i.descricao)); return { whatsapp: true, notificacao: true }; };
+  const entregar = async (a: { mensagem: string; resumo: string }) => {
+    // O resumo lista "descricao valor · descricao valor": basta o nome de cada conta.
+    entregas.push(a.resumo.split(" · ").map((x) => x.replace(/\s+R\$.*$/, "").trim()));
+    return { whatsapp: true, notificacao: true };
+  };
   const minhas = (xs: string[]) => xs.filter((d) => d.startsWith(tag));
 
   try {

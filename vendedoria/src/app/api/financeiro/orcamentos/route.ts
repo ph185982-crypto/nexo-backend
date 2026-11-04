@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { gastoDaCategoria, gastoPorCategoriaNoMes } from "@/lib/finance/orcamentos";
+import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
 
 async function requireAdmin() {
   const session = await auth();
@@ -18,28 +20,16 @@ export async function GET() {
     );
     const mesAtual = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
+    await semearOrcamentosIniciais().catch((e) => console.error("[orcamentos] limites iniciais:", e));
     const orcamentos = await prisma.orcamentoMax.findMany({
       orderBy: { categoria: "asc" },
     });
 
-    // Get current month spending per category
-    const gastos = await prisma.transacao.groupBy({
-      by: ["categoria"],
-      where: {
-        tipo: "despesa",
-        mes: mesAtual,
-        categoria: { in: orcamentos.map((o) => o.categoria) },
-      },
-      _sum: { valor: true },
-    });
-
-    const gastoMap = new Map(
-      gastos.map((g) => [g.categoria, g._sum.valor ?? 0])
-    );
-
+    // Gasto do mês por categoria (variações de grafia somadas: "Cartão de crédito " = "Cartão de credito")
+    const gastoMap = await gastoPorCategoriaNoMes(mesAtual);
     const result = orcamentos.map((o) => ({
       ...o,
-      gasto_atual: gastoMap.get(o.categoria) ?? 0,
+      gasto_atual: gastoDaCategoria(gastoMap, o.categoria),
     }));
 
     return NextResponse.json(result);

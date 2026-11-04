@@ -19,6 +19,10 @@ import { after } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { getOwnerProvider, MAX_OWNER_NUMBER, resolveToken } from "../config";
+import { garantirContasDeContratos } from "@/lib/finance/contratos-despesa";
+import { avisarOrcamentos } from "./orcamentos-alerta";
+import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
+import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
 
 export const chaveVespera = (contaId: string, vencimentoISO: string) => `conta-vespera-${contaId}-${vencimentoISO}`;
 
@@ -63,10 +67,19 @@ export interface EntregaVespera {
   notificacao: boolean;
 }
 
-/** Entrega por WhatsApp (Max), notificação no CRM e push. Injetável nos testes. */
-export type Entregador = (mensagem: string, itens: ItemVespera[]) => Promise<EntregaVespera>;
+/** Um aviso do Max ao dono: texto do WhatsApp/notificação e resumo curto para o push. */
+export interface Aviso {
+  titulo: string;
+  mensagem: string;
+  resumo: string;
+  url: string;
+  tag: string;
+}
 
-export const entregarPorTodosOsCanais: Entregador = async (mensagem, itens) => {
+/** Entrega por WhatsApp (Max), notificação no CRM e push. Injetável nos testes. */
+export type Entregador = (aviso: Aviso) => Promise<EntregaVespera>;
+
+export const entregarPorTodosOsCanais: Entregador = async ({ titulo, mensagem, resumo, url, tag }) => {
   const provider = await getOwnerProvider().catch(() => null);
   const out: EntregaVespera = { whatsapp: false, notificacao: false };
 
@@ -88,7 +101,7 @@ export const entregarPorTodosOsCanais: Entregador = async (mensagem, itens) => {
       .create({
         data: {
           type: "INFO",
-          title: itens.length === 1 ? `⏰ Conta vence amanhã — ${itens[0].descricao}` : `⏰ ${itens.length} contas vencem amanhã`,
+          title: titulo,
           body: mensagem,
           organizationId,
         },
@@ -99,12 +112,7 @@ export const entregarPorTodosOsCanais: Entregador = async (mensagem, itens) => {
 
   try {
     const { sendPushToAll } = await import("@/lib/push/notificar");
-    await sendPushToAll({
-      title: itens.length === 1 ? "⏰ Conta vence amanhã" : `⏰ ${itens.length} contas vencem amanhã`,
-      body: itens.map((i) => `${i.descricao} ${BRL.format(i.valor)}`).join(" · ").slice(0, 180),
-      url: "/crm/financeiro",
-      tag: "contas-vespera",
-    });
+    await sendPushToAll({ title: titulo, body: resumo.slice(0, 180), url, tag });
   } catch (e) {
     console.error("[Max] Falha ao enviar o push da conta:", e);
   }
@@ -125,6 +133,8 @@ export async function avisarContasDeAmanha(opts: { agora?: Date; entregar?: Entr
 
   const amanha = amanhaComoData(dia);
   const vencimento = amanha.toISOString().slice(0, 10);
+  // Contratos (parcelas, água, luz…): garante que as contas de amanhã já existam.
+  await garantirContasDeContratos(new Date(`${dia}T00:00:00Z`)).catch((e) => console.error("[Max] contas de contratos:", e));
   const contas = await prisma.contaPagarMax.findMany({
     where: { status: "pendente", data_vencimento: amanha },
     orderBy: { valor: "desc" },
@@ -145,7 +155,13 @@ export async function avisarContasDeAmanha(opts: { agora?: Date; entregar?: Entr
   if (novas.length === 0) return { situacao: "nada", contas: 0 };
 
   const itens: ItemVespera[] = novas.map((c) => ({ descricao: c.descricao, valor: c.valor, categoria: c.categoria }));
-  const entrega = await (opts.entregar ?? entregarPorTodosOsCanais)(montarMensagemVespera(itens, amanha), itens);
+  const entrega = await (opts.entregar ?? entregarPorTodosOsCanais)({
+    titulo: itens.length === 1 ? `⏰ Conta vence amanhã — ${itens[0].descricao}` : `⏰ ${itens.length} contas vencem amanhã`,
+    mensagem: montarMensagemVespera(itens, amanha),
+    resumo: itens.map((i) => `${i.descricao} ${BRL.format(i.valor)}`).join(" · "),
+    url: "/crm/financeiro",
+    tag: "contas-vespera",
+  });
   if (!entrega.whatsapp && !entrega.notificacao) {
     // Nada chegou ao dono: libera a trava para a próxima rodada tentar de novo.
     await prisma.alertaEnviadoMax.deleteMany({ where: { chave: { in: chaves } } }).catch(() => {});
@@ -164,10 +180,18 @@ export function acionarAvisoContasSePreciso(origem: string, opts: { forcar?: boo
   if (!opts.forcar && agora - ultimaRodada < INTERVALO_MS) return "throttle";
   ultimaRodada = agora;
   const trabalho = async () => {
+    // Contratos e limites combinados com o dono entram uma única vez (marca no banco).
+    await semearContratosDespesaIniciais().catch((e) => console.error(`[Max] contratos iniciais | origem=${origem}:`, e));
+    await semearOrcamentosIniciais().catch((e) => console.error(`[Max] limites iniciais | origem=${origem}:`, e));
     try {
       await avisarContasDeAmanha();
     } catch (e) {
       console.error(`[Max] Aviso de véspera | origem=${origem} falhou:`, e);
+    }
+    try {
+      await avisarOrcamentos();
+    } catch (e) {
+      console.error(`[Max] Aviso de orçamento | origem=${origem} falhou:`, e);
     }
   };
   try {

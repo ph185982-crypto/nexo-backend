@@ -1543,8 +1543,43 @@ model ContaPagarMax {
   transacao_id    String?
   criado_em       DateTime  @default(now())
 
+  // Conta gerada por um contrato de despesa (ver ContratoDespesa). parcela_numero 0 = entrada.
+  contrato_id     String?
+  parcela_numero  Int?
+  parcelas_total  Int?
+  // Valor aproximado (água, luz): vale até o dono informar o valor real da fatura.
+  estimada        Boolean   @default(false)
+
   @@map("max_contas_pagar")
   @@index([status, data_vencimento])
+  @@index([contrato_id])
+  @@unique([contrato_id, parcela_numero])
+}
+
+// Despesa recorrente ou parcelada com contrato: financiamento, parcela do carro,
+// empréstimo, internet, água e luz. O sistema gera as contas a pagar do mês e do
+// mês seguinte (ver lib/finance/contratos-despesa.ts); nada é apagado.
+model ContratoDespesa {
+  id              String    @id @default(uuid())
+  descricao       String
+  credor          String?
+  categoria       String    @default("Outros")
+  tipo_negocio    String    @default("pessoal")
+  valor_parcela   Float
+  parcelas_total  Int?      // null = sem fim (internet, água, luz)
+  dia_vencimento  Int
+  data_inicio     DateTime  @db.Date // vencimento da parcela 1
+  entrada         Float?
+  entrada_data    DateTime? @db.Date
+  saldo_devedor   Float?    // informativo: quanto ainda se deve no total do contrato
+  estimada        Boolean   @default(false) // valor varia todo mês (água, luz)
+  cronograma      Json?     // { "1": 450, "12": 371.04 } — valores que fogem do valor_parcela
+  status          String    @default("ativo") // ativo | encerrado
+  observacao      String?
+  criado_em       DateTime  @default(now())
+  atualizado_em   DateTime  @default(now()) @updatedAt
+
+  @@map("max_contratos_despesa")
 }
 
 model OrcamentoMax {

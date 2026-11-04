@@ -63,6 +63,7 @@ export async function PATCH(
         const v = Number(body.valor);
         if (!Number.isFinite(v) || v <= 0) return NextResponse.json({ error: "Informe um valor maior que zero." }, { status: 400 });
         data.valor = Math.round(v * 100) / 100;
+        data.estimada = false; // o dono informou o valor: deixa de ser aproximado
       }
       if (body.data_vencimento !== undefined) {
         const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(body.data_vencimento));

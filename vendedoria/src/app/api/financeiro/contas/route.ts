@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { garantirContasDeContratos } from "@/lib/finance/contratos-despesa";
+import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
 
 async function requireAdmin() {
   const session = await auth();
@@ -12,6 +14,10 @@ async function requireAdmin() {
 export async function GET(req: NextRequest) {
   try {
     await requireAdmin();
+
+    // Contratos (parcelas, água, luz…) geram as contas do mês e do seguinte sozinhos.
+    await semearContratosDespesaIniciais().catch((e) => console.error("[contas] contratos iniciais:", e));
+    await garantirContasDeContratos().catch((e) => console.error("[contas] gerar contas de contratos:", e));
 
     const status = new URL(req.url).searchParams.get("status");
     const where: Record<string, unknown> = {};

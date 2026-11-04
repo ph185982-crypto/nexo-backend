@@ -3,14 +3,13 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import {
-  Wallet, FileText, Receipt, Landmark,
+  Wallet, FileText, Receipt,
   PieChart, TrendingUp, LineChart, ShieldAlert, Loader2, History, BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OverviewTab } from "@/components/financeiro/OverviewTab";
 import { ExtratoTab } from "@/components/financeiro/ExtratoTab";
 import { ContasTab } from "@/components/financeiro/ContasTab";
-import { DividasTab } from "@/components/financeiro/DividasTab";
 import { OrcamentosTab } from "@/components/financeiro/OrcamentosTab";
 import { ReceitasTab } from "@/components/financeiro/ReceitasTab";
 import { ProjecaoTab } from "@/components/financeiro/ProjecaoTab";
@@ -22,7 +21,6 @@ const tabs = [
   { key: "dre",         label: "DRE",         icon: BarChart3 },
   { key: "extrato",     label: "Extrato",     icon: FileText },
   { key: "contas",      label: "Contas",       icon: Receipt },
-  { key: "dividas",     label: "Dividas",      icon: Landmark },
   { key: "orcamentos",  label: "Orcamentos",   icon: PieChart },
   { key: "receitas",    label: "Receitas",      icon: TrendingUp },
   { key: "projecao",    label: "Projecao",      icon: LineChart },
@@ -90,7 +88,6 @@ export default function FinanceiroPage() {
         {activeTab === "dre"         && <DreTab />}
         {activeTab === "extrato"     && <ExtratoTab />}
         {activeTab === "contas"      && <ContasTab />}
-        {activeTab === "dividas"     && <DividasTab />}
         {activeTab === "orcamentos"  && <OrcamentosTab />}
         {activeTab === "receitas"    && <ReceitasTab />}
         {activeTab === "projecao"    && <ProjecaoTab />}
