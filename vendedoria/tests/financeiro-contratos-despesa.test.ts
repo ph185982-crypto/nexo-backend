@@ -7,6 +7,7 @@ import {
 } from "@/lib/finance/contratos-despesa";
 import { CONTRATOS_INICIAIS } from "@/lib/finance/contratos-despesa-iniciais";
 import { nivelDoOrcamento } from "@/lib/finance/orcamentos";
+import { ORCAMENTOS_INICIAIS } from "@/lib/finance/orcamentos-iniciais";
 import { montarMensagemOrcamentos } from "@/lib/max/crons/orcamentos-alerta";
 
 const temBanco = Boolean(process.env.DATABASE_URL);
@@ -243,5 +244,27 @@ test("limite de gasto: soma as grafias da categoria, avisa a 80% e de novo a 100
     await prisma.alertaEnviadoMax.deleteMany({ where: { chave: { in: [`orc-80-${categoria}-2031-03`, `orc-estourado-${categoria}-2031-03`] } } });
     await prisma.transacao.deleteMany({ where: { descricao: tag } });
     await prisma.orcamentoMax.delete({ where: { id: orc.id } });
+  }
+});
+
+test("limites iniciais entram uma vez, respeitam o que o dono já definiu e não voltam se apagados", { skip: !temBanco, timeout: 60_000 }, async () => {
+  const { prisma } = await import("@/lib/prisma/client");
+  const { semearOrcamentosIniciais } = await import("@/lib/finance/orcamentos-iniciais");
+  if ((await prisma.alertaEnviadoMax.findUnique({ where: { chave: "seed-orcamentos-v1" } })) || (await prisma.orcamentoMax.count()) > 0) return; // banco de dev já mexido
+  assert.ok(ORCAMENTOS_INICIAIS.every((o) => o.limite_mensal > 0));
+  assert.ok(ORCAMENTOS_INICIAIS.some((o) => o.categoria === "Cartão de crédito"));
+  // o dono já tinha definido a Alimentação (com grafia diferente): não sobrescreve
+  const dele = await prisma.orcamentoMax.create({ data: { categoria: "alimentacao", limite_mensal: 900 } });
+  try {
+    assert.equal((await semearOrcamentosIniciais()).criados, ORCAMENTOS_INICIAIS.length - 1);
+    assert.equal((await semearOrcamentosIniciais()).criados, 0);
+    assert.equal((await prisma.orcamentoMax.findUnique({ where: { id: dele.id } }))?.limite_mensal, 900);
+    // apagou um: não volta
+    await prisma.orcamentoMax.delete({ where: { categoria: "Lazer" } });
+    await semearOrcamentosIniciais();
+    assert.equal(await prisma.orcamentoMax.count({ where: { categoria: "Lazer" } }), 0);
+  } finally {
+    await prisma.orcamentoMax.deleteMany({});
+    await prisma.alertaEnviadoMax.deleteMany({ where: { chave: "seed-orcamentos-v1" } });
   }
 });

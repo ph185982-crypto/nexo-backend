@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
 import { gastoDaCategoria, gastoPorCategoriaNoMes } from "@/lib/finance/orcamentos";
+import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
 
 async function requireAdmin() {
   const session = await auth();
@@ -19,6 +20,7 @@ export async function GET() {
     );
     const mesAtual = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
+    await semearOrcamentosIniciais().catch((e) => console.error("[orcamentos] limites iniciais:", e));
     const orcamentos = await prisma.orcamentoMax.findMany({
       orderBy: { categoria: "asc" },
     });

@@ -21,6 +21,8 @@ import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { getOwnerProvider, MAX_OWNER_NUMBER, resolveToken } from "../config";
 import { garantirContasDeContratos } from "@/lib/finance/contratos-despesa";
 import { avisarOrcamentos } from "./orcamentos-alerta";
+import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
+import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
 
 export const chaveVespera = (contaId: string, vencimentoISO: string) => `conta-vespera-${contaId}-${vencimentoISO}`;
 
@@ -178,6 +180,9 @@ export function acionarAvisoContasSePreciso(origem: string, opts: { forcar?: boo
   if (!opts.forcar && agora - ultimaRodada < INTERVALO_MS) return "throttle";
   ultimaRodada = agora;
   const trabalho = async () => {
+    // Contratos e limites combinados com o dono entram uma única vez (marca no banco).
+    await semearContratosDespesaIniciais().catch((e) => console.error(`[Max] contratos iniciais | origem=${origem}:`, e));
+    await semearOrcamentosIniciais().catch((e) => console.error(`[Max] limites iniciais | origem=${origem}:`, e));
     try {
       await avisarContasDeAmanha();
     } catch (e) {
