@@ -76,9 +76,20 @@ export async function processarEventoVendedorIa(evento: EventoVendedorIa): Promi
 }
 
 async function leadQualificado(lead: NonNullable<EventoVendedorIa["lead"]>): Promise<ResultadoEvento> {
-  // Um lead do Vendedor IA tem no máximo uma oportunidade em andamento.
-  const aberta = await prisma.oportunidade.findFirst({ where: { vendedorIaLeadId: lead.id, status: "EM_ANDAMENTO" }, select: { id: true } });
-  if (aberta) return { status: "IGNORADO", detalhe: "já existe oportunidade em andamento para este lead", oportunidadeId: aberta.id };
+  // Um lead do Vendedor IA tem no máximo uma oportunidade em andamento. Se ela ainda está antes da
+  // qualificação (ex.: veio da importação em "Leads"), avança; se já passou, não mexe.
+  const aberta = await prisma.oportunidade.findFirst({
+    where: { vendedorIaLeadId: lead.id, status: "EM_ANDAMENTO" },
+    select: { id: true, funilId: true, etapa: { select: { ordem: true } } },
+  });
+  if (aberta) {
+    const alvo = await etapaDeQualificacao(aberta.funilId);
+    if (alvo && aberta.etapa.ordem < alvo.ordem) {
+      await moverOportunidade({ oportunidadeId: aberta.id, etapaId: alvo.id, origem: "INTEGRACAO", ator: "vendedor-ia", motivo: "Vendedor IA: lead qualificado" });
+      return { status: "PROCESSADO", detalhe: "oportunidade avançada para a qualificação", oportunidadeId: aberta.id };
+    }
+    return { status: "IGNORADO", detalhe: "já existe oportunidade em andamento para este lead", oportunidadeId: aberta.id };
+  }
 
   const telefone = normalizarTelefone(lead.telefone);
   const nome = (lead.nome ?? "").trim() || (telefone ? `Lead ${telefone.slice(-4)}` : "Lead sem nome");
@@ -101,10 +112,9 @@ async function leadQualificado(lead: NonNullable<EventoVendedorIa["lead"]>): Pro
     if (pessoa.empresaId !== empresa.id) await prisma.contato.update({ where: { id: pessoa.id }, data: { empresaId: empresa.id } });
   }
 
-  const funil = await prisma.funil.findFirst({ where: { padrao: true, ativo: true }, orderBy: { ordem: "asc" }, include: { etapas: { orderBy: { ordem: "asc" } } } });
+  const funil = await prisma.funil.findFirst({ where: { padrao: true, ativo: true }, orderBy: { ordem: "asc" }, select: { id: true } });
   if (!funil) throw new Error("Nenhum funil padrão configurado");
-  const abertas = funil.etapas.filter((e) => e.tipo === "ABERTA");
-  const etapa = abertas.find((e) => /qualifica/i.test(e.nome)) ?? abertas[0];
+  const etapa = await etapaDeQualificacao(funil.id);
   if (!etapa) throw new Error("Funil padrão sem etapa aberta");
 
   const op = await criarOportunidade({
@@ -123,6 +133,12 @@ async function leadQualificado(lead: NonNullable<EventoVendedorIa["lead"]>): Pro
 
 
 type Lead = NonNullable<EventoVendedorIa["lead"]>;
+
+/** Etapa aberta onde o lead qualificado entra: a que tem "qualifica" no nome, senão a primeira aberta. */
+async function etapaDeQualificacao(funilId: string) {
+  const abertas = await prisma.etapa.findMany({ where: { funilId, tipo: "ABERTA" }, orderBy: { ordem: "asc" }, select: { id: true, nome: true, ordem: true } });
+  return abertas.find((e) => /qualifica/i.test(e.nome)) ?? abertas[0] ?? null;
+}
 
 async function tratar(e: EventoVendedorIa): Promise<ResultadoEvento> {
   if (!e.lead) return { status: "IGNORADO", detalhe: `tipo ${e.tipo} sem lead` };

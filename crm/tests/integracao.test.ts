@@ -81,6 +81,33 @@ test("evento lead.qualificado cria contato, empresa e oportunidade; reenviar nã
   }
 });
 
+test("lead.qualificado avança oportunidade importada que está antes da qualificação; depois dela não mexe", async () => {
+  const c = await cenario(true);
+  const { criarOportunidade, moverOportunidade } = await import("@/lib/funil/mover");
+  const k = gerarChave();
+  const reg = await prisma.chaveIntegracao.create({ data: { nome: "teste", prefixo: k.prefixo, hash: k.hash } });
+  const leadId = `lead-imp-${c.marca}`;
+  const ev = (sufixo: string) => ({ eventoId: `imp-${sufixo}-${c.marca}`, tipo: "lead.qualificado", marca: c.marca, lead: { id: leadId, nome: `Dono ${c.marca}` } });
+  try {
+    const op = await criarOportunidade({ nome: `Importada ${c.marca}`, contatoId: c.contato.id, funilId: c.funil.id, etapaId: c.leads.id, vendedorIaLeadId: leadId, ator: "teste" });
+    const r1 = await (await postEvento(req(ev("a"), k.chave))).json();
+    assert.deepEqual([r1.status, r1.oportunidadeId], ["PROCESSADO", op.id]);
+    assert.equal((await prisma.oportunidade.findUnique({ where: { id: op.id } }))!.etapaId, c.qualif.id, "foi para a qualificação");
+    const h = await c.historico(op.id);
+    assert.deepEqual(h.map((x) => [x.paraEtapaNome, x.origem]), [["Leads", "CRIACAO"], ["Qualificação", "INTEGRACAO"]]);
+    assert.equal(await prisma.oportunidade.count({ where: { vendedorIaLeadId: leadId } }), 1, "não criou outra");
+
+    await moverOportunidade({ oportunidadeId: op.id, etapaId: c.proposta.id, origem: "MANUAL", ator: "teste" });
+    const r2 = await (await postEvento(req(ev("b"), k.chave))).json();
+    assert.equal(r2.status, "IGNORADO", "já passou da qualificação: não volta");
+    assert.equal((await prisma.oportunidade.findUnique({ where: { id: op.id } }))!.etapaId, c.proposta.id);
+  } finally {
+    await prisma.eventoIntegracao.deleteMany({ where: { eventoId: { contains: c.marca } } });
+    await prisma.chaveIntegracao.delete({ where: { id: reg.id } });
+    await c.limpar();
+  }
+});
+
 test("eventos escalado, reunião, intenção, perdido e ganho: efeito no CRM e idempotência", async () => {
   const { processarEventoVendedorIa } = await import("@/lib/integracao/vendedor-ia");
   const { calcularSaude } = await import("@/lib/atividades/feedback");
