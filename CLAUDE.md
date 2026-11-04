@@ -22,9 +22,9 @@ Branches: `master` = production. `claude/prf-adaptive-study-app-xc2x76` = featur
 ## crm (CRM Avanteza — ferramenta própria, em `crm/`)
 
 - Next.js + Prisma, **banco próprio** (não compartilha tabelas com o `vendedoria/`); a ligação é por eventos HTTP, contrato em `crm/docs/integracao.md`. Ver `crm/README.md`.
-- Vercel: projeto **ainda não criado**. Ao criar: Root Directory = `crm`, variáveis em `crm/.env.example`. (Quando existir, registrar aqui `projectId` e o alias, como no vendedoria.)
-  O acesso MCP da Vercel nas sessões do Claude **não tem permissão** para criar projeto nem ler/gravar variáveis de ambiente (403): criar o projeto, o banco e as variáveis é passo manual no painel. Deploy em projeto existente funciona.
+- Vercel: projeto `nexo-crm`, projectId `prj_Xzk75OXp2fm02XwnOUtpr0P84mvn`, teamId `team_CnHo7fcjYzTZFbSiSFrNY38j` (criado 2026-11-04). Produção: `nexo-crm-tawny.vercel.app` (o nome `nexo-crm.vercel.app` já era de outra conta). Root Directory = `crm`, deploy do `master`. Health: `GET /api/health` → `{"status":"ok","db":"connected"}`.
+  O acesso MCP da Vercel nas sessões do Claude **não tem permissão** para criar projeto nem ler/gravar variáveis de ambiente (403). Deploy em projeto existente funciona.
   **Banco (criado 2026-11-03):** schema `crm` dentro do projeto Supabase `nexo-vendedoria` (ref `kwzbbjhteanvibfqwkky`) — o plano gratuito não permite um 3º projeto. Usuário próprio `crm_app` (dono do schema, `search_path = crm`, sem acesso às tabelas do vendedoria em `public`). Conexão pelo pooler `aws-0-us-east-1.pooler.supabase.com`, usuário `crm_app.kwzbbjhteanvibfqwkky`, com `?schema=crm` nas duas URLs. Migrações, seed (funil Vendas, motivos, admin) e a chave "Vendedor IA" já aplicados. Este ambiente não alcança a porta do Postgres: mudanças diretas no banco vão pela API SQL do Supabase.
-  Até o CRM existir, o Vendedor IA fica com `CRM_URL`/`CRM_API_KEY` vazios e o `/api/health` mostra `"crm":"desligado"` — é o esperado.
+  O Vendedor IA tem `CRM_URL=https://nexo-crm-tawny.vercel.app` e `CRM_API_KEY` (chave "Vendedor IA") configurados; o `/api/health` dele mostra o resultado do envio no campo `crm`.
 - **Mesma armadilha do vendedoria:** o `.vercelignore` da raiz lista `crm/`; se `crm/.vercelignore` for apagado, o projeto cai no da raiz e faz deploy vazio (build `READY`, todas as rotas 404). Mantenha `crm/.vercelignore`.
 - Regra de código: só `crm/src/lib/funil/mover.ts` cria oportunidade ou troca a etapa dela (há teste que falha se outro arquivo fizer).
