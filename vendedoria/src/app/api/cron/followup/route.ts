@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { processarFollowupsVencidos } from "@/lib/followup/processar";
 import { drainWebhookQueue } from "@/lib/jobs/webhook-queue";
+import { avisarContasDeAmanha } from "@/lib/max/crons/contas-vespera";
 
 // Entrada por HTTP do processador de follow-ups (GitHub Actions / cron externo).
 // A lógica mora em lib/followup/processar.ts e também é acionada sem segredo
@@ -18,5 +19,7 @@ export async function GET(req: Request) {
   // Lógica compartilhada com o dreno oportunista do webhook (claim atômico,
   // seguro rodar em paralelo com ele).
   const queue = await drainWebhookQueue(20);
-  return NextResponse.json({ ok: true, followups, queue });
+  // Aviso de véspera das contas a pagar (dedup no banco; fora das 8h–21h não faz nada).
+  const contas = await avisarContasDeAmanha().catch((e) => ({ situacao: "erro" as const, contas: 0, erro: String(e) }));
+  return NextResponse.json({ ok: true, followups, queue, contas });
 }

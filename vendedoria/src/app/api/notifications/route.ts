@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { acionarFollowupsSePreciso } from "@/lib/followup/gatilho";
+import { acionarAvisoContasSePreciso } from "@/lib/max/crons/contas-vespera";
 
 export async function GET(req: NextRequest) {
   // Tela do CRM aberta = follow-ups vencidos saem (ver lib/followup/gatilho.ts).
   acionarFollowupsSePreciso("crm").catch(() => {});
+  acionarAvisoContasSePreciso("crm");
   try {
     await requireAdmin();
   } catch {

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
 import { getOwnerProvider, MAX_OWNER_NUMBER, resolveToken, getBrasiliaNow, formatMes } from "../config";
+import { chaveVespera } from "./contas-vespera";
 
 async function tryAlert(chave: string): Promise<boolean> {
   try {
@@ -38,9 +39,14 @@ export async function dispatchAlertas(): Promise<number> {
       if (await tryAlert(`conta-atrasada-${c.id}-${hoje}`)) {
         alertas.push(`🚨 Conta ATRASADA: ${c.descricao} — R$ ${c.valor.toFixed(2).replace(".", ",")} (venc. ${new Date(c.data_vencimento).toLocaleDateString("pt-BR")})`);
       }
-    } else if (venc === amanhaStr || venc === em2diasStr) {
+    } else if (venc === amanhaStr) {
+      // Mesma trava do aviso de véspera dedicado (contas-vespera.ts): quem rodar primeiro avisa.
+      if (await tryAlert(chaveVespera(c.id, venc))) {
+        alertas.push(`📅 Conta em breve: ${c.descricao} — R$ ${c.valor.toFixed(2).replace(".", ",")} (amanhã)`);
+      }
+    } else if (venc === em2diasStr) {
       if (await tryAlert(`conta-proxima-${c.id}-${hoje}`)) {
-        alertas.push(`📅 Conta em breve: ${c.descricao} — R$ ${c.valor.toFixed(2).replace(".", ",")} (${venc === amanhaStr ? "amanhã" : "em 2 dias"})`);
+        alertas.push(`📅 Conta em breve: ${c.descricao} — R$ ${c.valor.toFixed(2).replace(".", ",")} (em 2 dias)`);
       }
     }
   }
