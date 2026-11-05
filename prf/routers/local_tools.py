@@ -76,7 +76,9 @@ async def podcasts():
         for chapter in ep['chapters']:
             if chapter['title'] not in titles:
                 titles.append(chapter['title'])
-        episodes.append({'id': ep['id'], 'title': f"Episódio {ep['number']}",
+        conversa = ep.get('format') == 'conversa'
+        episodes.append({'id': ep['id'], 'title': f"Episódio {ep['number']}" + (' · conversa' if conversa else ''),
+                         'format': ep.get('format', 'leitura'),
                          'subtitle': ', '.join(titles), 'subject_name': ep['subject_name'],
                          'on_demand': False, 'duration_secs': ep['duration_secs'],
                          'segment_count': ep['segment_count']})

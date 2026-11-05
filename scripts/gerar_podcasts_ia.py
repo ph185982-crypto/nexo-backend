@@ -24,6 +24,14 @@ Etapas por episódio, cada uma em cache para retomar:
 Uso:
     GEMINI_API_KEY=... python scripts/gerar_podcasts_ia.py <pasta> [episodio ...]
 
+Publicar: copiar os .mp3 novos de <pasta> para a branch `audios` e
+<pasta>/manifest.json para a branch `audios` (manifest.json) e para
+prf/local/audio_manifest.json.
+
+Cota: no plano gratuito da API cada modelo aceita só 20 pedidos de texto por
+dia e a voz esgota em ~10 pedidos — dá ~1 episódio por dia. Um episódio usa
+17 pedidos de texto e ~12 de voz; com faturamento ativo, os 52 saem numa tarde.
+
 A chave só vem do ambiente; nunca vai para arquivo nem para o repositório.
 """
 from __future__ import annotations
@@ -57,6 +65,8 @@ TEXT_MODEL = os.getenv("PODCAST_TEXT_MODEL", "gemini-3.8-flash")
 ATTEMPTS = int(os.getenv("PODCAST_ATTEMPTS", "30"))
 TEXT_FALLBACKS = [m for m in os.getenv("PODCAST_TEXT_FALLBACKS", "gemini-3.6-flash,gemini-3.5-flash").split(",") if m]
 TTS_MODEL = os.getenv("PODCAST_TTS_MODEL", "gemini-3.8-flash-tts")
+# Mesmas vozes (Algieba/Sulafat) e mesmo formato de falas por locutor.
+TTS_FALLBACKS = [m for m in os.getenv("PODCAST_TTS_FALLBACKS", "gemini-3.8-flash-lite-tts").split(",") if m]
 HOSTS = {"Marcos": "Algieba", "Julia": "Sulafat"}
 SEGMENTS = 8
 WORDS_PER_SEGMENT = 720
@@ -85,6 +95,10 @@ def log(msg: str) -> None:
     print(f"{time.strftime('%H:%M:%S')} {msg}", flush=True)
 
 
+class QuotaExhausted(RuntimeError):
+    pass
+
+
 class Gemini:
     def __init__(self, key: str):
         verify = os.getenv("SSL_CERT_FILE") or True
@@ -92,18 +106,28 @@ class Gemini:
         self.headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
         self.text_sem = asyncio.Semaphore(TEXT_CONCURRENCY)
         self.tts_sem = asyncio.Semaphore(TTS_CONCURRENCY)
+        self.exhausted: set[str] = set()
 
     async def _post(self, model: str | list[str], body: dict, sem: asyncio.Semaphore) -> dict:
         error = None
         models = [model] if isinstance(model, str) else model
         for attempt in range(ATTEMPTS):
-            model = models[attempt % len(models)]
+            live = [m for m in models if m not in self.exhausted]
+            if not live:
+                raise QuotaExhausted(f"cota diária esgotada em {', '.join(models)}")
+            model = live[attempt % len(live)]
             async with sem:
                 try:
                     r = await self.client.post(f"{API}/{model}:generateContent", headers=self.headers, json=body)
                     if r.status_code == 200:
                         return r.json()
                     error = f"HTTP {r.status_code}: {r.text[:300]}"
+                    # Cota por dia acabou: esperar não adianta (só volta no dia
+                    # seguinte). Tira o modelo da rotação.
+                    if r.status_code == 429 and "PerDay" in r.text:
+                        self.exhausted.add(model)
+                        log(f"  {model}: cota diária esgotada")
+                        continue
                     if r.status_code in (400, 401, 403, 404):
                         raise RuntimeError(error)
                 except httpx.HTTPError as e:
@@ -136,7 +160,7 @@ class Gemini:
                 "speakerVoiceConfigs": [{"speaker": s, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v}}}
                                         for s, v in HOSTS.items()]}}},
         }
-        data = await self._post(TTS_MODEL, body, self.tts_sem)
+        data = await self._post([TTS_MODEL, *TTS_FALLBACKS], body, self.tts_sem)
         part = data["candidates"][0]["content"]["parts"][0]["inlineData"]
         raw = base64.b64decode(part["data"])
         if raw[:4] == b"RIFF":
@@ -440,17 +464,19 @@ async def main(out: Path, only: list[str]) -> int:
     results = await asyncio.gather(*[one(e) for e in episodes])
     ok = [r for r in results if r]
     log(f"concluídos {len(ok)}/{len(episodes)}")
-    done_all = sorted((json.loads(p.read_text()) for p in (out / ".trabalho").glob("*/done.json")),
-                      key=lambda e: [x["id"] for x in base["episodes"]].index(e["id"]))
+    # Manifesto completo: episódio em conversa onde já existe, o de trajeto
+    # (leitura) onde ainda não. Pode ser publicado aos poucos, conforme a
+    # cota da API permite gerar.
+    ready = {e["id"]: e for e in (json.loads(p.read_text()) for p in (out / ".trabalho").glob("*/done.json"))}
+    merged = [ready.get(e["id"], e) for e in base["episodes"]]
     topics: dict[str, dict] = {}
-    for e in done_all:
+    for e in merged:
         for c in e["chapters"]:
             topics.setdefault(c["topic_id"], {"episode": e["id"], "start": c["start"]})
-    manifest = {"version": 2, "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "voices": HOSTS, "models": {"text": TEXT_MODEL, "tts": TTS_MODEL},
-                "episodes": done_all, "topics": topics}
+    manifest = {**base, "version": 2, "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "episodes": merged, "topics": topics}
     (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1))
-    log(f"manifesto: {len(done_all)} episódios, {sum(e['duration_secs'] for e in done_all) / 3600:.1f} h")
+    log(f"manifesto: {len(ready)} de {len(merged)} episódios em conversa")
     return 0 if len(ok) == len(episodes) else 1
 
 
