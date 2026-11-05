@@ -1303,6 +1303,7 @@ button { font-family:inherit; }
 }
 </style>
 <link rel="stylesheet" href="/api/prf/local/assets/refresh.css">
+<link rel="stylesheet" href="/api/prf/local/assets/trilha.css">
 </head>
 <body>
 
@@ -1318,12 +1319,13 @@ button { font-family:inherit; }
 
 <script src="/api/prf/local/assets/study-state.js"></script>
 <script src="/api/prf/local/assets/local-client.js"></script>
+<script src="/api/prf/local/assets/trilha.js"></script>
 <script>
 const API = '';
 
 const S = {
   theme: localStorage.getItem('prf_theme') || 'auto',
-  tab: 'dashboard', subView: null,
+  tab: 'trilha', subView: null,
   token: localStorage.getItem('prf_token'),
   localMode: localStorage.getItem('prf_local_mode') === '1',
   loading: {},
@@ -3387,6 +3389,8 @@ function viewMore() {
       <div class="display-hero">Ferramentas de <em>estudo</em></div>
     </div>
     ${moreGroup('O plano', [
+      { on:"switchTab('dashboard')", icon:I.home, cls:'accent', h:'Missão do dia',
+        p:'Painel do dia: missão adaptativa, revisões e estimativa de aprovação' },
       { on:'openPlano()', icon:I.calendar, cls:'gold', h:'Minha trajetória',
         p:'Calendário até a prova — o que já fechou e o que vem' },
       { on:'openTrilha()', icon:I.target, cls:'', h:'Trilha do edital',
@@ -3427,7 +3431,7 @@ function viewMore() {
 // ===== NAV / RENDER =====
 function renderNav() {
   const tabs = [
-    { id:'dashboard', icon:I.home,       label:'Início' },
+    { id:'trilha',    icon:TI.path,      label:'Trilha' },
     { id:'practice',  icon:I.book,       label:'Estudar' },
     { id:'simulado',  icon:I.target,     label:'Simulado' },
     { id:'audio',     icon:I.headphones, label:'Áudio' },
@@ -3440,12 +3444,16 @@ function renderNav() {
 
 function render() {
   const views = {
-    dashboard: viewDashboard, practice: viewPractice, simulado: viewSimulado,
+    trilha: viewCaminho, dashboard: viewDashboard, practice: viewPractice, simulado: viewSimulado,
     audio: viewAudio, more: viewMore,
   };
   const inSim = S.tab === 'simulado' && S.sim && !S.simResult;
   const inTutor = S.subView === 'tutor';
   const inPodTela = S.subView === 'podcastNow';
+  // Na trilha, um render() vindo de fora (áudio, toast de sincronia) não
+  // pode jogar a pessoa de volta ao topo do caminho.
+  const prevMain = document.getElementById('main-content');
+  const keepScroll = S.tab === 'trilha' && prevMain?.dataset.view === 'trilha' ? prevMain.scrollTop : null;
   document.getElementById('app').innerHTML = `
     <main class="content" id="main-content" data-view="${S.tab}">${(views[S.tab] || viewDashboard)()}</main>
     ${(inTutor || inPodTela) ? '' : playerBar()}
@@ -3453,6 +3461,8 @@ function render() {
     ${viewInstallGuide()}
   `;
   const mc = document.getElementById('main-content');
+  if (mc && keepScroll != null) mc.scrollTop = keepScroll;
+  if (S.tab === 'trilha') trailAfterRender();
   if (mc) mc.addEventListener('scroll', () => {
     const ab = document.getElementById('appbar');
     if (ab) ab.classList.toggle('scrolled', mc.scrollTop > 4);
@@ -3471,6 +3481,7 @@ function switchTab(tab) {
   S.tab = tab; S.subView = null; S.answerResult = null; S.answered = {};
   render(); scrollTop();
   if (tab === 'dashboard') loadDashboard();
+  if (tab === 'trilha') { T.scrollToCurrent = true; if (!T.path) loadCaminho(); else trailAfterRender(); }
   if (tab === 'practice' && !S.subjects) loadSubjects();
   if (tab === 'audio' && !S.lessons) loadLessons();
   if (tab === 'audio' && !S.podcasts) loadPodcasts();
@@ -5203,7 +5214,7 @@ async function init() {
   document.getElementById('splash').classList.add('hide');
   setTimeout(() => document.getElementById('splash')?.remove(), 400);
   render();
-  loadDashboard();
+  if (S.tab === 'trilha') loadCaminho(); else loadDashboard();
   loadSubjects();
   loadCoverage();
   resumeSimuladoIfAny();

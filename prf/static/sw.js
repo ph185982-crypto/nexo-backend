@@ -3,7 +3,7 @@
  * Enables offline-first PWA experience with cache-first strategy
  */
 
-const CACHE_NAME = 'prf-estudo-v3';
+const CACHE_NAME = 'prf-estudo-v4';
 const API_CACHE = 'prf-api-v3';
 const ASSETS_CACHE = 'prf-assets-v3';
 
@@ -14,7 +14,9 @@ const CRITICAL_ASSETS = [
   '/sw.js',
   '/api/prf/local/assets/study-state.js',
   '/api/prf/local/assets/local-client.js',
-  '/api/prf/local/assets/refresh.css'
+  '/api/prf/local/assets/refresh.css',
+  '/api/prf/local/assets/trilha.js',
+  '/api/prf/local/assets/trilha.css'
 ];
 
 // Install: cache critical assets

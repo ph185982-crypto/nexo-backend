@@ -19,10 +19,30 @@ router = APIRouter()
 async def study_asset(name: str):
     from pathlib import Path
     from fastapi.responses import FileResponse
-    if name not in {'study-state.js', 'local-client.js', 'refresh.css'}:
+    if name not in {'study-state.js', 'local-client.js', 'refresh.css', 'trilha.js', 'trilha.css'}:
         raise HTTPException(404, 'Arquivo não encontrado')
     path = Path(__file__).resolve().parent.parent / 'static' / name
     return FileResponse(path, headers={'Cache-Control': 'no-cache'})
+
+
+@router.get('/trilha/caminho')
+async def trail_path(exam: str = Query('PMGO', pattern='^(PMGO|PRF)$')):
+    """O edital inteiro como um caminho único de unidades (uma por tópico),
+    intercaladas entre matérias pelo peso na prova. Sem estado: o navegador
+    sabe quais lições já fez."""
+    from prf.local.trilha_licoes import build_path
+
+    return build_path(exam)
+
+
+@router.get('/trilha/licao/{lesson_id}')
+async def trail_lesson(lesson_id: str, attempt: int = Query(0, ge=0, le=1000)):
+    from prf.local.trilha_licoes import build_lesson
+
+    lesson = build_lesson(lesson_id, attempt)
+    if not lesson:
+        raise HTTPException(404, 'Lição não encontrada')
+    return lesson
 
 
 @router.get('/catalog')

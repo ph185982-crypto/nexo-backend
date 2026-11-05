@@ -119,3 +119,38 @@ class LocalToolsTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TrailTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        app = FastAPI()
+        app.include_router(router, prefix='/local')
+        cls.client = TestClient(app)
+
+    def test_path_interleaves_subjects_and_every_lesson_builds(self):
+        path = self.client.get('/local/trilha/caminho?exam=PMGO').json()
+        units = path['units']
+        self.assertGreater(len(units), 50)
+        self.assertGreater(len({u['subject_slug'] for u in units[:8]}), 4)
+        for unit in units:
+            for lesson in unit['lessons']:
+                r = self.client.get(f"/local/trilha/licao/{lesson['id']}")
+                self.assertEqual(r.status_code, 200, lesson['id'])
+                body = r.json()
+                if lesson['kind'] != 'audio':
+                    self.assertTrue(body['steps'], lesson['id'])
+                for step in body['steps']:
+                    if step['type'] == 'lacuna':
+                        self.assertIn(step['answer'], step['options'])
+                        self.assertEqual(len(set(step['options'])), len(step['options']))
+                        self.assertIn(step['said'], step['source'])
+                    if step['type'] == 'multipla':
+                        self.assertIn(step['answer'], [o['letter'] for o in step['options']])
+
+    def test_lesson_is_stable_per_attempt_and_rejects_unknown(self):
+        lesson_id = self.client.get('/local/trilha/caminho').json()['units'][2]['lessons'][0]['id']
+        a = self.client.get(f'/local/trilha/licao/{lesson_id}?attempt=1').json()
+        self.assertEqual(a, self.client.get(f'/local/trilha/licao/{lesson_id}?attempt=1').json())
+        self.assertEqual(self.client.get('/local/trilha/licao/nada.l1').status_code, 404)
+        self.assertEqual(self.client.get('/local/trilha/caminho?exam=XYZ').status_code, 422)

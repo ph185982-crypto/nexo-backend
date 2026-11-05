@@ -31,6 +31,21 @@ test('Mission history updates a single row',()=>{
  assert.equal(s.mission_history.length,1);assert.equal(s.mission_history[0].mission_completed,true);
 });
 test('All frontend scripts parse',()=>{
- for(const name of ['study-state.js','local-client.js','sw.js'])new vm.Script(fs.readFileSync(__dirname+'/'+name,'utf8'),{filename:name});
+ for(const name of ['study-state.js','local-client.js','trilha.js','sw.js'])new vm.Script(fs.readFileSync(__dirname+'/'+name,'utf8'),{filename:name});
  const html=fs.readFileSync(__dirname+'/app.html','utf8');for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(m[1]);
+});
+test('Trail lessons: pass threshold, daily XP, retry and backup',()=>{
+ const now='2026-11-05T15:00:00Z';
+ let r=state.trailLesson(state.initial(),{lesson_id:'t-1.l1',total:4,correct:4},now);
+ assert.equal(r.passed,true);assert.equal(r.bonus,15);assert.equal(state.xpToday(r.state,now),15);assert.equal(r.state.streak,1);
+ r=state.trailLesson(r.state,{lesson_id:'t-1.r',total:10,correct:7,pass_ratio:.8},now);
+ assert.equal(r.passed,false);assert.equal(r.bonus,0);assert.equal(r.state.trail.done['t-1.r'],undefined);
+ r=state.trailLesson(r.state,{lesson_id:'t-1.r',total:10,correct:9,pass_ratio:.8},now);
+ assert.equal(r.passed,true);assert.equal(r.state.trail.done['t-1.r'].best,90);
+ assert.throws(()=>state.trailLesson(r.state,{lesson_id:"x');alert(1)//",total:1,correct:1}));
+ const s=state.answer(r.state,{question_id:'q-9',is_correct:true},now);
+ assert.equal(state.xpToday(s,now),15+10+10);
+ const back=state.parseBackup(JSON.stringify(state.exportBackup(s)));
+ assert.deepEqual(back.trail,s.trail);assert.deepEqual(back.xp_days,s.xp_days);
+ assert.deepEqual(state.normalize({xp:5}).trail,{done:{},goal:100});
 });
