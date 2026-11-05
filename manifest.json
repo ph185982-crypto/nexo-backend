@@ -255,9 +255,9 @@
    "subject_name": "Direito Penal",
    "number": 1,
    "title": "Direito Penal · Episódio 1",
-   "file": "direito-penal-01-7b35f90789.mp3",
-   "bytes": 15225696,
-   "duration_secs": 2538,
+   "file": "direito-penal-01-ia-14a5408204.mp3",
+   "bytes": 13478544,
+   "duration_secs": 2246,
    "chapters": [
     {
      "topic_id": "54d74d33-d162-5118-b9e8-80c5ec91d98a",
@@ -267,20 +267,22 @@
     {
      "topic_id": "ce526efd-0bbe-563f-86c7-53b100956829",
      "title": "Aplicação da lei penal",
-     "start": 254.45
+     "start": 240.75
     },
     {
      "topic_id": "a1a54482-abc9-5cfa-b995-71c75745bed3",
      "title": "Crime",
-     "start": 922.49
+     "start": 1235.53
     }
    ],
    "boundaries": [
-    254.45,
-    922.49,
-    2537.62
+    240.75,
+    1235.53,
+    2246.36
    ],
-   "segment_count": 3
+   "segment_count": 3,
+   "format": "conversa",
+   "problems_fixed": 8
   },
   {
    "id": "direito-penal-02",
@@ -1624,11 +1626,11 @@
   },
   "ce526efd-0bbe-563f-86c7-53b100956829": {
    "episode": "direito-penal-01",
-   "start": 254.45
+   "start": 240.75
   },
   "a1a54482-abc9-5cfa-b995-71c75745bed3": {
    "episode": "direito-penal-01",
-   "start": 922.49
+   "start": 1235.53
   },
   "46dd063f-3f74-51d6-9969-c622cba10a4a": {
    "episode": "direito-penal-02",
