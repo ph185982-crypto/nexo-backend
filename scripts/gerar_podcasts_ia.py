@@ -244,9 +244,13 @@ def clean_turns(turns: list[dict]) -> list[dict]:
     return out
 
 
-def chunks_for_tts(turns: list[dict], max_words: int = 900) -> list[list[dict]]:
-    """Pedidos de voz de até ~6 min: o modelo devolve no máximo ~10 min e
-    perde fôlego no fim de pedidos longos."""
+TTS_MAX_WORDS = int(os.getenv("PODCAST_TTS_MAX_WORDS", "1200"))
+
+
+def chunks_for_tts(turns: list[dict], max_words: int = TTS_MAX_WORDS) -> list[list[dict]]:
+    """Pedidos de voz de até ~7,5 min: o modelo devolve no máximo ~10 min e
+    perde fôlego no fim de pedidos longos. Na cota gratuita a voz é o
+    gargalo, então um bloco inteiro cabe num pedido só (~8 por episódio)."""
     out, cur, n = [], [], 0
     for t in turns:
         w = len(t["text"].split())
