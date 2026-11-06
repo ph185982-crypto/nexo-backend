@@ -99,6 +99,10 @@ class QuotaExhausted(RuntimeError):
     pass
 
 
+class NoAudio(RuntimeError):
+    pass
+
+
 class Gemini:
     def __init__(self, key: str):
         verify = os.getenv("SSL_CERT_FILE") or True
@@ -165,7 +169,7 @@ class Gemini:
                 "speakerVoiceConfigs": [{"speaker": s, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v}}}
                                         for s, v in HOSTS.items()]}}},
         }
-        for attempt in range(4):
+        for attempt in range(2):
             data = await self._post([TTS_MODEL, *TTS_FALLBACKS], body, self.tts_sem)
             cand = (data.get("candidates") or [{}])[0]
             try:
@@ -175,7 +179,7 @@ class Gemini:
                 # A voz às vezes volta sem áudio (finishReason OTHER): pede de novo.
                 log(f"  voz sem áudio ({cand.get('finishReason', '?')}), tentando de novo")
         else:
-            raise RuntimeError("modelo de voz não devolveu áudio")
+            raise NoAudio("modelo de voz não devolveu áudio")
         raw = base64.b64decode(part["data"])
         if raw[:4] == b"RIFF":
             with wave.open(io.BytesIO(raw)) as w:
@@ -286,11 +290,21 @@ def silence(secs: float) -> bytes:
     return b"\x00\x00" * int(SAMPLE_RATE * secs)
 
 
-def to_mp3(pcm: bytes) -> bytes:
+CACHE_KBPS = 96
+
+
+def from_mp3(data: bytes) -> bytes:
+    import miniaudio
+
+    out = miniaudio.decode(bytes(data), output_format=miniaudio.SampleFormat.SIGNED16, nchannels=1, sample_rate=SAMPLE_RATE)
+    return out.samples.tobytes()
+
+
+def to_mp3(pcm: bytes, kbps: int = MP3_KBPS) -> bytes:
     import lameenc
 
     enc = lameenc.Encoder()
-    enc.set_bit_rate(MP3_KBPS)
+    enc.set_bit_rate(kbps)
     enc.set_in_sample_rate(SAMPLE_RATE)
     enc.set_channels(1)
     enc.set_quality(2)
@@ -381,20 +395,39 @@ async def voice_episode(g: Gemini, ep: dict, script: dict, work: Path) -> tuple[
     precisa ser: todos os pedidos saem em paralelo, limitados pelo semáforo, e
     o áudio é montado na ordem. Em sequência era ~1 h por episódio."""
 
-    async def voice_chunk(i: int, j: int, chunk: list[dict]) -> bytes:
-        path = work / f"seg_{i}_{j}.pcm"
-        if path.exists():
-            return path.read_bytes()
+    async def speak_checked(chunk: list[dict], label: str) -> bytes:
         expected = words(chunk) / 160 * 60
-        piece = b""
-        for attempt in range(3):
-            piece = await g.speak(chunk)
-            # Voz que corta o fim do texto devolve áudio curto demais.
-            if pcm_secs(piece) >= expected * 0.6:
-                break
-            log(f"  {ep['id']} bloco {i}.{j}: áudio curto ({pcm_secs(piece):.0f}s de ~{expected:.0f}s), refazendo")
-        path.write_bytes(piece)
-        return piece
+        try:
+            piece = b""
+            for attempt in range(3):
+                piece = await g.speak(chunk)
+                # Voz que corta o fim do texto devolve áudio curto demais.
+                if pcm_secs(piece) >= expected * 0.6:
+                    break
+                log(f"  {ep['id']} bloco {label}: áudio curto ({pcm_secs(piece):.0f}s de ~{expected:.0f}s), refazendo")
+            return piece
+        except NoAudio:
+            # Alguns trechos voltam sempre sem áudio inteiros e passam em
+            # partes menores.
+            if len(chunk) < 2:
+                raise
+            half = len(chunk) // 2
+            log(f"  {ep['id']} bloco {label}: sem áudio, dividindo em duas partes")
+            return (await speak_checked(chunk[:half], label + "a")) + silence(0.35) + \
+                (await speak_checked(chunk[half:], label + "b"))
+
+    async def voice_chunk(i: int, j: int, chunk: list[dict]) -> bytes:
+        # Guardado em MP3 (96 kbps): cabe na branch `audios`, então um
+        # reinício do ambiente não joga fora a cota de voz já gasta.
+        legacy, path = work / f"seg_{i}_{j}.pcm", work / f"seg_{i}_{j}.mp3"
+        if legacy.exists():
+            path.write_bytes(to_mp3(legacy.read_bytes(), CACHE_KBPS))
+            legacy.unlink()
+        if path.exists():
+            return from_mp3(path.read_bytes())
+        piece = await speak_checked(chunk, f"{i}.{j}")
+        path.write_bytes(to_mp3(piece, CACHE_KBPS))
+        return from_mp3(path.read_bytes())
 
     plan = [(i, j, chunk) for i, turns in enumerate(script["segments"])
             for j, chunk in enumerate(chunks_for_tts(turns))]
@@ -457,8 +490,8 @@ async def produce(g: Gemini, store, ep: dict, out: Path) -> dict | None:
                               for i in range(len(script["segments"]))),
     }
     done_path.write_text(json.dumps(result, ensure_ascii=False, indent=1))
-    for pcm_file in work.glob("seg_*.pcm"):
-        pcm_file.unlink()
+    for piece in [*work.glob("seg_*.pcm"), *work.glob("seg_*_*.mp3")]:
+        piece.unlink()
     log(f"{ep['id']}: PRONTO {result['duration_secs'] / 60:.1f} min, {len(mp3) / 1e6:.1f} MB, "
         f"{result['problems_fixed']} correções da revisão, {(time.monotonic() - t0) / 60:.1f} min")
     return result
