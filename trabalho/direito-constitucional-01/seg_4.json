@@ -1,0 +1,73 @@
+{
+ "topic_id": "a0b006e1-05e8-55b2-ad74-45699ecd687a",
+ "turns": [
+  {
+   "speaker": "Julia",
+   "text": "Avançando nos incisos do artigo quinto, a Constituição garante o direito de propriedade no inciso vinte e dois, mas exige logo no inciso vinte e três que ela atenda a sua função social. E tem uma regra de ouro no inciso vinte e cinco que tem tudo a ver com a rotina policial!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Essa cai demais para a Polícia Militar! Deixa eu ler a letra exata do inciso vinte e cinco do artigo quinto: \"no caso de iminente perigo público, a autoridade competente poderá usar de propriedade particular, assegurada ao proprietário indenização ulterior, se houver dano;\"."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Vamos traduzir isso de forma bem concreta. Imagina uma equipe em patrulhamento fazendo uma perseguição num município do interior de Goiás. Para interceptar um fugitivo armado que correu para uma área de mata fechada do outro lado de um rio, os policiais precisam de uma embarcação urgente. Eles veem um barco particular encostado na margem. O policial pode requisitar e usar esse barco na hora para conter a ameaça."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeito! Isso é o que a doutrina chama de requisição administrativa. A autoridade usa a propriedade particular no momento de iminente perigo público. E atenção ao detalhe que a banca cobra: a indenização é ulterior, ou seja, posterior, e somente se houver dano. Se usou o barco e devolveu intacto, o Estado não paga nada ao proprietário. Se quebrar o motor durante a perseguição, aí sim o Estado indeniza o prejuízo."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exato! Nada de indenização prévia nesse caso, porque a urgência não permite esperar. Agora, mudando de assunto, mas continuando no artigo quinto, vamos falar sobre o direito de petição e a obtenção de certidões. Vou ler o inciso trinta e quatro na alínea a: \"são a todos assegurados, independentemente do pagamento de taxas: a) o direito de petição aos Poderes Públicos em defesa de direitos ou contra ilegalidade ou abuso de poder;\"."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E a alínea b complementa garantindo a obtenção de certidões em repartições públicas para a defesa de direitos e esclarecimento de situações de interesse pessoal. O ponto central para a sua prova é guardar que esses dois direitos são gratuitos!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "E é justamente sobre isso o nosso desafio do bloco. Galera do trânsito, no patrulhamento, na corrida, foca aqui!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Manda a pergunta, Julia!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Pausa e pensa: o cidadão precisa pagar taxa para obter certidão em repartição pública destinada a esclarecer situação de interesse pessoal?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E aí, respondeu certo? A resposta é: Não! A Constituição garante expressamente que a obtenção de certidões para defesa de direitos e esclarecimento de interesse pessoal é gratuita e isenta de taxas administrativas."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Muito cuidado, porque a pegadinha da banca é dizer que a emissão de certidões para defesa de direitos exige o pagamento de taxas administrativas ou emolumentos. Se a questão cobrar taxa para isso, está totalmente errada!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Outra pegadinha pesada que o Instituto AOCP costuma armar diz respeito às garantias fundamentais e aos remédios constitucionais, especificamente o habeas corpus. A banca adora colocar na prova que o habeas corpus só pode ser impetrado de forma preventiva, e nunca de forma repressiva."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Caia nessa não! O habeas corpus serve, sim, tanto de forma preventiva quanto de forma repressiva. Ele protege a liberdade de locomoção contra qualquer ilegalidade ou abuso de poder."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeitamente! Se o cidadão está se achando ameaçado de sofrer violência ou coação na sua liberdade de locomoção, ele usa o habeas corpus preventivo. Agora, se ele já está sofrendo a violência ou coação na sua liberdade de ir e vir, ele usa o habeas corpus de forma repressiva."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Excelente esclarecimento, Marcos! E vale lembrar duas características essenciais que a banca sempre tenta confundir: o habeas corpus é uma ação totalmente gratuita e pode ser impetrado por qualquer pessoa, inclusive em favor de terceiro."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Resumindo o bloco para você não esquecer: propriedade atende à função social; uso de bem particular em iminente perigo público gera indenização posterior apenas se houver dano; certidões e petições são isentas de taxas; e o habeas corpus protege a liberdade de locomoção, de forma preventiva ou repressiva, sendo sempre gratuito."
+  }
+ ],
+ "problems": [
+  "A afirmação de que o habeas corpus preventivo concede 'salvo-conduto' e o repressivo gera 'alvará de soltura' não consta do material fornecido.",
+  "A afirmação de que o habeas corpus pode ser impetrado 'sem nem precisar de advogado' não possui apoio no material fornecido."
+ ]
+}
