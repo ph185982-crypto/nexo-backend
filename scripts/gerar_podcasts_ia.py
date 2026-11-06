@@ -74,7 +74,7 @@ SAMPLE_RATE = 24000
 MP3_KBPS = 48
 QUESTIONS_PER_TOPIC = 12
 TEXT_CONCURRENCY = int(os.getenv("TEXT_CONCURRENCY", "6"))
-TTS_CONCURRENCY = int(os.getenv("TTS_CONCURRENCY", "6"))
+TTS_CONCURRENCY = int(os.getenv("TTS_CONCURRENCY", "2"))
 EPISODE_CONCURRENCY = int(os.getenv("EPISODE_CONCURRENCY", "4"))
 
 STYLE = """Você escreve roteiros de um podcast de estudo para o concurso de Soldado da Polícia Militar de Goiás (PMGO, banca Instituto AOCP). Formato "mergulho profundo": dois apresentadores, Marcos e Julia, conversando de verdade — como amigos inteligentes que estudaram o assunto a fundo e explicam para quem ouve no carro, indo para o serviço.
@@ -165,8 +165,17 @@ class Gemini:
                 "speakerVoiceConfigs": [{"speaker": s, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v}}}
                                         for s, v in HOSTS.items()]}}},
         }
-        data = await self._post([TTS_MODEL, *TTS_FALLBACKS], body, self.tts_sem)
-        part = data["candidates"][0]["content"]["parts"][0]["inlineData"]
+        for attempt in range(4):
+            data = await self._post([TTS_MODEL, *TTS_FALLBACKS], body, self.tts_sem)
+            cand = (data.get("candidates") or [{}])[0]
+            try:
+                part = cand["content"]["parts"][0]["inlineData"]
+                break
+            except (KeyError, IndexError):
+                # A voz às vezes volta sem áudio (finishReason OTHER): pede de novo.
+                log(f"  voz sem áudio ({cand.get('finishReason', '?')}), tentando de novo")
+        else:
+            raise RuntimeError("modelo de voz não devolveu áudio")
         raw = base64.b64decode(part["data"])
         if raw[:4] == b"RIFF":
             with wave.open(io.BytesIO(raw)) as w:
