@@ -143,13 +143,18 @@ class Gemini:
             "generationConfig": {"temperature": temperature, "responseMimeType": "application/json",
                                  "responseSchema": schema, "maxOutputTokens": 16384},
         }
-        for attempt in range(3):
+        for attempt in range(5):
             data = await self._post([TEXT_MODEL, *TEXT_FALLBACKS], body, self.text_sem)
+            cand = (data.get("candidates") or [{}])[0]
             try:
-                text = "".join(p.get("text", "") for p in data["candidates"][0]["content"]["parts"])
+                text = "".join(p.get("text", "") for p in cand["content"]["parts"])
                 return json.loads(text)
             except (KeyError, IndexError, json.JSONDecodeError) as e:
-                log(f"  resposta inválida ({type(e).__name__}), tentando de novo")
+                reason = cand.get("finishReason", "?")
+                log(f"  resposta inválida ({type(e).__name__}, {reason}), tentando de novo")
+                # Raciocínio longo come o limite de saída e corta o JSON no
+                # meio: na próxima tentativa, raciocínio curto.
+                body["generationConfig"]["thinkingConfig"] = {"thinkingBudget": 1024}
         raise RuntimeError("modelo de texto não devolveu JSON válido")
 
     async def speak(self, turns: list[dict]) -> bytes:
