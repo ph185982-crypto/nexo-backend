@@ -12,9 +12,9 @@
    "subject_name": "Direito Constitucional",
    "number": 1,
    "title": "Direito Constitucional · Episódio 1",
-   "file": "direito-constitucional-01-5fee534867.mp3",
-   "bytes": 16629264,
-   "duration_secs": 2772,
+   "file": "direito-constitucional-01-ia-4847ec004a.mp3",
+   "bytes": 13484592,
+   "duration_secs": 2247,
    "chapters": [
     {
      "topic_id": "9a0b341d-1b9d-5fd0-9d50-61e06f68b9ba",
@@ -24,14 +24,16 @@
     {
      "topic_id": "a0b006e1-05e8-55b2-ad74-45699ecd687a",
      "title": "Direitos e garantias fundamentais",
-     "start": 1638.58
+     "start": 572.74
     }
    ],
    "boundaries": [
-    1638.58,
-    2771.54
+    572.74,
+    2247.38
    ],
-   "segment_count": 2
+   "segment_count": 2,
+   "format": "conversa",
+   "problems_fixed": 5
   },
   {
    "id": "direito-constitucional-02",
@@ -1582,7 +1584,7 @@
   },
   "a0b006e1-05e8-55b2-ad74-45699ecd687a": {
    "episode": "direito-constitucional-01",
-   "start": 1638.58
+   "start": 572.74
   },
   "16613cdc-8ad9-5e85-a57c-99a74eed39bd": {
    "episode": "direito-constitucional-03",
