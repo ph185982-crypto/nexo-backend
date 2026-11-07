@@ -54,7 +54,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import httpx  # noqa: E402
 
 from prf.local.content import get_store  # noqa: E402
-from prf.local.trajeto import article_order, document_name  # noqa: E402
+from prf.local.trajeto import _roman, article_order, document_name, speak as speak_law  # noqa: E402
 
 API = "https://generativelanguage.googleapis.com/v1beta/models"
 TEXT_MODEL = os.getenv("PODCAST_TEXT_MODEL", "gemini-3.8-flash")
@@ -93,6 +93,15 @@ Regra inegociável de conteúdo: tudo que for afirmado sobre a lei, prazos, pena
 
 def log(msg: str) -> None:
     print(f"{time.strftime('%H:%M:%S')} {msg}", flush=True)
+
+
+def tts_text(text: str) -> str:
+    """Como se lê em voz alta: "§ 3º" vira "parágrafo terceiro" e o inciso
+    no meio da frase ("; II - de") vira "inciso dois,". Além da pronúncia, a
+    voz recusa (finishReason OTHER) listas de lei copiadas no formato original."""
+    t = re.sub(r"(^|[;:.\"“]\s*)([IVXL]{1,6})\s*[-–—]\s*",
+               lambda m: f"{m.group(1)}inciso {_roman(m.group(2))}, ", text)
+    return speak_law(t)
 
 
 class QuotaExhausted(RuntimeError):
@@ -164,7 +173,7 @@ class Gemini:
     async def speak(self, turns: list[dict]) -> bytes:
         """PCM 16 bits mono 24 kHz de uma lista de falas."""
         body = {
-            "contents": [{"parts": [{"text": t["text"], "speechMetadata": {"speaker": t["speaker"]}} for t in turns]}],
+            "contents": [{"parts": [{"text": tts_text(t["text"]), "speechMetadata": {"speaker": t["speaker"]}} for t in turns]}],
             "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {"multiSpeakerVoiceConfig": {
                 "speakerVoiceConfigs": [{"speaker": s, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v}}}
                                         for s, v in HOSTS.items()]}}},
