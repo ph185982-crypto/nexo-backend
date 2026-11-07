@@ -1,0 +1,74 @@
+{
+ "topic_id": "a0dc56ff-5760-5395-a8b4-81ad5bee115d",
+ "turns": [
+  {
+   "speaker": "Marcos",
+   "text": "E já que a gente fechou as características do inquérito, tem um assunto no Código de Processo Penal que o Instituto AOCP cobra demais: a estrutura do nosso processo e o papel do Juiz das Garantias!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Esse tema despenca em prova! Marcos, lê para a gente o artigo três traço A. É o coração desse tópico na letra da lei."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Vamos lá. O artigo três traço A diz exatamente o seguinte: 'O processo penal terá estrutura acusatória, vedadas a iniciativa do juiz na fase de investigação e a substituição da atuação probatória do órgão de acusação.'"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Maravilha. Traduzindo isso para a vida real: o juiz não é detetive e nem promotor! O magistrado não sai produzindo prova de ofício na investigação e nem substitui a acusação. Cada órgão tem seu papel bem definido. É a pura estrutura acusatória."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exato! E é dentro desse espírito que surge o artigo três traço B, apresentando a figura do Juiz das Garantias. Ele é o responsável pelo controle da legalidade da investigação criminal e pela salvaguarda dos direitos individuais cuja franquia tenha sido reservada à autorização prévia do Poder Judiciário."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Para fixar de vez na memória, pensa numa analogia bem prática: o Juiz das Garantias funciona como aquele fiscal de campo que garante que todas as regras estão sendo seguidas durante o aquecimento dos times. Mas assim que o jogo oficial começa, no apito inicial — que no processo penal é o recebimento da denúncia —, quem assume toda a arbitragem da partida é o juiz da instrução!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Excelente comparação! O apito inicial é o marco divisor da competência. E é exatamente aqui que mora a pegadinha fatal da banca nas provas da Polícia Militar. Toma muito cuidado!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Manda essa pegadinha, Marcos, que o pessoal quer anotação no caderno agora mesmo!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "A banca troca o momento exato em que cessa a competência do Juiz das Garantias! A questão errada afirma que a competência cessa com o 'oferecimento' da denúncia. Mas o artigo três traço C diz expressamente que cessa com o 'recebimento' da denúncia ou queixa."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, isso pega muita gente distraída! Oferecer é quando o Ministério Público envia a denúncia para o fórum. Receber é quando o juiz analisa e aceita essa peça. A palavra mágica da banca é 'recebimento'."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeito, Julia. E dentro dessa função de proteger direitos individuais na fase de investigação, quando a Polícia Militar realiza uma prisão em flagrante ou por força de mandado de prisão provisória, o preso precisa ser levado para a audiência de custódia. Qual é o prazo legal rígido para isso?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Tá no artigo três traço B, parágrafo primeiro: o preso em flagrante ou por mandado será encaminhado à presença do juiz competente para a celebração da audiência de custódia no prazo de vinte e quatro horas! Vinte e quatro horas, gravou?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Guardou bem esse prazo de vinte e quatro horas? Excelente. Agora, segura o volante ou desacelera um pouquinho porque chegou a hora do nosso desafio de viatura!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Pausa aí e pensa: no caso de investigado preso, por quanto tempo e quantas vezes o Juiz das Garantias pode prorrogar a duração do inquérito policial?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E aí, respondeu mentalmente? A resposta correta é: o Juiz das Garantias pode prorrogar a duração do inquérito uma única vez, por até quinze dias! Essa regra está prevista no artigo três traço B, parágrafo segundo."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E tem um detalhe crucial nesse dispositivo: a lei deixa claro que se a investigação não for concluída após essa prorrogação única de até quinze dias, a prisão do investigado será imediatamente relaxada!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Resumindo tudo desse bloco para gabaritar: o processo penal brasileiro tem estrutura acusatória; o Juiz das Garantias controla a legalidade da investigação; o preso deve ir para a audiência de custódia em vinte e quatro horas; a competência do Juiz das Garantias cessa no 'recebimento' da denúncia; e o inquérito com réu preso só pode ser prorrogado uma única vez por até quinze dias!"
+  }
+ ],
+ "problems": []
+}
