@@ -1471,9 +1471,9 @@
    "subject_name": "Legislação Institucional PM",
    "number": 1,
    "title": "Legislação Institucional PM · Episódio 1",
-   "file": "legislacao-institucional-pm-01-707f11f1cc.mp3",
-   "bytes": 10481472,
-   "duration_secs": 1747,
+   "file": "legislacao-institucional-pm-01-ia-9b843ff522.mp3",
+   "bytes": 13504752,
+   "duration_secs": 2251,
    "chapters": [
     {
      "topic_id": "23725b9b-5a1a-56d4-bde0-db71a28754d2",
@@ -1483,26 +1483,28 @@
     {
      "topic_id": "1619367f-ef69-5335-a493-e9386767a9d8",
      "title": "Regulamento Disciplinar da PMGO",
-     "start": 631.87
+     "start": 581.84
     },
     {
      "topic_id": "2f24c33d-c95f-5770-b6d4-1da13383176d",
      "title": "Lei de Organização da PMGO",
-     "start": 847.92
+     "start": 1084.71
     },
     {
      "topic_id": "66070507-d8d2-5c3f-9ce4-03f010ac8908",
      "title": "Hierarquia e disciplina militar",
-     "start": 1395.34
+     "start": 1626.32
     }
    ],
    "boundaries": [
-    631.87,
-    847.92,
-    1395.34,
-    1746.91
+    581.84,
+    1084.71,
+    1626.32,
+    2250.74
    ],
-   "segment_count": 4
+   "segment_count": 4,
+   "format": "conversa",
+   "problems_fixed": 8
   },
   {
    "id": "realidade-goias-01",
@@ -1940,15 +1942,15 @@
   },
   "1619367f-ef69-5335-a493-e9386767a9d8": {
    "episode": "legislacao-institucional-pm-01",
-   "start": 631.87
+   "start": 581.84
   },
   "2f24c33d-c95f-5770-b6d4-1da13383176d": {
    "episode": "legislacao-institucional-pm-01",
-   "start": 847.92
+   "start": 1084.71
   },
   "66070507-d8d2-5c3f-9ce4-03f010ac8908": {
    "episode": "legislacao-institucional-pm-01",
-   "start": 1395.34
+   "start": 1626.32
   },
   "0866493b-222a-5753-a331-ac9cf10cd6b6": {
    "episode": "realidade-goias-01",

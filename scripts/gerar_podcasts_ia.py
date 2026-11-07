@@ -341,7 +341,7 @@ Tópicos do episódio, nesta ordem:
 {topic_list}
 
 Monte o roteiro-guia em exatamente {SEGMENTS} blocos de ~5 minutos, cobrindo os tópicos na ordem, distribuídos pelo peso do material (tópico com mais lei e mais questões ganha mais blocos). Para cada bloco: o topic_id do tópico que ele ensina; o que ele ensina (3 a 5 pontos concretos, tirados do material); 1 a 3 trechos curtos da lei para ler literalmente (copiados do material, sem alterar); uma analogia do dia a dia; a pegadinha de prova (a palavra que a banca troca); um desafio "pausa e pensa" com a resposta.
-cold_open: um caso hipotético curto e intrigante, de rua, que só se resolve com o conteúdo do episódio — conte o caso, não a resposta. resolution: como o caso se resolve, com o fundamento do material.
+cold_open: um caso hipotético curto e intrigante, de rua, que só se resolve com o conteúdo do episódio — conte o caso, não a resposta. resolution: a resposta a cada pergunta do caso, uma por uma (sim/não e por quê), com o artigo do material que a fundamenta. O caso só pode perguntar o que o material responde.
 
 MATERIAL:
 {material}""", OUTLINE_SCHEMA, temperature=0.8)
@@ -364,7 +364,7 @@ MATERIAL:
             else:
                 role.append("Continue a conversa de onde parou, sem nova saudação e sem resumir o que já foi dito.")
             if last:
-                role.append(f"É o FIM do episódio: depois do conteúdo do bloco, voltem ao caso do começo e resolvam: {outline['resolution']}. Façam uma revisão relâmpago com 3 perguntas rápidas ao ouvinte (pergunta, pausa curta, resposta) e se despeçam de forma natural, curta.")
+                role.append(f"É o FIM do episódio: depois do conteúdo do bloco, voltem ao caso do começo e respondam com todas as letras cada pergunta dele, uma por uma, com o artigo: {outline['resolution']}. Façam uma revisão relâmpago com 3 perguntas rápidas ao ouvinte (pergunta, pausa curta, resposta) e se despeçam de forma natural, curta.")
             tail = "\n".join(f"{t['speaker']}: {t['text']}" for t in previous_tail[-8:])
             draft = await g.json(f"""Escreva o bloco {i + 1} de {len(segs)} do episódio "{ep['subject_name']}, episódio {ep['number']}" como diálogo entre Marcos e Julia, com cerca de {WORDS_PER_SEGMENT} palavras (entre {WORDS_PER_SEGMENT - 80} e {WORDS_PER_SEGMENT + 120}).
 {' '.join(role)}
