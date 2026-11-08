@@ -1,0 +1,77 @@
+{
+ "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+ "turns": [
+  {
+   "speaker": "Marcos",
+   "text": "Falando em intenção e percepção, tem outra situação em que a gente precisa analisar se o militar realmente teve escolha na hora de agir. É o artigo trinta e oito, que fala da coação irresistível e da obediência hierárquica. Esse cai muito."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Cai e confunde! Porque no Direito Penal comum é de um jeito, mas aqui no Militar tem uns detalhes específicos. O artigo trinta e oito diz literalmente: Não é culpado quem comete o crime: alínea a, sob coação irresistível ou que lhe suprima a faculdade de agir segundo a própria vontade; e alínea b, em estrita obediência a ordem direta de superior hierárquico, em matéria de serviços."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pois é. Se o seu comandante te dá uma ordem direta sobre o serviço, você cumpre. E se essa ordem resultar em algo errado, o parágrafo primeiro deixa claro: quem responde pelo crime é o autor da ordem. Mas, Julia, aqui entra a pegadinha clássica do Instituto AOCP para a PM de Goiás."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Deixa eu adivinhar... eles tentam dizer que o subordinado nunca responde se estiver cumprindo ordens, né?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exatamente! Eles omitem a ressalva do parágrafo segundo. O texto diz que se a ordem do superior tem por objeto a prática de ato manifestamente criminoso, ou se houver excesso na execução, o inferior também é punido. O soldado não é um robô, ele tem que ter discernimento."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Faz sentido. Imagina que uma patrulha apreende uma carga de eletrônicos contrabandeados. Aí o comandante vira para o soldado e diz: 'Coloca metade no porta-malas do meu carro particular e vamos dividir depois'. Se o soldado obedecer, ele não pode chegar no tribunal e dizer que só estava cumprindo ordens."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Nossa, total. Desviar bens apreendidos é um crime escancarado, é manifestamente criminoso. Nesse caso, sentam os dois no banco dos réus: o que mandou e o que obedeceu. Agora, Julia, tem um ponto que o pessoal dá mole: o estado de necessidade do artigo trinta e nove. Ele é diferente do estado de necessidade comum."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Verdade. O artigo trinta e nove trata isso como exclusão de culpabilidade. Ele fala que não é culpado quem, para proteger direito próprio ou de família ou afeição, contra perigo certo e atual, que não provocou nem podia evitar, sacrifica direito alheio. Mas tem uma condição: desde que não lhe era razoavelmente exigível conduta diversa."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Isso! Se o sacrifício era exigível, o crime existe, mas a pena pode ser atenuada pelo artigo quarenta e um. O juiz vai olhar e falar: 'Olha, você podia ter agido diferente, mas a pressão era grande, então vou diminuir sua pena'. É uma colher de chá, mas não livra a cara totalmente."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E por falar em pressão, a gente tem que falar do artigo quarenta. Ele é o terror dos candidatos. Ele diz que nos crimes em que há violação do dever militar, o agente não pode invocar coação irresistível senão quando física ou material. Isso é muito pesado."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Peraí, deixa eu ver se entendi. Se for um crime que viola o dever militar, tipo um abandono de posto ou dormir em serviço, não adianta eu dizer que fui coagido psicologicamente?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exatamente. Se alguém te ligar e falar 'ou você sai do posto agora ou eu vou processar sua família', e você abandonar o serviço, você responde. Para o Código Penal Militar, se violou o dever, a coação só te socorre se for física — tipo alguém te amarrar — ou material."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Caramba. O rigor com o dever militar é outro nível. Pessoal, aproveitando esse gancho, pausa o áudio aí e pensa: qualquer coação irresistível exclui a culpabilidade de crime com violação do dever militar? Pensa no que a Julia acabou de falar."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí, lembrou? A resposta é: Não! O artigo quarenta exige que a coação seja estritamente física ou material. Se for aquela coação moral, psicológica, o militar ainda é culpado se o crime atingir o dever militar. A banca adora colocar um caso de ameaça psicológica para ver se você marca que exclui a culpa."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Eles são maldosos. E olha que interessante o artigo quarenta e um. Ele amarra tudo isso. Ele diz que se era possível resistir à coação, ou se a ordem não era manifestamente ilegal, ou ainda se era exigível o sacrifício no estado de necessidade, o juiz pode atenuar a pena."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Ou seja, a lei reconhece que o ser humano tem limites, mas o militar tem um padrão de coragem e resistência esperado que é maior que o do civil. Se você ceder muito fácil a uma ordem ilegal ou a uma pressão, você vai ser punido, mas talvez com uma pena mais branda."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exato. É o equilíbrio entre a disciplina rígida e a realidade do que um homem consegue suportar. Mas para a prova, gravem: ordem manifestamente criminosa não se cumpre, e coação em dever militar tem que ser física."
+  }
+ ],
+ "problems": [
+  "No artigo trinta e nove, o material diz que o perigo deve ser um que o agente 'não provocou, nem podia de outro modo evitar', detalhe omitido na fala da Julia.",
+  "No artigo quarenta e um, o Marcos afirma que o juiz 'pode atenuar a pena' se a ordem não era 'manifestamente ilegal', mas o texto da lei diz 'não era manifestamente ilegal' (o áudio diz 'ilegal', o que muda o sentido jurídico da excludente/atenuante)."
+ ]
+}

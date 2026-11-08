@@ -1,0 +1,66 @@
+{
+ "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+ "turns": [
+  {
+   "speaker": "Julia",
+   "text": "E avançando nos estudos, Marcos, a gente entra agora na teoria do crime dentro do Código Penal Militar, começando pela relação de causalidade no artigo vinte e nove. E a lei é extremamente direta ao conceituar o nexo de causalidade. Ela diz literalmente: Considera-se causa a ação ou omissão sem a qual o resultado não teria ocorrido."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exatamente, Julia! É a clássica teoria da equivalência dos antecedentes no Código Penal Militar. Se você elimina mentalmente a conduta e o resultado deixa de acontecer, essa conduta é considerada causa. Só que o CPM traz um cuidado gigante ao tratar da omissão no parágrafo segundo desse mesmo artigo vinte e nove."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, a relevância da omissão despenca em prova! O texto deixa claro que a omissão só é relevante como causa quando o omitente devia e podia agir para evitar o resultado. E a lei especifica exatamente de quem é esse dever de agir: incumbe a quem tem por lei obrigação de cuidado, proteção ou vigilância; a quem de outra forma assumiu a responsabilidade de impedir o resultado; ou a quem, com seu comportamento anterior, criou o risco de sua superveniência."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeito! Ou seja, o militar em serviço que tem o dever legal de proteção não pode simplesmente cruzar os braços se tinha condições de agir. Se ele devia e podia agir e se omite, a omissão dele é considerada causa do resultado. Agora, saindo da causalidade e indo para o artigo trinta, como é que o CPM conceitua o crime tentado, Julia?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "O artigo trinta, inciso dois, traz a definição exata da tentativa. A lei estabelece literalmente: tentado, quando, iniciada a execução, não se consuma por circunstâncias alheias à vontade do agente. O agente quer consumar o crime e dá início aos atos executórios, mas algo fora do controle dele impede que o resultado ocorra."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E aqui é onde o candidato precisa ligar o alerta vermelho para a pegadinha clássica da banca Instituto AOCP! A banca adora colocar na questão que a pena da tentativa é sempre reduzida de um a dois terços, tentando passar a ideia de que essa redução é absoluta e sem exceções."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Essa pegadinha derruba muita gente desatenta! A regra geral do parágrafo único do artigo trinta é sim a punição da tentativa com a pena do crime consumado diminuída de um a dois terços. No entanto, o próprio parágrafo único traz uma exceção expressa: o juiz pode, no caso de excepcional gravidade, aplicar a pena do crime consumado! Então, se a banca disser que a pena é obrigatoriamente ou sempre reduzida, a afirmação está errada!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Excelente observação, Julia! Essa ressalva da excepcional gravidade é o tipo de detalhe que garante a vaga na PMGO. E aproveitando o gancho da execução do crime, deixa eu lançar aquele desafio para o ouvinte fixar bem a matéria!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Manda ver, Marcos! Vamos ver quem tá ligado."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pausa aí e pensa: o que acontece com a punibilidade do agente que desiste voluntariamente de prosseguir na execução do crime militar?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí, respondeu certo? A resposta tá no artigo trinta e um do Código Penal Militar! A lei estabelece que ele só responde pelos atos já praticados, nos termos do artigo trinta e um. Ou seja, na desistência voluntária e também no arrependimento eficaz, há uma restrição da punibilidade: o sujeito não responde pela tentativa do crime principal que pretendia, mas tão somente pelos atos executados até aquele momento."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Com certeza! Se ele praticou uma lesão corporal antes de desistir do homicídio, por exemplo, responde apenas pela lesão já praticada. E para fechar a nossa análise das formas de extensão da conduta, temos o artigo trinta e dois, que trata do crime impossível. Lê o trecho legal para a gente, Julia."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Leio sim! O artigo trinta e dois determina literalmente: Quando, por ineficácia absoluta do meio empregado ou por absoluta impropriedade do objeto, é impossível consumar-se o crime, nenhuma pena é aplicável."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Para deixar isso bem concreto na mente de quem tá nos ouvindo no carro ou indo para o serviço, pensa na seguinte analogia: um indivíduo tenta disparar contra alguém utilizando um simulacro de plástico que não tem mecanismo de tiro. Como o simulacro de plástico não possui nenhum mecanismo de disparo, a conduta de tentar disparar com ele é um crime impossível por ineficácia absoluta do meio, não gerando punição por tentativa."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exatamente! Como a ineficácia do meio foi absoluta, o resultado de um disparo de arma de fogo era totalmente impossível de ocorrer. Por isso, como a lei determina que nenhuma pena é aplicável no crime impossível, o agente não pode ser punido nem mesmo por tentativa! Isso demonstra perfeitamente como o CPM exige um meio minimamente eficaz para gerar punibilidade."
+  }
+ ],
+ "problems": []
+}

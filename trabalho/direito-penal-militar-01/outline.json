@@ -1,0 +1,157 @@
+{
+ "cold_open": "Durante um turno de patrulhamento no batalhão da PMGO, um Soldado da ativa agride fisicamente um militar da reserva que estava no local resolvendo problemas administrativos. Em seguida, um Capitão ordena que um subordinado dê um soco em um suspeito já algemado e imobilizado, e o subordinado cumpre a ordem sem questionar. Diante desse cenário da prática policial militar, surgem duas dúvidas cruciais: Primeiro, a agressão do soldado da ativa contra o militar da reserva dentro do batalhão configura crime militar em tempo de paz? Segundo, o subordinado que cumpriu a ordem do Capitão para agredir o preso imobilizado fica isento de responsabilidade penal alegando obediência hierárquica?",
+ "resolution": "Para a primeira pergunta: Sim, configura crime militar. O artigo nono, inciso segundo, alínea b do Código Penal Militar estabelece expressamente que se considera crime militar em tempo de paz o fato praticado por militar da ativa, em lugar sujeito à administração militar, contra militar da reserva. Para a segunda pergunta: Não, o subordinado também responde pelo crime. Conforme o artigo trinta e oito, parágrafo segundo do Código Penal Militar, se a ordem do superior hierárquico tem por objeto a prática de ato manifestamente criminoso, o inferior hierárquico é punível juntamente com o autor da ordem.",
+ "segments": [
+  {
+   "topic_id": "d1643411-1899-5bf1-bed7-2de1f8c10dc8",
+   "title": "Princípios Fundamentais e Aplicação no Tempo",
+   "teaches": [
+    "Princípio da legalidade e anterioridade da lei penal militar sem exceções",
+    "Abolitio criminis e a retroatividade da lei penal militar mais benéfica mesmo após trânsito em julgado",
+    "Critério de apuração da maior benignidade considerando as leis separadamente em seu conjunto",
+    "Ultratividade da lei penal militar excepcional ou temporária para fatos praticados na sua vigência"
+   ],
+   "law_quotes": [
+    "Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.",
+    "Ninguém pode ser punido por fato que lei posterior deixa de considerar crime, cessando em virtude dela a execução e os efeitos penais da sentença condenatória.",
+    "A lei excepcional ou temporária, embora decorrido o período de sua duração ou cessadas as circunstâncias que a determinaram, aplica-se ao fato praticado durante sua vigência."
+   ],
+   "analogy": "Pense em um radar de velocidade temporário instalado na GO-070 durante uma obra: se você passou acima do limite enquanto o radar e a obra estavam valendo, a multa continua válida e aplicável mesmo depois que a obra acabou e o radar foi retirado.",
+   "trap": "A banca AOCP costuma trocar 'consideradas separadamente' por 'combinadas entre si', tentando induzir o candidato a achar que o juiz pode fazer uma mistura de leis (lex tertia), o que é vedado pelo parágrafo segundo do artigo segundo.",
+   "challenge": "Pausa aí e pensa: se uma nova lei penal militar torna uma conduta atípica, ela beneficia quem já foi condenado com decisão irrecorrível? Resposta: Sim, pela regra da retroatividade benéfica do artigo segundo, cessam a execução e os efeitos penais da sentença."
+  },
+  {
+   "topic_id": "d1643411-1899-5bf1-bed7-2de1f8c10dc8",
+   "title": "Tempo, Lugar do Crime e Territorialidade",
+   "teaches": [
+    "Adopção da teoria da atividade para a definição do tempo do crime militar",
+    "Teoria da ubiquidade para a definição do lugar do crime nos crimes comissivos",
+    "Lugar do crime nos delitos omissivos militares como sendo o local onde a ação deveria realizar-se",
+    "Extensão do território nacional a embarcações e aeronaves militares ou sob comando militar",
+    "Efeitos do cumprimento de pena no estrangeiro sobre a pena imposta no Brasil"
+   ],
+   "law_quotes": [
+    "Considera-se praticado o crime no momento da ação ou omissão, ainda que outro seja o do resultado.",
+    "Considera-se praticado o fato, no lugar em que se desenvolveu a atividade criminosa, no todo ou em parte, e ainda que sob forma de participação, bem como onde se produziu ou deveria produzir-se o resultado.",
+    "A pena cumprida no estrangeiro atenua a pena imposta no Brasil pelo mesmo crime, quando diversas, ou nela é computada, quando idênticas."
+   ],
+   "analogy": "Se um policial efetua um disparo na divisa de Goiás com Mato Grosso e a vítima morre no hospital do outro estado, para o tempo do crime importa o exato segundo do tiro, e para o lugar do crime valem ambos os locais.",
+   "trap": "A banca troca a teoria da ubiquidade no lugar do crime pela teoria do resultado ou tenta afirmar que o tempo do crime adota a teoria do resultado, invertendo a regra do artigo quinto.",
+   "challenge": "Pausa aí e pensa: qual é o lugar do crime militar em um delito puramente omissivo? Resposta: É o local onde a ação omitida deveria ter sido realizada, conforme prevê a parte final do artigo sexto."
+  },
+  {
+   "topic_id": "d1643411-1899-5bf1-bed7-2de1f8c10dc8",
+   "title": "Crimes Militares em Tempo de Paz e Conceitos Legais",
+   "teaches": [
+    "Hipóteses de crimes militares praticados por militar da ativa contra militar da ativa ou da reserva",
+    "Competência do Tribunal do Júri nos crimes dolosos contra a vida praticados por militares estaduais contra civil",
+    "Conceito legal de militar para fins de aplicação do Código Penal Militar",
+    "Definição de superior hierárquico por posto, graduação ou função",
+    "Equiparação de militar da reserva ou reformado quando empregado na administração militar"
+   ],
+   "law_quotes": [
+    "por militar da ativa contra militar na mesma situação;",
+    "É militar, para o efeito da aplicação deste Código, qualquer pessoa que, em tempo de paz ou de guerra, seja incorporada a instituições militares ou nelas matriculada, para servir em posto ou em graduação ou em regime de sujeição à disciplina militar.",
+    "Considera-se superior para fins de aplicação da lei penal militar: I – o militar que ocupa nível hierárquico, posto ou graduação superiores, conforme a antiguidade"
+   ],
+   "analogy": "Em um alojamento da PMGO, se dois soldados da ativa brigam na folga, o crime é militar por critério ratione personae; já se for contra um civil fora da área militar, a regra muda drasticamente.",
+   "trap": "A banca substitui a competência do Tribunal do Júri para militares estaduais por Justiça Militar nos crimes dolosos contra a vida de civil, omitindo a ressalva do parágrafo primeiro do artigo nono.",
+   "challenge": "Pausa aí e pensa: o militar da reserva pode ser considerado superior hierárquico para efeitos de aplicação da lei penal militar? Resposta: Sim, o artigo treze estabelece que o militar da reserva conserva as prerrogativas e responsabilidades do posto quando pratica ou contra ele é praticado crime militar."
+  },
+  {
+   "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+   "title": "Causalidade, Consumação, Tentativa e Crime Impossível",
+   "teaches": [
+    "Relação de causalidade e a teoria da equivalência dos antecedentes no CPM",
+    "Relevância da omissão quando o agente tem o dever legal ou assumiu a responsabilidade de agir",
+    "Punição da tentativa e a excepcional possibilidade de aplicar a pena do crime consumado",
+    "Hipóteses de desistência voluntária e arrependimento eficaz restringindo a punibilidade",
+    "Impunibilidade do crime impossível por ineficácia absoluta do meio ou impropriedade do objeto"
+   ],
+   "law_quotes": [
+    "Considera-se causa a ação ou omissão sem a qual o resultado não teria ocorrido.",
+    "tentado, quando, iniciada a execução, não se consuma por circunstâncias alheias à vontade do agente.",
+    "Quando, por ineficácia absoluta do meio empregado ou por absoluta impropriedade do objeto, é impossível consumar-se o crime, nenhuma pena é aplicável."
+   ],
+   "analogy": "Tentar disparar contra alguém usando um simulacro de plástico que não tem mecanismo de tiro é crime impossível por ineficácia absoluta do meio, não gerando punição por tentativa.",
+   "trap": "A banca afirma que a pena da tentativa é SEMPRE reduzida, escondendo a exceção do parágrafo único do artigo trinta, que permite aplicar a pena do crime consumado em casos de excepcional gravidade.",
+   "challenge": "Pausa aí e pensa: o que acontece com a punibilidade do agente que desiste voluntariamente de prosseguir na execução do crime militar? Resposta: Ele só responde pelos atos já praticados, nos termos do artigo trinta e um."
+  },
+  {
+   "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+   "title": "Culpabilidade, Dolo, Culpa e Espécies de Erro",
+   "teaches": [
+    "Excepcionalidade da punição por crime culposo no Código Penal Militar",
+    "Diferença entre dolo direto e dolo eventual no CPM",
+    "Efeitos do erro de direito escusável na atenuação ou substituição da pena",
+    "Isenção de pena pelo erro de fato escusável e a responsabilidade pelo erro culposo",
+    "Regra do erro sobre a pessoa e a consideração das qualidades da vítima pretendida"
+   ],
+   "law_quotes": [
+    "doloso, quando o agente quis o resultado ou assumiu o risco de produzi-lo;",
+    "É isento de pena quem, ao praticar o crime, supõe, por êrro plenamente escusável, a inexistência de circunstância de fato que o constitui ou a existência de situation de fato que tornaria a ação legítima.",
+    "Quando o agente, por êrro de percepção ou no uso dos meios de execução, ou outro acidente, atinge uma pessoa em vez de outra, responde como se tivesse praticado o crime contra aquela que realmente pretendia atingir."
+   ],
+   "analogy": "Se durante um confronto noturno o policial atinge por engano seu próprio parceiro achando que era o criminoso armado, aplica-se a regra do erro de percepção ou sobre a pessoa, considerando a vítima que se pretendia atingir.",
+   "trap": "A banca troca 'vítima pretendida' por 'vítima real' ao tratar das qualidades para configuração e agravação da pena no erro sobre a pessoa no artigo trinta e sete.",
+   "challenge": "Pausa aí e pensa: o erro de direito pode isentar totalmente de pena o militar que comete crime contra o dever militar? Resposta: Não, o artigo trinta e cinco ressalva expressamente que não se aplica se o crime atentar contra o dever militar."
+  },
+  {
+   "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+   "title": "Excludentes de Culpabilidade no CPM",
+   "teaches": [
+    "Coação irresistível e a exigência de coação física ou material nos crimes com violação do dever militar",
+    "Obediência hierárquica e a punibilidade do subordinado em caso de ordem manifestamente criminosa",
+    "Estado de necessidade como causa excludente de culpabilidade no artigo trinta e nove",
+    "Possibilidade de atenuação da pena nos casos em que era razoavelmente exigível conduta diversa",
+    "Responsabilidade do autor da coação ou da ordem ilegal"
+   ],
+   "law_quotes": [
+    "Não é culpado quem comete o crime: a) sob coação irresistível ou que lhe suprima a faculdade de agir segundo a própria vontade; b) em estrita obediência a ordem direta de superior hierárquico, em matéria de serviços.",
+    "Se a ordem do superior tem por objeto a prática de ato manifestamente criminoso, ou há excesso nos atos ou na forma da execução, é punível também o inferior hierárquico.",
+    "Nos crimes em que há violação do dever militar, o agente não pode invocar coação irresistível senão quando física ou material."
+   ],
+   "analogy": "Se um comandante ordena que a patrulha desvie bens apreendidos para proveito próprio, a ordem é manifestamente criminosa e o soldado que obedecer responderá junto com o superior.",
+   "trap": "A banca costuma afastar a punibilidade do inferior hierárquico em QUALQUER ordem recebida de superior, omitindo a ressalva da ordem manifestamente criminosa do artigo trinta e oito.",
+   "challenge": "Pausa aí e pensa: qualquer coação irresistível exclui a culpabilidade de crime com violação do dever militar? Resposta: Não, o artigo quarenta exige que a coação seja estritamente física ou material."
+  },
+  {
+   "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+   "title": "Excludentes de Ilicitude e Excesso",
+   "teaches": [
+    "Causas de exclusão de crime previstas no artigo quarenta e dois do CPM",
+    "Requisitos do estado de necessidade justificante e a vedação ao dever legal de encarar o perigo",
+    "Legítima defesa com uso moderado dos meios necessários contra agressão injusta",
+    "Punição do excesso culposo e mitigação no excesso escusável por perturbação de ânimo",
+    "Poder de coerção violenta do comandante de navio, aeronave ou praça de guerra em perigo iminente"
+   ],
+   "law_quotes": [
+    "Não há crime quando o agente pratica o fato: I - em estado de necessidade; II - em legítima defesa; III - em estrito cumprimento do dever legal; IV - em exercício regular de direito.",
+    "Entende-se em legítima defesa quem, usando moderadamente dos meios necessários, repele injusta agressão, atual ou iminente, a direito seu ou de outrem.",
+    "O agente que, em qualquer dos casos de exclusão de crime, excede culposamente os limites da necessidade, responde pelo fato, se êste é punível, a título de culpa."
+   ],
+   "analogy": "Um PM em serviço não pode alegar estado de necessidade para fugir de um incêndio abandonando civis sob sua proteção, pois ele tem o dever legal de arrostar o perigo.",
+   "trap": "A banca tenta afirmar que o excesso culposo isenta o agente de qualquer responsabilidade penal, quando na verdade o artigo quarenta e cinco diz que ele responde a título de culpa.",
+   "challenge": "Pausa aí e pensa: o comandante de praça de guerra pode usar meios violentos contra subalternos para evitar pânico? Resposta: Sim, o parágrafo único do artigo quarenta e dois autoriza compelir subalternos por meios violentos em situação de iminente perigo ou calamidade."
+  },
+  {
+   "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
+   "title": "Imputabilidade, Concurso de Agentes e Penas Privativas",
+   "teaches": [
+    "Critério biopsicológico para a inimputabilidade por doença ou desenvolvimento mental incompleto",
+    "Regras sobre embriaguez fortuita completa e incompleta no Código Penal Militar",
+    "Menoridade penal fixada aos dezoito anos conforme o artigo cinquenta",
+    "Teoria unitária temperada no concurso de agentes e a figura dos cabecilhas",
+    "Rol das penas principais do CPM incluindo a pena de morte por fuzilamento em tempo de guerra"
+   ],
+   "law_quotes": [
+    "Não é imputável quem, no momento da ação ou da omissão, não possui a capacidade de entender o caráter ilícito do fato ou de determinar-se de acôrdo com êsse entendimento, em virtude de doença mental, de desenvolvimento mental incompleto ou retardado.",
+    "Quem, de qualquer modo, concorre para o crime incide nas penas a êste cominadas.",
+    "A pena de morte é executada por fuzilamento."
+   ],
+   "analogy": "Em uma revolta promovida por vários soldados, aqueles que dirigiram e instigaram o grupo são considerados 'cabeças', recebendo agravação de pena específica pela autoria coletiva necessária.",
+   "trap": "A banca troca o prazo de comunicação da condenação à morte ao Presidente da República ou afirma que a pena de morte pode ser executada por injeção letal, violando o artigo cinquenta e seis que exige fuzilamento.",
+   "challenge": "Pausa aí e pensa: a participação de somenos importância no crime militar isenta o agente de pena? Resposta: Não isenta, apenas atenua a pena conforme estabelece o parágrafo terceiro do artigo cinquenta e três."
+  }
+ ]
+}
