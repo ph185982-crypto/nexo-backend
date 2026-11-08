@@ -753,9 +753,9 @@
    "subject_name": "Língua Portuguesa",
    "number": 1,
    "title": "Língua Portuguesa · Episódio 1",
-   "file": "lingua-portuguesa-01-6687be8c4c.mp3",
-   "bytes": 12572352,
-   "duration_secs": 2095,
+   "file": "lingua-portuguesa-01-ia-f4dc57a4b2.mp3",
+   "bytes": 12995568,
+   "duration_secs": 2166,
    "chapters": [
     {
      "topic_id": "46e12dab-4d11-5f07-8564-fc7d9ed52267",
@@ -765,14 +765,16 @@
     {
      "topic_id": "c60f1581-eb16-53f4-8b85-95d4e7a9f494",
      "title": "Concordância verbal e nominal",
-     "start": 1289.9
+     "start": 1119.49
     }
    ],
    "boundaries": [
-    1289.9,
-    2095.39
+    1119.49,
+    2165.87
    ],
-   "segment_count": 2
+   "segment_count": 2,
+   "format": "conversa",
+   "problems_fixed": 0
   },
   {
    "id": "lingua-portuguesa-02",
@@ -1732,7 +1734,7 @@
   },
   "c60f1581-eb16-53f4-8b85-95d4e7a9f494": {
    "episode": "lingua-portuguesa-01",
-   "start": 1289.9
+   "start": 1119.49
   },
   "07e2c3d8-03c5-5acf-9220-ae718d970f25": {
    "episode": "lingua-portuguesa-02",
