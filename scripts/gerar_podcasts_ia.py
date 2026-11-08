@@ -364,7 +364,7 @@ MATERIAL:
             else:
                 role.append("Continue a conversa de onde parou, sem nova saudação e sem resumir o que já foi dito.")
             if last:
-                role.append(f"É o FIM do episódio: depois do conteúdo do bloco, voltem ao caso do começo e respondam com todas as letras cada pergunta dele, uma por uma, com o artigo: {outline['resolution']}. Façam uma revisão relâmpago com 3 perguntas rápidas ao ouvinte (pergunta, pausa curta, resposta) e se despeçam de forma natural, curta.")
+                role.append(f"É o FIM do episódio: depois do conteúdo do bloco, voltem ao caso do começo ({outline['cold_open']}) e respondam com todas as letras cada pergunta dele, uma por uma, NA MESMA ORDEM do caso. As respostas são exatamente estas — não troque, não acrescente e não invente outra pergunta: {outline['resolution']}. Façam uma revisão relâmpago com 3 perguntas rápidas ao ouvinte (pergunta, pausa curta, resposta) e se despeçam de forma natural, curta.")
             tail = "\n".join(f"{t['speaker']}: {t['text']}" for t in previous_tail[-8:])
             draft = await g.json(f"""Escreva o bloco {i + 1} de {len(segs)} do episódio "{ep['subject_name']}, episódio {ep['number']}" como diálogo entre Marcos e Julia, com cerca de {WORDS_PER_SEGMENT} palavras (entre {WORDS_PER_SEGMENT - 80} e {WORDS_PER_SEGMENT + 120}).
 {' '.join(role)}
@@ -382,13 +382,18 @@ Final da conversa até aqui (continue a partir daqui, sem repetir):
 MATERIAL do tópico (fonte única para informação jurídica):
 {material_text(store, topic)}""", TURNS_SCHEMA, temperature=0.95)
             draft_turns = clean_turns(draft.get("turns", []))
+            closing_check = "" if not last else f"""
+
+FECHAMENTO: este é o fim do episódio. O caso do começo foi: {outline['cold_open']}
+As respostas certas, na ordem: {outline['resolution']}
+Se o trecho responder alguma pergunta diferente da do caso, fora de ordem ou com outra resposta, liste em "problems" e corrija as falas."""
             review = await g.json(f"""Revise este trecho de podcast de estudo contra o MATERIAL. Liste em "problems" cada afirmação jurídica que não tem apoio no material ou o contradiz (artigo, prazo, pena, número, requisito, competência, súmula ou julgado inventado), e devolva em "turns" o diálogo corrigido: conserte ou corte só o que estiver errado, mantenha todo o resto (estilo, tamanho, falas e ordem). Se nada estiver errado, "problems" vazio e o diálogo igual.
 
 TRECHO:
 {json.dumps(draft_turns, ensure_ascii=False)}
 
 MATERIAL:
-{material_text(store, topic)}""", REVIEW_SCHEMA, temperature=0.2)
+{material_text(store, topic)}{closing_check}""", REVIEW_SCHEMA, temperature=0.2)
             turns = clean_turns(review.get("turns", [])) or draft_turns
             if words(turns) < words(draft_turns) * 0.7:
                 turns = draft_turns
@@ -499,7 +504,9 @@ async def produce(g: Gemini, store, ep: dict, out: Path) -> dict | None:
                               for i in range(len(script["segments"]))),
     }
     done_path.write_text(json.dumps(result, ensure_ascii=False, indent=1))
-    for piece in [*work.glob("seg_*.pcm"), *work.glob("seg_*_*.mp3")]:
+    # As vozes por bloco (MP3) ficam: corrigir um bloco depois de pronto
+    # regrava só ele. Quem publica apaga a pasta.
+    for piece in work.glob("seg_*.pcm"):
         piece.unlink()
     log(f"{ep['id']}: PRONTO {result['duration_secs'] / 60:.1f} min, {len(mp3) / 1e6:.1f} MB, "
         f"{result['problems_fixed']} correções da revisão, {(time.monotonic() - t0) / 60:.1f} min")
