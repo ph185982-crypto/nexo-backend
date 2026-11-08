@@ -101,7 +101,18 @@ export async function moverOportunidade(m: MudancaEtapa, db?: Db): Promise<Resul
   const r = await prisma.$transaction(run);
   // Automações disparam depois de confirmar a transação; as de ação de automação não encadeiam (sem laço).
   if (r.mudou && m.origem !== "AUTOMACAO") await dispararAutomacoes(m.oportunidadeId, r.paraTipo ?? "ABERTA", false);
+  if (r.mudou && r.paraTipo === "GANHA") await levarCombinados(m.oportunidadeId);
   return r;
+}
+
+/** Ganhou: o que foi combinado na negociação vira cartão da entrega. Depois do commit; nunca derruba quem chamou. */
+async function levarCombinados(oportunidadeId: string) {
+  try {
+    const { levarCombinadosParaEntrega } = await import("@/lib/combinados/servico");
+    await levarCombinadosParaEntrega(oportunidadeId);
+  } catch (e) {
+    console.error("[combinados] falha ao levar para a entrega:", e);
+  }
 }
 
 /** Depois do commit; nunca derruba quem chamou. Import dinâmico: o motor importa este módulo. */

@@ -53,6 +53,8 @@ export async function concluirTarefa(id: string, agora: Date = new Date()) {
     if (!t) throw new Error("Tarefa não encontrada");
     if (t.status === "CONCLUIDA") return { tarefa: t, proxima: null };
     const feita = await tx.tarefa.update({ where: { id }, data: { status: "CONCLUIDA", concluidaEm: agora } });
+    // Tarefa de um combinado: concluí-la cumpre o combinado.
+    await tx.combinado.updateMany({ where: { tarefaId: id, status: "PENDENTE" }, data: { status: "ENTREGUE", entregueEm: agora } });
     if (t.oportunidadeId) await tx.oportunidade.update({ where: { id: t.oportunidadeId }, data: { ultimaAtividadeEm: agora } });
     let proxima = null;
     if (t.recorrencia && !t.paiId) {

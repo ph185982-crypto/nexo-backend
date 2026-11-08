@@ -9,6 +9,8 @@ import { ROTULO_TIPO_FEEDBACK } from "@/lib/formatar-atividades";
 import { NovaTarefa } from "./form-tarefa";
 import { TarefaItem, type TarefaDTO } from "./tarefa-item";
 import { botaoPrimario, campo } from "./dialogo";
+import { AbaCombinados } from "./ficha-combinados";
+import { AbaConversa } from "./ficha-conversa";
 
 interface Linha { id: string; paraFunilNome: string; paraEtapaNome: string; paraTipo: string; entrouEm: string; saiuEm: string | null; origem: string; ator: string | null; motivo: string | null }
 
@@ -26,8 +28,14 @@ const Item = ({ rotulo, children }: { rotulo: string; children: React.ReactNode 
 
 export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }: { c: CartaoDTO; etapaNome: string; etapas: EtapaDTO[]; onMover: (etapaId: string) => void; onFechar: () => void; onAtividade: () => void }) {
   const [historico, setHistorico] = useState<Linha[] | null>(null);
-  const [aba, setAba] = useState<"resumo" | "tarefas" | "feedback">("resumo");
+  const [aba, setAba] = useState<Aba>("linha");
   const vendedorIa = process.env.NEXT_PUBLIC_VENDEDOR_IA_URL;
+  // Esc fecha a ficha (se nenhum diálogo estiver aberto por cima: eles tratam o Esc antes).
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => { if (e.key === "Escape" && !document.querySelector("dialog[open]")) onFechar(); };
+    window.addEventListener("keydown", tecla);
+    return () => window.removeEventListener("keydown", tecla);
+  }, [onFechar]);
 
   useEffect(() => {
     let vivo = true;
@@ -37,28 +45,21 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
   }, [c.id, c.etapaId]);
 
   return (
-    <aside className="fixed inset-0 z-40 overflow-y-auto bg-superficie lg:static lg:z-auto lg:h-full lg:w-[400px] lg:flex-none lg:border-l lg:border-linha" aria-label="Resumo da oportunidade">
-      <div className="flex items-start justify-between gap-3 px-5 pt-4">
+    <div className="fixed inset-0 z-40 flex items-stretch justify-center bg-grafite/45 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) onFechar(); }}>
+    <section role="dialog" aria-modal="true" aria-label={`Ficha: ${c.nome}`} className="flex h-full w-full max-w-[1280px] flex-col overflow-hidden bg-superficie lg:rounded-2xl lg:shadow-2xl">
+      <header className="flex items-start justify-between gap-3 border-b border-linha px-5 py-3.5">
         <div className="min-w-0">
-          <h2 className="text-[15px] font-extrabold leading-tight">{c.nome}</h2>
-          <p className="text-[12px] font-semibold text-cinza">{c.codigo}</p>
+          <h2 className="truncate text-[17px] font-extrabold leading-tight">{c.nome}</h2>
+          <p className="text-[12px] font-semibold text-cinza">{c.codigo} · {c.contato.nome}{c.pessoa ? ` · ${c.pessoa.nome}` : ""} · {etapaNome}</p>
         </div>
-        <button onClick={onFechar} aria-label="Fechar painel" className="rounded-md px-2 py-1 text-[18px] leading-none text-cinza hover:bg-bq">×</button>
-      </div>
-
+        <button onClick={onFechar} aria-label="Fechar ficha" className="rounded-md px-2 py-1 text-[20px] leading-none text-cinza hover:bg-bq">×</button>
+      </header>
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
+      <aside className="order-2 border-t border-linha lg:order-none lg:w-[340px] lg:flex-none lg:overflow-y-auto lg:border-r lg:border-t-0" aria-label="Resumo da oportunidade">
       <div className="mx-5 mt-4 rounded-xl bg-azul px-4 py-3.5 text-bq">
         <b className="font-titulo text-[26px] font-extrabold leading-none">{moeda(c.valorTotal)}</b>
         <span className="mt-1 block text-[11px] opacity-90">Total{c.valorMensal > 0 ? ` · Mensal ${moeda(c.valorMensal)}` : ""}</span>
       </div>
-
-      <div role="tablist" className="mt-3 flex gap-5 border-b border-linha px-5">
-        {([["resumo", "Resumo"], ["tarefas", "Tarefas"], ["feedback", "Feedback"]] as const).map(([id, rotulo]) => (
-          <button key={id} role="tab" aria-selected={aba === id} onClick={() => setAba(id)}
-            className={`-mb-px border-b-2 py-2 text-[13px] font-semibold ${aba === id ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{rotulo}</button>
-        ))}
-      </div>
-      {aba === "resumo" && (
-        <>
       <label className="mx-5 mt-4 block">
         <span className="mb-1 block text-[12px] font-semibold text-cinza">Mover para</span>
         <select value={c.etapaId} onChange={(e) => onMover(e.target.value)} className="w-full rounded-[10px] border border-linha bg-superficie px-3 py-2 text-[13px] font-semibold">
@@ -114,13 +115,27 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
           </li>
         ))}
       </ol>
-        </>
-      )}
-      {aba === "tarefas" && <AbaTarefas oportunidadeId={c.id} onAtividade={onAtividade} />}
-      {aba === "feedback" && <AbaFeedback oportunidadeId={c.id} onAtividade={onAtividade} />}
-    </aside>
+      </aside>
+      <div className="min-w-0 flex-1 lg:overflow-y-auto">
+        <div role="tablist" className="sticky top-0 z-10 flex gap-5 overflow-x-auto border-b border-linha bg-superficie px-5">
+          {ABAS.map(([id, rotulo]) => (
+            <button key={id} role="tab" aria-selected={aba === id} onClick={() => setAba(id)}
+              className={`-mb-px whitespace-nowrap border-b-2 py-2.5 text-[13px] font-semibold ${aba === id ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{rotulo}</button>
+          ))}
+        </div>
+        {aba === "linha" && <AbaFeedback oportunidadeId={c.id} onAtividade={onAtividade} />}
+        {aba === "combinados" && <AbaCombinados oportunidadeId={c.id} onAtividade={onAtividade} />}
+        {aba === "tarefas" && <AbaTarefas oportunidadeId={c.id} onAtividade={onAtividade} />}
+        {aba === "conversa" && <AbaConversa oportunidadeId={c.id} contatoId={c.pessoa?.id ?? c.contato.id} onAtividade={onAtividade} />}
+      </div>
+      </div>
+    </section>
+    </div>
   );
 }
+
+type Aba = "linha" | "combinados" | "tarefas" | "conversa";
+const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
 
 /** Tarefa ou feedback muda o aviso "sem próxima atividade" e os indicadores do cartão: o quadro recarrega. */
 function AbaTarefas({ oportunidadeId, onAtividade }: { oportunidadeId: string; onAtividade: () => void }) {
@@ -178,7 +193,8 @@ function AbaFeedback({ oportunidadeId, onAtividade }: { oportunidadeId: string; 
         </div>
       )}
       <form onSubmit={enviar} className="space-y-2">
-        <textarea required rows={3} maxLength={5000} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="O que aconteceu nesta interação?" className={campo} />
+        <textarea required rows={5} maxLength={5000} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="O que aconteceu nesta interação? O que ficou combinado, com quem e para quando?" className={campo} />
+        <p className="text-[11.5px] text-cinza">O agente lê o que você registra e sugere os combinados na aba Combinados.</p>
         <div className="flex gap-2">
           <select value={tipo} onChange={(e) => setTipo(e.target.value)} aria-label="Tipo" className={`${campo} !py-2 !text-[12px]`}>
             {Object.entries(ROTULO_TIPO_FEEDBACK).filter(([k]) => k !== "SISTEMA").map(([k, v]) => <option key={k} value={k}>{v}</option>)}
