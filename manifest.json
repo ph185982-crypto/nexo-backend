@@ -454,9 +454,9 @@
    "subject_name": "Direito Processual Penal",
    "number": 1,
    "title": "Direito Processual Penal · Episódio 1",
-   "file": "direito-processual-penal-01-6fd8345ef5.mp3",
-   "bytes": 14244336,
-   "duration_secs": 2374,
+   "file": "direito-processual-penal-01-ia-c20a9522ff.mp3",
+   "bytes": 14335488,
+   "duration_secs": 2389,
    "chapters": [
     {
      "topic_id": "a0dc56ff-5760-5395-a8b4-81ad5bee115d",
@@ -465,9 +465,11 @@
     }
    ],
    "boundaries": [
-    2374.06
+    2389.19
    ],
-   "segment_count": 1
+   "segment_count": 1,
+   "format": "conversa",
+   "problems_fixed": 1
   },
   {
    "id": "direito-processual-penal-02",
