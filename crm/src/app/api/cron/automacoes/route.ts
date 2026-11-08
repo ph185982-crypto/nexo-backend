@@ -2,8 +2,9 @@
 import { timingSafeEqual } from "node:crypto";
 import { processarVencidas, varrerTempo } from "@/lib/automacao/motor";
 import { rodarRotinaDeEntregas } from "@/lib/entrega/rotina";
+import { processarPendentes } from "@/lib/combinados/fontes";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
 function segredoValido(req: Request, segredo: string): boolean {
@@ -19,5 +20,8 @@ export async function GET(req: Request) {
   // A rotina vem antes: o que ela muda (dono do cartão, "Essa semana") já vale para as automações.
   const entregas = await rodarRotinaDeEntregas();
   const varredura = await varrerTempo();
-  return Response.json({ entregas, varredura, execucao: await processarVencidas() });
+  const execucao = await processarVencidas();
+  // Agente de combinados: o que ficou na fila (análise que não rodou depois da resposta).
+  const agente = await processarPendentes(5);
+  return Response.json({ entregas, varredura, execucao, agente });
 }

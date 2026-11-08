@@ -55,6 +55,7 @@ model Contato {
   tarefas         Tarefa[]
   compromissos    Compromisso[]
   entregas        Entrega[]
+  mensagens       Mensagem[]
 
   @@index([tipo, nome])
   @@index([telefone])
@@ -133,6 +134,8 @@ model Oportunidade {
   tarefas      Tarefa[]
   compromissos Compromisso[]
   entrega      Entrega?
+  combinados   Combinado[]
+  analises     AnaliseAgente[]
 
   @@index([funilId, status, etapaId])
   @@index([contatoId])
@@ -417,4 +420,82 @@ model Meta {
   atualizadoEm DateTime @updatedAt
 
   @@unique([escopo, ano, mes, tipo])
+}
+
+// ── Combinados ─────────────────────────────────────────────────────────────
+// O que foi prometido ao cliente (ou pelo cliente): entregáveis, reuniões, tarefas. Nasce à mão ou como
+// SUGESTÃO do agente (src/lib/combinados/agente.ts), que lê feedbacks, conversas e transcrições.
+// Aceitar uma sugestão a materializa: antes de fechar vira tarefa/compromisso; depois, cartão da entrega.
+model Combinado {
+  id             String       @id @default(cuid())
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  descricao      String
+  tipo           String       @default("ENTREGAVEL") // ENTREGAVEL | REUNIAO | TAREFA
+  responsavel    String       @default("NOS") // NOS | CLIENTE — quem precisa cumprir
+  prazoEm        DateTime?
+  pilar          String? // COMERCIAL | PRODUTO | MARKETING | OPERACAO | FINANCEIRO | TECNOLOGIA
+  // SUGERIDO (aguarda decisão) | PENDENTE (aceito, a cumprir) | ENTREGUE | DESCARTADO | APLICADA (sugestão sobre outro item, já aplicada)
+  status         String       @default("SUGERIDO")
+  // NOVO: um combinado novo. CONCLUIR / ATUALIZAR_PRAZO: sugestão sobre um combinado ou cartão que já existe.
+  acao           String       @default("NOVO")
+  alvoCombinadoId String?
+  alvoCartaoId   String?
+  evidencia      String?      @db.Text // trecho da fonte que justifica (o agente sempre manda)
+  confianca      Float?
+  origem         String       @default("MANUAL") // MANUAL | AGENTE
+  analiseId      String?
+  // O que a aceitação criou
+  cartaoId       String?
+  tarefaId       String?
+  compromissoId  String?
+  decididoEm     DateTime?
+  decididoPorId  String?
+  entregueEm     DateTime?
+  criadoEm       DateTime     @default(now())
+  atualizadoEm   DateTime     @updatedAt
+
+  @@index([oportunidadeId, status])
+  @@index([analiseId])
+}
+
+// Cada texto que o agente leu (feedback, trecho de conversa, transcrição colada) e o que achou.
+model AnaliseAgente {
+  id             String       @id @default(cuid())
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  fonte          String // FEEDBACK | CONVERSA | REUNIAO | TEXTO
+  fonteRef       String // id do feedback, faixa da conversa… (idempotência: a mesma fonte não é lida duas vezes)
+  texto          String       @db.Text
+  status         String       @default("PENDENTE") // PENDENTE | PROCESSANDO | CONCLUIDA | ERRO | SEM_CHAVE
+  resumo         String?      @db.Text
+  erro           String?      @db.Text
+  sugestoes      Int          @default(0)
+  modelo         String?
+  tokensEntrada  Int?
+  tokensSaida    Int?
+  criadoEm       DateTime     @default(now())
+  concluidaEm    DateTime?
+
+  @@unique([oportunidadeId, fonte, fonteRef])
+  @@index([status, criadoEm])
+}
+
+// Mensagem de conversa trazida de fora (extensão do WhatsApp Web, arquivo "Exportar conversa").
+model Mensagem {
+  id             String   @id @default(cuid())
+  contatoId      String
+  contato        Contato  @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  canal          String   @default("WHATSAPP")
+  autor          String
+  deMim          Boolean // true = quem usa o CRM falou
+  texto          String   @db.Text
+  enviadaEm      DateTime
+  origem         String // EXTENSAO | ARQUIVO
+  hash           String   @unique // contato + horário + autor + texto: importar de novo não duplica
+  criadoEm       DateTime @default(now())
+
+  @@index([contatoId, enviadaEm])
+  @@index([oportunidadeId, enviadaEm])
 }

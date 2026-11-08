@@ -58,6 +58,23 @@ responsável, e o contato vira **Cliente**. Daí em diante:
   `{cliente}`, `{oportunidade}`, `{entrega}`, `{cartao}` e `{dias}`. Com espera, a ação só roda se o fato continuar
   verdadeiro (ex.: o cartão ainda está esperando o cliente). Há modelos prontos na tela de Automações.
 
+## Ficha do cliente, combinados e agente
+
+Clicar numa oportunidade abre a **ficha** (janela grande): resumo e histórico à esquerda; abas **Linha do tempo**
+(feedbacks), **Combinados**, **Tarefas** e **Conversa (WhatsApp)**.
+
+- **Combinado** (`src/lib/combinados/`) é o que foi prometido, por nós ou pelo cliente, com prazo. Aceito, vira o item
+  de trabalho certo: antes de fechar, tarefa (ou compromisso, se for reunião com data); depois de ganhar, cartão da
+  entrega. Ao ganhar, os combinados pendentes viram cartões. Concluir o cartão ou a tarefa cumpre o combinado.
+- **Agente** (`agente.ts`, modelo `claude-opus-5-5`, saída validada por esquema): lê cada feedback escrito, cada
+  trecho novo de conversa e cada transcrição colada ("Analisar transcrição ou texto"), e devolve **sugestões** —
+  combinado novo, item aberto já entregue, ou prazo novo — com o trecho de evidência. Nada entra sem a pessoa aceitar.
+  Roda depois da resposta (`after`); o que sobrar, o cron pega. Precisa de `ANTHROPIC_API_KEY`.
+- **Conversas**: a extensão do Chrome (`extensao/`, empacotada em `public/extensao-avanteza-whatsapp.zip` por
+  `npm run extensao:empacotar`) lê a conversa aberta no WhatsApp Web e envia para `/api/integracoes/whatsapp/mensagens`
+  com uma chave de serviço; ou importe o `.txt` do "Exportar conversa" na aba Conversa. O contato é achado pelo
+  telefone; importar de novo não duplica.
+
 ## O que existe e o que falta
 
 Existe: login (cookie HMAC, bloqueio por tentativas, usuário desativado perde acesso na hora), kanban com funis e etapas editáveis

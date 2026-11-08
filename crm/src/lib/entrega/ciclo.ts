@@ -24,6 +24,9 @@ export async function depoisDeMoverCartao(cartaoId: string, de: string, para: st
   if (de === para) return;
   const c = await prisma.entregaCartao.findUnique({ where: { id: cartaoId }, select: { entregaId: true } });
   if (!c) return;
+  // O combinado ligado ao cartão acompanha (entregue / pendente de novo).
+  if (para === "CONCLUIDO") await prisma.combinado.updateMany({ where: { cartaoId, status: "PENDENTE" }, data: { status: "ENTREGUE", entregueEm: agora } });
+  else if (de === "CONCLUIDO") await prisma.combinado.updateMany({ where: { cartaoId, status: "ENTREGUE" }, data: { status: "PENDENTE", entregueEm: null } });
   if (para === "CONCLUIDO") {
     const { dispararEventoEntrega } = await import("@/lib/automacao/motor");
     await dispararEventoEntrega("ENTREGA_CARTAO_CONCLUIDO", c.entregaId, cartaoId, agora);

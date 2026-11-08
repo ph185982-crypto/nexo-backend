@@ -4,8 +4,10 @@ import { calcularSaude, registrarFeedback } from "@/lib/atividades/feedback";
 import { INTENCOES, TIPOS_FEEDBACK, type Intencao } from "@/lib/atividades/intencoes";
 import { diasDesde } from "@/lib/funil/encerramento";
 import { comEntrada, escolha, texto } from "@/lib/validar";
+import { registrarFonte } from "@/lib/combinados/fontes";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300; // o agente de combinados lê o feedback depois da resposta
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   if (!(await usuarioDaRequisicao(req))) return naoAutenticado();
@@ -32,6 +34,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       intencao: c.intencao ? (escolha(c.intencao, "intenção", INTENCOES) as Intencao) : null,
       importante: c.importante === true, autor: uid, autorNome: usuario?.nome ?? null,
     });
+    // O agente procura combinados no que a pessoa escreveu (em segundo plano; texto curto é ignorado).
+    await registrarFonte({ oportunidadeId: id, fonte: "FEEDBACK", fonteRef: f.id, texto: f.texto });
     return Response.json({ id: f.id }, { status: 201 });
   });
 }
