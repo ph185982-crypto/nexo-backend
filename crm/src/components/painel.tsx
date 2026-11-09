@@ -12,6 +12,7 @@ import { botaoPrimario, campo } from "./dialogo";
 import { AbaCombinados } from "./ficha-combinados";
 import { AbaConversa } from "./ficha-conversa";
 import { AbaProdutos } from "./ficha-produtos";
+import { AbaPropostas } from "./ficha-propostas";
 import { EditarOportunidade, Prorrogar } from "./ficha-editar";
 import { AlertaParada, ResumoIa } from "./ficha-resumo";
 import { PARADO_CRITICO_DIAS } from "@/lib/formatar";
@@ -142,6 +143,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
         {aba === "linha" && <AbaFeedback oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "combinados" && <AbaCombinados oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "produtos" && <AbaProdutos oportunidadeId={c.id} onAtividade={onAtividade} />}
+        {aba === "propostas" && <AbaPropostas oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "tarefas" && <AbaTarefas oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "conversa" && <AbaConversa oportunidadeId={c.id} contatoId={c.pessoa?.id ?? c.contato.id} onAtividade={onAtividade} />}
       </div>
@@ -153,8 +155,8 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
   );
 }
 
-type Aba = "linha" | "combinados" | "produtos" | "tarefas" | "conversa";
-const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["produtos", "Produtos"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
+type Aba = "linha" | "combinados" | "produtos" | "propostas" | "tarefas" | "conversa";
+const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["produtos", "Produtos"], ["propostas", "Propostas"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
 
 /** Tarefa ou feedback muda o aviso "sem próxima atividade" e os indicadores do cartão: o quadro recarrega. */
 function AbaTarefas({ oportunidadeId, onAtividade }: { oportunidadeId: string; onAtividade: () => void }) {

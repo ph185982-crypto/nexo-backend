@@ -138,6 +138,7 @@ model Oportunidade {
   combinados   Combinado[]
   analises     AnaliseAgente[]
   produtos     OportunidadeProduto[]
+  propostas    Proposta[]
 
   // Resumo da IA (resumo, próximos passos, riscos) e quando foi gerado.
   resumoIa     Json?
@@ -591,4 +592,34 @@ model Configuracao {
   chave        String   @id
   valor        String   @db.Text
   atualizadoEm DateTime @updatedAt
+}
+
+// ─── Propostas: documento enviado ao cliente, com versões e aceite pelo link ──
+// Os itens são uma cópia dos produtos no momento da criação: editar os produtos depois não muda a proposta.
+model Proposta {
+  id             String       @id @default(cuid())
+  numero         Int          @unique @default(autoincrement()) // exibido como 00000012/2026
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  versao         Int          @default(1)
+  // RASCUNHO | ENVIADA | ACEITA | RECUSADA | OBSOLETA (substituída por uma versão nova)
+  status         String       @default("RASCUNHO")
+  titulo         String
+  introducao     String       @db.Text
+  condicoes      String       @db.Text
+  itens          Json         @default("[]") // [{ nome, descricao, quantidade, valorUnitario, desconto, recorrencia, total }]
+  valorUnico     Decimal      @default(0) @db.Decimal(14, 2)
+  valorMensal    Decimal      @default(0) @db.Decimal(14, 2)
+  validaAte      DateTime?
+  token          String       @unique // link público: /p/{token}
+  enviadaEm      DateTime?
+  visualizadaEm  DateTime?
+  respondidaEm   DateTime?
+  respostaNome   String?
+  respostaComentario String?  @db.Text
+  criadoPorId    String?
+  criadoEm       DateTime     @default(now())
+  atualizadoEm   DateTime     @updatedAt
+
+  @@index([oportunidadeId, versao])
 }

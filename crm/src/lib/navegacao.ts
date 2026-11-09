@@ -54,16 +54,19 @@ const fimDoDia = (agora: Date) => { const d = new Date(agora.getTime() - 3 * 360
 export async function avisosDoUsuario(uid: string, agora = new Date()): Promise<Aviso[]> {
   const u = await prisma.usuario.findUnique({ where: { id: uid }, select: { papel: true } });
   const meus = u?.papel === "ADMIN" ? { OR: [{ responsavelId: uid }, { responsavelId: null }] } : { responsavelId: uid };
-  const [tarefas, atrasadas, paradas, combinados, sugestoes, reunioes] = await Promise.all([
+  const [tarefas, atrasadas, paradas, combinados, sugestoes, reunioes, propostas] = await Promise.all([
     prisma.tarefa.findMany({ where: { ...meus, status: "ABERTA", paiId: null, prazoEm: { lte: fimDoDia(agora) } }, select: { id: true, titulo: true, prazoEm: true }, orderBy: { prazoEm: "asc" }, take: 30 }),
     prisma.oportunidade.findMany({ where: { ...meus, status: "EM_ANDAMENTO", finalizaEm: { lt: agora } }, select: { id: true, funilId: true, nome: true, finalizaEm: true }, orderBy: { finalizaEm: "asc" }, take: 20 }),
     prisma.oportunidade.findMany({ where: { ...meus, status: "EM_ANDAMENTO", ultimaAtividadeEm: { lt: new Date(agora.getTime() - PARADO_CRITICO_DIAS * DIA) } }, select: { id: true, funilId: true, nome: true, ultimaAtividadeEm: true }, orderBy: { ultimaAtividadeEm: "asc" }, take: 20 }),
     prisma.combinado.findMany({ where: { status: "PENDENTE", responsavel: "NOS", prazoEm: { lt: agora }, oportunidade: meus }, select: { id: true, descricao: true, prazoEm: true, oportunidade: { select: { id: true, funilId: true, nome: true } } }, orderBy: { prazoEm: "asc" }, take: 20 }),
     prisma.combinado.groupBy({ by: ["oportunidadeId"], where: { status: "SUGERIDO", oportunidade: meus }, _count: true }),
     prisma.reuniaoGoogle.count({ where: { status: "SEM_CLIENTE", conta: { usuarioId: uid } } }),
+    // Resposta do cliente pelo link nos últimos 14 dias, com a oportunidade ainda aberta.
+    prisma.proposta.findMany({ where: { status: { in: ["ACEITA", "RECUSADA"] }, respondidaEm: { gte: new Date(agora.getTime() - 14 * DIA) }, oportunidade: { ...meus, status: "EM_ANDAMENTO" } }, select: { id: true, status: true, respostaNome: true, oportunidade: { select: { id: true, funilId: true, nome: true } } }, orderBy: { respondidaEm: "desc" }, take: 10 }),
   ]);
   const dias = (d: Date | null) => Math.max(1, Math.floor((agora.getTime() - (d?.getTime() ?? 0)) / DIA));
   const avisos: Aviso[] = [];
+  for (const p of propostas) avisos.push({ chave: `pr:${p.id}`, nivel: p.status === "ACEITA" ? "INFO" : "ATENCAO", titulo: p.oportunidade.nome, detalhe: p.status === "ACEITA" ? `${p.respostaNome} aceitou a proposta: marque como ganha` : `${p.respostaNome} recusou a proposta`, href: linkOportunidade(p.oportunidade) });
   for (const t of tarefas) {
     const atrasada = t.prazoEm! < agora;
     avisos.push({ chave: `t:${t.id}`, nivel: atrasada ? "CRITICO" : "ATENCAO", titulo: t.titulo, detalhe: atrasada ? `Tarefa atrasada há ${dias(t.prazoEm)}d` : "Tarefa para hoje", href: "/tarefas" });

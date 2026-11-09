@@ -67,6 +67,10 @@ Parada há 14 dias ou mais, a ficha mostra o alerta.
 
 - **Produtos** (`src/lib/oportunidades/produtos.ts`): catálogo em Configuração → Produtos (único ou mensal). Com produtos, o valor da
   oportunidade é a soma das linhas (quantidade × valor − desconto %), por recorrência; sem produtos, digita-se em Editar.
+- **Propostas** (`src/lib/propostas/`): aba Propostas na ficha. Nasce dos produtos (cópia: editar produto depois não muda a
+  proposta), com textos padrão em Configuração → Produtos. Rascunho se edita; enviada, ganha o link público `/p/{token}`
+  (sem login) em que o cliente lê, baixa em PDF e aceita ou recusa. Abertura, aceite e recusa vão para a linha do tempo e
+  para os Avisos; aceite marca o sinal "Sinal de fechamento" e a probabilidade Quente. Versão nova substitui a anterior.
 - **Funil**: busca, filtros (responsável, probabilidade, tag, situação), modo **Lista** ordenável e **Exportar** (CSV do que está na tela).
 - **Busca global** (Ctrl+K) e **Avisos** (tarefas atrasadas/de hoje, oportunidades atrasadas ou paradas, combinados vencidos, sugestões
   do agente, reuniões sem cliente) ficam no topo da barra lateral.
