@@ -3,12 +3,19 @@ import { naoAutenticado, usuarioDaRequisicao } from "@/lib/auth/requisicao";
 import { comEntrada } from "@/lib/validar";
 import { validarCombinado } from "@/lib/combinados/modelo";
 import { criarCombinadoManual, listarCombinados } from "@/lib/combinados/servico";
+import { depoisDaResposta } from "@/lib/segundo-plano";
+import { sincronizarSeVencida } from "@/lib/google/reunioes";
 
 export const dynamic = "force-dynamic";
 type Ctx = { params: Promise<{ id: string }> };
 
+export const maxDuration = 300; // a sincronização do Google roda depois da resposta
+
 export async function GET(req: Request, ctx: Ctx) {
-  if (!(await usuarioDaRequisicao(req))) return naoAutenticado();
+  const uid = await usuarioDaRequisicao(req);
+  if (!uid) return naoAutenticado();
+  // Abrir os combinados puxa as reuniões novas do Meet do usuário (no máximo a cada 10 min), sem fazer esperar.
+  depoisDaResposta(() => sincronizarSeVencida(uid));
   const { id } = await ctx.params;
   if (!(await prisma.oportunidade.findUnique({ where: { id }, select: { id: true } }))) return Response.json({ erro: "Oportunidade não encontrada" }, { status: 404 });
   return Response.json({ ...(await listarCombinados(id)), agenteLigado: Boolean(process.env.ANTHROPIC_API_KEY?.trim()) });
