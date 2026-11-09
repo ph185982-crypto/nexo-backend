@@ -487,7 +487,7 @@ model AnaliseAgente {
   @@index([status, criadoEm])
 }
 
-// Mensagem de conversa trazida de fora (extensão do WhatsApp Web, arquivo "Exportar conversa").
+// Mensagem de conversa do WhatsApp: espelhada do Vendedor IA (sozinha) ou trazida de arquivo "Exportar conversa".
 model Mensagem {
   id             String   @id @default(cuid())
   contatoId      String
@@ -498,11 +498,14 @@ model Mensagem {
   deMim          Boolean // true = quem usa o CRM falou
   texto          String   @db.Text
   enviadaEm      DateTime
-  origem         String // EXTENSAO | ARQUIVO
+  origem         String // EXTENSAO | ARQUIVO | VENDEDOR_IA
   hash           String   @unique // contato + horário + autor + texto: importar de novo não duplica
+  // Quando o agente de combinados leu. Conversa do Vendedor IA chega aos poucos: é lida quando esfria (null = falta ler).
+  analisadaEm    DateTime?
   criadoEm       DateTime @default(now())
 
   @@index([contatoId, enviadaEm])
+  @@index([origem, analisadaEm])
   @@index([oportunidadeId, enviadaEm])
 }
 

@@ -4,6 +4,7 @@ import { acionarFollowupsSePreciso } from "@/lib/followup/gatilho";
 import { acionarRecuperacaoSePreciso } from "@/lib/ai/sdr/recuperar-falhas";
 import { despacharOutboxCrm } from "@/lib/crm-externo/outbox";
 import { crmConfigurado } from "@/lib/crm-externo/eventos";
+import { sincronizarConversasCrm } from "@/lib/crm-externo/conversas";
 
 // A rotina externa de monitoramento chama este endpoint de hora em hora — e
 // agora cada chamada também dispara, em segundo plano, os follow-ups vencidos.
@@ -28,11 +29,14 @@ export async function GET() {
 
   // Eventos para o CRM Avanteza que ficaram pendentes (CRM fora do ar, timeout…).
   const crm = dbStatus !== "connected" ? "sem-banco" : !crmConfigurado() ? "desligado" : await despacharOutboxCrm({ limite: 5, orcamentoMs: 15_000 }).catch(() => "erro" as const);
+  // Conversas do WhatsApp espelhadas na ficha do CRM (o webhook já manda as recentes; aqui pega o que ficou).
+  const crmConversas = dbStatus !== "connected" || !crmConfigurado() ? undefined : await sincronizarConversasCrm({ limite: 20, orcamentoMs: 12_000 }).catch(() => "erro" as const);
 
   return NextResponse.json(
     {
       status: ok ? "ok" : "degraded",
       crm,
+      ...(crmConversas ? { crmConversas } : {}),
       db: dbStatus,
       ...(dbError ? { dbError } : {}),
       auth: authOk ? "configured" : "MISSING — NEXTAUTH_SECRET/AUTH_SECRET nao definido",

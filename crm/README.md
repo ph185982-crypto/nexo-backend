@@ -60,8 +60,16 @@ responsável, e o contato vira **Cliente**. Daí em diante:
 
 ## Ficha do cliente, combinados e agente
 
-Clicar numa oportunidade abre a **ficha** (janela grande): resumo e histórico à esquerda; abas **Linha do tempo**
-(feedbacks), **Combinados**, **Tarefas** e **Conversa (WhatsApp)**.
+Clicar numa oportunidade abre a **ficha** (janela grande): no topo, **Editar**, **Prorrogar**, **Perder** e **Ganhar**; à esquerda,
+valores, **Resumo da IA** (situação, próximos passos e riscos, gerado sob pedido), dados e histórico de etapas; abas **Linha do tempo**
+(feedbacks; edições ficam registradas com o antes e o depois), **Combinados**, **Produtos**, **Tarefas** e **Conversa (WhatsApp)**.
+Parada há 14 dias ou mais, a ficha mostra o alerta.
+
+- **Produtos** (`src/lib/oportunidades/produtos.ts`): catálogo em Configuração → Produtos (único ou mensal). Com produtos, o valor da
+  oportunidade é a soma das linhas (quantidade × valor − desconto %), por recorrência; sem produtos, digita-se em Editar.
+- **Funil**: busca, filtros (responsável, probabilidade, tag, situação), modo **Lista** ordenável e **Exportar** (CSV do que está na tela).
+- **Busca global** (Ctrl+K) e **Avisos** (tarefas atrasadas/de hoje, oportunidades atrasadas ou paradas, combinados vencidos, sugestões
+  do agente, reuniões sem cliente) ficam no topo da barra lateral.
 
 - **Combinado** (`src/lib/combinados/`) é o que foi prometido, por nós ou pelo cliente, com prazo. Aceito, vira o item
   de trabalho certo: antes de fechar, tarefa (ou compromisso, se for reunião com data); depois de ganhar, cartão da
@@ -70,10 +78,9 @@ Clicar numa oportunidade abre a **ficha** (janela grande): resumo e histórico �
   trecho novo de conversa e cada transcrição colada ("Analisar transcrição ou texto"), e devolve **sugestões** —
   combinado novo, item aberto já entregue, ou prazo novo — com o trecho de evidência. Nada entra sem a pessoa aceitar.
   Roda depois da resposta (`after`); o que sobrar, o cron pega. Precisa de `ANTHROPIC_API_KEY`.
-- **Conversas**: a extensão do Chrome (`extensao/`, empacotada em `public/extensao-avanteza-whatsapp.zip` por
-  `npm run extensao:empacotar`) lê a conversa aberta no WhatsApp Web e envia para `/api/integracoes/whatsapp/mensagens`
-  com uma chave de serviço; ou importe o `.txt` do "Exportar conversa" na aba Conversa. O contato é achado pelo
-  telefone; importar de novo não duplica.
+- **Conversas**: as do WhatsApp do Vendedor IA chegam sozinhas na ficha (só de quem o CRM conhece) e o agente lê cada
+  conversa quando ela para por 30 minutos (contrato em `docs/integracao.md`, inclusive como ligar o seu próprio número do
+  WhatsApp Business em coexistência). Conversa de outro número: importe o `.txt` do "Exportar conversa" na aba Conversa.
 
 ## Reuniões do Google Meet
 

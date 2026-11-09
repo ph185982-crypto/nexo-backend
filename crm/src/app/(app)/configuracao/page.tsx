@@ -253,16 +253,10 @@ function Integracao() {
           <div className="mt-3 flex gap-2"><button className={botaoPrimario} onClick={() => void navigator.clipboard?.writeText(nova)}>Copiar</button><button className={botaoSecundario} onClick={() => setNova(null)}>Já guardei</button></div>
         </div>
       )}
-      <section aria-label="Extensão do WhatsApp" className="rounded-xl border border-linha bg-superficie p-4">
-        <h2 className="font-titulo text-[15px] font-extrabold">Extensão do WhatsApp Web</h2>
-        <p className="mt-1 text-[13px] text-cinza">Envia a conversa aberta no WhatsApp Web para a ficha do cliente. O agente lê o trecho novo e sugere os combinados.</p>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-[13px]">
-          <li><a className="font-bold text-azul" href="/extensao-avanteza-whatsapp.zip" download>Baixe a extensão</a> e descompacte numa pasta.</li>
-          <li>No Chrome, abra <code className="rounded bg-bq px-1.5 py-0.5">chrome://extensions</code>, ligue o <b>Modo do desenvolvedor</b> e clique em <b>Carregar sem compactação</b>, escolhendo a pasta.</li>
-          <li>Gere aqui embaixo uma chave chamada &quot;Extensão WhatsApp&quot;, clique no ícone da Avanteza na barra do Chrome e cole a chave.</li>
-          <li>No WhatsApp Web, abra a conversa do cliente (role para cima para carregar o que quiser enviar) e clique em <b>Enviar ao CRM</b>.</li>
-        </ol>
-        <p className="mt-2 text-[12px] text-cinza">A extensão só lê a conversa aberta, quando você clica. O contato é achado pelo telefone; se não existir no CRM, é criado.</p>
+      <section aria-label="Conversas do WhatsApp" className="rounded-xl border border-linha bg-superficie p-4">
+        <h2 className="font-titulo text-[15px] font-extrabold">Conversas do WhatsApp</h2>
+        <p className="mt-1 text-[13px] text-cinza">Chegam sozinhas na ficha do cliente pelo Vendedor IA, que usa a API oficial do WhatsApp. Só de quem já está no CRM. O agente lê cada conversa quando ela para por 30 minutos e sugere os combinados.</p>
+        <p className="mt-2 text-[13px] text-cinza">Para o seu próprio número do WhatsApp Business entrar também, conecte-o ao Vendedor IA em modo coexistência (o app continua funcionando no celular), sem agente de IA nele. O passo a passo está em <code className="rounded bg-bq px-1.5 py-0.5">crm/docs/integracao.md</code>.</p>
       </section>
       <form onSubmit={criar} className="flex gap-2"><input aria-label="Nome da chave" required maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome (ex.: Vendedor IA)" className={`${campo} !py-2`} /><button type="submit" className={botaoPrimario} disabled={!nome.trim()}>Gerar chave</button></form>
       <div className="overflow-auto rounded-xl border border-linha bg-superficie">
