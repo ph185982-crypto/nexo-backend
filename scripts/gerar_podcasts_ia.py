@@ -63,6 +63,8 @@ TEXT_MODEL = os.getenv("PODCAST_TEXT_MODEL", "gemini-3.8-flash")
 # Lote longo: sob pico de demanda vale esperar (até ~30 min por pedido) em
 # vez de perder o episódio.
 ATTEMPTS = int(os.getenv("PODCAST_ATTEMPTS", "30"))
+# Só roteiro: gasta a cota de texto adiantando episódios quando a de voz acabou.
+SCRIPT_ONLY = os.getenv("PODCAST_SCRIPT_ONLY") == "1"
 THINKING_BUDGET = int(os.getenv("PODCAST_THINKING_BUDGET", "4096"))
 TEXT_FALLBACKS = [m for m in os.getenv("PODCAST_TEXT_FALLBACKS", "gemini-3.6-flash,gemini-3.5-flash").split(",") if m]
 TTS_MODEL = os.getenv("PODCAST_TTS_MODEL", "gemini-3.8-flash-tts")
@@ -489,6 +491,8 @@ async def produce(g: Gemini, store, ep: dict, out: Path) -> dict | None:
     try:
         script = await write_episode(g, store, ep, work)
         log(f"{ep['id']}: roteiro pronto, {sum(words(s) for s in script['segments'])} palavras")
+        if SCRIPT_ONLY:
+            return None
         pcm, seg_bounds, seg_topics = await voice_episode(g, ep, script, work)
     except Exception as e:
         log(f"{ep['id']}: FALHOU — {e}")
