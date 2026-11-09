@@ -1,0 +1,86 @@
+{
+ "topic_id": "b39aa01d-3dcf-5380-bc89-c0567aad11e7",
+ "turns": [
+  {
+   "speaker": "Marcos",
+   "text": "Imagina a cena: em pleno dia de jogo no Estádio Serra Dourada, em Goiânia, um comerciante estaciona um food truck em local proibido, bloqueando bem a saída de emergência."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, perigo total! O que aconteceu em seguida?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Um policial militar determina a liberação imediata do local e faz a remoção do veículo. O comerciante protesta gritando três coisas: primeiro, que a Polícia Militar não tem poder de polícia sobre comércio, já que isso seria exclusivo da polícia judiciária; segundo, que a remoção sem ordem judicial prévia é ilegal por violar o devido processo legal; e terceiro, que ele iria ao Poder Judiciário para revogar a norma da prefeitura por falta de conveniência."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Caramba, que confusão! E aí: o policial agiu respaldado pelo poder de polícia administrativo? A medida podia ser executada diretamente sem autorização prévia do juiz? O Judiciário pode revogar o ato da prefeitura por conveniência e oportunidade?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "A resposta completa para essa situação a gente vai revelar só no final do episódio! Mas pode ter certeza: hoje você vai dominar o tema de Atos Administrativos em Direito Administrativo para gabaritar a prova da Polícia Militar de Goiás."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Com certeza! E para a gente começar a desembolar esse caso do Serra Dourada, precisamos entender primeiro o conceito de atos administrativos e quais são os seus atributos."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exato! O nosso material de estudo traz isso com bastante precisão. Quer ler o trecho literal da norma, Julia?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Leio sim! O material diz exatamente o seguinte: Os atributos dos atos administrativos são: presunção de legitimidade e veracidade, imperatividade, autoexecutoriedade e tipicidade. Nem todos os atos possuem todos os atributos."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Peraí, deixa eu ver se entendi o conceito. O que significa exatamente essa presunção de legitimidade e veracidade?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "É o seguinte: o material aponta isso como um atributo do ato administrativo, indicando que o ato praticado conta com a presunção de que foi feito de acordo com a lei e com fatos verdadeiros."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeito! Pensa na prática com uma analogia do dia a dia policial. Pensa na ordem dada por um policial rodoviário na rodovia GO-zero-quarenta mandando você encostar o seu veículo na blitz."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Ótimo exemplo! Naquele momento em que o policial dá o sinal, o ato presume-se verdadeiro e legal de imediato, o que é a presunção de legitimidade. Além disso, essa ordem impõe uma obrigação direta para você parar o carro, mesmo sem o policial ter que pedir licença ou permissão prévia para mais ninguém. Essa força de impor obrigações é o atributo da imperatividade!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exatamente! Agora, quero lançar um desafio para quem tá ouvindo a gente no carro ou no ônibus indo pro trabalho. Pausa aí e pensa: todo ato administrativo é imperativo e autoexecutório?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí, o que você acha? Pausou e pensou? A resposta é um sonoro não! A regra no nosso material é clara: nem todos os atos possuem todos os atributos de forma simultânea. O próprio material destaca exatamente essa ressalva!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Que aula! E o candidato da PMGO precisa ficar com o olho aberto porque o Instituto AOCP adora montar pegadinha exatamente em cima dos atributos!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, cobram demais! E como é que a banca tenta te confundir na hora do exame? Ela pega os atributos — presunção de legitimidade e veracidade, imperatividade, autoexecutoriedade e tipicidade — e mistura com outras coisas do Direito Administrativo."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "É batata! A banca AOCP tenta confundir os atributos dos atos com os princípios constitucionais da Administração, como legalidade, moralidade, eficiência e publicidade. Ou então tenta trocar a lista de atributos colocando outros conceitos para te enganar!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exatamente! Aí colocam na questão que motivação, finalidade, forma ou objeto são atributos, e a afirmação fica errada. Se a questão disser que a eficiência é um atributo do ato administrativo, pode marcar errado na hora!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Boa! Eficiência é princípio constitucional, não é atributo do ato. Guardou isso, você já sai na frente de um monte de concorrente."
+  }
+ ],
+ "problems": [
+  "A detalhação teórica dos conceitos de presunção de legitimidade e veracidade ('estritamente conforme a lei', 'verdadeiros até prova em contrário') na fala da Julia (Turno 10) não está prevista no material fornecido, que apenas menciona 'presunção de legitimidade e veracidade' como um dos atributos.",
+  "A classificação de 'atos enunciativos ou de consentimento' e os exemplos 'emissão de uma certidão ou uma licença' na fala da Julia (Turno 14) não constam no material, que se limita a afirmar que 'nem todos os atos possuem todos os atributos'.",
+  "A afirmação de que motivação, finalidade, forma e objeto são 'elementos constitutivos do ato' na fala de Marcos e Julia (Turnos 17 e 18) traz conceito não contido no material, onde esses termos aparecem apenas no enunciado de uma questão incorreta sobre atributos."
+ ]
+}
