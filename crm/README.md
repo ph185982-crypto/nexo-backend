@@ -75,6 +75,16 @@ Clicar numa oportunidade abre a **ficha** (janela grande): resumo e histórico �
   com uma chave de serviço; ou importe o `.txt` do "Exportar conversa" na aba Conversa. O contato é achado pelo
   telefone; importar de novo não duplica.
 
+## Reuniões do Google Meet
+
+Cada usuário conecta a própria conta Google em **Configuração → Google (reuniões)** (Workspace com transcrição do Meet
+ligada). O CRM lê a Agenda e as transcrições (`calendar.readonly`, `meetings.space.readonly`; refresh token cifrado):
+depois de cada reunião encerrada com transcrição, acha o evento pelo código da sala, o cliente pelo e-mail dos
+convidados (contato com o mesmo e-mail) e manda a transcrição para o agente (fonte `REUNIAO`), com um registro na linha
+do tempo. Reunião sem cliente identificado fica na lista para vincular com um clique. Sincroniza ao abrir uma ficha
+(no máximo a cada 10 min), no cron diário e em "Sincronizar agora". Código em `src/lib/google/`. A API do Meet guarda
+as falas por 30 dias.
+
 ## O que existe e o que falta
 
 Existe: login (cookie HMAC, bloqueio por tentativas, usuário desativado perde acesso na hora), kanban com funis e etapas editáveis

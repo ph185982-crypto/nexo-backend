@@ -29,4 +29,5 @@ Branches: `master` = production. `claude/prf-adaptive-study-app-xc2x76` = featur
 - **Mesma armadilha do vendedoria:** o `.vercelignore` da raiz lista `crm/`; se `crm/.vercelignore` for apagado, o projeto cai no da raiz e faz deploy vazio (build `READY`, todas as rotas 404). Mantenha `crm/.vercelignore`.
 - Regra de código: só `crm/src/lib/funil/mover.ts` cria oportunidade ou troca a etapa dela (há teste que falha se outro arquivo fizer).
 - Agente de combinados (`crm/src/lib/combinados/agente.ts`) usa o SDK da Anthropic e precisa de `ANTHROPIC_API_KEY` no projeto `nexo-crm`; sem ela as análises ficam `SEM_CHAVE`. Testes trocam o modelo por um falso (`definirModelo`).
+- Reuniões do Google Meet (`crm/src/lib/google/`): precisa de `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` no `nexo-crm` (OAuth Web, consentimento Interno, Meet REST API e Calendar API ativadas, redirect `https://nexo-crm-tawny.vercel.app/api/google/callback`). Testes usam `definirTransporteGoogle` (sem rede).
 - Extensão do WhatsApp Web em `crm/extensao/`: mudou um arquivo, rode `npm run extensao:empacotar` (há teste que falha se o zip ficar desatualizado).

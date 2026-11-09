@@ -23,6 +23,7 @@ model Usuario {
   contatos      Contato[]
   oportunidades Oportunidade[]
   tarefas       Tarefa[]
+  contaGoogle   ContaGoogle?
   compromissos  Compromisso[]
   cartoesEntrega EntregaCartao[]
 }
@@ -498,4 +499,49 @@ model Mensagem {
 
   @@index([contatoId, enviadaEm])
   @@index([oportunidadeId, enviadaEm])
+}
+
+// ── Google (reuniões do Meet) ───────────────────────────────────────────────
+// Conexão de um usuário com o Google: lê a Agenda (quem estava na reunião) e as transcrições do Meet.
+// O refresh token fica cifrado (AES-256-GCM com chave derivada de SESSION_SECRET).
+model ContaGoogle {
+  id                    String          @id @default(cuid())
+  usuarioId             String          @unique
+  usuario               Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  email                 String
+  refreshTokenCifrado   String          @db.Text
+  accessToken           String?         @db.Text
+  accessExpiraEm        DateTime?
+  escopos               String          @db.Text
+  ativa                 Boolean         @default(true)
+  erro                  String?         @db.Text
+  ultimaSincronizacaoEm DateTime?
+  criadoEm              DateTime        @default(now())
+  atualizadoEm          DateTime        @updatedAt
+  reunioes              ReuniaoGoogle[]
+}
+
+// Uma reunião do Meet encontrada na sincronização. A transcrição vai para o agente de combinados da oportunidade
+// do cliente (achado pelo e-mail dos convidados do evento na Agenda) ou espera alguém vincular.
+model ReuniaoGoogle {
+  id               String      @id @default(cuid())
+  contaId          String
+  conta            ContaGoogle @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  conferenceRecord String      @unique // conferenceRecords/{id} na API do Meet
+  titulo           String?
+  inicio           DateTime
+  fim              DateTime?
+  meetingCode      String?
+  emails           String[] // convidados do evento (sem o próprio usuário)
+  participantes    Json        @default("[]") // nomes de quem falou
+  transcricao      String?     @db.Text
+  // AGUARDANDO (transcrição ainda não gerada) | SEM_TRANSCRICAO | SEM_CLIENTE | VINCULADA | IGNORADA
+  status           String
+  oportunidadeId   String?
+  analiseId        String?
+  criadoEm         DateTime    @default(now())
+  atualizadoEm     DateTime    @updatedAt
+
+  @@index([contaId, status])
+  @@index([oportunidadeId])
 }

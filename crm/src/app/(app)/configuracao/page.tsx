@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { botaoPrimario, botaoSecundario, campo, Dialogo } from "@/components/dialogo";
 import { dataHora } from "@/lib/formatar";
 
-type Aba = "funis" | "motivos" | "usuarios" | "integracao" | "entrega";
-const ABAS: Array<[Aba, string]> = [["funis", "Funis e etapas"], ["motivos", "Motivos"], ["usuarios", "Usuários"], ["integracao", "Integração"], ["entrega", "Modelo de entrega"]];
+type Aba = "funis" | "motivos" | "usuarios" | "integracao" | "google" | "entrega";
+const ABAS: Array<[Aba, string]> = [["funis", "Funis e etapas"], ["motivos", "Motivos"], ["usuarios", "Usuários"], ["integracao", "Integração"], ["google", "Google (reuniões)"], ["entrega", "Modelo de entrega"]];
 
 async function chamar(url: string, metodo: string, corpo?: unknown): Promise<{ ok: boolean; erro?: string; dados?: Record<string, unknown> }> {
   const r = await fetch(url, { method: metodo, headers: { "content-type": "application/json" }, ...(corpo !== undefined ? { body: JSON.stringify(corpo) } : {}) });
@@ -16,6 +16,8 @@ const rotulo = "mb-1 block text-[12px] font-semibold text-cinza";
 
 export default function ConfiguracaoPage() {
   const [aba, setAba] = useState<Aba>("funis");
+  // Volta do Google cai em ?aba=google.
+  useEffect(() => { const a = new URLSearchParams(window.location.search).get("aba"); if (a && ABAS.some(([k]) => k === a)) setAba(a as Aba); }, []);
   return (
     <div className="flex h-full flex-col">
       <header className="px-6 py-3.5"><h1 className="text-[22px] font-extrabold leading-none tracking-tight">Configuração</h1></header>
@@ -23,7 +25,7 @@ export default function ConfiguracaoPage() {
         {ABAS.map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px whitespace-nowrap border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{r}</button>)}
       </div>
       <div className="flex-1 overflow-auto px-6 pb-8 pt-4">
-        {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "entrega" && <Modelos />}
+        {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "google" && <Google />}{aba === "entrega" && <Modelos />}
       </div>
     </div>
   );
@@ -223,6 +225,104 @@ function Integracao() {
         <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-cinza"><tr>{["Nome", "Chave", "Criada", "Último uso", ""].map((h) => <th key={h} className="border-b border-linha px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
           <tbody>{dados?.length === 0 && <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza">Nenhuma chave.</td></tr>}{dados?.map((c) => <tr key={c.id} className="border-b border-linha last:border-0"><td className="px-4 py-2.5 font-semibold">{c.nome}</td><td className="px-4 py-2.5 font-mono text-[12px] text-cinza">{c.prefixo}…</td><td className="px-4 py-2.5 text-cinza">{dataHora(c.criadaEm)}</td><td className="px-4 py-2.5 text-cinza">{c.ultimoUsoEm ? dataHora(c.ultimoUsoEm) : "nunca"}</td><td className="px-4 py-2.5 text-right">{c.revogadaEm ? <span className="text-[12px] text-cinza">Revogada</span> : <button className="text-[12px] font-bold text-critico" onClick={() => revogar(c)}>Revogar</button>}</td></tr>)}</tbody></table>
       </div>
+    </div>
+  );
+}
+
+// ─── Google (reuniões do Meet) ───────────────────────────────────────────────
+interface ReuniaoCfg { id: string; titulo: string | null; inicio: string; fim: string | null; emails: string[]; status: string; oportunidadeNome: string | null; participantes: string[] }
+interface GoogleCfg {
+  configurado: boolean; redirectUri: string;
+  conta: { email: string; ativa: boolean; erro: string | null; ultimaSincronizacaoEm: string | null } | null;
+  reunioes: ReuniaoCfg[]; oportunidades: Array<{ id: string; nome: string; contato: { nome: string } }>;
+}
+const ROTULO_REUNIAO: Record<string, string> = { AGUARDANDO: "Transcrição sendo gerada", SEM_TRANSCRICAO: "Sem transcrição", SEM_CLIENTE: "Cliente não identificado", VINCULADA: "Enviada ao agente", IGNORADA: "Ignorada" };
+const RETORNO_GOOGLE: Record<string, string> = {
+  ok: "Conta Google conectada. As reuniões com transcrição passam a ir para o agente.", cancelado: "Conexão cancelada.",
+  escopos: "Faltou permitir a Agenda e o Meet na tela do Google. Conecte de novo e deixe todas as permissões marcadas.",
+  erro_state: "A conexão expirou. Tente de novo.", erro_token: "O Google recusou a conexão. Confira o endereço de retorno no Google Cloud.",
+  sem_refresh: "O Google não mandou o acesso permanente. Remova o acesso do CRM em myaccount.google.com/permissions e conecte de novo.",
+  sem_credenciais: "Falta configurar GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET no projeto do CRM na Vercel.",
+};
+function Google() {
+  const [d, setD] = useState<GoogleCfg | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+  const [escolha, setEscolha] = useState<Record<string, string>>({});
+  const carregar = useCallback(async () => { const r = await fetch("/api/google"); if (r.ok) setD(await r.json()); }, []);
+  useEffect(() => { void carregar(); const g = new URLSearchParams(window.location.search).get("google"); if (g) setMsg(RETORNO_GOOGLE[g] ?? null); }, [carregar]);
+  const sincronizar = async () => {
+    setOcupado(true); const r = await chamar("/api/google/sincronizar", "POST"); setOcupado(false);
+    if (!r.ok) setMsg(r.erro ?? null);
+    else { const x = r.dados as { reunioes: number; vinculadas: number; semCliente: number; aguardando: number }; setMsg(x.reunioes === 0 ? "Nenhuma reunião nova." : `${x.reunioes} reunião(ões): ${x.vinculadas} enviada(s) ao agente, ${x.semCliente} sem cliente identificado, ${x.aguardando} com transcrição ainda sendo gerada.`); }
+    await carregar();
+  };
+  const desconectar = async () => { if (window.confirm("Desconectar sua conta Google? As reuniões novas deixam de ser lidas.")) { await chamar("/api/google", "DELETE"); setMsg(null); await carregar(); } };
+  const operar = async (r: ReuniaoCfg, operacao: "vincular" | "ignorar") => {
+    const res = await chamar(`/api/google/reunioes/${r.id}`, "PATCH", { operacao, oportunidadeId: escolha[r.id] });
+    setMsg(res.ok ? (operacao === "vincular" ? "Reunião vinculada. O agente vai ler a transcrição." : null) : res.erro ?? null);
+    await carregar();
+  };
+  if (!d) return <p className="text-[13px] text-cinza">Carregando…</p>;
+  return (
+    <div className="max-w-4xl space-y-4">
+      <p className="text-[13px] text-cinza">Depois de cada reunião no Google Meet com transcrição ligada, o CRM busca a transcrição, descobre o cliente pelos convidados do evento na Agenda (e-mail do contato) e manda para o agente de combinados. As sugestões aparecem na ficha da oportunidade.</p>
+      {msg && <p role="status" className="rounded-xl border border-azul bg-azul-8 px-3.5 py-2.5 text-[13px] font-semibold text-azul">{msg}</p>}
+      {!d.configurado ? (
+        <section className="rounded-xl border border-linha bg-superficie p-4 text-[13px]">
+          <h2 className="font-titulo text-[15px] font-extrabold">Falta configurar o acesso ao Google</h2>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">
+            <li>No Google Cloud (console.cloud.google.com), no projeto da Avanteza, ative a <b>Google Meet REST API</b> e a <b>Google Calendar API</b>.</li>
+            <li>Em <b>Tela de consentimento OAuth</b>, use o tipo <b>Interno</b> (só contas da sua empresa, sem verificação do Google) e adicione os escopos <code>calendar.readonly</code> e <code>meetings.space.readonly</code>.</li>
+            <li>Em <b>Credenciais</b>, crie (ou reaproveite) um ID do cliente OAuth do tipo <b>Aplicativo da Web</b> com o URI de redirecionamento: <code className="break-all rounded bg-bq px-1.5 py-0.5">{d.redirectUri}</code></li>
+            <li>Na Vercel, no projeto <b>nexo-crm</b>, crie as variáveis <code>GOOGLE_CLIENT_ID</code> e <code>GOOGLE_CLIENT_SECRET</code> e refaça o deploy.</li>
+          </ol>
+        </section>
+      ) : !d.conta ? (
+        <section className="rounded-xl border border-linha bg-superficie p-4">
+          <p className="text-[13px]">Conecte a conta Google em que você faz as reuniões. O CRM só lê a Agenda e as transcrições do Meet.</p>
+          <a href="/api/google/conectar" className={`${botaoPrimario} mt-3 inline-block`}>Conectar conta Google</a>
+        </section>
+      ) : (
+        <section className="rounded-xl border border-linha bg-superficie p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">{d.conta.email} {d.conta.ativa ? <span className="ml-1 text-[12px] font-bold text-ok">conectada</span> : <span className="ml-1 text-[12px] font-bold text-critico">desconectada</span>}</p>
+              <p className="text-[12px] text-cinza">Última sincronização: {d.conta.ultimaSincronizacaoEm ? dataHora(d.conta.ultimaSincronizacaoEm) : "nunca"} · também roda sozinha ao abrir uma ficha e uma vez por dia.</p>
+              {d.conta.erro && <p className="mt-1 text-[12px] font-semibold text-critico">{d.conta.erro}</p>}
+            </div>
+            {d.conta.ativa ? <button className={botaoPrimario} disabled={ocupado} onClick={() => void sincronizar()}>{ocupado ? "Sincronizando…" : "Sincronizar agora"}</button> : <a href="/api/google/conectar" className={botaoPrimario}>Conectar de novo</a>}
+            <button className="text-[12px] font-bold text-critico" onClick={() => void desconectar()}>Desconectar</button>
+          </div>
+        </section>
+      )}
+      {d.reunioes.length > 0 && (
+        <section aria-label="Reuniões" className="rounded-xl border border-linha bg-superficie">
+          <h2 className="border-b border-linha px-4 py-3 font-titulo text-[15px] font-extrabold">Reuniões encontradas</h2>
+          <ul className="divide-y divide-linha">
+            {d.reunioes.map((r) => (
+              <li key={r.id} className="px-4 py-3 text-[13px]">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="font-semibold">{r.titulo ?? "Reunião sem título"} <span className="font-normal text-cinza">· {dataHora(r.inicio)}</span></span>
+                  <span className={`text-[12px] font-semibold ${r.status === "SEM_CLIENTE" ? "text-critico" : r.status === "VINCULADA" ? "text-ok" : "text-cinza"}`}>{ROTULO_REUNIAO[r.status] ?? r.status}{r.oportunidadeNome ? `: ${r.oportunidadeNome}` : ""}</span>
+                </div>
+                {(r.emails.length > 0 || r.participantes.length > 0) && <p className="text-[12px] text-cinza">{r.emails.length ? `Convidados: ${r.emails.join(", ")}` : `Falaram: ${r.participantes.join(", ")}`}</p>}
+                {r.status === "SEM_CLIENTE" && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <select aria-label="Oportunidade" value={escolha[r.id] ?? ""} onChange={(e) => setEscolha({ ...escolha, [r.id]: e.target.value })} className={`${campo} !w-auto !py-1.5 !text-[12px]`}>
+                      <option value="">Escolha a oportunidade…</option>
+                      {d.oportunidades.map((o) => <option key={o.id} value={o.id}>{o.contato.nome} — {o.nome}</option>)}
+                    </select>
+                    <button className={`${botaoPrimario} !px-3 !py-1.5 !text-[12px]`} disabled={!escolha[r.id]} onClick={() => void operar(r, "vincular")}>Vincular</button>
+                    <button className="text-[12px] font-semibold text-cinza" onClick={() => void operar(r, "ignorar")}>Ignorar</button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          <p className="border-t border-linha px-4 py-2.5 text-[12px] text-cinza">Dica: com o e-mail do cliente cadastrado no contato, a reunião é vinculada sozinha.</p>
+        </section>
+      )}
     </div>
   );
 }

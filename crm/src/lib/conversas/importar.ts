@@ -34,12 +34,21 @@ export function validarMensagens(v: unknown): MensagemEntrada[] {
   });
 }
 
-/** Oportunidade a que a conversa se refere: a em andamento mais recente; senão a ganha com entrega em andamento; senão a mais recente. */
-async function oportunidadeDoContato(contatoId: string) {
-  const onde = { OR: [{ contatoId }, { pessoaId: contatoId }, { contato: { pessoas: { some: { id: contatoId } } } }] };
-  return (await prisma.oportunidade.findFirst({ where: { ...onde, status: "EM_ANDAMENTO" }, orderBy: { atualizadoEm: "desc" }, select: { id: true, nome: true } }))
-    ?? (await prisma.oportunidade.findFirst({ where: { ...onde, status: "GANHA", entrega: { status: "EM_ANDAMENTO" } }, orderBy: { atualizadoEm: "desc" }, select: { id: true, nome: true } }))
-    ?? (await prisma.oportunidade.findFirst({ where: onde, orderBy: { atualizadoEm: "desc" }, select: { id: true, nome: true } }));
+/**
+ * Oportunidade a que a conversa (ou reunião) do contato se refere. Por situação: em andamento; senão ganha com entrega
+ * em andamento; senão a mais recente. Em cada situação, primeiro a em que ele é o contato da oportunidade, depois a
+ * da empresa dele (duas oportunidades da mesma empresa: vale a da pessoa que falou).
+ */
+export async function oportunidadeDoContato(contatoId: string) {
+  const vinculos = [{ pessoaId: contatoId }, { contatoId }, { contato: { pessoas: { some: { id: contatoId } } } }];
+  const situacoes = [{ status: "EM_ANDAMENTO" }, { status: "GANHA", entrega: { status: "EM_ANDAMENTO" } }, {}];
+  for (const situacao of situacoes) {
+    for (const vinculo of vinculos) {
+      const op = await prisma.oportunidade.findFirst({ where: { ...vinculo, ...situacao }, orderBy: { atualizadoEm: "desc" }, select: { id: true, nome: true } });
+      if (op) return op;
+    }
+  }
+  return null;
 }
 
 const fmt = (d: Date) => d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
