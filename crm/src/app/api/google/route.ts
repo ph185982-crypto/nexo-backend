@@ -15,8 +15,10 @@ export async function GET(req: Request) {
     ? await prisma.oportunidade.findMany({ where: { OR: [{ status: "EM_ANDAMENTO" }, { status: "GANHA", entrega: { status: "EM_ANDAMENTO" } }] }, orderBy: { atualizadoEm: "desc" }, take: 500, select: { id: true, nome: true, contato: { select: { nome: true } } } })
     : [];
   const nomes = new Map((await prisma.oportunidade.findMany({ where: { id: { in: reunioes.map((r) => r.oportunidadeId).filter((x): x is string => Boolean(x)) } }, select: { id: true, nome: true } })).map((o) => [o.id, o.nome]));
+  const cred = await credenciaisGoogle();
+  const papel = (await prisma.usuario.findUnique({ where: { id: uid }, select: { papel: true } }))?.papel;
   return Response.json({
-    configurado: Boolean(credenciaisGoogle()), redirectUri: enderecoDeRetorno(req), conta,
+    configurado: Boolean(cred), origem: cred?.origem ?? null, clientId: papel === "ADMIN" ? cred?.clientId ?? null : null, admin: papel === "ADMIN", redirectUri: enderecoDeRetorno(req), conta,
     reunioes: reunioes.map((r) => ({ ...r, oportunidadeNome: r.oportunidadeId ? nomes.get(r.oportunidadeId) ?? null : null })), oportunidades,
   });
 }

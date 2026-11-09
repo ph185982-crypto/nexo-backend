@@ -1,6 +1,8 @@
 // Cliente mínimo do Google: OAuth (conectar, renovar o token) e GET nas APIs da Agenda e do Meet.
 // Sem SDK do Google: são poucas chamadas REST. O transporte pode ser trocado nos testes (sem rede).
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { prisma } from "@/lib/prisma";
+import { ErroEntrada } from "@/lib/validar";
 
 export const ESCOPOS = [
   "openid",
@@ -12,10 +14,35 @@ export const ESCOPOS = [
 const AUTORIZAR = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN = "https://oauth2.googleapis.com/token";
 
-export function credenciaisGoogle(): { clientId: string; clientSecret: string } | null {
+export type CredenciaisGoogle = { clientId: string; clientSecret: string; origem: "AMBIENTE" | "CONFIGURACAO" };
+const CHAVE_ID = "google.clientId", CHAVE_SEGREDO = "google.clientSecret";
+
+/** Variáveis de ambiente valem mais; sem elas, as credenciais salvas pelo administrador em Configuração → Google. */
+export async function credenciaisGoogle(): Promise<CredenciaisGoogle | null> {
   const clientId = process.env.GOOGLE_CLIENT_ID?.trim(), clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
-  return clientId && clientSecret ? { clientId, clientSecret } : null;
+  if (clientId && clientSecret) return { clientId, clientSecret, origem: "AMBIENTE" };
+  const linhas = await prisma.configuracao.findMany({ where: { chave: { in: [CHAVE_ID, CHAVE_SEGREDO] } } });
+  const id = linhas.find((l) => l.chave === CHAVE_ID)?.valor, segredo = linhas.find((l) => l.chave === CHAVE_SEGREDO)?.valor;
+  if (!id || !segredo) return null;
+  try { return { clientId: id, clientSecret: decifrar(segredo), origem: "CONFIGURACAO" }; } catch { return null; } // SESSION_SECRET mudou
 }
+
+/** ID do cliente OAuth do Google (Aplicativo da Web): termina em .apps.googleusercontent.com. */
+export function validarCredenciais(clientId: unknown, clientSecret: unknown): { clientId: string; clientSecret: string } {
+  const id = typeof clientId === "string" ? clientId.trim() : "", segredo = typeof clientSecret === "string" ? clientSecret.trim() : "";
+  if (!/^[\w-]+\.apps\.googleusercontent\.com$/.test(id) || id.length > 200) throw new ErroEntrada("ID do cliente inválido: copie o que termina em .apps.googleusercontent.com");
+  if (segredo.length < 10 || segredo.length > 200 || /\s/.test(segredo)) throw new ErroEntrada("Chave secreta inválida");
+  return { clientId: id, clientSecret: segredo };
+}
+
+export async function salvarCredenciais(c: { clientId: string; clientSecret: string }) {
+  await prisma.$transaction([
+    prisma.configuracao.upsert({ where: { chave: CHAVE_ID }, update: { valor: c.clientId }, create: { chave: CHAVE_ID, valor: c.clientId } }),
+    prisma.configuracao.upsert({ where: { chave: CHAVE_SEGREDO }, update: { valor: cifrar(c.clientSecret) }, create: { chave: CHAVE_SEGREDO, valor: cifrar(c.clientSecret) } }),
+  ]);
+}
+
+export const apagarCredenciais = () => prisma.configuracao.deleteMany({ where: { chave: { in: [CHAVE_ID, CHAVE_SEGREDO] } } });
 
 type Transporte = (url: string, init?: RequestInit) => Promise<Response>;
 let transporte: Transporte = (url, init) => fetch(url, { ...init, signal: AbortSignal.timeout(20_000) });
@@ -29,9 +56,9 @@ export class ErroGoogle extends Error {
 /** Endereço de volta do OAuth: o mesmo domínio em que a pessoa está (ou GOOGLE_REDIRECT_URI, se definido). Precisa estar cadastrado no Google Cloud. */
 export const enderecoDeRetorno = (req: Request) => process.env.GOOGLE_REDIRECT_URI?.trim() || `${new URL(req.url).origin}/api/google/callback`;
 
-export function urlDeAutorizacao(redirectUri: string, state: string): string {
-  const cred = credenciaisGoogle();
-  if (!cred) throw new ErroGoogle("GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET não configurados no CRM", 503);
+export async function urlDeAutorizacao(redirectUri: string, state: string): Promise<string> {
+  const cred = await credenciaisGoogle();
+  if (!cred) throw new ErroGoogle("Credenciais do Google não configuradas no CRM (Configuração → Google)", 503);
   const u = new URL(AUTORIZAR);
   u.searchParams.set("client_id", cred.clientId);
   u.searchParams.set("redirect_uri", redirectUri);
@@ -47,8 +74,8 @@ export function urlDeAutorizacao(redirectUri: string, state: string): string {
 interface RespostaToken { access_token: string; expires_in: number; refresh_token?: string; scope?: string; id_token?: string }
 
 async function pedirToken(corpo: Record<string, string>): Promise<RespostaToken> {
-  const cred = credenciaisGoogle();
-  if (!cred) throw new ErroGoogle("GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET não configurados no CRM", 503);
+  const cred = await credenciaisGoogle();
+  if (!cred) throw new ErroGoogle("Credenciais do Google não configuradas no CRM (Configuração → Google)", 503);
   const r = await transporte(TOKEN, { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ ...corpo, client_id: cred.clientId, client_secret: cred.clientSecret }).toString() });
   const j = (await r.json().catch(() => ({}))) as RespostaToken & { error?: string; error_description?: string };
   // invalid_grant = acesso revogado ou token expirado: só reconectando.

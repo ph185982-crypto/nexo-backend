@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { cenario } from "./_cenario";
 import { prisma } from "@/lib/prisma";
 import { criarOportunidade } from "@/lib/funil/mover";
-import { cifrar, decifrar, definirTransporteGoogle, emailDoIdToken, urlDeAutorizacao } from "@/lib/google/cliente";
+import { apagarCredenciais, cifrar, credenciaisGoogle, decifrar, definirTransporteGoogle, emailDoIdToken, salvarCredenciais, urlDeAutorizacao, validarCredenciais } from "@/lib/google/cliente";
 import { sincronizarConta, tokenDaConta, vincularReuniao } from "@/lib/google/reunioes";
 import { assinarSessao, COOKIE_SESSAO } from "@/lib/auth/sessao";
 import { GET as getCallback } from "@/app/api/google/callback/route";
@@ -36,10 +36,11 @@ test("cifra do refresh token, URL de autorização e e-mail do id_token", async 
   assert.throws(() => decifrar([iv, tag, Buffer.from("adulterado").toString("base64url")].join(".")), "texto adulterado não decifra");
   assert.notEqual(cifrar("x"), cifrar("x"), "IV aleatório");
   const antes = process.env.GOOGLE_CLIENT_ID; delete process.env.GOOGLE_CLIENT_ID;
-  assert.throws(() => urlDeAutorizacao("https://crm/api/google/callback", "s"), /GOOGLE_CLIENT_ID/);
+  await apagarCredenciais();
+  await assert.rejects(urlDeAutorizacao("https://crm/api/google/callback", "s"), /Credenciais do Google não configuradas/);
   if (antes) process.env.GOOGLE_CLIENT_ID = antes;
   await comCredenciais(async () => {
-    const u = new URL(urlDeAutorizacao("https://crm.x/api/google/callback", "estado123"));
+    const u = new URL(await urlDeAutorizacao("https://crm.x/api/google/callback", "estado123"));
     assert.equal(u.searchParams.get("access_type"), "offline");
     assert.equal(u.searchParams.get("prompt"), "consent");
     assert.equal(u.searchParams.get("state"), "estado123");
@@ -237,5 +238,26 @@ test("rotas: conectar exige login e guarda o state; callback confere state e per
   } finally {
     await prisma.usuario.deleteMany({ where: { id: { in: [u.id, outro.id] } } });
     await c.limpar();
+  }
+});
+
+test("credenciais salvas no CRM: validação, segredo cifrado no banco, variável de ambiente vale mais", async () => {
+  const env = { id: process.env.GOOGLE_CLIENT_ID, segredo: process.env.GOOGLE_CLIENT_SECRET };
+  delete process.env.GOOGLE_CLIENT_ID; delete process.env.GOOGLE_CLIENT_SECRET;
+  try {
+    assert.throws(() => validarCredenciais("123", "GOCSPX-abcdefghij"), /ID do cliente inválido/);
+    assert.throws(() => validarCredenciais("1-ab.apps.googleusercontent.com", "curta"), /Chave secreta inválida/);
+    await apagarCredenciais();
+    assert.equal(await credenciaisGoogle(), null);
+    await salvarCredenciais(validarCredenciais(" 1-ab.apps.googleusercontent.com ", "GOCSPX-segredo-teste"));
+    const linha = await prisma.configuracao.findUniqueOrThrow({ where: { chave: "google.clientSecret" } });
+    assert.ok(!linha.valor.includes("GOCSPX"), "segredo não fica em texto puro");
+    assert.deepEqual(await credenciaisGoogle(), { clientId: "1-ab.apps.googleusercontent.com", clientSecret: "GOCSPX-segredo-teste", origem: "CONFIGURACAO" });
+    process.env.GOOGLE_CLIENT_ID = "env.apps.googleusercontent.com"; process.env.GOOGLE_CLIENT_SECRET = "segredo-do-ambiente";
+    assert.equal((await credenciaisGoogle())?.origem, "AMBIENTE");
+  } finally {
+    await apagarCredenciais();
+    if (env.id) process.env.GOOGLE_CLIENT_ID = env.id; else delete process.env.GOOGLE_CLIENT_ID;
+    if (env.segredo) process.env.GOOGLE_CLIENT_SECRET = env.segredo; else delete process.env.GOOGLE_CLIENT_SECRET;
   }
 });

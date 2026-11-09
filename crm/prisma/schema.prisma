@@ -584,3 +584,11 @@ model OportunidadeProduto {
 
   @@index([oportunidadeId])
 }
+
+// ─── Configurações do sistema guardadas no banco (ex.: credenciais do Google) ─
+// Segredo vai cifrado (AES-256-GCM com chave derivada do SESSION_SECRET). Variável de ambiente, se houver, vale mais.
+model Configuracao {
+  chave        String   @id
+  valor        String   @db.Text
+  atualizadoEm DateTime @updatedAt
+}
