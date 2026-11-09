@@ -209,7 +209,24 @@ function Produtos() {
           </tbody></table>
       </div>
       {form && <FormProduto p={form === "novo" ? null : form} onFechar={() => setForm(null)} onSalvo={() => { setForm(null); void carregar(); }} />}
+      <TextosProposta />
     </div>
+  );
+}
+
+function TextosProposta() {
+  const [t, setT] = useState<{ introducao: string; condicoes: string } | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  useEffect(() => { fetch("/api/config/propostas").then((r) => r.json()).then(setT).catch(() => setMsg("Não foi possível carregar.")); }, []);
+  if (!t) return null;
+  return (
+    <form className="mt-6 space-y-3 rounded-xl border border-linha bg-superficie p-4" onSubmit={async (e) => { e.preventDefault(); const r = await chamar("/api/config/propostas", "PUT", t); setMsg(r.ok ? "Textos salvos. Valem para as próximas propostas." : r.erro ?? null); }}>
+      <h2 className="font-titulo text-[15px] font-extrabold">Textos padrão da proposta</h2>
+      <p className="text-[12px] text-cinza">Podem usar {"{cliente}"}, {"{contato}"}, {"{oportunidade}"} e {"{consultor}"}. Cada proposta pode ser ajustada antes de enviar.</p>
+      <label className="block"><span className={rotulo}>Introdução</span><textarea id="padrao-introducao" rows={5} required minLength={10} maxLength={5000} value={t.introducao} onChange={(e) => setT({ ...t, introducao: e.target.value })} className={campo} /></label>
+      <label className="block"><span className={rotulo}>Condições</span><textarea id="padrao-condicoes" rows={4} required minLength={10} maxLength={5000} value={t.condicoes} onChange={(e) => setT({ ...t, condicoes: e.target.value })} className={campo} /></label>
+      <div className="flex items-center gap-3"><button type="submit" className={botaoPrimario}>Salvar textos</button>{msg && <span role="status" className="text-[13px] font-semibold">{msg}</span>}</div>
+    </form>
   );
 }
 
