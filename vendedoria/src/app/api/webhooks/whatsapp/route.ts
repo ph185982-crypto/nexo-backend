@@ -21,6 +21,7 @@ import { registrarOrigemAnuncio } from "@/lib/crm/origem-anuncio";
 import { retomarDisparosPendentes } from "@/lib/prospeccao/disparo";
 import { aplicarStatusEnvio, type StatusMeta } from "@/lib/prospeccao/entrega";
 import { criarOrcamento } from "@/lib/jobs/fila";
+import { sincronizarConversasCrm } from "@/lib/crm-externo/conversas";
 
 // Trabalho pós-resposta (chamadas de IA, envio de WhatsApp) precisa de mais que o
 // default da função para terminar — a Vercel pode congelar a invocação assim que
@@ -69,6 +70,9 @@ export async function POST(req: NextRequest) {
     // Process each entry
     for (const entry of data.entry ?? []) {
       for (const change of entry.changes ?? []) {
+        // Número em coexistência (o mesmo número no app WhatsApp Business e na API): o que o consultor manda pelo
+        // app chega como eco. Só registra na conversa; a IA não entra aqui.
+        if (change.field === "smb_message_echoes") { await registrarEcos(change.value); continue; }
         if (change.field !== "messages") continue;
 
         const value = change.value;
@@ -130,6 +134,8 @@ export async function POST(req: NextRequest) {
         // Orçamento curto: este trabalho roda dentro do tempo do webhook (60s) e antes
         // dormia 30–90s entre envios — estourava o limite (timeouts recorrentes).
         await retomarDisparosPendentes(criarOrcamento(Math.max(maxDuration - (Date.now() - t0) / 1000, 0), 15)).catch((e) => console.error("[Webhook] retomarDisparosPendentes falhou:", e));
+        // Conversas recentes vão para a ficha do CRM Avanteza (só dos leads que o CRM conhece).
+        await sincronizarConversasCrm({ limite: 3, orcamentoMs: 6_000 }).catch(() => {});
       });
     }
 
@@ -614,4 +620,36 @@ function verifySignature(body: string, signature: string | null): boolean {
   if (sigBuf.length !== expBuf.length) return false;
 
   return timingSafeEqual(sigBuf, expBuf);
+}
+
+// ─── Coexistência: mensagens enviadas pelo app WhatsApp Business ──────────────
+interface EcoMeta { id: string; from?: string; to: string; timestamp: string; type: string; text?: { body?: string }; image?: { caption?: string }; video?: { caption?: string }; document?: { caption?: string; filename?: string } }
+
+async function registrarEcos(value: { metadata?: { phone_number_id?: string }; message_echoes?: EcoMeta[] }) {
+  const providerConfig = await prisma.whatsappProviderConfig.findFirst({ where: { businessPhoneNumberId: value.metadata?.phone_number_id ?? "" }, select: { id: true, organizationId: true } });
+  if (!providerConfig) return;
+  const ROTULO: Record<string, string> = { image: "[Imagem enviada]", video: "[Vídeo enviado]", audio: "[Áudio enviado]", document: "[Documento enviado]", sticker: "[Sticker enviado]", location: "[Localização enviada]" };
+  const TIPO: Record<string, string> = { text: "TEXT", image: "IMAGE", video: "VIDEO", audio: "AUDIO", document: "DOCUMENT" };
+  for (const eco of value.message_echoes ?? []) {
+    try {
+      const sentAt = new Date(Number(eco.timestamp) * 1000);
+      const legenda = eco.image?.caption ?? eco.video?.caption ?? eco.document?.caption;
+      const content = eco.text?.body ?? (legenda ? `${ROTULO[eco.type] ?? `[${eco.type}]`} "${legenda}"` : ROTULO[eco.type] ?? `[${eco.type}]`);
+      let lead = await prisma.lead.findFirst({ where: { organizationId: providerConfig.organizationId, phoneNumber: { in: brazilianNumberVariants(eco.to) } }, select: { id: true } });
+      if (!lead) {
+        const coluna = await prisma.kanbanColumn.findFirst({ where: { organizationId: providerConfig.organizationId, isDefaultEntry: true } });
+        if (!coluna) continue;
+        lead = await prisma.lead.create({ data: { phoneNumber: normalizeBrazilianNumber(eco.to), leadOrigin: "OUTBOUND", organizationId: providerConfig.organizationId, kanbanColumnId: coluna.id }, select: { id: true } });
+        await registrarCriacaoLead({ leadId: lead.id, coluna, ator: "webhook" });
+      }
+      let conversa = await prisma.whatsappConversation.findFirst({ where: { leadId: lead.id, whatsappProviderConfigId: providerConfig.id }, select: { id: true } });
+      conversa ??= await prisma.whatsappConversation.create({ data: { customerWhatsappBusinessId: normalizeBrazilianNumber(eco.to), leadOrigin: "OUTBOUND", leadId: lead.id, whatsappProviderConfigId: providerConfig.id, lastMessageAt: sentAt, humanTakeover: true }, select: { id: true } });
+      await prisma.whatsappMessage.create({ data: { id: eco.id, wamid: eco.id, content, type: TIPO[eco.type] ?? "TEXT", role: "ASSISTANT", sentAt, status: "SENT", conversationId: conversa.id } });
+      // Alguém respondeu pelo app: a IA sai da conversa (mesmo efeito de assumir pelo painel).
+      await prisma.whatsappConversation.update({ where: { id: conversa.id }, data: { lastMessageAt: sentAt, humanTakeover: true } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") continue; // eco repetido
+      console.error("[Webhook] Falha ao registrar eco:", e);
+    }
+  }
 }

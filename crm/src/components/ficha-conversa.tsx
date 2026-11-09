@@ -1,6 +1,6 @@
 "use client";
 
-// Aba "Conversa" da ficha: mensagens do WhatsApp trazidas pela extensão ou pelo arquivo "Exportar conversa".
+// Aba "Conversa" da ficha: mensagens do WhatsApp espelhadas pelo Vendedor IA, ou trazidas pelo arquivo "Exportar conversa".
 import { useCallback, useEffect, useRef, useState } from "react";
 import { dataHora } from "@/lib/formatar";
 import { lerArquivoWhatsapp, type MensagemLida } from "@/lib/conversas/arquivo";
@@ -32,14 +32,14 @@ export function AbaConversa({ oportunidadeId, contatoId, onAtividade }: { oportu
         <button className={botaoSecundario} onClick={() => entrada.current?.click()}>Importar conversa exportada (.txt)</button>
         <input ref={entrada} type="file" accept=".txt,text/plain" className="hidden" onChange={(e) => { void escolherArquivo(e.target.files?.[0]); e.target.value = ""; }} />
       </div>
-      <p className="mt-2 text-[12px] text-cinza">Pelo WhatsApp Web, a extensão do CRM envia a conversa aberta com um clique (Configuração → Extensão do WhatsApp). O agente lê o trecho novo e sugere combinados.</p>
+      <p className="mt-2 text-[12px] text-cinza">As conversas pelo número do Vendedor IA chegam aqui sozinhas. Conversa de outro número: no celular, abra a conversa › Mais › Exportar conversa (sem mídia) e importe o .txt. O agente lê e sugere combinados.</p>
       {aviso && <p role="status" className="mt-2 text-[13px] font-semibold text-grafite">{aviso}</p>}
       <ol className="mt-4 space-y-2">
         {msgs === null && <li className="text-[12px] text-cinza">Carregando…</li>}
-        {msgs?.length === 0 && <li className="text-[12px] text-cinza">Nenhuma conversa importada ainda.</li>}
+        {msgs?.length === 0 && <li className="text-[12px] text-cinza">Nenhuma mensagem ainda.</li>}
         {msgs?.map((m) => (
           <li key={m.id} className={`max-w-[85%] rounded-xl px-3 py-2 ${m.deMim ? "ml-auto bg-azul-8" : "bg-bq"}`}>
-            <p className="text-[11px] font-semibold text-cinza">{m.deMim ? "Você" : m.autor} · {dataHora(m.enviadaEm)}</p>
+            <p className="text-[11px] font-semibold text-cinza">{m.deMim ? (m.origem === "VENDEDOR_IA" ? m.autor : "Você") : m.autor} · {dataHora(m.enviadaEm)}</p>
             <p className="whitespace-pre-wrap text-[13px]">{m.texto}</p>
           </li>
         ))}

@@ -137,6 +137,11 @@ model Oportunidade {
   entrega      Entrega?
   combinados   Combinado[]
   analises     AnaliseAgente[]
+  produtos     OportunidadeProduto[]
+
+  // Resumo da IA (resumo, próximos passos, riscos) e quando foi gerado.
+  resumoIa     Json?
+  resumoIaEm   DateTime?
 
   @@index([funilId, status, etapaId])
   @@index([contatoId])
@@ -482,7 +487,7 @@ model AnaliseAgente {
   @@index([status, criadoEm])
 }
 
-// Mensagem de conversa trazida de fora (extensão do WhatsApp Web, arquivo "Exportar conversa").
+// Mensagem de conversa do WhatsApp: espelhada do Vendedor IA (sozinha) ou trazida de arquivo "Exportar conversa".
 model Mensagem {
   id             String   @id @default(cuid())
   contatoId      String
@@ -493,11 +498,14 @@ model Mensagem {
   deMim          Boolean // true = quem usa o CRM falou
   texto          String   @db.Text
   enviadaEm      DateTime
-  origem         String // EXTENSAO | ARQUIVO
+  origem         String // EXTENSAO | ARQUIVO | VENDEDOR_IA
   hash           String   @unique // contato + horário + autor + texto: importar de novo não duplica
+  // Quando o agente de combinados leu. Conversa do Vendedor IA chega aos poucos: é lida quando esfria (null = falta ler).
+  analisadaEm    DateTime?
   criadoEm       DateTime @default(now())
 
   @@index([contatoId, enviadaEm])
+  @@index([origem, analisadaEm])
   @@index([oportunidadeId, enviadaEm])
 }
 
@@ -543,5 +551,36 @@ model ReuniaoGoogle {
   atualizadoEm     DateTime    @updatedAt
 
   @@index([contaId, status])
+  @@index([oportunidadeId])
+}
+
+// ─── Produtos: catálogo e linhas da oportunidade ─────────────────────────────
+// Com linhas, valorUnico/valorMensal da oportunidade são a soma delas (src/lib/oportunidades/produtos.ts).
+model Produto {
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  codigo      String?
+  descricao   String?  @db.Text
+  valor       Decimal  @default(0) @db.Decimal(14, 2)
+  recorrencia String   @default("UNICO") // UNICO | MENSAL
+  ativo       Boolean  @default(true)
+  criadoEm    DateTime @default(now())
+
+  itens OportunidadeProduto[]
+}
+
+model OportunidadeProduto {
+  id             String       @id @default(cuid())
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  produtoId      String?
+  produto        Produto?     @relation(fields: [produtoId], references: [id], onDelete: SetNull)
+  nome           String
+  quantidade     Decimal      @default(1) @db.Decimal(10, 2)
+  valorUnitario  Decimal      @db.Decimal(14, 2)
+  desconto       Decimal      @default(0) @db.Decimal(5, 2) // percentual
+  recorrencia    String       @default("UNICO") // UNICO | MENSAL
+  criadoEm       DateTime     @default(now())
+
   @@index([oportunidadeId])
 }

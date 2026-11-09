@@ -43,7 +43,10 @@ export function Cartao({ c, selecionado, onAbrir, sobreposto }: { c: CartaoDTO; 
       <p className="text-[11.5px] leading-[1.55] text-cinza">
         {c.codigo}
         <br />
-        Criada {data(c.criadoEm)}{c.finalizaEm ? ` · Finaliza ${data(c.finalizaEm)}` : ""}
+        Criada {data(c.criadoEm)}
+        {c.finalizaEm && (aberta && new Date(c.finalizaEm) < new Date()
+          ? <span className="font-bold text-critico" title="Passou da data limite"> · Atrasada {diasDesde(c.finalizaEm)}d</span>
+          : ` · Finaliza ${data(c.finalizaEm)}`)}
       </p>
       {aberta && c.proximaAtividade?.quando && (
         <p className="mt-1 text-[11.5px] text-cinza">Próxima: <span className={prazoTexto(c.proximaAtividade.quando).atrasada ? "font-bold text-critico" : "font-semibold text-grafite"}>{prazoTexto(c.proximaAtividade.quando).texto}</span></p>

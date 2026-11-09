@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma/client";
 import { despacharOutboxCrm } from "./outbox";
 import { detectarIntencoes } from "./intencoes";
+import { reabrirConversasDoLead } from "./conversas";
 
 export type TipoEventoCrm = "lead.qualificado" | "lead.escalado" | "reuniao.agendada" | "lead.perdido" | "lead.ganho" | "intencao.detectada";
 
@@ -70,6 +71,7 @@ export async function emitirEventoCrm(e: EmitirEvento): Promise<"enfileirado" | 
       throw err;
     }
     void despacharOutboxCrm({ limite: 5 }).catch(() => {});
+    await reabrirConversasDoLead(e.leadId); // o CRM vai conhecer o lead: a conversa passa a ser espelhada
     return "enfileirado";
   } catch (err) {
     console.error("[CRM-externo] Falha ao enfileirar evento:", err);

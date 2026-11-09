@@ -490,8 +490,15 @@ model WhatsappConversation {
   // aiProcessedAt em WhatsappMessage.
   aiLockUntil                DateTime?
 
+  // Espelho no CRM Avanteza (src/lib/crm-externo/conversas.ts): até onde as mensagens já foram enviadas,
+  // e se o CRM conhece o lead (ATIVO) ou não (IGNORADO: não manda mais até o lead virar evento do CRM).
+  crmSincronizadoAte         DateTime?
+  crmStatus                  String?   // null (ainda não perguntou) | ATIVO | IGNORADO
+
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
+
+  @@index([lastMessageAt])
 }
 
 model ConversationFollowUp {

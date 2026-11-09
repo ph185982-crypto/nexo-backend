@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Avisos, BuscaGlobal } from "./busca-avisos";
 
 const ITENS = [
   {
@@ -49,6 +50,10 @@ export function Nav({ nome, admin }: { nome: string; admin: boolean }) {
   };
   return (
     <>
+      <div className="-mb-5 flex flex-col gap-1 border-b border-bq/20 pb-3">
+        <BuscaGlobal />
+        <Avisos />
+      </div>
       <nav className="flex flex-col gap-1" aria-label="Módulos">
         {[...ITENS, ...(admin ? [CONFIG] : [])].map((i) => {
           const ativo = caminho.startsWith(i.href);

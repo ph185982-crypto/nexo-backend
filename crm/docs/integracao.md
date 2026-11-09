@@ -56,9 +56,44 @@ Todos exigem `lead.id`. Tipo com formato válido mas desconhecido é registrado 
 | `lead.ganho` (`motivo`) | Idem, para a etapa **Ganha**. |
 | `intencao.detectada` (`intencao`, `texto`) | Feedback de WhatsApp com o sinal (um dos 13 de `src/lib/atividades/intencoes.ts`); atualiza a atividade e a saúde do negócio. Sem oportunidade em andamento: ignorado. `intencao` fora da lista: `400`. |
 
+## Vendedor IA → CRM: conversas do WhatsApp (implementado)
+
+`POST {CRM_URL}/api/integracoes/vendedor-ia/conversas`, mesma chave de serviço dos eventos.
+
+```json
+{ "leadId": "cmw0abc123", "telefone": "5562984465388", "nome": "João",
+  "mensagens": [{ "id": "wamid.…", "deMim": false, "autor": "João", "texto": "Quero saber da consultoria", "em": "2026-11-09T14:02:00Z" }] }
+```
+
+- **Só lead que o CRM conhece:** contato com `vendedorIaLeadId` = `leadId`, oportunidade com esse `vendedorIaLeadId`, ou contato com o mesmo
+  telefone que já tem negócio no CRM. Os demais respondem `{"status":"IGNORADO"}` e **nada é gravado** (nem contato novo).
+- **Pergunta antes de mandar:** com `mensagens: []` o CRM só responde `CONHECIDO` ou `IGNORADO`. O Vendedor IA faz isso na primeira vez de
+  cada conversa; conversa `IGNORADO` não envia conteúdo até o lead virar evento do CRM (aí volta a perguntar).
+- Com mensagens: grava na ficha (`Mensagem`, origem `VENDEDOR_IA`; repetir não duplica) e responde `PROCESSADO` com `novas`.
+  `deMim: true` = quem falou foi o Vendedor IA ou o consultor.
+- **Agente:** não lê a cada mensagem. Quando a conversa do contato fica **30 minutos parada**, o trecho ainda não lido vai para o agente de
+  combinados de uma vez (depois da resposta deste endpoint, e também no cron e no "Executar agora").
+
+Lado do Vendedor IA: `vendedoria/src/lib/crm-externo/conversas.ts`. Roda depois de cada webhook do WhatsApp (3 conversas mais recentes,
+orçamento de 6 s) e no `/api/health` (20 conversas, 12 s; resultado em `crmConversas`). Marca até onde enviou em
+`WhatsappConversation.crmSincronizadoAte` e guarda `crmStatus` (`ATIVO`/`IGNORADO`). Na primeira vez manda até 30 dias de histórico.
+
+### Seu próprio número do WhatsApp Business (coexistência)
+
+O mesmo número pode ficar no app WhatsApp Business do celular **e** na API oficial (a Meta chama de *coexistência*). Assim as conversas do
+consultor também chegam ao CRM, sem extensão e sem exportar nada:
+
+1. No painel da Meta (app do Vendedor IA), em **WhatsApp → Configuração da API**, adicione o número escolhendo a opção de **conectar um número
+   que já usa o app WhatsApp Business** (fluxo de cadastro incorporado com coexistência). O app continua funcionando no celular.
+2. Assine no webhook do app o campo **`smb_message_echoes`** (além de `messages`): é por ele que chega o que você manda pelo app.
+3. No Vendedor IA, cadastre o número como um WhatsApp da organização **sem agente de IA ativo** (senão a IA responde aos seus clientes).
+4. Pronto: o que o cliente manda chega pelo `messages`; o que você manda pelo app chega como eco e é gravado como mensagem do consultor
+   (e, se a conversa tinha IA, ela sai da conversa). As duas vão para a ficha do cliente no CRM como as demais.
+
+Observações: a Meta não copia para a API o histórico anterior à conexão; mensagens de grupos não entram.
+
 ## CRM → Vendedor IA (previsto, ainda não implementado)
 
-- ler a conversa de um lead (hoje a oportunidade só tem um link para o Vendedor IA);
 - pausar/retomar a IA em um lead (assumir o atendimento);
 - enviar mensagem pelo WhatsApp do Vendedor IA.
 

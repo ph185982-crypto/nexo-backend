@@ -260,3 +260,101 @@ test("motivos: catálogo padrão é garantido uma vez por organização (cache) 
     }
   } finally { await c.limpar(); }
 });
+
+test("conversas: pergunta antes de mandar; lead desconhecido fica IGNORADO sem conteúdo; conhecido manda só o que é novo; evento reabre", { skip: !temBanco }, async () => {
+  const { sincronizarConversaCrm, sincronizarConversasCrm } = await import("@/lib/crm-externo/conversas");
+  const { emitirEventoCrm } = await import("@/lib/crm-externo/eventos");
+  const c = await cenario();
+  const prov = await c.prisma.whatsappProviderConfig.create({ data: { accountName: "t", displayPhoneNumber: "1", businessPhoneNumberId: `pn-${c.org.id}`, organizationId: c.org.id } });
+  const conv = await c.prisma.whatsappConversation.create({ data: { customerWhatsappBusinessId: c.lead.phoneNumber, leadOrigin: "INBOUND", leadId: c.lead.id, whatsappProviderConfigId: prov.id, lastMessageAt: new Date() } });
+  const msg = (seg: number, role: string, content: string, extra: Record<string, unknown> = {}) => c.prisma.whatsappMessage.create({ data: { content, type: "TEXT", role, sentAt: new Date(Date.now() - 600_000 + seg * 1000), conversationId: conv.id, ...extra } });
+  // CRM falso: conhece o lead só a partir do 3º pedido
+  let conhece = false, recusar = false;
+  const recebidos: Array<Record<string, unknown>> = [];
+  const http = await import("node:http");
+  const servidor = http.createServer((req, res) => {
+    let b = ""; req.on("data", (x) => (b += x));
+    req.on("end", () => {
+      const corpo = JSON.parse(b || "{}");
+      if (!req.url?.endsWith("/conversas")) { res.writeHead(200, { "content-type": "application/json" }); res.end("{}"); return; } // evento do outbox
+      recebidos.push(corpo);
+      if (recusar && (corpo.mensagens as unknown[]).length) { res.writeHead(400, { "content-type": "application/json" }); res.end('{"erro":"Mensagem 1 sem texto"}'); return; }
+      const status = !conhece ? "IGNORADO" : (corpo.mensagens as unknown[]).length ? "PROCESSADO" : "CONHECIDO";
+      res.writeHead(200, { "content-type": "application/json" }); res.end(JSON.stringify({ status }));
+    });
+  });
+  await new Promise<void>((r) => servidor.listen(0, "127.0.0.1", r));
+  try {
+    process.env.CRM_URL = `http://127.0.0.1:${(servidor.address() as AddressInfo).port}`; process.env.CRM_API_KEY = "avz_live_teste";
+    await msg(1, "USER", "Quero saber da consultoria");
+    await msg(2, "ASSISTANT", "Claro! Qual o faturamento?");
+    assert.equal(await sincronizarConversaCrm(conv.id), "ignorada");
+    assert.deepEqual(recebidos.map((r) => (r.mensagens as unknown[]).length), [0], "só perguntou: nenhum conteúdo saiu");
+    assert.equal((await c.prisma.whatsappConversation.findUnique({ where: { id: conv.id } }))!.crmStatus, "IGNORADO");
+    assert.equal(await sincronizarConversaCrm(conv.id), "ignorada", "não pergunta de novo");
+    assert.equal(recebidos.length, 1);
+
+    // o lead vira evento do CRM: reabre e passa a mandar
+    conhece = true;
+    assert.equal(await emitirEventoCrm({ tipo: "lead.qualificado", leadId: c.lead.id, chave: `q:${c.lead.id}` }), "enfileirado");
+    assert.equal((await c.prisma.whatsappConversation.findUnique({ where: { id: conv.id } }))!.crmStatus, null);
+    const antes = recebidos.length;
+    assert.equal(await sincronizarConversaCrm(conv.id), "enviada");
+    const lote = recebidos.slice(antes).filter((r) => (r.mensagens as unknown[] | undefined)?.length);
+    assert.equal(lote.length, 1);
+    const ms = lote[0].mensagens as Array<{ deMim: boolean; texto: string; autor: string }>;
+    assert.deepEqual(ms.map((m) => [m.deMim, m.texto]), [[false, "Quero saber da consultoria"], [true, "Claro! Qual o faturamento?"]]);
+    assert.equal(lote[0].leadId, c.lead.id);
+    assert.equal(await sincronizarConversaCrm(conv.id), "nada", "nada novo");
+    await msg(30, "USER", "", { type: "IMAGE", caption: "nosso faturamento" });
+    const n = recebidos.length;
+    assert.deepEqual(await sincronizarConversasCrm({ limite: 50 }), { enviadas: 1, ignoradas: 0, falhas: 0 });
+    const ultimo = recebidos.slice(n).find((r) => (r.mensagens as unknown[]).length)!;
+    assert.deepEqual((ultimo.mensagens as Array<{ texto: string }>).map((m) => m.texto), ['[Imagem] "nosso faturamento"'], "só a nova, mídia com rótulo");
+    // CRM recusa o lote (400): a marca avança para a conversa não travar
+    recusar = true;
+    const recusada = await msg(40, "USER", "algo que o CRM recusa");
+    assert.equal(await sincronizarConversaCrm(conv.id), "nada");
+    assert.equal((await c.prisma.whatsappConversation.findUnique({ where: { id: conv.id } }))!.crmSincronizadoAte?.getTime(), recusada.sentAt.getTime());
+  } finally {
+    await new Promise<void>((r) => servidor.close(() => r()));
+    delete process.env.CRM_URL; delete process.env.CRM_API_KEY;
+    await c.prisma.whatsappMessage.deleteMany({ where: { conversationId: conv.id } });
+    await c.prisma.whatsappConversation.deleteMany({ where: { leadId: c.lead.id } });
+    await c.prisma.whatsappProviderConfig.delete({ where: { id: prov.id } });
+    await c.limpar();
+  }
+});
+
+test("coexistência: eco do app WhatsApp Business vira mensagem do consultor e tira a IA da conversa", { skip: !temBanco }, async () => {
+  const { createHmac } = await import("node:crypto");
+  const { NextRequest } = await import("next/server");
+  const { POST } = await import("@/app/api/webhooks/whatsapp/route");
+  const c = await cenario();
+  const prov = await c.prisma.whatsappProviderConfig.create({ data: { accountName: "consultor", displayPhoneNumber: "1", businessPhoneNumberId: `pn-eco-${c.org.id}`, organizationId: c.org.id } });
+  process.env.META_WHATSAPP_APP_SECRET = "segredo-teste";
+  const enviar = (value: unknown) => {
+    const body = JSON.stringify({ entry: [{ id: "waba", changes: [{ field: "smb_message_echoes", value }] }] });
+    const sig = "sha256=" + createHmac("sha256", "segredo-teste").update(body).digest("hex");
+    return POST(new NextRequest("http://x/api/webhooks/whatsapp", { method: "POST", body, headers: { "x-hub-signature-256": sig, "x-nexo-webhook-retry": "1" } }));
+  };
+  const ts = String(Math.floor(Date.now() / 1000));
+  const eco = { id: `wamid.eco.${c.org.id}`, from: "1", to: c.lead.phoneNumber, timestamp: ts, type: "text", text: { body: "Te mando o contrato hoje" } };
+  try {
+    await enviar({ metadata: { phone_number_id: prov.businessPhoneNumberId }, message_echoes: [eco] });
+    await enviar({ metadata: { phone_number_id: prov.businessPhoneNumberId }, message_echoes: [eco] }); // repetido: ignora
+    const conv = await c.prisma.whatsappConversation.findFirstOrThrow({ where: { leadId: c.lead.id, whatsappProviderConfigId: prov.id } });
+    assert.equal(conv.humanTakeover, true);
+    const msgs = await c.prisma.whatsappMessage.findMany({ where: { conversationId: conv.id } });
+    assert.deepEqual(msgs.map((m) => [m.role, m.content, m.wamid]), [["ASSISTANT", "Te mando o contrato hoje", eco.id]]);
+    // número sem cadastro: não faz nada
+    await enviar({ metadata: { phone_number_id: "desconhecido" }, message_echoes: [{ ...eco, id: "outro" }] });
+    assert.equal(await c.prisma.whatsappMessage.count({ where: { id: "outro" } }), 0);
+  } finally {
+    delete process.env.META_WHATSAPP_APP_SECRET;
+    await c.prisma.whatsappMessage.deleteMany({ where: { conversation: { leadId: c.lead.id } } });
+    await c.prisma.whatsappConversation.deleteMany({ where: { leadId: c.lead.id } });
+    await c.prisma.whatsappProviderConfig.delete({ where: { id: prov.id } });
+    await c.limpar();
+  }
+});

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { botaoPrimario, botaoSecundario, campo, Dialogo } from "@/components/dialogo";
 import { dataHora } from "@/lib/formatar";
 
-type Aba = "funis" | "motivos" | "usuarios" | "integracao" | "google" | "entrega";
-const ABAS: Array<[Aba, string]> = [["funis", "Funis e etapas"], ["motivos", "Motivos"], ["usuarios", "Usuários"], ["integracao", "Integração"], ["google", "Google (reuniões)"], ["entrega", "Modelo de entrega"]];
+type Aba = "funis" | "motivos" | "produtos" | "usuarios" | "integracao" | "google" | "entrega";
+const ABAS: Array<[Aba, string]> = [["funis", "Funis e etapas"], ["motivos", "Motivos"], ["produtos", "Produtos"], ["usuarios", "Usuários"], ["integracao", "Integração"], ["google", "Google (reuniões)"], ["entrega", "Modelo de entrega"]];
 
 async function chamar(url: string, metodo: string, corpo?: unknown): Promise<{ ok: boolean; erro?: string; dados?: Record<string, unknown> }> {
   const r = await fetch(url, { method: metodo, headers: { "content-type": "application/json" }, ...(corpo !== undefined ? { body: JSON.stringify(corpo) } : {}) });
@@ -25,7 +25,7 @@ export default function ConfiguracaoPage() {
         {ABAS.map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px whitespace-nowrap border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{r}</button>)}
       </div>
       <div className="flex-1 overflow-auto px-6 pb-8 pt-4">
-        {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "google" && <Google />}{aba === "entrega" && <Modelos />}
+        {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "produtos" && <Produtos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "google" && <Google />}{aba === "entrega" && <Modelos />}
       </div>
     </div>
   );
@@ -190,6 +190,50 @@ function FormUsuario({ u, onFechar, onSalvo }: { u: UsuarioCfg | null; onFechar:
   );
 }
 
+// ─── Produtos (catálogo) ─────────────────────────────────────────────────────
+interface ProdutoCfg { id: string; nome: string; codigo: string | null; descricao: string | null; valor: number; recorrencia: string; ativo: boolean }
+const reais = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+function Produtos() {
+  const { dados, erro, carregar } = useLista<ProdutoCfg>("/api/produtos?todos=1", "produtos");
+  const [form, setForm] = useState<ProdutoCfg | "novo" | null>(null);
+  if (erro) return <Aviso erro={erro} />;
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-3 flex items-center justify-between gap-3"><p className="text-[13px] text-cinza">Produtos e serviços que entram nas oportunidades. Com produtos, o valor da oportunidade é a soma deles (único e mensal).</p><button className={`${botaoPrimario} flex-none`} onClick={() => setForm("novo")}>Novo produto</button></div>
+      <div className="overflow-auto rounded-xl border border-linha bg-superficie">
+        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-cinza"><tr>{["Nome", "Código", "Valor", "Recorrência", "Situação", ""].map((h) => <th key={h} className="border-b border-linha px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <tbody>
+            {dados?.length === 0 && <tr><td colSpan={6} className="px-4 py-3 text-cinza">Nenhum produto cadastrado.</td></tr>}
+            {dados?.map((p) => <tr key={p.id} className="border-b border-linha last:border-0"><td className="px-4 py-2.5 font-semibold">{p.nome}</td><td className="px-4 py-2.5 text-cinza">{p.codigo ?? "—"}</td><td className="px-4 py-2.5">{reais(p.valor)}</td><td className="px-4 py-2.5">{p.recorrencia === "MENSAL" ? "Mensal" : "Único"}</td><td className="px-4 py-2.5">{p.ativo ? "Ativo" : <span className="text-cinza">Desativado</span>}</td><td className="px-4 py-2.5 text-right"><button className="text-[12px] font-bold text-azul" onClick={() => setForm(p)}>Editar</button></td></tr>)}
+          </tbody></table>
+      </div>
+      {form && <FormProduto p={form === "novo" ? null : form} onFechar={() => setForm(null)} onSalvo={() => { setForm(null); void carregar(); }} />}
+    </div>
+  );
+}
+
+function FormProduto({ p, onFechar, onSalvo }: { p: ProdutoCfg | null; onFechar: () => void; onSalvo: () => void }) {
+  const [f, setF] = useState({ nome: p?.nome ?? "", codigo: p?.codigo ?? "", descricao: p?.descricao ?? "", valor: p ? String(p.valor) : "", recorrencia: p?.recorrencia ?? "UNICO", ativo: p?.ativo ?? true });
+  const [erro, setErro] = useState<string | null>(null);
+  return (
+    <Dialogo titulo={p ? "Editar produto" : "Novo produto"} onFechar={onFechar}>
+      <form className="space-y-3" onSubmit={async (e) => { e.preventDefault(); const r = p ? await chamar(`/api/produtos/${p.id}`, "PATCH", f) : await chamar("/api/produtos", "POST", f); if (r.ok) onSalvo(); else setErro(r.erro ?? null); }}>
+        <label className="block"><span className={rotulo}>Nome</span><input required minLength={2} maxLength={120} value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} className={campo} /></label>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="block"><span className={rotulo}>Valor (R$)</span><input required inputMode="decimal" value={f.valor} onChange={(e) => setF({ ...f, valor: e.target.value })} className={campo} /></label>
+          <label className="block"><span className={rotulo}>Recorrência</span><select value={f.recorrencia} onChange={(e) => setF({ ...f, recorrencia: e.target.value })} className={campo}><option value="UNICO">Único</option><option value="MENSAL">Mensal</option></select></label>
+        </div>
+        <label className="block"><span className={rotulo}>Código (opcional)</span><input maxLength={40} value={f.codigo} onChange={(e) => setF({ ...f, codigo: e.target.value })} className={campo} /></label>
+        <label className="block"><span className={rotulo}>Descrição (opcional)</span><textarea rows={3} maxLength={1000} value={f.descricao} onChange={(e) => setF({ ...f, descricao: e.target.value })} className={campo} /></label>
+        {p && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} className="accent-[var(--azul)]" />Produto ativo</label>}
+        <Aviso erro={erro} />
+        <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario}>Salvar</button></div>
+      </form>
+    </Dialogo>
+  );
+}
+
 // ─── Integração (chaves do Vendedor IA) ──────────────────────────────────────
 interface ChaveCfg { id: string; nome: string; prefixo: string; criadaEm: string; ultimoUsoEm: string | null; revogadaEm: string | null }
 function Integracao() {
@@ -209,16 +253,10 @@ function Integracao() {
           <div className="mt-3 flex gap-2"><button className={botaoPrimario} onClick={() => void navigator.clipboard?.writeText(nova)}>Copiar</button><button className={botaoSecundario} onClick={() => setNova(null)}>Já guardei</button></div>
         </div>
       )}
-      <section aria-label="Extensão do WhatsApp" className="rounded-xl border border-linha bg-superficie p-4">
-        <h2 className="font-titulo text-[15px] font-extrabold">Extensão do WhatsApp Web</h2>
-        <p className="mt-1 text-[13px] text-cinza">Envia a conversa aberta no WhatsApp Web para a ficha do cliente. O agente lê o trecho novo e sugere os combinados.</p>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-[13px]">
-          <li><a className="font-bold text-azul" href="/extensao-avanteza-whatsapp.zip" download>Baixe a extensão</a> e descompacte numa pasta.</li>
-          <li>No Chrome, abra <code className="rounded bg-bq px-1.5 py-0.5">chrome://extensions</code>, ligue o <b>Modo do desenvolvedor</b> e clique em <b>Carregar sem compactação</b>, escolhendo a pasta.</li>
-          <li>Gere aqui embaixo uma chave chamada &quot;Extensão WhatsApp&quot;, clique no ícone da Avanteza na barra do Chrome e cole a chave.</li>
-          <li>No WhatsApp Web, abra a conversa do cliente (role para cima para carregar o que quiser enviar) e clique em <b>Enviar ao CRM</b>.</li>
-        </ol>
-        <p className="mt-2 text-[12px] text-cinza">A extensão só lê a conversa aberta, quando você clica. O contato é achado pelo telefone; se não existir no CRM, é criado.</p>
+      <section aria-label="Conversas do WhatsApp" className="rounded-xl border border-linha bg-superficie p-4">
+        <h2 className="font-titulo text-[15px] font-extrabold">Conversas do WhatsApp</h2>
+        <p className="mt-1 text-[13px] text-cinza">Chegam sozinhas na ficha do cliente pelo Vendedor IA, que usa a API oficial do WhatsApp. Só de quem já está no CRM. O agente lê cada conversa quando ela para por 30 minutos e sugere os combinados.</p>
+        <p className="mt-2 text-[13px] text-cinza">Para o seu próprio número do WhatsApp Business entrar também, conecte-o ao Vendedor IA em modo coexistência (o app continua funcionando no celular), sem agente de IA nele. O passo a passo está em <code className="rounded bg-bq px-1.5 py-0.5">crm/docs/integracao.md</code>.</p>
       </section>
       <form onSubmit={criar} className="flex gap-2"><input aria-label="Nome da chave" required maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome (ex.: Vendedor IA)" className={`${campo} !py-2`} /><button type="submit" className={botaoPrimario} disabled={!nome.trim()}>Gerar chave</button></form>
       <div className="overflow-auto rounded-xl border border-linha bg-superficie">
