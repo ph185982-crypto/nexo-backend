@@ -67,8 +67,9 @@ export async function editarOportunidade(id: string, e: EdicaoOportunidade, ator
   muda("probabilidade", e.probabilidade === op.probabilidade, `Probabilidade: ${PROBABILIDADE[op.probabilidade ?? ""] ?? "—"} → ${PROBABILIDADE[e.probabilidade ?? ""] ?? "—"}`);
   muda("origem", e.origem === op.origem, `Origem: ${op.origem ?? "—"} → ${e.origem ?? "—"}`);
   muda("tags", JSON.stringify(e.tags) === JSON.stringify(op.tags), `Tags: ${op.tags.join(", ") || "—"} → ${e.tags?.join(", ") || "—"}`);
+  // A tela manda só o dia (vale 18h): mesmo dia de Brasília não é mudança, mesmo com outro horário gravado.
   const prorrogou = e.finalizaEm && op.finalizaEm && e.finalizaEm > op.finalizaEm;
-  muda("finalizaEm", (e.finalizaEm?.getTime() ?? null) === (op.finalizaEm?.getTime() ?? null), `${prorrogou ? "Prorrogou" : "Data limite"}: ${dataBr(op.finalizaEm)} → ${dataBr(e.finalizaEm ?? null)}`);
+  muda("finalizaEm", dataBr(e.finalizaEm ?? null) === dataBr(op.finalizaEm), `${prorrogou ? "Prorrogou" : "Data limite"}: ${dataBr(op.finalizaEm)} → ${dataBr(e.finalizaEm ?? null)}`);
 
   if (e.responsavelId !== undefined && e.responsavelId !== op.responsavelId) {
     const u = e.responsavelId ? await prisma.usuario.findFirst({ where: { id: e.responsavelId, ativo: true }, select: { nome: true } }) : null;

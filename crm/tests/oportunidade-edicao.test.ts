@@ -57,6 +57,10 @@ test("editar registra o antes e o depois na linha do tempo e só o que mudou", a
     await editarOportunidade(p.op.id, validarEdicaoOportunidade({ finalizaEm: "2027-01-10" }), { id: p.dono.id, nome: "Dono" });
     assert.ok(await prisma.feedback.findFirst({ where: { oportunidadeId: p.op.id, texto: { contains: "Prorrogou: 20/12/2026 → 10/01/2027" } } }));
 
+    // mesmo dia com outro horário (a tela só manda o dia): não é mudança
+    await prisma.oportunidade.update({ where: { id: p.op.id }, data: { finalizaEm: new Date("2027-01-10T14:03:00Z") } });
+    assert.equal((await editarOportunidade(p.op.id, validarEdicaoOportunidade({ finalizaEm: "2027-01-10" }), { id: p.dono.id, nome: "Dono" }))?.mudancas.length, 0);
+
     // nada mudou: sem registro
     const antes = await prisma.feedback.count({ where: { oportunidadeId: p.op.id } });
     assert.equal((await editarOportunidade(p.op.id, validarEdicaoOportunidade({ nome: "Consultoria anual" }), { id: p.dono.id, nome: "Dono" }))?.mudancas.length, 0);

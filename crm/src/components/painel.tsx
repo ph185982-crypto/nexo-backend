@@ -54,18 +54,18 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
   return (
     <div className="fixed inset-0 z-40 flex items-stretch justify-center bg-grafite/45 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) onFechar(); }}>
     <section role="dialog" aria-modal="true" aria-label={`Ficha: ${c.nome}`} className="flex h-full w-full max-w-[1280px] flex-col overflow-hidden bg-superficie lg:rounded-2xl lg:shadow-2xl">
-      <header className="flex items-start justify-between gap-3 border-b border-linha px-5 py-3.5">
-        <div className="min-w-0">
+      <header className="flex flex-wrap items-start gap-x-3 gap-y-2 border-b border-linha px-5 py-3.5 sm:flex-nowrap">
+        <div className="min-w-0 flex-1">
           <h2 className="truncate text-[17px] font-extrabold leading-tight">{c.nome}</h2>
           <p className="text-[12px] font-semibold text-cinza">{c.codigo} · {c.contato.nome}{c.pessoa ? ` · ${c.pessoa.nome}` : ""} · {etapaNome}</p>
         </div>
-        <div className="flex flex-none flex-wrap items-center justify-end gap-1.5">
+        <div className="order-3 flex w-full flex-wrap items-center gap-1.5 sm:order-none sm:w-auto sm:flex-none sm:justify-end">
           <button onClick={() => setDialogo("editar")} className="rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-azul">Editar</button>
-          {aberta && <button onClick={() => setDialogo("prorrogar")} className="hidden rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-azul sm:block">Prorrogar</button>}
+          {aberta && <button onClick={() => setDialogo("prorrogar")} className="rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-azul">Prorrogar</button>}
           {aberta && final("PERDIDA") && <button onClick={() => onMover(final("PERDIDA")!.id)} className="rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-critico hover:text-critico">Perder</button>}
           {aberta && final("GANHA") && <button onClick={() => onMover(final("GANHA")!.id)} className="rounded-lg bg-azul px-3 py-1.5 text-[12px] font-bold text-bq">Ganhar</button>}
-          <button onClick={onFechar} aria-label="Fechar ficha" className="rounded-md px-2 py-1 text-[20px] leading-none text-cinza hover:bg-bq">×</button>
         </div>
+        <button onClick={onFechar} aria-label="Fechar ficha" className="flex-none rounded-md px-2 py-1 text-[20px] leading-none text-cinza hover:bg-bq">×</button>
       </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
       <aside className="order-2 border-t border-linha lg:order-none lg:w-[340px] lg:flex-none lg:overflow-y-auto lg:border-r lg:border-t-0" aria-label="Resumo da oportunidade">

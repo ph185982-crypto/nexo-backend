@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { DndContext, DragOverlay, PointerSensor, TouchSensor, useDroppable, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import type { CartaoDTO, EtapaDTO, QuadroDTO } from "@/lib/funil/quadro";
 import { tipoMotivoDaEtapa } from "@/lib/funil/encerramento";
@@ -148,7 +149,7 @@ function Lista({ quadro, selecionado, onAbrir }: { quadro: QuadroDTO; selecionad
                 <td className="px-3 py-2">{PROBABILIDADE[c.probabilidade ?? ""] ?? "—"}</td>
                 <td className={`px-3 py-2 ${atrasada ? "font-bold text-critico" : ""}`}>{data(c.finalizaEm)}</td>
                 <td className={`px-3 py-2 text-right ${aberta && parada >= 14 ? "font-bold text-critico" : aberta && parada >= 7 ? "font-bold" : "text-cinza"}`}>{aberta ? `${parada}d` : "—"}</td>
-                <td className="px-3 py-2">{aberta ? (c.proximaAtividade ? (c.proximaAtividade.quando ? data(c.proximaAtividade.quando) : "Sem prazo") : <span className="rounded-full bg-laranja px-2 py-0.5 text-[11px] font-bold text-grafite">Nenhuma</span>) : "—"}</td>
+                <td className="px-3 py-2">{aberta ? (c.proximaAtividade ? (c.proximaAtividade.quando ? <span className={new Date(c.proximaAtividade.quando) < new Date() ? "font-bold text-critico" : ""}>{data(c.proximaAtividade.quando)}</span> : "Sem prazo") : <span className="rounded-full bg-laranja px-2 py-0.5 text-[11px] font-bold text-grafite">Nenhuma</span>) : "—"}</td>
               </tr>
             );
           })}
@@ -159,6 +160,10 @@ function Lista({ quadro, selecionado, onAbrir }: { quadro: QuadroDTO; selecionad
 }
 
 export default function OportunidadesPage() {
+  return <Suspense><Oportunidades /></Suspense>;
+}
+
+function Oportunidades() {
   const [funis, setFunis] = useState<FunilItem[]>([]);
   const [funilId, setFunilId] = useState<string>("");
   const [quadro, setQuadro] = useState<QuadroDTO | null>(null);
@@ -175,15 +180,18 @@ export default function OportunidadesPage() {
   const sensores = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }), useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }));
 
   useEffect(() => {
-    // Links da busca e dos avisos: /oportunidades?funil=…&abrir=…
-    const url = new URLSearchParams(window.location.search);
-    const pedido = url.get("funil");
-    if (url.get("abrir")) setAberto(url.get("abrir"));
     fetch("/api/funis").then((r) => r.json()).then((j: { funis: FunilItem[] }) => {
       setFunis(j.funis);
-      setFunilId((atual) => atual || j.funis.find((f) => f.id === pedido)?.id || (j.funis.find((f) => f.padrao) ?? j.funis[0])?.id || "");
+      setFunilId((atual) => atual || (j.funis.find((f) => f.padrao) ?? j.funis[0])?.id || "");
     }).catch(() => setErro("Não foi possível carregar os funis"));
   }, []);
+  // Links da busca e dos avisos: /oportunidades?funil=…&abrir=… (também quando já se está nesta tela).
+  const params = useSearchParams();
+  useEffect(() => {
+    const funil = params.get("funil"), abrir = params.get("abrir");
+    if (funil) setFunilId(funil);
+    if (abrir) setAberto(abrir);
+  }, [params]);
 
   const carregar = useCallback(async () => {
     if (!funilId) return;
@@ -207,7 +215,7 @@ export default function OportunidadesPage() {
     a.href = URL.createObjectURL(new Blob([csvOportunidades(visivel)], { type: "text/csv;charset=utf-8" }));
     a.download = `oportunidades-${visivel.funil.nome.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.csv`;
     a.click();
-    URL.revokeObjectURL(a.href);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
 
   const mover = async (cartao: CartaoDTO, etapaId: string, motivoId: string | null = null, motivoDetalhe: string | null = null) => {

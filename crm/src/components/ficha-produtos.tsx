@@ -49,20 +49,20 @@ export function AbaProdutos({ oportunidadeId, onAtividade }: { oportunidadeId: s
       <div className="overflow-x-auto">
         <table className="w-full min-w-[520px] text-[13px]">
           <thead><tr className="border-b border-linha text-left text-[11px] uppercase tracking-[0.04em] text-cinza">
-            <th className="py-2 font-bold">Produto</th><th className="py-2 text-right font-bold">Qtd.</th><th className="py-2 text-right font-bold">Valor unit.</th><th className="py-2 text-right font-bold">Desc.</th><th className="py-2 font-bold">Recorrência</th><th className="py-2 text-right font-bold">Total</th><th />
+            <th className="px-2 py-2 font-bold">Produto</th><th className="px-2 py-2 text-right font-bold">Qtd.</th><th className="px-2 py-2 text-right font-bold">Valor unit.</th><th className="px-2 py-2 text-right font-bold">Desc.</th><th className="px-2 py-2 font-bold">Recorrência</th><th className="px-2 py-2 text-right font-bold">Total</th><th />
           </tr></thead>
           <tbody>
             {linhas === null && <tr><td colSpan={7} className="py-3 text-cinza">Carregando…</td></tr>}
             {linhas?.length === 0 && <tr><td colSpan={7} className="py-3 text-[12px] text-cinza">Nenhum produto. Sem produtos, os valores da oportunidade são os digitados em Editar.</td></tr>}
             {linhas?.map((l) => (
               <tr key={l.id} className="border-b border-linha">
-                <td className="py-2 font-semibold">{l.nome}</td>
-                <td className="py-2 text-right">{l.quantidade.toLocaleString("pt-BR")}</td>
-                <td className="py-2 text-right">{reais(l.valorUnitario)}</td>
-                <td className="py-2 text-right">{l.desconto ? `${l.desconto.toLocaleString("pt-BR")}%` : "—"}</td>
+                <td className="px-2 py-2 font-semibold">{l.nome}</td>
+                <td className="px-2 py-2 text-right">{l.quantidade.toLocaleString("pt-BR")}</td>
+                <td className="px-2 py-2 text-right">{reais(l.valorUnitario)}</td>
+                <td className="px-2 py-2 text-right">{l.desconto ? `${l.desconto.toLocaleString("pt-BR")}%` : "—"}</td>
                 <td className="py-2">{l.recorrencia === "MENSAL" ? "Mensal" : "Único"}</td>
-                <td className="py-2 text-right font-bold">{reais(l.total)}</td>
-                <td className="py-2 text-right"><button onClick={() => void chamar(`/api/oportunidades/${oportunidadeId}/produtos/${l.id}`, "DELETE")} aria-label={`Remover ${l.nome}`} className="rounded px-2 text-[16px] text-cinza hover:text-critico">×</button></td>
+                <td className="px-2 py-2 text-right font-bold">{reais(l.total)}</td>
+                <td className="px-2 py-2 text-right"><button onClick={() => void chamar(`/api/oportunidades/${oportunidadeId}/produtos/${l.id}`, "DELETE")} aria-label={`Remover ${l.nome}`} className="rounded px-2 text-[16px] text-cinza hover:text-critico">×</button></td>
               </tr>
             ))}
           </tbody>

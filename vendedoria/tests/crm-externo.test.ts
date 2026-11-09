@@ -269,7 +269,7 @@ test("conversas: pergunta antes de mandar; lead desconhecido fica IGNORADO sem c
   const conv = await c.prisma.whatsappConversation.create({ data: { customerWhatsappBusinessId: c.lead.phoneNumber, leadOrigin: "INBOUND", leadId: c.lead.id, whatsappProviderConfigId: prov.id, lastMessageAt: new Date() } });
   const msg = (seg: number, role: string, content: string, extra: Record<string, unknown> = {}) => c.prisma.whatsappMessage.create({ data: { content, type: "TEXT", role, sentAt: new Date(Date.now() - 600_000 + seg * 1000), conversationId: conv.id, ...extra } });
   // CRM falso: conhece o lead só a partir do 3º pedido
-  let conhece = false;
+  let conhece = false, recusar = false;
   const recebidos: Array<Record<string, unknown>> = [];
   const http = await import("node:http");
   const servidor = http.createServer((req, res) => {
@@ -278,6 +278,7 @@ test("conversas: pergunta antes de mandar; lead desconhecido fica IGNORADO sem c
       const corpo = JSON.parse(b || "{}");
       if (!req.url?.endsWith("/conversas")) { res.writeHead(200, { "content-type": "application/json" }); res.end("{}"); return; } // evento do outbox
       recebidos.push(corpo);
+      if (recusar && (corpo.mensagens as unknown[]).length) { res.writeHead(400, { "content-type": "application/json" }); res.end('{"erro":"Mensagem 1 sem texto"}'); return; }
       const status = !conhece ? "IGNORADO" : (corpo.mensagens as unknown[]).length ? "PROCESSADO" : "CONHECIDO";
       res.writeHead(200, { "content-type": "application/json" }); res.end(JSON.stringify({ status }));
     });
@@ -310,6 +311,11 @@ test("conversas: pergunta antes de mandar; lead desconhecido fica IGNORADO sem c
     assert.deepEqual(await sincronizarConversasCrm({ limite: 50 }), { enviadas: 1, ignoradas: 0, falhas: 0 });
     const ultimo = recebidos.slice(n).find((r) => (r.mensagens as unknown[]).length)!;
     assert.deepEqual((ultimo.mensagens as Array<{ texto: string }>).map((m) => m.texto), ['[Imagem] "nosso faturamento"'], "só a nova, mídia com rótulo");
+    // CRM recusa o lote (400): a marca avança para a conversa não travar
+    recusar = true;
+    const recusada = await msg(40, "USER", "algo que o CRM recusa");
+    assert.equal(await sincronizarConversaCrm(conv.id), "nada");
+    assert.equal((await c.prisma.whatsappConversation.findUnique({ where: { id: conv.id } }))!.crmSincronizadoAte?.getTime(), recusada.sentAt.getTime());
   } finally {
     await new Promise<void>((r) => servidor.close(() => r()));
     delete process.env.CRM_URL; delete process.env.CRM_API_KEY;

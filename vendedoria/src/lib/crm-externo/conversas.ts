@@ -12,8 +12,9 @@ const HISTORICO_INICIAL_MS = 30 * 86_400_000; // na primeira vez, até 30 dias d
 const MAX_MENSAGENS = 500;
 const TIMEOUT_MS = 8_000;
 
-type Resposta = { status: "PROCESSADO" | "CONHECIDO" | "IGNORADO" };
+type Resposta = { status: "PROCESSADO" | "CONHECIDO" | "IGNORADO" | "RECUSADO" };
 
+/** null = CRM fora do ar (tenta de novo); RECUSADO = 400, o CRM não aceita este conteúdo (reenviar não adianta). */
 async function postar(corpo: unknown): Promise<Resposta | null> {
   const base = process.env.CRM_URL?.trim().replace(/\/+$/, "");
   const chave = process.env.CRM_API_KEY?.trim();
@@ -23,6 +24,10 @@ async function postar(corpo: unknown): Promise<Resposta | null> {
       method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${chave}` },
       body: JSON.stringify(corpo), signal: AbortSignal.timeout(TIMEOUT_MS),
     });
+    if (r.status === 400) {
+      console.error("[CRM-externo] CRM recusou a conversa:", (await r.text().catch(() => "")).slice(0, 200));
+      return { status: "RECUSADO" };
+    }
     if (!r.ok) return null;
     return (await r.json()) as Resposta;
   } catch {
@@ -51,7 +56,7 @@ export async function sincronizarConversaCrm(conversaId: string, agora = new Dat
 
     if (c.crmStatus !== "ATIVO") {
       const r = await postar({ ...lead, mensagens: [] });
-      if (!r) return "falhou";
+      if (!r || r.status === "RECUSADO") return "falhou";
       if (r.status === "IGNORADO") {
         await prisma.whatsappConversation.update({ where: { id: c.id }, data: { crmStatus: "IGNORADO" } });
         return "ignorada";
@@ -74,8 +79,9 @@ export async function sincronizarConversaCrm(conversaId: string, agora = new Dat
       await prisma.whatsappConversation.update({ where: { id: c.id }, data: { crmStatus: "IGNORADO" } });
       return "ignorada";
     }
+    // Enviado (ou recusado de vez): avança a marca para não travar a conversa num lote que nunca vai passar.
     await prisma.whatsappConversation.update({ where: { id: c.id }, data: { crmSincronizadoAte: msgs[msgs.length - 1].sentAt } });
-    return "enviada";
+    return r.status === "RECUSADO" ? "nada" : "enviada";
   } catch (e) {
     console.error("[CRM-externo] Falha ao sincronizar conversa:", e);
     return "falhou";
