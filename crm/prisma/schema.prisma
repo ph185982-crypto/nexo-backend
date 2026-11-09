@@ -137,6 +137,11 @@ model Oportunidade {
   entrega      Entrega?
   combinados   Combinado[]
   analises     AnaliseAgente[]
+  produtos     OportunidadeProduto[]
+
+  // Resumo da IA (resumo, próximos passos, riscos) e quando foi gerado.
+  resumoIa     Json?
+  resumoIaEm   DateTime?
 
   @@index([funilId, status, etapaId])
   @@index([contatoId])
@@ -543,5 +548,36 @@ model ReuniaoGoogle {
   atualizadoEm     DateTime    @updatedAt
 
   @@index([contaId, status])
+  @@index([oportunidadeId])
+}
+
+// ─── Produtos: catálogo e linhas da oportunidade ─────────────────────────────
+// Com linhas, valorUnico/valorMensal da oportunidade são a soma delas (src/lib/oportunidades/produtos.ts).
+model Produto {
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  codigo      String?
+  descricao   String?  @db.Text
+  valor       Decimal  @default(0) @db.Decimal(14, 2)
+  recorrencia String   @default("UNICO") // UNICO | MENSAL
+  ativo       Boolean  @default(true)
+  criadoEm    DateTime @default(now())
+
+  itens OportunidadeProduto[]
+}
+
+model OportunidadeProduto {
+  id             String       @id @default(cuid())
+  oportunidadeId String
+  oportunidade   Oportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  produtoId      String?
+  produto        Produto?     @relation(fields: [produtoId], references: [id], onDelete: SetNull)
+  nome           String
+  quantidade     Decimal      @default(1) @db.Decimal(10, 2)
+  valorUnitario  Decimal      @db.Decimal(14, 2)
+  desconto       Decimal      @default(0) @db.Decimal(5, 2) // percentual
+  recorrencia    String       @default("UNICO") // UNICO | MENSAL
+  criadoEm       DateTime     @default(now())
+
   @@index([oportunidadeId])
 }

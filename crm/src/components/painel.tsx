@@ -11,6 +11,8 @@ import { TarefaItem, type TarefaDTO } from "./tarefa-item";
 import { botaoPrimario, campo } from "./dialogo";
 import { AbaCombinados } from "./ficha-combinados";
 import { AbaConversa } from "./ficha-conversa";
+import { AbaProdutos } from "./ficha-produtos";
+import { EditarOportunidade, Prorrogar } from "./ficha-editar";
 
 interface Linha { id: string; paraFunilNome: string; paraEtapaNome: string; paraTipo: string; entrouEm: string; saiuEm: string | null; origem: string; ator: string | null; motivo: string | null }
 
@@ -29,6 +31,9 @@ const Item = ({ rotulo, children }: { rotulo: string; children: React.ReactNode 
 export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }: { c: CartaoDTO; etapaNome: string; etapas: EtapaDTO[]; onMover: (etapaId: string) => void; onFechar: () => void; onAtividade: () => void }) {
   const [historico, setHistorico] = useState<Linha[] | null>(null);
   const [aba, setAba] = useState<Aba>("linha");
+  const [dialogo, setDialogo] = useState<"editar" | "prorrogar" | null>(null);
+  const aberta = c.status === "EM_ANDAMENTO";
+  const final = (tipo: string) => etapas.find((e) => e.tipo === tipo);
   const vendedorIa = process.env.NEXT_PUBLIC_VENDEDOR_IA_URL;
   // Esc fecha a ficha (se nenhum diálogo estiver aberto por cima: eles tratam o Esc antes).
   useEffect(() => {
@@ -52,7 +57,13 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
           <h2 className="truncate text-[17px] font-extrabold leading-tight">{c.nome}</h2>
           <p className="text-[12px] font-semibold text-cinza">{c.codigo} · {c.contato.nome}{c.pessoa ? ` · ${c.pessoa.nome}` : ""} · {etapaNome}</p>
         </div>
-        <button onClick={onFechar} aria-label="Fechar ficha" className="rounded-md px-2 py-1 text-[20px] leading-none text-cinza hover:bg-bq">×</button>
+        <div className="flex flex-none flex-wrap items-center justify-end gap-1.5">
+          <button onClick={() => setDialogo("editar")} className="rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-azul">Editar</button>
+          {aberta && <button onClick={() => setDialogo("prorrogar")} className="hidden rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-azul sm:block">Prorrogar</button>}
+          {aberta && final("PERDIDA") && <button onClick={() => onMover(final("PERDIDA")!.id)} className="rounded-lg border border-linha px-3 py-1.5 text-[12px] font-bold hover:border-critico hover:text-critico">Perder</button>}
+          {aberta && final("GANHA") && <button onClick={() => onMover(final("GANHA")!.id)} className="rounded-lg bg-azul px-3 py-1.5 text-[12px] font-bold text-bq">Ganhar</button>}
+          <button onClick={onFechar} aria-label="Fechar ficha" className="rounded-md px-2 py-1 text-[20px] leading-none text-cinza hover:bg-bq">×</button>
+        </div>
       </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
       <aside className="order-2 border-t border-linha lg:order-none lg:w-[340px] lg:flex-none lg:overflow-y-auto lg:border-r lg:border-t-0" aria-label="Resumo da oportunidade">
@@ -76,6 +87,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
         <Item rotulo="Probabilidade">{c.probabilidade ? <span className="rounded-full bg-laranja px-2.5 py-0.5 text-[11px] font-bold text-grafite">{PROBABILIDADE[c.probabilidade] ?? c.probabilidade}</span> : "—"}</Item>
         <Item rotulo="Origem">{c.origem ?? "—"}</Item>
         <Item rotulo="Finaliza em">{data(c.finalizaEm)}</Item>
+        {c.tags.length > 0 && <Item rotulo="Tags"><span className="flex flex-wrap justify-end gap-1">{c.tags.map((t) => <span key={t} className="rounded-full bg-azul-8 px-2 py-0.5 text-[11px] text-azul">#{t}</span>)}</span></Item>}
         {c.status !== "EM_ANDAMENTO" && <Item rotulo="Motivo">{c.motivo ?? "Sem motivo registrado"}</Item>}
       </div>
 
@@ -125,17 +137,20 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
         </div>
         {aba === "linha" && <AbaFeedback oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "combinados" && <AbaCombinados oportunidadeId={c.id} onAtividade={onAtividade} />}
+        {aba === "produtos" && <AbaProdutos oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "tarefas" && <AbaTarefas oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "conversa" && <AbaConversa oportunidadeId={c.id} contatoId={c.pessoa?.id ?? c.contato.id} onAtividade={onAtividade} />}
       </div>
       </div>
+      {dialogo === "editar" && <EditarOportunidade c={c} onFechar={() => setDialogo(null)} onSalvo={() => { setDialogo(null); onAtividade(); }} />}
+      {dialogo === "prorrogar" && <Prorrogar c={c} onFechar={() => setDialogo(null)} onSalvo={() => { setDialogo(null); onAtividade(); }} />}
     </section>
     </div>
   );
 }
 
-type Aba = "linha" | "combinados" | "tarefas" | "conversa";
-const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
+type Aba = "linha" | "combinados" | "produtos" | "tarefas" | "conversa";
+const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["produtos", "Produtos"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
 
 /** Tarefa ou feedback muda o aviso "sem próxima atividade" e os indicadores do cartão: o quadro recarrega. */
 function AbaTarefas({ oportunidadeId, onAtividade }: { oportunidadeId: string; onAtividade: () => void }) {

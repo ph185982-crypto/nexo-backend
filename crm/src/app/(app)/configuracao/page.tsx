@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { botaoPrimario, botaoSecundario, campo, Dialogo } from "@/components/dialogo";
 import { dataHora } from "@/lib/formatar";
 
-type Aba = "funis" | "motivos" | "usuarios" | "integracao" | "google" | "entrega";
-const ABAS: Array<[Aba, string]> = [["funis", "Funis e etapas"], ["motivos", "Motivos"], ["usuarios", "Usuários"], ["integracao", "Integração"], ["google", "Google (reuniões)"], ["entrega", "Modelo de entrega"]];
+type Aba = "funis" | "motivos" | "produtos" | "usuarios" | "integracao" | "google" | "entrega";
+const ABAS: Array<[Aba, string]> = [["funis", "Funis e etapas"], ["motivos", "Motivos"], ["produtos", "Produtos"], ["usuarios", "Usuários"], ["integracao", "Integração"], ["google", "Google (reuniões)"], ["entrega", "Modelo de entrega"]];
 
 async function chamar(url: string, metodo: string, corpo?: unknown): Promise<{ ok: boolean; erro?: string; dados?: Record<string, unknown> }> {
   const r = await fetch(url, { method: metodo, headers: { "content-type": "application/json" }, ...(corpo !== undefined ? { body: JSON.stringify(corpo) } : {}) });
@@ -25,7 +25,7 @@ export default function ConfiguracaoPage() {
         {ABAS.map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px whitespace-nowrap border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{r}</button>)}
       </div>
       <div className="flex-1 overflow-auto px-6 pb-8 pt-4">
-        {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "google" && <Google />}{aba === "entrega" && <Modelos />}
+        {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "produtos" && <Produtos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "google" && <Google />}{aba === "entrega" && <Modelos />}
       </div>
     </div>
   );
@@ -185,6 +185,50 @@ function FormUsuario({ u, onFechar, onSalvo }: { u: UsuarioCfg | null; onFechar:
         {u && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} className="accent-[var(--azul)]" />Usuário ativo</label>}
         <Aviso erro={erro} />
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={!nome.trim()}>Salvar</button></div>
+      </form>
+    </Dialogo>
+  );
+}
+
+// ─── Produtos (catálogo) ─────────────────────────────────────────────────────
+interface ProdutoCfg { id: string; nome: string; codigo: string | null; descricao: string | null; valor: number; recorrencia: string; ativo: boolean }
+const reais = (v: number) => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+function Produtos() {
+  const { dados, erro, carregar } = useLista<ProdutoCfg>("/api/produtos?todos=1", "produtos");
+  const [form, setForm] = useState<ProdutoCfg | "novo" | null>(null);
+  if (erro) return <Aviso erro={erro} />;
+  return (
+    <div className="max-w-4xl">
+      <div className="mb-3 flex items-center justify-between gap-3"><p className="text-[13px] text-cinza">Produtos e serviços que entram nas oportunidades. Com produtos, o valor da oportunidade é a soma deles (único e mensal).</p><button className={`${botaoPrimario} flex-none`} onClick={() => setForm("novo")}>Novo produto</button></div>
+      <div className="overflow-auto rounded-xl border border-linha bg-superficie">
+        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-cinza"><tr>{["Nome", "Código", "Valor", "Recorrência", "Situação", ""].map((h) => <th key={h} className="border-b border-linha px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <tbody>
+            {dados?.length === 0 && <tr><td colSpan={6} className="px-4 py-3 text-cinza">Nenhum produto cadastrado.</td></tr>}
+            {dados?.map((p) => <tr key={p.id} className="border-b border-linha last:border-0"><td className="px-4 py-2.5 font-semibold">{p.nome}</td><td className="px-4 py-2.5 text-cinza">{p.codigo ?? "—"}</td><td className="px-4 py-2.5">{reais(p.valor)}</td><td className="px-4 py-2.5">{p.recorrencia === "MENSAL" ? "Mensal" : "Único"}</td><td className="px-4 py-2.5">{p.ativo ? "Ativo" : <span className="text-cinza">Desativado</span>}</td><td className="px-4 py-2.5 text-right"><button className="text-[12px] font-bold text-azul" onClick={() => setForm(p)}>Editar</button></td></tr>)}
+          </tbody></table>
+      </div>
+      {form && <FormProduto p={form === "novo" ? null : form} onFechar={() => setForm(null)} onSalvo={() => { setForm(null); void carregar(); }} />}
+    </div>
+  );
+}
+
+function FormProduto({ p, onFechar, onSalvo }: { p: ProdutoCfg | null; onFechar: () => void; onSalvo: () => void }) {
+  const [f, setF] = useState({ nome: p?.nome ?? "", codigo: p?.codigo ?? "", descricao: p?.descricao ?? "", valor: p ? String(p.valor) : "", recorrencia: p?.recorrencia ?? "UNICO", ativo: p?.ativo ?? true });
+  const [erro, setErro] = useState<string | null>(null);
+  return (
+    <Dialogo titulo={p ? "Editar produto" : "Novo produto"} onFechar={onFechar}>
+      <form className="space-y-3" onSubmit={async (e) => { e.preventDefault(); const r = p ? await chamar(`/api/produtos/${p.id}`, "PATCH", f) : await chamar("/api/produtos", "POST", f); if (r.ok) onSalvo(); else setErro(r.erro ?? null); }}>
+        <label className="block"><span className={rotulo}>Nome</span><input required minLength={2} maxLength={120} value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} className={campo} /></label>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="block"><span className={rotulo}>Valor (R$)</span><input required inputMode="decimal" value={f.valor} onChange={(e) => setF({ ...f, valor: e.target.value })} className={campo} /></label>
+          <label className="block"><span className={rotulo}>Recorrência</span><select value={f.recorrencia} onChange={(e) => setF({ ...f, recorrencia: e.target.value })} className={campo}><option value="UNICO">Único</option><option value="MENSAL">Mensal</option></select></label>
+        </div>
+        <label className="block"><span className={rotulo}>Código (opcional)</span><input maxLength={40} value={f.codigo} onChange={(e) => setF({ ...f, codigo: e.target.value })} className={campo} /></label>
+        <label className="block"><span className={rotulo}>Descrição (opcional)</span><textarea rows={3} maxLength={1000} value={f.descricao} onChange={(e) => setF({ ...f, descricao: e.target.value })} className={campo} /></label>
+        {p && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} className="accent-[var(--azul)]" />Produto ativo</label>}
+        <Aviso erro={erro} />
+        <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario}>Salvar</button></div>
       </form>
     </Dialogo>
   );
