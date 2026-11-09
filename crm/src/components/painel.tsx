@@ -13,6 +13,8 @@ import { AbaCombinados } from "./ficha-combinados";
 import { AbaConversa } from "./ficha-conversa";
 import { AbaProdutos } from "./ficha-produtos";
 import { EditarOportunidade, Prorrogar } from "./ficha-editar";
+import { AlertaParada, ResumoIa } from "./ficha-resumo";
+import { PARADO_CRITICO_DIAS } from "@/lib/formatar";
 
 interface Linha { id: string; paraFunilNome: string; paraEtapaNome: string; paraTipo: string; entrouEm: string; saiuEm: string | null; origem: string; ator: string | null; motivo: string | null }
 
@@ -71,6 +73,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
         <b className="font-titulo text-[26px] font-extrabold leading-none">{moeda(c.valorTotal)}</b>
         <span className="mt-1 block text-[11px] opacity-90">Total{c.valorMensal > 0 ? ` · Mensal ${moeda(c.valorMensal)}` : ""}</span>
       </div>
+      <ResumoIa oportunidadeId={c.id} ultimaAtividadeEm={c.ultimaAtividadeEm} />
       <label className="mx-5 mt-4 block">
         <span className="mb-1 block text-[12px] font-semibold text-cinza">Mover para</span>
         <select value={c.etapaId} onChange={(e) => onMover(e.target.value)} className="w-full rounded-[10px] border border-linha bg-superficie px-3 py-2 text-[13px] font-semibold">
@@ -129,6 +132,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
       </ol>
       </aside>
       <div className="min-w-0 flex-1 lg:overflow-y-auto">
+        {aberta && diasDesde(c.ultimaAtividadeEm) >= PARADO_CRITICO_DIAS && <AlertaParada dias={diasDesde(c.ultimaAtividadeEm)} />}
         <div role="tablist" className="sticky top-0 z-10 flex gap-5 overflow-x-auto border-b border-linha bg-superficie px-5">
           {ABAS.map(([id, rotulo]) => (
             <button key={id} role="tab" aria-selected={aba === id} onClick={() => setAba(id)}
