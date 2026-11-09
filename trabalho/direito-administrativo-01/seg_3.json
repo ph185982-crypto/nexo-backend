@@ -1,0 +1,80 @@
+{
+ "topic_id": "b39aa01d-3dcf-5380-bc89-c0567aad11e7",
+ "turns": [
+  {
+   "speaker": "Julia",
+   "text": "Mas agora, Marcos, e quando o ato administrativo nasce podre, torto, cheio de vício e em desacordo com a lei? Aí a história muda completamente de figura. Entra em cena a anulação!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exatamente, Julia. E é aí que muita gente escorrega na hora da prova. Enquanto a revogação lida com o ato que era perfeito e válido, mas ficou inoportuno, a anulação vem para varrer a sujeira! A anulação decorre obrigatoriamente da ilegalidade do ato administrativo. Se tá fora da lei, não tem conversa: tem que anular."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Isso mesmo. Aliás, deixa eu ler o trecho exato do nosso material sobre isso para todo mundo gravar a letra fria da regra no ouvido. Acompanha aí:"
+  },
+  {
+   "speaker": "Julia",
+   "text": "A anulação decorre da ilegalidade do ato, com efeitos ex tunc (retroativos). Pode ser declarada pela própria Administração (autotutela) ou pelo Poder Judiciário."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Tradução prática disso tudo! Primeiro ponto fundamental: a anulação não é um favor ou uma escolha qualquer. A anulação é um dever da Administração Pública ao constatar a ilegalidade. Percebeu a virada? Na revogação a Administração avalia se quer ou não por conveniência. Na anulação, se constatou que é ilegal, a Administração tem o dever de anular!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "E tem outro detalhe de ouro nessa leitura que acabei de fazer. Quem é que pode anular o ato? Tanto a própria Administração Pública, exercendo a chamada autotutela, quanto o Poder Judiciário! Lembra que o juiz não podia revogar ato por conveniência? Pois é, mas anular por ilegalidade o Judiciário pode! Se o ato violou a lei, o Judiciário mete a caneta e anula."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeito. Vamos colocar isso na rotina da PMGO para ficar bem concreto para quem tá no carro? Imagina a seguinte situação: um policial militar consegue uma promoção na corporação apresentando um diploma de curso superior. Tempos depois, descobre-se que esse diploma era totalmente falso! O ato dessa promoção foi praticado com base em uma ilegalidade gritante."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, exemplo perfeito! E aí, o que acontece nesse caso? O ato de promoção é ilegal, então ele é anulado. E a anulação apaga tudo desde a origem, lá na data em que o diploma falso foi apresentado, como se aquela promoção nunca tivesse existido no mundo jurídico!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exato! Apaga o passado todinho. E isso nos leva direto para a pegadinha clássica de prova sobre o tempo dos efeitos. E para testar quem tá prestando atenção, que tal a gente mandar aquele nosso desafio rápido?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Com certeza! Solta a pergunta aí, Marcos."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pausa aí e pensa: se um ato administrativo ilegal é anulado hoje, qual é a data de início dos efeitos dessa anulação?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí? Pausou? Respondeu mentalmente? A resposta certa é: data retroativa! Efeitos ex tunc! A anulação volta no tempo até o exato momento em que o ato foi praticado lá atrás, eliminando seus efeitos desde a origem. É o famoso tapa na testa: ex tunc bate na testa e cai para trás, voltando no tempo!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Boa! Essa regrinha da testa não falha! Ex tunc retroage até a origem. Já a revogação é ex nunc, bate na nuca e joga os efeitos para a frente. Agora, presta atenção em como a banca Instituto AOCP gosta de montar a armadilha na hora da prova para derrubar o candidato."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Pois é, a banca adora trocar esses conceitos! A primeira pegadinha da AOCP é afirmar que a anulação produz efeitos ex nunc, ou seja, mantendo e preservando os efeitos passados. Errado! Anulação é ex tunc, retroage e queima o passado."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "A segunda pegadinha é a questão dizer que a anulação é vedada ao Poder Judiciário, alegando que só a própria Administração poderia anular. Mentira! O Judiciário pode sim anular atos ilegais da Administração Pública. Ele só não pode revogar por conveniência."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E a terceira pegadinha da banca, que é bem venenosa, é trocar a palavra 'dever' por 'mera faculdade'. A banca escreve que anular um ato ilegal é facultativo para a Administração. Errado! Ao constatar a ilegalidade, a anulação é um dever da Administração Pública, não é opção!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Sensacional, Julia. Então, amarrando o pacote da anulação para ninguém errar na hora do gabarito: a anulação vem de uma ilegalidade; gera efeitos ex tunc, que retroagem à origem; é um dever da Administração Pública; e pode ser declarada tanto pela Administração por autotutela quanto pelo Judiciário."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Fechou com chave de ouro! Sabendo diferenciar revogação e anulação, você já garante metade das questões de atos administrativos da prova!"
+  }
+ ],
+ "problems": [
+  "No sexto turno, Julia afirma que o juiz 'pode e deve' anular o ato ilegal, mas o material indica que a anulação é um dever da Administração Pública, estabelecendo apenas que o ato pode ser pronunciado/declarado pelo Poder Judiciário."
+ ]
+}

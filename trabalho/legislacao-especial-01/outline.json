@@ -1,0 +1,132 @@
+{
+ "cold_open": "Imagine a seguinte situação em uma abordagem da PM em Goiânia: a equipe para um carro de luxo e encontra dez gramas de cocaína no console, uma balança de precisão no porta-luvas e cinco mil reais em espécie sob o banco. O motorista, um médico primário, jura que é tudo para consumo próprio e que a balança é para não ser enganado na pureza. A dúvida que fica para a guarnição na hora: ele pode ser preso em flagrante pelo artigo trinta e três, o tráfico, ou a balança e a quantidade 'pequena' jogam ele para o artigo vinte e oito como usuário? E o carro, a polícia pode apreender agora ou precisa esperar o juiz?",
+ "resolution": "Primeiro, sobre a prisão: sim, ele pode ser autuado por tráfico. O artigo trinta e três da Lei de Drogas traz dezoito verbos, incluindo 'trazer consigo' e 'guardar', e o parágrafo segundo do artigo vinte e oito diz que o juiz — e a polícia no flagrante — vai olhar a natureza, a quantidade, o local e, principalmente, as circunstâncias sociais e pessoais, como a balança e o dinheiro trocado. Segundo, sobre o carro: o artigo sessenta e dois diz que veículos utilizados para a prática dos crimes da lei ficarão sob custódia da autoridade de polícia judiciária após a apreensão. E por fim, mesmo se ele fosse apenas usuário, o artigo quarenta e oito, parágrafo segundo, deixa claro que para o usuário não se impõe prisão em flagrante, mas sim a lavratura de termo circunstanciado.",
+ "segments": [
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "O que é droga e o tal do SISNAD",
+   "teaches": [
+    "A definição de droga não está na lei, mas em listas do Poder Executivo da União",
+    "O SISNAD articula prevenção e repressão em conjunto",
+    "A União pode autorizar o plantio para fins medicinais ou científicos",
+    "O sistema atua junto com o SUS e o SUAS"
+   ],
+   "law_quotes": [
+    "Artigo primeiro, parágrafo único: Para fins desta Lei, consideram-se como drogas as substâncias ou os produtos capazes de causar dependência, assim especificados em lei ou relacionados em listas atualizadas periodicamente pelo Poder Executivo da União."
+   ],
+   "analogy": "O SISNAD é como uma força-tarefa de condomínio: não adianta só o síndico querer limpar se os moradores não ajudarem e se não houver uma regra central que todos os blocos sigam.",
+   "trap": "A banca AOCP costuma dizer que os Estados podem definir o que é droga por conta própria. Mentira. A competência para atualizar a lista é do Poder Executivo da União.",
+   "challenge": "Pausa aí e pensa: o uso de plantas em rituais religiosos, como o chá de Santo Daime, é proibido pela lei de drogas? A resposta é não, o artigo segundo ressalva o uso estritamente ritualístico-religioso."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "Plano Nacional e Competências",
+   "teaches": [
+    "O Plano Nacional de Políticas sobre Drogas dura cinco anos",
+    "A União é quem coordena o SISNAD e estabelece as diretrizes",
+    "Compete à União estabelecer a política nacional de controle de fronteiras"
+   ],
+   "law_quotes": [
+    "Artigo oito letra D, parágrafo primeiro: O plano de que trata o caput terá duração de cinco anos a contar de sua aprovação."
+   ],
+   "analogy": "A União é o técnico do time de futebol: ela desenha a estratégia e o plano de jogo (o Plano Nacional), mas quem corre em campo são os Estados e Municípios.",
+   "trap": "A banca troca o prazo de cinco anos por dez anos para confundir com outros planos nacionais. Fique esperto: na Lei de Drogas são cinco anos.",
+   "challenge": "O SISNAD pode ignorar as normas do CONAD? Não, o artigo quarto, inciso onze, diz que a observância às normas do Conselho Nacional Antidrogas é um princípio do sistema."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "Internação: O nó da questão",
+   "teaches": [
+    "Internação voluntária precisa de declaração escrita do dependente",
+    "Internação involuntária dura no máximo noventa dias",
+    "Servidores da segurança pública NÃO podem pedir internação involuntária",
+    "O Ministério Público deve ser avisado de toda internação em setenta e duas horas"
+   ],
+   "law_quotes": [
+    "Artigo vinte e três letra A, parágrafo terceiro, inciso dois: internação involuntária: aquela que se dá, sem o consentimento do dependente, a pedido de familiar ou do responsável legal ou, na absoluta falta deste, de servidor público da área de saúde, da assistência social ou dos órgãos públicos integrantes do Sisnad, com exceção de servidores da área de segurança pública."
+   ],
+   "analogy": "A internação involuntária é como um 'freio de mão' de emergência puxado pela família quando o motorista perdeu o controle total e está indo em direção ao abismo.",
+   "trap": "A banca vai dizer que 'qualquer servidor público' pode pedir a internação involuntária. O erro é que o policial militar, por ser da segurança pública, está expressamente proibido de fazer esse pedido.",
+   "challenge": "Qual o prazo máximo da internação involuntária? Pausa e pensa. A resposta é noventa dias, conforme o artigo vinte e três letra A, parágrafo quinto."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "O Usuário: Artigo Vinte e Oito",
+   "teaches": [
+    "Não existe pena de prisão para o usuário de drogas",
+    "As penas são advertência, serviços à comunidade e curso educativo",
+    "O prazo máximo das penas é de cinco meses, ou dez se for reincidente",
+    "A prescrição ocorre em dois anos"
+   ],
+   "law_quotes": [
+    "Artigo vinte e oito: Quem adquirir, guardar, tiver em depósito, transportar ou trouxer consigo, para consumo pessoal, drogas sem autorização [...] será submetido às seguintes penas: um - advertência; dois - prestação de serviços à comunidade; três - medida educativa."
+   ],
+   "analogy": "A pena do usuário é como uma 'suspensão escolar': você não vai preso, mas tem que cumprir tarefas e ouvir sermão para entender o erro.",
+   "trap": "Cuidado com a afirmação 'o porte de drogas deixou de ser crime'. Errado. Ele continua sendo crime, só não tem mais pena de prisão (privativa de liberdade).",
+   "challenge": "Se um usuário se recusa a cumprir a prestação de serviços, ele pode ir preso? Não. O parágrafo sexto diz que ele sofrerá primeiro admoestação verbal e depois multa."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "Tráfico: O Artigo Trinta e Três",
+   "teaches": [
+    "O tráfico tem dezoito verbos e inclui condutas gratuitas",
+    "A pena é de reclusão de cinco a quinze anos",
+    "Oferecer droga para 'juntos consumirem' é um crime menor (detenção)",
+    "Vender para policial disfarçado é tráfico se já havia conduta criminosa anterior"
+   ],
+   "law_quotes": [
+    "Artigo trinta e três: Importar, exportar, remeter, preparar, produzir, fabricar, adquirir, vender, expor à venda, oferecer, ter em depósito, transportar, trazer consigo, guardar, prescrever, ministrar, entregar a consumo ou fornecer drogas, ainda que gratuitamente."
+   ],
+   "analogy": "O tráfico é um polvo de dezoito braços: não importa se você está vendendo, guardando no armário ou só levando de um ponto a outro, um dos braços te alcança.",
+   "trap": "A banca diz que o tráfico exige lucro. Mentira. O texto da lei diz 'ainda que gratuitamente'. Deu um 'presentinho' proibido? É tráfico.",
+   "challenge": "Se alguém oferece droga eventualmente, sem lucro, para um amigo consumirem juntos, qual a pena? Pausa e pensa. É detenção de seis meses a um ano, conforme o parágrafo terceiro."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "Maquinário, Associação e Financiamento",
+   "teaches": [
+    "Associação para o tráfico exige duas ou mais pessoas",
+    "Financiamento é o crime com a maior pena da lei (oito a vinte anos)",
+    "Colaborar como informante (o 'fogueteiro') tem pena de dois a seis anos"
+   ],
+   "law_quotes": [
+    "Artigo trinta e cinco: Associarem-se duas ou mais pessoas para o fim de praticar, reiteradamente ou não, qualquer dos crimes previstos nos artigos trinta e três e trinta e quatro."
+   ],
+   "analogy": "A associação é a 'empresa' do crime. O financiador é o 'investidor' que não toca na droga, mas coloca o dinheiro. Por isso ele é o mais visado pela lei.",
+   "trap": "A banca troca 'duas ou mais pessoas' da associação por 'três ou mais' para confundir com a organização criminosa do Código Penal. Na Lei de Drogas, dois já formam associação.",
+   "challenge": "Qual crime tem a pena mais alta: o tráfico ou o financiamento? Resposta: O financiamento (artigo trinta e seis), com reclusão de oito a vinte anos."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "Causas de Aumento e o Tráfico Privilegiado",
+   "teaches": [
+    "Aumento de um sexto a dois terços se houver transnacionalidade ou venda perto de escolas",
+    "O tráfico privilegiado reduz a pena se o agente for primário e de bons antecedentes",
+    "Não pode ser privilegiado quem integra organização criminosa",
+    "Venda em transporte público aumenta a pena"
+   ],
+   "law_quotes": [
+    "Artigo quarenta: As penas previstas nos artigos trinta e três a trinta e sete desta Lei são aumentadas de um sexto a dois terços, se: [...] três - a infração tiver sido cometida nas dependências ou imediações de estabelecimentos prisionais, de ensino ou hospitalares."
+   ],
+   "analogy": "O aumento de pena é como um 'agravante de trânsito': cometer o erro perto de uma escola é muito mais grave do que em uma rua deserta.",
+   "trap": "A banca diz que o tráfico privilegiado é um novo tipo de crime. Errado. É apenas uma causa de diminuição de pena aplicada ao traficante 'de primeira viagem'.",
+   "challenge": "Se um traficante é preso vendendo droga na porta de um quartel da PM, a pena aumenta? Sim, o artigo quarenta, inciso três, inclui unidades militares e policiais."
+  },
+  {
+   "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
+   "title": "Procedimentos e Destruição de Drogas",
+   "teaches": [
+    "Inquérito: trinta dias se preso, noventa se solto (podendo duplicar)",
+    "Destruição da droga em flagrante: quinze dias após autorização",
+    "Laudo de constatação é suficiente para o flagrante",
+    "O réu primário pode apelar em liberdade"
+   ],
+   "law_quotes": [
+    "Artigo cinquenta e um: O inquérito policial será concluído no prazo de trinta dias, se o indiciado estiver preso, e de noventa dias, quando solto."
+   ],
+   "analogy": "O laudo de constatação é como um 'teste rápido' de covid: serve para tomar as primeiras medidas, mas depois precisa do laudo definitivo para confirmar cem por cento.",
+   "trap": "A banca vai tentar usar os prazos do Código de Processo Penal (dez e trinta dias). Na Lei de Drogas é diferente: trinta e noventa dias.",
+   "challenge": "Quem deve estar presente na incineração da droga? Pausa e pensa. Resposta: O Ministério Público e a autoridade sanitária, conforme o artigo cinquenta, parágrafo quarto."
+  }
+ ]
+}
