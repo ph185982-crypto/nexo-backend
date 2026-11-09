@@ -63,6 +63,7 @@ TEXT_MODEL = os.getenv("PODCAST_TEXT_MODEL", "gemini-3.8-flash")
 # Lote longo: sob pico de demanda vale esperar (até ~30 min por pedido) em
 # vez de perder o episódio.
 ATTEMPTS = int(os.getenv("PODCAST_ATTEMPTS", "30"))
+THINKING_BUDGET = int(os.getenv("PODCAST_THINKING_BUDGET", "4096"))
 TEXT_FALLBACKS = [m for m in os.getenv("PODCAST_TEXT_FALLBACKS", "gemini-3.6-flash,gemini-3.5-flash").split(",") if m]
 TTS_MODEL = os.getenv("PODCAST_TTS_MODEL", "gemini-3.8-flash-tts")
 # Mesmas vozes (Algieba/Sulafat) e mesmo formato de falas por locutor.
@@ -154,7 +155,10 @@ class Gemini:
             "systemInstruction": {"parts": [{"text": STYLE}]},
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": temperature, "responseMimeType": "application/json",
-                                 "responseSchema": schema, "maxOutputTokens": 16384},
+                                 "responseSchema": schema, "maxOutputTokens": 16384,
+                                 # Raciocínio sem teto deixa a resposta passar de 5 min e a
+                                 # conexão cai antes de ela chegar.
+                                 "thinkingConfig": {"thinkingBudget": THINKING_BUDGET}},
         }
         for attempt in range(5):
             data = await self._post([TEXT_MODEL, *TEXT_FALLBACKS], body, self.text_sem)
@@ -520,7 +524,9 @@ async def main(out: Path, only: list[str]) -> int:
     out.mkdir(parents=True, exist_ok=True)
     store = get_store()
     base = json.loads((Path(__file__).resolve().parent.parent / "prf/local/audio_manifest.json").read_text())
-    episodes = [e for e in base["episodes"] if not only or e["id"] in only]
+    # Na ordem pedida: quem já tem roteiro (só falta voz) vai primeiro.
+    by_id = {e["id"]: e for e in base["episodes"]}
+    episodes = [by_id[i] for i in only if i in by_id] if only else base["episodes"]
     g = Gemini(key)
     sem = asyncio.Semaphore(EPISODE_CONCURRENCY)
 
