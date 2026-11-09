@@ -269,7 +269,7 @@ function Integracao() {
 
 // ─── Google (reuniões do Meet) ───────────────────────────────────────────────
 interface ReuniaoCfg { id: string; titulo: string | null; inicio: string; fim: string | null; emails: string[]; status: string; oportunidadeNome: string | null; participantes: string[] }
-interface GoogleCfg {
+interface GoogleCfg { origem: string | null; clientId: string | null; admin: boolean;
   configurado: boolean; redirectUri: string;
   conta: { email: string; ativa: boolean; erro: string | null; ultimaSincronizacaoEm: string | null } | null;
   reunioes: ReuniaoCfg[]; oportunidades: Array<{ id: string; nome: string; contato: { nome: string } }>;
@@ -282,6 +282,19 @@ const RETORNO_GOOGLE: Record<string, string> = {
   sem_refresh: "O Google não mandou o acesso permanente. Remova o acesso do CRM em myaccount.google.com/permissions e conecte de novo.",
   sem_credenciais: "Falta configurar GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET no projeto do CRM na Vercel.",
 };
+function CredenciaisGoogle({ onSalvo }: { onSalvo: () => void | Promise<void> }) {
+  const [clientId, setClientId] = useState(""); const [segredo, setSegredo] = useState(""); const [erro, setErro] = useState<string | null>(null);
+  return (
+    <form className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]" onSubmit={async (e) => { e.preventDefault(); const r = await chamar("/api/google/credenciais", "PUT", { clientId, clientSecret: segredo }); if (r.ok) { setClientId(""); setSegredo(""); setErro(null); await onSalvo(); } else setErro(r.erro ?? "Não foi possível salvar"); }}>
+      <input id="google-client-id" aria-label="ID do cliente" required value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="ID do cliente (….apps.googleusercontent.com)" className={`${campo} !py-2`} />
+      <input id="google-client-secret" aria-label="Chave secreta" required type="password" autoComplete="off" value={segredo} onChange={(e) => setSegredo(e.target.value)} placeholder="Chave secreta (GOCSPX-…)" className={`${campo} !py-2`} />
+      <button type="submit" className={botaoPrimario}>Salvar</button>
+      {erro && <p role="alert" className="text-[12px] font-semibold text-critico sm:col-span-3">{erro}</p>}
+      <p className="text-[12px] text-cinza sm:col-span-3">A chave secreta fica cifrada no banco do CRM e não é mostrada de novo.</p>
+    </form>
+  );
+}
+
 function Google() {
   const [d, setD] = useState<GoogleCfg | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -306,6 +319,14 @@ function Google() {
     <div className="max-w-4xl space-y-4">
       <p className="text-[13px] text-cinza">Depois de cada reunião no Google Meet com transcrição ligada, o CRM busca a transcrição, descobre o cliente pelos convidados do evento na Agenda (e-mail do contato) e manda para o agente de combinados. As sugestões aparecem na ficha da oportunidade.</p>
       {msg && <p role="status" className="rounded-xl border border-azul bg-azul-8 px-3.5 py-2.5 text-[13px] font-semibold text-azul">{msg}</p>}
+      {d.configurado && d.admin && (
+        <details className="rounded-xl border border-linha bg-superficie p-4 text-[13px]">
+          <summary className="cursor-pointer font-semibold">Credenciais do Google {d.origem === "AMBIENTE" ? "(variáveis da Vercel)" : "(salvas no CRM)"}</summary>
+          <p className="mt-2 break-all text-cinza">ID do cliente: {d.clientId}</p>
+          <p className="mt-1 text-cinza">URI de redirecionamento cadastrado no Google: <code className="break-all rounded bg-bq px-1.5 py-0.5">{d.redirectUri}</code></p>
+          {d.origem === "CONFIGURACAO" && <CredenciaisGoogle onSalvo={async () => { setMsg("Credenciais trocadas."); await carregar(); }} />}
+        </details>
+      )}
       {!d.configurado ? (
         <section className="rounded-xl border border-linha bg-superficie p-4 text-[13px]">
           <h2 className="font-titulo text-[15px] font-extrabold">Falta configurar o acesso ao Google</h2>
@@ -313,8 +334,9 @@ function Google() {
             <li>No Google Cloud (console.cloud.google.com), no projeto da Avanteza, ative a <b>Google Meet REST API</b> e a <b>Google Calendar API</b>.</li>
             <li>Em <b>Tela de consentimento OAuth</b>, use o tipo <b>Interno</b> (só contas da sua empresa, sem verificação do Google) e adicione os escopos <code>calendar.readonly</code> e <code>meetings.space.readonly</code>.</li>
             <li>Em <b>Credenciais</b>, crie (ou reaproveite) um ID do cliente OAuth do tipo <b>Aplicativo da Web</b> com o URI de redirecionamento: <code className="break-all rounded bg-bq px-1.5 py-0.5">{d.redirectUri}</code></li>
-            <li>Na Vercel, no projeto <b>nexo-crm</b>, crie as variáveis <code>GOOGLE_CLIENT_ID</code> e <code>GOOGLE_CLIENT_SECRET</code> e refaça o deploy.</li>
+            <li>Cole aqui o ID do cliente e a chave secreta.</li>
           </ol>
+          {d.admin ? <CredenciaisGoogle onSalvo={async () => { setMsg("Credenciais salvas. Agora conecte a sua conta Google."); await carregar(); }} /> : <p className="mt-2 text-cinza">Peça a um administrador para cadastrar as credenciais.</p>}
         </section>
       ) : !d.conta ? (
         <section className="rounded-xl border border-linha bg-superficie p-4">
