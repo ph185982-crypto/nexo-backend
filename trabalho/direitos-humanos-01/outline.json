@@ -1,0 +1,134 @@
+{
+ "cold_open": "Imagina que você está de plantão em uma viatura em Goiânia e recebe dois chamados seguidos. No primeiro, um gerente de uma academia de luxo barrou a entrada de um aluno por causa da 'cor da pele' e da 'procedência'. No segundo, um oficial de justiça pede apoio para prender um sujeito que não devolveu um carro financiado, o famoso depositário infiel. E aí, soldado? No primeiro caso, é crime ou só 'mal-entendido'? No segundo, você pode dar voz de prisão por essa dívida ou o Pacto de San José da Costa Rica trava sua mão? Se liga que isso derruba muito candidato na PM de Goiás.",
+ "resolution": "No caso da academia, é crime de racismo sim, conforme o artigo quinto da Lei sete mil setecentos e dezesseis, com pena de reclusão de um a três anos. Já no caso do depositário infiel, você não pode prender. Apesar de a Constituição citar essa possibilidade, o Supremo Tribunal Federal decidiu, com base no Pacto de San José da Costa Rica e na Súmula Vinculante vinte e cinco, que a única prisão civil por dívida aceita no Brasil é a do devedor de alimentos, o famoso 'pensão alimentícia'.",
+ "segments": [
+  {
+   "topic_id": "0300fa92-3691-5914-b128-f8eaa1627a5e",
+   "title": "DUDH: O Nascimento e a Natureza",
+   "teaches": [
+    "A Declaração Universal foi proclamada pela ONU em dez de dezembro de mil novecentos e quarenta e oito.",
+    "Ela não é um tratado ou lei vinculante, mas sim uma Resolução da Assembleia Geral.",
+    "Possui um peso moral e político gigantesco, servindo de norte para as constituições modernas.",
+    "Surgiu como resposta direta às atrocidades cometidas durante a Segunda Guerra Mundial."
+   ],
+   "law_quotes": [
+    "A DUDH foi proclamada pela Assembleia Geral da ONU em dez de dezembro de mil novecentos e quarenta e oito, em resposta às atrocidades da Segunda Guerra Mundial."
+   ],
+   "analogy": "Pensa na DUDH como o 'Regulamento Geral de Ética' de uma grande empresa internacional. Ela não é o contrato de trabalho que você assinou, mas se você desrespeitar, a empresa inteira vai te olhar torto e você perde toda a moral para negociar qualquer coisa.",
+   "trap": "A banca adora dizer que a DUDH é um 'tratado internacional vinculante'. Mentira. Ela é uma Resolução, o que significa que tem valor moral e político, mas não força de lei por si só como um pacto.",
+   "challenge": "Se a prova disser que a DUDH foi assinada em mil novecentos e quarenta e cinco, logo após a criação da ONU, está certo ou errado? Pausa e pensa. Resposta: Errado. A ONU é de quarenta e cinco, mas a DUDH é de dez de dezembro de mil novecentos e quarenta e oito."
+  },
+  {
+   "topic_id": "0300fa92-3691-5914-b128-f8eaa1627a5e",
+   "title": "DUDH: Princípios e Indivisibilidade",
+   "teaches": [
+    "Os direitos humanos são indivisíveis e interdependentes; você não escolhe qual proteger.",
+    "O artigo primeiro foca em liberdade, igualdade, dignidade e fraternidade.",
+    "Todos nascem livres e iguais, sem distinção de qualquer espécie.",
+    "A DUDH foi o primeiro documento a reunir direitos civis e sociais no mesmo pacote."
+   ],
+   "law_quotes": [
+    "Artigo primeiro: todos nascem livres e iguais em dignidade e direitos, devendo agir com fraternidade."
+   ],
+   "analogy": "É como o kit de equipamentos de um policial. Você não pode dizer: 'Hoje eu só vou levar o rádio, não preciso do colete nem da arma'. Eles são indivisíveis para sua segurança. Nos direitos humanos, a dignidade depende de todos os direitos juntos.",
+   "trap": "A banca AOCP pode dizer que 'cada país deve escolher qual categoria de direitos proteger'. Errado! A DUDH afirma a indivisibilidade.",
+   "challenge": "A DUDH separa os direitos em 'mais importantes' e 'menos importantes'? Resposta: Não, ela consagra a indivisibilidade e interdependência."
+  },
+  {
+   "topic_id": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7",
+   "title": "Pacto de San José: A Hierarquia no Brasil",
+   "teaches": [
+    "Adotado em vinte e dois de novembro de mil novecentos e sessenta e nove.",
+    "No Brasil, tem status 'supralegal', conforme decisão do Supremo Tribunal Federal.",
+    "Isso significa que ele está acima das leis comuns, mas abaixo da Constituição Federal.",
+    "O Brasil ratificou o pacto apenas em mil novecentos e noventa e dois."
+   ],
+   "law_quotes": [
+    "O Pacto de São José foi adotado em vinte e dois de novembro de mil novecentos e sessenta e nove e entrou em vigor em mil novecentos e setenta e oito. Brasil ratificou em mil novecentos e noventa e dois."
+   ],
+   "analogy": "Imagina uma escada de comando. No topo está o Coronel (Constituição). Logo abaixo vem o Tenente-Coronel (Tratados Supralegais como o Pacto). E lá embaixo estão os soldados e as leis comuns. O Tenente-Coronel manda na tropa, mas obedece ao Coronel.",
+   "trap": "Cuidado! A banca vai dizer que o Pacto tem status de 'Lei Ordinária'. O STF já bateu o martelo: é supralegal.",
+   "challenge": "Um tratado de direitos humanos aprovado antes de dois mil e quatro tem qual status? Pausa e pensa. Resposta: Status supralegal."
+  },
+  {
+   "topic_id": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7",
+   "title": "Pacto de San José: Vida e Pena de Morte",
+   "teaches": [
+    "Protege o direito à vida, em geral, desde a concepção.",
+    "Não proíbe a pena de morte de forma absoluta para quem já a tinha, mas proíbe sua expansão.",
+    "É terminantemente proibida a pena de morte para crimes políticos.",
+    "O país que aboliu a pena de morte não pode restabelecê-la."
+   ],
+   "law_quotes": [
+    "O artigo quarto protege a vida desde a concepção em geral e limita a pena de morte, proibindo-a para crimes políticos."
+   ],
+   "analogy": "Pensa no direito à vida como um terreno murado. O Pacto diz que você não pode diminuir esse terreno. Se você já tinha uma janelinha para a pena de morte, ok, mas não pode abrir novas janelas nem derrubar o muro.",
+   "trap": "A questão vai dizer que a pena de morte é 'absolutamente proibida' em qualquer caso pelo Pacto. Errado. Ela é limitada e proibida para crimes políticos.",
+   "challenge": "O Pacto de San José permite aplicar pena de morte para um crime político? Resposta: Não, o artigo quarto proíbe expressamente."
+  },
+  {
+   "topic_id": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7",
+   "title": "Pacto de San José: Liberdade e Prisão Civil",
+   "teaches": [
+    "Ninguém pode ser detido por dívida.",
+    "A única exceção permitida pelo Pacto é o descumprimento de deveres alimentares (pensão).",
+    "A Súmula Vinculante vinte e cinco do STF proibiu a prisão do depositário infiel.",
+    "Isso mudou a aplicação prática do artigo quinto da nossa Constituição."
+   ],
+   "law_quotes": [
+    "O artigo sétimo, parágrafo sétimo, da Convenção Americana sobre Direitos Humanos excepciona o devedor de alimentos. O STF editou a Súmula Vinculante vinte e cinco proibindo a prisão do depositário infiel."
+   ],
+   "analogy": "É como se o Pacto fosse um filtro. A Constituição diz que pode prender 'A' e 'B'. O filtro do Pacto só deixa passar o 'A' (alimentos). O 'B' (depositário) fica retido e não chega na rua para o policial cumprir.",
+   "trap": "A banca vai dizer que 'qualquer devedor que não prove insolvência pode ser preso'. Errado. Só devedor de pensão alimentícia.",
+   "challenge": "O depositário infiel pode ser preso hoje no Brasil? Resposta: Não, conforme a Súmula Vinculante vinte e cinco do Supremo Tribunal Federal."
+  },
+  {
+   "topic_id": "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6",
+   "title": "O Sistema Interamericano: Comissão vs Corte",
+   "teaches": [
+    "O sistema é formado por dois órgãos: a Comissão (CIDH) e a Corte Interamericana.",
+    "A Comissão recebe denúncias de indivíduos e faz relatórios.",
+    "A Corte é quem julga os Estados (países) e emite sentenças vinculantes.",
+    "Indivíduos não podem processar o Estado direto na Corte; precisam passar pela Comissão antes."
+   ],
+   "law_quotes": [
+    "O sistema interamericano de direitos humanos é composto pela Comissão Interamericana de Direitos Humanos (CIDH) e pela Corte Interamericana de Direitos Humanos."
+   ],
+   "analogy": "A Comissão é como o Ministério Público: ela investiga, recebe a denúncia e decide se leva o caso para o juiz. A Corte é o Juiz, quem dá a sentença final que o Brasil é obrigado a cumprir.",
+   "trap": "Dizer que a Corte IDH julga 'indivíduos'. Errado! Quem julga pessoas é o direito penal interno. A Corte julga Estados por violação de tratados.",
+   "challenge": "Para levar um caso ao sistema internacional, precisa esgotar os recursos internos do país? Resposta: Sim, essa é a regra geral."
+  },
+  {
+   "topic_id": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2",
+   "title": "Lei de Racismo: Crimes em Espécie",
+   "teaches": [
+    "Racismo não é só xingamento; é impedir acesso a serviços e direitos.",
+    "Negar emprego em empresa privada por raça dá reclusão de dois a cinco anos.",
+    "Impedir acesso a entradas sociais ou elevadores é crime com pena de um a três anos.",
+    "Recusar matrícula em escola (pública ou privada) é crime grave, com pena de três a cinco anos."
+   ],
+   "law_quotes": [
+    "Artigo sexto: Recusar, negar ou impedir a inscrição ou ingresso de aluno em estabelecimento de ensino público ou privado de qualquer grau. Pena: reclusão de três a cinco anos."
+   ],
+   "analogy": "Imagine uma barreira invisível. Se você coloca essa barreira num elevador social, num restaurante ou numa vaga de emprego baseada na cor da pessoa, você está cometendo um crime da Lei sete mil setecentos e dezesseis.",
+   "trap": "A banca troca 'reclusão' por 'detenção'. Na Lei de Racismo, os crimes são punidos com reclusão.",
+   "challenge": "Se o crime de recusar matrícula escolar for contra um menor de dezoito anos, a pena muda? Resposta: Sim, é agravada em um terço, conforme o parágrafo único do artigo sexto."
+  },
+  {
+   "topic_id": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2",
+   "title": "Lei de Racismo: Efeitos da Condenação",
+   "teaches": [
+    "Para o servidor público, a condenação pode gerar a perda do cargo.",
+    "A perda do cargo NÃO é automática; o juiz deve motivar na sentença.",
+    "A injúria racial agora está dentro da lógica da raça, cor e etnia.",
+    "O juiz deve considerar discriminatória qualquer atitude que cause humilhação ou medo baseado na raça."
+   ],
+   "law_quotes": [
+    "Artigo dezoito: Os efeitos de que tratam os artigos dezesseis e dezessete desta Lei não são automáticos, devendo ser motivadamente declarados na sentença."
+   ],
+   "analogy": "É como uma expulsão de um jogador de futebol. O juiz não expulsa só porque o cara fez a falta; ele tem que parar, analisar e declarar a expulsão na súmula do jogo de forma fundamentada.",
+   "trap": "A banca vai dizer que a perda do cargo para o policial condenado por racismo é 'automática'. Errado! O artigo dezoito diz que deve ser motivada na sentença.",
+   "challenge": "Qual a pena para quem utiliza a cruz suástica para divulgar o nazismo? Resposta: Reclusão de dois a cinco anos e multa, conforme o artigo vigésimo, parágrafo primeiro."
+  }
+ ]
+}
