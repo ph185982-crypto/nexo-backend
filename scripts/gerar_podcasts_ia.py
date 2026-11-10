@@ -448,7 +448,19 @@ async def voice_episode(g: Gemini, ep: dict, script: dict, work: Path) -> tuple[
             # Alguns trechos voltam sempre sem áudio inteiros e passam em
             # partes menores.
             if len(chunk) < 2:
-                raise
+                # Uma fala só, sempre recusada: em geral é lei copiada ao pé da
+                # letra. Reescrita com o mesmo conteúdo, sem a citação literal.
+                if chunk[0].get("_rewritten"):
+                    raise
+                log(f"  {ep['id']} bloco {label}: fala recusada, reescrevendo sem citação literal")
+                new = await g.json(f"""Reescreva esta fala de podcast de estudo mantendo exatamente as mesmas informações jurídicas, o tom e mais ou menos o tamanho, mas sem copiar texto de lei palavra por palavra: explique o dispositivo com outras palavras, citando só o número do artigo. Devolva em "turns" uma única fala de {chunk[0]['speaker']}.
+
+FALA:
+{chunk[0]['text']}""", TURNS_SCHEMA, temperature=0.4)
+                turns = clean_turns(new.get("turns", []))
+                if not turns:
+                    raise
+                return await speak_checked([{**turns[0], "speaker": chunk[0]["speaker"], "_rewritten": True}], label + "r")
             half = len(chunk) // 2
             log(f"  {ep['id']} bloco {label}: sem áudio, dividindo em duas partes")
             return (await speak_checked(chunk[:half], label + "a")) + silence(0.35) + \
