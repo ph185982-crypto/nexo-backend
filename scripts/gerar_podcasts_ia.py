@@ -104,7 +104,25 @@ def tts_text(text: str) -> str:
     voz recusa (finishReason OTHER) listas de lei copiadas no formato original."""
     t = re.sub(r"(^|[;:.\"“]\s*)([IVXL]{1,6})\s*[-–—]\s*",
                lambda m: f"{m.group(1)}inciso {_roman(m.group(2))}, ", text)
+    # Códigos anteriores a 1971 (CPM, CPPM) usam acento diferencial ("êste",
+    # "acôrdo"): a voz tropeça e recusa o trecho como citação. Grafia atual.
+    t = _OLD_SPELLING.sub(lambda m: _modern(m.group(0)), t)
     return speak_law(t)
+
+
+_OLD_WORDS = ["êste", "êstes", "êsse", "êsses", "êle", "êles", "dêle", "dêles", "nêle", "nêles",
+              "aquêle", "aquêles", "acôrdo", "acôrdos", "sôbre", "têrmo", "têrmos", "êrro", "êrros",
+              "contrôle", "fôrça", "fôrças", "esfôrço", "govêrno", "emprêgo", "sêlo", "tôda", "tôdas",
+              "tôdo", "tôdos", "pôsto", "postôs", "dêste", "dêsse", "nêste", "nêsse", "dêstes", "dêsses",
+              "êsse", "mêsmo", "mêsma", "fôr", "fôrem", "pôr", "almôço", "gôzo", "dôlo", "bôlsa", "côrte"]
+_OLD_SPELLING = re.compile(r"\b(" + "|".join(sorted(set(_OLD_WORDS), key=len, reverse=True)) + r")\b", re.IGNORECASE)
+
+
+def _modern(word: str) -> str:
+    if word.lower() == "pôr":
+        return word  # verbo "pôr" mantém o acento
+    out = word.replace("ê", "e").replace("ô", "o").replace("Ê", "E").replace("Ô", "O")
+    return out
 
 
 class QuotaExhausted(RuntimeError):
