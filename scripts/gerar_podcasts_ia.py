@@ -107,6 +107,8 @@ def tts_text(text: str) -> str:
     # Códigos anteriores a 1971 (CPM, CPPM) usam acento diferencial ("êste",
     # "acôrdo"): a voz tropeça e recusa o trecho como citação. Grafia atual.
     t = _OLD_SPELLING.sub(lambda m: _modern(m.group(0)), t)
+    # Erros de digitação do roteiro em números por extenso ("cinquenta e meve").
+    t = re.sub(r"\be meve\b", "e nove", t)
     return speak_law(t)
 
 
