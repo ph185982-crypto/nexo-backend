@@ -63,6 +63,9 @@ TEXT_MODEL = os.getenv("PODCAST_TEXT_MODEL", "gemini-3.8-flash")
 # Lote longo: sob pico de demanda vale esperar (até ~30 min por pedido) em
 # vez de perder o episódio.
 ATTEMPTS = int(os.getenv("PODCAST_ATTEMPTS", "30"))
+# Só roteiro: gasta a cota de texto adiantando episódios quando a de voz acabou.
+SCRIPT_ONLY = os.getenv("PODCAST_SCRIPT_ONLY") == "1"
+THINKING_BUDGET = int(os.getenv("PODCAST_THINKING_BUDGET", "4096"))
 TEXT_FALLBACKS = [m for m in os.getenv("PODCAST_TEXT_FALLBACKS", "gemini-3.6-flash,gemini-3.5-flash").split(",") if m]
 TTS_MODEL = os.getenv("PODCAST_TTS_MODEL", "gemini-3.8-flash-tts")
 # Mesmas vozes (Algieba/Sulafat) e mesmo formato de falas por locutor.
@@ -101,7 +104,25 @@ def tts_text(text: str) -> str:
     voz recusa (finishReason OTHER) listas de lei copiadas no formato original."""
     t = re.sub(r"(^|[;:.\"“]\s*)([IVXL]{1,6})\s*[-–—]\s*",
                lambda m: f"{m.group(1)}inciso {_roman(m.group(2))}, ", text)
+    # Códigos anteriores a 1971 (CPM, CPPM) usam acento diferencial ("êste",
+    # "acôrdo"): a voz tropeça e recusa o trecho como citação. Grafia atual.
+    t = _OLD_SPELLING.sub(lambda m: _modern(m.group(0)), t)
     return speak_law(t)
+
+
+_OLD_WORDS = ["êste", "êstes", "êsse", "êsses", "êle", "êles", "dêle", "dêles", "nêle", "nêles",
+              "aquêle", "aquêles", "acôrdo", "acôrdos", "sôbre", "têrmo", "têrmos", "êrro", "êrros",
+              "contrôle", "fôrça", "fôrças", "esfôrço", "govêrno", "emprêgo", "sêlo", "tôda", "tôdas",
+              "tôdo", "tôdos", "pôsto", "postôs", "dêste", "dêsse", "nêste", "nêsse", "dêstes", "dêsses",
+              "êsse", "mêsmo", "mêsma", "fôr", "fôrem", "pôr", "almôço", "gôzo", "dôlo", "bôlsa", "côrte"]
+_OLD_SPELLING = re.compile(r"\b(" + "|".join(sorted(set(_OLD_WORDS), key=len, reverse=True)) + r")\b", re.IGNORECASE)
+
+
+def _modern(word: str) -> str:
+    if word.lower() == "pôr":
+        return word  # verbo "pôr" mantém o acento
+    out = word.replace("ê", "e").replace("ô", "o").replace("Ê", "E").replace("Ô", "O")
+    return out
 
 
 class QuotaExhausted(RuntimeError):
@@ -154,7 +175,10 @@ class Gemini:
             "systemInstruction": {"parts": [{"text": STYLE}]},
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": temperature, "responseMimeType": "application/json",
-                                 "responseSchema": schema, "maxOutputTokens": 16384},
+                                 "responseSchema": schema, "maxOutputTokens": 16384,
+                                 # Raciocínio sem teto deixa a resposta passar de 5 min e a
+                                 # conexão cai antes de ela chegar.
+                                 "thinkingConfig": {"thinkingBudget": THINKING_BUDGET}},
         }
         for attempt in range(5):
             data = await self._post([TEXT_MODEL, *TEXT_FALLBACKS], body, self.text_sem)
@@ -424,7 +448,19 @@ async def voice_episode(g: Gemini, ep: dict, script: dict, work: Path) -> tuple[
             # Alguns trechos voltam sempre sem áudio inteiros e passam em
             # partes menores.
             if len(chunk) < 2:
-                raise
+                # Uma fala só, sempre recusada: em geral é lei copiada ao pé da
+                # letra. Reescrita com o mesmo conteúdo, sem a citação literal.
+                if chunk[0].get("_rewritten"):
+                    raise
+                log(f"  {ep['id']} bloco {label}: fala recusada, reescrevendo sem citação literal")
+                new = await g.json(f"""Reescreva esta fala de podcast de estudo mantendo exatamente as mesmas informações jurídicas, o tom e mais ou menos o tamanho, mas sem copiar texto de lei palavra por palavra: explique o dispositivo com outras palavras, citando só o número do artigo. Devolva em "turns" uma única fala de {chunk[0]['speaker']}.
+
+FALA:
+{chunk[0]['text']}""", TURNS_SCHEMA, temperature=0.4)
+                turns = clean_turns(new.get("turns", []))
+                if not turns:
+                    raise
+                return await speak_checked([{**turns[0], "speaker": chunk[0]["speaker"], "_rewritten": True}], label + "r")
             half = len(chunk) // 2
             log(f"  {ep['id']} bloco {label}: sem áudio, dividindo em duas partes")
             return (await speak_checked(chunk[:half], label + "a")) + silence(0.35) + \
@@ -485,6 +521,8 @@ async def produce(g: Gemini, store, ep: dict, out: Path) -> dict | None:
     try:
         script = await write_episode(g, store, ep, work)
         log(f"{ep['id']}: roteiro pronto, {sum(words(s) for s in script['segments'])} palavras")
+        if SCRIPT_ONLY:
+            return None
         pcm, seg_bounds, seg_topics = await voice_episode(g, ep, script, work)
     except Exception as e:
         log(f"{ep['id']}: FALHOU — {e}")
@@ -520,7 +558,9 @@ async def main(out: Path, only: list[str]) -> int:
     out.mkdir(parents=True, exist_ok=True)
     store = get_store()
     base = json.loads((Path(__file__).resolve().parent.parent / "prf/local/audio_manifest.json").read_text())
-    episodes = [e for e in base["episodes"] if not only or e["id"] in only]
+    # Na ordem pedida: quem já tem roteiro (só falta voz) vai primeiro.
+    by_id = {e["id"]: e for e in base["episodes"]}
+    episodes = [by_id[i] for i in only if i in by_id] if only else base["episodes"]
     g = Gemini(key)
     sem = asyncio.Semaphore(EPISODE_CONCURRENCY)
 

@@ -1256,9 +1256,9 @@
    "subject_name": "Direito Penal Militar",
    "number": 1,
    "title": "Direito Penal Militar · Episódio 1",
-   "file": "direito-penal-militar-01-8b0ec1d116.mp3",
-   "bytes": 15772032,
-   "duration_secs": 2629,
+   "file": "direito-penal-militar-01-ia-f35bbe25a9.mp3",
+   "bytes": 15067584,
+   "duration_secs": 2511,
    "chapters": [
     {
      "topic_id": "d1643411-1899-5bf1-bed7-2de1f8c10dc8",
@@ -1268,14 +1268,16 @@
     {
      "topic_id": "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565",
      "title": "Crime militar",
-     "start": 1167.77
+     "start": 830.95
     }
    ],
    "boundaries": [
-    1167.77,
-    2628.67
+    830.95,
+    2511.21
    ],
-   "segment_count": 2
+   "segment_count": 2,
+   "format": "conversa",
+   "problems_fixed": 11
   },
   {
    "id": "direito-penal-militar-02",
@@ -1890,7 +1892,7 @@
   },
   "a1535d2c-8a9b-5db2-a0a8-ec809eb0f565": {
    "episode": "direito-penal-militar-01",
-   "start": 1167.77
+   "start": 830.95
   },
   "d170914e-ade1-5998-a578-6c3c1eb47c61": {
    "episode": "direito-penal-militar-02",
