@@ -1,0 +1,46 @@
+{
+ "topic_id": "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9",
+ "turns": [
+  {
+   "speaker": "Marcos",
+   "text": "Excelente, Julia! Agora mudando de bloco, vamos entrar forte em editores de texto e planilhas eletrônicas, um assunto que o Instituto AOCP despenca em prova. Para começar nas planilhas, tem uma função básica que o pessoal erra por bobeira. Olha só o que o material diz literalmente: \"A função SOMA (ou SUM) retorna o somatório dos valores contidos no intervalo de células especificado, no caso, das células A1 até A5.\""
+  },
+  {
+   "speaker": "Julia",
+   "text": "Pois é! O segredo aqui é não complicar nada. A função SOMA faz exatamente isso: ela calcula o somatório total dos valores dispostos em um intervalo contínuo, como das células A1 até A5. A banca tenta inventar dizendo que essa função calcula produto de valores ou que retorna o maior valor entre as células, mas não cai nessa pegadinha. Falou em somatório de intervalo, é a função SOMA. Agora, Marcos, outro ponto que cai demais sobre planilhas é aquele famoso símbolo do cifrão nas fórmulas, né?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Com certeza, o símbolo do cifrão! Vamos ler a regra exata do material para não ter dúvida: \"O uso do símbolo $ antes da letra da coluna e do número da linha (referência absoluta) faz com que essa referência não seja alterada quando a fórmula é copiada para outras células, ao contrário da referência relativa, que se ajusta automaticamente.\""
+  },
+  {
+   "speaker": "Julia",
+   "text": "Que aula! E para o ouvinte visualizar bem isso na rotina do trabalho policial: pensa que o cifrão na planilha funciona como algemar a coordenada ao solo! Se a célula A1 está livre, sem o cifrão, ela é uma referência relativa. Ou seja, se você arrasta a fórmula para baixo, a referência corre junto com o mouse. Mas se você coloca o cifrão antes da coluna e da linha, formando cifrão A cifrão um, ela vira uma referência absoluta! É como se estivesse algemada e fixa no posto: você pode arrastar a fórmula para onde quiser na planilha, que aquela coordenada permanece totalmente travada."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Que imagem sensacional, Julia! E fica esperto na pegadinha da banca: o Instituto AOCP adora inverter os conceitos e trocar referências relativas por absolutas. Eles colocam na questão que inserir o cifrão faz a célula se atualizar dinamicamente com o deslocamento da fórmula. Mentira! O efeito do cifrão é exatamente o oposto, é travar a referência tornando ela absoluta, impedindo qualquer deslocamento ao copiar ou arrastar as fórmulas. Se disser que se ajusta automaticamente ao arrastar, trata-se de referência relativa."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exato! E saindo um pouco das planilhas e entrando nos processadores de texto, como o Microsoft Word, a banca cobra muito as opções de formatação. Onde é que a gente ajusta coisas como espaçamento entre linhas, recuos e alinhamentos de texto, Marcos?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Boa pergunta! Isso cai direto. Espaçamentos entre linhas, recuos à esquerda ou à direita e alinhamentos de texto são formatados especificamente no menu ou caixa de diálogo Parágrafo. A banca tenta confundir o candidato afirmando que essa formatação de parágrafo é feita exclusivamente pelo menu Arquivo, ou até mesmo exigindo a instalação de um complemento externo que não vem no programa. Tudo errado! É no menu ou painel Parágrafo que você configura todas essas opções do texto."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Perfeito! E para fechar este tópico com chave de ouro, chegou a hora do nosso desafio para testar quem tá atento. Pausa e pensa: para imprimir centenas de convites nominais para a formatura do curso de soldados puxando os nomes direto de uma lista do Excel, qual recurso do processador de texto você emprega?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pensou? A resposta é o recurso de Mala Direta! O texto literal do material define perfeitamente: \"A mala direta permite gerar múltiplos documentos personalizados (como cartas, etiquetas ou e-mails) a partir de um modelo único combinado com uma base de dados (por exemplo, uma planilha ou lista de contatos), inserindo automaticamente os dados de cada destinatário.\""
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exatamente! Trazendo para a rotina da Polícia Militar em Goiás, a mala direta é aquele recurso essencial quando você precisa emitir despachos, notificações ou etiquetas personalizadas em lote. Você junta o documento-modelo com uma fonte de dados externa, como uma planilha de contatos, e o sistema combina tudo automaticamente sem precisar digitar um por um. Memorizou isso, você garante mais uma questão na prova do Instituto AOCP!"
+  }
+ ],
+ "problems": []
+}

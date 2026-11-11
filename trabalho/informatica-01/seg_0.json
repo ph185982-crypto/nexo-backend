@@ -1,0 +1,46 @@
+{
+ "topic_id": "958d8e04-b29c-5cce-9c52-83537372e336",
+ "turns": [
+  {
+   "speaker": "Marcos",
+   "text": "Plantão no batalhão da PMGO em Anápolis. Uma comerciante desesperada chega ao posto policial relatando que todos os computadores da loja dela travaram completamente. O motivo? Um funcionário clicou num link de falso boleto recebido por e-mail. Na tela, apareceu aquela mensagem clássica dizendo que todos os arquivos foram cifrados e exigindo três mil reais em moeda digital para liberar a chave. Para complicar, o técnico da loja jura que o becape incremental feito na véspera é autossuficiente e recupera tudo sozinho, e ainda soltou que a polícia só conseguiria puxar o histórico do servidor se apagasse as tabelas com comandos de modificação. O policial militar de serviço precisa orientar a vítima e registrar a ocorrência: afinal, esse ataque é tecnicamente ransomware ou apenas phishing? O becape incremental realmente garante a integridade de tudo sem depender do anterior? E qual comando SQL serve para apenas consultar os dados no banco relacional da corporação?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, que confusão no plantão! Mas calma, não responde agora. Deixa essa pulga atrás da orelha porque a solução completa desse caso vem no final do episódio. Hoje, você vai dominar os pontos mais cobrados de Informática para gabaritar a prova da PMGO."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E para começar do começo, Julia: o básico que sustenta qualquer máquina, o sistema operacional. A banca adora colocar frente a frente os dois gigantes: Linux e Windows."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Adora! E aqui você não pode titubear no conceito. Escuta o texto exato da definição: 'O Linux é um sistema operacional de código aberto (open source), que pode ser livremente estudado, modificado e distribuído, diferentemente do Windows, que é um software proprietário da Microsoft.'"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Traduzindo isso para a nossa realidade: pensa no Linux como uma viatura padrão cuja mecânica tem manual totalmente aberto. O batalhão pode inspecionar o motor, ajustar as peças e personalizar a carcaça do jeito que a corporação precisar. Já o Windows é aquele veículo blindado de concessionária privada: você usa a chave, dirige na ronda diária, mas o capô vem lacrado e selado de fábrica pela Microsoft."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Perfeito. E fica esperto com a maldade do examinador. Uma questão clássica tenta te convencer de que o Windows é de código aberto, ou inventa que ele não possui versões para computadores pessoais. Errado! O Windows domina os computadores pessoais justamente como software proprietário e comercial."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Outro detalhe de sistema operacional que despenca em prova: o gerenciamento de processos. Um sistema multitarefa consegue alternar o uso do processador entre vários programas tão rápido que parece simultâneo, mesmo se a máquina tiver apenas um núcleo físico de processamento. E se um programa travar e você encerrar esse processo, isso não vai travar o sistema operacional inteiro de forma obrigatória."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Muito bem lembrado. Agora, aproveitando que falamos de processo travado, vamos lançar o nosso desafio. Pausa aí e pensa: se você precisa abrir diretamente o Gerenciador de Tarefas no Windows, sem passar por nenhuma tela intermediária de opções ou bloqueio, qual atalho você usa no teclado?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pensou? A resposta certa é Ctrl mais Shift mais Esc. Olha o que a regra diz com todas as letras: 'A combinação Ctrl+Shift+Esc abre diretamente o Gerenciador de Tarefas do Windows. A combinação Ctrl+Alt+Del abre uma tela intermediária de opções, a partir da qual também é possível acessá-lo.'"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Essa é a pegadinha favorita da banca. Todo mundo cresceu usando Ctrl mais Alt mais Del quando o computador engasga, né? Aí o candidato lê na prova que esse atalho abre diretamente o gerenciador e marca certo sem pensar. Só que o Ctrl mais Alt mais Del te joga numa tela azul cheia de botões: bloquear, trocar de usuário, sair... O atalho cirúrgico, direto na veia dos processos, é Ctrl mais Shift mais Esc."
+  }
+ ],
+ "problems": []
+}

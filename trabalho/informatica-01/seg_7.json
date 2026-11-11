@@ -1,0 +1,102 @@
+{
+ "topic_id": "8fce0309-caac-559e-8ae9-669b4953a3e1",
+ "turns": [
+  {
+   "speaker": "Julia",
+   "text": "Fechando essa parte de nuvem, Marcos, a gente precisa falar do que realmente mora lá dentro e que é o coração de qualquer sistema moderno: os bancos de dados. Se a banca Instituto AOCP cobrar SQL, tem um cara que é o rei absoluto das questões."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Deixa eu adivinhar... o comando SELECT? Esse aí é figurinha carimbada em qualquer prova de informática para a área policial."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Na mosca! O material é bem direto e vale a pena ler esse trecho literal: 'O comando SELECT é utilizado na linguagem SQL para realizar consultas e recuperar dados de uma ou mais tabelas de um banco de dados relacional.' Ou seja, ele é a nossa principal ferramenta de busca."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exato. O pessoal às vezes se confunde com comandos que alteram ou apagam coisas, mas o SELECT é inofensivo nesse sentido, ele só 'traz para a tela'. É como se você estivesse consultando o arquivo físico do batalhão: você olha a ficha, lê as informações, mas não mexe em nada, não risca nada. É puramente recuperação de dados."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Perfeito. E dentro dessas tabelas, os dados não ficam jogados de qualquer jeito. Tem uma regra de ouro sobre a identificação de cada linha, que é a tal da chave primária. Deixa eu ler a definição técnica: 'A chave primária identifica de forma única cada registro (linha) de uma tabela, não podendo conter valores nulos nem duplicados, diferentemente da chave estrangeira, que referencia a chave primária de outra tabela para estabelecer relacionamentos.'"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Essa parte da chave primária dá pra matar com uma analogia muito simples da rotina da PMGO. Pensa no número da sua matrícula funcional ou no seu CPF. Não existem dois policiais com o mesmo registro funcional na corporação e ninguém pode assumir o serviço ou receber fardamento sem ter uma matrícula atribuída. Se o sistema aceitasse dois CPFs iguais ou alguém sem CPF, o banco de dados ia virar uma bagunça completa."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, total. E olha a pegadinha da banca: eles amam dizer que a chave primária aceita campos nulos, ou seja, que você poderia deixar em branco. Mas agora o pessoal já sabe: se é primária, tem que ter valor e esse valor tem que ser único."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E para o banco não virar um 'Frankenstein' cheio de informação repetida, existe a normalização. O texto diz que 'a normalização é o processo de estruturação das tabelas de um banco de dados relacional, por meio da aplicação de formas normais sucessivas, com o objetivo de reduzir a redundância de dados e evitar anomalias de manipulação.'"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Gente, traduzindo: é organização. É aplicar regras técnicas para garantir que você não vai escrever o nome do batalhão cinquenta vezes em lugares diferentes. Se mudar o nome do batalhão, você muda em um lugar só e o resto se ajusta. Isso evita erro e economiza espaço."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pois é, e por falar em segurança e espaço, não podemos esquecer das rotinas de becape de dados. O material deixa claro que elas necessitam de execução periódica regular e guarda preferencial fora do disco ou servidor onde opera a produção."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Peraí, deixa eu ver se entendi a maldade da prova. A banca vai dizer que o becape de banco de dados deve ser mantido obrigatoriamente e exclusivamente no mesmo disco físico de produção, por ser mais rápido?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exatamente! E aí que o candidato cai. Se o servidor queimar ou o disco pifar, você perde o dado original e a cópia de segurança junto. É o mesmo que guardar a chave reserva da viatura dentro do porta-luvas da própria viatura e depois trancar a porta com a chave principal lá dentro."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Faz todo o sentido. Bom, agora que a gente já destrinchou o conteúdo, vamos voltar para aquele caso lá do início, em Anápolis? A comerciante desesperada com os computadores travados e o técnico dando orientações bem duvidosas."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Vamos lá, o policial militar de serviço precisa orientar a vítima e lavrar o boletim com precisão técnica. Respondendo às perguntas do caso, uma por uma: Primeiro: trata-se de um ataque iniciado por phishing que culminou na instalação de um ransomware. O ransomware é o malware que efetivamente sequestra dados criptografando-os e exige resgate para a entrega da chave de descriptografia, enquanto phishing foi o vetor de engenharia social que induziu o clique no site ou mensagem falsa."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Perfeito. E sobre o que o técnico falou do becape incremental ser autossuficiente?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Segundo: não, o técnico está errado. O becape incremental não é autossuficiente para restauração total por si só, pois ele copia exclusivamente os arquivos alterados desde o último becape (seja ele completo ou incremental), exigindo o becape completo base e os incrementais posteriores para a restauração integral."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E a última dúvida do caso, sobre qual comando usar no servidor da polícia pra puxar o histórico sem apagar nada?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Terceiro: para realizar consultas e recuperar dados de uma ou mais tabelas de forma segura sem alterá-las, utiliza-se exclusivamente o comando SELECT da linguagem SQL."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Matou a pau. Caso resolvido e boletim lavrado com sucesso! Agora, pra fechar o episódio com chave de ouro, revisão relâmpago. Eu pergunto e você responde rápido aí do outro lado."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pausa e pensa, hein galera! Primeira: Um campo designado como chave primária em uma tabela relacional pode receber valor duplicado ou ser deixado em branco? (Pausa curta) Resposta: Não! A chave primária jamais aceita duplicidade ou valores nulos."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Segunda: Onde deve ser guardado, preferencialmente, o becape de um banco de dados? (Pausa curta) Resposta: Em local distinto do servidor de produção."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Terceira: Qual o comando SQL usado para realizar consultas e recuperar dados? (Pausa curta) Resposta: É o comando SELECT. Fechou o pacote!"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Fechou! Terminamos nosso mergulho em informática por hoje. Revisem esses conceitos, porque a banca AOCP adora esses detalhes."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "É isso aí. Bons estudos, foco na farda e até a próxima!"
+  }
+ ],
+ "problems": []
+}

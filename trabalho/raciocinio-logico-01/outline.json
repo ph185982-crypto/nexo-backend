@@ -1,0 +1,141 @@
+{
+ "cold_open": "Imagina a cena: você está no rádio da viatura e o COPOM passa a seguinte instrução: 'Se o suspeito estiver armado e houver risco à guarnição, então a aproximação deve ser tática'. Aí você chega lá e vê que o cara está armado, mas está de costas, longe de todo mundo, sem risco imediato. E agora? Pela lógica, você descumpriu a ordem se aproximar normal? Ou então, se o seu sargento diz: 'Não é verdade que o soldado Silva é motorista e o cabo Souza é o anotador'. Como é que você traduz isso pra saber quem é quem sem errar a escala? Raciocínio Lógico não é 'achismo', é regra de jogo, e a AOCP ama testar se você sabe trocar um 'e' por um 'ou' sem titubear.",
+ "resolution": "No caso do rádio, a lógica do condicional 'Se P, então Q' diz que a ordem só é descumprida se o antecedente for todo verdadeiro e você não fizer o consequente. Como o risco era falso, a frase inteira continua sendo logicamente verdadeira, não importa o que você faça. Já na escala, a negação de 'Silva é motorista E Souza é anotador' vira 'Silva NÃO é motorista OU Souza NÃO é anotador', conforme a primeira lei de De Morgan. Se você achar que os dois não são, você errou a negação, porque basta um deles não ser para a frase do sargento ser verdade.",
+ "segments": [
+  {
+   "topic_id": "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce",
+   "title": "O Átomo da Lógica: Proposições Simples",
+   "teaches": [
+    "Definição de proposição simples como uma única ideia",
+    "A ausência de conectivos lógicos (e, ou, se... então)",
+    "A capacidade de ser julgada apenas como Verdadeira ou Falsa",
+    "Diferença entre sentença aberta e proposição definida"
+   ],
+   "law_quotes": [
+    "Uma proposição é considerada simples, por não conter conectivo lógico, e expressa uma única ideia, podendo ser julgada como verdadeira ou falsa."
+   ],
+   "analogy": "Pensa numa peça de munição. A munição sozinha é a proposição simples. Ou ela dispara (V) ou falha (F). Você não tem como dividir a bala no meio e dizer que metade disparou. É uma ideia só, um objeto só.",
+   "trap": "A banca coloca uma frase de exclamação ou interrogação, tipo 'Prenda aquele suspeito!', e pergunta se é proposição. Não é! Só é proposição o que dá pra dizer se é V ou F.",
+   "challenge": "Pausa aí e pensa: a frase 'Soldado, limpe a viatura!' é uma proposição simples? Resposta: Não, porque é uma ordem (imperativa), e ordens não podem ser valoradas como verdadeiro ou falso."
+  },
+  {
+   "topic_id": "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce",
+   "title": "Conectivos: O 'E' e o 'OU'",
+   "teaches": [
+    "A conjunção (e) exige que tudo seja verdade",
+    "A disjunção inclusiva (ou) aceita que apenas um seja verdade",
+    "A negação da conjunção usando De Morgan",
+    "Identificação de proposições compostas"
+   ],
+   "law_quotes": [
+    "A negação da conjunção (De Morgan), ~(p ∧ q) equivale a ~p ∨ ~q.",
+    "A disjunção inclusiva (∨) só é falsa quando ambas as proposições simples que a compõem são falsas."
+   ],
+   "analogy": "O 'E' é aquele parceiro de guarnição rigoroso: pra ele estar feliz, o café tem que estar quente E o pão tem que estar fresco. Se um falhar, ele reclama. O 'OU' é o parceiro gente boa: se tiver café quente OU pão fresco, ele já tá satisfeito.",
+   "trap": "A banca diz que a negação de 'Carlos é policial e Ana é advogada' é 'Carlos não é policial e Ana não é advogada'. Mentira! O 'e' tem que virar 'ou'.",
+   "challenge": "Se eu disser 'Vou ao batalhão ou vou ao fórum', e eu for nos dois lugares, a frase é verdadeira ou falsa? Resposta: Verdadeira. No 'ou' da lógica (disjunção inclusiva), se os dois forem verdade, o resultado final é verdade."
+  },
+  {
+   "topic_id": "cc31e11f-9546-5077-83b1-b8a728e53d84",
+   "title": "A Tabela-Verdade do Condicional",
+   "teaches": [
+    "A regra do 'V vai para F' (Vera Fischer)",
+    "O condicional só é falso em um único caso",
+    "Definição de Tautologia (sempre verdade)",
+    "Definição de Contradição (sempre falsa)"
+   ],
+   "law_quotes": [
+    "O condicional (→) só é falso quando o antecedente (p) é verdadeiro e o consequente (q) é falso; em todos os demais casos, o condicional é verdadeiro.",
+    "Uma proposição composta que resulta sempre verdadeira, para qualquer combinação de valores lógicos das proposições simples, é chamada de tautologia."
+   ],
+   "analogy": "Imagina uma promessa de político: 'Se eu for eleito, então vou aumentar o salário'. Se ele não for eleito (F), não importa se o salário aumenta ou não, ele não mentiu! Ele só mentiria (F) se fosse eleito (V) e o salário NÃO aumentasse (F).",
+   "trap": "Falar que o condicional 'Se P, então Q' é falso quando o primeiro é Falso. Errado! Se começar com Falso, o condicional já é Verdadeiro por tabela.",
+   "challenge": "A frase 'Marcelo é aprovado e não é aprovado' é o quê? Resposta: Uma contradição, porque é impossível as duas coisas serem verdadeiras ao mesmo tempo (p ∧ ~p)."
+  },
+  {
+   "topic_id": "aa663618-6994-5ffa-82f0-3c3fbd38d05e",
+   "title": "Equivalência: A Contrapositiva",
+   "teaches": [
+    "Como dizer a mesma coisa usando palavras diferentes",
+    "A regra de 'inverter e negar' o condicional",
+    "Equivalência de p → q com ~q → ~p",
+    "Diferença entre equivalência e negação"
+   ],
+   "law_quotes": [
+    "A contrapositiva de p → q é ~q → ~p, sendo logicamente equivalente à proposição original. Logo, a contrapositiva correta é: 'Se a pista não ficou escorregadia, então não choveu.'"
+   ],
+   "analogy": "É como a regra do trânsito: 'Se você avançou o sinal, então será multado'. Dizer isso é o mesmo que dizer: 'Se você não foi multado, então você não avançou o sinal'. Você inverteu a ordem e negou as duas partes.",
+   "trap": "A banca tenta te convencer que 'Se chover, a pista molha' é o mesmo que 'Se a pista molhar, então choveu'. Não é! Se o caminhão pipa passar, a pista molha sem chuva.",
+   "challenge": "Qual a contrapositiva de 'Se sou policial, então ando armado'? Resposta: 'Se não ando armado, então não sou policial'."
+  },
+  {
+   "topic_id": "aa663618-6994-5ffa-82f0-3c3fbd38d05e",
+   "title": "Negação do 'Se... Então'",
+   "teaches": [
+    "A regra do 'Mané' (Mantém a primeira e Nega a segunda)",
+    "Transformar um condicional em uma conjunção (e)",
+    "Negação da disjunção (ou) vira conjunção (e) negada",
+    "Aplicação prática em editais e leis"
+   ],
+   "law_quotes": [
+    "A negação de p → q é logicamente equivalente a p ∧ ~q (o antecedente é verdadeiro e o consequente é falso).",
+    "Pela segunda lei de De Morgan, ~(p ∨ q) ≡ ~p ∧ ~q. Assim, a negação correta é: 'Não está chovendo e a pista não está molhada.'"
+   ],
+   "analogy": "Sabe quando alguém te desmente? 'Você disse que se ganhasse na loteria, me dava um carro!'. Para essa pessoa provar que você mentiu, ela tem que mostrar que você Ganhou (V) E NÃO deu o carro (F).",
+   "trap": "Cuidado! A negação de um 'Se... então' NUNCA começa com 'Se'. Se a resposta da banca tiver um 'Se', pode riscar que tá errado.",
+   "challenge": "Negue: 'Se o motorista está embriagado, então ele será autuado'. Resposta: 'O motorista está embriagado E não será autuado'."
+  },
+  {
+   "topic_id": "4f0a61a9-e17d-5f71-800d-e502b2c963de",
+   "title": "Matemática da Viatura: Porcentagem e Equações",
+   "teaches": [
+    "Cálculo rápido de porcentagem de frotas",
+    "Montagem de equações simples para problemas de idade",
+    "Resolução de problemas de 'o dobro de'",
+    "Transformação de texto em linguagem algébrica"
+   ],
+   "law_quotes": [
+    "Calcula-se 30% de 200: 0,30 × 200 = 60 veículos.",
+    "Sendo J a idade de Julia e M = 2J a idade de Marcos, tem-se J + 2J = 42, logo 3J = 42, e J = 14 anos."
+   ],
+   "analogy": "Porcentagem é como dividir a apreensão. Se você tem 200 tabletes e 30% é de um tipo, você divide os 200 em 100 pedaços (cada um vale 2) e pega 30 desses pedaços. 30 vezes 2 dá 60.",
+   "trap": "Em problemas de idade, a banca diz 'daqui a cinco anos'. O pessoal esquece de somar 5 anos nas duas pessoas da equação.",
+   "challenge": "Se a soma das idades de dois recrutas é 50 e um tem o quádruplo da idade do outro, qual a idade do mais novo? Resposta: 10 anos (X + 4X = 50 -> 5X = 50 -> X = 10)."
+  },
+  {
+   "topic_id": "4f0a61a9-e17d-5f71-800d-e502b2c963de",
+   "title": "Proporção e Conjuntos",
+   "teaches": [
+    "Regra de três simples para produtividade policial",
+    "Grandezas diretamente proporcionais",
+    "Princípio da Inclusão-Exclusão em conjuntos",
+    "Cálculo de quem não pertence a nenhum grupo"
+   ],
+   "law_quotes": [
+    "Trata-se de grandezas diretamente proporcionais (mais policiais, mais veículos fiscalizados no mesmo tempo). Por regra de três simples: 4 policiais ---- 60 veículos; 6 policiais ---- x. x = (6×60)/4 = 90 veículos.",
+    "Pelo princípio da inclusão-exclusão, o número de policiais que atuam em pelo menos uma das atividades é 20 + 15 − 5 = 30."
+   ],
+   "analogy": "Imagina o efetivo: 20 policiais jogam futebol, 15 jogam vôlei, e 5 jogam os dois. Se você somar 20 com 15, vai contar os 5 'fominhas' duas vezes! Tem que subtrair a interseção pra não errar a contagem do churrasco.",
+   "trap": "Na regra de três, a banca adora colocar grandezas inversas, mas aqui no material focamos na direta: se aumenta o número de PMs, aumenta o número de abordagens.",
+   "challenge": "Se 50 policiais foram entrevistados, 30 fazem patrulhamento rural e 25 fazem urbano, sendo que 10 fazem os dois, quantos não fazem nenhum? Resposta: 5 policiais. (30+25-10 = 45; 50-45 = 5)."
+  },
+  {
+   "topic_id": "097f794c-6d10-515d-9315-28dec5a74989",
+   "title": "Sequências: A Lógica do Padrão",
+   "teaches": [
+    "Progressão Aritmética (soma constante)",
+    "Progressão Geométrica (multiplicação constante)",
+    "Sequência de Fibonacci (soma dos anteriores)",
+    "Sequências alfanuméricas com saltos duplos"
+   ],
+   "law_quotes": [
+    "Trata-se de uma progressão aritmética de razão 4 (cada termo é obtido somando-se 4 ao anterior). O próximo termo é 19 + 4 = 23.",
+    "Trata-se da sequência de Fibonacci, na qual, a partir do terceiro termo, cada termo é igual à soma dos dois termos imediatamente anteriores.",
+    "As letras avançam de duas em duas posições no alfabeto (A, C, E, G, I...) e os números avançam de duas em duas unidades (2, 4, 6, 8, 10...)."
+   ],
+   "analogy": "Sequência é igual escala de plantão. Se você folga de 4 em 4 dias, é uma PA. Se a cada dia o número de ocorrências triplica porque é feriado em Goiânia, aí é uma PG.",
+   "trap": "A banca pula uma letra do alfabeto ou muda o padrão no meio do caminho. Tem que testar o padrão do primeiro pro segundo E do segundo pro terceiro termo.",
+   "challenge": "Qual o próximo número na sequência: 1, 1, 2, 3, 5, 8, ...? Resposta: 13. É a sequência de Fibonacci (5 + 8 = 13)."
+  }
+ ]
+}

@@ -1,0 +1,143 @@
+{
+ "cold_open": "Plantão no batalhão da PMGO em Anápolis. Uma comerciante desesperada chega ao posto policial relatando que todos os computadores de sua loja travaram após um funcionário clicar em um link de falso boleto bancário recebido por e-mail. Na tela, surge uma mensagem dizendo que todos os arquivos foram cifrados e exigindo três mil reais em moeda digital para liberação da chave. Para piorar, o técnico da empresa afirma que o becape incremental feito no dia anterior é autossuficiente e recupera todo o sistema sozinho, e que a polícia só conseguiria puxar o histórico de registros do servidor se apagasse as tabelas com comandos de modificação. O policial militar de serviço precisa orientar a vítima e lavrar o boletim: esse ataque se enquadra tecnicamente como ransomware ou apenas phishing? O becape incremental realmente guarda a integridade de tudo sem depender do becape anterior? E qual comando SQL é o correto para apenas consultar os dados da ocorrência no banco relacional da corporação?",
+ "resolution": "Primeiro: trata-se de um ataque iniciado por phishing que culminou na instalação de um ransomware. O ransomware é o malware que efetivamente sequestra dados criptografando-os e exige resgate para a entrega da chave de descriptografia, enquanto phishing foi o vetor de engenharia social que induziu o clique no site ou mensagem falsa. Segundo: não, o técnico está errado. O becape incremental não é autossuficiente para restauração total por si só, pois ele copia exclusivamente os arquivos alterados desde o último becape (seja ele completo ou incremental), exigindo o becape completo base e os incrementais posteriores para a restauração integral. Terceiro: para realizar consultas e recuperar dados de uma ou mais tabelas de forma segura sem alterá-las, utiliza-se exclusivamente o comando SELECT da linguagem SQL.",
+ "segments": [
+  {
+   "topic_id": "958d8e04-b29c-5cce-9c52-83537372e336",
+   "title": "Sistemas Operacionais: Natureza do Linux versus Windows e Atalhos Essenciais",
+   "teaches": [
+    "Linux é um sistema operacional de código aberto (open source) cujo código-fonte pode ser livremente estudado, modificado e distribuído.",
+    "Windows é um software proprietário pertencente à Microsoft, que possui versões compatíveis com computadores pessoais.",
+    "A combinação de teclas Ctrl+Shift+Esc abre diretamente o Gerenciador de Tarefas no Windows, enquanto Ctrl+Alt+Del abre uma tela intermediária com opções."
+   ],
+   "law_quotes": [
+    "O Linux é um sistema operacional de código aberto (open source), que pode ser livremente estudado, modificado e distribuído, diferentemente do Windows, que é um software proprietário da Microsoft.",
+    "A combinação Ctrl+Shift+Esc abre diretamente o Gerenciador de Tarefas do Windows. A combinação Ctrl+Alt+Del abre uma tela intermediária de opções, a partir da qual também é possível acessá-lo."
+   ],
+   "analogy": "Pense no Linux como a viatura padrão cuja mecânica tem manual aberto: o batalhão pode inspecionar o motor, ajustar as peças e personalizar a carcaça. Já o Windows é um veículo blindado de concessionária privada: você usa a chave, dirige na ronda diária, mas o capô é selado de fábrica pela Microsoft.",
+   "trap": "A banca adora afirmar que o Windows é de código aberto ou que o atalho Ctrl+Alt+Del abre diretamente o Gerenciador de Tarefas, quando na verdade ele abre uma tela intermediária.",
+   "challenge": "Pausa e pensa: se você precisa abrir diretamente o Gerenciador de Tarefas no Windows sem passar por telas intermediárias de bloqueio, qual atalho você usa? Resposta: Ctrl+Shift+Esc."
+  },
+  {
+   "topic_id": "958d8e04-b29c-5cce-9c52-83537372e336",
+   "title": "Gerenciamento de Processos e Controle de Permissões no Linux",
+   "teaches": [
+    "O comando chmod (change mode) altera permissões de leitura (r), escrita (w) e execução (x) para proprietário, grupo e outros usuários no Linux.",
+    "O sistema operacional multitarefa gerencia e alterna o uso do processador entre processos por meio de escalonamento, operando mesmo em processador de núcleo único.",
+    "O encerramento de um processo isolado não trava obrigatoriamente todo o sistema operacional, e processos não exigem processador físico dedicado exclusivo."
+   ],
+   "law_quotes": [
+    "O comando chmod (change mode) altera as permissões de leitura (r), escrita (w) e execução (x) de arquivos e diretórios, para o proprietário, o grupo e os demais usuários.",
+    "Um sistema operacional multitarefa permite a execução aparentemente simultânea de diversos processos, por meio do gerenciamento e alternância do uso do processador entre eles (escalonamento de processos), mesmo em computadores com um único núcleo de processamento."
+   ],
+   "analogy": "O processador em núcleo único é como o operador do rádio do COPOM atendendo três viaturas: ele alterna frações de segundos falando com uma, ouvindo outra e despachando a terceira. Dá a impressão de que tudo acontece junto, mas é escalonamento rápido.",
+   "trap": "Cuidado com termos categóricos: dizer que cada processo em execução exige obrigatoriamente um processador físico dedicado ou que finalizar um processo trava todo o sistema torna a questão incorreta.",
+   "challenge": "Pausa e pensa: no terminal Linux, se um policial precisa alterar os privilégios de leitura, escrita e execução de um arquivo de relatório sigiloso, qual comando ele digita? Resposta: chmod."
+  },
+  {
+   "topic_id": "b618269e-62a9-5f77-b5b3-cd5c54bdce55",
+   "title": "Redes de Computadores: Resolução de Nomes com DNS e Segurança Web com HTTPS",
+   "teaches": [
+    "O DNS (Domain Name System) traduz nomes de domínio legíveis para humanos em endereços IP numéricos utilizados pelas máquinas.",
+    "O HTTPS (HTTP Secure) adiciona uma camada de criptografia via TLS/SSL à comunicação entre navegador e servidor.",
+    "O protocolo HTTPS garante confidencialidade e integridade dos dados trafegados, algo ausente no HTTP comum."
+   ],
+   "law_quotes": [
+    "O DNS (Domain Name System) é o serviço/protocolo responsável por traduzir nomes de domínio, mais fáceis de memorizar, em endereços IP numéricos, utilizados efetivamente pelos computadores na rede.",
+    "O HTTPS (HTTP Secure) utiliza uma camada adicional de criptografia (por meio de TLS/SSL) para proteger a comunicação entre o navegador e o servidor, garantindo confidencialidade e integridade dos dados transmitidos, o que não ocorre no HTTP simples."
+   ],
+   "analogy": "O DNS funciona exatamente como a lista de contatos do celular funcional do militar: você digita o nome 'Comandante', mas o aparelho disca a sequência numérica do telefone para completar a ligação.",
+   "trap": "A banca troca as funções e afirma que o protocolo responsável por traduzir domínios em números IP é o próprio navegador, ou diz que o HTTP simples fornece proteção de confidencialidade nativa.",
+   "challenge": "Pausa e pensa: quando você digita o endereço de um portal de notícias governamental e seu navegador descobre o endereço IP numérico do servidor de destino, qual protocolo operou nos bastidores? Resposta: DNS (Domain Name System)."
+  },
+  {
+   "topic_id": "b618269e-62a9-5f77-b5b3-cd5c54bdce55",
+   "title": "Endereçamento IP e Proteção Perimetral com Firewall",
+   "teaches": [
+    "O IPv4 opera com endereços de 32 bits, possuindo limite numérico finito que levou ao seu esgotamento prático.",
+    "O IPv6 foi criado para suceder o IPv4 e utiliza 128 bits de endereçamento, expandindo exponencialmente o volume de endereços disponíveis.",
+    "O firewall é um mecanismo de segurança em hardware, software ou ambos, destinado a controlar e filtrar o tráfego de dados conforme regras pré-estabelecidas."
+   ],
+   "law_quotes": [
+    "O IPv4 utiliza endereços de 32 bits, o que limita o número total de endereços disponíveis; diante do esgotamento desses endereços, foi criado o IPv6, que utiliza endereços de 128 bits, ampliando exponencialmente a quantidade de endereços disponíveis.",
+    "O firewall é um mecanismo (de hardware, software, ou ambos) que controla e filtra o tráfego de dados entre redes (por exemplo, entre uma rede interna e a Internet), permitindo ou bloqueando conexões conforme regras de segurança previamente definidas."
+   ],
+   "analogy": "O firewall é a sentinela do quartel no portão das armas: ele confere quem quer entrar ou sair e só libera a passagem de veículos e pessoas que cumprem expressamente a escala de serviço e as regras de segurança.",
+   "trap": "A banca tenta convencer o candidato de que o número de endereços IPv4 é infinito, ou que IPv4 e IPv6 são apenas nomes comerciais diferentes para um mesmo padrão técnico de 32 bits.",
+   "challenge": "Pausa e pensa: o IPv6 foi desenvolvido para substituir o IPv4 por qual motivo e com qual tamanho de endereçamento em bits? Resposta: pelo esgotamento dos endereços do IPv4, adotando 128 bits de tamanho de endereço."
+  },
+  {
+   "topic_id": "382c3dd2-53e2-511c-8385-8a04f04deba4",
+   "title": "Segurança da Informação: Ameaças Virtuais, Criptografia e Estratégias de Becape",
+   "teaches": [
+    "Phishing é engenharia social para capturar dados pessoais ou bancários usando mensagens ou páginas simuladas.",
+    "Ransomware sequestra e criptografa arquivos do usuário para exigir resgate em troca da chave de recuperação.",
+    "A criptografia assimétrica baseia-se em um par de chaves distintas (pública e privada), enquanto a simétrica utiliza a mesma chave única.",
+    "O becape incremental copia apenas arquivos modificados desde o último becape realizado e marca os arquivos, ao passo que o diferencial copia alterações desde o último becape completo."
+   ],
+   "law_quotes": [
+    "Phishing é uma técnica de engenharia social em que o golpista tenta induzir a vítima, por meio de mensagens ou páginas falsas que se passam por instituições legítimas, a fornecer dados pessoais, senhas ou informações bancárias.",
+    "O ransomware é o tipo de malware que sequestra dados, criptografando-os, e exige pagamento (resgate) da vítima para o fornecimento da chave de descriptografia.",
+    "Na criptografia assimétrica, utiliza-se um par de chaves distintas (uma pública e uma privada): o que é cifrado com uma chave só pode ser decifrado com a outra. Na criptografia simétrica, uma única chave é usada tanto para cifrar quanto para decifrar.",
+    "O becape incremental copia somente os arquivos alterados desde o último becape (completo ou incremental) e atualiza o marcador de becape; já o becape diferencial copia os arquivos alterados desde o último becape completo, sem atualizar tal marcador."
+   ],
+   "analogy": "Na criptografia assimétrica, a chave pública é a fenda de um cofre na parede do batalhão onde qualquer pessoa deposita envelopes sigilosos, mas só o oficial de inteligência com a chave privada consegue abrir a portinhola interna e ler o conteúdo.",
+   "trap": "As questões adoram dizer que o becape diferencial atualiza o marcador de arquivo, ou trocar o conceito de criptografia simétrica dizendo que ela opera com chaves pública e privada distintas.",
+   "challenge": "Pausa e pensa: qual tipo de becape copia unicamente os arquivos alterados desde o último procedimento e atualiza o marcador do arquivo para a rotina seguinte? Resposta: becape incremental."
+  },
+  {
+   "topic_id": "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9",
+   "title": "Editores de Texto e Planilhas: Fórmulas, Referências e Formatação",
+   "teaches": [
+    "A função SOMA calcula o somatório total dos valores dispostos em um intervalo contínuo como A1 até A5.",
+    "O símbolo cifrão ($) fixa linhas e colunas tornando a coordenada uma referência absoluta, impedindo deslocamentos ao arrastar fórmulas.",
+    "A mala direta combina um documento-modelo com fontes de dados externas para produzir despachos e etiquetas personalizados em lote.",
+    "Espaçamentos entre linhas, recuos e alinhamentos de texto são formatados especificamente no menu ou caixa de diálogo Parágrafo."
+   ],
+   "law_quotes": [
+    "A função SOMA (ou SUM) retorna o somatório dos valores contidos no intervalo de células especificado, no caso, das células A1 até A5.",
+    "O uso do símbolo $ antes da letra da coluna e do número da linha (referência absoluta) faz com que essa referência não seja alterada quando a fórmula é copiada para outras células, ao contrário da referência relativa, que se ajusta automaticamente.",
+    "A mala direta permite gerar múltiplos documentos personalizados (como cartas, etiquetas ou e-mails) a partir de um modelo único combinado com uma base de dados (por exemplo, uma planilha ou lista de contatos), inserindo automaticamente os dados de cada destinatário."
+   ],
+   "analogy": "O cifrão na planilha funciona como algemar a coordenada ao solo: se a célula A1 está livre, arrastar a fórmula faz ela correr junto com o mouse; se você coloca $A$1, ela fica fixa no posto.",
+   "trap": "A banca troca referências relativas por absolutas, dizendo que colocar o cifrão faz a célula se atualizar dinamicamente com o deslocamento, quando o efeito é exatamente travá-la.",
+   "challenge": "Pausa e pensa: para imprimir centenas de convites nominais para a formatura do curso de soldados puxando os nomes direto de uma lista do Excel, qual recurso do processador de texto você emprega? Resposta: recurso de Mala Direta."
+  },
+  {
+   "topic_id": "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3",
+   "title": "Computação em Nuvem: Modelos de Serviço IaaS versus SaaS e Tipos de Implantação",
+   "teaches": [
+    "No modelo IaaS (Infraestrutura como Serviço), o provedor entrega recursos virtualizados de processamento e rede, cabendo ao cliente instalar e administrar sistema operacional e aplicações.",
+    "No modelo SaaS (Software como Serviço), o usuário final consome sistemas prontos pela web sem gerenciar infraestrutura, servidores ou sistemas operacionais de base.",
+    "Nuvem privada destina-se ao emprego exclusivo por uma única entidade corporativa, distinguindo-se da nuvem pública e da híbrida.",
+    "A escalabilidade elástica sob demanda permite ampliação ou retração de capacidade computacional sem obrigatoriedade de aquisição de parque físico de servidores."
+   ],
+   "law_quotes": [
+    "No modelo IaaS (Infrastructure as a Service), o provedor fornece a infraestrutura de TI virtualizada (processamento, armazenamento, rede), enquanto o cliente é responsável por instalar e gerenciar sistemas operacionais, middlewares e aplicações.",
+    "No SaaS, o provedor disponibiliza uma aplicação completa, pronta para uso, acessada geralmente via navegador, sem que o usuário precise instalar, configurar ou manter a infraestrutura ou o software subjacente (exemplos: webmail, editores de texto on-line).",
+    "A nuvem privada é destinada ao uso exclusivo de uma única organização, em oposição à nuvem pública (aberta ao público em geral) e à nuvem híbrida (composição de duas ou mais infraestruturas de nuvem distintas)."
+   ],
+   "analogy": "IaaS é alugar um galpão vazio: você recebe energia, piso e paredes, mas tem que montar sua própria mobília e computadores. SaaS é hospedar-se em hotel executivo pronto: entra no quarto, a cama está arrumada, o ar funciona e você não precisa construir nada.",
+   "trap": "A banca afirma que no modelo SaaS o cliente precisa instalar e gerenciar o sistema operacional subjacente da aplicação, invertendo com as características do modelo IaaS.",
+   "challenge": "Pausa e pensa: se um batalhão utiliza um sistema corporativo completo de correio eletrônico direto pelo navegador sem instalar nada no disco rígido local, qual é o modelo de serviço em nuvem aplicado? Resposta: SaaS (Software as a Service)."
+  },
+  {
+   "topic_id": "8fce0309-caac-559e-8ae9-669b4953a3e1",
+   "title": "Banco de Dados: Linguagem SQL, Chaves Primárias e Integridade Estrutural",
+   "teaches": [
+    "O comando SELECT da linguagem SQL destina-se a realizar consultas e recuperar dados contidos em tabelas de bancos relacionais.",
+    "A chave primária (primary key) identifica univocamente cada linha de uma tabela relacional, vedando repetição de valores e termos nulos.",
+    "A normalização consiste na aplicação sequencial de regras técnicas destinadas a cortar redundâncias e prevenir discrepâncias no tratamento dos dados.",
+    "Rotinas de becape de dados necessitam de execução periódica regular e guarda preferencial fora do disco ou servidor onde opera a produção."
+   ],
+   "law_quotes": [
+    "O comando SELECT é utilizado na linguagem SQL para realizar consultas e recuperar dados de uma ou mais tabelas de um banco de dados relacional.",
+    "A chave primária identifica de forma única cada registro (linha) de uma tabela, não podendo conter valores nulos nem duplicados, diferentemente da chave estrangeira, que referencia a chave primária de outra tabela para estabelecer relacionamentos.",
+    "A normalização é o processo de estruturação das tabelas de um banco de dados relacional, por meio da aplicação de formas normais sucessivas, com o objetivo de reduzir a redundância de dados e evitar anomalias de manipulação."
+   ],
+   "analogy": "A chave primária é o número da matrícula funcional ou CPF do militar: não existem dois policiais com o mesmo registro funcional na corporação e ninguém pode assumir o serviço sem matrícula atribuída.",
+   "trap": "A banca frequentemente diz que a chave primária aceita campos nulos ou que o becape de banco de dados deve ser mantido obrigatoriamente e exclusivamente no mesmo disco físico de produção.",
+   "challenge": "Pausa e pensa: um campo designado como chave primária em uma tabela relacional de viaturas pode receber valor duplicado ou registro deixado em branco (nulo)? Resposta: não, a chave primária jamais aceita duplicidade ou valores nulos."
+  }
+ ]
+}

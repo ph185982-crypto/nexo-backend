@@ -1,0 +1,82 @@
+{
+ "topic_id": "aa663618-6994-5ffa-82f0-3c3fbd38d05e",
+ "turns": [
+  {
+   "speaker": "Marcos",
+   "text": "Espera aí, Julia, antes da gente pular pros diagramas... eu tava olhando aqui as anotações e acho que a gente precisa moer um pouco mais essa regra do 'Mané'. O pessoal decora o nome, mas na hora do 'vamos ver' da prova do Instituto AOCP, a galera se banana toda com o conectivo."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Pior que é verdade. O 'Mané' é aquele macete clássico pra negar o 'Se... então', né? 'Mantém a primeira E Nega a segunda'. Mas Marcos, sabe o que eu percebo? O erro não é nem na negação em si, é que o candidato quer manter o 'Se' na resposta."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Nossa, exato! É instintivo, né? Você lê uma frase começando com 'Se' e acha que a negação tem que ter um 'Se' também. Mas ó, presta atenção: se você quer desmentir uma promessa condicional, você não pode criar outra condição. Deixa eu usar aquela analogia que o pessoal gosta: imagina que eu te falo 'Julia, se eu ganhar na loteria, eu te dou um carro'. Pra você provar que eu sou um mentiroso, o que tem que acontecer?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Bom, primeiro você tem que ganhar na loteria, senão a promessa nem valeu. E depois, você tem que NÃO me dar o carro. Se essas duas coisas acontecerem ao mesmo tempo, eu posso apontar o dedo e falar: 'Mentira!'. Ganhou e não deu."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Perfeito! Você manteve a primeira parte — eu ganhar — e negou a segunda — eu não te dar o carro. E o conectivo no meio foi o 'E'. É exatamente o que o material diz. Olha o trecho literal aqui: 'A negação de p condicional q é logicamente equivalente a p e não q (o antecedente é verdadeiro e o consequente é falso)'. Ou seja, vira uma conjunção."
+  },
+  {
+   "speaker": "Julia",
+   "text": "É por isso que a regra do Mané é tão boa. Mas a banca é maldosa. Eles colocam lá na letra A: 'Se eu não ganhar na loteria, então não te dou o carro'. O concurseiro apressado vê um monte de 'não', acha que tá negando tudo e marca. Tá errado!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Erradíssimo. Se a resposta da banca tiver um 'Se', você já risca com vontade, sem dó. Agora, vamos testar o pessoal que tá ouvindo a gente. Galera, pausa o áudio aí e pensa: como ficaria a negação de 'Se o motorista está embriagado, então ele será autuado'? Pensa na regra do Mané."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí, pensaram? A resposta certa, que o material confirma, é: 'O motorista está embriagado E não será autuado'. Percebeu? Eu mantive que ele tá bêbado e neguei a autuação. No Raciocínio Lógico, isso é o que destrói a frase original."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E sabe o que eu acho engraçado? A banca AOCP às vezes tenta te cansar com as leis de De Morgan também. A gente falou do Ricardo policial e do Fábio bombeiro, que era a negação do 'E' virando 'OU'. Mas e quando é o contrário? Quando eu tenho um 'OU' e quero negar?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Aí você usa a segunda lei de De Morgan. É o mesmo princípio de inverter e negar tudo. O material traz um exemplo ótimo sobre o clima. Se eu digo 'Está chovendo ou a pista está molhada', e quero negar isso, eu tenho que negar os dois fatos e trocar o 'ou' pelo 'e'."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Deixa eu ler como o material coloca essa negação específica: 'Não está chovendo e a pista não está molhada'. Faz sentido, né? Se eu digo que uma coisa ou outra acontece, pra eu estar mentindo, nenhuma das duas pode ser verdade."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exatamente. É o que o material chama de 'negação da disjunção que vira conjunção negada'. Parece nome de bicho de sete cabeças, mas é só trocar o conectivo e pôr o 'não' em todo mundo. Mas ó, cuidado com a pegadinha da banca. Às vezes eles mantêm o 'ou' e só negam os verbos. Tipo: 'Não está chovendo ou a pista não está molhada'. Isso tá errado!"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Tá muito errado, e cai direto. No material diz que essa opção é considerada incorreta pelo gabarito oficial. Se era 'OU', a negação obrigatoriamente tem que ter o 'E'. É uma troca de trilho. Se você não trocar o trilho do conectivo, o trem descarrila e você perde a questão."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Isso vale pra rotina do policial também, né? Pensa num edital ou numa ordem de serviço: 'O soldado fará a patrulha ou ficará na guarita'. Pra descumprir essa ordem, o cara tem que NÃO fazer a patrulha E NÃO ficar na guarita. Se ele fizer um dos dois, ele cumpriu a ordem original."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Boa! É por isso que a lógica é tão pé no chão quando a gente para pra ver. O problema é que na hora da prova, com o cansaço, a gente tenta 'ouvir' a frase. E a lógica proposicional não é sobre o som, é sobre a estrutura. Se você tentar resolver 'por ouvido', a banca te pega, porque eles escrevem frases que soam bonitinhas, mas estão logicamente podres."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Pois é. Então, recapitulando pra ninguém esquecer: negação de 'Se... então' é 'E' com a segunda parte negada. Negação de 'E' vira 'OU'. Negação de 'OU' vira 'E'. Sempre invertendo o valor das frases. Se você gravar essas três trocas, já mata a maior parte das questões de negação do Instituto AOCP."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E não esqueçam: se a banca pedir a contrapositiva, que a gente falou antes, o 'Se' continua lá. Mas se pedir negação, o 'Se' some. Essa é a maior dica de sobrevivência pra esse concurso da PMGO."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Show. Agora sim, com essas equivalências e negações bem mastigadas, a gente pode ir pros diagramas lógicos sem medo. Vamos lá?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Agora sim! Vamos desenhar esses círculos porque o 'Todo policial é militar' e o 'Algum militar é oficial' confundem muita gente."
+  }
+ ],
+ "problems": []
+}
