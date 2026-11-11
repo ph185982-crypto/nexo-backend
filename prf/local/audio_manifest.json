@@ -660,9 +660,9 @@
    "subject_name": "Direito Administrativo",
    "number": 1,
    "title": "Direito Administrativo · Episódio 1",
-   "file": "direito-administrativo-01-f54e5a854e.mp3",
-   "bytes": 13282272,
-   "duration_secs": 2214,
+   "file": "direito-administrativo-01-ia-ab407aa901.mp3",
+   "bytes": 13828608,
+   "duration_secs": 2305,
    "chapters": [
     {
      "topic_id": "b39aa01d-3dcf-5380-bc89-c0567aad11e7",
@@ -672,14 +672,16 @@
     {
      "topic_id": "aa438456-7ff4-559d-a528-8ab093508e61",
      "title": "Poderes administrativos",
-     "start": 1259.95
+     "start": 1081.52
     }
    ],
    "boundaries": [
-    1259.95,
-    2213.71
+    1081.52,
+    2304.71
    ],
-   "segment_count": 2
+   "segment_count": 2,
+   "format": "conversa",
+   "problems_fixed": 7
   },
   {
    "id": "direito-administrativo-02",
@@ -1704,7 +1706,7 @@
   },
   "aa438456-7ff4-559d-a528-8ab093508e61": {
    "episode": "direito-administrativo-01",
-   "start": 1259.95
+   "start": 1081.52
   },
   "b7cddc33-067c-5a73-bcce-c8dc7f691bcd": {
    "episode": "direito-administrativo-02",
