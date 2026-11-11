@@ -1053,9 +1053,9 @@
    "subject_name": "Direitos Humanos",
    "number": 1,
    "title": "Direitos Humanos · Episódio 1",
-   "file": "direitos-humanos-01-ea9040f049.mp3",
-   "bytes": 12743712,
-   "duration_secs": 2124,
+   "file": "direitos-humanos-01-ia-85af1f237a.mp3",
+   "bytes": 14004576,
+   "duration_secs": 2334,
    "chapters": [
     {
      "topic_id": "0300fa92-3691-5914-b128-f8eaa1627a5e",
@@ -1065,26 +1065,28 @@
     {
      "topic_id": "77cb5a6e-a53f-570e-9611-e4e3a0629cf7",
      "title": "Pacto de San José da Costa Rica",
-     "start": 763.01
+     "start": 568.06
     },
     {
      "topic_id": "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6",
      "title": "Sistema interamericano de proteção",
-     "start": 1388.62
+     "start": 1516.61
     },
     {
      "topic_id": "6f7c3757-9409-564d-9a90-1cd4c1b35eb2",
      "title": "Direitos das minorias e grupos vulneráveis",
-     "start": 1825.97
+     "start": 1807.93
     }
    ],
    "boundaries": [
-    763.01,
-    1388.62,
-    1825.97,
-    2123.95
+    568.06,
+    1516.61,
+    1807.93,
+    2334.04
    ],
-   "segment_count": 4
+   "segment_count": 4,
+   "format": "conversa",
+   "problems_fixed": 12
   },
   {
    "id": "direitos-humanos-02",
@@ -1812,15 +1814,15 @@
   },
   "77cb5a6e-a53f-570e-9611-e4e3a0629cf7": {
    "episode": "direitos-humanos-01",
-   "start": 763.01
+   "start": 568.06
   },
   "79b0cb92-28f4-5442-b4ed-f211c2b3c3d6": {
    "episode": "direitos-humanos-01",
-   "start": 1388.62
+   "start": 1516.61
   },
   "6f7c3757-9409-564d-9a90-1cd4c1b35eb2": {
    "episode": "direitos-humanos-01",
-   "start": 1825.97
+   "start": 1807.93
   },
   "df7322d3-b04f-500f-a33e-d943234e7002": {
    "episode": "direitos-humanos-02",
