@@ -862,9 +862,9 @@
    "subject_name": "Legislação Especial",
    "number": 1,
    "title": "Legislação Especial · Episódio 1",
-   "file": "legislacao-especial-01-048d813281.mp3",
-   "bytes": 15888528,
-   "duration_secs": 2648,
+   "file": "legislacao-especial-01-ia-8d16148f74.mp3",
+   "bytes": 14412240,
+   "duration_secs": 2402,
    "chapters": [
     {
      "topic_id": "c70a9caf-d407-569d-b2a3-3ce2f7e8ca82",
@@ -873,9 +873,11 @@
     }
    ],
    "boundaries": [
-    2648.09
+    2401.98
    ],
-   "segment_count": 1
+   "segment_count": 1,
+   "format": "conversa",
+   "problems_fixed": 8
   },
   {
    "id": "legislacao-especial-02",
