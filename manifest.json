@@ -1227,9 +1227,9 @@
    "subject_name": "Ética no Serviço Público",
    "number": 1,
    "title": "Ética no Serviço Público · Episódio 1",
-   "file": "etica-servico-publico-01-eaadfd9787.mp3",
-   "bytes": 15104448,
-   "duration_secs": 2517,
+   "file": "etica-servico-publico-01-ia-f6b442dd4e.mp3",
+   "bytes": 14411088,
+   "duration_secs": 2402,
    "chapters": [
     {
      "topic_id": "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca",
@@ -1239,26 +1239,28 @@
     {
      "topic_id": "2f18f1f0-7ba2-505d-a22f-e4715db75762",
      "title": "Regime disciplinar do servidor",
-     "start": 794.71
+     "start": 571.88
     },
     {
      "topic_id": "a14e387a-1553-528a-b97a-66d2d7caafb0",
      "title": "Lei de Improbidade Administrativa",
-     "start": 1426.7
+     "start": 1164.06
     },
     {
      "topic_id": "1065303e-27ec-53d2-aa2d-91b6c32e0ce8",
      "title": "Conflito de interesses",
-     "start": 2072.26
+     "start": 1788.95
     }
    ],
    "boundaries": [
-    794.71,
-    1426.7,
-    2072.26,
-    2517.41
+    571.88,
+    1164.06,
+    1788.95,
+    2401.79
    ],
-   "segment_count": 4
+   "segment_count": 4,
+   "format": "conversa",
+   "problems_fixed": 1
   },
   {
    "id": "direito-penal-militar-01",
@@ -1886,15 +1888,15 @@
   },
   "2f18f1f0-7ba2-505d-a22f-e4715db75762": {
    "episode": "etica-servico-publico-01",
-   "start": 794.71
+   "start": 571.88
   },
   "a14e387a-1553-528a-b97a-66d2d7caafb0": {
    "episode": "etica-servico-publico-01",
-   "start": 1426.7
+   "start": 1164.06
   },
   "1065303e-27ec-53d2-aa2d-91b6c32e0ce8": {
    "episode": "etica-servico-publico-01",
-   "start": 2072.26
+   "start": 1788.95
   },
   "d1643411-1899-5bf1-bed7-2de1f8c10dc8": {
    "episode": "direito-penal-militar-01",
