@@ -1180,9 +1180,9 @@
    "subject_name": "Raciocínio Lógico",
    "number": 1,
    "title": "Raciocínio Lógico · Episódio 1",
-   "file": "raciocinio-logico-01-88ade5cb5a.mp3",
-   "bytes": 14126544,
-   "duration_secs": 2354,
+   "file": "raciocinio-logico-01-ia-d987d36dc9.mp3",
+   "bytes": 15262272,
+   "duration_secs": 2544,
    "chapters": [
     {
      "topic_id": "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce",
@@ -1192,32 +1192,34 @@
     {
      "topic_id": "cc31e11f-9546-5077-83b1-b8a728e53d84",
      "title": "Tabelas-verdade",
-     "start": 591.14
+     "start": 612.05
     },
     {
      "topic_id": "aa663618-6994-5ffa-82f0-3c3fbd38d05e",
      "title": "Equivalências e negações",
-     "start": 1049.95
+     "start": 935.85
     },
     {
      "topic_id": "4f0a61a9-e17d-5f71-800d-e502b2c963de",
      "title": "Raciocínio quantitativo",
-     "start": 1615.06
+     "start": 1616.16
     },
     {
      "topic_id": "097f794c-6d10-515d-9315-28dec5a74989",
      "title": "Sequências e padrões",
-     "start": 1975.49
+     "start": 2148.77
     }
    ],
    "boundaries": [
-    591.14,
-    1049.95,
-    1615.06,
-    1975.49,
-    2354.42
+    612.05,
+    935.85,
+    1616.16,
+    2148.77,
+    2543.66
    ],
-   "segment_count": 5
+   "segment_count": 5,
+   "format": "conversa",
+   "problems_fixed": 6
   },
   {
    "id": "etica-servico-publico-01",
@@ -1864,19 +1866,19 @@
   },
   "cc31e11f-9546-5077-83b1-b8a728e53d84": {
    "episode": "raciocinio-logico-01",
-   "start": 591.14
+   "start": 612.05
   },
   "aa663618-6994-5ffa-82f0-3c3fbd38d05e": {
    "episode": "raciocinio-logico-01",
-   "start": 1049.95
+   "start": 935.85
   },
   "4f0a61a9-e17d-5f71-800d-e502b2c963de": {
    "episode": "raciocinio-logico-01",
-   "start": 1615.06
+   "start": 1616.16
   },
   "097f794c-6d10-515d-9315-28dec5a74989": {
    "episode": "raciocinio-logico-01",
-   "start": 1975.49
+   "start": 2148.77
   },
   "3c9d63c0-e3fe-51a2-88ff-d703d398e6ca": {
    "episode": "etica-servico-publico-01",
