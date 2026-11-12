@@ -1127,9 +1127,9 @@
    "subject_name": "Informática",
    "number": 1,
    "title": "Informática · Episódio 1",
-   "file": "informatica-01-26b6bf0756.mp3",
-   "bytes": 15620976,
-   "duration_secs": 2603,
+   "file": "informatica-01-ia-e62a3f9ac8.mp3",
+   "bytes": 14212080,
+   "duration_secs": 2369,
    "chapters": [
     {
      "topic_id": "958d8e04-b29c-5cce-9c52-83537372e336",
@@ -1139,38 +1139,40 @@
     {
      "topic_id": "b618269e-62a9-5f77-b5b3-cd5c54bdce55",
      "title": "Redes de computadores e internet",
-     "start": 420.34
+     "start": 532.37
     },
     {
      "topic_id": "382c3dd2-53e2-511c-8385-8a04f04deba4",
      "title": "Segurança da informação",
-     "start": 851.21
+     "start": 1125.06
     },
     {
      "topic_id": "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9",
      "title": "Editores de texto e planilhas",
-     "start": 1341.26
+     "start": 1423.46
     },
     {
      "topic_id": "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3",
      "title": "Computação em nuvem",
-     "start": 1760.47
+     "start": 1696.07
     },
     {
      "topic_id": "8fce0309-caac-559e-8ae9-669b4953a3e1",
      "title": "Banco de dados",
-     "start": 2191.51
+     "start": 1998.03
     }
    ],
    "boundaries": [
-    420.34,
-    851.21,
-    1341.26,
-    1760.47,
-    2191.51,
-    2603.5
+    532.37,
+    1125.06,
+    1423.46,
+    1696.07,
+    1998.03,
+    2368.62
    ],
-   "segment_count": 6
+   "segment_count": 6,
+   "format": "conversa",
+   "problems_fixed": 0
   },
   {
    "id": "raciocinio-logico-01",
@@ -1838,23 +1840,23 @@
   },
   "b618269e-62a9-5f77-b5b3-cd5c54bdce55": {
    "episode": "informatica-01",
-   "start": 420.34
+   "start": 532.37
   },
   "382c3dd2-53e2-511c-8385-8a04f04deba4": {
    "episode": "informatica-01",
-   "start": 851.21
+   "start": 1125.06
   },
   "d2a7cc83-d68d-515d-8d7d-9646edd1a0f9": {
    "episode": "informatica-01",
-   "start": 1341.26
+   "start": 1423.46
   },
   "b1bf9a4f-ad15-5352-bd3a-7de98a682ef3": {
    "episode": "informatica-01",
-   "start": 1760.47
+   "start": 1696.07
   },
   "8fce0309-caac-559e-8ae9-669b4953a3e1": {
    "episode": "informatica-01",
-   "start": 2191.51
+   "start": 1998.03
   },
   "a1678605-a3aa-5dbc-bbe5-fe0b71db71ce": {
    "episode": "raciocinio-logico-01",
