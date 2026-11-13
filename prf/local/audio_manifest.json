@@ -1390,9 +1390,9 @@
    "subject_name": "Direito Processual Penal Militar",
    "number": 1,
    "title": "Direito Processual Penal Militar · Episódio 1",
-   "file": "direito-processual-penal-militar-01-bac1413625.mp3",
-   "bytes": 16029360,
-   "duration_secs": 2672,
+   "file": "direito-processual-penal-militar-01-ia-c6eb598897.mp3",
+   "bytes": 14541840,
+   "duration_secs": 2424,
    "chapters": [
     {
      "topic_id": "534a41d5-c28e-53cd-811e-02f89711c733",
@@ -1401,9 +1401,11 @@
     }
    ],
    "boundaries": [
-    2671.56
+    2423.58
    ],
-   "segment_count": 1
+   "segment_count": 1,
+   "format": "conversa",
+   "problems_fixed": 4
   },
   {
    "id": "direito-processual-penal-militar-02",
