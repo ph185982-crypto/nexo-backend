@@ -1,0 +1,69 @@
+{
+ "topic_id": "46dd063f-3f74-51d6-9969-c622cba10a4a",
+ "turns": [
+  {
+   "speaker": "Julia",
+   "text": "Imagina a cena: você está na patrulha e vê um sujeito quebrando o vidro de um carro estacionado. Você aborda, ele diz que fez isso para salvar um cachorro que estava morrendo sufocado no calor. No mesmo instante, chega o dono do carro, furioso, e tenta agredir o rapaz com uma barra de ferro. O rapaz se defende e acaba quebrando o braço do dono do carro. Para complicar, um terceiro homem que estava só olhando a confusão resolveu levar o rádio que caiu do carro no meio do tumulto. E agora? Quem cometeu crime? Quem agiu no direito? O rapaz que quebrou o vidro responde pelo dano? E o que levou o rádio, cometeu crime?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Caramba, Julia, que situação. É o típico caso que parece bagunça, mas o Direito Penal organiza tudo. Calma aí, pessoal, vamos deixar essas respostas em aberto para o final do episódio, mas eu já te garanto uma coisa: hoje você vai dominar os fundamentos das Excludentes de Ilicitude no Direito Penal."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Isso aí. Mas antes de entrar no que exclui o crime, a gente precisa saber o que é o crime, né? Para a banca Instituto AOCP, vale a regra de ouro da teoria tripartida. Marcos, como é que funciona aquele esquema do bolo?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pensa no crime como um bolo de três camadas. Para você dizer que tem um crime, você precisa das três. A primeira é o fato típico, que é aquela conduta descrita na lei como crime. A segunda é a ilicitude, ou antijuridicidade, que é o que a gente vai focar hoje. E a terceira é a culpabilidade, que é o juízo de reprovação sobre o autor. Se faltar qualquer uma dessas camadas, não tem crime. O que a gente vai ver agora são as situações em que o sujeito faz algo que parece crime, mas que a lei diz: tudo bem, nesse caso específico, sua conduta não é ilícita."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exato. É como se a ilicitude fosse o 'contrário ao Direito'. E as excludentes são as permissões que o Direito dá. A primeira delas é o Estado de Necessidade. Deixa eu ler o que o artigo vinte e quatro diz, porque a letra da lei cai muito: Artigo vinte e quatro - Considera-se em estado de necessidade quem pratica o fato para salvar de perigo atual, que não provocou por sua vontade, nem podia de outro modo evitar, direito próprio ou alheio, cujo sacrifício, nas circunstâncias, não era razoável exigir-se."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Peraí, deixa eu traduzir isso para o mundo real. No caso do cachorro no carro que você contou, o rapaz quebrou o vidro para salvar uma vida, um bem jurídico, sacrificando o vidro, que é outro bem jurídico. Houve um conflito. Mas olha o detalhe que a banca ama: o perigo tem que ser atual. O cachorro estava morrendo ali, agora. Se o dono do cachorro disse que ia deixar ele no sol amanhã, você não pode quebrar o carro hoje, entende?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Perfeito. E tem uma pegadinha clássica aqui. O Código Penal diz perigo atual para o Estado de Necessidade. Já na Legítima Defesa, a lei fala em agressão atual ou iminente. A banca troca essas palavras o tempo todo. Se a prova disser que o Estado de Necessidade admite perigo iminente, está errado! Tem que ser atual, acontecendo agora."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Nossa, anotem isso! Perigo atual no Estado de Necessidade. Outro ponto: o sujeito não pode ter provocado o perigo por vontade própria. Se eu coloco fogo na minha casa de propósito e, para fugir, preciso arrombar a porta do vizinho, eu não posso alegar Estado de Necessidade, porque o perigo fui eu que criei."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E tem a questão do dever legal, né? O parágrafo primeiro do artigo vinte e quatro é bem claro: Não pode alegar estado de necessidade quem tinha o dever legal de enfrentar o perigo. Imagine um naufrágio onde só tem um colete salva-vidas. Dois passageiros brigando por ele? Estado de Necessidade, um bem vai cair para o outro sobreviver. Mas e se o policial militar pula da lancha e deixa todo mundo para trás para se salvar sozinho?"
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Aí não dá. O PM tem o dever legal de enfrentar o perigo. Ele é o garantidor. Ele não pode sacrificar a vida dos outros alegando que estava em perigo, porque a profissão dele exige que ele encare essa situação. Faz parte do pacote da farda. Mas ó, Julia, vamos lançar aquele desafio para o pessoal?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Manda ver."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Ouvinte, pausa aí e pensa: se você provoca voluntariamente um incêndio para esconder uma prova de um crime e depois precisa quebrar a porta do vizinho para fugir do fogo e não morrer queimado, você pode alegar Estado de Necessidade pelo dano na porta?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí? Pensou? A resposta é não! O Artigo vinte e quatro diz claramente que o perigo não pode ter sido provocado por sua vontade. Como você tacou fogo na casa, você é o responsável pela situação, então vai responder pelo dano na porta do vizinho sim."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Exato. E outro requisito é que o sacrifício do bem não podia ser evitado de outro modo. Se tinha uma janela aberta do lado da porta, você tinha que sair pela janela. O dano ao patrimônio alheio tem que ser a última opção, o único jeito de salvar o bem maior."
+  },
+  {
+   "speaker": "Julia",
+   "text": "É a ideia da razoabilidade. Não dá para matar uma pessoa para salvar um celular, por exemplo. O sacrifício do bem tem que ser algo que a sociedade aceite como razoável naquela pressão do momento. No próximo bloco, a gente vai ver como isso se diferencia da Legítima Defesa, que é onde o bicho pega nas provas da PM de Goiás."
+  }
+ ],
+ "problems": [
+  "A menção ao 'concurso' de pessoas não consta no material fornecido.",
+  "A pergunta sobre a idade de oitenta anos e a alteração de pena não possui amparo no material."
+ ]
+}

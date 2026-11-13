@@ -1,0 +1,74 @@
+{
+ "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+ "turns": [
+  {
+   "speaker": "Julia",
+   "text": "E olha, Marcos, esse tópico de penas é o que separa quem quer só 'passar' de quem vai realmente vestir a farda da PMGO. No Artigo trinta e dois, o Código já dá a letra: as penas são privativas de liberdade, restritivas de direitos e a de multa. Mas o que a banca adora cobrar mesmo é o detalhe das privativas, que são a reclusão e a detenção."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Pois é, Julia. Muita gente acha que é tudo a mesma coisa, 'ah, vai preso do mesmo jeito', mas pra prova do Instituto AOCP, essa confusão é fatal. O Artigo trinta e três explica isso direitinho. Deixa eu ler aqui: 'A pena de reclusão deve ser cumprida em regime fechado, semi-aberto ou aberto. A de detenção, em regime semi-aberto, ou aberto, salvo necessidade de transferência a regime fechado'."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Peraí, lê de novo essa parte da detenção. Isso é o coração da pegadinha."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Com certeza. A detenção é em regime semiaberto ou aberto, 'salvo necessidade de transferência a regime fechado'. Ou seja, Julia, a detenção nunca, em hipótese alguma, começa no fechado. Ela só vai parar lá se o cara fizer bobagem e sofrer uma regressão de regime."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Exatamente! Se a banca disser que um réu condenado a dez anos de detenção deve começar no regime fechado, tá errado. Detenção não admite regime inicial fechado. Grave isso: detenção é só semiaberto ou aberto pra começar. Já a reclusão, essa sim, pode transitar pelos três regimes desde o primeiro dia, dependendo do tempo da pena."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "E pra facilitar pro pessoal que tá ouvindo e tentando visualizar, eu gosto de pensar nos regimes como 'níveis de confiança' do Estado no preso. O regime fechado é segurança total, máxima ou média, com isolamento noturno. O semiaberto já é aquela vibe da colônia agrícola ou industrial; o cara trabalha de dia e volta pra dormir na unidade. Já o aberto é o nível máximo de confiança: baseia-se na autodisciplina. O cara fica na casa de albergado e, na teoria, não tem vigilância direta."
+  },
+  {
+   "speaker": "Julia",
+   "text": "É a ideia da individualização da pena, né? Inclusive, o Código diz que o condenado será submetido, no início do cumprimento, a um exame criminológico de classificação. Agora, vamos pros números, que é onde a galera tropeça. Marcos, lê pra gente a alínea 'a' do parágrafo segundo do Artigo trinta e três."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Tá na mão: 'Artigo trinta e três, parágrafo segundo, alínea 'a' - o condenado a pena superior a oito anos deverá começar a cumpri-la em regime fechado'."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Oito anos. Esse é o marco. Passou de oito, é fechado direto. Agora, se a pena for maior que quatro e não passar de oito, ele pode começar no semiaberto, desde que não seja reincidente. E se for quatro anos ou menos, também sendo primário, já pode começar direto no aberto. É uma escadinha: oito, quatro, e o zero."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Boa! E aproveitando esse gancho dos prazos, vamos lançar aquele desafio pro pessoal. Pausa aí o podcast agora e pensa: imagina um réu primário, bons antecedentes, mas foi condenado a exatos seis anos de reclusão. Ele pode começar no regime semiaberto? Pensa aí."
+  },
+  {
+   "speaker": "Julia",
+   "text": "E aí? Se você disse que sim, acertou em cheio. Como a pena é de seis anos, ela se encaixa naquela faixa 'superior a quatro e não excedente a oito' do Artigo trinta e três, parágrafo segundo, alínea 'b'. Como ele é primário, o juiz pode sim mandar pro semiaberto direto. Se fosse reincidente, a história seria outra, o regime teria que ser mais rigoroso."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Tem um ponto aqui no parágrafo quarto desse mesmo artigo que é a cara da PMGO, porque fala de crimes contra a administração pública. Julia, se o cara desvia dinheiro da prefeitura, por exemplo, ele consegue progredir de regime do mesmo jeito que um ladrão de galinha?"
+  },
+  {
+   "speaker": "Julia",
+   "text": "Nossa, excelente pergunta. A lei é bem mais dura aqui. O parágrafo quarto diz que, pra crimes contra a administração, a progressão de regime fica condicionada à reparação do dano ou à devolução do produto do crime. Ou seja: não devolveu o dinheiro que roubou do erário? Não sai do fechado pro semiaberto. Tem que pagar o que deve, com os acréscimos legais, pra ter o benefício."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "É o famoso 'pagar pra sair', literalmente. Isso é muito importante porque a banca pode misturar os requisitos de bom comportamento com esse da reparação do dano. Pra crimes comuns, o mérito é comportamento e tempo; pra crimes contra a administração, tem que ter o 'pix' de volta pros cofres públicos também."
+  },
+  {
+   "speaker": "Julia",
+   "text": "Perfeito. E lembrem-se: o trabalho do preso será sempre remunerado e são garantidos os benefícios da Previdência Social. No fechado, o trabalho externo só pode em serviços ou obras públicas. Já no semiaberto, o leque abre mais, pode até frequentar cursos supletivos profissionalizantes, de segundo grau ou superior."
+  },
+  {
+   "speaker": "Marcos",
+   "text": "Tudo isso foca na ressocialização. Mas olha, Julia, a gente falou de prisão, mas o Código Penal também tem aquelas penas que não tiram a liberdade total, mas tiram o sossego, né? As restritivas de direitos. Vamos entrar nelas agora?"
+  }
+ ],
+ "problems": [
+  "O material não menciona que o regime fechado exige exame criminológico para todos os casos; o Artigo trinta e quatro diz que o condenado será submetido a ele no início do cumprimento, mas não restringe a obrigatoriedade apenas ao regime fechado no texto legal apresentado.",
+  "A afirmação de que o trabalho do preso no regime fechado ou semiaberto tem 'direitos previdenciários' está tecnicamente imprecisa conforme o material; o Artigo trinta e nove garante os 'benefícios da Previdência Social', não 'direitos previdenciários' de forma genérica.",
+  "A afirmação de que no regime semiaberto o preso pode fazer 'curso superior ou profissionalizante' está incompleta e potencialmente errada conforme o material; o Artigo trinta e cinco, parágrafo segundo, especifica 'cursos supletivos profissionalizantes, de instrução de segundo grau ou superior'."
+ ]
+}

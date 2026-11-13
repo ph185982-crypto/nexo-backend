@@ -1,0 +1,142 @@
+{
+ "cold_open": "Imagina a cena: você está na patrulha e vê um sujeito quebrando o vidro de um carro estacionado. Você aborda, ele diz que fez isso para salvar um cachorro que estava morrendo sufocado no calor. No mesmo instante, chega o dono do carro, furioso, e tenta agredir o rapaz com uma barra de ferro. O rapaz se defende e acaba quebrando o braço do dono do carro. Para complicar, um terceiro homem que estava só olhando a confusão resolveu levar o rádio que caiu do carro no meio do tumulto. E agora? Quem cometeu crime? Quem agiu no direito? O rapaz que quebrou o vidro responde pelo dano? E o que levou o rádio, responde sozinho ou em concurso? E se o dono do carro for um idoso de oitenta anos, a pena muda?",
+ "resolution": "Vamos lá: 1. O rapaz que quebrou o vidro para salvar o cachorro agiu em Estado de Necessidade (Artigo vinte e quatro), pois sacrificou o patrimônio para salvar uma vida em perigo atual. 2. Ao se defender do dono do carro, ele agiu em Legítima Defesa (Artigo vinte e cinco), pois repeliu agressão injusta e iminente. 3. O terceiro homem que levou o rádio cometeu furto; não há concurso de pessoas com o rapaz do vidro porque não houve ajuste prévio nem vontade de colaborar no mesmo crime (Artigo vinte e nove). 4. Se o dono do carro fosse maior de sessenta anos, isso seria uma agravante de pena (Artigo sessenta e um, inciso dois, alínea 'h'), e se o agressor fosse maior de setenta anos na data da sentença, teria a prescrição reduzida pela metade (Artigo cento e quinze).",
+ "segments": [
+  {
+   "topic_id": "46dd063f-3f74-51d6-9969-c622cba10a4a",
+   "title": "Ilicitude: Quando o Errado é Certo",
+   "teaches": [
+    "Conceito de crime na teoria tripartida (Fato típico, ilícito e culpável)",
+    "Diferença entre perigo atual no Estado de Necessidade e agressão injusta na Legítima Defesa",
+    "Requisitos do Estado de Necessidade: perigo não provocado e inevitável",
+    "O dever legal de enfrentar o perigo impede o Estado de Necessidade"
+   ],
+   "law_quotes": [
+    "Artigo vinte e quatro - Considera-se em estado de necessidade quem pratica o fato para salvar de perigo atual, que não provocou por sua vontade, nem podia de outro modo evitar, direito próprio ou alheio, cujo sacrifício, nas circunstâncias, não era razoável exigir-se.",
+    "Parágrafo primeiro - Não pode alegar estado de necessidade quem tinha o dever legal de enfrentar o perigo."
+   ],
+   "analogy": "Imagine um naufrágio onde só tem um colete salva-vidas. Dois passageiros brigam por ele. Isso é Estado de Necessidade: um bem jurídico vai cair para o outro sobreviver. Agora, se um policial pula da lancha para não enfrentar um bandido armado, ele não pode alegar Estado de Necessidade, porque ele tem o dever legal de enfrentar o perigo.",
+   "trap": "A banca troca 'perigo atual' por 'perigo iminente' no Estado de Necessidade. Cuidado! O Código Penal só fala em perigo atual para o Estado de Necessidade, enquanto na Legítima Defesa pode ser atual ou iminente.",
+   "challenge": "Se você provoca voluntariamente um incêndio para esconder uma prova e depois precisa quebrar a porta do vizinho para fugir do fogo, você pode alegar Estado de Necessidade pelo dano na porta? Pausa e pensa. Resposta: Não, porque o Artigo vinte e quatro diz claramente que o perigo não pode ter sido provocado por sua vontade."
+  },
+  {
+   "topic_id": "46dd063f-3f74-51d6-9969-c622cba10a4a",
+   "title": "Legítima Defesa e o Excesso",
+   "teaches": [
+    "Uso moderado dos meios necessários",
+    "Legítima Defesa contra agressão atual ou iminente",
+    "O parágrafo único sobre reféns e agentes de segurança pública",
+    "Punição pelo excesso doloso ou culposo"
+   ],
+   "law_quotes": [
+    "Artigo vinte e cinco - Entende-se em legítima defesa quem, usando moderadamente dos meios necessários, repele injusta agressão, atual ou iminente, a direito seu ou de outrem.",
+    "Parágrafo único - O agente, em qualquer das hipóteses deste artigo, responderá pelo excesso doloso ou culposo."
+   ],
+   "analogy": "É a regra do 'só o necessário'. Se alguém vem te dar um tapa, você não pode descarregar um carregador de pistola na pessoa. Se o cara parou de bater e caiu, e você continua chutando, você saiu da legítima defesa e entrou no excesso punível.",
+   "trap": "A banca diz que na Legítima Defesa a agressão precisa ser exclusivamente física. Errado! Pode ser contra qualquer 'direito seu ou de outrem', como patrimônio ou honra.",
+   "challenge": "Um policial atira em um sequestrador que mantém uma vítima refém sob mira de arma. Ele agiu em legítima defesa? Resposta: Sim, conforme o parágrafo único do Artigo vinte e cinco, introduzido pelo Pacote Anticrime."
+  },
+  {
+   "topic_id": "1af3d3c4-1115-5bcd-a11f-36e4b18abfd3",
+   "title": "Culpabilidade: O Juízo de Reprovação",
+   "teaches": [
+    "Inimputabilidade por menoridade penal (menores de dezoito anos)",
+    "Doença mental e a incapacidade de entender o caráter ilícito",
+    "A regra da embriaguez voluntária ou culposa (não excluem o crime)",
+    "Isenção de pena na embriaguez completa por caso fortuito ou força maior"
+   ],
+   "law_quotes": [
+    "Artigo vinte e sete - Os menores de dezoito anos são penalmente inimputáveis, ficando sujeitos às normas estabelecidas na legislação especial.",
+    "Artigo vinte e oito - Não excluem a imputabilidade penal: I - a emoção ou a paixão; II - a embriaguez, voluntária ou culposa, pelo álcool ou substância de efeitos análogos."
+   ],
+   "analogy": "Beber para criar coragem e cometer um crime é a 'actio libera in causa'. Você era livre no momento em que decidiu beber, então o Direito Penal te alcança. É diferente de alguém que cai num tonel de vinho por acidente e fica bêbado sem querer.",
+   "trap": "A banca adora dizer que a 'emoção intensa' ou 'paixão' excluem a culpabilidade. Mentira! O Artigo vinte e oito, inciso primeiro, diz textualmente que não excluem.",
+   "challenge": "Um jovem de dezessete anos e onze meses comete um homicídio. Ele será julgado pelo Código Penal? Resposta: Não, pelo Artigo vinte e sete ele é inimputável, sujeito ao ECA."
+  },
+  {
+   "topic_id": "0f163fc9-07d7-5a16-8d1f-bc34163ba1b5",
+   "title": "Concurso de Pessoas: Quem vai junto?",
+   "teaches": [
+    "Teoria Monista: todos que concorrem respondem pelo crime",
+    "Participação de menor importância e redução de pena",
+    "Incomunicabilidade de circunstâncias pessoais (salvo elementares)",
+    "Punição do ajuste e instigação apenas se o crime for tentado"
+   ],
+   "law_quotes": [
+    "Artigo vinte e nove - Quem, de qualquer modo, concorre para o crime incide nas penas a este cominadas, na medida de sua culpabilidade.",
+    "Artigo trinta - Não se comunicam as circunstâncias e as condições de caráter pessoal, salvo quando elementares do crime."
+   ],
+   "analogy": "Um time de assalto: um dirige, um vigia e um entra na loja. Todos estão 'jogando' o mesmo crime. Mas se o motorista só achou que ia levar o amigo para um encontro e não sabia do roubo, ele não concorre para o crime.",
+   "trap": "A banca diz que as condições pessoais 'sempre' se comunicam. O erro está no 'sempre'. Elas só se comunicam se forem 'elementares' do crime, como a condição de funcionário público no peculato.",
+   "challenge": "Se três pessoas planejam um furto, mas desistem antes de sair de casa, elas podem ser punidas? Resposta: Não, conforme o Artigo trinta e um, o ajuste não é punível se o crime não chega, pelo menos, a ser tentado."
+  },
+  {
+   "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+   "title": "Penas Privativas de Liberdade e Regimes",
+   "teaches": [
+    "Diferença entre Reclusão e Detenção",
+    "Regimes fechado, semiaberto e aberto",
+    "Critérios de tempo para regime inicial (oito anos, quatro anos)",
+    "Progressão de regime e reparação do dano em crimes contra a administração"
+   ],
+   "law_quotes": [
+    "Artigo trinta e três - A pena de reclusão deve ser cumprida em regime fechado, semi-aberto ou aberto. A de detenção, em regime semi-aberto, ou aberto, salvo necessidade de transferência a regime fechado.",
+    "Artigo trinta e três, parágrafo segundo, alínea 'a' - o condenado a pena superior a oito anos deverá começar a cumpri-la em regime fechado."
+   ],
+   "analogy": "Pense nos regimes como níveis de confiança. O fechado é segurança máxima. O semiaberto é a colônia agrícola (trabalho de dia, volta de noite). O aberto é a casa de albergado (baseado na autodisciplina).",
+   "trap": "A banca afirma que a pena de Detenção pode começar em regime Fechado. Errado! Detenção só começa em semiaberto ou aberto. O fechado na detenção só acontece por regressão.",
+   "challenge": "Um réu primário condenado a seis anos de reclusão pode começar no regime semiaberto? Resposta: Sim, pois a pena é superior a quatro e não excede oito anos (Artigo trinta e três, parágrafo segundo, 'b')."
+  },
+  {
+   "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+   "title": "Penas Restritivas e Dosimetria",
+   "teaches": [
+    "Penas restritivas como penas autônomas e substitutivas",
+    "Requisitos para substituição (PPL não superior a quatro anos, crime sem violência)",
+    "O Sistema Trifásico de aplicação da pena (Artigo sessenta e oito)",
+    "Duração das penas restritivas de direitos"
+   ],
+   "law_quotes": [
+    "Artigo quarenta e quatro - As penas restritivas de direitos são autônomas e substituem as privativas de liberdade, quando: I – aplicada pena privativa de liberdade não superior a quatro anos e o crime não for cometido com violência ou grave ameaça...",
+    "Artigo sessenta e oito - A pena-base será fixada atendendo-se ao critério do artigo cinquenta e nove deste Código; em seguida serão consideradas as circunstâncias atenuantes e agravantes; por último, as causas de diminuição e de aumento."
+   ],
+   "analogy": "A dosimetria é uma receita de bolo em três passos: primeiro você vê os ingredientes básicos (pena-base), depois tempera com as agravantes ou atenuantes, e no final coloca o fermento ou tira um pedaço (causas de aumento e diminuição).",
+   "trap": "Cuidado com a ordem do sistema trifásico! A banca inverte a segunda fase (agravantes/atenuantes) com a terceira (causas de aumento/diminuição). Lembre-se: a terceira fase é a última.",
+   "challenge": "Uma condenação por roubo (que tem violência) pode ser substituída por prestação de serviços à comunidade? Resposta: Não, o Artigo quarenta e quatro proíbe a substituição em crimes cometidos com violência ou grave ameaça à pessoa."
+  },
+  {
+   "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+   "title": "Concurso de Crimes e Limites",
+   "teaches": [
+    "Concurso Material (soma das penas)",
+    "Concurso Formal (uma ação, dois crimes - exasperação)",
+    "Crime Continuado e seus requisitos (tempo, lugar, maneira de execução)",
+    "O limite máximo de quarenta anos para cumprimento de pena"
+   ],
+   "law_quotes": [
+    "Artigo sessenta e nove - Quando o agente, mediante mais de uma ação ou omissão, pratica dois ou mais crimes... aplicam-se cumulativamente as penas.",
+    "Artigo setenta e cinco - O tempo de cumprimento das penas privativas de liberdade não pode ser superior a quarenta anos."
+   ],
+   "analogy": "Concurso material é como uma conta de supermercado: você vai somando cada item. Concurso formal é como um acidente: uma só freada brusca (ação) que atinge dois carros (dois crimes).",
+   "trap": "A banca ainda usa o limite antigo de trinta anos para o tempo máximo de pena. Atualize: agora são quarenta anos conforme o Artigo setenta e cinco.",
+   "challenge": "No concurso formal próprio, o juiz soma as penas ou aplica a mais grave com um aumento? Resposta: Aplica a mais grave aumentada de um sexto até metade (Artigo setenta)."
+  },
+  {
+   "topic_id": "9042b6b4-a01d-58b9-a6e6-802780182b9e",
+   "title": "Extinção da Punibilidade e Prescrição",
+   "teaches": [
+    "Causas de extinção (morte, anistia, prescrição)",
+    "Prescrição pela pena máxima em abstrato",
+    "Redução de prazos prescricionais pela metade (idade)",
+    "Interrupção da prescrição (recebimento da denúncia, sentença)"
+   ],
+   "law_quotes": [
+    "Artigo cento e sete - Extingue-se a punibilidade: I - pela morte do agente; II - pela anistia, graça ou indulto; IV - pela prescrição, decadência ou perempção.",
+    "Artigo cento e nove - A prescrição... regula-se pelo máximo da pena privativa de liberdade cominada ao crime."
+   ],
+   "analogy": "A prescrição é o 'prazo de validade' que o Estado tem para processar ou punir alguém. Se o Estado dormir no ponto e o tempo passar, ele perde o direito de punir, como um iogurte vencido que você não pode mais consumir.",
+   "trap": "A banca diz que a prescrição antes da sentença se baseia na pena mínima. Errado! O Artigo cento e nove diz que se regula pelo 'máximo da pena' cominada.",
+   "challenge": "O que acontece com o prazo da prescrição se o criminoso tinha vinte anos na data do crime? Resposta: O prazo é reduzido de metade, conforme o Artigo cento e quinze."
+  }
+ ]
+}
