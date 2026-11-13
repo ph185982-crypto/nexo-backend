@@ -1530,9 +1530,9 @@
    "subject_name": "Realidade de Goiás",
    "number": 1,
    "title": "Realidade de Goiás · Episódio 1",
-   "file": "realidade-goias-01-d29a595c3f.mp3",
-   "bytes": 9857520,
-   "duration_secs": 1643,
+   "file": "realidade-goias-01-ia-eb054a3b77.mp3",
+   "bytes": 13686048,
+   "duration_secs": 2281,
    "chapters": [
     {
      "topic_id": "0866493b-222a-5753-a331-ac9cf10cd6b6",
@@ -1542,20 +1542,28 @@
     {
      "topic_id": "f75b8d6c-e266-5edd-b40a-632d5fe43785",
      "title": "Geografia de Goiás",
-     "start": 666.48
+     "start": 904.31
     },
     {
      "topic_id": "bf41de43-6a0c-5916-9fd9-9a6ee2a66629",
      "title": "Economia de Goiás",
-     "start": 1306.32
+     "start": 1464.65
+    },
+    {
+     "topic_id": "0866493b-222a-5753-a331-ac9cf10cd6b6",
+     "title": "História de Goiás",
+     "start": 1991.74
     }
    ],
    "boundaries": [
-    666.48,
-    1306.32,
-    1642.92
+    904.31,
+    1464.65,
+    1991.74,
+    2280.95
    ],
-   "segment_count": 3
+   "segment_count": 4,
+   "format": "conversa",
+   "problems_fixed": 16
   },
   {
    "id": "realidade-goias-02",
@@ -1976,11 +1984,11 @@
   },
   "f75b8d6c-e266-5edd-b40a-632d5fe43785": {
    "episode": "realidade-goias-01",
-   "start": 666.48
+   "start": 904.31
   },
   "bf41de43-6a0c-5916-9fd9-9a6ee2a66629": {
    "episode": "realidade-goias-01",
-   "start": 1306.32
+   "start": 1464.65
   },
   "ee4bcceb-08c4-5d8a-bc68-1b7cbdb05fd2": {
    "episode": "realidade-goias-02",
