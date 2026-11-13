@@ -408,6 +408,10 @@ Final da conversa até aqui (continue a partir daqui, sem repetir):
 MATERIAL do tópico (fonte única para informação jurídica):
 {material_text(store, topic)}""", TURNS_SCHEMA, temperature=0.95)
             draft_turns = clean_turns(draft.get("turns", []))
+            opening_check = "" if not first else f"""
+
+ABERTURA: este é o começo do episódio. O caso contado tem de ser exatamente este, com as mesmas perguntas (o fim do episódio responde a elas): {outline['cold_open']}
+Se o trecho mudar o caso ou as perguntas, liste em "problems" e corrija as falas para contar este caso."""
             closing_check = "" if not last else f"""
 
 FECHAMENTO: este é o fim do episódio. O caso do começo foi: {outline['cold_open']}
@@ -419,7 +423,7 @@ TRECHO:
 {json.dumps(draft_turns, ensure_ascii=False)}
 
 MATERIAL:
-{material_text(store, topic)}{closing_check}""", REVIEW_SCHEMA, temperature=0.2)
+{material_text(store, topic)}{opening_check}{closing_check}""", REVIEW_SCHEMA, temperature=0.2)
             turns = clean_turns(review.get("turns", [])) or draft_turns
             if words(turns) < words(draft_turns) * 0.7:
                 turns = draft_turns
