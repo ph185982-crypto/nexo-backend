@@ -53,6 +53,17 @@ Acesse: http://localhost:3000
 
 **Credenciais padrão:** `admin@vendedoria.com` / `admin123`
 
+## Login único (Avanteza ID)
+
+A tela de login tem "Entrar com Avanteza" (ação principal), que leva à Central (`AVANTEZA_HUB_URL`, padrão
+`https://app.avanteza.com.br`) em `/sso/authorize?app=vendas&return=<caminho>`. A Central devolve em
+`/api/sso/callback?token=<JWT>`; a rota chama `signIn("avanteza-sso", { token })` e o segundo provider Credentials
+do NextAuth (`src/lib/auth/index.ts` → `src/lib/auth/sso.ts`) confere o token com `src/lib/avanteza-sso.ts`
+(ES256, chave pública do JWKS da Central, emissor, `aud = vendas`, validade de 60 s) e acha o usuário pelo e-mail ou
+cria na primeira entrada (`admin` → ADMIN; os demais → SELLER; senha aleatória que ninguém vê). Quem já existe não
+muda de papel. A sessão é a mesma do login por senha (JWT do NextAuth), e e-mail e senha continuam como reserva.
+O cabeçalho tem o atalho "Central" (`/api/sso/central`). Testes: `tests/sso.test.ts`.
+
 ## Estrutura do Projeto
 
 ```

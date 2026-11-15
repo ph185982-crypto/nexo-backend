@@ -2,7 +2,7 @@
 import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, LogOut, User, Bell, ShoppingBag, AlertTriangle, BellOff } from "lucide-react";
+import { Menu, LogOut, User, Bell, ShoppingBag, AlertTriangle, BellOff, LayoutGrid } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -130,6 +130,14 @@ export function Header({ onToggleSidebar }: HeaderProps) {
       {/* Right */}
       <div className="flex items-center gap-1.5">
         <Clock />
+
+        {/* Atalho discreto para a Central da Avanteza (os outros aplicativos do login único) */}
+        <Button variant="ghost" size="sm" asChild className="rounded-lg text-muted-foreground hover:text-foreground px-2">
+          <a href="/api/sso/central" title="Central Avanteza" aria-label="Central Avanteza">
+            <LayoutGrid className="w-4 h-4" />
+            <span className="hidden lg:inline text-xs">Central</span>
+          </a>
+        </Button>
 
         <ThemeSwitcher />
 
