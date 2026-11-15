@@ -264,7 +264,7 @@ test("relatório do banco: realizado, projetado, escopo e classificação manual
     assert.equal(nexo.projetado.previsto.receitas, 3_000);
     assert.equal(nexo.projetado.previsto.despesas, 700);
 
-    // Escopo "pessoal" não enxerga a Nexo
+    // Escopo "pessoal" não enxerga a Avanteza
     const pessoal = await montarRelatorioDre(periodo, "pessoal", hoje);
     assert.equal(pessoal.realizado.atual.receitaBruta, 4_000);
     assert.equal(pessoal.realizado.atual.grupos.pessoais, 500);

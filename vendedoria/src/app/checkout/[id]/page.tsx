@@ -195,7 +195,7 @@ export default function CheckoutPage() {
 
         {/* Header */}
         <div style={s.header}>
-          <div style={s.logo}>NEXO BRASIL</div>
+          <div style={s.logo}>AVANTEZA</div>
           <div style={s.selosRow}>
             <span style={s.selo}>🔒 Compra Segura</span>
             <span style={s.selo}>✅ Mercado Pago</span>

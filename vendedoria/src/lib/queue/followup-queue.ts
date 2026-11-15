@@ -20,7 +20,7 @@ const STEP_INTERVALS_MS: Record<number, number> = {
   4: prazoDoToque(4),   // 48h
 };
 
-// ── Mensagens por step (prospecção B2B — Nexo) ───────────────────────────────
+// ── Mensagens por step (prospecção B2B — Avanteza) ───────────────────────────────
 function buildProspeccaoFollowupMessage(step: number, name: string | null): string[] {
   switch (step) {
     case 1: return [
@@ -239,7 +239,7 @@ export function startFollowUpWorker(): void {
         });
       }
 
-      // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato
+      // Funil Avanteza: follow-up conta como novo toque → 2º/3º Contato
       if (orgTipo === "PROSPECCAO" && conv?.lead && conv.provider?.organization?.id) {
         await moverLeadPorTipo(
           conv.lead.id,

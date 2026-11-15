@@ -1,4 +1,4 @@
-// ─── Pipeline Mover — movimentação automática de leads no funil Nexo ─────────
+// ─── Pipeline Mover — movimentação automática de leads no funil Avanteza ─────────
 //
 // Funil de vendas em 5 etapas:
 //   Leads → Qualificação → Proposta e Negociação → Contrato → Ganho | Perdido
@@ -297,12 +297,12 @@ export function colunaPorTentativa(tentativa: number): FunilTipo {
 }
 
 const COLUNAS_CANONICAS: Array<{ type: FunilCanonico; name: string; order: number; color: string; isDefaultEntry?: boolean }> = [
-  { type: "TRIAGE",              name: "Leads",                  order: 0, color: "#6B7280", isDefaultEntry: true },
-  { type: "EM_QUALIFICACAO",     name: "Qualificação",           order: 1, color: "#3B82F6" },
-  { type: "PROPOSTA_NEGOCIACAO", name: "Proposta e Negociação",  order: 2, color: "#F59E0B" },
-  { type: "CONTRATO",            name: "Contrato",               order: 3, color: "#8B5CF6" },
-  { type: "GANHO",               name: "Ganho",                  order: 4, color: "#22C55E" },
-  { type: "LOST",                name: "Perdido",                order: 5, color: "#EF4444" },
+  { type: "TRIAGE",              name: "Leads",                  order: 0, color: "#8a94a6", isDefaultEntry: true },
+  { type: "EM_QUALIFICACAO",     name: "Qualificação",           order: 1, color: "#55637a" },
+  { type: "PROPOSTA_NEGOCIACAO", name: "Proposta e Negociação",  order: 2, color: "#c9a77a" },
+  { type: "CONTRATO",            name: "Contrato",               order: 3, color: "#2f4a73" },
+  { type: "GANHO",               name: "Ganho",                  order: 4, color: "#ff6a1f" },
+  { type: "LOST",                name: "Perdido",                order: 5, color: "#8c5a4a" },
 ];
 
 /**

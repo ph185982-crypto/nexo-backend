@@ -6,7 +6,7 @@ const referralCompleto = {
   source_url: "https://fb.me/abc123",
   source_id: "120210000000000001",
   source_type: "ad",
-  headline: "Venda mais com a Nexo",
+  headline: "Venda mais com a Avanteza",
   body: "Fale com a gente no WhatsApp",
   media_type: "image",
   image_url: "https://example.com/i.jpg",
@@ -19,7 +19,7 @@ test("extrai todos os campos de um referral de anúncio", () => {
     ctwaClid: referralCompleto.ctwa_clid,
     adSourceId: "120210000000000001",
     adSourceType: "ad",
-    adHeadline: "Venda mais com a Nexo",
+    adHeadline: "Venda mais com a Avanteza",
     adBody: "Fale com a gente no WhatsApp",
     adSourceUrl: "https://fb.me/abc123",
   });

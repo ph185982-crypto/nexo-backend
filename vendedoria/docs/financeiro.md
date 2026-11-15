@@ -2,10 +2,10 @@
 
 ## Competência mensal
 - A **Visão Geral** é por competência: sem filtro mostra só o **mês corrente (data de Brasília)**. Na virada do dia 1º passa sozinha para o mês novo e compara com o mês anterior.
-- Filtros: **Mês** (com ‹ ›), **Dia**, **Período** livre; escopo **Tudo / Nexo / Pessoal**. Lógica em `src/lib/finance/periodo.ts` (`resolverPeriodo`, `periodoAnterior`).
+- Filtros: **Mês** (com ‹ ›), **Dia**, **Período** livre; escopo **Tudo / Avanteza / Pessoal**. Lógica em `src/lib/finance/periodo.ts` (`resolverPeriodo`, `periodoAnterior`).
 - Nada some: receitas em aberto de meses anteriores aparecem à parte ("em atraso de períodos anteriores").
 
-## Nexo × Pessoal
+## Avanteza × Pessoal
 Usa o campo `tipo_negocio` (`nexo`, `pessoal`, e `lukaizen`/`geral` agrupados em "outros"). Em `ReceitaPrevistaMax` vazio conta como pessoal. Ver `src/lib/finance/escopo.ts`.
 
 ## Receita perdida

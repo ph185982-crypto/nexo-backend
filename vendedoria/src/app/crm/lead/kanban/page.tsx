@@ -395,7 +395,7 @@ export default function KanbanPage() {
   const orgs: Array<{ id: string; name: string; status: string }> =
     orgsData?.whatsappBusinessOrganizations ?? [];
 
-  // Auto-seleciona a única org ativa (a Nexo)
+  // Auto-seleciona a única org ativa (a Avanteza)
   useEffect(() => {
     if (!selectedOrgId && orgs.length > 0) {
       const ativa = orgs.find((o) => o.status === "ACTIVE") ?? orgs[0];
@@ -511,7 +511,7 @@ export default function KanbanPage() {
               ))}
               {filteredColumns.length === 0 && (
                 <div className="flex items-center justify-center w-full text-muted-foreground">
-                  <p>Nenhuma coluna — rode o seed da Nexo</p>
+                  <p>Nenhuma coluna — rode o seed da Avanteza</p>
                 </div>
               )}
             </div>

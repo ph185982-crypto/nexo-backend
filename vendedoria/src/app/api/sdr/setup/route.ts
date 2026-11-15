@@ -1,6 +1,6 @@
 /**
  * POST /api/sdr/setup
- * Cria (ou retorna existente) a organização Nexo Brasil SDR no banco.
+ * Cria (ou retorna existente) a organização Avanteza SDR no banco.
  *
  * Body mínimo:
  *   { "secret": "<CRON_SECRET>" }
@@ -71,12 +71,12 @@ export async function POST(req: NextRequest) {
   if (!existingColumns) {
     await prisma.kanbanColumn.createMany({
       data: [
-        { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, organizationId: org.id, color: "#6B7280" },
-        { name: "Em qualificação", order: 1, type: "CUSTOM", organizationId: org.id, color: "#3B82F6" },
-        { name: "Qualificados", order: 2, type: "CUSTOM", organizationId: org.id, color: "#10B981" },
-        { name: "Mornos (nutrição)", order: 3, type: "CUSTOM", organizationId: org.id, color: "#F59E0B" },
-        { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, organizationId: org.id, color: "#8B5CF6" },
-        { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, organizationId: org.id, color: "#EF4444" },
+        { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, organizationId: org.id, color: "#8a94a6" },
+        { name: "Em qualificação", order: 1, type: "CUSTOM", organizationId: org.id, color: "#55637a" },
+        { name: "Qualificados", order: 2, type: "CUSTOM", organizationId: org.id, color: "#e0b48a" },
+        { name: "Mornos (nutrição)", order: 3, type: "CUSTOM", organizationId: org.id, color: "#c9a77a" },
+        { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, organizationId: org.id, color: "#2f4a73" },
+        { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, organizationId: org.id, color: "#8c5a4a" },
       ],
     });
     console.log("[SDR Setup] Colunas Kanban criadas");
@@ -148,6 +148,6 @@ export async function POST(req: NextRequest) {
     ok: true,
     orgId: org.id,
     providerId: providerConfig.id,
-    message: "SDR Nexo Brasil configurado com sucesso",
+    message: "SDR Avanteza configurado com sucesso",
   });
 }

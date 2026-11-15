@@ -1,4 +1,4 @@
-// Escopo do financeiro: separa o que é da Nexo (empresa) do que é pessoal.
+// Escopo do financeiro: separa o que é da Avanteza (empresa) do que é pessoal.
 // O campo `tipo_negocio` já existe nas tabelas (pessoal | nexo | lukaizen | geral).
 // Em ReceitaPrevistaMax ele é opcional — e vazio conta como pessoal (mesma regra
 // que a confirmação de recebimento já usava).

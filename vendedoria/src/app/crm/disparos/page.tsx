@@ -277,7 +277,7 @@ export default function DisparosPage() {
                     {lead.kanbanColumn && (
                       <span
                         className="shrink-0 px-2 py-0.5 rounded-full text-xs text-white whitespace-nowrap"
-                        style={{ backgroundColor: lead.kanbanColumn.color || "#6b7280" }}
+                        style={{ backgroundColor: lead.kanbanColumn.color || "#8a94a6" }}
                       >
                         {lead.kanbanColumn.name}
                       </span>

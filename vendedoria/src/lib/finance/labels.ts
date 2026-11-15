@@ -1,6 +1,6 @@
 export const TIPO_NEGOCIO_OPTIONS = [
   { value: "pessoal", label: "Pessoal" },
-  { value: "nexo", label: "Nexo" },
+  { value: "nexo", label: "Avanteza" },
   { value: "lukaizen", label: "LuKaizen" },
   { value: "geral", label: "Geral" },
 ] as const;

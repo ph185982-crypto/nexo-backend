@@ -796,7 +796,7 @@ export default function Disparo({ org }: { org: Org }) {
             <input
               value={novoRodape}
               onChange={(e) => setNovoRodape(e.target.value)}
-              placeholder="ex.: Nexo Brasil"
+              placeholder="ex.: Avanteza"
               className={inputCls}
             />
           </label>

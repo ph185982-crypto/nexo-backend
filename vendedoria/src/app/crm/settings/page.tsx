@@ -732,8 +732,8 @@ function KanbanTab({ orgs }: { orgs: OrgType[] }) {
   const [updateColumn, { loading: saving }] = useMutation(UPDATE_KANBAN_COLUMN);
 
   const PRESET_COLORS = [
-    "#3b82f6", "#22c55e", "#f97316", "#8b5cf6",
-    "#ef4444", "#6b7280", "#ec4899", "#0891b2",
+    "#55637a", "#ff6a1f", "#c9a77a", "#2f4a73",
+    "#8c5a4a", "#8a94a6", "#e0b48a", "#132a4c",
   ];
 
   const startEdit = (col: { id: string; name: string; color: string }) => {

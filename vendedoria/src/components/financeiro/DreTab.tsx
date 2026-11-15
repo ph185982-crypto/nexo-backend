@@ -62,7 +62,7 @@ function baixarCsv(nome: string, conteudo: string) {
 }
 
 export function DreTab() {
-  // A DRE é da empresa por padrão (escopo Nexo); a escolha fica guardada no navegador.
+  // A DRE é da empresa por padrão (escopo Avanteza); a escolha fica guardada no navegador.
   const [filtro, setFiltroState] = useState<FiltroFin>(() => ({ ...filtroInicial(), escopo: "nexo" }));
   const [pronto, setPronto] = useState(false);
   const [modo, setModo] = useState<Modo>("realizado");
@@ -156,7 +156,7 @@ export function DreTab() {
   const porGrupo = projetado ? data.projetado.porGrupo : data.realizado.porGrupo;
   const ant = data.realizado.anterior;
   const rotAnt = data.anterior.label;
-  const escopoNome = data.escopo === "nexo" ? "Nexo (empresa)" : data.escopo === "pessoal" ? "Pessoal" : "Nexo + Pessoal + outros";
+  const escopoNome = data.escopo === "nexo" ? "Avanteza (empresa)" : data.escopo === "pessoal" ? "Pessoal" : "Avanteza + Pessoal + outros";
   const prev = data.projetado.previsto;
   const temPrevisto = prev.receitas > 0 || prev.despesas > 0;
   const manuais = data.classificacao.filter((c) => c.origem === "manual").length;

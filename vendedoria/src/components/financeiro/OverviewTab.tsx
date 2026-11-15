@@ -117,7 +117,7 @@ export function OverviewTab() {
   }
 
   const rotAnt = data.comparativo.periodoAnterior.label;
-  const escopoNome = data.escopo === "nexo" ? "Nexo" : data.escopo === "pessoal" ? "Pessoal" : "Nexo + Pessoal + outros";
+  const escopoNome = data.escopo === "nexo" ? "Avanteza" : data.escopo === "pessoal" ? "Pessoal" : "Avanteza + Pessoal + outros";
   const metaPct = data.meta && data.meta.alvo > 0 ? Math.round((data.meta.atual / data.meta.alvo) * 100) : 0;
   const metaColor = metaPct >= 60 ? "bg-green-500" : metaPct >= 30 ? "bg-yellow-500" : "bg-red-500";
   const rp = data.receitasPrevistas;
@@ -156,12 +156,12 @@ export function OverviewTab() {
           variacao={<VariacaoBadge pct={data.comparativo.saldo.variacaoPct} rotulo={rotAnt} />} />
       </div>
 
-      {/* Nexo × Pessoal */}
+      {/* Avanteza × Pessoal */}
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-foreground">Nexo × Pessoal</h3>
+        <h3 className="text-sm font-semibold text-foreground">Avanteza × Pessoal</h3>
         <div className="grid gap-4 md:grid-cols-2">
           <BlocoCard
-            titulo="Nexo (empresa)" icone={<Building2 className="w-4 h-4" />} b={data.porNegocio.nexo} rotAnt={rotAnt}
+            titulo="Avanteza (empresa)" icone={<Building2 className="w-4 h-4" />} b={data.porNegocio.nexo} rotAnt={rotAnt}
             ativo={data.escopo === "nexo"} onClick={() => setFiltro({ ...filtro, escopo: data.escopo === "nexo" ? "todos" : "nexo" })}
           />
           <BlocoCard

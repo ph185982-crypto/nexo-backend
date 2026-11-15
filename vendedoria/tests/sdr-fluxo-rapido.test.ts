@@ -40,5 +40,5 @@ test("follow-up de lead já no ICP convida para a ligação em vez de repetir pe
   const s: SDRSession = { ...SDR_EMPTY_SESSION, mode: "SDR", faturamento_total: "150000", cnpj: "tem", loja_fisica: "sim" };
   const p = promptFollowupSdr(1, 4, s);
   assert.match(p, /ligação de 20 min com o Pedro/);
-  assert.match(p, /nem a última que a Nexo fez/);
+  assert.match(p, /nem a última que a Avanteza fez/);
 });

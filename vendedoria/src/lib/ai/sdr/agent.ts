@@ -192,8 +192,8 @@ function mensagensDeHandoff(s: SDRSession): Array<{ text: string; delay: number 
       : "Ele te chama em breve pra combinar o melhor horário";
   return [
     { text: `Perfeito${primeiro ? `, ${primeiro}` : ""}, já tenho tudo que preciso`, delay: 0 },
-    { text: "Vou te passar pro Pedro, fundador da Nexo — ele estruturou a operação de mais de 600 empresas e vai conduzir a conversa pessoalmente", delay: 1500 },
-    { text: `Já salva o contato dele: 📲 Pedro | Nexo: ${formatarTelefoneOwner()}`, delay: 1500 },
+    { text: "Vou te passar pro Pedro, fundador da Avanteza — ele estruturou a operação de mais de 600 empresas e vai conduzir a conversa pessoalmente", delay: 1500 },
+    { text: `Já salva o contato dele: 📲 Pedro | Avanteza: ${formatarTelefoneOwner()}`, delay: 1500 },
     { text: quando, delay: 1500 },
   ];
 }

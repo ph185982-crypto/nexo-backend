@@ -1442,7 +1442,7 @@ export async function processAIResponse(
           }
           await prisma.calendarEvent.create({
             data: {
-              title: `Diagnóstico Nexo — ${nomeNegocio}`,
+              title: `Diagnóstico Avanteza — ${nomeNegocio}`,
               description: `Reunião agendada pela IA via WhatsApp.\nContato: ${to}` +
                 (sessaoProspeccao.tipoNegocio ? `\nTipo de negócio: ${sessaoProspeccao.tipoNegocio}` : ""),
               startTime: dataHoraInicio,
@@ -1466,7 +1466,7 @@ export async function processAIResponse(
           reuniaoDataLabel = dataLabel;
 
           const notifMsg =
-            `📅 *REUNIÃO AGENDADA — NEXO*\n\n` +
+            `📅 *REUNIÃO AGENDADA — AVANTEZA*\n\n` +
             `🏢 Empresa: ${nomeNegocio}\n` +
             `📱 WhatsApp: ${to}\n` +
             `🗓️ Data/hora: ${dataLabel}\n` +

@@ -328,7 +328,7 @@ export async function processarFollowupsVencidos(opts: { orcamentoMs?: number } 
         }
       }
 
-      // Funil Nexo: follow-up conta como novo toque → 2º/3º Contato.
+      // Funil Avanteza: follow-up conta como novo toque → 2º/3º Contato.
       // Só vale para prospecção outbound. A org do SDR também é tipo
       // PROSPECCAO, então sem checar o agente um lead inbound que estava em
       // "Em qualificação"/"Mornos" era jogado para "2º Contato" — coluna de

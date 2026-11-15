@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "=== Nexo Vendas — Starting ==="
+echo "=== Avanteza Vendas — Starting ==="
 
 # Run DB migrations in background so Render health check passes immediately.
 # Workers verify DB state before processing, so late migration is safe.

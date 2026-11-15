@@ -117,7 +117,7 @@ test("SDR: lead no ICP que escolheu horário → ligação marcada, card movido,
   globalThis.fetch = (async (url: string | URL, init?: RequestInit) => {
     const u = String(url);
     if (u.includes("api.openai.com")) {
-      const r = { messages: [{ text: `Fechado então, ${slot.label}`, delay: 0 }, { text: "O Pedro, fundador da Nexo, vai te ligar no horário", delay: 0 }],
+      const r = { messages: [{ text: `Fechado então, ${slot.label}`, delay: 0 }, { text: "O Pedro, fundador da Avanteza, vai te ligar no horário", delay: 0 }],
         updateSession: { nome: "Rafael Lima", empresa: "RL Autopeças", segmento: "autopeças", faturamento_total: "80 mil por mês",
           loja_fisica: "sim", tem_loja_fisica: true, cnpj: "tem", problema_principal: "Loja vende bem mas no Mercado Livre não passa de 10 pedidos por mês",
           horario_reuniao: slot.iso, score: 90 },
