@@ -18,7 +18,7 @@ interface Dados { sugeridos: CombinadoDTO[]; pendentes: CombinadoDTO[]; entregue
 const ROTULO_FONTE: Record<string, string> = { FEEDBACK: "Feedback", CONVERSA: "Conversa", REUNIAO: "Reunião", TEXTO: "Texto colado" };
 const ROTULO_ANALISE: Record<string, string> = { PENDENTE: "Na fila", PROCESSANDO: "Lendo…", CONCLUIDA: "Lida", ERRO: "Erro", SEM_CHAVE: "Agente desligado" };
 const diaIso = (iso: string | null) => (iso ? new Date(new Date(iso).getTime() - 3 * 3_600_000).toISOString().slice(0, 10) : "");
-const chip = "rounded-full bg-bq px-2 py-0.5 text-[11px] font-semibold text-cinza";
+const chip = "rounded-full bg-creme px-2 py-0.5 text-[11px] font-semibold text-suave";
 const vencido = (c: CombinadoDTO) => c.prazoEm !== null && new Date(c.prazoEm).getTime() < Date.now();
 
 function ondeVirou(c: CombinadoDTO) {
@@ -57,41 +57,41 @@ export function AbaCombinados({ oportunidadeId, onAtividade }: { oportunidadeId:
   };
   const refazer = async (id: string) => { await fetch(`/api/analises/${id}/reprocessar`, { method: "POST" }); await carregar(); };
 
-  if (!d) return <p className="px-5 py-4 text-[12px] text-cinza">Carregando…</p>;
+  if (!d) return <p className="px-5 py-4 text-[12px] text-suave">Carregando…</p>;
   return (
     <div className="space-y-5 px-5 pb-8 pt-4">
       {!d.agenteLigado && (
-        <p className="rounded-xl border border-linha bg-bq px-3.5 py-2.5 text-[12px] text-cinza" role="status">
+        <p className="rounded-md border border-areia bg-creme px-3.5 py-2.5 text-[12px] text-suave" role="status">
           O agente que lê feedbacks, conversas e reuniões está desligado: falta a chave da Anthropic (<code>ANTHROPIC_API_KEY</code>) no projeto do CRM. Os combinados à mão funcionam normalmente.
         </p>
       )}
       <div className="flex flex-wrap gap-2">
         <button className={botaoPrimario} onClick={() => setNovo(true)}>+ Combinado</button>
         <button className={botaoSecundario} onClick={() => setAnalisar(true)}>Analisar transcrição ou texto</button>
-        {lendo && <span className="self-center text-[12px] font-semibold text-azul" role="status">O agente está lendo…</span>}
+        {lendo && <span className="self-center text-[12px] font-semibold text-marinho" role="status">O agente está lendo…</span>}
       </div>
-      {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+      {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
 
       <section aria-label="Sugestões do agente">
-        <h3 className="mb-2 text-[13px] font-extrabold">Sugestões do agente {d.sugeridos.length > 0 && <span className="ml-1 rounded-full bg-laranja px-2 py-0.5 text-[11px] text-grafite">{d.sugeridos.length}</span>}</h3>
-        {d.sugeridos.length === 0 && <p className="text-[12px] text-cinza">Nada para decidir. O agente sugere combinados a partir do que você escreve na linha do tempo, das conversas importadas e das transcrições.</p>}
+        <h3 className="mb-2 text-[13px] font-extrabold">Sugestões do agente {d.sugeridos.length > 0 && <span className="ml-1 rounded-full bg-laranja px-2 py-0.5 text-[11px] text-marinho">{d.sugeridos.length}</span>}</h3>
+        {d.sugeridos.length === 0 && <p className="text-[12px] text-suave">Nada para decidir. O agente sugere combinados a partir do que você escreve na linha do tempo, das conversas importadas e das transcrições.</p>}
         <ul className="space-y-2">
           {d.sugeridos.map((c) => (
-            <li key={c.id} className="rounded-xl border border-azul/40 bg-superficie p-3.5">
+            <li key={c.id} className="rounded-md border border-marinho/40 bg-superficie p-3.5">
               <p className="font-semibold">{c.descricao}</p>
               <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {c.acao !== "NOVO" && <span className="rounded-full bg-azul px-2 py-0.5 text-[11px] font-bold text-bq">{c.acao === "CONCLUIR" ? "Marcar como entregue" : "Mudar o prazo"}</span>}
+                {c.acao !== "NOVO" && <span className="rounded-full bg-marinho px-2 py-0.5 text-[11px] font-bold text-creme">{c.acao === "CONCLUIR" ? "Marcar como entregue" : "Mudar o prazo"}</span>}
                 {c.acao === "NOVO" && <span className={chip}>{ROTULO_TIPO_COMBINADO[c.tipo as keyof typeof ROTULO_TIPO_COMBINADO] ?? c.tipo}</span>}
                 {c.acao === "NOVO" && <span className={chip}>Quem cumpre: {ROTULO_RESPONSAVEL[c.responsavel as keyof typeof ROTULO_RESPONSAVEL] ?? c.responsavel}</span>}
                 {c.prazoEm && <span className={chip}>Prazo {data(c.prazoEm)}</span>}
                 {c.pilar && <span className={chip}>{ROTULO_PILAR[c.pilar as keyof typeof ROTULO_PILAR] ?? c.pilar}</span>}
                 {c.confianca !== null && <span className={chip} title="O quanto o texto deixa claro">{Math.round(c.confianca * 100)}% de certeza</span>}
               </div>
-              {c.evidencia && <blockquote className="mt-2 border-l-2 border-linha pl-2.5 text-[12px] italic text-cinza">“{c.evidencia}”</blockquote>}
+              {c.evidencia && <blockquote className="mt-2 border-l-2 border-areia pl-2.5 text-[12px] italic text-suave">“{c.evidencia}”</blockquote>}
               <div className="mt-2.5 flex flex-wrap gap-2">
                 <button className={`${botaoPrimario} !px-3 !py-1.5 !text-[12px]`} onClick={() => void operar(c.id, { operacao: "aceitar" })}>Aceitar</button>
                 {c.acao === "NOVO" && <button className={`${botaoSecundario} !px-3 !py-1.5 !text-[12px]`} onClick={() => setEditando(c)}>Ajustar e aceitar</button>}
-                <button className="px-2 text-[12px] font-semibold text-cinza hover:text-grafite" onClick={() => void operar(c.id, { operacao: "descartar" })}>Descartar</button>
+                <button className="px-2 text-[12px] font-semibold text-suave hover:text-marinho" onClick={() => void operar(c.id, { operacao: "descartar" })}>Descartar</button>
               </div>
             </li>
           ))}
@@ -100,22 +100,22 @@ export function AbaCombinados({ oportunidadeId, onAtividade }: { oportunidadeId:
 
       <section aria-label="Combinados pendentes">
         <h3 className="mb-2 text-[13px] font-extrabold">Pendentes</h3>
-        {d.pendentes.length === 0 && <p className="text-[12px] text-cinza">Nenhum combinado em aberto.</p>}
-        <ul className="divide-y divide-linha rounded-xl border border-linha">
+        {d.pendentes.length === 0 && <p className="text-[12px] text-suave">Nenhum combinado em aberto.</p>}
+        <ul className="divide-y divide-areia rounded-md border border-areia">
           {d.pendentes.map((c) => (
             <li key={c.id} className="flex flex-wrap items-start gap-3 px-3.5 py-3">
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">{c.descricao}</p>
-                <p className="mt-0.5 text-[12px] text-cinza">
+                <p className="mt-0.5 text-[12px] text-suave">
                   {c.responsavel === "CLIENTE" ? "O cliente cumpre" : "Nós cumprimos"}
-                  {c.prazoEm ? <> · <span className={vencido(c) ? "font-bold text-critico" : ""}>{vencido(c) ? "venceu em " : "até "}{data(c.prazoEm)}</span></> : " · sem prazo"}
+                  {c.prazoEm ? <> · <span className={vencido(c) ? "font-bold text-perigo-texto" : ""}>{vencido(c) ? "venceu em " : "até "}{data(c.prazoEm)}</span></> : " · sem prazo"}
                   {ondeVirou(c) && ` · virou ${ondeVirou(c)}`}
                   {c.origem === "AGENTE" && " · sugerido pelo agente"}
                 </p>
               </div>
               <div className="flex gap-1.5">
                 <button className={`${botaoSecundario} !px-3 !py-1.5 !text-[12px]`} onClick={() => void operar(c.id, { operacao: "entregue" })}>Entregue</button>
-                <button className="px-2 text-[12px] font-semibold text-cinza hover:text-grafite" onClick={() => void operar(c.id, { operacao: "descartar" })} aria-label={`Descartar ${c.descricao}`}>Descartar</button>
+                <button className="px-2 text-[12px] font-semibold text-suave hover:text-marinho" onClick={() => void operar(c.id, { operacao: "descartar" })} aria-label={`Descartar ${c.descricao}`}>Descartar</button>
               </div>
             </li>
           ))}
@@ -127,7 +127,7 @@ export function AbaCombinados({ oportunidadeId, onAtividade }: { oportunidadeId:
           <button className="text-[13px] font-extrabold" onClick={() => setVerEntregues((v) => !v)} aria-expanded={verEntregues}>Entregues ({d.entregues.length}) {verEntregues ? "▴" : "▾"}</button>
           {verEntregues && (
             <ul className="mt-2 space-y-1">
-              {d.entregues.map((c) => <li key={c.id} className="text-[12.5px]"><span className="text-ok">✓</span> {c.descricao} <span className="text-cinza">· {data(c.entregueEm)}</span></li>)}
+              {d.entregues.map((c) => <li key={c.id} className="text-[12.5px]"><span className="text-ok">✓</span> {c.descricao} <span className="text-suave">· {data(c.entregueEm)}</span></li>)}
             </ul>
           )}
         </section>
@@ -139,11 +139,11 @@ export function AbaCombinados({ oportunidadeId, onAtividade }: { oportunidadeId:
           <ul className="space-y-1.5">
             {d.analises.map((a) => (
               <li key={a.id} className="text-[12px]">
-                <span className="font-semibold">{ROTULO_FONTE[a.fonte] ?? a.fonte}</span> · <span className={a.status === "ERRO" ? "font-bold text-critico" : "text-cinza"}>{ROTULO_ANALISE[a.status] ?? a.status}</span>
-                {a.status === "CONCLUIDA" && <span className="text-cinza"> · {a.sugestoes} sugestão(ões)</span>}
-                {a.resumo && <span className="block text-cinza">{a.resumo}</span>}
-                {a.erro && <span className="block text-cinza">{a.erro}</span>}
-                {(a.status === "ERRO" || a.status === "SEM_CHAVE") && <button className="text-[12px] font-bold text-azul" onClick={() => void refazer(a.id)}>Tentar de novo</button>}
+                <span className="font-semibold">{ROTULO_FONTE[a.fonte] ?? a.fonte}</span> · <span className={a.status === "ERRO" ? "font-bold text-perigo-texto" : "text-suave"}>{ROTULO_ANALISE[a.status] ?? a.status}</span>
+                {a.status === "CONCLUIDA" && <span className="text-suave"> · {a.sugestoes} sugestão(ões)</span>}
+                {a.resumo && <span className="block text-suave">{a.resumo}</span>}
+                {a.erro && <span className="block text-suave">{a.erro}</span>}
+                {(a.status === "ERRO" || a.status === "SEM_CHAVE") && <button className="text-[12px] font-bold text-marinho" onClick={() => void refazer(a.id)}>Tentar de novo</button>}
               </li>
             ))}
           </ul>
@@ -169,7 +169,7 @@ function FormCombinado({ titulo, inicial, onFechar, onSalvar }: { titulo: string
   const [f, setF] = useState({ descricao: inicial?.descricao ?? "", tipo: inicial?.tipo ?? "ENTREGAVEL", responsavel: inicial?.responsavel ?? "NOS", prazoEm: diaIso(inicial?.prazoEm ?? null), hora: "", pilar: inicial?.pilar ?? "" });
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
-  const rotulo = "mb-1 block text-[12px] font-semibold text-cinza";
+  const rotulo = "mb-1 block text-[12px] font-semibold text-suave";
   return (
     <Dialogo titulo={titulo} onFechar={onFechar}>
       <form className="space-y-3" onSubmit={async (e) => {
@@ -186,8 +186,8 @@ function FormCombinado({ titulo, inicial, onFechar, onSalvar }: { titulo: string
             ? <label className="block"><span className={rotulo}>Hora</span><input type="time" value={f.hora} onChange={(e) => setF({ ...f, hora: e.target.value })} className={campo} /></label>
             : <label className="block"><span className={rotulo}>Pilar do plano</span><select value={f.pilar} onChange={(e) => setF({ ...f, pilar: e.target.value })} className={campo}><option value="">—</option>{PILARES.map((p) => <option key={p} value={p}>{ROTULO_PILAR[p]}</option>)}</select></label>}
         </div>
-        <p className="text-[12px] text-cinza">Ao salvar: com a venda fechada vira cartão da entrega; antes disso, tarefa. Reunião com data vai para a agenda.</p>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        <p className="text-[12px] text-suave">Ao salvar: com a venda fechada vira cartão da entrega; antes disso, tarefa. Reunião com data vai para a agenda.</p>
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={salvando || f.descricao.trim().length < 3}>{salvando ? "Salvando…" : "Salvar"}</button></div>
       </form>
     </Dialogo>
@@ -209,8 +209,8 @@ function FormAnalisar({ oportunidadeId, onFechar, onEnviado }: { oportunidadeId:
       }}>
         <select value={fonte} onChange={(e) => setFonte(e.target.value)} className={campo} aria-label="O que é o texto"><option value="REUNIAO">Transcrição de reunião (Google Meet, gravação…)</option><option value="TEXTO">Outro texto (e-mail, anotação, ata)</option></select>
         <textarea required rows={12} minLength={20} maxLength={200000} value={texto} onChange={(e) => setTexto(e.target.value)} className={campo} placeholder="Cole aqui a transcrição. O agente lista o que ficou combinado, com prazo e responsável, para você aceitar." />
-        <p className="text-[12px] text-cinza">No Google Meet, a transcrição fica no Google Drive do organizador (pasta Meet Recordings): abra o documento, copie tudo e cole aqui.</p>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        <p className="text-[12px] text-suave">No Google Meet, a transcrição fica no Google Drive do organizador (pasta Meet Recordings): abra o documento, copie tudo e cole aqui.</p>
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={enviando || texto.trim().length < 20}>{enviando ? "Enviando…" : "Analisar"}</button></div>
       </form>
     </Dialogo>

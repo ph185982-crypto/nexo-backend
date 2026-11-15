@@ -30,38 +30,38 @@ export function FormLogin({ entrarComAvanteza, voltar, erroInicial }: { entrarCo
 
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-      <section className="flex flex-col justify-between bg-azul p-10 text-bq lg:p-16">
-        <Logo variante="bq" largura={180} />
+      <section className="flex flex-col justify-between bg-marinho p-10 text-creme lg:p-16">
+        <Logo variante="creme" tamanho={32} />
         <div>
           <h1 className="text-[44px] font-extrabold leading-[1.05] tracking-tight lg:text-[64px]">
-            Visão para <span className="text-bq">[</span>ir além<span className="text-bq">]</span>.
+            Visão para <span className="text-laranja">[</span>ir além<span className="text-laranja">]</span>.
           </h1>
-          <p className="mt-4 max-w-md text-[16px] text-bq/90">Funil, contatos e entrega no mesmo lugar, ligados ao Vendedor IA.</p>
+          <p className="mt-4 max-w-md text-[16px] text-creme/90">Funil, contatos e entrega no mesmo lugar, ligados ao Vendedor IA.</p>
         </div>
-        <p className="text-[12px] text-bq/80">Consultoria e Estratégia</p>
+        <p className="text-[12px] text-creme/80">CRM · Avanteza</p>
       </section>
       <section className="flex items-center justify-center p-10">
         <form onSubmit={entrar} className="w-full max-w-sm space-y-5" noValidate>
           <h2 className="text-[24px] font-extrabold">Entrar</h2>
-          <a href={entrarComAvanteza} className="block w-full rounded-[10px] bg-azul py-3 text-center text-[14px] font-bold text-bq">
+          <a href={entrarComAvanteza} className="block w-full rounded-full bg-laranja py-3 text-center text-[14px] font-bold text-marinho hover:bg-laranja-hover">
             Entrar com Avanteza
           </a>
-          <p className="flex items-center gap-3 text-[12px] text-cinza">
-            <span className="h-px flex-1 bg-linha" />ou com e-mail e senha<span className="h-px flex-1 bg-linha" />
+          <p className="flex items-center gap-3 text-[12px] text-suave">
+            <span className="h-px flex-1 bg-areia" />ou com e-mail e senha<span className="h-px flex-1 bg-areia" />
           </p>
           <label className="block">
-            <span className="mb-1 block text-[12px] font-semibold text-cinza">E-mail</span>
+            <span className="mb-1 block text-[12px] font-semibold text-suave">E-mail</span>
             <input type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-[10px] border border-linha bg-superficie px-3 py-2.5 text-[14px]" />
+              className="w-full rounded-md border border-areia bg-superficie px-3 py-2.5 text-[14px]" />
           </label>
           <label className="block">
-            <span className="mb-1 block text-[12px] font-semibold text-cinza">Senha</span>
+            <span className="mb-1 block text-[12px] font-semibold text-suave">Senha</span>
             <input type="password" autoComplete="current-password" required value={senha} onChange={(e) => setSenha(e.target.value)}
-              className="w-full rounded-[10px] border border-linha bg-superficie px-3 py-2.5 text-[14px]" />
+              className="w-full rounded-md border border-areia bg-superficie px-3 py-2.5 text-[14px]" />
           </label>
-          {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+          {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
           <button type="submit" disabled={enviando || !email || !senha}
-            className="w-full rounded-[10px] border border-azul bg-superficie py-3 text-[14px] font-bold text-azul disabled:opacity-50">
+            className="w-full rounded-full border border-marinho bg-superficie py-3 text-[14px] font-bold text-marinho disabled:opacity-50">
             {enviando ? "Entrando…" : "Entrar com senha"}
           </button>
         </form>

@@ -79,7 +79,7 @@ export function FormAutomacao({ inicial, id, funis, onFechar, onSalvo }: { inici
     if (r.ok) onSalvo(); else setErro(((await r.json().catch(() => null)) as { erro?: string } | null)?.erro ?? "Não foi possível salvar");
   };
 
-  const rotulo = "mb-1 block text-[12px] font-semibold text-cinza";
+  const rotulo = "mb-1 block text-[12px] font-semibold text-suave";
   const mini = `${campo} !py-2 !text-[13px]`;
   return (
     <Dialogo titulo={id ? "Editar automação" : "Nova automação"} onFechar={onFechar}>
@@ -96,8 +96,8 @@ export function FormAutomacao({ inicial, id, funis, onFechar, onSalvo }: { inici
             <optgroup label="Oportunidades">{GATILHOS.filter((g) => !ehGatilhoDeEntrega(g)).map((g) => <option key={g} value={g}>{ROTULO_GATILHO[g]}</option>)}</optgroup>
             <optgroup label="Funil de entrega">{GATILHOS.filter(ehGatilhoDeEntrega).map((g) => <option key={g} value={g}>{ROTULO_GATILHO[g]}</option>)}</optgroup>
           </select>
-          {GATILHOS_DE_TEMPO.includes(f.gatilho) && <span className="mt-1 block text-[11.5px] text-cinza">Gatilho de tempo: roda na varredura diária ou em &quot;Executar agora&quot;.{exigido && ` Exige o critério "${ROTULO_CAMPO[exigido.campo]}" com "${exigido.operador === ">=" ? "≥" : "≤"}".`}</span>}
-          {deEntrega && <span className="mt-1 block text-[11.5px] text-cinza">As ações valem para a oportunidade ganha que abriu a entrega; a tarefa vai para quem cuida do cartão. Nos textos, use {"{cliente}"}, {"{entrega}"}, {"{cartao}"} e {"{dias}"}.</span>}</label>
+          {GATILHOS_DE_TEMPO.includes(f.gatilho) && <span className="mt-1 block text-[11.5px] text-suave">Gatilho de tempo: roda na varredura diária ou em &quot;Executar agora&quot;.{exigido && ` Exige o critério "${ROTULO_CAMPO[exigido.campo]}" com "${exigido.operador === ">=" ? "≥" : "≤"}".`}</span>}
+          {deEntrega && <span className="mt-1 block text-[11.5px] text-suave">As ações valem para a oportunidade ganha que abriu a entrega; a tarefa vai para quem cuida do cartão. Nos textos, use {"{cliente}"}, {"{entrega}"}, {"{cartao}"} e {"{dias}"}.</span>}</label>
 
         <fieldset className="space-y-2"><legend className={rotulo}>Se (todos precisam valer)</legend>
           {f.criterios.map((c, i) => {
@@ -112,39 +112,39 @@ export function FormAutomacao({ inicial, id, funis, onFechar, onSalvo }: { inici
                 <select aria-label="Operador" value={c.operador} onChange={(e) => setCriterio(i, { operador: e.target.value })} className={`${mini} !w-20 flex-none`}>{ops.map((o) => <option key={o} value={o}>{o === ">=" ? "≥" : o === "<=" ? "≤" : o === "!=" ? "≠" : "="}</option>)}</select>
                 {lista ? <select aria-label="Valor" value={c.valor} onChange={(e) => setCriterio(i, { valor: e.target.value })} className={mini}><option value="">Escolha…</option>{lista.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}</select>
                   : <input aria-label="Valor" value={c.valor} inputMode={CAMPOS_NUMERICOS.includes(c.campo) ? "numeric" : "text"} onChange={(e) => setCriterio(i, { valor: e.target.value })} className={mini} />}
-                <button type="button" aria-label="Remover critério" onClick={() => setF({ ...f, criterios: f.criterios.filter((_, j) => j !== i) })} className="flex-none px-1.5 text-[18px] text-cinza">×</button>
+                <button type="button" aria-label="Remover critério" onClick={() => setF({ ...f, criterios: f.criterios.filter((_, j) => j !== i) })} className="flex-none px-1.5 text-[18px] text-suave">×</button>
               </div>
             );
           })}
-          <button type="button" className="text-[12px] font-bold text-azul" onClick={() => setF({ ...f, criterios: [...f.criterios, novoCriterio()] })}>+ critério</button>
+          <button type="button" className="text-[12px] font-bold text-marinho" onClick={() => setF({ ...f, criterios: [...f.criterios, novoCriterio()] })}>+ critério</button>
         </fieldset>
 
         <fieldset className="space-y-3"><legend className={rotulo}>Então</legend>
           {f.acoes.map((a, i) => (
-            <div key={i} className="space-y-2 rounded-[10px] border border-linha p-3">
+            <div key={i} className="space-y-2 rounded-md border border-areia p-3">
               <div className="flex gap-2">
                 <select aria-label="Ação" value={a.tipo} onChange={(e) => setAcao(i, { tipo: e.target.value as TipoAcao })} className={mini}>{TIPOS_ACAO.map((t) => <option key={t} value={t}>{ROTULO_ACAO[t]}</option>)}</select>
-                <button type="button" aria-label="Remover ação" onClick={() => setF({ ...f, acoes: f.acoes.filter((_, j) => j !== i) })} className="flex-none px-1.5 text-[18px] text-cinza">×</button>
+                <button type="button" aria-label="Remover ação" onClick={() => setF({ ...f, acoes: f.acoes.filter((_, j) => j !== i) })} className="flex-none px-1.5 text-[18px] text-suave">×</button>
               </div>
               {a.tipo === "CRIAR_TAREFA" && (<>
                 <input aria-label="Título da tarefa" placeholder="Título da tarefa" maxLength={200} value={a.titulo} onChange={(e) => setAcao(i, { titulo: e.target.value })} className={mini} />
                 <div className="grid grid-cols-3 gap-2">
                   <select aria-label="Tipo da tarefa" value={a.tipoTarefa} onChange={(e) => setAcao(i, { tipoTarefa: e.target.value })} className={mini}>{TIPOS_TAREFA.map((t) => <option key={t} value={t}>{ROTULO_TIPO_TAREFA[t]}</option>)}</select>
                   <select aria-label="Prioridade" value={a.prioridade} onChange={(e) => setAcao(i, { prioridade: e.target.value })} className={mini}>{PRIORIDADES.map((p) => <option key={p} value={p}>{ROTULO_PRIORIDADE[p]}</option>)}</select>
-                  <label className="flex items-center gap-1 text-[12px] text-cinza">prazo<input aria-label="Prazo em horas" inputMode="numeric" value={a.prazoHoras} onChange={(e) => setAcao(i, { prazoHoras: e.target.value })} className={`${mini} !px-2`} />h</label>
+                  <label className="flex items-center gap-1 text-[12px] text-suave">prazo<input aria-label="Prazo em horas" inputMode="numeric" value={a.prazoHoras} onChange={(e) => setAcao(i, { prazoHoras: e.target.value })} className={`${mini} !px-2`} />h</label>
                 </div></>)}
               {a.tipo === "MOVER_ETAPA" && <select aria-label="Etapa de destino" value={a.etapaId} onChange={(e) => setAcao(i, { etapaId: e.target.value })} className={mini}><option value="">Etapa de destino…</option>{etapas.map((e) => <option key={e.id} value={e.id}>{e.rotulo}</option>)}</select>}
               {a.tipo === "ADICIONAR_TAG" && <input aria-label="Tag" placeholder="tag (sem espaços)" maxLength={40} value={a.tag} onChange={(e) => setAcao(i, { tag: e.target.value })} className={mini} />}
               {a.tipo === "REGISTRAR_ALERTA" && <textarea aria-label="Mensagem" rows={2} maxLength={500} placeholder="Mensagem que aparece na linha do tempo" value={a.mensagem} onChange={(e) => setAcao(i, { mensagem: e.target.value })} className={mini} />}
               {a.tipo === "DISPARAR_WEBHOOK" && <input aria-label="Endereço do webhook" placeholder="https://…" maxLength={500} value={a.url} onChange={(e) => setAcao(i, { url: e.target.value })} className={mini} />}
-              <label className="flex items-center gap-2 text-[12px] text-cinza">Esperar <input aria-label="Espera em horas" inputMode="numeric" value={a.esperaHoras} onChange={(e) => setAcao(i, { esperaHoras: e.target.value })} className={`${mini} !w-20 !px-2`} /> horas antes de executar</label>
+              <label className="flex items-center gap-2 text-[12px] text-suave">Esperar <input aria-label="Espera em horas" inputMode="numeric" value={a.esperaHoras} onChange={(e) => setAcao(i, { esperaHoras: e.target.value })} className={`${mini} !w-20 !px-2`} /> horas antes de executar</label>
             </div>
           ))}
-          <button type="button" className="text-[12px] font-bold text-azul" onClick={() => setF({ ...f, acoes: [...f.acoes, acaoVazia()] })}>+ ação</button>
+          <button type="button" className="text-[12px] font-bold text-marinho" onClick={() => setF({ ...f, acoes: [...f.acoes, acaoVazia()] })}>+ ação</button>
         </fieldset>
 
-        <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} className="accent-[var(--azul)]" />Automação ativa</label>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} className="accent-laranja" />Automação ativa</label>
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2 pt-1"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={salvando || !f.nome.trim() || f.acoes.length === 0}>{salvando ? "Salvando…" : "Salvar"}</button></div>
       </form>
     </Dialogo>

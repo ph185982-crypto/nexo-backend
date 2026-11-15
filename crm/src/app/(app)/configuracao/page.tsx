@@ -12,7 +12,7 @@ async function chamar(url: string, metodo: string, corpo?: unknown): Promise<{ o
   const dados = (await r.json().catch(() => null)) as Record<string, unknown> | null;
   return r.ok ? { ok: true, dados: dados ?? {} } : { ok: false, erro: (dados?.erro as string) ?? "Não foi possível concluir" };
 }
-const rotulo = "mb-1 block text-[12px] font-semibold text-cinza";
+const rotulo = "mb-1 block text-[12px] font-semibold text-suave";
 
 export default function ConfiguracaoPage() {
   const [aba, setAba] = useState<Aba>("funis");
@@ -21,8 +21,8 @@ export default function ConfiguracaoPage() {
   return (
     <div className="flex h-full flex-col">
       <header className="px-6 py-3.5"><h1 className="text-[22px] font-extrabold leading-none tracking-tight">Configuração</h1></header>
-      <div role="tablist" className="mx-6 flex gap-5 overflow-x-auto border-b border-linha">
-        {ABAS.map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px whitespace-nowrap border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{r}</button>)}
+      <div role="tablist" className="mx-6 flex gap-5 overflow-x-auto border-b border-areia">
+        {ABAS.map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px whitespace-nowrap border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-laranja text-marinho" : "border-transparent text-suave"}`}>{r}</button>)}
       </div>
       <div className="flex-1 overflow-auto px-6 pb-8 pt-4">
         {aba === "funis" && <Funis />}{aba === "motivos" && <Motivos />}{aba === "produtos" && <Produtos />}{aba === "usuarios" && <Usuarios />}{aba === "integracao" && <Integracao />}{aba === "google" && <Google />}{aba === "entrega" && <Modelos />}
@@ -42,7 +42,7 @@ function useLista<T>(url: string, chave: string) {
   useEffect(() => { void carregar(); }, [carregar]);
   return { dados, erro, carregar };
 }
-const Aviso = ({ erro }: { erro: string | null }) => (erro ? <p role="alert" className="mb-3 text-[13px] font-semibold text-critico">{erro}</p> : null);
+const Aviso = ({ erro }: { erro: string | null }) => (erro ? <p role="alert" className="mb-3 text-[13px] font-semibold text-perigo-texto">{erro}</p> : null);
 
 // ─── Funis e etapas ──────────────────────────────────────────────────────────
 interface EtapaCfg { id: string; nome: string; tipo: string; ordem: number; descricao: string | null; oportunidades: number }
@@ -62,33 +62,33 @@ function Funis() {
   if (erro) return <Aviso erro={erro} />;
   return (
     <div className="max-w-4xl space-y-4">
-      <div className="flex items-center justify-between"><p className="text-[13px] text-cinza">A natureza da etapa (aberta, ganha, perdida) define o status, o motivo e a abertura da entrega.</p><button className={botaoPrimario} onClick={() => setNovo(true)}>Novo funil</button></div>
+      <div className="flex items-center justify-between"><p className="text-[13px] text-suave">A natureza da etapa (aberta, ganha, perdida) define o status, o motivo e a abertura da entrega.</p><button className={botaoPrimario} onClick={() => setNovo(true)}>Novo funil</button></div>
       <Aviso erro={msg} />
-      {dados === null && <p className="py-8 text-center text-cinza">Carregando…</p>}
+      {dados === null && <p className="py-8 text-center text-suave">Carregando…</p>}
       {dados?.map((f) => (
-        <section key={f.id} aria-label={f.nome} className="rounded-xl border border-linha bg-superficie p-4">
+        <section key={f.id} aria-label={f.nome} className="rounded-md border border-areia bg-superficie p-4">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-titulo text-[16px] font-extrabold">{f.nome}</h2>
-            {f.padrao && <span className="rounded-full bg-azul-8 px-2.5 py-0.5 text-[11px] font-bold text-azul">Padrão</span>}
-            {!f.ativo && <span className="rounded-full border border-linha px-2.5 py-0.5 text-[11px] font-bold text-cinza">Desativado</span>}
-            <span className="text-[12px] text-cinza">{f.oportunidades} oportunidade(s)</span>
+            {f.padrao && <span className="rounded-full bg-areia px-2.5 py-0.5 text-[11px] font-bold text-marinho">Padrão</span>}
+            {!f.ativo && <span className="rounded-full border border-areia px-2.5 py-0.5 text-[11px] font-bold text-suave">Desativado</span>}
+            <span className="text-[12px] text-suave">{f.oportunidades} oportunidade(s)</span>
             <span className="ml-auto flex flex-wrap gap-3 text-[12px] font-bold">
-              <button className="text-azul" onClick={() => { const n = window.prompt("Novo nome do funil", f.nome); if (n && n !== f.nome) void agir(`/api/config/funis/${f.id}`, "PATCH", { nome: n }); }}>Renomear</button>
-              {!f.padrao && f.ativo && <button className="text-azul" onClick={() => agir(`/api/config/funis/${f.id}`, "PATCH", { padrao: true })}>Tornar padrão</button>}
-              {!f.padrao && <button className="text-azul" onClick={() => agir(`/api/config/funis/${f.id}`, "PATCH", { ativo: !f.ativo })}>{f.ativo ? "Desativar" : "Ativar"}</button>}
-              {!f.padrao && <button className="text-critico" onClick={() => agir(`/api/config/funis/${f.id}`, "DELETE", undefined, `Excluir o funil "${f.nome}"?`)}>Excluir</button>}
+              <button className="text-marinho" onClick={() => { const n = window.prompt("Novo nome do funil", f.nome); if (n && n !== f.nome) void agir(`/api/config/funis/${f.id}`, "PATCH", { nome: n }); }}>Renomear</button>
+              {!f.padrao && f.ativo && <button className="text-marinho" onClick={() => agir(`/api/config/funis/${f.id}`, "PATCH", { padrao: true })}>Tornar padrão</button>}
+              {!f.padrao && <button className="text-marinho" onClick={() => agir(`/api/config/funis/${f.id}`, "PATCH", { ativo: !f.ativo })}>{f.ativo ? "Desativar" : "Ativar"}</button>}
+              {!f.padrao && <button className="text-perigo-texto" onClick={() => agir(`/api/config/funis/${f.id}`, "DELETE", undefined, `Excluir o funil "${f.nome}"?`)}>Excluir</button>}
             </span>
           </div>
           <ol className="mt-3">
             {f.etapas.map((e, i) => (
-              <li key={e.id} className="flex items-start gap-3 border-t border-linha py-2.5">
-                <span className="flex flex-none flex-col"><button aria-label={`Subir ${e.nome}`} disabled={i === 0} onClick={() => mover(f, i, -1)} className="px-1 leading-none text-cinza disabled:opacity-30">▲</button><button aria-label={`Descer ${e.nome}`} disabled={i === f.etapas.length - 1} onClick={() => mover(f, i, 1)} className="px-1 leading-none text-cinza disabled:opacity-30">▼</button></span>
-                <div className="min-w-0 flex-1"><p className="font-semibold">{e.nome} <span className="ml-1 text-[11px] font-bold text-cinza">{NATUREZA[e.tipo]}</span></p>{e.descricao && <p className="text-[12px] text-cinza">{e.descricao}</p>}<p className="text-[11.5px] text-cinza">{e.oportunidades} oportunidade(s)</p></div>
-                <span className="flex flex-none gap-3 text-[12px] font-bold"><button className="text-azul" onClick={() => setEtapa({ funilId: f.id, etapa: e })}>Editar</button><button className="text-critico" onClick={() => agir(`/api/config/etapas/${e.id}`, "DELETE", undefined, `Excluir a etapa "${e.nome}"?`)}>Excluir</button></span>
+              <li key={e.id} className="flex items-start gap-3 border-t border-areia py-2.5">
+                <span className="flex flex-none flex-col"><button aria-label={`Subir ${e.nome}`} disabled={i === 0} onClick={() => mover(f, i, -1)} className="px-1 leading-none text-suave disabled:opacity-30">▲</button><button aria-label={`Descer ${e.nome}`} disabled={i === f.etapas.length - 1} onClick={() => mover(f, i, 1)} className="px-1 leading-none text-suave disabled:opacity-30">▼</button></span>
+                <div className="min-w-0 flex-1"><p className="font-semibold">{e.nome} <span className="ml-1 text-[11px] font-bold text-suave">{NATUREZA[e.tipo]}</span></p>{e.descricao && <p className="text-[12px] text-suave">{e.descricao}</p>}<p className="text-[11.5px] text-suave">{e.oportunidades} oportunidade(s)</p></div>
+                <span className="flex flex-none gap-3 text-[12px] font-bold"><button className="text-marinho" onClick={() => setEtapa({ funilId: f.id, etapa: e })}>Editar</button><button className="text-perigo-texto" onClick={() => agir(`/api/config/etapas/${e.id}`, "DELETE", undefined, `Excluir a etapa "${e.nome}"?`)}>Excluir</button></span>
               </li>
             ))}
           </ol>
-          <button className="mt-1 text-[12px] font-bold text-azul" onClick={() => setEtapa({ funilId: f.id, etapa: null })}>+ etapa</button>
+          <button className="mt-1 text-[12px] font-bold text-marinho" onClick={() => setEtapa({ funilId: f.id, etapa: null })}>+ etapa</button>
         </section>
       ))}
       {novo && <NovoFunil onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); void carregar(); }} />}
@@ -103,8 +103,8 @@ function NovoFunil({ onFechar, onSalvo }: { onFechar: () => void; onSalvo: () =>
     <Dialogo titulo="Novo funil" onFechar={onFechar}>
       <form className="space-y-3" onSubmit={async (e) => { e.preventDefault(); const r = await chamar("/api/config/funis", "POST", { nome, padrao }); if (r.ok) onSalvo(); else setErro(r.erro ?? null); }}>
         <label className="block"><span className={rotulo}>Nome</span><input required maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} className={campo} /></label>
-        <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={padrao} onChange={(e) => setPadrao(e.target.checked)} className="accent-[var(--azul)]" />Usar como funil padrão (recebe as oportunidades do Vendedor IA)</label>
-        <p className="text-[12px] text-cinza">Nasce com Novo, Em andamento, Ganha e Perdida. Ajuste depois.</p>
+        <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={padrao} onChange={(e) => setPadrao(e.target.checked)} className="accent-laranja" />Usar como funil padrão (recebe as oportunidades do Vendedor IA)</label>
+        <p className="text-[12px] text-suave">Nasce com Novo, Em andamento, Ganha e Perdida. Ajuste depois.</p>
         <Aviso erro={erro} />
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={!nome.trim()}>Criar</button></div>
       </form>
@@ -138,14 +138,14 @@ function Motivos() {
   if (erro) return <Aviso erro={erro} />;
   return (
     <div className="max-w-4xl">
-      <p className="mb-3 text-[13px] text-cinza">Motivo desativado some da lista de escolha, mas continua nos relatórios das oportunidades que já o usam.</p>
+      <p className="mb-3 text-[13px] text-suave">Motivo desativado some da lista de escolha, mas continua nos relatórios das oportunidades que já o usam.</p>
       <Aviso erro={msg} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {([["GANHO", "Motivos de ganho"], ["PERDA", "Motivos de perda"]] as const).map(([tipo, titulo]) => (
-          <section key={tipo} aria-label={titulo} className="rounded-xl border border-linha bg-superficie p-4">
+          <section key={tipo} aria-label={titulo} className="rounded-md border border-areia bg-superficie p-4">
             <h2 className="font-titulo text-[15px] font-extrabold">{titulo}</h2>
             <ul className="mt-2">{dados?.filter((m) => m.tipo === tipo).map((m) => (
-              <li key={m.id} className="flex items-center justify-between gap-3 border-t border-linha py-2 text-[13px]"><span className={m.ativo ? "" : "text-cinza line-through"}>{m.nome}</span><span className="flex items-center gap-3 text-[12px] text-cinza">{m.usos} uso(s)<button className="font-bold text-azul" onClick={() => alternar(m)}>{m.ativo ? "Desativar" : "Ativar"}</button></span></li>
+              <li key={m.id} className="flex items-center justify-between gap-3 border-t border-areia py-2 text-[13px]"><span className={m.ativo ? "" : "text-suave line-through"}>{m.nome}</span><span className="flex items-center gap-3 text-[12px] text-suave">{m.usos} uso(s)<button className="font-bold text-marinho" onClick={() => alternar(m)}>{m.ativo ? "Desativar" : "Ativar"}</button></span></li>
             ))}</ul>
             <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); void adicionar(tipo); }}><input aria-label={`Novo motivo de ${tipo === "GANHO" ? "ganho" : "perda"}`} maxLength={80} value={nome[tipo]} onChange={(e) => setNome({ ...nome, [tipo]: e.target.value })} placeholder="Novo motivo" className={`${campo} !py-2`} /><button type="submit" className={botaoPrimario} disabled={!nome[tipo].trim()}>Adicionar</button></form>
           </section>
@@ -163,10 +163,10 @@ function Usuarios() {
   if (erro) return <Aviso erro={erro} />;
   return (
     <div className="max-w-4xl">
-      <div className="mb-3 flex items-center justify-between"><p className="text-[13px] text-cinza">Administrador acessa configuração e exporta contatos. Vendedor trabalha no funil, tarefas e contatos.</p><button className={botaoPrimario} onClick={() => setForm("novo")}>Novo usuário</button></div>
-      <div className="overflow-auto rounded-xl border border-linha bg-superficie">
-        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-cinza"><tr>{["Nome", "E-mail", "Papel", "Situação", ""].map((h) => <th key={h} className="border-b border-linha px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
-          <tbody>{dados?.map((u) => <tr key={u.id} className="border-b border-linha last:border-0"><td className="px-4 py-2.5 font-semibold">{u.nome}</td><td className="px-4 py-2.5 text-cinza">{u.email}</td><td className="px-4 py-2.5">{u.papel === "ADMIN" ? "Administrador" : "Vendedor"}</td><td className="px-4 py-2.5">{u.ativo ? "Ativo" : <span className="text-cinza">Desativado</span>}</td><td className="px-4 py-2.5 text-right"><button className="text-[12px] font-bold text-azul" onClick={() => setForm(u)}>Editar</button></td></tr>)}</tbody></table>
+      <div className="mb-3 flex items-center justify-between"><p className="text-[13px] text-suave">Administrador acessa configuração e exporta contatos. Vendedor trabalha no funil, tarefas e contatos.</p><button className={botaoPrimario} onClick={() => setForm("novo")}>Novo usuário</button></div>
+      <div className="overflow-auto rounded-md border border-areia bg-superficie">
+        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-suave"><tr>{["Nome", "E-mail", "Papel", "Situação", ""].map((h) => <th key={h} className="border-b border-areia px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <tbody>{dados?.map((u) => <tr key={u.id} className="border-b border-areia last:border-0"><td className="px-4 py-2.5 font-semibold">{u.nome}</td><td className="px-4 py-2.5 text-suave">{u.email}</td><td className="px-4 py-2.5">{u.papel === "ADMIN" ? "Administrador" : "Vendedor"}</td><td className="px-4 py-2.5">{u.ativo ? "Ativo" : <span className="text-suave">Desativado</span>}</td><td className="px-4 py-2.5 text-right"><button className="text-[12px] font-bold text-marinho" onClick={() => setForm(u)}>Editar</button></td></tr>)}</tbody></table>
       </div>
       {form && <FormUsuario u={form === "novo" ? null : form} onFechar={() => setForm(null)} onSalvo={() => { setForm(null); void carregar(); }} />}
     </div>
@@ -182,7 +182,7 @@ function FormUsuario({ u, onFechar, onSalvo }: { u: UsuarioCfg | null; onFechar:
         {!u && <label className="block"><span className={rotulo}>E-mail</span><input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={campo} /></label>}
         <label className="block"><span className={rotulo}>Papel</span><select value={papel} onChange={(e) => setPapel(e.target.value)} className={campo}><option value="VENDEDOR">Vendedor</option><option value="ADMIN">Administrador</option></select></label>
         <label className="block"><span className={rotulo}>{u ? "Nova senha (deixe vazio para manter)" : "Senha (mínimo de 10 caracteres)"}</span><input type="password" autoComplete="new-password" required={!u} minLength={u ? 0 : 10} value={senha} onChange={(e) => setSenha(e.target.value)} className={campo} /></label>
-        {u && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} className="accent-[var(--azul)]" />Usuário ativo</label>}
+        {u && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} className="accent-laranja" />Usuário ativo</label>}
         <Aviso erro={erro} />
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={!nome.trim()}>Salvar</button></div>
       </form>
@@ -200,12 +200,12 @@ function Produtos() {
   if (erro) return <Aviso erro={erro} />;
   return (
     <div className="max-w-4xl">
-      <div className="mb-3 flex items-center justify-between gap-3"><p className="text-[13px] text-cinza">Produtos e serviços que entram nas oportunidades. Com produtos, o valor da oportunidade é a soma deles (único e mensal).</p><button className={`${botaoPrimario} flex-none`} onClick={() => setForm("novo")}>Novo produto</button></div>
-      <div className="overflow-auto rounded-xl border border-linha bg-superficie">
-        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-cinza"><tr>{["Nome", "Código", "Valor", "Recorrência", "Situação", ""].map((h) => <th key={h} className="border-b border-linha px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+      <div className="mb-3 flex items-center justify-between gap-3"><p className="text-[13px] text-suave">Produtos e serviços que entram nas oportunidades. Com produtos, o valor da oportunidade é a soma deles (único e mensal).</p><button className={`${botaoPrimario} flex-none`} onClick={() => setForm("novo")}>Novo produto</button></div>
+      <div className="overflow-auto rounded-md border border-areia bg-superficie">
+        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-suave"><tr>{["Nome", "Código", "Valor", "Recorrência", "Situação", ""].map((h) => <th key={h} className="border-b border-areia px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
           <tbody>
-            {dados?.length === 0 && <tr><td colSpan={6} className="px-4 py-3 text-cinza">Nenhum produto cadastrado.</td></tr>}
-            {dados?.map((p) => <tr key={p.id} className="border-b border-linha last:border-0"><td className="px-4 py-2.5 font-semibold">{p.nome}</td><td className="px-4 py-2.5 text-cinza">{p.codigo ?? "—"}</td><td className="px-4 py-2.5">{reais(p.valor)}</td><td className="px-4 py-2.5">{p.recorrencia === "MENSAL" ? "Mensal" : "Único"}</td><td className="px-4 py-2.5">{p.ativo ? "Ativo" : <span className="text-cinza">Desativado</span>}</td><td className="px-4 py-2.5 text-right"><button className="text-[12px] font-bold text-azul" onClick={() => setForm(p)}>Editar</button></td></tr>)}
+            {dados?.length === 0 && <tr><td colSpan={6} className="px-4 py-3 text-suave">Nenhum produto cadastrado.</td></tr>}
+            {dados?.map((p) => <tr key={p.id} className="border-b border-areia last:border-0"><td className="px-4 py-2.5 font-semibold">{p.nome}</td><td className="px-4 py-2.5 text-suave">{p.codigo ?? "—"}</td><td className="px-4 py-2.5">{reais(p.valor)}</td><td className="px-4 py-2.5">{p.recorrencia === "MENSAL" ? "Mensal" : "Único"}</td><td className="px-4 py-2.5">{p.ativo ? "Ativo" : <span className="text-suave">Desativado</span>}</td><td className="px-4 py-2.5 text-right"><button className="text-[12px] font-bold text-marinho" onClick={() => setForm(p)}>Editar</button></td></tr>)}
           </tbody></table>
       </div>
       {form && <FormProduto p={form === "novo" ? null : form} onFechar={() => setForm(null)} onSalvo={() => { setForm(null); void carregar(); }} />}
@@ -220,9 +220,9 @@ function TextosProposta() {
   useEffect(() => { fetch("/api/config/propostas").then((r) => r.json()).then(setT).catch(() => setMsg("Não foi possível carregar.")); }, []);
   if (!t) return null;
   return (
-    <form className="mt-6 space-y-3 rounded-xl border border-linha bg-superficie p-4" onSubmit={async (e) => { e.preventDefault(); const r = await chamar("/api/config/propostas", "PUT", t); setMsg(r.ok ? "Textos salvos. Valem para as próximas propostas." : r.erro ?? null); }}>
+    <form className="mt-6 space-y-3 rounded-md border border-areia bg-superficie p-4" onSubmit={async (e) => { e.preventDefault(); const r = await chamar("/api/config/propostas", "PUT", t); setMsg(r.ok ? "Textos salvos. Valem para as próximas propostas." : r.erro ?? null); }}>
       <h2 className="font-titulo text-[15px] font-extrabold">Textos padrão da proposta</h2>
-      <p className="text-[12px] text-cinza">Podem usar {"{cliente}"}, {"{contato}"}, {"{oportunidade}"} e {"{consultor}"}. Cada proposta pode ser ajustada antes de enviar.</p>
+      <p className="text-[12px] text-suave">Podem usar {"{cliente}"}, {"{contato}"}, {"{oportunidade}"} e {"{consultor}"}. Cada proposta pode ser ajustada antes de enviar.</p>
       <label className="block"><span className={rotulo}>Introdução</span><textarea id="padrao-introducao" rows={5} required minLength={10} maxLength={5000} value={t.introducao} onChange={(e) => setT({ ...t, introducao: e.target.value })} className={campo} /></label>
       <label className="block"><span className={rotulo}>Condições</span><textarea id="padrao-condicoes" rows={4} required minLength={10} maxLength={5000} value={t.condicoes} onChange={(e) => setT({ ...t, condicoes: e.target.value })} className={campo} /></label>
       <div className="flex items-center gap-3"><button type="submit" className={botaoPrimario}>Salvar textos</button>{msg && <span role="status" className="text-[13px] font-semibold">{msg}</span>}</div>
@@ -243,7 +243,7 @@ function FormProduto({ p, onFechar, onSalvo }: { p: ProdutoCfg | null; onFechar:
         </div>
         <label className="block"><span className={rotulo}>Código (opcional)</span><input maxLength={40} value={f.codigo} onChange={(e) => setF({ ...f, codigo: e.target.value })} className={campo} /></label>
         <label className="block"><span className={rotulo}>Descrição (opcional)</span><textarea rows={3} maxLength={1000} value={f.descricao} onChange={(e) => setF({ ...f, descricao: e.target.value })} className={campo} /></label>
-        {p && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} className="accent-[var(--azul)]" />Produto ativo</label>}
+        {p && <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} className="accent-laranja" />Produto ativo</label>}
         <Aviso erro={erro} />
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario}>Salvar</button></div>
       </form>
@@ -261,24 +261,24 @@ function Integracao() {
   if (erro) return <Aviso erro={erro} />;
   return (
     <div className="max-w-4xl space-y-4">
-      <p className="text-[13px] text-cinza">Chaves para sistemas que enviam eventos ao CRM (o Vendedor IA). Endereço: <code className="rounded bg-superficie px-1.5 py-0.5">/api/integracoes/vendedor-ia/eventos</code>. No Vendedor IA, guarde a chave como <code className="rounded bg-superficie px-1.5 py-0.5">CRM_API_KEY</code> e o endereço deste CRM como <code className="rounded bg-superficie px-1.5 py-0.5">CRM_URL</code>.</p>
+      <p className="text-[13px] text-suave">Chaves para sistemas que enviam eventos ao CRM (o Vendedor IA). Endereço: <code className="rounded bg-superficie px-1.5 py-0.5">/api/integracoes/vendedor-ia/eventos</code>. No Vendedor IA, guarde a chave como <code className="rounded bg-superficie px-1.5 py-0.5">CRM_API_KEY</code> e o endereço deste CRM como <code className="rounded bg-superficie px-1.5 py-0.5">CRM_URL</code>.</p>
       <Aviso erro={msg} />
       {nova && (
-        <div role="status" className="rounded-xl border border-azul bg-azul-8 p-4">
-          <p className="text-[13px] font-bold text-azul">Copie agora. Esta chave não será mostrada de novo.</p>
-          <p className="mt-2 break-all rounded-lg bg-superficie p-3 font-mono text-[13px]">{nova}</p>
+        <div role="status" className="rounded-md border border-marinho bg-areia p-4">
+          <p className="text-[13px] font-bold text-marinho">Copie agora. Esta chave não será mostrada de novo.</p>
+          <p className="mt-2 break-all rounded-md bg-superficie p-3 font-mono text-[13px]">{nova}</p>
           <div className="mt-3 flex gap-2"><button className={botaoPrimario} onClick={() => void navigator.clipboard?.writeText(nova)}>Copiar</button><button className={botaoSecundario} onClick={() => setNova(null)}>Já guardei</button></div>
         </div>
       )}
-      <section aria-label="Conversas do WhatsApp" className="rounded-xl border border-linha bg-superficie p-4">
+      <section aria-label="Conversas do WhatsApp" className="rounded-md border border-areia bg-superficie p-4">
         <h2 className="font-titulo text-[15px] font-extrabold">Conversas do WhatsApp</h2>
-        <p className="mt-1 text-[13px] text-cinza">Chegam sozinhas na ficha do cliente pelo Vendedor IA, que usa a API oficial do WhatsApp. Só de quem já está no CRM. O agente lê cada conversa quando ela para por 30 minutos e sugere os combinados.</p>
-        <p className="mt-2 text-[13px] text-cinza">Para o seu próprio número do WhatsApp Business entrar também, conecte-o ao Vendedor IA em modo coexistência (o app continua funcionando no celular), sem agente de IA nele. O passo a passo está em <code className="rounded bg-bq px-1.5 py-0.5">crm/docs/integracao.md</code>.</p>
+        <p className="mt-1 text-[13px] text-suave">Chegam sozinhas na ficha do cliente pelo Vendedor IA, que usa a API oficial do WhatsApp. Só de quem já está no CRM. O agente lê cada conversa quando ela para por 30 minutos e sugere os combinados.</p>
+        <p className="mt-2 text-[13px] text-suave">Para o seu próprio número do WhatsApp Business entrar também, conecte-o ao Vendedor IA em modo coexistência (o app continua funcionando no celular), sem agente de IA nele. O passo a passo está em <code className="rounded bg-creme px-1.5 py-0.5">crm/docs/integracao.md</code>.</p>
       </section>
       <form onSubmit={criar} className="flex gap-2"><input aria-label="Nome da chave" required maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome (ex.: Vendedor IA)" className={`${campo} !py-2`} /><button type="submit" className={botaoPrimario} disabled={!nome.trim()}>Gerar chave</button></form>
-      <div className="overflow-auto rounded-xl border border-linha bg-superficie">
-        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-cinza"><tr>{["Nome", "Chave", "Criada", "Último uso", ""].map((h) => <th key={h} className="border-b border-linha px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
-          <tbody>{dados?.length === 0 && <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza">Nenhuma chave.</td></tr>}{dados?.map((c) => <tr key={c.id} className="border-b border-linha last:border-0"><td className="px-4 py-2.5 font-semibold">{c.nome}</td><td className="px-4 py-2.5 font-mono text-[12px] text-cinza">{c.prefixo}…</td><td className="px-4 py-2.5 text-cinza">{dataHora(c.criadaEm)}</td><td className="px-4 py-2.5 text-cinza">{c.ultimoUsoEm ? dataHora(c.ultimoUsoEm) : "nunca"}</td><td className="px-4 py-2.5 text-right">{c.revogadaEm ? <span className="text-[12px] text-cinza">Revogada</span> : <button className="text-[12px] font-bold text-critico" onClick={() => revogar(c)}>Revogar</button>}</td></tr>)}</tbody></table>
+      <div className="overflow-auto rounded-md border border-areia bg-superficie">
+        <table className="w-full text-left text-[13px]"><thead className="text-[11px] uppercase tracking-wide text-suave"><tr>{["Nome", "Chave", "Criada", "Último uso", ""].map((h) => <th key={h} className="border-b border-areia px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <tbody>{dados?.length === 0 && <tr><td colSpan={5} className="px-4 py-6 text-center text-suave">Nenhuma chave.</td></tr>}{dados?.map((c) => <tr key={c.id} className="border-b border-areia last:border-0"><td className="px-4 py-2.5 font-semibold">{c.nome}</td><td className="px-4 py-2.5 font-mono text-[12px] text-suave">{c.prefixo}…</td><td className="px-4 py-2.5 text-suave">{dataHora(c.criadaEm)}</td><td className="px-4 py-2.5 text-suave">{c.ultimoUsoEm ? dataHora(c.ultimoUsoEm) : "nunca"}</td><td className="px-4 py-2.5 text-right">{c.revogadaEm ? <span className="text-[12px] text-suave">Revogada</span> : <button className="text-[12px] font-bold text-perigo-texto" onClick={() => revogar(c)}>Revogar</button>}</td></tr>)}</tbody></table>
       </div>
     </div>
   );
@@ -306,8 +306,8 @@ function CredenciaisGoogle({ onSalvo }: { onSalvo: () => void | Promise<void> })
       <input id="google-client-id" aria-label="ID do cliente" required value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="ID do cliente (….apps.googleusercontent.com)" className={`${campo} !py-2`} />
       <input id="google-client-secret" aria-label="Chave secreta" required type="password" autoComplete="off" value={segredo} onChange={(e) => setSegredo(e.target.value)} placeholder="Chave secreta (GOCSPX-…)" className={`${campo} !py-2`} />
       <button type="submit" className={botaoPrimario}>Salvar</button>
-      {erro && <p role="alert" className="text-[12px] font-semibold text-critico sm:col-span-3">{erro}</p>}
-      <p className="text-[12px] text-cinza sm:col-span-3">A chave secreta fica cifrada no banco do CRM e não é mostrada de novo.</p>
+      {erro && <p role="alert" className="text-[12px] font-semibold text-perigo-texto sm:col-span-3">{erro}</p>}
+      <p className="text-[12px] text-suave sm:col-span-3">A chave secreta fica cifrada no banco do CRM e não é mostrada de novo.</p>
     </form>
   );
 }
@@ -331,59 +331,59 @@ function Google() {
     setMsg(res.ok ? (operacao === "vincular" ? "Reunião vinculada. O agente vai ler a transcrição." : null) : res.erro ?? null);
     await carregar();
   };
-  if (!d) return <p className="text-[13px] text-cinza">Carregando…</p>;
+  if (!d) return <p className="text-[13px] text-suave">Carregando…</p>;
   return (
     <div className="max-w-4xl space-y-4">
-      <p className="text-[13px] text-cinza">Depois de cada reunião no Google Meet com transcrição ligada, o CRM busca a transcrição, descobre o cliente pelos convidados do evento na Agenda (e-mail do contato) e manda para o agente de combinados. As sugestões aparecem na ficha da oportunidade.</p>
-      {msg && <p role="status" className="rounded-xl border border-azul bg-azul-8 px-3.5 py-2.5 text-[13px] font-semibold text-azul">{msg}</p>}
+      <p className="text-[13px] text-suave">Depois de cada reunião no Google Meet com transcrição ligada, o CRM busca a transcrição, descobre o cliente pelos convidados do evento na Agenda (e-mail do contato) e manda para o agente de combinados. As sugestões aparecem na ficha da oportunidade.</p>
+      {msg && <p role="status" className="rounded-md border border-marinho bg-areia px-3.5 py-2.5 text-[13px] font-semibold text-marinho">{msg}</p>}
       {d.configurado && d.admin && (
-        <details className="rounded-xl border border-linha bg-superficie p-4 text-[13px]">
+        <details className="rounded-md border border-areia bg-superficie p-4 text-[13px]">
           <summary className="cursor-pointer font-semibold">Credenciais do Google {d.origem === "AMBIENTE" ? "(variáveis da Vercel)" : "(salvas no CRM)"}</summary>
-          <p className="mt-2 break-all text-cinza">ID do cliente: {d.clientId}</p>
-          <p className="mt-1 text-cinza">URI de redirecionamento cadastrado no Google: <code className="break-all rounded bg-bq px-1.5 py-0.5">{d.redirectUri}</code></p>
+          <p className="mt-2 break-all text-suave">ID do cliente: {d.clientId}</p>
+          <p className="mt-1 text-suave">URI de redirecionamento cadastrado no Google: <code className="break-all rounded bg-creme px-1.5 py-0.5">{d.redirectUri}</code></p>
           {d.origem === "CONFIGURACAO" && <CredenciaisGoogle onSalvo={async () => { setMsg("Credenciais trocadas."); await carregar(); }} />}
         </details>
       )}
       {!d.configurado ? (
-        <section className="rounded-xl border border-linha bg-superficie p-4 text-[13px]">
+        <section className="rounded-md border border-areia bg-superficie p-4 text-[13px]">
           <h2 className="font-titulo text-[15px] font-extrabold">Falta configurar o acesso ao Google</h2>
           <ol className="mt-2 list-decimal space-y-1 pl-5">
             <li>No Google Cloud (console.cloud.google.com), no projeto da Avanteza, ative a <b>Google Meet REST API</b> e a <b>Google Calendar API</b>.</li>
             <li>Em <b>Tela de consentimento OAuth</b>, use o tipo <b>Interno</b> (só contas da sua empresa, sem verificação do Google) e adicione os escopos <code>calendar.readonly</code> e <code>meetings.space.readonly</code>.</li>
-            <li>Em <b>Credenciais</b>, crie (ou reaproveite) um ID do cliente OAuth do tipo <b>Aplicativo da Web</b> com o URI de redirecionamento: <code className="break-all rounded bg-bq px-1.5 py-0.5">{d.redirectUri}</code></li>
+            <li>Em <b>Credenciais</b>, crie (ou reaproveite) um ID do cliente OAuth do tipo <b>Aplicativo da Web</b> com o URI de redirecionamento: <code className="break-all rounded bg-creme px-1.5 py-0.5">{d.redirectUri}</code></li>
             <li>Cole aqui o ID do cliente e a chave secreta.</li>
           </ol>
-          {d.admin ? <CredenciaisGoogle onSalvo={async () => { setMsg("Credenciais salvas. Agora conecte a sua conta Google."); await carregar(); }} /> : <p className="mt-2 text-cinza">Peça a um administrador para cadastrar as credenciais.</p>}
+          {d.admin ? <CredenciaisGoogle onSalvo={async () => { setMsg("Credenciais salvas. Agora conecte a sua conta Google."); await carregar(); }} /> : <p className="mt-2 text-suave">Peça a um administrador para cadastrar as credenciais.</p>}
         </section>
       ) : !d.conta ? (
-        <section className="rounded-xl border border-linha bg-superficie p-4">
+        <section className="rounded-md border border-areia bg-superficie p-4">
           <p className="text-[13px]">Conecte a conta Google em que você faz as reuniões. O CRM só lê a Agenda e as transcrições do Meet.</p>
           <a href="/api/google/conectar" className={`${botaoPrimario} mt-3 inline-block`}>Conectar conta Google</a>
         </section>
       ) : (
-        <section className="rounded-xl border border-linha bg-superficie p-4">
+        <section className="rounded-md border border-areia bg-superficie p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="font-semibold">{d.conta.email} {d.conta.ativa ? <span className="ml-1 text-[12px] font-bold text-ok">conectada</span> : <span className="ml-1 text-[12px] font-bold text-critico">desconectada</span>}</p>
-              <p className="text-[12px] text-cinza">Última sincronização: {d.conta.ultimaSincronizacaoEm ? dataHora(d.conta.ultimaSincronizacaoEm) : "nunca"} · também roda sozinha ao abrir uma ficha e uma vez por dia.</p>
-              {d.conta.erro && <p className="mt-1 text-[12px] font-semibold text-critico">{d.conta.erro}</p>}
+              <p className="font-semibold">{d.conta.email} {d.conta.ativa ? <span className="ml-1 text-[12px] font-bold text-ok">conectada</span> : <span className="ml-1 text-[12px] font-bold text-perigo-texto">desconectada</span>}</p>
+              <p className="text-[12px] text-suave">Última sincronização: {d.conta.ultimaSincronizacaoEm ? dataHora(d.conta.ultimaSincronizacaoEm) : "nunca"} · também roda sozinha ao abrir uma ficha e uma vez por dia.</p>
+              {d.conta.erro && <p className="mt-1 text-[12px] font-semibold text-perigo-texto">{d.conta.erro}</p>}
             </div>
             {d.conta.ativa ? <button className={botaoPrimario} disabled={ocupado} onClick={() => void sincronizar()}>{ocupado ? "Sincronizando…" : "Sincronizar agora"}</button> : <a href="/api/google/conectar" className={botaoPrimario}>Conectar de novo</a>}
-            <button className="text-[12px] font-bold text-critico" onClick={() => void desconectar()}>Desconectar</button>
+            <button className="text-[12px] font-bold text-perigo-texto" onClick={() => void desconectar()}>Desconectar</button>
           </div>
         </section>
       )}
       {d.reunioes.length > 0 && (
-        <section aria-label="Reuniões" className="rounded-xl border border-linha bg-superficie">
-          <h2 className="border-b border-linha px-4 py-3 font-titulo text-[15px] font-extrabold">Reuniões encontradas</h2>
-          <ul className="divide-y divide-linha">
+        <section aria-label="Reuniões" className="rounded-md border border-areia bg-superficie">
+          <h2 className="border-b border-areia px-4 py-3 font-titulo text-[15px] font-extrabold">Reuniões encontradas</h2>
+          <ul className="divide-y divide-areia">
             {d.reunioes.map((r) => (
               <li key={r.id} className="px-4 py-3 text-[13px]">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <span className="font-semibold">{r.titulo ?? "Reunião sem título"} <span className="font-normal text-cinza">· {dataHora(r.inicio)}</span></span>
-                  <span className={`text-[12px] font-semibold ${r.status === "SEM_CLIENTE" ? "text-critico" : r.status === "VINCULADA" ? "text-ok" : "text-cinza"}`}>{ROTULO_REUNIAO[r.status] ?? r.status}{r.oportunidadeNome ? `: ${r.oportunidadeNome}` : ""}</span>
+                  <span className="font-semibold">{r.titulo ?? "Reunião sem título"} <span className="font-normal text-suave">· {dataHora(r.inicio)}</span></span>
+                  <span className={`text-[12px] font-semibold ${r.status === "SEM_CLIENTE" ? "text-perigo-texto" : r.status === "VINCULADA" ? "text-ok" : "text-suave"}`}>{ROTULO_REUNIAO[r.status] ?? r.status}{r.oportunidadeNome ? `: ${r.oportunidadeNome}` : ""}</span>
                 </div>
-                {(r.emails.length > 0 || r.participantes.length > 0) && <p className="text-[12px] text-cinza">{r.emails.length ? `Convidados: ${r.emails.join(", ")}` : `Falaram: ${r.participantes.join(", ")}`}</p>}
+                {(r.emails.length > 0 || r.participantes.length > 0) && <p className="text-[12px] text-suave">{r.emails.length ? `Convidados: ${r.emails.join(", ")}` : `Falaram: ${r.participantes.join(", ")}`}</p>}
                 {r.status === "SEM_CLIENTE" && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     <select aria-label="Oportunidade" value={escolha[r.id] ?? ""} onChange={(e) => setEscolha({ ...escolha, [r.id]: e.target.value })} className={`${campo} !w-auto !py-1.5 !text-[12px]`}>
@@ -391,13 +391,13 @@ function Google() {
                       {d.oportunidades.map((o) => <option key={o.id} value={o.id}>{o.contato.nome} — {o.nome}</option>)}
                     </select>
                     <button className={`${botaoPrimario} !px-3 !py-1.5 !text-[12px]`} disabled={!escolha[r.id]} onClick={() => void operar(r, "vincular")}>Vincular</button>
-                    <button className="text-[12px] font-semibold text-cinza" onClick={() => void operar(r, "ignorar")}>Ignorar</button>
+                    <button className="text-[12px] font-semibold text-suave" onClick={() => void operar(r, "ignorar")}>Ignorar</button>
                   </div>
                 )}
               </li>
             ))}
           </ul>
-          <p className="border-t border-linha px-4 py-2.5 text-[12px] text-cinza">Dica: com o e-mail do cliente cadastrado no contato, a reunião é vinculada sozinha.</p>
+          <p className="border-t border-areia px-4 py-2.5 text-[12px] text-suave">Dica: com o e-mail do cliente cadastrado no contato, a reunião é vinculada sozinha.</p>
         </section>
       )}
     </div>
@@ -412,12 +412,12 @@ function Modelos() {
   if (erro) return <Aviso erro={erro} />;
   return (
     <div className="max-w-4xl space-y-3">
-      <p className="text-[13px] text-cinza">O modelo padrão gera os cartões da entrega quando uma oportunidade é ganha. Os cartões podem ser editados em cada entrega.</p>
+      <p className="text-[13px] text-suave">O modelo padrão gera os cartões da entrega quando uma oportunidade é ganha. Os cartões podem ser editados em cada entrega.</p>
       {dados?.map((m) => (
-        <section key={m.id} className="rounded-xl border border-linha bg-superficie p-4">
-          <div className="flex items-center gap-2"><h2 className="font-titulo text-[15px] font-extrabold">{m.nome}</h2>{m.padrao && <span className="rounded-full bg-azul-8 px-2.5 py-0.5 text-[11px] font-bold text-azul">Padrão</span>}{!m.padrao && m.ativo && <button className="ml-auto text-[12px] font-bold text-azul" onClick={() => padrao(m)}>Tornar padrão</button>}</div>
-          {m.descricao && <p className="text-[12px] text-cinza">{m.descricao}</p>}
-          <ul className="mt-2 text-[13px]">{m.itens.map((i) => <li key={i.id} className="flex justify-between border-t border-linha py-1.5"><span>{i.titulo}</span><span className="text-[12px] text-cinza">{i.pilar.toLowerCase()}{i.prazoDias != null ? ` · ${i.prazoDias} dias` : ""}</span></li>)}</ul>
+        <section key={m.id} className="rounded-md border border-areia bg-superficie p-4">
+          <div className="flex items-center gap-2"><h2 className="font-titulo text-[15px] font-extrabold">{m.nome}</h2>{m.padrao && <span className="rounded-full bg-areia px-2.5 py-0.5 text-[11px] font-bold text-marinho">Padrão</span>}{!m.padrao && m.ativo && <button className="ml-auto text-[12px] font-bold text-marinho" onClick={() => padrao(m)}>Tornar padrão</button>}</div>
+          {m.descricao && <p className="text-[12px] text-suave">{m.descricao}</p>}
+          <ul className="mt-2 text-[13px]">{m.itens.map((i) => <li key={i.id} className="flex justify-between border-t border-areia py-1.5"><span>{i.titulo}</span><span className="text-[12px] text-suave">{i.pilar.toLowerCase()}{i.prazoDias != null ? ` · ${i.prazoDias} dias` : ""}</span></li>)}</ul>
         </section>
       ))}
     </div>

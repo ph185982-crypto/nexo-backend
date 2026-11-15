@@ -27,16 +27,16 @@ export function DialogoMotivo({ nomeOportunidade, etapa, onCancelar, onConfirmar
 
   return (
     <Dialogo titulo={tipo === "GANHO" ? "Por que ganhamos?" : "Por que perdemos?"} onFechar={onCancelar}>
-      <p className="mb-4 text-[13px] text-cinza">{nomeOportunidade} → <strong className="text-grafite">{etapa.nome}</strong>. O motivo alimenta o relatório de ganhos e perdas.</p>
+      <p className="mb-4 text-[13px] text-suave">{nomeOportunidade} → <strong className="text-marinho">{etapa.nome}</strong>. O motivo alimenta o relatório de ganhos e perdas.</p>
       <label className="mb-3 block">
-        <span className="mb-1 block text-[12px] font-semibold text-cinza">Motivo</span>
+        <span className="mb-1 block text-[12px] font-semibold text-suave">Motivo</span>
         <select value={motivoId} onChange={(e) => setMotivoId(e.target.value)} disabled={motivos === null} className={campo}>
           <option value="">{motivos === null ? "Carregando…" : "Escolha o motivo"}</option>
           {motivos?.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
         </select>
       </label>
       <label className="mb-5 block">
-        <span className="mb-1 block text-[12px] font-semibold text-cinza">Detalhe (opcional)</span>
+        <span className="mb-1 block text-[12px] font-semibold text-suave">Detalhe (opcional)</span>
         <input value={detalhe} maxLength={500} onChange={(e) => setDetalhe(e.target.value)} placeholder="Ex.: achou caro frente ao concorrente X" className={campo} />
       </label>
       <div className="flex flex-wrap justify-end gap-2">

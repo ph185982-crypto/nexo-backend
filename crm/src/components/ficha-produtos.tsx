@@ -48,31 +48,31 @@ export function AbaProdutos({ oportunidadeId, onAtividade }: { oportunidadeId: s
     <div className="px-5 pb-8 pt-3">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[520px] text-[13px]">
-          <thead><tr className="border-b border-linha text-left text-[11px] uppercase tracking-[0.04em] text-cinza">
+          <thead><tr className="border-b border-areia text-left text-[11px] uppercase tracking-[0.04em] text-suave">
             <th className="px-2 py-2 font-bold">Produto</th><th className="px-2 py-2 text-right font-bold">Qtd.</th><th className="px-2 py-2 text-right font-bold">Valor unit.</th><th className="px-2 py-2 text-right font-bold">Desc.</th><th className="px-2 py-2 font-bold">Recorrência</th><th className="px-2 py-2 text-right font-bold">Total</th><th />
           </tr></thead>
           <tbody>
-            {linhas === null && <tr><td colSpan={7} className="py-3 text-cinza">Carregando…</td></tr>}
-            {linhas?.length === 0 && <tr><td colSpan={7} className="py-3 text-[12px] text-cinza">Nenhum produto. Sem produtos, os valores da oportunidade são os digitados em Editar.</td></tr>}
+            {linhas === null && <tr><td colSpan={7} className="py-3 text-suave">Carregando…</td></tr>}
+            {linhas?.length === 0 && <tr><td colSpan={7} className="py-3 text-[12px] text-suave">Nenhum produto. Sem produtos, os valores da oportunidade são os digitados em Editar.</td></tr>}
             {linhas?.map((l) => (
-              <tr key={l.id} className="border-b border-linha">
+              <tr key={l.id} className="border-b border-areia">
                 <td className="px-2 py-2 font-semibold">{l.nome}</td>
                 <td className="px-2 py-2 text-right">{l.quantidade.toLocaleString("pt-BR")}</td>
                 <td className="px-2 py-2 text-right">{reais(l.valorUnitario)}</td>
                 <td className="px-2 py-2 text-right">{l.desconto ? `${l.desconto.toLocaleString("pt-BR")}%` : "—"}</td>
                 <td className="py-2">{l.recorrencia === "MENSAL" ? "Mensal" : "Único"}</td>
                 <td className="px-2 py-2 text-right font-bold">{reais(l.total)}</td>
-                <td className="px-2 py-2 text-right"><button onClick={() => void chamar(`/api/oportunidades/${oportunidadeId}/produtos/${l.id}`, "DELETE")} aria-label={`Remover ${l.nome}`} className="rounded px-2 text-[16px] text-cinza hover:text-critico">×</button></td>
+                <td className="px-2 py-2 text-right"><button onClick={() => void chamar(`/api/oportunidades/${oportunidadeId}/produtos/${l.id}`, "DELETE")} aria-label={`Remover ${l.nome}`} className="rounded px-2 text-[16px] text-suave hover:text-perigo-texto">×</button></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       {!!linhas?.length && (
-        <p className="mt-2 text-right text-[13px]"><span className="text-cinza">Único</span> <b>{moeda(unico)}</b> · <span className="text-cinza">Mensal</span> <b>{moeda(mensal)}</b></p>
+        <p className="mt-2 text-right text-[13px]"><span className="text-suave">Único</span> <b>{moeda(unico)}</b> · <span className="text-suave">Mensal</span> <b>{moeda(mensal)}</b></p>
       )}
 
-      <form onSubmit={adicionar} className="mt-4 space-y-2 rounded-xl border border-linha p-3">
+      <form onSubmit={adicionar} className="mt-4 space-y-2 rounded-md border border-areia p-3">
         <p className="text-[12px] font-bold">Adicionar produto</p>
         {catalogo.length > 0 && (
           <select value={nova.produtoId} onChange={(e) => escolher(e.target.value)} aria-label="Produto do catálogo" className={pequeno}>
@@ -87,7 +87,7 @@ export function AbaProdutos({ oportunidadeId, onAtividade }: { oportunidadeId: s
           <input inputMode="decimal" value={nova.desconto} onChange={(e) => setNova({ ...nova, desconto: e.target.value })} aria-label="Desconto (%)" placeholder="Desc. %" className={pequeno} />
           <select value={nova.recorrencia} onChange={(e) => setNova({ ...nova, recorrencia: e.target.value })} aria-label="Recorrência" className={pequeno}><option value="UNICO">Único</option><option value="MENSAL">Mensal</option></select>
         </div>
-        {erro && <p role="alert" className="text-[12px] font-semibold text-critico">{erro}</p>}
+        {erro && <p role="alert" className="text-[12px] font-semibold text-perigo-texto">{erro}</p>}
         <button type="submit" className={`${botaoPrimario} w-full`}>Adicionar</button>
       </form>
     </div>

@@ -19,24 +19,24 @@ export function Shell({ nome, admin, central, children }: { nome: string; admin:
 
   const lateral = (
     <>
-      <div className="px-2"><Logo variante="bq" largura={150} /></div>
+      <div className="px-2"><Logo variante="creme" tamanho={26} /></div>
       <Nav nome={nome} admin={admin} central={central} />
     </>
   );
   return (
     <div className="flex h-dvh flex-col lg:grid lg:grid-cols-[232px_1fr]">
-      <header className="flex flex-none items-center justify-between bg-azul px-4 py-3 lg:hidden">
-        <Logo variante="bq" largura={120} />
-        <button onClick={() => setAberto(true)} aria-label="Abrir menu" aria-expanded={aberto} className="rounded-lg p-2 text-bq">
+      <header className="flex flex-none items-center justify-between bg-marinho px-4 py-3 lg:hidden">
+        <Logo variante="creme" tamanho={22} />
+        <button onClick={() => setAberto(true)} aria-label="Abrir menu" aria-expanded={aberto} className="rounded-md p-2 text-creme">
           <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M4 7h16M4 12h16M4 17h16" /></svg>
         </button>
       </header>
-      <aside className="hidden flex-col gap-8 bg-azul px-4 py-5 lg:flex">{lateral}</aside>
+      <aside className="hidden flex-col gap-8 bg-marinho px-4 py-5 lg:flex">{lateral}</aside>
       {aberto && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
-          <div className="absolute inset-0 bg-grafite/50" onClick={() => setAberto(false)} />
-          <aside className="absolute inset-y-0 left-0 flex w-[260px] flex-col gap-8 overflow-y-auto bg-azul px-4 py-5">
-            <button onClick={() => setAberto(false)} aria-label="Fechar menu" className="-mb-4 self-end rounded-lg p-1 text-[22px] leading-none text-bq">×</button>
+          <div className="absolute inset-0 bg-marinho/50" onClick={() => setAberto(false)} />
+          <aside className="absolute inset-y-0 left-0 flex w-[260px] flex-col gap-8 overflow-y-auto bg-marinho px-4 py-5">
+            <button onClick={() => setAberto(false)} aria-label="Fechar menu" className="-mb-4 self-end rounded-md p-1 text-[22px] leading-none text-creme">×</button>
             {lateral}
           </aside>
         </div>

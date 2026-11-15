@@ -19,26 +19,26 @@ interface FunilItem { id: string; nome: string; padrao: boolean }
 function Coluna({ etapa, ultima, selecionado, onAbrir }: { etapa: EtapaDTO; ultima: boolean; selecionado: string | null; onAbrir: (c: CartaoDTO) => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: etapa.id });
   return (
-    <section className={`relative w-[292px] flex-none pr-[22px] ${isOver ? "rounded-lg ring-2 ring-azul/60" : ""}`} aria-label={etapa.nome}>
-      {!ultima && <span aria-hidden className="absolute right-0.5 top-2 text-[22px] leading-none text-linha">›</span>}
+    <section className={`relative w-[292px] flex-none pr-[22px] ${isOver ? "rounded-md ring-2 ring-marinho/60" : ""}`} aria-label={etapa.nome}>
+      {!ultima && <span aria-hidden className="absolute right-0.5 top-2 text-[22px] leading-none text-areia">›</span>}
       <header className="mb-2.5 flex items-start justify-between pr-2.5">
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-[0.04em]">{etapa.nome}</h3>
-          <span className="text-[12px] text-cinza">{moeda(etapa.total)}</span>
+          <span className="text-[12px] text-suave">{moeda(etapa.total)}</span>
         </div>
-        <span className="grid h-[22px] min-w-[26px] place-items-center rounded-full border border-linha bg-superficie px-1 text-[11px] font-semibold">{etapa.quantidade}</span>
+        <span className="grid h-[22px] min-w-[26px] place-items-center rounded-full border border-areia bg-superficie px-1 text-[11px] font-semibold">{etapa.quantidade}</span>
       </header>
       <div ref={setNodeRef} className="min-h-[120px]">
         {etapa.oportunidades.map((c) => <Cartao key={c.id} c={c} selecionado={selecionado === c.id} onAbrir={() => onAbrir(c)} />)}
         {etapa.quantidade === 0 && (
           <>
             {etapa.descricao && (
-              <div className="rounded-[10px] border-[1.5px] border-dashed border-linha p-3 text-[11.5px] leading-normal text-cinza">
-                <i className="mb-1 block font-titulo text-[11px] font-bold not-italic text-grafite">Descrição</i>
+              <div className="rounded-md border-[1.5px] border-dashed border-areia p-3 text-[11.5px] leading-normal text-suave">
+                <i className="mb-1 block font-titulo text-[11px] font-bold not-italic text-marinho">Descrição</i>
                 {etapa.descricao}
               </div>
             )}
-            <p className="mt-9 text-center text-[12px] text-cinza">Etapa vazia</p>
+            <p className="mt-9 text-center text-[12px] text-suave">Etapa vazia</p>
           </>
         )}
       </div>
@@ -60,7 +60,7 @@ function ZonaFixa({ etapa }: { etapa: EtapaDTO }) {
   return (
     <div
       ref={setNodeRef}
-      className={`pointer-events-auto w-60 rounded-xl border-2 border-dashed px-4 py-4 text-center text-[13px] font-bold ${isOver ? "border-azul bg-azul text-bq" : "border-azul bg-superficie text-azul"}`}
+      className={`pointer-events-auto w-60 rounded-md border-2 border-dashed px-4 py-4 text-center text-[13px] font-bold ${isOver ? "border-marinho bg-marinho text-creme" : "border-marinho bg-superficie text-marinho"}`}
     >
       Soltar em: {etapa.nome}
     </div>
@@ -71,7 +71,7 @@ function Finalizadas({ quadro, selecionado, onAbrir }: { quadro: QuadroDTO; sele
   const [ano, mes] = quadro.finalizadas.mes.split("-");
   const nomeMes = new Date(Number(ano), Number(mes) - 1, 1).toLocaleDateString("pt-BR", { month: "long" });
   return (
-    <section className="w-[292px] flex-none border-l border-linha pl-5" aria-label="Finalizadas no mês">
+    <section className="w-[292px] flex-none border-l border-areia pl-5" aria-label="Finalizadas no mês">
       <h3 className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.04em]">Finalizadas em {nomeMes}</h3>
       {quadro.finalizadas.etapas.map((e) => <Zona key={e.id} etapa={e} selecionado={selecionado} onAbrir={onAbrir} />)}
     </section>
@@ -81,10 +81,10 @@ function Finalizadas({ quadro, selecionado, onAbrir }: { quadro: QuadroDTO; sele
 function Zona({ etapa, selecionado, onAbrir }: { etapa: EtapaDTO; selecionado: string | null; onAbrir: (c: CartaoDTO) => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: etapa.id });
   return (
-    <div ref={setNodeRef} className={`mb-4 min-h-[88px] rounded-[10px] border border-dashed p-2 ${isOver ? "border-azul bg-azul-8" : "border-linha"}`}>
+    <div ref={setNodeRef} className={`mb-4 min-h-[88px] rounded-md border border-dashed p-2 ${isOver ? "border-marinho bg-areia" : "border-areia"}`}>
       <div className="mb-2 flex items-center justify-between px-1">
         <span className="text-[12px] font-bold">{etapa.nome}</span>
-        <span className="text-[12px] text-cinza">{etapa.quantidade} · {moeda(etapa.total)}</span>
+        <span className="text-[12px] text-suave">{etapa.quantidade} · {moeda(etapa.total)}</span>
       </div>
       {etapa.oportunidades.map((c) => <Cartao key={c.id} c={c} selecionado={selecionado === c.id} onAbrir={() => onAbrir(c)} />)}
     </div>
@@ -93,9 +93,9 @@ function Zona({ etapa, selecionado, onAbrir }: { etapa: EtapaDTO; selecionado: s
 
 function Filtro({ rotulo, valor, onMudar, opcoes }: { rotulo: string; valor: string; onMudar: (v: string) => void; opcoes: Array<readonly [string, string] | string[]> }) {
   return (
-    <label className={`flex items-center gap-1 rounded-full border px-2.5 py-1 ${valor ? "border-azul bg-azul-8 text-azul" : "border-linha bg-superficie text-cinza"}`}>
+    <label className={`flex items-center gap-1 rounded-full border px-2.5 py-1 ${valor ? "border-marinho bg-areia text-marinho" : "border-areia bg-superficie text-suave"}`}>
       <span className="font-semibold">{rotulo}:</span>
-      <select value={valor} onChange={(e) => onMudar(e.target.value)} className="max-w-[160px] cursor-pointer bg-transparent font-semibold text-grafite outline-none">
+      <select value={valor} onChange={(e) => onMudar(e.target.value)} className="max-w-[160px] cursor-pointer bg-transparent font-semibold text-marinho outline-none">
         <option value="">Todos</option>
         {opcoes.map(([v, r]) => <option key={v} value={v}>{r}</option>)}
       </select>
@@ -122,34 +122,34 @@ function Lista({ quadro, selecionado, onAbrir }: { quadro: QuadroDTO; selecionad
     return todas.sort((a, b) => { const x = chave(a), y = chave(b); return (x < y ? -1 : x > y ? 1 : 0) * (ordem.desc ? -1 : 1); });
   }, [quadro, ordem]);
   const cab = (col: ColunaLista, rotulo: string, direita = false) => (
-    <th className={`border-b border-linha px-3 py-2.5 font-semibold ${direita ? "text-right" : ""}`} aria-sort={ordem.col === col ? (ordem.desc ? "descending" : "ascending") : undefined}>
+    <th className={`border-b border-areia px-3 py-2.5 font-semibold ${direita ? "text-right" : ""}`} aria-sort={ordem.col === col ? (ordem.desc ? "descending" : "ascending") : undefined}>
       <button onClick={() => setOrdem({ col, desc: ordem.col === col ? !ordem.desc : col === "valor" || col === "parada" })} className="uppercase">{rotulo}{ordem.col === col ? (ordem.desc ? " ↓" : " ↑") : ""}</button>
     </th>
   );
   return (
-    <div className="overflow-auto rounded-xl border border-linha bg-superficie">
+    <div className="overflow-auto rounded-md border border-areia bg-superficie">
       <table className="w-full min-w-[860px] text-left text-[13px]">
-        <thead className="text-[11px] tracking-wide text-cinza"><tr>
+        <thead className="text-[11px] tracking-wide text-suave"><tr>
           {cab("nome", "Oportunidade")}{cab("etapa", "Etapa")}{cab("responsavel", "Responsável")}{cab("valor", "Valor", true)}
-          <th className="border-b border-linha px-3 py-2.5 font-semibold uppercase">Probab.</th>{cab("finaliza", "Finaliza em")}{cab("parada", "Sem atividade", true)}
-          <th className="border-b border-linha px-3 py-2.5 font-semibold uppercase">Próxima</th>
+          <th className="border-b border-areia px-3 py-2.5 font-semibold uppercase">Probab.</th>{cab("finaliza", "Finaliza em")}{cab("parada", "Sem atividade", true)}
+          <th className="border-b border-areia px-3 py-2.5 font-semibold uppercase">Próxima</th>
         </tr></thead>
         <tbody>
-          {linhas.length === 0 && <tr><td colSpan={8} className="px-3 py-4 text-cinza">Nenhuma oportunidade com esses filtros.</td></tr>}
+          {linhas.length === 0 && <tr><td colSpan={8} className="px-3 py-4 text-suave">Nenhuma oportunidade com esses filtros.</td></tr>}
           {linhas.map(({ c, etapa }) => {
             const aberta = c.status === "EM_ANDAMENTO";
             const atrasada = aberta && c.finalizaEm && new Date(c.finalizaEm) < new Date();
             const parada = diasDesde(c.ultimaAtividadeEm);
             return (
-              <tr key={c.id} onClick={() => onAbrir(c)} className={`cursor-pointer border-b border-linha last:border-0 hover:bg-bq ${selecionado === c.id ? "bg-azul-8" : ""}`}>
-                <td className="px-3 py-2"><span className="block font-semibold">{c.nome}</span><span className="text-[12px] text-azul">{c.contato.nome}</span></td>
-                <td className="px-3 py-2">{etapa}{!aberta && <span className="ml-1 text-[11px] text-cinza">({c.status === "GANHA" ? "ganha" : "perdida"})</span>}</td>
+              <tr key={c.id} onClick={() => onAbrir(c)} className={`cursor-pointer border-b border-areia last:border-0 hover:bg-creme ${selecionado === c.id ? "bg-areia" : ""}`}>
+                <td className="px-3 py-2"><span className="block font-semibold">{c.nome}</span><span className="text-[12px] text-marinho">{c.contato.nome}</span></td>
+                <td className="px-3 py-2">{etapa}{!aberta && <span className="ml-1 text-[11px] text-suave">({c.status === "GANHA" ? "ganha" : "perdida"})</span>}</td>
                 <td className="px-3 py-2">{c.responsavel ?? "—"}</td>
                 <td className="px-3 py-2 text-right font-semibold">{moeda(c.valorTotal)}</td>
                 <td className="px-3 py-2">{PROBABILIDADE[c.probabilidade ?? ""] ?? "—"}</td>
-                <td className={`px-3 py-2 ${atrasada ? "font-bold text-critico" : ""}`}>{data(c.finalizaEm)}</td>
-                <td className={`px-3 py-2 text-right ${aberta && parada >= 14 ? "font-bold text-critico" : aberta && parada >= 7 ? "font-bold" : "text-cinza"}`}>{aberta ? `${parada}d` : "—"}</td>
-                <td className="px-3 py-2">{aberta ? (c.proximaAtividade ? (c.proximaAtividade.quando ? <span className={new Date(c.proximaAtividade.quando) < new Date() ? "font-bold text-critico" : ""}>{data(c.proximaAtividade.quando)}</span> : "Sem prazo") : <span className="rounded-full bg-laranja px-2 py-0.5 text-[11px] font-bold text-grafite">Nenhuma</span>) : "—"}</td>
+                <td className={`px-3 py-2 ${atrasada ? "font-bold text-perigo-texto" : ""}`}>{data(c.finalizaEm)}</td>
+                <td className={`px-3 py-2 text-right ${aberta && parada >= 14 ? "font-bold text-perigo-texto" : aberta && parada >= 7 ? "font-bold" : "text-suave"}`}>{aberta ? `${parada}d` : "—"}</td>
+                <td className="px-3 py-2">{aberta ? (c.proximaAtividade ? (c.proximaAtividade.quando ? <span className={new Date(c.proximaAtividade.quando) < new Date() ? "font-bold text-perigo-texto" : ""}>{data(c.proximaAtividade.quando)}</span> : "Sem prazo") : <span className="rounded-full bg-laranja px-2 py-0.5 text-[11px] font-bold text-marinho">Nenhuma</span>) : "—"}</td>
               </tr>
             );
           })}
@@ -243,43 +243,43 @@ function Oportunidades() {
     <div className="flex h-full">
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3.5 px-6 py-3.5">
-          <button onClick={() => setNova(true)} disabled={!funilId} aria-label="Nova oportunidade" className="grid h-[34px] w-[34px] place-items-center rounded-[9px] bg-azul text-[20px] font-bold leading-none text-bq disabled:opacity-50">+</button>
+          <button onClick={() => setNova(true)} disabled={!funilId} aria-label="Nova oportunidade" className="grid h-[34px] w-[34px] place-items-center rounded-md bg-marinho text-[20px] font-bold leading-none text-creme disabled:opacity-50">+</button>
           <h1 className="text-[22px] font-extrabold leading-none tracking-tight">Oportunidades</h1>
         </header>
 
-        <div className="mx-6 flex items-center gap-2 rounded-xl border border-linha bg-superficie px-3 py-2">
+        <div className="mx-6 flex items-center gap-2 rounded-md border border-areia bg-superficie px-3 py-2">
           <label className="flex items-center font-titulo text-[13px] font-extrabold">
-            <span className="font-extrabold text-azul" aria-hidden>[</span>
+            <span className="font-extrabold text-marinho" aria-hidden>[</span>
             <select value={funilId} onChange={(e) => { setFunilId(e.target.value); setAberto(null); setQuadro(null); }} aria-label="Funil" className="cursor-pointer bg-transparent px-1 uppercase">
               {funis.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
             </select>
-            <span className="font-extrabold text-azul" aria-hidden>]</span>
+            <span className="font-extrabold text-marinho" aria-hidden>]</span>
           </label>
-          <span className="mx-1 h-5 w-px bg-linha" aria-hidden />
+          <span className="mx-1 h-5 w-px bg-areia" aria-hidden />
           <input value={filtros.q} onChange={(e) => setFiltros({ ...filtros, q: e.target.value })} placeholder="Buscar no funil…" aria-label="Buscar no funil" className="min-w-0 flex-1 bg-transparent px-1 py-1 text-[13px] outline-none" />
           <div className="flex items-center gap-1" role="group" aria-label="Visualização">
-            {(["quadro", "lista"] as const).map((m) => <button key={m} onClick={() => trocarModo(m)} aria-pressed={modo === m} className={`rounded-md px-2.5 py-1 text-[12px] font-bold ${modo === m ? "bg-azul text-bq" : "text-cinza hover:text-grafite"}`}>{m === "quadro" ? "Quadro" : "Lista"}</button>)}
+            {(["quadro", "lista"] as const).map((m) => <button key={m} onClick={() => trocarModo(m)} aria-pressed={modo === m} className={`rounded-md px-2.5 py-1 text-[12px] font-bold ${modo === m ? "bg-marinho text-creme" : "text-suave hover:text-marinho"}`}>{m === "quadro" ? "Quadro" : "Lista"}</button>)}
           </div>
-          <button onClick={exportar} disabled={!visivel} title="Exportar o que está na tela (CSV)" className="rounded-md px-2.5 py-1 text-[12px] font-bold text-azul disabled:opacity-50">Exportar</button>
+          <button onClick={exportar} disabled={!visivel} title="Exportar o que está na tela (CSV)" className="rounded-md px-2.5 py-1 text-[12px] font-bold text-marinho disabled:opacity-50">Exportar</button>
         </div>
         <div className="mx-6 mt-2 flex flex-wrap items-center gap-2 text-[12px]">
           <Filtro rotulo="Responsável" valor={filtros.responsavel} onMudar={(v) => setFiltros({ ...filtros, responsavel: v })} opcoes={opcoes.responsaveis.map((r) => [r, r])} />
           <Filtro rotulo="Probabilidade" valor={filtros.probabilidade} onMudar={(v) => setFiltros({ ...filtros, probabilidade: v })} opcoes={[...Object.entries(PROBABILIDADE), ["—", "Sem probabilidade"]]} />
           {opcoes.tags.length > 0 && <Filtro rotulo="Tag" valor={filtros.tag} onMudar={(v) => setFiltros({ ...filtros, tag: v })} opcoes={opcoes.tags.map((t) => [t, `#${t}`])} />}
           <Filtro rotulo="Situação" valor={filtros.situacao} onMudar={(v) => setFiltros({ ...filtros, situacao: v as Situacao })} opcoes={Object.entries(SITUACOES).filter(([k]) => k)} />
-          {temFiltro(filtros) && <button onClick={() => setFiltros(SEM_FILTRO)} className="font-bold text-azul">Limpar filtros</button>}
+          {temFiltro(filtros) && <button onClick={() => setFiltros(SEM_FILTRO)} className="font-bold text-marinho">Limpar filtros</button>}
         </div>
 
-        {erro && <p role="alert" className="mx-6 mt-3 text-[13px] font-semibold text-critico">{erro}</p>}
+        {erro && <p role="alert" className="mx-6 mt-3 text-[13px] font-semibold text-perigo-texto">{erro}</p>}
 
         <div className="flex-1 overflow-auto px-6 pb-6 pt-3.5">
           {!quadro || !visivel ? (
-            <p className="text-cinza">{funilId ? "Carregando…" : "Nenhum funil configurado. Rode o seed (npm run db:seed)."}</p>
+            <p className="text-suave">{funilId ? "Carregando…" : "Nenhum funil configurado. Rode o seed (npm run db:seed)."}</p>
           ) : modo === "lista" ? (
             <Lista quadro={visivel} selecionado={aberto} onAbrir={(c) => setAberto(c.id)} />
           ) : (
             <DndContext sensors={sensores} onDragStart={(e: DragStartEvent) => setArrastando((e.active.data.current as { cartao: CartaoDTO }).cartao)} onDragEnd={aoSoltar} onDragCancel={() => setArrastando(null)}>
-              <p className="mb-2.5 font-titulo text-[13px] font-bold">Em andamento <small className="font-texto text-[12px] font-normal text-cinza">({totalAndamento}) · {moeda(valorAndamento)}</small></p>
+              <p className="mb-2.5 font-titulo text-[13px] font-bold">Em andamento <small className="font-texto text-[12px] font-normal text-suave">({totalAndamento}) · {moeda(valorAndamento)}</small></p>
               <div className="flex min-w-max items-start">
                 {visivel.etapas.map((e, i) => <Coluna key={e.id} etapa={e} ultima={i === visivel.etapas.length - 1} selecionado={aberto} onAbrir={(c) => setAberto(c.id)} />)}
                 <Finalizadas quadro={visivel} selecionado={aberto} onAbrir={(c) => setAberto(c.id)} />

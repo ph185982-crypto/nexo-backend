@@ -31,30 +31,30 @@ export default function AgendaPage() {
   return (
     <div className="flex h-full flex-col">
       <header className="flex items-center gap-3.5 px-6 py-3.5">
-        <button onClick={() => setNovo(true)} aria-label="Novo compromisso" className="grid h-[34px] w-[34px] place-items-center rounded-[9px] bg-azul text-[20px] font-bold leading-none text-bq">+</button>
+        <button onClick={() => setNovo(true)} aria-label="Novo compromisso" className="grid h-[34px] w-[34px] place-items-center rounded-md bg-marinho text-[20px] font-bold leading-none text-creme">+</button>
         <h1 className="text-[22px] font-extrabold leading-none tracking-tight">Agenda</h1>
         <div className="ml-4 flex items-center gap-2 text-[13px] font-semibold">
-          <button onClick={() => mover(-1)} aria-label="Semana anterior" className="rounded-lg border border-linha bg-superficie px-2.5 py-1">‹</button>
-          <button onClick={() => setBase(inicioDaSemana(new Date()))} className="rounded-lg border border-linha bg-superficie px-3 py-1">Hoje</button>
-          <button onClick={() => mover(1)} aria-label="Próxima semana" className="rounded-lg border border-linha bg-superficie px-2.5 py-1">›</button>
-          <span className="ml-2 text-cinza">{titulo}</span>
+          <button onClick={() => mover(-1)} aria-label="Semana anterior" className="rounded-md border border-areia bg-superficie px-2.5 py-1">‹</button>
+          <button onClick={() => setBase(inicioDaSemana(new Date()))} className="rounded-md border border-areia bg-superficie px-3 py-1">Hoje</button>
+          <button onClick={() => mover(1)} aria-label="Próxima semana" className="rounded-md border border-areia bg-superficie px-2.5 py-1">›</button>
+          <span className="ml-2 text-suave">{titulo}</span>
         </div>
-        <div className="ml-auto flex overflow-hidden rounded-full border border-linha bg-superficie text-[12px] font-semibold">
-          {(["eu", "todos"] as const).map((e) => <button key={e} onClick={() => setEscopo(e)} aria-pressed={escopo === e} className={`px-4 py-1.5 ${escopo === e ? "bg-azul text-bq" : "text-cinza"}`}>{e === "eu" ? "Meus" : "Todos"}</button>)}
+        <div className="ml-auto flex overflow-hidden rounded-full border border-areia bg-superficie text-[12px] font-semibold">
+          {(["eu", "todos"] as const).map((e) => <button key={e} onClick={() => setEscopo(e)} aria-pressed={escopo === e} className={`px-4 py-1.5 ${escopo === e ? "bg-marinho text-creme" : "text-suave"}`}>{e === "eu" ? "Meus" : "Todos"}</button>)}
         </div>
       </header>
       <div className="mx-6 grid flex-1 grid-cols-7 gap-2 overflow-auto pb-6">
         {dias.map((d) => {
           const doDia = itens?.filter((c) => new Date(c.inicio).toDateString() === d.toDateString()) ?? [];
           return (
-            <section key={d.toISOString()} aria-label={d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric" })} className={`min-w-[130px] rounded-xl border bg-superficie p-2 ${d.toDateString() === hoje ? "border-azul" : "border-linha"}`}>
-              <h3 className={`mb-2 px-1 text-[12px] font-bold ${d.toDateString() === hoje ? "text-azul" : ""}`}>{d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit" })}</h3>
-              {itens === null && <p className="px-1 text-[11px] text-cinza">…</p>}
+            <section key={d.toISOString()} aria-label={d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric" })} className={`min-w-[130px] rounded-md border bg-superficie p-2 ${d.toDateString() === hoje ? "border-marinho" : "border-areia"}`}>
+              <h3 className={`mb-2 px-1 text-[12px] font-bold ${d.toDateString() === hoje ? "text-marinho" : ""}`}>{d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit" })}</h3>
+              {itens === null && <p className="px-1 text-[11px] text-suave">…</p>}
               {doDia.map((c) => (
-                <button key={c.id} onClick={() => setAberto(c)} className={`mb-1.5 block w-full rounded-lg bg-azul-8 px-2 py-1.5 text-left ${c.status === "REALIZADO" ? "opacity-60" : ""}`}>
-                  <span className="block text-[11px] font-bold text-azul">{hora(c.inicio)}–{hora(c.fim)}</span>
+                <button key={c.id} onClick={() => setAberto(c)} className={`mb-1.5 block w-full rounded-md bg-areia px-2 py-1.5 text-left ${c.status === "REALIZADO" ? "opacity-60" : ""}`}>
+                  <span className="block text-[11px] font-bold text-marinho">{hora(c.inicio)}–{hora(c.fim)}</span>
                   <span className={`block text-[12px] font-semibold leading-tight ${c.status === "REALIZADO" ? "line-through" : ""}`}>{c.assunto}</span>
-                  {(c.contato || c.oportunidade) && <span className="block truncate text-[11px] text-cinza">{c.oportunidade?.nome ?? c.contato?.nome}</span>}
+                  {(c.contato || c.oportunidade) && <span className="block truncate text-[11px] text-suave">{c.oportunidade?.nome ?? c.contato?.nome}</span>}
                 </button>
               ))}
             </section>
@@ -83,16 +83,16 @@ function NovoCompromisso({ dia, onFechar, onCriado }: { dia: Date; onFechar: () 
   return (
     <Dialogo titulo="Novo compromisso" onFechar={onFechar}>
       <form onSubmit={salvar} className="space-y-3">
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Assunto</span><input required maxLength={200} value={assunto} onChange={(e) => setAssunto(e.target.value)} className={campo} /></label>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Assunto</span><input required maxLength={200} value={assunto} onChange={(e) => setAssunto(e.target.value)} className={campo} /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Início</span><input type="datetime-local" required value={inicio} onChange={(e) => setInicio(e.target.value)} className={campo} /></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Fim</span><input type="datetime-local" required value={fim} onChange={(e) => setFim(e.target.value)} className={campo} /></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Tipo</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Início</span><input type="datetime-local" required value={inicio} onChange={(e) => setInicio(e.target.value)} className={campo} /></label>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Fim</span><input type="datetime-local" required value={fim} onChange={(e) => setFim(e.target.value)} className={campo} /></label>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Tipo</span>
             <select value={tipo} onChange={(e) => setTipo(e.target.value)} className={campo}>{["REUNIAO", "LIGACAO", "VISITA", "OUTRO"].map((t) => <option key={t} value={t}>{{ REUNIAO: "Reunião", LIGACAO: "Ligação", VISITA: "Visita", OUTRO: "Outro" }[t]}</option>)}</select></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Local</span><input maxLength={200} value={local} onChange={(e) => setLocal(e.target.value)} className={campo} /></label>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Local</span><input maxLength={200} value={local} onChange={(e) => setLocal(e.target.value)} className={campo} /></label>
         </div>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Participantes (e-mails)</span><input value={participantes} onChange={(e) => setParticipantes(e.target.value)} className={campo} placeholder="a@empresa.com, b@empresa.com" /></label>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Participantes (e-mails)</span><input value={participantes} onChange={(e) => setParticipantes(e.target.value)} className={campo} placeholder="a@empresa.com, b@empresa.com" /></label>
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2 pt-1"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={!assunto.trim()}>Criar</button></div>
       </form>
     </Dialogo>
@@ -104,8 +104,8 @@ function DetalheCompromisso({ c, onFechar, onMudou }: { c: Comp; onFechar: () =>
   return (
     <Dialogo titulo={c.assunto} onFechar={onFechar}>
       <p className="mb-1 text-[13px]">{new Date(c.inicio).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}, {hora(c.inicio)}–{hora(c.fim)}</p>
-      {c.local && <p className="text-[13px] text-cinza">{c.local}</p>}
-      {(c.oportunidade || c.contato) && <p className="text-[13px] font-semibold text-azul">{c.oportunidade?.nome ?? c.contato?.nome}</p>}
+      {c.local && <p className="text-[13px] text-suave">{c.local}</p>}
+      {(c.oportunidade || c.contato) && <p className="text-[13px] font-semibold text-marinho">{c.oportunidade?.nome ?? c.contato?.nome}</p>}
       <div className="mt-5 flex flex-wrap justify-end gap-2">
         <button className={botaoSecundario} onClick={() => marcar("CANCELADO")}>Cancelar compromisso</button>
         {c.status !== "REALIZADO" && <button className={botaoPrimario} onClick={() => marcar("REALIZADO")}>Marcar como realizado</button>}

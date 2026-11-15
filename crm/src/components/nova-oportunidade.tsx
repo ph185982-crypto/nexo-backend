@@ -29,17 +29,17 @@ export function NovaOportunidade({ funilId, onFechar, onCriada }: { funilId: str
   return (
     <Dialogo titulo="Nova oportunidade" onFechar={onFechar}>
       <form onSubmit={salvar} className="space-y-3">
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Oportunidade</span>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Oportunidade</span>
           <input required value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex.: Oficina Rocha — vendas e processos" className={campo} /></label>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Empresa ou contato</span>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Empresa ou contato</span>
           <input required value={contatoNome} onChange={(e) => setContatoNome(e.target.value)} className={campo} /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Telefone</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Telefone</span>
             <input value={telefone} onChange={(e) => setTelefone(e.target.value)} inputMode="tel" className={campo} /></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Valor (R$)</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Valor (R$)</span>
             <input value={valorUnico} onChange={(e) => setValorUnico(e.target.value)} inputMode="decimal" className={campo} /></label>
         </div>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button>
           <button type="submit" className={botaoPrimario} disabled={salvando || !nome.trim() || !contatoNome.trim()}>{salvando ? "Criando…" : "Criar"}</button>

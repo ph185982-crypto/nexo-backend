@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 interface Resultado { tipo: "OPORTUNIDADE" | "CONTATO"; id: string; titulo: string; detalhe: string; href: string }
 interface Aviso { chave: string; nivel: "CRITICO" | "ATENCAO" | "INFO"; titulo: string; detalhe: string; href: string }
 
-const botaoLateral = "flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-[13px] font-semibold text-bq/85 hover:bg-bq/10";
+const botaoLateral = "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-semibold text-creme/85 hover:bg-creme/10";
 const icone = "h-[19px] w-[19px] flex-none fill-none stroke-current";
 
 /** Ctrl+K (ou ⌘K) em qualquer tela: busca oportunidades e contatos por nome, código, telefone, e-mail ou documento. */
@@ -55,22 +55,22 @@ export function BuscaGlobal() {
     <>
       <button ref={botao} onClick={() => setAberta(true)} className={botaoLateral} aria-keyshortcuts="Control+K">
         <svg viewBox="0 0 24 24" className={icone} strokeWidth="1.7" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
-        Buscar <kbd className="ml-auto rounded border border-bq/30 px-1.5 text-[10px] font-semibold text-bq/70">Ctrl K</kbd>
+        Buscar <kbd className="ml-auto rounded border border-creme/30 px-1.5 text-[10px] font-semibold text-creme/70">Ctrl K</kbd>
       </button>
       <dialog ref={ref} onClose={() => setAberta(false)} onClick={(e) => { if (e.target === ref.current) setAberta(false); }}
-        className="mt-[12vh] w-[min(560px,94vw)] rounded-[14px] bg-superficie p-0 text-grafite shadow-xl" aria-label="Buscar">
-        <div className="border-b border-linha p-3">
+        className="mt-[12vh] w-[min(560px,94vw)] rounded-md bg-superficie p-0 text-marinho" aria-label="Buscar">
+        <div className="border-b border-areia p-3">
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={teclas} placeholder="Oportunidade, empresa, pessoa, telefone, e-mail ou código…"
             aria-label="Buscar" className="w-full bg-transparent px-2 py-1.5 text-[15px] outline-none" />
         </div>
         <ul className="max-h-[50vh] overflow-y-auto p-1.5" role="listbox">
-          {q.trim().length >= 2 && !buscando && res.length === 0 && <li className="px-3 py-3 text-[13px] text-cinza">Nada encontrado.</li>}
-          {q.trim().length < 2 && <li className="px-3 py-3 text-[12px] text-cinza">Digite ao menos 2 letras. Setas para escolher, Enter para abrir.</li>}
+          {q.trim().length >= 2 && !buscando && res.length === 0 && <li className="px-3 py-3 text-[13px] text-suave">Nada encontrado.</li>}
+          {q.trim().length < 2 && <li className="px-3 py-3 text-[12px] text-suave">Digite ao menos 2 letras. Setas para escolher, Enter para abrir.</li>}
           {res.map((r, i) => (
             <li key={`${r.tipo}:${r.id}`} role="option" aria-selected={i === sel}>
-              <button onMouseEnter={() => setSel(i)} onClick={() => ir(r)} className={`flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left ${i === sel ? "bg-azul-8" : ""}`}>
-                <span className={`mt-0.5 flex-none rounded px-1.5 py-0.5 text-[10px] font-bold ${r.tipo === "OPORTUNIDADE" ? "bg-azul text-bq" : "border border-linha text-cinza"}`}>{r.tipo === "OPORTUNIDADE" ? "OPORT." : "CONTATO"}</span>
-                <span className="min-w-0"><span className="block truncate text-[13.5px] font-semibold">{r.titulo}</span><span className="block truncate text-[12px] text-cinza">{r.detalhe}</span></span>
+              <button onMouseEnter={() => setSel(i)} onClick={() => ir(r)} className={`flex w-full items-start gap-3 rounded-md px-3 py-2 text-left ${i === sel ? "bg-areia" : ""}`}>
+                <span className={`mt-0.5 flex-none rounded px-1.5 py-0.5 text-[10px] font-bold ${r.tipo === "OPORTUNIDADE" ? "bg-marinho text-creme" : "border border-areia text-suave"}`}>{r.tipo === "OPORTUNIDADE" ? "OPORT." : "CONTATO"}</span>
+                <span className="min-w-0"><span className="block truncate text-[13.5px] font-semibold">{r.titulo}</span><span className="block truncate text-[12px] text-suave">{r.detalhe}</span></span>
               </button>
             </li>
           ))}
@@ -80,7 +80,7 @@ export function BuscaGlobal() {
   );
 }
 
-const COR: Record<Aviso["nivel"], string> = { CRITICO: "bg-critico", ATENCAO: "bg-laranja", INFO: "bg-azul" };
+const COR: Record<Aviso["nivel"], string> = { CRITICO: "bg-perigo", ATENCAO: "bg-laranja", INFO: "bg-marinho" };
 
 /** Sino: o que pede ação agora. Recarrega ao trocar de tela e a cada 5 minutos. */
 export function Avisos() {
@@ -111,18 +111,18 @@ export function Avisos() {
       <button onClick={() => setAberto((x) => !x)} aria-expanded={aberto} className={botaoLateral}>
         <svg viewBox="0 0 24 24" className={icone} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2.2 2.2 0 0 0 4 0" /></svg>
         Avisos
-        {!!avisos?.length && <span className={`ml-auto grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-bold ${criticos ? "bg-laranja text-grafite" : "bg-bq/20 text-bq"}`}>{avisos.length}</span>}
+        {!!avisos?.length && <span className={`ml-auto grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-bold ${criticos ? "bg-laranja text-marinho" : "bg-creme/20 text-creme"}`}>{avisos.length}</span>}
       </button>
       {aberto && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-[min(360px,86vw)] overflow-hidden rounded-xl border border-linha bg-superficie text-grafite shadow-xl lg:left-full lg:top-0 lg:ml-3 lg:mt-0">
-          <p className="border-b border-linha px-4 py-2.5 text-[13px] font-extrabold">Avisos</p>
+        <div className="absolute left-0 top-full z-50 mt-1 w-[min(360px,86vw)] overflow-hidden rounded-md border border-areia bg-superficie text-marinho lg:left-full lg:top-0 lg:ml-3 lg:mt-0">
+          <p className="border-b border-areia px-4 py-2.5 text-[13px] font-extrabold">Avisos</p>
           <ul className="max-h-[60vh] overflow-y-auto">
-            {avisos?.length === 0 && <li className="px-4 py-4 text-[13px] text-cinza">Nada pedindo ação agora.</li>}
+            {avisos?.length === 0 && <li className="px-4 py-4 text-[13px] text-suave">Nada pedindo ação agora.</li>}
             {avisos?.map((a) => (
               <li key={a.chave}>
-                <button onClick={() => { setAberto(false); router.push(a.href); }} className="flex w-full items-start gap-2.5 border-b border-linha px-4 py-2.5 text-left last:border-0 hover:bg-bq">
+                <button onClick={() => { setAberto(false); router.push(a.href); }} className="flex w-full items-start gap-2.5 border-b border-areia px-4 py-2.5 text-left last:border-0 hover:bg-creme">
                   <i className={`mt-1.5 h-2 w-2 flex-none rounded-full ${COR[a.nivel]}`} aria-hidden />
-                  <span className="min-w-0"><span className="block truncate text-[13px] font-semibold">{a.titulo}</span><span className="block text-[12px] text-cinza">{a.detalhe}</span></span>
+                  <span className="min-w-0"><span className="block truncate text-[13px] font-semibold">{a.titulo}</span><span className="block text-[12px] text-suave">{a.detalhe}</span></span>
                 </button>
               </li>
             ))}

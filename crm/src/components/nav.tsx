@@ -50,7 +50,7 @@ export function Nav({ nome, admin, central }: { nome: string; admin: boolean; ce
   };
   return (
     <>
-      <div className="-mb-5 flex flex-col gap-1 border-b border-bq/20 pb-3">
+      <div className="-mb-5 flex flex-col gap-1 border-b border-creme/20 pb-3">
         <BuscaGlobal />
         <Avisos />
       </div>
@@ -62,7 +62,7 @@ export function Nav({ nome, admin, central }: { nome: string; admin: boolean; ce
               key={i.href}
               href={i.href}
               aria-current={ativo ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-[13px] font-semibold ${ativo ? "bg-laranja text-grafite" : "text-bq/85 hover:bg-bq/10"}`}
+              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-semibold ${ativo ? "bg-laranja text-marinho" : "text-creme/85 hover:bg-creme/10"}`}
             >
               <svg viewBox="0 0 24 24" className="h-[19px] w-[19px] flex-none fill-none stroke-current" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{i.icone}</svg>
               {i.rotulo}
@@ -70,17 +70,17 @@ export function Nav({ nome, admin, central }: { nome: string; admin: boolean; ce
           );
         })}
       </nav>
-      <div className="mt-auto border-t border-bq/20 pt-4">
+      <div className="mt-auto border-t border-creme/20 pt-4">
         {/* Atalho discreto para a Central da Avanteza (os outros aplicativos do login único) */}
-        <a href={central} className="mb-3 flex items-center gap-2 text-[12px] text-bq/80 underline-offset-2 hover:underline">
+        <a href={central} className="mb-3 flex items-center gap-2 text-[12px] text-creme/80 underline-offset-2 hover:underline">
           <svg viewBox="0 0 24 24" className="h-[15px] w-[15px] flex-none fill-none stroke-current" strokeWidth="1.7" strokeLinejoin="round" aria-hidden>
             <rect x="4" y="4" width="6.5" height="6.5" rx="1.2" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2" />
             <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2" />
           </svg>
           Central
         </a>
-        <p className="truncate text-[12px] font-semibold text-bq">{nome}</p>
-        <button onClick={sair} className="mt-1 text-[12px] text-bq/80 underline-offset-2 hover:underline">Sair</button>
+        <p className="truncate text-[12px] font-semibold text-creme">{nome}</p>
+        <button onClick={sair} className="mt-1 text-[12px] text-creme/80 underline-offset-2 hover:underline">Sair</button>
       </div>
     </>
   );

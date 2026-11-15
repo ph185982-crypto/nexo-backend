@@ -3,10 +3,14 @@
 Funil de vendas, contatos e (em breve) entrega. Ferramenta própria da Avanteza, **separada do Vendedor IA**
 (`../vendedoria`), com banco próprio e ligação por eventos (ver [docs/integracao.md](docs/integracao.md)).
 
-Identidade visual: azul `#2448FF`, laranja `#FF7043`, branco quente `#F6F5F0`, grafite `#18191D`, cinza `#686A73`;
-Manrope (títulos) e Inter (texto). As cores vivem só em `src/app/globals.css`; componentes usam tokens do Tailwind.
-O laranja é **preenchimento com texto grafite**, nunca texto (contraste 2,5:1 sobre claro). `tests/marca.test.ts` protege isso.
-Logo: `public/brand/` (arquivo enviado pela marca; `avanteza-logo-original.webp` é o original intacto).
+Identidade visual **Avanteza v2.0** (tema claro único): marinho `#0B1B33` (texto, barra lateral, botão padrão), creme
+`#F5F0E6` (fundo), areia `#EAD9C2` (bordas e pílulas secundárias), laranja `#FF6A1F` (só ação principal, foco e destaque),
+branco nos cartões, texto secundário `#55637A`. Manrope em tudo; cantos de 6px (ou pílula), bordas de 1px, **sem sombras
+e sem degradês**. A paleta vive só em `tailwind.config.ts` (`PALETA`); componentes usam as classes (`bg-marinho`,
+`text-suave`, `border-areia`…), nunca hex solto. O laranja é **preenchimento com texto marinho** — texto claro sobre
+laranja e laranja como texto sobre fundo claro não passam em contraste. `tests/marca.test.ts` protege tudo isso.
+Logo: `src/components/logo.tsx` (a palavra "avanteza" com o quadrado laranja no lugar do ponto);
+`public/brand/avanteza-logo-original.webp` é o arquivo original da marca anterior, guardado só como referência.
 
 ## Rodar local
 
