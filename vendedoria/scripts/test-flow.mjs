@@ -15,7 +15,12 @@ const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const META_TOKEN = process.env.META_WHATSAPP_ACCESS_TOKEN;
 const APP_SECRET = process.env.META_WHATSAPP_APP_SECRET;
-const VERIFY_TOKEN = process.env.META_WHATSAPP_VERIFY_TOKEN || "vendedoria_webhook_2025";
+// Sem valor padrão: o repositório é público. O script para se a variável faltar.
+const VERIFY_TOKEN = process.env.META_WHATSAPP_VERIFY_TOKEN;
+if (!VERIFY_TOKEN) {
+  console.error("Defina a variável de ambiente META_WHATSAPP_VERIFY_TOKEN antes de rodar este script.");
+  process.exit(1);
+}
 const PHONE_NUMBER_ID = process.env.META_WHATSAPP_PHONE_NUMBER_ID || "CONFIGURE_ME";
 const CRON_SECRET = process.env.CRON_SECRET;
 

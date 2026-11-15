@@ -17,14 +17,14 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-RAPIDAPI_KEY  = os.getenv("RAPIDAPI_KEY", "bfa0201ad4msh4eb2fb783613e2fp1f18b7jsn0379d6db7632")
+RAPIDAPI_KEY  = os.getenv("RAPIDAPI_KEY")  # obrigatória, sem valor padrão (o repositório é público)
 RAPIDAPI_HOST = "aliexpress-true-api.p.rapidapi.com"
 GEMINI_KEY    = os.getenv("GOOGLE_API_KEY", "")
 BASE_URL      = f"https://{RAPIDAPI_HOST}/api/v3/hot-products-download"
 
 HEADERS = {
     "x-rapidapi-host": RAPIDAPI_HOST,
-    "x-rapidapi-key":  RAPIDAPI_KEY,
+    "x-rapidapi-key":  RAPIDAPI_KEY or "",
 }
 
 # Priority niches ordered by Brazilian market potential
@@ -324,6 +324,8 @@ async def _translate_titles(products: list) -> list:
 
 async def fetch_hot_products(usd_brl: float = 6.10, limit: int = 50) -> list:
     """Fetch HOT products across all priority niches with scoring filters applied."""
+    if not RAPIDAPI_KEY:
+        raise RuntimeError("RAPIDAPI_KEY não configurada: defina a variável de ambiente para usar o Hot Miner")
     logger.info(f"Hot Miner v2: {len(CATEGORIES)} nichos, filtros: ≤${MAX_COST_USD}, score≥{MIN_SCORE}")
     results = []
 

@@ -9,9 +9,18 @@
 const BASE_URL = process.env.APP_URL || "https://vendedoria.onrender.com";
 const GOOGLE_AI_KEY = process.env.GOOGLE_AI_API_KEY;
 const META_TOKEN = process.env.META_WHATSAPP_ACCESS_TOKEN;
-const META_PHONE_ID = process.env.META_WHATSAPP_PHONE_NUMBER_ID || "945465465327151";
-const META_APP_SECRET = process.env.META_WHATSAPP_APP_SECRET || "10119a83dd51952878eefe32b9e98a10";
-const VERIFY_TOKEN = process.env.META_WHATSAPP_VERIFY_TOKEN || "vendedoria_webhook_2025";
+// Sem valores padrão: o repositório é público. Tudo vem de variável de ambiente, e o script para se faltar.
+function obrigatoria(nome) {
+  const v = process.env[nome];
+  if (!v) {
+    console.error(`Defina a variável de ambiente ${nome} antes de rodar este script.`);
+    process.exit(1);
+  }
+  return v;
+}
+const META_PHONE_ID = obrigatoria("META_WHATSAPP_PHONE_NUMBER_ID");
+const META_APP_SECRET = obrigatoria("META_WHATSAPP_APP_SECRET");
+const VERIFY_TOKEN = obrigatoria("META_WHATSAPP_VERIFY_TOKEN");
 import { createHmac } from "crypto";
 
 const RESET = "\x1b[0m";
@@ -188,7 +197,7 @@ async function test5_webhook_post() {
     } else if (res.status === 401) {
       fail(`Webhook POST retornou 401 — assinatura rejeitada`);
       warn("META_WHATSAPP_APP_SECRET no Render pode estar errado");
-      warn("Valor esperado: 10119a83dd51952878eefe32b9e98a10 (32 chars hex)");
+      warn("Confira o valor em Meta for Developers → Configurações do app → Básico (32 caracteres hex)");
       return false;
     } else {
       fail(`Webhook POST retornou ${res.status}: ${body.slice(0, 200)}`);
