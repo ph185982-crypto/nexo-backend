@@ -62,3 +62,12 @@ gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 - O Vendedor IA avisa o CRM (`crm/`, ferramenta separada) quando um lead é qualificado, escalado, perdido ou ganho, quando marca ligação e quando a mensagem do lead traz um sinal de intenção (preço, urgência, "quero contratar"…). Contrato e detalhes: `crm/docs/integracao.md`.
 - **Liga com duas variáveis na Vercel:** `CRM_URL` e `CRM_API_KEY` (chave criada no CRM com `npm run chave:criar -- "Vendedor IA"`). Sem elas, nada muda.
 - Tabela `CrmEventoOutbox`: eventos pendentes/enviados/falhos. Se o CRM cair, o `/api/health` reenvia (campo `crm` no JSON), com orçamento de 15 s por chamada para não travar o check. `FALHOU` = recusado pelo CRM (`400`) ou 8 tentativas esgotadas: veja `ultimoErro`.
+
+## IA: DeepSeek como provedor principal (04/11/2026)
+
+- Liga sozinha quando existe a variável **`DEEPSEEK_API_KEY`** na Vercel (Settings → Environment Variables → Production), seguida de um novo deploy. A chave **nunca** vai no código nem no repositório.
+- Com a variável, a DeepSeek (modelo `deepseek-chat`) responde primeiro no atendimento (SDR), nos follow-ups, no relatório do gestor, no analista da prospecção e no configurador do agente. OpenAI, Anthropic e Google ficam de **reserva**: se a DeepSeek falhar ou ficar sem saldo, o atendimento continua.
+- Sem a variável, nada muda. Para voltar atrás, é só apagar a variável e fazer um novo deploy.
+- **Continuam na OpenAI**, porque a DeepSeek não faz: transcrição de áudio (Whisper), voz (TTS) e leitura de imagem do comprovante. O Max (assistente financeiro) também segue na OpenAI, porque usa ferramentas e busca na web. Ou seja: **áudio de lead continua precisando de crédito na OpenAI**.
+- Para conferir: `GET /api/health` mostra `"llm": "deepseek"` quando a chave foi lida (só o nome do provedor, nunca a chave).
+- Sem saldo na DeepSeek (erro 402), o CRM mostra a notificação "💳 DeepSeek sem créditos" e o push, uma vez a cada 6h.

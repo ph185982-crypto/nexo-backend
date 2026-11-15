@@ -4,7 +4,12 @@
 // Agora vira notificação + push, uma vez a cada 6h por provedor.
 import { prisma } from "@/lib/prisma/client";
 
-const COTA = /insufficient_quota|credit_balance_exhausted|no credits remaining|billing_hard_limit|exceeded your current quota/i;
+const COTA = /insufficient_quota|credit_balance_exhausted|no credits remaining|billing_hard_limit|exceeded your current quota|insufficient balance/i;
+const ONDE_RECARREGAR: Record<string, string> = {
+  OpenAI: "OpenAI: platform.openai.com → Billing",
+  DeepSeek: "DeepSeek: platform.deepseek.com → Top up",
+  Anthropic: "Anthropic: console.anthropic.com → Billing",
+};
 const INTERVALO_MS = 6 * 60 * 60 * 1000;
 
 export function ehErroDeCota(texto: string): boolean {
@@ -26,7 +31,7 @@ export async function alertarCotaEsgotada(provedor: string, detalhe: string): Pr
         type: "ESCALATION",
         title: titulo,
         body: `O provedor ${provedor} recusou a chamada por falta de crédito. Leads estão recebendo a mensagem de espera. ` +
-          `Adicione créditos (OpenAI: platform.openai.com → Billing) e ative a recarga automática.\n\nDetalhe: ${detalhe.slice(0, 300)}`,
+          `Adicione créditos (${ONDE_RECARREGAR[provedor] ?? "no painel do provedor"}) e ative a recarga automática.\n\nDetalhe: ${detalhe.slice(0, 300)}`,
         organizationId: org.id,
       },
     });

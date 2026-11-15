@@ -20,6 +20,7 @@ import { proximoEnvio } from "@/lib/followup/janela";
 import { dataDoToque } from "@/lib/followup/cadencia";
 import { buildSdrSystemPrompt, formatarTelefoneOwner } from "./prompt";
 import { MENSAGEM_FALHA_SDR } from "./fallback";
+import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
@@ -351,7 +352,7 @@ async function transferirParaHumano(args: {
 // já foi consumido — sem isso, provider configurado + até 3 fallbacks, cada um
 // com timeout de 20s (LLM_TIMEOUT_MS), somavam até 80s numa ÚNICA chamada, e o
 // loop externo ainda tentava de novo em cima disso.
-async function callSdrLLM(
+export async function callSdrLLM(
   systemPrompt: string,
   history: Array<{ role: "user" | "assistant"; content: string }>,
   userMessage: string,
@@ -362,6 +363,15 @@ async function callSdrLLM(
   const provider = aiProvider?.toUpperCase();
   const model = aiModel ?? "gpt-4o";
   const timeLeft = () => Date.now() < deadline;
+
+  // DeepSeek primeiro quando configurada (DEEPSEEK_API_KEY); OpenAI e os demais ficam de reserva.
+  if (deepseekAtivo() && timeLeft()) {
+    const r = await deepseekChat(
+      [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }],
+      { maxTokens: 1000, temperature: 0.7, json: true, timeoutMs: Math.max(3_000, Math.min(20_000, deadline - Date.now())) },
+    );
+    if (r) return r;
+  }
 
   // maxTokens 1000 (era 600) — mensagens longas do cliente (ex.: áudio transcrito)
   // levam o modelo a preencher mais campos de updateSession + mais balões de texto,

@@ -6,6 +6,7 @@
 // CRM abertas chamam (ver lib/followup/gatilho.ts). Nenhum segredo envolvido.
 import { prisma } from "@/lib/prisma/client";
 import { alertarCotaEsgotada, ehErroDeCota } from "@/lib/ai/alerta-cota";
+import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 import { sendWhatsAppMessage, sendWhatsAppTemplate } from "@/lib/whatsapp/send";
 import { planejarEnvio, proximoEnvio, templateFollowup } from "@/lib/followup/janela";
 import { promptFollowupSdr, fallbackFollowupSdr, primeiroNome } from "@/lib/followup/conteudo";
@@ -58,6 +59,14 @@ async function generateFollowupMessage(
     `${stepDesc}\n` +
     (leadName ? `Nome do cliente: ${leadName}\n` : "") +
     `\nHistórico recente:\n${historyText}\n\nEscreva a mensagem de follow-up:`;
+
+  if (deepseekAtivo()) {
+    const texto = await deepseekChat(
+      [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
+      { maxTokens: 120, temperature: 0.9 },
+    );
+    if (texto) return texto;
+  }
 
   if (process.env.OPENAI_API_KEY) {
     try {
