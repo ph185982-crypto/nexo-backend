@@ -1,4 +1,9 @@
+import { geminiAtivo, geminiTranscrever } from "@/lib/ai/gemini";
+
 /**
+ * Transcrição de áudio: Gemini primeiro (plano gratuito do Google AI Studio, chave em
+ * GOOGLE_AI_API_KEY); se ele falhar ou não estiver configurado, OpenAI Whisper de reserva.
+ *
  * Audio transcription via OpenAI Whisper (whisper-1).
  *
  * WhatsApp sends voice/audio messages as OGG (Opus codec).
@@ -30,8 +35,14 @@ export async function transcribeAudio(
   audioBuffer: Buffer,
   mimeType: string = "audio/ogg"
 ): Promise<string | null> {
+  if (geminiAtivo()) {
+    const texto = await geminiTranscrever(audioBuffer, mimeType);
+    if (texto) return texto;
+    // Sem fala compreensível ou Gemini fora do ar: tenta o Whisper se houver chave.
+  }
+
   if (!process.env.OPENAI_API_KEY) {
-    console.warn("[Transcription] OPENAI_API_KEY not configured — skipping transcription");
+    console.warn("[Transcription] nenhum provedor de transcrição disponível (GOOGLE_AI_API_KEY ou OPENAI_API_KEY)");
     return null;
   }
 

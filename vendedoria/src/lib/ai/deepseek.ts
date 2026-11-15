@@ -69,6 +69,57 @@ export async function deepseekChat(mensagens: MensagemChat[], opts: OpcoesDeepSe
   }
 }
 
+export interface RespostaCompleta {
+  choices: Array<{
+    message: {
+      role: string;
+      content: string | null;
+      tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }>;
+    };
+  }>;
+}
+
+/** Como deepseekChat, mas devolve a resposta inteira (com tool_calls) — usado pelo Max, que chama ferramentas. */
+export async function deepseekCompletion(corpo: {
+  messages: Array<{ role: string; content: unknown }>;
+  tools?: unknown[];
+  tool_choice?: string;
+  max_tokens?: number;
+  temperature?: number;
+  timeoutMs?: number;
+}): Promise<RespostaCompleta | null> {
+  const chave = process.env.DEEPSEEK_API_KEY?.trim();
+  if (!chave) return null;
+  try {
+    const res = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
+      method: "POST",
+      signal: AbortSignal.timeout(corpo.timeoutMs ?? TIMEOUT_PADRAO_MS * 2),
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${chave}` },
+      body: JSON.stringify({
+        model: DEEPSEEK_MODELO,
+        messages: corpo.messages,
+        max_tokens: corpo.max_tokens ?? 2048,
+        ...(corpo.temperature != null ? { temperature: corpo.temperature } : {}),
+        ...(corpo.tools?.length ? { tools: corpo.tools, ...(corpo.tool_choice ? { tool_choice: corpo.tool_choice } : {}) } : {}),
+        stream: false,
+      }),
+    });
+    if (!res.ok) {
+      const texto = await res.text().catch(() => "");
+      console.error(`[DeepSeek] HTTP ${res.status}:`, texto.slice(0, 300));
+      if (res.status === 402 || (await import("./alerta-cota")).ehErroDeCota(texto)) {
+        void import("./alerta-cota").then((m) => m.alertarCotaEsgotada("DeepSeek", texto || `HTTP ${res.status}`));
+      }
+      return null;
+    }
+    const data = (await res.json()) as RespostaCompleta;
+    return data.choices?.[0]?.message ? data : null;
+  } catch (e) {
+    console.error("[DeepSeek]", e instanceof Error ? e.message : "erro de rede");
+    return null;
+  }
+}
+
 /** Nome do provedor de texto que atende primeiro, para o health check (sem expor chave). */
 export function provedorPrincipal(): "deepseek" | "openai" | "anthropic" | "google" | "nenhum" {
   if (deepseekAtivo()) return "deepseek";

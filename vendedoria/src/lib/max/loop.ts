@@ -4,10 +4,14 @@ import { buildMaxSystemPrompt } from "./prompt";
 import { MAX_TOOLS } from "./tools/definitions";
 import { executeMaxTool } from "./tools/executors";
 import { MAX_CHAT_MODEL, MAX_TOOL_ITERATIONS, MAX_OWNER_NUMBER } from "./config";
+import { deepseekAtivo } from "@/lib/ai/deepseek";
+import { imagensParaTexto } from "./media";
 
 export async function runMaxAgent(
-  userContent: string | Array<{ type: string; [k: string]: unknown }>,
+  conteudoRecebido: string | Array<{ type: string; [k: string]: unknown }>,
 ): Promise<string> {
+  // DeepSeek não lê imagem: o Gemini lê e a imagem entra como texto. Com a OpenAI segue como estava.
+  const userContent = deepseekAtivo() ? await imagensParaTexto(conteudoRecebido) : conteudoRecebido;
   const systemPrompt = await buildMaxSystemPrompt();
 
   // Load recent conversation history (8 messages max to stay within token limits)

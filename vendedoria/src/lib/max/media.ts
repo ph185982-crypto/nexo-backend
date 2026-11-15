@@ -1,5 +1,6 @@
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
 import { MAX_MEDIA_TIMEOUT_MS } from "./config";
+import { geminiAtivo, geminiLerImagem } from "@/lib/ai/gemini";
 
 export async function fetchMetaMediaWithTimeout(
   mediaId: string,
@@ -55,4 +56,31 @@ export function buildDocumentContent(
   });
 
   return parts;
+}
+
+const INSTRUCAO_LEITURA =
+  "Leia esta imagem (comprovante, boleto, print ou foto) e transcreva tudo o que for relevante para um controle financeiro: " +
+  "valor, favorecido, pagador, data, forma de pagamento, banco e descrição. Seja literal. " +
+  "Se um dado não estiver visível, escreva 'não visível'. Não invente nada.";
+
+type ParteConteudo = { type: string; [k: string]: unknown };
+
+/**
+ * A DeepSeek não lê imagem: antes de ir para ela, a imagem é lida pelo Gemini e vira texto,
+ * junto com a legenda e a instrução originais. Conteúdo de texto passa direto.
+ */
+export async function imagensParaTexto(conteudo: string | ParteConteudo[]): Promise<string | ParteConteudo[]> {
+  if (typeof conteudo === "string") return conteudo;
+  const imagens = conteudo.filter((p) => p.type === "image_url");
+  if (imagens.length === 0) return conteudo;
+
+  const textos = conteudo.filter((p) => p.type === "text").map((p) => String(p.text ?? "")).filter(Boolean);
+  const leituras: string[] = [];
+  for (const img of imagens) {
+    const url = String((img.image_url as { url?: string } | undefined)?.url ?? "");
+    const m = /^data:([^;]+);base64,(.+)$/.exec(url);
+    const leitura = m && geminiAtivo() ? await geminiLerImagem(Buffer.from(m[2], "base64"), m[1], INSTRUCAO_LEITURA) : null;
+    leituras.push(leitura ?? "[A imagem foi recebida, mas não consegui lê-la agora. Peça ao usuário para digitar valor, favorecido e data.]");
+  }
+  return `${textos.join("\n\n")}\n\n[Leitura automática da imagem recebida]\n${leituras.join("\n---\n")}`.trim();
 }

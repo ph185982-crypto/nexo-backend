@@ -7,6 +7,7 @@
  */
 
 import { getMediaUrl, downloadMedia } from "@/lib/whatsapp/media";
+import { geminiAtivo, geminiLerImagem } from "@/lib/ai/gemini";
 import {
   getFinancialOverview,
   listProfiles,
@@ -71,6 +72,13 @@ async function analyzePaymentProof(
 
 Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON válido, sem markdown, sem explicações.`;
 
+  // Gemini primeiro (plano gratuito); a OpenAI só de reserva.
+  if (geminiAtivo()) {
+    const lido = await geminiLerImagem(imageBuffer, safeType, prompt, { json: true, maxTokens: 600 });
+    if (lido) return interpretarComprovante(lido);
+  }
+  if (!process.env.OPENAI_API_KEY) throw new Error("Nenhum provedor de leitura de imagem configurado (GOOGLE_AI_API_KEY ou OPENAI_API_KEY)");
+
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -107,6 +115,12 @@ Se não conseguir identificar algum campo, omita-o. Responda SOMENTE o JSON vál
 
   if (!text) throw new Error("OpenAI retornou resposta vazia");
 
+  return interpretarComprovante(text);
+}
+
+type ComprovanteLido = Awaited<ReturnType<typeof analyzePaymentProof>>;
+
+function interpretarComprovante(text: string): ComprovanteLido {
   try {
     const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
     const parsed = JSON.parse(cleaned);

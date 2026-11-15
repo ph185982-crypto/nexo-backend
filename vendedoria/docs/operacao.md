@@ -68,6 +68,10 @@ gpg -d backup.sql.gz.gpg | gunzip | psql "$DIRECT_URL"
 - Liga sozinha quando existe a variável **`DEEPSEEK_API_KEY`** na Vercel (Settings → Environment Variables → Production), seguida de um novo deploy. A chave **nunca** vai no código nem no repositório.
 - Com a variável, a DeepSeek (modelo `deepseek-chat`) responde primeiro no atendimento (SDR), nos follow-ups, no relatório do gestor, no analista da prospecção e no configurador do agente. OpenAI, Anthropic e Google ficam de **reserva**: se a DeepSeek falhar ou ficar sem saldo, o atendimento continua.
 - Sem a variável, nada muda. Para voltar atrás, é só apagar a variável e fazer um novo deploy.
-- **Continuam na OpenAI**, porque a DeepSeek não faz: transcrição de áudio (Whisper), voz (TTS) e leitura de imagem do comprovante. O Max (assistente financeiro) também segue na OpenAI, porque usa ferramentas e busca na web. Ou seja: **áudio de lead continua precisando de crédito na OpenAI**.
-- Para conferir: `GET /api/health` mostra `"llm": "deepseek"` quando a chave foi lida (só o nome do provedor, nunca a chave).
+- **Max (assistente financeiro)**: conversa, ferramentas e análises também passam para a DeepSeek. Como ela não lê imagem, o comprovante enviado ao Max é lido antes pelo Gemini e entra como texto.
+- **Gemini** (plano gratuito do Google AI Studio, variável **`GOOGLE_AI_API_KEY`**): transcrição de áudio (OpenAI Whisper fica de reserva), leitura de imagem/comprovante e busca na web do Max. A chave é uma "API key" criada em aistudio.google.com/apikey (começa com `AIza`). O "ID do cliente OAuth" e a "chave secreta GOCSPX" do Google Cloud **não** servem para isso: são do login com Google.
+- No plano gratuito o Google pode usar o conteúdo enviado (áudios e imagens dos clientes) para melhorar os produtos dele.
+- **Só a voz do Max** (resposta em áudio) ainda usa a OpenAI. Sem crédito lá, o Max responde só em texto, sem erro.
+- Se o Google aposentar o modelo padrão do Gemini (`gemini-2.5-flash`), troque pela variável `GEMINI_MODEL`.
+- Para conferir: `GET /api/health` mostra `"llm": "deepseek"`, `"max": "deepseek"` e `"transcricao": "gemini"` quando as chaves foram lidas (só os nomes, nunca as chaves).
 - Sem saldo na DeepSeek (erro 402), o CRM mostra a notificação "💳 DeepSeek sem créditos" e o push, uma vez a cada 6h.
