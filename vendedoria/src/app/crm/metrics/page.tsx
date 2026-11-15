@@ -35,7 +35,7 @@ const SDR_STATUS_ORDER: Array<{ key: string; label: string; color: string }> = [
   { key: "novo",            label: "Novo",              color: "#64748b" },
   { key: "em_qualificacao", label: "Em qualificação",   color: "#0891b2" },
   { key: "qualificado",     label: "Qualificado",       color: "#22c55e" },
-  { key: "handoff_enviado", label: "Handoff enviado",   color: "#2448FF" },
+  { key: "handoff_enviado", label: "Handoff enviado",   color: "#0B1B33" },
   { key: "morno",           label: "Morno (parou)",     color: "#f59e0b" },
   { key: "frio",            label: "Frio (parou)",      color: "#94a3b8" },
   { key: "fora",            label: "Fora do ICP",       color: "#ef4444" },
@@ -62,13 +62,13 @@ function StatCard({ title, value, sub, icon: Icon, color, trend }: StatCardProps
             {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${color}18` }}>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}18` }}>
               <Icon className="w-5 h-5" style={{ color }} />
             </div>
             {trend && trend !== "neutral" && (
               trend === "up"
-                ? <TrendingUp className="w-3.5 h-3.5 text-green-500" />
-                : <TrendingDown className="w-3.5 h-3.5 text-red-500" />
+                ? <TrendingUp className="w-3.5 h-3.5 text-green-700 dark:text-green-400" />
+                : <TrendingDown className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
             )}
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function MetricsPage() {
                 onClick={() => setPeriod(p.value)}
                 className={cn(
                   "px-3 py-2 text-sm transition-colors",
-                  period === p.value ? "bg-primary text-white font-medium" : "text-muted-foreground hover:bg-muted"
+                  period === p.value ? "bg-primary text-primary-foreground font-medium" : "text-muted-foreground hover:bg-muted"
                 )}
               >
                 {p.label}
@@ -169,7 +169,7 @@ export default function MetricsPage() {
               value={metrics.orders}
               sub="passagens de bastão"
               icon={ShoppingBag}
-              color="#2448FF"
+              color="#0B1B33"
               trend="up"
             />
             <StatCard
@@ -230,7 +230,7 @@ export default function MetricsPage() {
                 { label: "Conversas iniciadas", value: metrics.totalConversations, color: "#0891b2" },
                 { label: "Conversas ativas (48h)", value: metrics.activeConversations, color: "#22c55e" },
                 { label: "Escaladas para humano", value: metrics.escalations, color: "#f97316" },
-                { label: "Pedidos fechados (IA)", value: metrics.orders, color: "#2448FF" },
+                { label: "Pedidos fechados (IA)", value: metrics.orders, color: "#0B1B33" },
               ].map((row, i) => {
                 const pct = metrics.totalConversations > 0
                   ? Math.round((row.value / metrics.totalConversations) * 100)

@@ -124,7 +124,7 @@ export function PerdaDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <ThumbsDown className="w-4 h-4 text-red-500" /> Dar perda nesta receita?
+            <ThumbsDown className="w-4 h-4 text-red-600 dark:text-red-400" /> Dar perda nesta receita?
           </DialogTitle>
           <DialogDescription>
             {receita && (
@@ -144,7 +144,7 @@ export function PerdaDialog({
           rows={3}
           maxLength={300}
         />
-        {erro && <p className="text-sm text-red-500">{erro}</p>}
+        {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={fechar} disabled={salvando}>Cancelar</Button>
           <Button variant="destructive" onClick={() => void confirmar()} disabled={salvando} className="gap-1.5">

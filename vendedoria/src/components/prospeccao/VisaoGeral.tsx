@@ -73,9 +73,9 @@ export function VisaoGeral({ resumo, navegar, novaBusca }: {
         <section>
           <h2 className="text-sm font-semibold text-foreground mb-3">O que fazer agora</h2>
           {resumo.passos.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card">
+            <div className="rounded-lg border border-border bg-card">
               <EmptyState
-                icon={<CheckCircle2 className="w-6 h-6 text-green-500" />}
+                icon={<CheckCircle2 className="w-6 h-6 text-green-700 dark:text-green-400" />}
                 titulo="Tudo em dia"
                 descricao="Não há empresas esperando por você. Crie uma nova busca para abastecer o funil."
                 acao={<button onClick={novaBusca} className={btn.primario}><Search className="w-4 h-4" /> Nova busca</button>}
@@ -87,7 +87,7 @@ export function VisaoGeral({ resumo, navegar, novaBusca }: {
                 const rodando = p.acao.segmentId ? progresso[p.acao.segmentId] : undefined;
                 const nome = resumo.buscas.find((b) => b.id === p.acao.segmentId)?.nome;
                 return (
-                  <li key={p.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 md:p-4">
+                  <li key={p.id} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 md:p-4">
                     <span className="w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
                       {i + 1}
                     </span>
@@ -138,7 +138,7 @@ export function VisaoGeral({ resumo, navegar, novaBusca }: {
         </section>
 
         {/* Como funciona */}
-        <section className="rounded-xl border border-border bg-card p-4">
+        <section className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-3">
             <Info className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Como funciona</h2>
@@ -164,7 +164,7 @@ export function VisaoGeral({ resumo, navegar, novaBusca }: {
 
 function Kpi({ icon, label, valor, sub }: { icon: React.ReactNode; label: string; valor: string; sub?: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
+    <div className="rounded-lg border border-border bg-card p-3">
       <div className="flex items-center gap-1.5 text-muted-foreground">
         {icon}
         <span className="text-[11px] font-medium">{label}</span>

@@ -87,7 +87,7 @@ export function EditarReceitaDialog({
             <Campo label="Cliente"><input className={inputCls} value={f.cliente} onChange={(e) => setF({ ...f, cliente: e.target.value })} /></Campo>
           </div>
         </div>
-        {erro && <p className="text-sm text-red-500">{erro}</p>}
+        {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={salvando}>Cancelar</Button>
           <Button onClick={() => void salvar()} disabled={salvando} className="gap-1.5">
@@ -174,7 +174,7 @@ export function EditarContratoDialog({
             <Campo label="Cliente"><input className={inputCls} value={f.cliente} onChange={(e) => setF({ ...f, cliente: e.target.value })} /></Campo>
           </div>
         </div>
-        {erro && <p className="text-sm text-red-500">{erro}</p>}
+        {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={salvando}>Cancelar</Button>
           <Button onClick={() => void salvar()} disabled={salvando} className="gap-1.5">

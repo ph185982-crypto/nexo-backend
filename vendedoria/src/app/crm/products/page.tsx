@@ -112,7 +112,7 @@ function ImageGallery({
                   onError={(e) => { e.currentTarget.src = ""; e.currentTarget.style.display = "none"; }}
                 />
                 {isFirst && (
-                  <span className="absolute top-1 left-1 bg-primary text-white text-[9px] px-1.5 py-0.5 rounded font-medium">
+                  <span className="absolute top-1 left-1 bg-primary text-primary-foreground text-[9px] px-1.5 py-0.5 rounded font-medium">
                     Principal
                   </span>
                 )}
@@ -475,7 +475,7 @@ export default function ProductsPage() {
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     {imgs.length > 0 && (
-                      <span className="flex items-center gap-1 text-green-600">
+                      <span className="flex items-center gap-1 text-green-700 dark:text-green-400">
                         <Images className="w-3 h-3" />
                         {imgs.length} foto{imgs.length > 1 ? "s" : ""}
                       </span>

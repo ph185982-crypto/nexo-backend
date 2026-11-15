@@ -41,7 +41,7 @@ const OBJ_BADGE: Record<ObjType, string> = {
   PRICE:       "bg-red-100    text-red-700    border-red-200",
   COMPETITOR:  "bg-blue-100   text-blue-700   border-blue-200",
   TIMING:      "bg-amber-100  text-amber-700  border-amber-200",
-  DISINTEREST: "bg-slate-100  text-slate-600  border-slate-200",
+  DISINTEREST: "bg-muted  text-muted-foreground  border-border",
   TRUST:       "bg-violet-100 text-violet-700 border-violet-200",
   FEATURE:     "bg-cyan-100   text-cyan-700   border-cyan-200",
 };
@@ -142,7 +142,7 @@ export function ObjectionsTab({ onSave, onError }: Props) {
       </div>
 
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
+        <div className="border rounded-lg p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium">
             {editing ? `Editar: "${editing.keyword}"` : "Nova Regra de Objeção"}
           </p>
@@ -216,7 +216,7 @@ export function ObjectionsTab({ onSave, onError }: Props) {
           <p className="text-sm">Nenhuma regra de objeção. Crie a primeira!</p>
         </div>
       ) : (
-        <div className="divide-y divide-border rounded-xl border bg-card overflow-hidden">
+        <div className="divide-y divide-border rounded-lg border bg-card overflow-hidden">
           {rules.map(rule => (
             <div key={rule.id} className={cn("flex items-start gap-3 px-4 py-3", !rule.isActive && "opacity-50")}>
               <div className="flex-1 min-w-0">

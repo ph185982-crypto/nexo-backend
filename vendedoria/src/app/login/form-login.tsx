@@ -3,10 +3,11 @@
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Bot, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Logo } from "@/components/ui/logo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 /**
@@ -48,22 +49,15 @@ export function FormLogin({ entrarComAvanteza, erroInicial }: { entrarComAvantez
   };
 
   return (
-    <div className="min-h-screen bg-primary flex items-center justify-center p-4">
+    <div className="min-h-screen bg-marinho flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-12 h-12 bg-avz-laranja rounded-xl flex items-center justify-center">
-              <Bot className="w-7 h-7 text-avz-grafite" />
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-1">
-            <span className="font-titulo text-3xl font-extrabold text-white">NEXO</span>
-          </div>
-          <p className="text-white/85 text-sm">CRM Inteligente para WhatsApp</p>
+          <Logo className="text-4xl text-creme" />
+          <p className="text-areia text-sm font-semibold">Vendedor IA · Avanteza</p>
         </div>
 
-        <Card className="border-0 shadow-2xl">
+        <Card className="border-marinho-2">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Entrar</CardTitle>
             <CardDescription className="text-center">
@@ -77,7 +71,7 @@ export function FormLogin({ entrarComAvanteza, erroInicial }: { entrarComAvantez
               </div>
             )}
 
-            <Button asChild className="w-full">
+            <Button asChild variant="destaque" className="w-full">
               <a href={entrarComAvanteza}>Entrar com Avanteza</a>
             </Button>
             <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
@@ -137,8 +131,8 @@ export function FormLogin({ entrarComAvanteza, erroInicial }: { entrarComAvantez
           </CardContent>
         </Card>
 
-        <p className="text-center text-white/40 text-xs">
-          © 2026 Nexo Assessoria. Todos os direitos reservados.
+        <p className="text-center text-creme/60 text-xs">
+          © 2026 Avanteza. Todos os direitos reservados.
         </p>
       </div>
     </div>

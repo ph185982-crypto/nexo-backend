@@ -227,7 +227,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                       <AlertTriangle className="w-4 h-4 mr-2" />
                       Reportar Problema
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleClose} className="text-orange-600">
+                    <DropdownMenuItem onClick={handleClose} className="text-orange-700 dark:text-orange-400">
                       <X className="w-4 h-4 mr-2" />
                       Encerrar Lead
                     </DropdownMenuItem>
@@ -272,7 +272,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
               <TabsTrigger
                 key={tab}
                 value={tab}
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2 text-sm"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2 text-sm"
               >
                 {tab === "overview" && "Visão Geral"}
                 {tab === "activities" && "Atividades"}
@@ -281,7 +281,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                   <span className="flex items-center gap-1.5">
                     Conversas
                     {conversations.length > 0 && (
-                      <span className="bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                      <span className="bg-primary text-primary-foreground text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
                         {conversations.length}
                       </span>
                     )}
@@ -291,7 +291,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                   <span className="flex items-center gap-1.5">
                     Feedback
                     {notes.length > 0 && (
-                      <span className="bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                      <span className="bg-primary text-primary-foreground text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
                         {notes.length}
                       </span>
                     )}
@@ -481,7 +481,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
                               <span
                                 className={cn(
                                   "w-2 h-2 rounded-full flex-shrink-0",
-                                  conv.isActive ? "bg-green-500" : "bg-gray-300"
+                                  conv.isActive ? "bg-green-500" : "bg-muted-foreground/40"
                                 )}
                               />
                             </div>

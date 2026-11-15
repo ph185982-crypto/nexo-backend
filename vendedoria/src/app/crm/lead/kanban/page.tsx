@@ -166,7 +166,7 @@ function LeadCard({
   const diasSemAtividade = diasDesde(lead.lastActivityAt ?? lead.createdAt);
   const corParado =
     diasNaEtapa >= PARADO_CRITICO_DIAS ? "text-red-600 dark:text-red-400 font-medium"
-    : diasNaEtapa >= PARADO_ATENCAO_DIAS ? "text-amber-600 dark:text-amber-400 font-medium"
+    : diasNaEtapa >= PARADO_ATENCAO_DIAS ? "text-amber-700 dark:text-amber-400 font-medium"
     : "text-muted-foreground";
 
   return (
@@ -174,7 +174,7 @@ function LeadCard({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`kanban-card cursor-grab active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${dragging ? "shadow-xl rotate-2" : ""} ${lead.kanbanColumn?.type === "GANHO" ? "border-green-500/50 bg-green-500/5 ring-1 ring-green-500/20" : ""}`}
+      className={`kanban-card cursor-grab active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${dragging ? " rotate-2" : ""} ${lead.kanbanColumn?.type === "GANHO" ? "border-green-500/50 bg-green-500/5 ring-1 ring-green-500/20" : ""}`}
       onClick={onClick}
     >
       <div className="flex items-start gap-2.5">
@@ -200,7 +200,7 @@ function LeadCard({
             </p>
           )}
           {lead.reuniaoEm && (
-            <p className="text-[11px] text-green-600 dark:text-green-400 mt-0.5 truncate">
+            <p className="text-[11px] text-green-700 dark:text-green-400 mt-0.5 truncate">
               📅 Ligação {new Date(lead.reuniaoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
             </p>
           )}

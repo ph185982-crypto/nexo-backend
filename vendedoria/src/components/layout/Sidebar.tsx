@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
-  Settings, X, Zap, Radar, Wallet, ChevronLeft, ChevronRight, Trophy,
+  Settings, X, Radar, Wallet, ChevronLeft, ChevronRight, Trophy,
   Megaphone, PhoneCall,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Logo } from "@/components/ui/logo";
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 
@@ -89,11 +90,11 @@ export function Sidebar({
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10 flex-shrink-0">
-        <div className="flex-shrink-0 w-8 h-8 bg-avz-laranja rounded-xl flex items-center justify-center">
-          <Zap className="w-4 h-4 text-avz-grafite" />
-        </div>
-        <div className={cn("flex items-baseline gap-1 flex-1 min-w-0", collapsed && "md:hidden")}>
-          <span className="font-titulo font-extrabold text-lg tracking-tight text-white truncate">NEXO</span>
+        {/* Recolhida: só o "a" com o quadrado laranja. */}
+        <span aria-hidden className={cn("logo hidden text-2xl text-creme w-8 text-center", collapsed && "md:inline-block")}>a<span className="logo-ponto" /></span>
+        <div className={cn("flex flex-col flex-1 min-w-0", collapsed && "md:hidden")}>
+          <Logo className="text-2xl text-creme" />
+          <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.25em] text-areia">Vendedor IA</span>
         </div>
         <button
           onClick={onMobileClose}
@@ -134,7 +135,7 @@ export function Sidebar({
                 <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-white" : "")} />
                 <span className={cn(collapsed && "md:hidden")}>{item.label}</span>
                 {active && !collapsed && (
-                  <span className="ml-auto w-1 h-4 rounded-full bg-avz-laranja flex-shrink-0" />
+                  <span className="ml-auto w-1 h-4 rounded-full bg-laranja flex-shrink-0" />
                 )}
               </Link>
             );

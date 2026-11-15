@@ -88,7 +88,7 @@ export function EditarContaDialog({
             </select>
           </Campo>
         </div>
-        {erro && <p className="text-sm text-red-500">{erro}</p>}
+        {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={salvando}>Cancelar</Button>
           <Button onClick={() => void salvar()} disabled={salvando} className="gap-1.5">
@@ -132,7 +132,7 @@ export function ExcluirContaDialog({
     <Dialog open={!!conta} onOpenChange={(o) => { if (!o) onClose(); }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Trash2 className="w-4 h-4 text-red-500" /> Excluir esta conta?</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" /> Excluir esta conta?</DialogTitle>
           <DialogDescription>
             {conta && (
               <>
@@ -143,7 +143,7 @@ export function ExcluirContaDialog({
             )}
           </DialogDescription>
         </DialogHeader>
-        {erro && <p className="text-sm text-red-500">{erro}</p>}
+        {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={excluindo}>Cancelar</Button>
           <Button variant="destructive" onClick={() => void excluir()} disabled={excluindo} className="gap-1.5">

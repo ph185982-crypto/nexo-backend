@@ -64,7 +64,7 @@ export function EntregaMensagens({ orgId, versao }: { orgId: string; versao: num
   }, [orgId, dias, versao]);
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 space-y-3">
+    <section className="rounded-lg border border-border bg-card p-4 space-y-3">
       <div className="flex items-center gap-2">
         <MailCheck className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-semibold text-foreground">Entrega das mensagens</h3>
@@ -76,7 +76,7 @@ export function EntregaMensagens({ orgId, versao }: { orgId: string; versao: num
         </select>
       </div>
 
-      {erro ? <p className="text-xs text-red-500">{erro}</p> : !d ? (
+      {erro ? <p className="text-xs text-red-600 dark:text-red-400">{erro}</p> : !d ? (
         <p className="text-xs text-muted-foreground flex items-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Carregando…</p>
       ) : d.total === 0 ? (
         <p className="text-xs text-muted-foreground">
@@ -87,10 +87,10 @@ export function EntregaMensagens({ orgId, versao }: { orgId: string; versao: num
         <>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             <Num rotulo="Enviadas" valor={d.total} />
-            <Num rotulo="Entregues" valor={`${d.entregues}${d.taxaEntrega != null ? ` (${d.taxaEntrega}%)` : ""}`} tom="text-green-600 dark:text-green-400" />
+            <Num rotulo="Entregues" valor={`${d.entregues}${d.taxaEntrega != null ? ` (${d.taxaEntrega}%)` : ""}`} tom="text-green-700 dark:text-green-400" />
             <Num rotulo="Lidas" valor={`${d.lidos}${d.taxaLeitura != null ? ` (${d.taxaLeitura}%)` : ""}`} />
-            <Num rotulo="Falharam" valor={d.falhas} tom={d.falhas ? "text-red-500" : undefined} />
-            <Num rotulo="Sem confirmação" valor={d.semConfirmacao} tom={d.semConfirmacao ? "text-amber-500" : undefined} />
+            <Num rotulo="Falharam" valor={d.falhas} tom={d.falhas ? "text-red-600 dark:text-red-400" : undefined} />
+            <Num rotulo="Sem confirmação" valor={d.semConfirmacao} tom={d.semConfirmacao ? "text-amber-700 dark:text-amber-400" : undefined} />
           </div>
 
           {naoEntregues > 0 && (
@@ -108,10 +108,10 @@ export function EntregaMensagens({ orgId, versao }: { orgId: string; versao: num
               </button>
             </div>
           )}
-          {avisoRecup && <p className="text-xs text-green-600 dark:text-green-400">{avisoRecup}</p>}
+          {avisoRecup && <p className="text-xs text-green-700 dark:text-green-400">{avisoRecup}</p>}
 
           {!d.recebeuStatusAlgumaVez && (
-            <p className="flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400">
+            <p className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               Nenhum status de entrega chegou da Meta. Confira no app da Meta (WhatsApp → Configuração → Webhook)
               se o campo <b>messages</b> está inscrito.

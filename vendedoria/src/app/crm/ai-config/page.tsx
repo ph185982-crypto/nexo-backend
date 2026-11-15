@@ -93,7 +93,7 @@ export default function AIConfigPage() {
                 className={cn(
                   "rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium",
                   "data-[state=active]:border-primary data-[state=active]:text-primary",
-                  "data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+                  "data-[state=active]:bg-transparent",
                   "text-muted-foreground hover:text-foreground transition-colors"
                 )}
               >
@@ -130,9 +130,9 @@ export default function AIConfigPage() {
           <div
             key={t.id}
             className={cn(
-              "flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-sm font-medium",
+              "flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-medium",
               "pointer-events-auto animate-in slide-in-from-right-5 fade-in duration-300",
-              t.type === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
+              t.type === "success" ? "bg-primary text-primary-foreground" : "bg-red-600 text-primary-foreground"
             )}
           >
             {t.type === "success"

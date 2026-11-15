@@ -231,12 +231,12 @@ export function Empresas({ orgId, buscas, filtrosIniciais, aoMudar }: {
                       <p className="font-medium text-foreground truncate">{e.nome ?? "—"}</p>
                       <p className="text-xs text-muted-foreground truncate">
                         {e.segment?.nome ?? "Importada"}
-                        {e.ratingGoogle != null && <> · <Star className="inline w-3 h-3 -mt-0.5 text-yellow-500 fill-yellow-500" /> {e.ratingGoogle.toFixed(1)} ({e.numeroAvaliacoes ?? 0})</>}
+                        {e.ratingGoogle != null && <> · <Star className="inline w-3 h-3 -mt-0.5 text-yellow-700 dark:text-yellow-400 fill-yellow-500" /> {e.ratingGoogle.toFixed(1)} ({e.numeroAvaliacoes ?? 0})</>}
                       </p>
                     </td>
                     <td className="py-2.5 pr-3 whitespace-nowrap">
                       <span className="flex items-center gap-1.5 text-xs text-foreground">
-                        {e.tipoTelefone === "CELULAR" ? <Smartphone className="w-3.5 h-3.5 text-green-500" /> : <Phone className="w-3.5 h-3.5 text-muted-foreground" />}
+                        {e.tipoTelefone === "CELULAR" ? <Smartphone className="w-3.5 h-3.5 text-green-700 dark:text-green-400" /> : <Phone className="w-3.5 h-3.5 text-muted-foreground" />}
                         {fmtTelefone(e.telefone)}
                       </span>
                     </td>
@@ -325,8 +325,8 @@ function SinaisCompactos({ e }: { e: EmpresaResumo }) {
     <span
       title={`${rotulo}: ${v === null ? "não verificado" : v ? "sim" : "não"}`}
       className={`inline-flex items-center justify-center w-6 h-6 rounded-md border ${
-        v === true ? "border-green-500/30 text-green-600 dark:text-green-400"
-          : v === false ? "border-red-500/30 text-red-500" : "border-border text-muted-foreground/50"
+        v === true ? "border-green-500/30 text-green-700 dark:text-green-400"
+          : v === false ? "border-red-500/30 text-red-600 dark:text-red-400" : "border-border text-muted-foreground/50"
       }`}
     >
       {icon}

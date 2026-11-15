@@ -58,7 +58,7 @@ const PAUSE_CAMPAIGN = gql`
 `;
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  PLANNING: { label: "Rascunho", className: "bg-gray-100 text-gray-700" },
+  PLANNING: { label: "Rascunho", className: "bg-muted text-foreground" },
   ACTIVE: { label: "Ativo", className: "bg-green-100 text-green-700" },
   PAUSED: { label: "Pausado", className: "bg-orange-100 text-orange-700" },
   COMPLETED: { label: "Concluído", className: "bg-blue-100 text-blue-700" },
@@ -66,7 +66,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 };
 
 const RECIPIENT_STATUS: Record<string, { label: string; className: string }> = {
-  PENDING: { label: "Pendente", className: "bg-gray-100 text-gray-700" },
+  PENDING: { label: "Pendente", className: "bg-muted text-foreground" },
   SENT: { label: "Enviado", className: "bg-green-100 text-green-700" },
   FAILED: { label: "Falhou", className: "bg-red-100 text-red-700" },
   REPLIED: { label: "Respondeu", className: "bg-blue-100 text-blue-700" },
@@ -179,8 +179,8 @@ export default function CampaignViewPage() {
                 <p className="text-xs text-muted-foreground">{campaign.sender?.displayPhoneNumber}</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <Wifi className="w-4 h-4 text-green-500" />
-                <span className="text-xs text-green-600 font-medium">Estável</span>
+                <Wifi className="w-4 h-4 text-green-700 dark:text-green-400" />
+                <span className="text-xs text-green-700 dark:text-green-400 font-medium">Estável</span>
               </div>
             </div>
             <Button variant="outline" size="sm" className="mt-3 w-full text-xs">
@@ -234,7 +234,7 @@ export default function CampaignViewPage() {
             </div>
             <div className="grid grid-cols-3 gap-2 mt-2">
               {[
-                { label: "Enviados", value: stats?.sent ?? 0, color: "text-green-600" },
+                { label: "Enviados", value: stats?.sent ?? 0, color: "text-green-700 dark:text-green-400" },
                 { label: "Falhas", value: stats?.failed ?? 0, color: "text-red-600" },
                 { label: "Responderam", value: stats?.replied ?? 0, color: "text-blue-600" },
               ].map((s) => (
@@ -260,7 +260,7 @@ export default function CampaignViewPage() {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Bar dataKey="sent" name="Enviados" fill="#2448FF" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="sent" name="Enviados" fill="#0B1B33" radius={[2, 2, 0, 0]} />
               <Bar dataKey="replied" name="Responderam" fill="#00ff87" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -281,7 +281,7 @@ export default function CampaignViewPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
+                <tr className="border-b border-border">
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">
                     Destinatário
                   </th>
@@ -297,7 +297,7 @@ export default function CampaignViewPage() {
                 {recipients.map((r: { id: string; phoneNumber: string; name?: string; status: string; sentAt?: string }) => {
                   const statusInfo = RECIPIENT_STATUS[r.status] ?? { label: r.status, className: "" };
                   return (
-                    <tr key={r.id} className="border-b border-gray-50 hover:bg-muted/30">
+                    <tr key={r.id} className="border-b border-border hover:bg-muted/30">
                       <td className="px-4 py-3">
                         <p className="font-medium">{r.name ?? "—"}</p>
                         <p className="text-xs text-muted-foreground">{r.phoneNumber}</p>
@@ -326,7 +326,7 @@ export default function CampaignViewPage() {
 
           {/* Pagination */}
           {recipientsTotal > 50 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
               <Button
                 variant="outline"
                 size="sm"

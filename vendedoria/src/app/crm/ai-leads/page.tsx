@@ -60,25 +60,25 @@ const ETAPA_LABEL: Record<Etapa, string> = {
 };
 
 const ETAPA_COLOR: Record<Etapa, string> = {
-  NOVO:                "bg-slate-100   text-slate-700   border-slate-200",
+  NOVO:                "bg-muted   text-foreground   border-border",
   PRODUTO_IDENTIFICADO:"bg-blue-100    text-blue-700    border-blue-200",
   MIDIA_ENVIADA:       "bg-indigo-100  text-indigo-700  border-indigo-200",
   QUALIFICANDO:        "bg-amber-100   text-amber-700   border-amber-200",
   NEGOCIANDO:          "bg-orange-100  text-orange-700  border-orange-200",
   COLETANDO_DADOS:     "bg-violet-100  text-violet-700  border-violet-200",
-  PEDIDO_CONFIRMADO:   "bg-emerald-100 text-emerald-700 border-emerald-200",
+  PEDIDO_CONFIRMADO:   "bg-secondary text-primary border-border",
   PERDIDO:             "bg-red-100     text-red-700     border-red-200",
 };
 
 const ETAPA_ICON: Record<Etapa, React.ReactNode> = {
-  NOVO:                <span className="text-slate-400">●</span>,
-  PRODUTO_IDENTIFICADO:<span className="text-blue-400">●</span>,
-  MIDIA_ENVIADA:       <span className="text-indigo-400">●</span>,
-  QUALIFICANDO:        <span className="text-amber-400">●</span>,
-  NEGOCIANDO:          <span className="text-orange-400">●</span>,
-  COLETANDO_DADOS:     <span className="text-violet-400">●</span>,
-  PEDIDO_CONFIRMADO:   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />,
-  PERDIDO:             <XCircle className="w-3.5 h-3.5 text-red-500" />,
+  NOVO:                <span className="text-muted-foreground">●</span>,
+  PRODUTO_IDENTIFICADO:<span className="text-blue-700 dark:text-blue-400">●</span>,
+  MIDIA_ENVIADA:       <span className="text-indigo-700 dark:text-indigo-400">●</span>,
+  QUALIFICANDO:        <span className="text-amber-700 dark:text-amber-400">●</span>,
+  NEGOCIANDO:          <span className="text-orange-700 dark:text-orange-400">●</span>,
+  COLETANDO_DADOS:     <span className="text-violet-700 dark:text-violet-400">●</span>,
+  PEDIDO_CONFIRMADO:   <CheckCircle2 className="w-3.5 h-3.5 text-primary" />,
+  PERDIDO:             <XCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />,
 };
 
 const FOLLOWUP_STATUS_LABEL: Record<string, string> = {
@@ -121,7 +121,7 @@ function phoneDisplay(raw: string): string {
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 
 const AVATAR_COLORS = [
-  "bg-blue-500", "bg-violet-500", "bg-emerald-500", "bg-orange-500",
+  "bg-blue-500", "bg-violet-500", "bg-primary", "bg-orange-500",
   "bg-rose-500", "bg-cyan-500", "bg-amber-500", "bg-indigo-500",
 ];
 
@@ -141,7 +141,7 @@ function StatCard({ etapa, count, active, onClick }: { etapa: Etapa; count: numb
     <button
       onClick={onClick}
       className={cn(
-        "flex flex-col gap-1 p-3 rounded-xl border text-left transition-all hover:shadow-sm",
+        "flex flex-col gap-1 p-3 rounded-lg border text-left transition-all",
         active ? "border-primary/40 ring-1 ring-primary/30 bg-primary/5" : "bg-card hover:border-primary/20"
       )}
     >
@@ -158,7 +158,7 @@ function StatCard({ etapa, count, active, onClick }: { etapa: Etapa; count: numb
 
 function ConversationCard({ conv }: { conv: Conversation }) {
   return (
-    <div className="flex items-start gap-3 p-4 rounded-xl border bg-card hover:shadow-sm transition-shadow">
+    <div className="flex items-start gap-3 p-4 rounded-lg border bg-card">
       <Avatar name={conv.profileName} id={conv.id} />
 
       <div className="flex-1 min-w-0">
@@ -194,7 +194,7 @@ function ConversationCard({ conv }: { conv: Conversation }) {
       <div className="text-xs text-muted-foreground flex-shrink-0 text-right">
         <span className="block">{timeAgo(conv.lastMessageAt)}</span>
         {conv.humanTakeover && (
-          <span className="block mt-1 text-red-500 font-medium">intervenção</span>
+          <span className="block mt-1 text-red-600 dark:text-red-400 font-medium">intervenção</span>
         )}
       </div>
     </div>
@@ -290,7 +290,7 @@ export default function AILeadsPage() {
               className={cn(
                 "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                 !filterEtapa && !humanOnly
-                  ? "bg-primary text-white border-primary"
+                  ? "bg-primary text-primary-foreground border-primary"
                   : "bg-card text-muted-foreground border-border hover:border-primary/40"
               )}
             >
@@ -321,7 +321,7 @@ export default function AILeadsPage() {
                   className={cn(
                     "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                     filterEtapa === etapa
-                      ? "bg-primary text-white border-primary"
+                      ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card text-muted-foreground border-border hover:border-primary/40"
                   )}
                 >

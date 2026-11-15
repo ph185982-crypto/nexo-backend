@@ -390,12 +390,12 @@ export default function DisparosPage() {
               </CardHeader>
               <CardContent className="px-4 pb-3 space-y-2">
                 <div className="flex gap-4">
-                  <div className="flex items-center gap-1.5 text-green-600">
+                  <div className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
                     <CheckCircle className="w-4 h-4" />
                     <span className="text-sm font-medium">{results.sent} enviados</span>
                   </div>
                   {results.failed > 0 && (
-                    <div className="flex items-center gap-1.5 text-red-500">
+                    <div className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
                       <XCircle className="w-4 h-4" />
                       <span className="text-sm font-medium">{results.failed} falhas</span>
                     </div>

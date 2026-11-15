@@ -1,4 +1,4 @@
-/* Nexo Vendas — Service Worker v2
+/* Vendedor IA · Avanteza — Service Worker v2
  * Strategy:
  *   - Static assets (_next/static, icons, fonts): Cache-First, versioned cache
  *   - Navigation (HTML pages): Network-First with offline fallback
@@ -6,7 +6,7 @@
  *   - Push notifications: existing handler preserved
  */
 
-const CACHE_VERSION = 'nexo-v3'; // v3: identidade Avanteza (ícones e offline novos)
+const CACHE_VERSION = 'nexo-v4'; // v4: identidade Avanteza v2.0 (ícones e offline novos)
 const STATIC_CACHE  = `${CACHE_VERSION}-static`;
 const OFFLINE_URL   = '/offline.html';
 
@@ -101,10 +101,10 @@ self.addEventListener('push', (event) => {
   if (!event.data) return;
   let data;
   try { data = event.data.json(); }
-  catch { data = { title: 'Nexo Vendas', body: event.data.text(), url: '/crm/conversations' }; }
+  catch { data = { title: 'Vendedor IA', body: event.data.text(), url: '/crm/conversations' }; }
 
   event.waitUntil(
-    self.registration.showNotification(data.title ?? 'Nexo Vendas', {
+    self.registration.showNotification(data.title ?? 'Vendedor IA', {
       body:             data.body,
       icon:             '/icon-192.png',
       badge:            '/icon-192.png',

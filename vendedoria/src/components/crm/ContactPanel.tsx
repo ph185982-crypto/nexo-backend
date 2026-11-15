@@ -33,7 +33,7 @@ const ETAPA_MAP: Record<string, { label: string; color: string }> = {
   PRODUTO_IDENTIFICADO:{ label: "Qualificando",   color: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400" },
   NEGOCIANDO:         { label: "Negociando",      color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
   COLETANDO_DADOS:    { label: "Coletando dados", color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" },
-  PEDIDO_CONFIRMADO:  { label: "Confirmado",      color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
+  PEDIDO_CONFIRMADO:  { label: "Confirmado",      color: "bg-secondary text-primary" },
   PERDIDO:            { label: "Perdido",         color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
@@ -115,7 +115,7 @@ export function ContactPanel({ conv, onClose }: { conv: Conv; onClose: () => voi
         {/* Avatar + name */}
         <div className="px-4 py-5 text-center border-b border-border">
           <div
-            className="w-14 h-14 rounded-full text-xl font-bold flex items-center justify-center mx-auto mb-3 text-white shadow-md"
+            className="w-14 h-14 rounded-full text-xl font-bold flex items-center justify-center mx-auto mb-3 text-white"
             style={{ background: `hsl(${avatarHue}, 65%, 45%)` }}
           >
             {initial}

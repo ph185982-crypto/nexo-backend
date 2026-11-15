@@ -84,7 +84,7 @@ function ProfessionalCard({
 
   return (
     <Card
-      className="hover:shadow-md transition-shadow cursor-pointer"
+      className=" cursor-pointer"
       onClick={onSelect}
     >
       <CardContent className="p-5">

@@ -66,7 +66,7 @@ export function VariacaoBadge({ pct, rotulo, invertColor }: { pct: number | null
   const isUp = pct > 0;
   const isFlat = pct === 0;
   const good = isFlat ? null : invertColor ? !isUp : isUp;
-  const color = isFlat ? "text-muted-foreground" : good ? "text-green-500" : "text-red-500";
+  const color = isFlat ? "text-muted-foreground" : good ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400";
   return (
     <span className={cn("inline-flex items-center gap-0.5 text-xs font-medium", color)}>
       {!isFlat && (isUp ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />)}
@@ -148,11 +148,11 @@ export function OverviewTab() {
 
       {/* Resumo do escopo */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <ResumoCard titulo="Receitas" valor={data.receitas} cor="text-green-500" icone={<TrendingUp className="w-5 h-5 text-green-500" />} bg="bg-green-500/10"
+        <ResumoCard titulo="Receitas" valor={data.receitas} cor="text-green-700 dark:text-green-400" icone={<TrendingUp className="w-5 h-5 text-green-700 dark:text-green-400" />} bg="bg-green-500/10"
           variacao={<VariacaoBadge pct={data.comparativo.receitas.variacaoPct} rotulo={rotAnt} />} />
-        <ResumoCard titulo="Despesas" valor={data.despesas} cor="text-red-500" icone={<TrendingDown className="w-5 h-5 text-red-500" />} bg="bg-red-500/10"
+        <ResumoCard titulo="Despesas" valor={data.despesas} cor="text-red-600 dark:text-red-400" icone={<TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />} bg="bg-red-500/10"
           variacao={<VariacaoBadge pct={data.comparativo.despesas.variacaoPct} rotulo={rotAnt} invertColor />} />
-        <ResumoCard titulo="Saldo" valor={data.saldo} cor={data.saldo >= 0 ? "text-blue-500" : "text-red-500"} icone={<DollarSign className={cn("w-5 h-5", data.saldo >= 0 ? "text-blue-500" : "text-red-500")} />} bg={data.saldo >= 0 ? "bg-blue-500/10" : "bg-red-500/10"}
+        <ResumoCard titulo="Saldo" valor={data.saldo} cor={data.saldo >= 0 ? "text-blue-600 dark:text-blue-400" : "text-red-600 dark:text-red-400"} icone={<DollarSign className={cn("w-5 h-5", data.saldo >= 0 ? "text-blue-600 dark:text-blue-400" : "text-red-600 dark:text-red-400")} />} bg={data.saldo >= 0 ? "bg-blue-500/10" : "bg-red-500/10"}
           variacao={<VariacaoBadge pct={data.comparativo.saldo.variacaoPct} rotulo={rotAnt} />} />
       </div>
 
@@ -200,7 +200,7 @@ export function OverviewTab() {
                     <td className="py-2 font-medium text-foreground">{nome}</td>
                     <td className="py-2 text-right text-foreground">{BRL.format(c.atual)}</td>
                     <td className="py-2 text-right text-muted-foreground">{BRL.format(c.anterior)}</td>
-                    <td className={cn("py-2 text-right font-medium", bom == null ? "text-muted-foreground" : bom ? "text-green-500" : "text-red-500")}>
+                    <td className={cn("py-2 text-right font-medium", bom == null ? "text-muted-foreground" : bom ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400")}>
                       {dif > 0 ? "+" : ""}{BRL.format(dif)}
                     </td>
                   </tr>
@@ -235,7 +235,7 @@ export function OverviewTab() {
             Receitas previstas — {data.periodo.label}
           </CardTitle>
           <div className="text-right">
-            <span className="text-lg font-semibold text-green-500">{BRL.format(rp.total)}</span>
+            <span className="text-lg font-semibold text-green-700 dark:text-green-400">{BRL.format(rp.total)}</span>
             <span className="block text-[11px] text-muted-foreground">a receber neste período</span>
           </div>
         </CardHeader>
@@ -243,9 +243,9 @@ export function OverviewTab() {
           {(previstoTotal > 0 || rp.perdidas.quantidade > 0) && (
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground">
               <span>Previsto: <strong className="text-foreground">{BRL.format(previstoTotal)}</strong></span>
-              <span>Já recebido: <strong className="text-green-500">{BRL.format(rp.recebido)}</strong></span>
-              <span>Falta: <strong className="text-orange-500">{BRL.format(rp.total)}</strong></span>
-              {rp.perdidas.quantidade > 0 && <span>Perdido: <strong className="text-red-500">{BRL.format(rp.perdidas.total)}</strong></span>}
+              <span>Já recebido: <strong className="text-green-700 dark:text-green-400">{BRL.format(rp.recebido)}</strong></span>
+              <span>Falta: <strong className="text-orange-700 dark:text-orange-400">{BRL.format(rp.total)}</strong></span>
+              {rp.perdidas.quantidade > 0 && <span>Perdido: <strong className="text-red-600 dark:text-red-400">{BRL.format(rp.perdidas.total)}</strong></span>}
             </div>
           )}
 
@@ -267,7 +267,7 @@ export function OverviewTab() {
                   <AlertTriangle className="w-4 h-4" />
                   {rp.atrasadasAnteriores.quantidade} receita(s) em aberto de períodos anteriores · {BRL.format(rp.atrasadasAnteriores.total)}
                 </span>
-                <ChevronDown className={cn("w-4 h-4 transition-transform text-red-500", !mostrarAtrasadas && "-rotate-90")} />
+                <ChevronDown className={cn("w-4 h-4 transition-transform text-red-600 dark:text-red-400", !mostrarAtrasadas && "-rotate-90")} />
               </button>
               {mostrarAtrasadas && (
                 <div className="px-3 pb-2">
@@ -388,14 +388,14 @@ function BlocoCard({ titulo, icone, b, rotAnt, ativo, onClick }: {
           <span className="text-[11px] text-muted-foreground">{ativo ? "filtrando — clique p/ limpar" : "clique p/ filtrar"}</span>
         </button>
         <div className="grid grid-cols-3 gap-2">
-          <Mini titulo="Receitas" v={b.receitas} cor="text-green-500" pct={b.variacao.receitas} rot={rotAnt} />
-          <Mini titulo="Despesas" v={b.despesas} cor="text-red-500" pct={b.variacao.despesas} rot={rotAnt} inv />
-          <Mini titulo="Saldo" v={b.saldo} cor={b.saldo >= 0 ? "text-blue-500" : "text-red-500"} pct={b.variacao.saldo} rot={rotAnt} />
+          <Mini titulo="Receitas" v={b.receitas} cor="text-green-700 dark:text-green-400" pct={b.variacao.receitas} rot={rotAnt} />
+          <Mini titulo="Despesas" v={b.despesas} cor="text-red-600 dark:text-red-400" pct={b.variacao.despesas} rot={rotAnt} inv />
+          <Mini titulo="Saldo" v={b.saldo} cor={b.saldo >= 0 ? "text-blue-600 dark:text-blue-400" : "text-red-600 dark:text-red-400"} pct={b.variacao.saldo} rot={rotAnt} />
         </div>
         {(b.previsto.abertas > 0 || b.previsto.perdidas > 0) && (
           <p className="text-xs text-muted-foreground border-t border-border pt-2">
-            A receber: <strong className="text-orange-500">{BRL.format(b.previsto.abertas)}</strong>
-            {b.previsto.perdidas > 0 && <> · Perdido: <strong className="text-red-500">{BRL.format(b.previsto.perdidas)}</strong></>}
+            A receber: <strong className="text-orange-700 dark:text-orange-400">{BRL.format(b.previsto.abertas)}</strong>
+            {b.previsto.perdidas > 0 && <> · Perdido: <strong className="text-red-600 dark:text-red-400">{BRL.format(b.previsto.perdidas)}</strong></>}
           </p>
         )}
       </CardContent>
@@ -422,12 +422,12 @@ function LinhaPrevista({ r, ocupado, onReceber, onPerda }: { r: PrevistaItem; oc
         {r.cliente && <span className="text-muted-foreground"> — {r.cliente}</span>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <span className={cn("text-xs", r.atrasada ? "text-red-500" : "text-muted-foreground")}>{fmtData(r.data_prevista)}</span>
-        <span className="font-medium text-green-500">{BRL.format(r.valor)}</span>
+        <span className={cn("text-xs", r.atrasada ? "text-red-600 dark:text-red-400" : "text-muted-foreground")}>{fmtData(r.data_prevista)}</span>
+        <span className="font-medium text-green-700 dark:text-green-400">{BRL.format(r.valor)}</span>
         <Button variant="ghost" size="icon-sm" disabled={ocupado} onClick={onReceber} title="Confirmar recebimento">
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
+          <CheckCircle2 className="w-4 h-4 text-green-700 dark:text-green-400" />
         </Button>
-        <Button variant="ghost" size="sm" disabled={ocupado} onClick={onPerda} title="Dar perda nesta receita" className="gap-1 text-red-500 hover:text-red-500 px-2">
+        <Button variant="ghost" size="sm" disabled={ocupado} onClick={onPerda} title="Dar perda nesta receita" className="gap-1 text-red-600 dark:text-red-400 hover:text-red-500 px-2">
           <ThumbsDown className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Perda</span>
         </Button>
       </div>

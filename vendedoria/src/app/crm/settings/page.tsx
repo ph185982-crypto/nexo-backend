@@ -161,9 +161,9 @@ function StatusBadge({ status }: { status: string }) {
     ERROR: { label: "Erro", icon: XCircle, className: "bg-red-100 text-red-700" },
     BANNED: { label: "Banido", icon: XCircle, className: "bg-red-100 text-red-700" },
     ACTIVE: { label: "Ativo", icon: CheckCircle2, className: "bg-green-100 text-green-700" },
-    INACTIVE: { label: "Inativo", icon: XCircle, className: "bg-gray-100 text-gray-600" },
+    INACTIVE: { label: "Inativo", icon: XCircle, className: "bg-muted text-muted-foreground" },
   };
-  const cfg = config[status] ?? { label: status, icon: Phone, className: "bg-gray-100 text-gray-600" };
+  const cfg = config[status] ?? { label: status, icon: Phone, className: "bg-muted text-muted-foreground" };
   const Icon = cfg.icon;
   return (
     <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium", cfg.className)}>
@@ -244,7 +244,7 @@ function OrganizationTab({ orgs, refetch }: { orgs: OrgType[]; refetch: () => vo
             </div>
           </div>
           {feedback && (
-            <p className={cn("text-sm", feedback.ok ? "text-green-600" : "text-red-600")}>{feedback.msg}</p>
+            <p className={cn("text-sm", feedback.ok ? "text-green-700 dark:text-green-400" : "text-red-600")}>{feedback.msg}</p>
           )}
           <Button onClick={handleSave} disabled={saving || !form.name} className="gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -567,7 +567,7 @@ function AgentTab({ orgs }: { orgs: OrgType[] }) {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
-                <Key className="w-4 h-4 text-amber-500" />
+                <Key className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 Modo Sandbox (Teste)
               </CardTitle>
               <CardDescription className="mt-1">
@@ -705,7 +705,7 @@ function AgentTab({ orgs }: { orgs: OrgType[] }) {
       </Card>
 
       {feedback && (
-        <p className={cn("text-sm", feedback.ok ? "text-green-600" : "text-red-600")}>{feedback.msg}</p>
+        <p className={cn("text-sm", feedback.ok ? "text-green-700 dark:text-green-400" : "text-red-600")}>{feedback.msg}</p>
       )}
 
       <Button onClick={handleSave} disabled={saving} className="gap-2">
@@ -854,7 +854,7 @@ function SecurityTab() {
             <p className="text-sm text-destructive">As senhas não coincidem</p>
           )}
           {feedback && (
-            <p className={cn("text-sm", feedback.ok ? "text-green-600" : "text-red-600")}>{feedback.msg}</p>
+            <p className={cn("text-sm", feedback.ok ? "text-green-700 dark:text-green-400" : "text-red-600")}>{feedback.msg}</p>
           )}
           <Button
             onClick={handleSave}
@@ -1045,7 +1045,7 @@ function IntegracoesTab() {
         ) : status?.connected ? (
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
+              <CheckCircle2 className="w-4 h-4 text-green-700 dark:text-green-400" />
               <span className="text-foreground">
                 Conectado{status.email ? ` como ${status.email}` : ""}
               </span>
@@ -1066,7 +1066,7 @@ function IntegracoesTab() {
         ) : (
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <XCircle className="w-4 h-4 text-red-500" />
+              <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
               Nenhuma conta Google conectada
             </div>
             <Button asChild size="sm">
@@ -1154,12 +1154,12 @@ function RapidApiCard() {
             <div className="flex items-center gap-2 text-sm">
               {status?.configured ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-4 h-4 text-green-700 dark:text-green-400" />
                   <span>Configurada ({status.maskedKey})</span>
                 </>
               ) : (
                 <>
-                  <XCircle className="w-4 h-4 text-red-500" />
+                  <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                   <span className="text-muted-foreground">Nenhuma chave configurada — a busca de empresas não funciona sem ela</span>
                 </>
               )}
@@ -1179,8 +1179,8 @@ function RapidApiCard() {
                   Salvar
                 </Button>
               </div>
-              {erro && <p className="text-xs text-red-500">{erro}</p>}
-              {sucesso && <p className="text-xs text-green-600">Chave validada e salva ✓</p>}
+              {erro && <p className="text-xs text-red-600 dark:text-red-400">{erro}</p>}
+              {sucesso && <p className="text-xs text-green-700 dark:text-green-400">Chave validada e salva ✓</p>}
               <p className="text-xs text-muted-foreground">
                 Obtenha em rapidapi.com — assine as APIs &quot;Local Business Data&quot; e &quot;Lista de Empresas por Segmento&quot;.
               </p>

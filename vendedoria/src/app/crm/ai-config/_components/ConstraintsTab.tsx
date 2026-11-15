@@ -112,7 +112,7 @@ export function ConstraintsTab({ onSave, onError }: Props) {
       </div>
 
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
+        <div className="border rounded-lg p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium">
             {editing ? `Editar: "${editing.title}"` : "Nova Restrição"}
           </p>
@@ -178,11 +178,11 @@ export function ConstraintsTab({ onSave, onError }: Props) {
             <div
               key={rule.id}
               className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border bg-card",
+                "flex items-start gap-3 p-4 rounded-lg border bg-card",
                 !rule.isActive && "opacity-50"
               )}
             >
-              <ShieldAlert className={cn("w-4 h-4 mt-0.5 flex-shrink-0", rule.isActive ? "text-amber-500" : "text-muted-foreground")} />
+              <ShieldAlert className={cn("w-4 h-4 mt-0.5 flex-shrink-0", rule.isActive ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground")} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className="font-medium text-sm">{rule.title}</span>

@@ -50,7 +50,7 @@ export default function AnunciosPage() {
       </div>
 
       {erro ? (
-        <p className="text-sm text-red-500">{erro}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>
       ) : !dados ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
       ) : dados.anuncios.length === 0 ? (
@@ -68,7 +68,7 @@ export default function AnunciosPage() {
             ))}
           </div>
           {dados.total.ganhosSemValor > 0 && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">{dados.total.ganhosSemValor} ganho(s) sem valor de contrato preenchido — o valor ganho não os inclui.</p>
+            <p className="text-xs text-amber-700 dark:text-amber-400">{dados.total.ganhosSemValor} ganho(s) sem valor de contrato preenchido — o valor ganho não os inclui.</p>
           )}
 
           <Card>

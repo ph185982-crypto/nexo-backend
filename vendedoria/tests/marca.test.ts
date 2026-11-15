@@ -1,4 +1,5 @@
-// Identidade Avanteza no Vendedor IA: contraste dos tokens do tema e cores proibidas.
+// Identidade Avanteza v2.0 no Vendedor IA: paleta e contraste dos tokens do tema, forma (sem sombras,
+// sem degradês, raio de 6px), fonte única e cores/nomes da identidade anterior proibidos.
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -14,55 +15,90 @@ function lum(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 const contraste = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+const perto = (a: string, b: string) => [1, 3, 5].every((i) => Math.abs(parseInt(a.slice(i, i + 2), 16) - parseInt(b.slice(i, i + 2), 16)) <= 2);
 
 const css = fs.readFileSync("src/app/globals.css", "utf8");
 function tokens(bloco: ":root" | ".dark"): Record<string, string> {
   const ini = css.indexOf(`${bloco} {`);
   const corpo = css.slice(ini, css.indexOf("}", ini));
   const out: Record<string, string> = {};
-  for (const m of corpo.matchAll(/--([a-z-]+):\s*([\d.]+ [\d.]+% [\d.]+%)\s*;/g)) out[m[1]] = hslParaHex(m[2]);
+  for (const m of corpo.matchAll(/--([a-z0-9-]+):\s*([\d.]+ [\d.]+% [\d.]+%)\s*;/g)) out[m[1]] = hslParaHex(m[2]);
   return out;
 }
+function fontes(dir = "src"): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? fontes(`${dir}/${e.name}`) : /\.(tsx?|css)$/.test(e.name) ? [`${dir}/${e.name}`] : []);
+}
+// Só a interface: rotas de API e bibliotecas de servidor não têm classe de estilo.
+const telas = () => fontes().filter((f) => /^src\/(app\/(?!api\/)|components\/|lib\/prospeccao\/status\.ts)/.test(f));
 
-test("tema claro usa a paleta oficial e passa em AA", () => {
+const MARINHO = "#0b1b33", MARINHO2 = "#132a4c", CREME = "#f5f0e6", AREIA = "#ead9c2", LARANJA = "#ff6a1f", SUAVE = "#55637a", PERIGO = "#dc2626";
+const PARES = [["foreground", "background"], ["foreground", "card"], ["card-foreground", "card"], ["popover-foreground", "popover"],
+  ["primary-foreground", "primary"], ["primary", "background"], ["primary", "card"], ["secondary-foreground", "secondary"],
+  ["muted-foreground", "background"], ["muted-foreground", "card"], ["muted-foreground", "muted"], ["foreground", "muted"],
+  ["accent-foreground", "accent"], ["destructive-foreground", "destructive"], ["destructive-texto", "background"], ["destructive-texto", "card"],
+  ["sidebar-fg", "sidebar-bg"]];
+
+test("tema claro (padrão) usa a paleta v2.0 e passa em AA", () => {
   const t = tokens(":root");
-  const perto = (a: string, b: string) => [1, 3, 5].every((i) => Math.abs(parseInt(a.slice(i, i + 2), 16) - parseInt(b.slice(i, i + 2), 16)) <= 3);
-  assert.ok(perto(t.primary, "#2448ff"), `primary ${t.primary}`);
-  assert.ok(perto(t.background, "#f6f5f0"), `background ${t.background}`);
-  assert.ok(perto(t.foreground, "#18191d"), `foreground ${t.foreground}`);
-  assert.ok(perto(t["muted-foreground"], "#686a73"), `muted ${t["muted-foreground"]}`);
-  for (const [fg, bg] of [["foreground", "background"], ["foreground", "card"], ["primary", "background"], ["primary-foreground", "primary"], ["muted-foreground", "background"], ["muted-foreground", "card"], ["sidebar-fg", "sidebar-bg"], ["accent-foreground", "accent"]]) {
-    assert.ok(contraste(t[fg], t[bg]) >= 4.5, `claro ${fg} sobre ${bg}: ${contraste(t[fg], t[bg]).toFixed(2)}`);
+  for (const [nome, hex] of [["background", CREME], ["foreground", MARINHO], ["card", "#ffffff"], ["primary", MARINHO], ["primary-foreground", CREME],
+    ["secondary", AREIA], ["border", AREIA], ["muted-foreground", SUAVE], ["laranja", LARANJA], ["ring", LARANJA], ["destructive", PERIGO],
+    ["sidebar-bg", MARINHO], ["marinho", MARINHO], ["marinho-2", MARINHO2], ["creme", CREME], ["areia", AREIA]]) {
+    assert.ok(perto(t[nome], hex), `${nome}: ${t[nome]} ≠ ${hex}`);
   }
+  for (const [fg, bg] of PARES) assert.ok(contraste(t[fg], t[bg]) >= 4.5, `claro ${fg} sobre ${bg}: ${contraste(t[fg], t[bg]).toFixed(2)}`);
+  assert.match(fs.readFileSync("src/app/layout.tsx", "utf8"), /defaultTheme="light"/, "o tema padrão é o claro");
+  assert.match(css, /--radius:\s*0\.375rem/, "raio de 6px");
 });
 
-test("tema escuro (padrão) passa em AA, inclusive texto em azul", () => {
+test("tema escuro (opcional) é marinho com texto creme e passa em AA", () => {
   const t = tokens(".dark");
-  for (const [fg, bg] of [["foreground", "background"], ["foreground", "card"], ["primary-texto", "background"], ["primary-texto", "card"], ["primary-foreground", "primary"], ["muted-foreground", "background"], ["muted-foreground", "card"], ["sidebar-fg", "sidebar-bg"], ["accent-foreground", "accent"]]) {
-    assert.ok(contraste(t[fg], t[bg]) >= 4.5, `escuro ${fg} sobre ${bg}: ${contraste(t[fg], t[bg]).toFixed(2)}`);
+  for (const [nome, hex] of [["background", MARINHO], ["card", MARINHO2], ["foreground", CREME], ["laranja", LARANJA], ["ring", LARANJA]]) {
+    assert.ok(perto(t[nome], hex), `${nome}: ${t[nome]} ≠ ${hex}`);
   }
-  assert.match(css, /\.dark \.text-primary/, "texto azul no escuro usa o tom claro");
+  for (const [fg, bg] of PARES) assert.ok(contraste(t[fg], t[bg]) >= 4.5, `escuro ${fg} sobre ${bg}: ${contraste(t[fg], t[bg]).toFixed(2)}`);
 });
 
-test("sem a marca antiga: verde-petróleo, amarelo e Poppins saíram", () => {
-  const arquivos = ["tailwind.config.ts", "src/app/globals.css", "src/app/layout.tsx", "public/manifest.json", "public/offline.html", "src/app/checkout/[id]/page.tsx"];
+test("laranja é preenchimento com texto marinho — nunca cor de texto nem fundo de texto claro", () => {
+  assert.ok(contraste(MARINHO, LARANJA) >= 4.5, "marinho sobre laranja");
+  assert.ok(contraste(MARINHO, "#e85a12") >= 4.5, "marinho sobre laranja (hover)");
+  assert.ok(contraste("#ffffff", LARANJA) < 3 && contraste(LARANJA, CREME) < 3, "branco sobre laranja e laranja sobre creme reprovam");
+  for (const f of telas()) {
+    const s = fs.readFileSync(f, "utf8");
+    assert.ok(!/\btext-laranja\b/.test(s), `${f}: laranja como cor de texto`);
+    assert.ok(!/bg-laranja[^"`]*text-(white|creme|primary-foreground)|text-(white|creme|primary-foreground)[^"`]*bg-laranja(?!-)/.test(s), `${f}: texto claro sobre laranja`);
+  }
+});
+
+test("sem a identidade anterior: azul/grafite, verde-petróleo, Inter, Poppins e a marca NEXO na interface", () => {
+  const arquivos = [...telas(), "tailwind.config.ts", "public/manifest.json", "public/offline.html"];
+  const proibidos = [/#2448FF/i, /#FF7043/i, /#F6F5F0/i, /#18191D/i, /#686A73/i, /#004c3f/i, /#F5C400/i, /#00B894/i, /poppins/i, /font-inter|\bInter\b/,
+    /\bavz-(azul|laranja|bq|grafite|cinza)\b/, /\b(bg|text|border|ring)-emerald-/, /primary-texto/];
   for (const f of arquivos) {
     const s = fs.readFileSync(f, "utf8");
-    for (const proibido of [/#004c3f/i, /#F5C400/i, /#00B894/i, /poppins/i, /#10b981.*theme|theme_color.*#10b981/i]) assert.ok(!proibido.test(s), `${f}: ${proibido}`);
+    for (const p of proibidos) assert.ok(!p.test(s), `${f}: ${p}`);
   }
-  assert.ok(!/linear-gradient/.test(fs.readFileSync("src/app/checkout/[id]/page.tsx", "utf8")), "sem gradiente");
+  for (const f of ["src/app/layout.tsx", "src/app/login/form-login.tsx", "src/components/layout/Sidebar.tsx", "public/manifest.json", "public/offline.html"]) {
+    assert.ok(!/nexo/i.test(fs.readFileSync(f, "utf8").replace(/nexo-v\d/g, "")), `${f}: ainda mostra a marca NEXO`);
+  }
+  assert.match(fs.readFileSync("src/app/layout.tsx", "utf8"), /title: "Vendedor IA · Avanteza"/);
+  assert.match(fs.readFileSync("src/components/ui/logo.tsx", "utf8"), /avanteza<span className="logo-ponto"/);
+  assert.match(css, /\.logo-ponto \{[^}]*background: hsl\(var\(--laranja\)\)/, "o ponto do logo é o quadrado laranja");
 });
 
-test("laranja só como preenchimento, nunca como cor de texto", () => {
-  const ruins: string[] = [];
-  const varrer = (dir: string) => {
-    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-      const p = `${dir}/${e.name}`;
-      if (e.isDirectory()) varrer(p);
-      else if (/\.(tsx|ts|css)$/.test(e.name) && /text-avz-laranja|color:\s*['"]?#FF7043/i.test(fs.readFileSync(p, "utf8"))) ruins.push(p);
-    }
-  };
-  varrer("src");
-  assert.deepEqual(ruins, []);
-  assert.ok(contraste("#18191D", "#FF7043") >= 4.5, "grafite sobre laranja");
+test("forma: sem sombras, sem degradês, sem cantos maiores que o raio do tema", () => {
+  for (const f of telas()) {
+    const s = fs.readFileSync(f, "utf8");
+    assert.ok(!/(?<![\w-])shadow(-(sm|md|lg|xl|2xl|inner|\[))?(?=[\s"'`])|box-shadow|boxShadow|drop-shadow/.test(s), `${f}: sombra`);
+    assert.ok(!/bg-gradient|-gradient\(/.test(s), `${f}: degradê`);
+    assert.ok(!/\brounded(-[trbl]{1,2})?-(xl|2xl|3xl)\b/.test(s), `${f}: canto fora do padrão (use rounded-lg/md ou rounded-full)`);
+  }
+});
+
+test("neutros vêm do tema: sem cinza frio (gray/slate/zinc) nem branco chapado como fundo de cartão", () => {
+  for (const f of telas()) {
+    const s = fs.readFileSync(f, "utf8");
+    assert.ok(!/\b(bg|text|border)-(gray|slate|zinc)-\d/.test(s), `${f}: cinza frio (use muted/border/foreground)`);
+    assert.ok(!/(?<![\w:-])bg-white(?![\w/-])/.test(s), `${f}: bg-white (use bg-card)`);
+  }
 });

@@ -17,7 +17,7 @@ export function StatusBadge({ status, className = "" }: { status: string; classN
 
 export function Sinal({ value, label }: { value: boolean | null | undefined; label: string }) {
   const cor =
-    value === true  ? "text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/30" :
+    value === true  ? "text-green-700 dark:text-green-400 bg-green-500/10 border-green-500/30" :
     value === false ? "text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/30" :
     "text-muted-foreground bg-background border-border";
   const icone = value === true ? "✓" : value === false ? "✗" : "?";
@@ -98,13 +98,13 @@ export function AvisosProvider({ children }: { children: React.ReactNode }) {
           <div
             key={a.id}
             role="status"
-            className={`pointer-events-auto flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm shadow-lg bg-card ${
+            className={`pointer-events-auto flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm bg-card ${
               a.tipo === "erro" ? "border-red-500/40" : a.tipo === "ok" ? "border-green-500/40" : "border-border"
             }`}
           >
             {a.tipo === "erro"
-              ? <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-              : <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${a.tipo === "ok" ? "text-green-500" : "text-primary"}`} />}
+              ? <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+              : <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${a.tipo === "ok" ? "text-green-700 dark:text-green-400" : "text-primary"}`} />}
             <span className="flex-1 text-foreground">{a.msg}</span>
             <button onClick={() => setAvisos((x) => x.filter((y) => y.id !== a.id))} className="text-muted-foreground hover:text-foreground">
               <X className="w-3.5 h-3.5" />

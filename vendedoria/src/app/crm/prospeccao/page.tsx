@@ -160,7 +160,7 @@ function ProspeccaoHub() {
                   {a.label}
                   {n ? (
                     <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                      a.id === "revisao" ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" : "bg-muted text-muted-foreground"
+                      a.id === "revisao" ? "bg-amber-500/15 text-amber-700 dark:text-amber-400" : "bg-muted text-muted-foreground"
                     }`}>{n}</span>
                   ) : null}
                 </button>

@@ -223,7 +223,7 @@ export default function CalendarPage() {
         <div className="flex items-center gap-2">
           {googleStatus && (
             googleStatus.connected ? (
-              <span className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">
+              <span className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20">
                 ● Google conectado{googleStatus.email ? ` — ${googleStatus.email}` : ""}
               </span>
             ) : (
@@ -331,7 +331,7 @@ export default function CalendarPage() {
                           <span
                             className={cn(
                               "text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full",
-                              isToday ? "bg-primary text-white" : "text-foreground"
+                              isToday ? "bg-primary text-primary-foreground" : "text-foreground"
                             )}
                           >
                             {cell.day}
@@ -517,7 +517,7 @@ export default function CalendarPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-green-600" />
+              <MessageCircle className="w-5 h-5 text-green-700 dark:text-green-400" />
               <CardTitle className="text-base">Retornos Agendados — WhatsApp</CardTitle>
               {followups.length > 0 && (
                 <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">
