@@ -1,4 +1,5 @@
 import { alertarCotaEsgotada, ehErroDeCota } from "@/lib/ai/alerta-cota";
+import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 // ─── Shared LLM client — used by DecisionService and Responder ───────────────
 
 export interface LLMMessage {
@@ -117,8 +118,22 @@ export async function callGemini(
   } catch (e) { console.error("[Gemini]", e); return null; }
 }
 
+export async function callDeepSeek(
+  systemPrompt: string,
+  history: LLMMessage[],
+  userMessage: string,
+  opts: LLMCallOptions = {},
+): Promise<string | null> {
+  return deepseekChat(
+    [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: userMessage }],
+    { maxTokens: opts.maxTokens, temperature: opts.temperature, json: opts.responseFormat === "json_object" },
+  );
+}
+
 /**
- * Calls the configured provider first; falls back through the chain.
+ * Com DEEPSEEK_API_KEY configurada, a DeepSeek responde primeiro (qualquer que seja o
+ * provedor gravado no agente) e os demais ficam de reserva. Sem a chave, nada muda.
+ * Depois tenta o provedor configurado e percorre a cadeia de reserva.
  */
 export async function callLLM(
   systemPrompt: string,
@@ -129,6 +144,7 @@ export async function callLLM(
   opts: LLMCallOptions = {},
 ): Promise<string | null> {
   const p = aiProvider?.toUpperCase();
+  if (deepseekAtivo()) { const d = await callDeepSeek(systemPrompt, history, userMessage, opts); if (d) return d; }
   if (p === "ANTHROPIC") { const r = await callAnthropic(systemPrompt, history, userMessage, aiModel ?? "claude-haiku-4-5-20251001", opts); if (r) return r; }
   if (p === "OPENAI")    { const r = await callOpenAI(systemPrompt, history, userMessage, aiModel ?? "gpt-4o-mini", opts); if (r) return r; }
   if (p === "GOOGLE")    { const r = await callGemini(systemPrompt, history, userMessage, aiModel ?? "gemini-2.0-flash-lite", opts); if (r) return r; }

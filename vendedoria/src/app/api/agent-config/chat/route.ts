@@ -1,3 +1,4 @@
+import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { config } from "@/lib/config/env";
@@ -60,7 +61,14 @@ export async function POST(req: NextRequest) {
 
     let response: string | null = null;
 
-    if (process.env.OPENAI_API_KEY) {
+    if (deepseekAtivo()) {
+      response = await deepseekChat(
+        [{ role: "system", content: systemPrompt }, ...history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })), { role: "user", content: lastMessage }],
+        { maxTokens: 600, temperature: 0.7 },
+      );
+    }
+
+    if (!response && process.env.OPENAI_API_KEY) {
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },

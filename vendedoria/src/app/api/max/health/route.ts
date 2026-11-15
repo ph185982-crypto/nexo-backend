@@ -1,9 +1,10 @@
-// GET /api/max/health — diagnóstico aberto do Max (testa OpenAI + último erro real)
-// Somente leitura + um teste barato de OpenAI (max_tokens 5). Temporário para diagnóstico.
+// GET /api/max/health — diagnóstico aberto do Max (testa o provedor de IA + último erro real)
+// Somente leitura + um teste barato (max_tokens 5). Rota pública: nunca devolve chave, nem prefixo.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { chatCompletion } from "@/lib/max/openai";
+import { deepseekAtivo } from "@/lib/ai/deepseek";
 
 export async function GET() {
   const out: Record<string, unknown> = {};
@@ -14,11 +15,8 @@ export async function GET() {
   }).catch(() => null);
   const envKey = process.env.OPENAI_API_KEY;
   const key = cred?.refreshToken ?? envKey;
-  out.chaveOpenAI = {
-    fonte: cred?.refreshToken ? "banco" : envKey ? "env" : "AUSENTE",
-    prefixo: key ? key.slice(0, 12) + "…" : null,
-    tamanho: key?.length ?? 0,
-  };
+  out.chaveOpenAI = { fonte: cred?.refreshToken ? "banco" : envKey ? "env" : "AUSENTE", configurada: Boolean(key) };
+  out.provedorDoMax = deepseekAtivo() ? "deepseek" : "openai";
 
   // Último erro real registrado pelo Max
   const erro = await prisma.contextoPedro.findUnique({
@@ -33,9 +31,9 @@ export async function GET() {
       messages: [{ role: "user", content: "responda só: ok" }],
       max_tokens: 5,
     });
-    out.testeOpenAI = { ok: true, resposta: r.choices[0]?.message?.content ?? "(vazio)" };
+    out.testeIA = { ok: true, resposta: r.choices[0]?.message?.content ?? "(vazio)" };
   } catch (e) {
-    out.testeOpenAI = { ok: false, erro: e instanceof Error ? e.message : String(e) };
+    out.testeIA = { ok: false, erro: e instanceof Error ? e.message : String(e) };
   }
 
   return NextResponse.json(out);

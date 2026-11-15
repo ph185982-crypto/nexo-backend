@@ -1,11 +1,17 @@
 import { adminRepository } from "@/lib/admin/admin.repository";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/send";
+import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 
 // ─── LLM helper ───────────────────────────────────────────────────────────────
 
 async function consultarLLM(pergunta: string, contexto: string): Promise<string | null> {
   const systemPrompt = `Você é um assistente de vendas WhatsApp. Analise os dados do CRM e responda de forma direta e útil em português. Use emojis. Seja conciso (máx 5 linhas).`;
   const userMsg = `Dados do CRM:\n${contexto}\n\nPergunta do gestor: ${pergunta}`;
+
+  if (deepseekAtivo()) {
+    const texto = await deepseekChat([{ role: "system", content: systemPrompt }, { role: "user", content: userMsg }], { maxTokens: 400 });
+    if (texto) return texto;
+  }
 
   if (process.env.OPENAI_API_KEY) {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {

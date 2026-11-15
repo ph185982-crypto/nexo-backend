@@ -1,6 +1,7 @@
 // Agente analista — classifica ProspectLeads via LLM (não conversacional)
 // Usa OpenAI para chamada única, sem histórico
 
+import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 import { prisma } from "@/lib/prisma/client";
 
 type Classificacao = "APROVAR_AUTO" | "REVISAR" | "DESCARTAR";
@@ -21,10 +22,33 @@ Critérios:
 Responda APENAS JSON válido, sem explicação fora do JSON:
 { "classificacao": "APROVAR_AUTO" | "REVISAR" | "DESCARTAR", "motivo": "string curta, uma frase" }`;
 
+function lerAnalise(content: string): AnaliseResult | null {
+  const parsed = JSON.parse(content) as Partial<AnaliseResult>;
+  const classificacao = parsed.classificacao;
+  if (!classificacao || !["APROVAR_AUTO", "REVISAR", "DESCARTAR"].includes(classificacao)) {
+    console.error("[AgenteAnalista] Classificação inválida:", classificacao);
+    return null;
+  }
+  return { classificacao: classificacao as Classificacao, motivo: parsed.motivo ?? "sem motivo" };
+}
+
 async function chamarLLM(prompt: string): Promise<AnaliseResult | null> {
+  if (deepseekAtivo()) {
+    const texto = await deepseekChat(
+      [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: prompt }],
+      { maxTokens: 150, temperature: 0.1, json: true },
+    );
+    if (texto) {
+      try {
+        const r = lerAnalise(texto);
+        if (r) return r;
+      } catch { /* JSON inválido: cai para a OpenAI */ }
+    }
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    console.warn("[AgenteAnalista] OPENAI_API_KEY não configurado");
+    console.warn("[AgenteAnalista] nenhum provedor de IA configurado (DEEPSEEK_API_KEY ou OPENAI_API_KEY)");
     return null;
   }
 

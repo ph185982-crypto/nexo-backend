@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
     hasGoogleKey:      !!process.env.GOOGLE_AI_API_KEY,
     hasAnthropicKey:   !!process.env.ANTHROPIC_API_KEY,
     hasOpenAiKey:      !!process.env.OPENAI_API_KEY,
+    hasDeepSeekKey:    !!process.env.DEEPSEEK_API_KEY,
     hasMetaToken:      !!process.env.META_WHATSAPP_ACCESS_TOKEN,
     hasMetaSecret:     !!process.env.META_WHATSAPP_APP_SECRET,
     hasDatabaseUrl:    !!process.env.DATABASE_URL,

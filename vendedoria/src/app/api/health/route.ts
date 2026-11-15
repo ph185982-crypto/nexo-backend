@@ -6,6 +6,8 @@ import { acionarAvisoContasSePreciso } from "@/lib/max/crons/contas-vespera";
 import { despacharOutboxCrm } from "@/lib/crm-externo/outbox";
 import { crmConfigurado } from "@/lib/crm-externo/eventos";
 import { sincronizarConversasCrm } from "@/lib/crm-externo/conversas";
+import { deepseekAtivo, provedorPrincipal } from "@/lib/ai/deepseek";
+import { geminiAtivo } from "@/lib/ai/gemini";
 
 // A rotina externa de monitoramento chama este endpoint de hora em hora — e
 // agora cada chamada também dispara, em segundo plano, os follow-ups vencidos.
@@ -46,6 +48,10 @@ export async function GET() {
       followups,
       recuperacao,
       avisoContas,
+      // Qual provedor de IA responde primeiro (só o nome, nunca a chave).
+      llm: provedorPrincipal(),
+      max: deepseekAtivo() ? "deepseek" : process.env.OPENAI_API_KEY ? "openai" : "nenhum",
+      transcricao: geminiAtivo() ? "gemini" : process.env.OPENAI_API_KEY ? "openai" : "nenhuma",
       env: process.env.NODE_ENV,
       ts: new Date().toISOString(),
     },

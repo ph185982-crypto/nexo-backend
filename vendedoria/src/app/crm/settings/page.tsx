@@ -875,8 +875,10 @@ function SecurityTab() {
         <CardContent>
           <div className="space-y-2">
             {[
+              { label: "DeepSeek API Key", env: "DEEPSEEK_API_KEY", desc: "Provedor principal de texto quando configurada (OpenAI fica de reserva)" },
+              { label: "Google AI (Gemini) API Key", env: "GOOGLE_AI_API_KEY", desc: "Transcrição de áudio, leitura de imagem e busca na web (plano gratuito do Google AI Studio)" },
               { label: "Anthropic API Key", env: "ANTHROPIC_API_KEY", desc: "Para usar Claude como agente (recomendado)" },
-              { label: "OpenAI API Key", env: "OPENAI_API_KEY", desc: "Para usar GPT-4o como agente" },
+              { label: "OpenAI API Key", env: "OPENAI_API_KEY", desc: "Só reserva (e voz do Max): com DeepSeek e Gemini configurados, não precisa de crédito" },
               { label: "Meta Verify Token", env: "META_WHATSAPP_VERIFY_TOKEN", desc: "Token de verificação do webhook" },
               { label: "Cron Secret", env: "CRON_SECRET", desc: "Protege o endpoint do worker de campanhas" },
             ].map((item) => (

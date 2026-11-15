@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma/client";
+import { deepseekAtivo, deepseekCompletion } from "@/lib/ai/deepseek";
+import { geminiAtivo, geminiGerar } from "@/lib/ai/gemini";
 
 let _cachedKey: string | null = null;
 let _cachedKeyAt = 0;
@@ -19,6 +21,11 @@ async function getOpenAIKey(): Promise<string> {
 
 export function invalidateOpenAIKeyCache() { _cachedKey = null; }
 
+/** A chave da OpenAI, se houver — sem lançar erro (a OpenAI é só reserva quando a DeepSeek está ligada). */
+async function chaveOpenAIOpcional(): Promise<string | null> {
+  try { return await getOpenAIKey(); } catch { return null; }
+}
+
 export async function chatCompletion(opts: {
   model: string;
   messages: Array<{ role: string; content: unknown }>;
@@ -37,6 +44,14 @@ export async function chatCompletion(opts: {
     };
   }>;
 }> {
+  // Com DEEPSEEK_API_KEY a DeepSeek assume o Max (conversa, ferramentas e análises); o modelo
+  // pedido (gpt-4o-mini/gpt-4o) é ignorado. A OpenAI só entra de reserva, se houver chave.
+  if (deepseekAtivo()) {
+    const r = await deepseekCompletion({ messages: opts.messages, tools: opts.tools, tool_choice: opts.tool_choice, max_tokens: opts.max_tokens });
+    if (r) return r;
+    if (!(await chaveOpenAIOpcional())) throw new Error("DeepSeek indisponível e nenhuma OpenAI de reserva configurada");
+  }
+
   const apiKey = await getOpenAIKey();
 
   const body: Record<string, unknown> = {
@@ -68,7 +83,16 @@ export async function chatCompletion(opts: {
 }
 
 export async function webSearch(query: string): Promise<string> {
-  const apiKey = await getOpenAIKey();
+  // Gemini com busca do Google primeiro (plano gratuito); OpenAI de reserva.
+  if (geminiAtivo()) {
+    const r = await geminiGerar([{ texto: query }], {
+      sistema: "Pesquise na web e responda em português do Brasil, de forma objetiva, citando as fontes.",
+      buscaWeb: true, maxTokens: 900, temperatura: 0.2, timeoutMs: 25_000,
+    });
+    if (r) return r;
+  }
+  const apiKey = await chaveOpenAIOpcional();
+  if (!apiKey) return "Busca na web indisponível no momento (falta configurar GOOGLE_AI_API_KEY).";
 
   const res = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
