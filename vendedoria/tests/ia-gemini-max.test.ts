@@ -63,6 +63,13 @@ test("Gemini transcreve áudio: chave só no cabeçalho, áudio inline, 'inaudí
     const c = simular({ "generativelanguage.googleapis.com": () => new Response('{"error":"RESOURCE_EXHAUSTED"}', { status: 429 }) });
     try { assert.equal(await geminiTranscrever(audio, "audio/ogg"), null); } finally { c.restaurar(); }
 
+    // API desativada no projeto da chave (403): o log traz o motivo, não o corpo cortado
+    const desativada = JSON.stringify({ error: { code: 403, status: "PERMISSION_DENIED", message: "Gemini API has not been used in project 123 before or it is disabled.", details: [{ x: "y".repeat(500) }] } });
+    const antes = log.logs.length;
+    const e403 = simular({ "generativelanguage.googleapis.com": () => new Response(desativada, { status: 403 }) });
+    try { assert.equal(await geminiTranscrever(audio, "audio/ogg"), null); } finally { e403.restaurar(); }
+    assert.ok(log.logs.slice(antes).some((l) => l.includes("PERMISSION_DENIED Gemini API has not been used")), "o motivo do 403 aparece no log");
+
     const d = simular({ "generativelanguage.googleapis.com": () => gemini("x") });
     try {
       assert.equal(await geminiTranscrever(Buffer.alloc(16 * 1024 * 1024), "audio/ogg"), null, "áudio grande demais nem é enviado");

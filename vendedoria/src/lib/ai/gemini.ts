@@ -66,8 +66,14 @@ export async function geminiGerar(partes: ParteGemini[], opts: OpcoesGemini = {}
     });
     if (!res.ok) {
       const texto = await res.text().catch(() => "");
-      // 429 = limite do plano gratuito; só o corpo da resposta vai para o log.
-      console.error(`[Gemini] HTTP ${res.status}:`, texto.slice(0, 300));
+      // Só o motivo (status + mensagem) vai para o log, nunca a chave. 429 = limite do plano
+      // gratuito; 403 SERVICE_DISABLED = API do Gemini desativada no projeto da chave.
+      let motivo = texto.slice(0, 200);
+      try {
+        const e = (JSON.parse(texto) as { error?: { status?: string; message?: string } }).error;
+        if (e) motivo = `${e.status ?? ""} ${e.message ?? ""}`.trim().slice(0, 300);
+      } catch { /* corpo não era JSON */ }
+      console.error(`[Gemini] HTTP ${res.status}:`, motivo);
       return null;
     }
     const data = (await res.json()) as {
