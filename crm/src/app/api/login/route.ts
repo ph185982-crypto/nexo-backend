@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { assinarSessao, COOKIE_SESSAO, DURACAO_SESSAO_S, segredoDaSessao } from "@/lib/auth/sessao";
+import { assinarSessao, cookieDeSessao, segredoDaSessao } from "@/lib/auth/sessao";
 
 const JANELA_MS = 15 * 60_000;
 const LIMITE_EMAIL = 10;
@@ -32,12 +32,11 @@ export async function POST(req: Request) {
   await prisma.tentativaLogin.deleteMany({ where: { chave: `email:${email}` } });
 
   const token = await assinarSessao(usuario.id, segredoDaSessao());
-  const seguro = process.env.NODE_ENV === "production" ? "; Secure" : "";
   return new Response(JSON.stringify({ ok: true, nome: usuario.nome }), {
     status: 200,
     headers: {
       "content-type": "application/json",
-      "set-cookie": `${COOKIE_SESSAO}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${DURACAO_SESSAO_S}${seguro}`,
+      "set-cookie": cookieDeSessao(token),
     },
   });
 }

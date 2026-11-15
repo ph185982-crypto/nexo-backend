@@ -6,7 +6,7 @@ import { Logo } from "./logo";
 import { Nav } from "./nav";
 
 /** Desktop: barra lateral fixa. Celular: barra no topo com menu em gaveta (fecha ao navegar). */
-export function Shell({ nome, admin, children }: { nome: string; admin: boolean; children: React.ReactNode }) {
+export function Shell({ nome, admin, central, children }: { nome: string; admin: boolean; central: string; children: React.ReactNode }) {
   const [aberto, setAberto] = useState(false);
   const caminho = usePathname();
   useEffect(() => setAberto(false), [caminho]);
@@ -20,7 +20,7 @@ export function Shell({ nome, admin, children }: { nome: string; admin: boolean;
   const lateral = (
     <>
       <div className="px-2"><Logo variante="bq" largura={150} /></div>
-      <Nav nome={nome} admin={admin} />
+      <Nav nome={nome} admin={admin} central={central} />
     </>
   );
   return (

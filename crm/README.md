@@ -26,9 +26,19 @@ npm test                          # precisa de DATABASE_URL e SESSION_SECRET
   conversão por etapa, tempo parado e ciclo de vendas. `tests/funil-guarda.test.ts` lê o código e falha se alguém escrever
   etapa/funil/status direto.
 - **A natureza da etapa é dado da etapa** (`ABERTA`, `GANHA`, `PERDIDA`), não o nome. Dá para criar funis novos sem mexer no código.
-- **Toda rota `/api/*` exige login** (cookie assinado), exceto `/api/login`, `/api/health` e `/api/integracoes/*`
-  (esta valida a chave de serviço). O login bloqueia após 10 falhas por e-mail ou 30 por IP em 15 minutos.
+- **Toda rota `/api/*` exige login** (cookie assinado), exceto `/api/login`, `/api/sso/callback`, `/api/health` e
+  `/api/integracoes/*` (esta valida a chave de serviço). O login bloqueia após 10 falhas por e-mail ou 30 por IP em 15 minutos.
 - **Schema muda por migração**: edite `prisma/schema.prisma`, rode `npm run db:migrate:new -- --name descricao` e commite `prisma/migrations/`.
+
+## Login único (Avanteza ID)
+
+A tela de login tem "Entrar com Avanteza" (ação principal), que leva à Central (`AVANTEZA_HUB_URL`, padrão
+`https://app.avanteza.com.br`) em `/sso/authorize?app=crm&return=<caminho>`. A Central devolve em
+`/api/sso/callback?token=<JWT>`; `src/lib/avanteza-sso.ts` confere o token (ES256, chave pública do JWKS da Central,
+emissor, `aud = crm`, validade de 60 s) e `src/lib/auth/sso.ts` acha o usuário pelo e-mail ou cria na primeira entrada
+(`admin` → ADMIN; os demais → VENDEDOR; senha aleatória que ninguém vê). Usuário desativado é recusado e quem já existe
+não muda de papel. A sessão é a mesma do login por senha (cookie assinado com `SESSION_SECRET`). E-mail e senha
+continuam valendo como reserva. O menu tem o atalho "Central". Testes: `tests/sso.test.ts`.
 
 ## Deploy (Vercel)
 

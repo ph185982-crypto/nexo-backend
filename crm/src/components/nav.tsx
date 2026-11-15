@@ -40,7 +40,7 @@ const CONFIG = {
   icone: <><circle cx="12" cy="12" r="3" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1" /></>,
 };
 
-export function Nav({ nome, admin }: { nome: string; admin: boolean }) {
+export function Nav({ nome, admin, central }: { nome: string; admin: boolean; central: string }) {
   const caminho = usePathname();
   const router = useRouter();
   const sair = async () => {
@@ -71,6 +71,14 @@ export function Nav({ nome, admin }: { nome: string; admin: boolean }) {
         })}
       </nav>
       <div className="mt-auto border-t border-bq/20 pt-4">
+        {/* Atalho discreto para a Central da Avanteza (os outros aplicativos do login único) */}
+        <a href={central} className="mb-3 flex items-center gap-2 text-[12px] text-bq/80 underline-offset-2 hover:underline">
+          <svg viewBox="0 0 24 24" className="h-[15px] w-[15px] flex-none fill-none stroke-current" strokeWidth="1.7" strokeLinejoin="round" aria-hidden>
+            <rect x="4" y="4" width="6.5" height="6.5" rx="1.2" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2" />
+            <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2" />
+          </svg>
+          Central
+        </a>
         <p className="truncate text-[12px] font-semibold text-bq">{nome}</p>
         <button onClick={sair} className="mt-1 text-[12px] text-bq/80 underline-offset-2 hover:underline">Sair</button>
       </div>
