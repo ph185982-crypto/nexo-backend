@@ -115,7 +115,7 @@ export function PersonaTab({ onSave, onError }: Props) {
 
       {/* Inline create / edit form */}
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
+        <div className="border rounded-lg p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium text-foreground">
             {editing ? `Editar: ${editing.name}` : "Nova Persona"}
           </p>
@@ -199,7 +199,7 @@ export function PersonaTab({ onSave, onError }: Props) {
             <div
               key={p.id}
               className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border bg-card transition-colors",
+                "flex items-start gap-3 p-4 rounded-lg border bg-card transition-colors",
                 p.isActive && "border-primary/30 ring-1 ring-primary/20"
               )}
             >
@@ -211,7 +211,7 @@ export function PersonaTab({ onSave, onError }: Props) {
                     {p.archetype}
                   </Badge>
                   {p.isActive && (
-                    <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-200 bg-emerald-50">
+                    <Badge variant="outline" className="text-xs text-primary border-border bg-secondary">
                       ativa
                     </Badge>
                   )}

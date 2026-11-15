@@ -19,7 +19,7 @@ import type { Navegar } from "./navegacao";
 
 // Cores do progresso por etapa (mesma ordem do funil).
 const SEGMENTOS_BARRA = [
-  { id: "qualificar",  label: "Para qualificar", cor: "bg-slate-400" },
+  { id: "qualificar",  label: "Para qualificar", cor: "bg-muted-foreground/40" },
   { id: "revisar",     label: "Em revisão",      cor: "bg-amber-500" },
   { id: "abordar",     label: "Prontas",         cor: "bg-green-500" },
   { id: "conversando", label: "Em conversa",     cor: "bg-cyan-500" },
@@ -127,8 +127,8 @@ function CardBusca({ busca: b, recemCriada, navegar, recarregar, editar, duplica
   const termos = [b.termoBusca, ...b.termosSecundarios];
 
   return (
-    <div className={`rounded-xl border bg-card p-4 flex flex-col gap-3 transition-shadow ${
-      destaque ? "border-primary shadow-[0_0_0_3px] shadow-primary/20" : "border-border"
+    <div className={`rounded-lg border bg-card p-4 flex flex-col gap-3 ${
+      destaque ? "border-primary ring-2 ring-laranja/40" : "border-border"
     }`}>
       {/* Cabeçalho */}
       <div className="flex items-start gap-2">

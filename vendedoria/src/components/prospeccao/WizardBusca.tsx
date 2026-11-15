@@ -126,7 +126,7 @@ export function WizardBusca({ orgId, editar, duplicar, onClose, onSalvo }: {
         role="dialog"
         aria-modal="true"
         aria-label={editar ? "Editar busca" : "Nova busca"}
-        className="w-full sm:max-w-2xl max-h-[92dvh] flex flex-col rounded-t-2xl sm:rounded-2xl border border-border bg-card shadow-xl"
+        className="w-full sm:max-w-2xl max-h-[92dvh] flex flex-col rounded-t-lg sm:rounded-lg border border-border bg-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Topo */}
@@ -284,7 +284,7 @@ export function WizardBusca({ orgId, editar, duplicar, onClose, onSalvo }: {
                   Meta: <strong className="text-foreground">{fmtNum(meta)}</strong> empresas.
                 </p>
                 {potencial < meta && (
-                  <p className="text-amber-600 dark:text-amber-400">
+                  <p className="text-amber-700 dark:text-amber-400">
                     Com essa combinação o potencial é ~{fmtNum(potencial)} empresas. Para chegar à meta, adicione segmentos ou cidades.
                   </p>
                 )}
@@ -299,7 +299,7 @@ export function WizardBusca({ orgId, editar, duplicar, onClose, onSalvo }: {
             </>
           )}
 
-          {erro && <p className="text-sm text-red-500">{erro}</p>}
+          {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         </div>
 
         {/* Rodapé */}

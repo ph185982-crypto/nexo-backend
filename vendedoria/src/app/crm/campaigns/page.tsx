@@ -101,7 +101,7 @@ function CampaignCard({
     : 0;
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -148,14 +148,14 @@ function CampaignCard({
             <p className="text-lg font-bold">{campaign.totalRecipients}</p>
             <p className="text-xs text-muted-foreground">Total</p>
           </div>
-          <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+          <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-primary rounded-full"
               style={{ width: `${successRate}%` }}
             />
           </div>
           <div className="text-center">
-            <p className="text-sm font-semibold text-green-600">{successRate}%</p>
+            <p className="text-sm font-semibold text-green-700 dark:text-green-400">{successRate}%</p>
             <p className="text-xs text-muted-foreground">Taxa Envio</p>
           </div>
           <div className="text-center">
@@ -267,7 +267,7 @@ export default function CampaignsPage() {
               className={cn(
                 "px-3 py-2 text-sm transition-colors",
                 periodFilter === f.value
-                  ? "bg-primary text-white font-medium"
+                  ? "bg-primary text-primary-foreground font-medium"
                   : "text-muted-foreground hover:bg-muted"
               )}
             >
@@ -295,7 +295,7 @@ export default function CampaignsPage() {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Bar dataKey="enviados" fill="#2448FF" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="enviados" fill="#0B1B33" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

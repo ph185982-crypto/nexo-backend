@@ -1,14 +1,14 @@
 /**
- * Seed NEXO — pivô da ferramenta para prospecção B2B da Nexo Assessoria.
+ * Seed AVANTEZA — pivô da ferramenta para prospecção B2B da Avanteza.
  *
  * Idempotente: pode rodar quantas vezes precisar.
  *
  * O que faz:
- *  1. Upsert da org "Nexo Assessoria" (tipo PROSPECCAO, ACTIVE)
- *  2. Reaponta o provider WhatsApp REAL (phone_id 1009631782242056) para a org Nexo
+ *  1. Upsert da org "Avanteza" (tipo PROSPECCAO, ACTIVE)
+ *  2. Reaponta o provider WhatsApp REAL (phone_id 1009631782242056) para a org Avanteza
  *  3. Desativa a org VENDAS antiga e remove o provider placeholder
- *  4. Cria as 9 colunas do funil Nexo
- *  5. Agente "SDR Nexo" com prompt de prospecção consultiva (sandbox ligado)
+ *  4. Cria as 9 colunas do funil Avanteza
+ *  5. Agente "SDR Avanteza" com prompt de prospecção consultiva (sandbox ligado)
  *  6. AiConfig + DisparoConfig
  *
  * Uso: npx tsx prisma/seed-nexo.ts
@@ -22,23 +22,23 @@ const REAL_PHONE_NUMBER_ID = "1009631782242056";
 
 // Funil de vendas em 6 entradas (5 estágios ativos + Perdido):
 const FUNIL_NEXO: Array<{ name: string; type: string; color: string; isDefaultEntry?: boolean }> = [
-  { name: "Leads",                 type: "TRIAGE",              color: "#6b7280", isDefaultEntry: true },
-  { name: "Qualificação",          type: "EM_QUALIFICACAO",     color: "#3b82f6" },
-  { name: "Proposta e Negociação", type: "PROPOSTA_NEGOCIACAO", color: "#f59e0b" },
-  { name: "Contrato",              type: "CONTRATO",            color: "#8b5cf6" },
-  { name: "Ganho",                 type: "GANHO",               color: "#22c55e" },
-  { name: "Perdido",               type: "LOST",                color: "#ef4444" },
+  { name: "Leads",                 type: "TRIAGE",              color: "#8a94a6", isDefaultEntry: true },
+  { name: "Qualificação",          type: "EM_QUALIFICACAO",     color: "#55637a" },
+  { name: "Proposta e Negociação", type: "PROPOSTA_NEGOCIACAO", color: "#c9a77a" },
+  { name: "Contrato",              type: "CONTRATO",            color: "#2f4a73" },
+  { name: "Ganho",                 type: "GANHO",               color: "#ff6a1f" },
+  { name: "Perdido",               type: "LOST",                color: "#8c5a4a" },
 ];
 
-const SDR_NEXO_PROMPT = `Você é o SDR da Nexo, assessoria especializada em fazer empresas venderem nos maiores marketplaces do Brasil (Mercado Livre, Shopee, Amazon, Magalu).
+const SDR_NEXO_PROMPT = `Você é o SDR da Avanteza, assessoria especializada em fazer empresas venderem nos maiores marketplaces do Brasil (Mercado Livre, Shopee, Amazon, Magalu).
 Seu papel: prospecção consultiva B2B via WhatsApp — nunca venda agressiva.
 
-SOBRE A NEXO:
+SOBRE A AVANTEZA:
 - Assessoria ponta a ponta: criação e otimização de contas, anúncios, precificação, logística e escala de vendas em marketplaces.
 - Atende desde quem nunca vendeu online até quem já vende e quer crescer.
 - Clientes fortes nos segmentos de moda, varejo, ferragens e marcenaria.
 
-OBJETIVO: qualificar o lead e agendar uma reunião online de diagnóstico gratuito (30 min, Google Meet) com o especialista da Nexo.
+OBJETIVO: qualificar o lead e agendar uma reunião online de diagnóstico gratuito (30 min, Google Meet) com o especialista da Avanteza.
 
 QUALIFICAÇÃO (colete naturalmente, UMA pergunta por vez):
 1. Tipo de negócio e o que vende (moda, varejo, ferragens, marcenaria...)

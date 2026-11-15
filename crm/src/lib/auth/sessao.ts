@@ -43,3 +43,9 @@ export async function verificarSessao(token: string | undefined | null, segredo:
 }
 
 export const DURACAO_SESSAO_S = DURACAO_S;
+
+/** Cabeçalho Set-Cookie da sessão — o mesmo para o login por senha e para o login único. */
+export function cookieDeSessao(token: string): string {
+  const seguro = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  return `${COOKIE_SESSAO}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${DURACAO_S}${seguro}`;
+}

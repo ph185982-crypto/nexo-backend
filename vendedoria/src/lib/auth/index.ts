@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma/client";
 import { authConfig } from "./config";
+import { autorizarSso, PROVIDER_SSO } from "./sso";
 import { ipDaRequisicao, limparFalhasLogin, loginBloqueado, registrarFalhaLogin } from "./tentativas";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -45,6 +46,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           role: user.role,
         };
+      },
+    }),
+    // Login único (Avanteza ID). Segundo provider, separado do de senha acima: recebe o token que a Central
+    // devolveu em /api/sso/callback, confere a assinatura e acha ou cria o usuário (lib/auth/sso.ts).
+    Credentials({
+      id: PROVIDER_SSO,
+      name: "Avanteza ID",
+      credentials: {
+        token: { label: "Token", type: "text" },
+      },
+      async authorize(credentials) {
+        return autorizarSso(credentials?.token);
       },
     }),
   ],

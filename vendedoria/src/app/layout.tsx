@@ -1,22 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
 import { InstallBanner } from "@/components/pwa/InstallBanner";
 
-// Identidade Avanteza: Manrope nos títulos, Inter no texto.
-const manrope = Manrope({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-manrope", display: "swap" });
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-inter", display: "swap" });
+// Identidade Avanteza v2.0: Manrope em tudo (texto, títulos e números).
+const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-manrope", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Nexo — Prospecção Inteligente para Marketplaces",
+  title: "Vendedor IA · Avanteza",
   description: "Gerencie seus leads e automatize suas vendas via WhatsApp com IA",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Nexo",
+    title: "Vendedor IA",
   },
   icons: {
     icon: "/icon-192.png",
@@ -34,8 +33,8 @@ export const viewport: Viewport = {
   // auto-zoom ao focar input é evitado via font-size 16px no globals.css,
   // que resolve a causa sem tirar o zoom de quem precisa.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F6F5F0" },
-    { media: "(prefers-color-scheme: dark)", color: "#18191D" },
+    { media: "(prefers-color-scheme: light)", color: "#F5F0E6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B1B33" },
   ],
 };
 
@@ -47,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${manrope.variable} ${inter.variable}`}
+      className={manrope.variable}
       suppressHydrationWarning
     >
       <head>
@@ -68,7 +67,7 @@ if ('serviceWorker' in navigator) {
       <body className="antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
         >

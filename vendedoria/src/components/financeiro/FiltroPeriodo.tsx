@@ -2,7 +2,7 @@
 
 // Filtro de competência compartilhado (Visão Geral e Receitas):
 // Mês (padrão, com navegação ‹ ›), Dia, Período livre e — quando permitido — Tudo;
-// mais o escopo Nexo × Pessoal.
+// mais o escopo Avanteza × Pessoal.
 
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -63,7 +63,7 @@ export function Seg<T extends string>({
           aria-pressed={valor === o.v}
           className={cn(
             "px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
-            valor === o.v ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+            valor === o.v ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground",
           )}
         >
           {o.label}
@@ -153,7 +153,7 @@ export function FiltroPeriodo({
           onChange={(escopo) => set({ escopo })}
           opcoes={[
             { v: "todos", label: "Tudo" },
-            { v: "nexo", label: "Nexo" },
+            { v: "nexo", label: "Avanteza" },
             { v: "pessoal", label: "Pessoal" },
           ]}
         />

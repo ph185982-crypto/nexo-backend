@@ -56,14 +56,14 @@ export default function OfertasPage() {
   const [tab, setTab] = useState<"agenda" | "historico">("agenda");
 
   return (
-    <div className="flex flex-col h-full bg-gray-950 text-white">
+    <div className="flex flex-col h-full bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-gray-800 px-6 py-4">
+      <div className="border-b border-border px-6 py-4">
         <div className="flex items-center gap-3">
-          <Megaphone className="w-6 h-6 text-yellow-400" />
+          <Megaphone className="w-6 h-6 text-yellow-700 dark:text-yellow-400" />
           <div>
             <h1 className="text-lg font-semibold">Ofertas Automáticas</h1>
-            <p className="text-xs text-gray-400">15 envios diários · Importação semanal automática</p>
+            <p className="text-xs text-muted-foreground">15 envios diários · Importação semanal automática</p>
           </div>
         </div>
         {/* Tabs */}
@@ -74,8 +74,8 @@ export default function OfertasPage() {
               onClick={() => setTab(t)}
               className={`px-4 py-1.5 text-sm rounded-lg transition-colors capitalize ${
                 tab === t
-                  ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/40"
-                  : "text-gray-400 hover:text-white hover:bg-gray-800"
+                  ? "bg-secondary text-secondary-foreground border border-border"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
               {t === "agenda" ? "📅 Agenda" : "📋 Histórico"}
@@ -131,17 +131,17 @@ function AgendaTab() {
   return (
     <div className="p-6 space-y-6">
       {/* Manual fire */}
-      <div className="bg-gray-900 border border-gray-700 rounded-xl p-4">
+      <div className="bg-card border border-border rounded-lg p-4">
         <h2 className="font-semibold mb-3 flex items-center gap-2">
-          <Send className="w-4 h-4 text-yellow-400" /> Disparar oferta agora
+          <Send className="w-4 h-4 text-yellow-700 dark:text-yellow-400" /> Disparar oferta agora
         </h2>
-        <p className="text-sm text-gray-400 mb-3">
+        <p className="text-sm text-muted-foreground mb-3">
           Seleciona automaticamente o melhor produto pela rotação inteligente, gera a arte e envia no WhatsApp.
         </p>
         <button
           onClick={handleFireNow}
           disabled={firing}
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-black font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm bg-laranja hover:bg-laranja-hover disabled:opacity-50 text-marinho font-semibold rounded-lg transition-colors"
         >
           {firing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           {firing ? "Enviando..." : "Disparar agora"}
@@ -149,8 +149,8 @@ function AgendaTab() {
         {result && (
           <div className={`mt-3 flex items-center gap-2 p-3 rounded-lg text-sm ${
             result.ok
-              ? "bg-green-900/40 text-green-300 border border-green-800"
-              : "bg-red-900/40 text-red-300 border border-red-800"
+              ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800"
+              : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
           }`}>
             {result.ok
               ? <><CheckCircle className="w-4 h-4" /> Oferta enviada: <strong>{result.nomeProduto}</strong></>
@@ -161,10 +161,10 @@ function AgendaTab() {
       </div>
 
       {/* Daily schedule */}
-      <div className="bg-gray-900 border border-gray-700 rounded-xl p-4">
+      <div className="bg-card border border-border rounded-lg p-4">
         <h2 className="font-semibold mb-4 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-blue-400" /> Agenda diária
-          <span className="ml-auto text-xs text-gray-500">Horário de Brasília</span>
+          <Calendar className="w-4 h-4 text-blue-700 dark:text-blue-400" /> Agenda diária
+          <span className="ml-auto text-xs text-muted-foreground">Horário de Brasília</span>
         </h2>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
           {HORARIOS.map((h) => {
@@ -174,10 +174,10 @@ function AgendaTab() {
                 key={h}
                 className={`flex flex-col items-center justify-center p-3 rounded-lg border text-sm font-medium transition-all ${
                   st === "done"
-                    ? "bg-green-900/20 border-green-800 text-green-400"
+                    ? "bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
                     : st === "next"
-                    ? "bg-yellow-500/20 border-yellow-500 text-yellow-300 ring-1 ring-yellow-500/50 animate-pulse"
-                    : "bg-gray-800/50 border-gray-700 text-gray-400"
+                    ? "bg-yellow-500/20 border-yellow-500 text-yellow-700 dark:text-yellow-300 ring-1 ring-yellow-500/50 animate-pulse"
+                    : "bg-muted border-border text-muted-foreground"
                 }`}
               >
                 <Clock className="w-3.5 h-3.5 mb-1 opacity-70" />
@@ -188,20 +188,20 @@ function AgendaTab() {
             );
           })}
         </div>
-        <p className="mt-4 text-xs text-gray-500">
+        <p className="mt-4 text-xs text-muted-foreground">
           ⚙️ Cron roda a cada 30 min. O endpoint <code>/api/cron/oferta</code> verifica automaticamente se o horário atual coincide com um dos 15 slots (±15 min).
         </p>
       </div>
 
       {/* Weekly import info */}
-      <div className="bg-gray-900 border border-gray-700 rounded-xl p-4">
+      <div className="bg-card border border-border rounded-lg p-4">
         <h2 className="font-semibold mb-2 flex items-center gap-2">
-          <RefreshCw className="w-4 h-4 text-purple-400" /> Importação semanal
+          <RefreshCw className="w-4 h-4 text-purple-700 dark:text-purple-400" /> Importação semanal
         </h2>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-muted-foreground">
           Todo domingo às 23:00 (Brasília), o sistema importa automaticamente o catálogo do fornecedor e notifica você no WhatsApp.
         </p>
-        <div className="mt-2 flex items-center gap-2 text-xs text-purple-300">
+        <div className="mt-2 flex items-center gap-2 text-xs text-purple-700 dark:text-purple-300">
           <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
           <span>Próxima importação: domingo 23:00</span>
         </div>
@@ -247,17 +247,17 @@ function HistoricoTab() {
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value as typeof status); setPage(1); }}
-          className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
+          className="bg-muted border border-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
         >
           <option value="">Todos os status</option>
           <option value="ENVIADA">Enviadas</option>
           <option value="PRONTA">Prontas</option>
           <option value="FALHA">Com falha</option>
         </select>
-        <span className="text-sm text-gray-400">{total} registros</span>
+        <span className="text-sm text-muted-foreground">{total} registros</span>
         <button
           onClick={() => fetchOfertas()}
-          className="ml-auto p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+          className="ml-auto p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -265,11 +265,11 @@ function HistoricoTab() {
 
       {/* List */}
       {loading ? (
-        <div className="flex items-center justify-center h-40 text-gray-500">
+        <div className="flex items-center justify-center h-40 text-muted-foreground">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando...
         </div>
       ) : ofertas.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-40 text-gray-500 gap-3">
+        <div className="flex flex-col items-center justify-center h-40 text-muted-foreground gap-3">
           <Megaphone className="w-10 h-10 opacity-40" />
           <p className="text-sm">Nenhuma oferta gerada ainda.</p>
         </div>
@@ -287,15 +287,15 @@ function HistoricoTab() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 disabled:opacity-40 rounded-lg"
+            className="px-3 py-1.5 text-sm bg-muted hover:bg-muted disabled:opacity-40 rounded-lg"
           >
             ← Anterior
           </button>
-          <span className="text-sm text-gray-400">{page} / {pages}</span>
+          <span className="text-sm text-muted-foreground">{page} / {pages}</span>
           <button
             onClick={() => setPage((p) => Math.min(pages, p + 1))}
             disabled={page === pages}
-            className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 disabled:opacity-40 rounded-lg"
+            className="px-3 py-1.5 text-sm bg-muted hover:bg-muted disabled:opacity-40 rounded-lg"
           >
             Próxima →
           </button>
@@ -314,9 +314,9 @@ function HistoricoTab() {
 
 function OfertaRow({ oferta, onClick }: { oferta: Oferta; onClick: () => void }) {
   const statusColors = {
-    ENVIADA: "text-green-400 bg-green-900/30 border-green-800",
-    PRONTA:  "text-blue-400 bg-blue-900/30 border-blue-800",
-    FALHA:   "text-red-400 bg-red-900/30 border-red-800",
+    ENVIADA: "text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800",
+    PRONTA:  "text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800",
+    FALHA:   "text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800",
   };
   const statusIcons = {
     ENVIADA: <CheckCircle className="w-3.5 h-3.5" />,
@@ -327,23 +327,23 @@ function OfertaRow({ oferta, onClick }: { oferta: Oferta; onClick: () => void })
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 p-3 bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 rounded-xl text-left transition-colors"
+      className="w-full flex items-center gap-3 p-3 bg-card hover:bg-muted border border-border hover:border-border rounded-lg text-left transition-colors"
     >
       {/* Thumb */}
-      <div className="w-12 h-12 rounded-lg bg-gray-800 overflow-hidden shrink-0">
+      <div className="w-12 h-12 rounded-lg bg-muted overflow-hidden shrink-0">
         {oferta.produto?.fotoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={oferta.produto.fotoUrl} alt="" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-5 h-5 text-gray-600" />
+            <Package className="w-5 h-5 text-muted-foreground" />
           </div>
         )}
       </div>
       {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{oferta.nomeProduto}</p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted-foreground">
           {fmt(oferta.precoDesconto)} · {fmtDate(oferta.criadaEm)}
         </p>
       </div>
@@ -361,40 +361,40 @@ function OfertaRow({ oferta, onClick }: { oferta: Oferta; onClick: () => void })
 function OfertaModal({ oferta, onClose }: { oferta: Oferta; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+      <div className="bg-card border border-border rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-semibold">{oferta.nomeProduto}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">✕</button>
         </div>
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="bg-gray-800 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Preço Venda</p>
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-xs text-muted-foreground mb-1">Preço Venda</p>
               <p className="font-semibold">{fmt(oferta.precoVenda)}</p>
             </div>
-            <div className="bg-gray-800 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Preço Desconto</p>
-              <p className="font-semibold text-green-400">{fmt(oferta.precoDesconto)}</p>
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-xs text-muted-foreground mb-1">Preço Desconto</p>
+              <p className="font-semibold text-green-700 dark:text-green-400">{fmt(oferta.precoDesconto)}</p>
             </div>
-            <div className="bg-gray-800 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Parcelamento</p>
-              <p className="font-semibold text-blue-400">10× {fmt(oferta.parcelamento)}</p>
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-xs text-muted-foreground mb-1">Parcelamento</p>
+              <p className="font-semibold text-blue-700 dark:text-blue-400">10× {fmt(oferta.parcelamento)}</p>
             </div>
-            <div className="bg-gray-800 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Status</p>
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-xs text-muted-foreground mb-1">Status</p>
               <p className={`font-semibold ${
-                oferta.status === "ENVIADA" ? "text-green-400" :
-                oferta.status === "FALHA" ? "text-red-400" : "text-blue-400"
+                oferta.status === "ENVIADA" ? "text-green-700 dark:text-green-400" :
+                oferta.status === "FALHA" ? "text-red-700 dark:text-red-400" : "text-blue-700 dark:text-blue-400"
               }`}>{oferta.status}</p>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-3">
-            <p className="text-xs text-gray-400 mb-2">Texto da oferta</p>
+          <div className="bg-muted rounded-lg p-3">
+            <p className="text-xs text-muted-foreground mb-2">Texto da oferta</p>
             <p className="text-sm whitespace-pre-line">{oferta.textoOferta}</p>
           </div>
 
-          <div className="text-xs text-gray-500 space-y-1">
+          <div className="text-xs text-muted-foreground space-y-1">
             <p>Criada em: {fmtDate(oferta.criadaEm)}</p>
             {oferta.enviadaEm && <p>Enviada em: {fmtDate(oferta.enviadaEm)}</p>}
           </div>

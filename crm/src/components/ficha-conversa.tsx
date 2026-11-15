@@ -32,14 +32,14 @@ export function AbaConversa({ oportunidadeId, contatoId, onAtividade }: { oportu
         <button className={botaoSecundario} onClick={() => entrada.current?.click()}>Importar conversa exportada (.txt)</button>
         <input ref={entrada} type="file" accept=".txt,text/plain" className="hidden" onChange={(e) => { void escolherArquivo(e.target.files?.[0]); e.target.value = ""; }} />
       </div>
-      <p className="mt-2 text-[12px] text-cinza">As conversas pelo número do Vendedor IA chegam aqui sozinhas. Conversa de outro número: no celular, abra a conversa › Mais › Exportar conversa (sem mídia) e importe o .txt. O agente lê e sugere combinados.</p>
-      {aviso && <p role="status" className="mt-2 text-[13px] font-semibold text-grafite">{aviso}</p>}
+      <p className="mt-2 text-[12px] text-suave">As conversas pelo número do Vendedor IA chegam aqui sozinhas. Conversa de outro número: no celular, abra a conversa › Mais › Exportar conversa (sem mídia) e importe o .txt. O agente lê e sugere combinados.</p>
+      {aviso && <p role="status" className="mt-2 text-[13px] font-semibold text-marinho">{aviso}</p>}
       <ol className="mt-4 space-y-2">
-        {msgs === null && <li className="text-[12px] text-cinza">Carregando…</li>}
-        {msgs?.length === 0 && <li className="text-[12px] text-cinza">Nenhuma mensagem ainda.</li>}
+        {msgs === null && <li className="text-[12px] text-suave">Carregando…</li>}
+        {msgs?.length === 0 && <li className="text-[12px] text-suave">Nenhuma mensagem ainda.</li>}
         {msgs?.map((m) => (
-          <li key={m.id} className={`max-w-[85%] rounded-xl px-3 py-2 ${m.deMim ? "ml-auto bg-azul-8" : "bg-bq"}`}>
-            <p className="text-[11px] font-semibold text-cinza">{m.deMim ? (m.origem === "VENDEDOR_IA" ? m.autor : "Você") : m.autor} · {dataHora(m.enviadaEm)}</p>
+          <li key={m.id} className={`max-w-[85%] rounded-md px-3 py-2 ${m.deMim ? "ml-auto bg-areia" : "bg-creme"}`}>
+            <p className="text-[11px] font-semibold text-suave">{m.deMim ? (m.origem === "VENDEDOR_IA" ? m.autor : "Você") : m.autor} · {dataHora(m.enviadaEm)}</p>
             <p className="whitespace-pre-wrap text-[13px]">{m.texto}</p>
           </li>
         ))}
@@ -64,9 +64,9 @@ function ConfirmarArquivo({ lido, contatoId, onFechar, onImportado }: { lido: { 
         if (r.ok) onImportado((await r.json()).novas); else setErro(((await r.json().catch(() => null)) as { erro?: string } | null)?.erro ?? "Não foi possível importar");
       }}>
         <p className="text-[13px]">{lido.mensagens.length} mensagens{de && ate ? `, de ${dataHora(de)} a ${dataHora(ate)}` : ""}.{lido.mensagens.length > 2000 && " Só as 2000 mais recentes entram."}</p>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Quem é você nesta conversa?</span>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Quem é você nesta conversa?</span>
           <select value={eu} onChange={(e) => setEu(e.target.value)} className={campo}>{lido.autores.map((a) => <option key={a} value={a}>{a}</option>)}</select></label>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={enviando || !eu}>{enviando ? "Importando…" : "Importar"}</button></div>
       </form>
     </Dialogo>

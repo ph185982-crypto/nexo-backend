@@ -38,9 +38,9 @@ function pagina(p: Params, nome: string, erro?: string, admin = false, retorno =
 form{background:#16161d;border:1px solid #2a2a35;border-radius:12px;padding:24px;max-width:380px;width:100%}
 h1{font-size:18px;margin:0 0 8px}p{font-size:14px;color:#aaa;margin:0 0 16px}input[type=password]{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #333;background:#0b0b0f;color:#eee;font-size:16px}
 button{margin-top:12px;width:100%;padding:10px;border:0;border-radius:8px;background:#6d5efc;color:#fff;font-size:15px;cursor:pointer}.l{display:block;text-align:center;padding:10px;border:1px solid #6d5efc;border-radius:8px;color:#b7afff;text-decoration:none;font-size:15px}.e{color:#ff6b6b;font-size:13px;margin-top:8px}</style></head>
-<body><form method="post"><h1>Autorizar acesso ao Nexo Vendedoria</h1>
-<p><b>${esc(nome)}</b> quer consultar leads, funil, clientes e contratos (somente leitura). ${admin ? "Você está logado como administrador — basta tocar em Autorizar." : "Entre no Nexo como administrador ou digite a chave de acesso."}</p>
-${hid}${admin ? "" : `<a class="l" href="/login?callbackUrl=${encodeURIComponent(retorno)}">Entrar no Nexo</a><p style="margin:14px 0 6px">Ou use a chave de acesso:</p><input type="password" name="chave" placeholder="Chave de acesso" required>`}
+<body><form method="post"><h1>Autorizar acesso ao Avanteza Vendedoria</h1>
+<p><b>${esc(nome)}</b> quer consultar leads, funil, clientes e contratos (somente leitura). ${admin ? "Você está logado como administrador — basta tocar em Autorizar." : "Entre no Avanteza como administrador ou digite a chave de acesso."}</p>
+${hid}${admin ? "" : `<a class="l" href="/login?callbackUrl=${encodeURIComponent(retorno)}">Entrar no Avanteza</a><p style="margin:14px 0 6px">Ou use a chave de acesso:</p><input type="password" name="chave" placeholder="Chave de acesso" required>`}
 ${erro ? `<div class="e">${esc(erro)}</div>` : ""}<button type="submit">Autorizar</button></form></body></html>`;
   return new NextResponse(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-frame-options": "DENY" } });
 }

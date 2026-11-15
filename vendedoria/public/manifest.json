@@ -1,13 +1,13 @@
 {
-  "name": "Nexo",
-  "short_name": "Nexo",
+  "name": "Vendedor IA · Avanteza",
+  "short_name": "Vendedor IA",
   "description": "CRM Inteligente para WhatsApp com IA — Feche mais vendas no automático",
   "start_url": "/crm/conversations",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#18191D",
-  "theme_color": "#2448FF",
+  "background_color": "#F5F0E6",
+  "theme_color": "#0B1B33",
   "lang": "pt-BR",
   "categories": [
     "business",

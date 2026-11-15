@@ -47,25 +47,25 @@ export default function AutomacoesPage() {
   return (
     <div className="flex h-full flex-col">
       <header className="flex items-center gap-3.5 px-6 py-3.5">
-        <button onClick={() => setForm({ inicial: VAZIO })} aria-label="Nova automação" className="grid h-[34px] w-[34px] place-items-center rounded-[9px] bg-azul text-[20px] font-bold leading-none text-bq">+</button>
+        <button onClick={() => setForm({ inicial: VAZIO })} aria-label="Nova automação" className="grid h-[34px] w-[34px] place-items-center rounded-md bg-marinho text-[20px] font-bold leading-none text-creme">+</button>
         <h1 className="text-[22px] font-extrabold leading-none tracking-tight">Automações</h1>
         <button onClick={varrer} className={`${botaoSecundario} ml-auto`} title="Procura oportunidades paradas ou sem interação e executa o que venceu">Executar agora</button>
       </header>
-      {aviso && <p role="status" className="mx-6 mb-2 rounded-lg bg-azul-8 px-3 py-2 text-[13px] text-azul">{aviso}</p>}
+      {aviso && <p role="status" className="mx-6 mb-2 rounded-md bg-areia px-3 py-2 text-[13px] text-marinho">{aviso}</p>}
       <div className="flex-1 overflow-auto px-6 pb-6">
-        {itens === null && <p className="py-10 text-center text-cinza">Carregando…</p>}
-        {itens?.length === 0 && <p className="py-10 text-center text-cinza">Nenhuma automação ainda. Use o "+" e comece de um modelo.</p>}
+        {itens === null && <p className="py-10 text-center text-suave">Carregando…</p>}
+        {itens?.length === 0 && <p className="py-10 text-center text-suave">Nenhuma automação ainda. Use o "+" e comece de um modelo.</p>}
         <ul className="space-y-3">
           {itens?.map((a) => (
-            <li key={a.id} className="rounded-xl border border-linha bg-superficie p-4">
+            <li key={a.id} className="rounded-md border border-areia bg-superficie p-4">
               <div className="flex items-start gap-3">
-                <button role="switch" aria-checked={a.ativo} aria-label={`${a.ativo ? "Desativar" : "Ativar"} ${a.nome}`} onClick={() => alternar(a)} className={`mt-0.5 h-5 w-9 flex-none rounded-full p-0.5 ${a.ativo ? "bg-azul" : "bg-linha"}`}><i className={`block h-4 w-4 rounded-full bg-superficie transition-transform ${a.ativo ? "translate-x-4" : ""}`} /></button>
+                <button role="switch" aria-checked={a.ativo} aria-label={`${a.ativo ? "Desativar" : "Ativar"} ${a.nome}`} onClick={() => alternar(a)} className={`mt-0.5 h-5 w-9 flex-none rounded-full p-0.5 ${a.ativo ? "bg-marinho" : "bg-areia"}`}><i className={`block h-4 w-4 rounded-full bg-superficie transition-transform ${a.ativo ? "translate-x-4" : ""}`} /></button>
                 <div className="min-w-0 flex-1">
                   <p className="font-titulo text-[15px] font-extrabold">{a.nome}</p>
-                  <p className="text-[12px] text-cinza">{resumo(a)}</p>
-                  <p className="mt-1.5 flex gap-3 text-[12px] text-cinza"><span>{a.execucoes.executadas} executada(s)</span>{a.execucoes.pendentes > 0 && <span>{a.execucoes.pendentes} aguardando</span>}{a.execucoes.erros > 0 && <span className="font-bold text-critico">{a.execucoes.erros} com erro</span>}</p>
+                  <p className="text-[12px] text-suave">{resumo(a)}</p>
+                  <p className="mt-1.5 flex gap-3 text-[12px] text-suave"><span>{a.execucoes.executadas} executada(s)</span>{a.execucoes.pendentes > 0 && <span>{a.execucoes.pendentes} aguardando</span>}{a.execucoes.erros > 0 && <span className="font-bold text-perigo-texto">{a.execucoes.erros} com erro</span>}</p>
                 </div>
-                <div className="flex flex-none gap-2 text-[12px] font-bold"><button className="text-azul" onClick={() => setVerExec(a)}>Execuções</button><button className="text-azul" onClick={() => editar(a)}>Editar</button><button className="text-critico" onClick={() => excluir(a)}>Excluir</button></div>
+                <div className="flex flex-none gap-2 text-[12px] font-bold"><button className="text-marinho" onClick={() => setVerExec(a)}>Execuções</button><button className="text-marinho" onClick={() => editar(a)}>Editar</button><button className="text-perigo-texto" onClick={() => excluir(a)}>Excluir</button></div>
               </div>
             </li>
           ))}
@@ -83,14 +83,14 @@ function Execucoes({ a, onFechar }: { a: Item; onFechar: () => void }) {
   return (
     <Dialogo titulo={`Execuções — ${a.nome}`} onFechar={onFechar}>
       <ul className="max-h-[55vh] overflow-y-auto">
-        {lista === null && <li className="py-3 text-[12px] text-cinza">Carregando…</li>}
-        {lista?.length === 0 && <li className="py-3 text-[12px] text-cinza">Ainda não executou.</li>}
+        {lista === null && <li className="py-3 text-[12px] text-suave">Carregando…</li>}
+        {lista?.length === 0 && <li className="py-3 text-[12px] text-suave">Ainda não executou.</li>}
         {lista?.map((e) => (
-          <li key={e.id} className="border-b border-linha py-2.5 text-[12.5px]">
+          <li key={e.id} className="border-b border-areia py-2.5 text-[12.5px]">
             <p className="flex items-center justify-between gap-3"><span className="font-semibold">{e.oportunidade ?? "—"}</span>
-              <span className={e.status === "ERRO" ? "font-bold text-critico" : e.status === "EXECUTADA" ? "font-bold text-ok" : "text-cinza"}>{{ EXECUTADA: "Executada", PENDENTE: "Aguardando", EXECUTANDO: "Executando", IGNORADA: "Ignorada", ERRO: "Erro" }[e.status] ?? e.status}</span></p>
-            <p className="text-cinza">{ROTULO_ACAO[e.acaoTipo]} · {e.status === "PENDENTE" ? `vence ${dataHora(e.executarEm)}` : e.executadaEm ? dataHora(e.executadaEm) : ""}</p>
-            {e.detalhe && <p className="text-cinza">{e.detalhe}</p>}
+              <span className={e.status === "ERRO" ? "font-bold text-perigo-texto" : e.status === "EXECUTADA" ? "font-bold text-ok" : "text-suave"}>{{ EXECUTADA: "Executada", PENDENTE: "Aguardando", EXECUTANDO: "Executando", IGNORADA: "Ignorada", ERRO: "Erro" }[e.status] ?? e.status}</span></p>
+            <p className="text-suave">{ROTULO_ACAO[e.acaoTipo]} · {e.status === "PENDENTE" ? `vence ${dataHora(e.executarEm)}` : e.executadaEm ? dataHora(e.executadaEm) : ""}</p>
+            {e.detalhe && <p className="text-suave">{e.detalhe}</p>}
           </li>
         ))}
       </ul>

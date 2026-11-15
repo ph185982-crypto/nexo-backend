@@ -149,25 +149,25 @@ export default function Resultados({ organizationId, buscas }: {
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KpiCard
-            icon={<Users className="w-5 h-5 text-blue-500" />}
+            icon={<Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
             label="Taxa de resposta"
             value={metricas ? pct(metricas.taxaResposta) : "—"}
             sub="abordados → responderam"
           />
           <KpiCard
-            icon={<MessageSquare className="w-5 h-5 text-cyan-500" />}
+            icon={<MessageSquare className="w-5 h-5 text-cyan-700 dark:text-cyan-400" />}
             label="Taxa de qualificação"
             value={metricas ? pct(metricas.taxaQualificacao) : "—"}
             sub="responderam → qualificados"
           />
           <KpiCard
-            icon={<TrendingUp className="w-5 h-5 text-green-500" />}
+            icon={<TrendingUp className="w-5 h-5 text-green-700 dark:text-green-400" />}
             label="Taxa reunião"
             value={metricas ? pct(metricas.taxaReuniao) : "—"}
             sub="qualificados → reunião"
           />
           <KpiCard
-            icon={<Calendar className="w-5 h-5 text-amber-500" />}
+            icon={<Calendar className="w-5 h-5 text-amber-700 dark:text-amber-400" />}
             label="Reuniões agendadas"
             value={metricas ? fmt(metricas.porStatus["REUNIAO_AGENDADA"] ?? 0) : "—"}
             sub="total"
@@ -175,7 +175,7 @@ export default function Resultados({ organizationId, buscas }: {
         </div>
 
         {/* Funil */}
-        <div className="bg-card rounded-xl border p-5">
+        <div className="bg-card rounded-lg border p-5">
           <h2 className="text-sm font-semibold text-muted-foreground mb-4">Funil de Conversão</h2>
           <div className="space-y-2">
             {ETAPAS_FUNIL.map((etapa) => {
@@ -220,7 +220,7 @@ export default function Resultados({ organizationId, buscas }: {
 
         {/* Por Segmento */}
         {metricas && metricas.porSegmento.length > 0 && (
-          <div className="bg-card rounded-xl border p-5">
+          <div className="bg-card rounded-lg border p-5">
             <h2 className="text-sm font-semibold text-muted-foreground mb-4">Comparação por Segmento</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -243,7 +243,7 @@ export default function Resultados({ organizationId, buscas }: {
                         <td className="text-right py-2.5 text-muted-foreground">{fmt(seg.abordados)}</td>
                         <td className="text-right py-2.5 text-muted-foreground">{fmt(seg.reunioes)}</td>
                         <td className="text-right py-2.5">
-                          <span className={`font-semibold ${seg.taxaConversaoTotal > 0.05 ? "text-green-600" : "text-muted-foreground"}`}>
+                          <span className={`font-semibold ${seg.taxaConversaoTotal > 0.05 ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}`}>
                             {pct(seg.taxaConversaoTotal)}
                           </span>
                         </td>
@@ -257,7 +257,7 @@ export default function Resultados({ organizationId, buscas }: {
 
         {/* Por Template (A/B) */}
         {metricas?.porTemplate && metricas.porTemplate.some((t) => t.enviados > 0) && (
-          <div className="bg-card rounded-xl border p-5">
+          <div className="bg-card rounded-lg border p-5">
             <h2 className="text-sm font-semibold text-muted-foreground mb-4">Desempenho por Template</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -284,7 +284,7 @@ export default function Resultados({ organizationId, buscas }: {
                         <td className="text-right py-2.5 text-muted-foreground">{fmt(t.respondidos)}</td>
                         <td className="text-right py-2.5 text-muted-foreground">{fmt(t.reunioes)}</td>
                         <td className="text-right py-2.5">
-                          <span className={`font-semibold ${t.taxaResposta > 0.1 ? "text-green-600" : "text-muted-foreground"}`}>
+                          <span className={`font-semibold ${t.taxaResposta > 0.1 ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}`}>
                             {pct(t.taxaResposta)}
                           </span>
                         </td>
@@ -319,7 +319,7 @@ function KpiCard({
   sub: string;
 }) {
   return (
-    <div className="bg-card rounded-xl border p-4 flex flex-col gap-2">
+    <div className="bg-card rounded-lg border p-4 flex flex-col gap-2">
       <div className="flex items-center gap-2 text-muted-foreground">
         {icon}
         <span className="text-xs font-medium">{label}</span>

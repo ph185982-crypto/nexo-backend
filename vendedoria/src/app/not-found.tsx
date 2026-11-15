@@ -12,7 +12,7 @@ export default function NotFound() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-primary flex items-center justify-center p-4">
+    <div className="min-h-screen bg-marinho flex items-center justify-center p-4">
       <div className="text-center space-y-4">
         <p className="text-6xl font-bold text-white/20">404</p>
         <p className="text-white font-semibold text-lg">Página não encontrada</p>

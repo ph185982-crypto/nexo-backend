@@ -62,7 +62,7 @@ function baixarCsv(nome: string, conteudo: string) {
 }
 
 export function DreTab() {
-  // A DRE é da empresa por padrão (escopo Nexo); a escolha fica guardada no navegador.
+  // A DRE é da empresa por padrão (escopo Avanteza); a escolha fica guardada no navegador.
   const [filtro, setFiltroState] = useState<FiltroFin>(() => ({ ...filtroInicial(), escopo: "nexo" }));
   const [pronto, setPronto] = useState(false);
   const [modo, setModo] = useState<Modo>("realizado");
@@ -156,7 +156,7 @@ export function DreTab() {
   const porGrupo = projetado ? data.projetado.porGrupo : data.realizado.porGrupo;
   const ant = data.realizado.anterior;
   const rotAnt = data.anterior.label;
-  const escopoNome = data.escopo === "nexo" ? "Nexo (empresa)" : data.escopo === "pessoal" ? "Pessoal" : "Nexo + Pessoal + outros";
+  const escopoNome = data.escopo === "nexo" ? "Avanteza (empresa)" : data.escopo === "pessoal" ? "Pessoal" : "Avanteza + Pessoal + outros";
   const prev = data.projetado.previsto;
   const temPrevisto = prev.receitas > 0 || prev.despesas > 0;
   const manuais = data.classificacao.filter((c) => c.origem === "manual").length;
@@ -301,7 +301,7 @@ function KpiCard({ titulo, valor, margem, pct, rot, destaque }: {
     <Card className={cn(destaque && (neg ? "border-red-500/40" : "border-primary/40"))}>
       <CardContent className="p-4">
         <p className="text-xs text-muted-foreground">{titulo}</p>
-        <p className={cn("text-xl font-bold truncate", neg ? "text-red-500" : "text-foreground")}>{BRL.format(valor)}</p>
+        <p className={cn("text-xl font-bold truncate", neg ? "text-red-600 dark:text-red-400" : "text-foreground")}>{BRL.format(valor)}</p>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-h-[1rem]">
           {margem !== undefined && <span className="text-xs text-muted-foreground">margem {fmtPct(margem)}</span>}
           {pct !== undefined && <VariacaoBadge pct={pct} rotulo={rot} />}
@@ -317,7 +317,7 @@ function VariacaoCel({ pct, inv }: { pct: number | null; inv: boolean }) {
   const up = pct > 0;
   const bom = flat ? null : inv ? !up : up;
   return (
-    <span className={cn("text-xs font-medium tabular-nums", flat ? "text-muted-foreground" : bom ? "text-green-500" : "text-red-500")}>
+    <span className={cn("text-xs font-medium tabular-nums", flat ? "text-muted-foreground" : bom ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400")}>
       {up ? "+" : ""}{pct.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%
     </span>
   );
@@ -383,7 +383,7 @@ function TabelaDre({ dre, anterior, porGrupo, rotAtual, rotAnt, comparar, ocupad
                       <span className="ml-2 text-[11px] font-normal text-muted-foreground">margem {fmtPct(margem)}</span>
                     )}
                   </td>
-                  <td className={cn("py-2 text-right tabular-nums", total ? (v < 0 ? "font-semibold text-red-500" : "font-semibold text-foreground") : "text-foreground")}>
+                  <td className={cn("py-2 text-right tabular-nums", total ? (v < 0 ? "font-semibold text-red-600 dark:text-red-400" : "font-semibold text-foreground") : "text-foreground")}>
                     {BRL.format(v)}
                   </td>
                   <td className="py-2 pl-3 text-right tabular-nums text-muted-foreground">{fmtPct(av)}</td>
@@ -614,10 +614,10 @@ function AcumuladoCard({ a }: { a: RelatorioDre["acumuladoAno"] }) {
         </p>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-3">
-        <MiniValor label="Receita líquida" v={d.receitaLiquida} cor="text-green-500" />
-        <MiniValor label="Saídas" v={d.totalSaidas} cor="text-red-500" />
-        <MiniValor label="Resultado líquido" v={d.resultadoLiquido} cor={d.resultadoLiquido >= 0 ? "text-blue-500" : "text-red-500"} sub={`margem ${fmtPct(d.margemLiquida)}`} />
-        <MiniValor label="Média por mês" v={media} cor={media >= 0 ? "text-foreground" : "text-red-500"} sub="resultado líquido" />
+        <MiniValor label="Receita líquida" v={d.receitaLiquida} cor="text-green-700 dark:text-green-400" />
+        <MiniValor label="Saídas" v={d.totalSaidas} cor="text-red-600 dark:text-red-400" />
+        <MiniValor label="Resultado líquido" v={d.resultadoLiquido} cor={d.resultadoLiquido >= 0 ? "text-blue-600 dark:text-blue-400" : "text-red-600 dark:text-red-400"} sub={`margem ${fmtPct(d.margemLiquida)}`} />
+        <MiniValor label="Média por mês" v={media} cor={media >= 0 ? "text-foreground" : "text-red-600 dark:text-red-400"} sub="resultado líquido" />
       </CardContent>
     </Card>
   );

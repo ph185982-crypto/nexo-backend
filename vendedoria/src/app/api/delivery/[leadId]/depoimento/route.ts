@@ -46,7 +46,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
 
   const primeiroNome = (lead.profileName ?? "").trim().split(/\s+/)[0] || null;
   const texto = [
-    primeiroNome ? `Oi ${primeiroNome}! Aqui é o Pedro, da Nexo 👋` : "Oi! Aqui é o Pedro, da Nexo 👋",
+    primeiroNome ? `Oi ${primeiroNome}! Aqui é o Pedro, da Avanteza 👋` : "Oi! Aqui é o Pedro, da Avanteza 👋",
     "Queria te pedir um favor rápido: você toparia gravar um depoimento curto — texto, áudio ou vídeo, do jeito que for mais fácil pra você — contando como foi a experiência com a gente até aqui?",
     "Isso ajuda muito a mostrar resultado real pra outras empresas que estão avaliando entrar no marketplace. Sem compromisso nenhum se não rolar 🙏",
   ].join("\n\n");

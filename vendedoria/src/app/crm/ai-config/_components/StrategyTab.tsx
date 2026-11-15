@@ -28,7 +28,7 @@ interface Props {
 
 const URGENCY_LABEL: Record<Urgency, string> = { low: "Baixa", medium: "Média", high: "Alta" };
 const URGENCY_BADGE: Record<Urgency, string> = {
-  low:    "bg-slate-100  text-slate-600  border-slate-200",
+  low:    "bg-muted  text-muted-foreground  border-border",
   medium: "bg-amber-100  text-amber-700  border-amber-200",
   high:   "bg-red-100    text-red-700    border-red-200",
 };
@@ -111,7 +111,7 @@ export function StrategyTab({ onSave, onError }: Props) {
       </div>
 
       {(creating || editing) && (
-        <div className="border rounded-xl p-4 bg-muted/50 space-y-4">
+        <div className="border rounded-lg p-4 bg-muted/50 space-y-4">
           <p className="text-sm font-medium">{editing ? `Editar: ${editing.name}` : "Nova Estratégia"}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -188,7 +188,7 @@ export function StrategyTab({ onSave, onError }: Props) {
             <div
               key={p.id}
               className={cn(
-                "flex items-start gap-3 p-4 rounded-xl border bg-card",
+                "flex items-start gap-3 p-4 rounded-lg border bg-card",
                 p.isActive && "border-primary/30 ring-1 ring-primary/20"
               )}
             >
@@ -199,7 +199,7 @@ export function StrategyTab({ onSave, onError }: Props) {
                     Urgência: {URGENCY_LABEL[p.urgency]}
                   </Badge>
                   {p.isActive && (
-                    <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-200 bg-emerald-50">ativa</Badge>
+                    <Badge variant="outline" className="text-xs text-primary border-border bg-secondary">ativa</Badge>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground line-clamp-1 mb-1">

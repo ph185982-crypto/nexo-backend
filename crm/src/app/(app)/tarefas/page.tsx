@@ -24,11 +24,11 @@ export default function TarefasPage() {
   return (
     <div className="flex h-full flex-col">
       <header className="flex items-center gap-3.5 px-6 py-3.5">
-        <button onClick={() => setNova(true)} aria-label="Nova tarefa" className="grid h-[34px] w-[34px] place-items-center rounded-[9px] bg-azul text-[20px] font-bold leading-none text-bq">+</button>
+        <button onClick={() => setNova(true)} aria-label="Nova tarefa" className="grid h-[34px] w-[34px] place-items-center rounded-md bg-marinho text-[20px] font-bold leading-none text-creme">+</button>
         <h1 className="text-[22px] font-extrabold leading-none tracking-tight">Tarefas</h1>
-        <div className="ml-auto flex overflow-hidden rounded-full border border-linha bg-superficie text-[12px] font-semibold">
+        <div className="ml-auto flex overflow-hidden rounded-full border border-areia bg-superficie text-[12px] font-semibold">
           {(["eu", "todos"] as const).map((e) => (
-            <button key={e} onClick={() => setEscopo(e)} aria-pressed={escopo === e} className={`px-4 py-1.5 ${escopo === e ? "bg-azul text-bq" : "text-cinza"}`}>{e === "eu" ? "Minhas" : "Todas"}</button>
+            <button key={e} onClick={() => setEscopo(e)} aria-pressed={escopo === e} className={`px-4 py-1.5 ${escopo === e ? "bg-marinho text-creme" : "text-suave"}`}>{e === "eu" ? "Minhas" : "Todas"}</button>
           ))}
         </div>
       </header>
@@ -36,15 +36,15 @@ export default function TarefasPage() {
         <nav className="w-52 flex-none space-y-1" aria-label="Visões">
           {VISOES.map((v) => (
             <button key={v.id} onClick={() => setVisao(v.id)} aria-current={visao === v.id ? "true" : undefined}
-              className={`flex w-full items-center justify-between rounded-[10px] px-3 py-2.5 text-left text-[13px] font-semibold ${visao === v.id ? "bg-azul-8 text-azul" : "text-grafite hover:bg-superficie"}`}>
+              className={`flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-[13px] font-semibold ${visao === v.id ? "bg-areia text-marinho" : "text-marinho hover:bg-superficie"}`}>
               {v.rotulo}
-              <span className={`rounded-full px-2 text-[11px] ${v.id === "atrasadas" && (dados?.contadores[v.id] ?? 0) > 0 ? "bg-critico font-bold text-bq" : "bg-superficie text-cinza"}`}>{dados?.contadores[v.id] ?? "–"}</span>
+              <span className={`rounded-full px-2 text-[11px] ${v.id === "atrasadas" && (dados?.contadores[v.id] ?? 0) > 0 ? "bg-perigo font-bold text-superficie" : "bg-superficie text-suave"}`}>{dados?.contadores[v.id] ?? "–"}</span>
             </button>
           ))}
         </nav>
-        <section className="min-w-0 flex-1 overflow-auto rounded-xl border border-linha bg-superficie px-5">
-          {!dados && <p className="py-10 text-center text-cinza">Carregando…</p>}
-          {dados && dados.tarefas.length === 0 && <p className="py-10 text-center text-cinza">Nada por aqui.</p>}
+        <section className="min-w-0 flex-1 overflow-auto rounded-md border border-areia bg-superficie px-5">
+          {!dados && <p className="py-10 text-center text-suave">Carregando…</p>}
+          {dados && dados.tarefas.length === 0 && <p className="py-10 text-center text-suave">Nada por aqui.</p>}
           <ul>{dados?.tarefas.map((t) => <TarefaItem key={t.id} t={t} onMudou={carregar} />)}</ul>
         </section>
       </div>

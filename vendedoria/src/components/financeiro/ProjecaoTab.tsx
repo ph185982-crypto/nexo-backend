@@ -121,13 +121,13 @@ export function ProjecaoTab() {
           <CardContent className="p-5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-blue-500" />
+                <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Saldo Atual</p>
                 <p className={cn(
                   "text-xl font-bold",
-                  data.saldo_atual >= 0 ? "text-green-500" : "text-red-500"
+                  data.saldo_atual >= 0 ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400"
                 )}>
                   {BRL.format(data.saldo_atual)}
                 </p>
@@ -140,11 +140,11 @@ export function ProjecaoTab() {
           <CardContent className="p-5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-orange-500" />
+                <TrendingDown className="w-5 h-5 text-orange-700 dark:text-orange-400" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Burn Rate Diario</p>
-                <p className="text-xl font-bold text-orange-500">
+                <p className="text-xl font-bold text-orange-700 dark:text-orange-400">
                   {BRL.format(data.burn_rate)}
                 </p>
               </div>
@@ -160,18 +160,18 @@ export function ProjecaoTab() {
                 data.primeiro_negativo ? "bg-red-500/10" : "bg-green-500/10"
               )}>
                 {data.primeiro_negativo
-                  ? <AlertTriangle className="w-5 h-5 text-red-500" />
-                  : <Calendar className="w-5 h-5 text-green-500" />
+                  ? <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  : <Calendar className="w-5 h-5 text-green-700 dark:text-green-400" />
                 }
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Primeiro Dia Negativo</p>
                 {data.primeiro_negativo ? (
-                  <p className="text-xl font-bold text-red-500">
+                  <p className="text-xl font-bold text-red-600 dark:text-red-400">
                     {new Date(data.primeiro_negativo).toLocaleDateString("pt-BR")}
                   </p>
                 ) : (
-                  <p className="text-xl font-bold text-green-500">Nenhum</p>
+                  <p className="text-xl font-bold text-green-700 dark:text-green-400">Nenhum</p>
                 )}
               </div>
             </div>

@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 const GET_ORGS = gql`query { whatsappBusinessOrganizations { id name } }`;
 
 const ETAPAS = [
-  { id: "NOVO",                label: "Novo",            color: "border-t-gray-400" },
+  { id: "NOVO",                label: "Novo",            color: "border-t-muted-foreground" },
   { id: "PRODUTO_IDENTIFICADO",label: "Qualificando",    color: "border-t-primary" },
-  { id: "NEGOCIANDO",          label: "Negociando",      color: "border-t-avz-laranja" },
+  { id: "NEGOCIANDO",          label: "Negociando",      color: "border-t-laranja" },
   { id: "COLETANDO_DADOS",     label: "Coletando dados", color: "border-t-orange-300" },
   { id: "PEDIDO_CONFIRMADO",   label: "Confirmado",      color: "border-t-green-500" },
   { id: "PERDIDO",             label: "Perdido",         color: "border-t-red-500" },
@@ -108,7 +108,7 @@ export default function PipelinePage() {
             return (
               <div
                 key={etapa.id}
-                className={cn("flex flex-col rounded-xl border border-border border-t-4 bg-muted/40 w-64 shrink-0 overflow-hidden", etapa.color)}
+                className={cn("flex flex-col rounded-lg border border-border border-t-4 bg-muted/40 w-64 shrink-0 overflow-hidden", etapa.color)}
                 onDragOver={e => { e.preventDefault(); }}
                 onDrop={async () => { if (dragId) { await moveCard(dragId, etapa.id); setDragId(null); } }}
               >
@@ -139,13 +139,13 @@ export default function PipelinePage() {
                         onDragEnd={() => setDragId(null)}
                         onClick={() => router.push(`/crm/conversations?id=${conv?.id ?? ""}`)}
                         className={cn(
-                          "bg-card rounded-lg border border-border p-2.5 cursor-pointer shadow-sm hover:shadow-md transition-all select-none",
+                          "bg-card rounded-lg border border-border p-2.5 cursor-pointer transition-all select-none",
                           stale && "border-red-300 animate-pulse ring-1 ring-red-200",
                           dragId === lead.id && "opacity-50"
                         )}
                       >
                         <div className="flex items-center gap-2 mb-1.5">
-                          <div className="w-7 h-7 rounded-full bg-primary-100 text-primary-700 text-xs font-bold flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-secondary text-primary text-xs font-bold flex items-center justify-center shrink-0">
                             {(lead.profileName ?? lead.phoneNumber)?.[0]?.toUpperCase() ?? "?"}
                           </div>
                           <p className="text-sm font-medium text-foreground truncate flex-1">
@@ -154,7 +154,7 @@ export default function PipelinePage() {
                         </div>
 
                         {produto && (
-                          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-primary-50 text-primary-700 font-medium mb-1">
+                          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-primary font-medium mb-1">
                             🔧 {produto.replace("_", " ")}
                           </span>
                         )}
@@ -163,7 +163,7 @@ export default function PipelinePage() {
                           <span className={cn("text-[10px] flex items-center gap-0.5", stale ? "text-red-600 font-semibold" : "text-muted-foreground")}>
                             ⏱ {timeAgo(conv?.lastMessageAt ?? null)}
                           </span>
-                          {conv?.localizacaoRecebida && <span className="text-[10px] text-emerald-600">📍</span>}
+                          {conv?.localizacaoRecebida && <span className="text-[10px] text-primary">📍</span>}
                           {conv?.humanTakeover && <span className="text-[10px] text-blue-600">👤</span>}
                         </div>
                       </div>

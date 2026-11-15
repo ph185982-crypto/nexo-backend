@@ -27,7 +27,7 @@ const COLUNAS: { key: string; label: string; cor: string }[] = [
   { key: "AGUARDANDO_PAGAMENTO", label: "Aguardando Pagamento", cor: "border-yellow-400" },
   { key: "PAGO",                 label: "Pago",                 cor: "border-green-400" },
   { key: "ENVIADO",              label: "Enviado",              cor: "border-blue-400" },
-  { key: "ENTREGUE",             label: "Entregue",             cor: "border-emerald-400" },
+  { key: "ENTREGUE",             label: "Entregue",             cor: "border-primary" },
 ];
 
 export default function PedidosNacionaisPage() {
@@ -88,7 +88,7 @@ export default function PedidosNacionaisPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Package className="w-5 h-5 text-emerald-400" />
+          <Package className="w-5 h-5 text-primary" />
           <h1 className="text-lg font-semibold text-foreground">Pedidos Nacionais</h1>
           <span className="text-sm text-muted-foreground">({pedidos.length} pedidos)</span>
         </div>
@@ -114,7 +114,7 @@ export default function PedidosNacionaisPage() {
               return (
                 <div
                   key={col.key}
-                  className={`flex flex-col w-72 flex-shrink-0 bg-muted/40 rounded-xl border-t-2 ${col.cor}`}
+                  className={`flex flex-col w-72 flex-shrink-0 bg-muted/40 rounded-lg border-t-2 ${col.cor}`}
                 >
                   {/* Column header */}
                   <div className="px-3 py-2.5 border-b border-border flex-shrink-0">
@@ -147,7 +147,7 @@ export default function PedidosNacionaisPage() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-foreground text-background text-sm px-4 py-2.5 rounded-xl shadow-lg z-50">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-foreground text-background text-sm px-4 py-2.5 rounded-lg z-50">
           {toast}
         </div>
       )}
@@ -176,7 +176,7 @@ function PedidoCard({
   };
 
   return (
-    <div className="bg-background rounded-lg border border-border p-3 space-y-2 shadow-sm text-sm">
+    <div className="bg-background rounded-lg border border-border p-3 space-y-2 text-sm">
       {/* Nome e localização */}
       <div>
         <p className="font-semibold text-foreground truncate">{pedido.nomeCliente}</p>
@@ -210,7 +210,7 @@ function PedidoCard({
           href={`https://wa.me/${pedido.telefoneCliente}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-emerald-400 hover:underline"
+          className="text-xs text-primary hover:underline"
         >
           {pedido.telefoneCliente}
         </a>
@@ -228,7 +228,7 @@ function PedidoCard({
         <button
           onClick={() => setShowEnvio(true)}
           disabled={enviando}
-          className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           <Truck className="w-3.5 h-3.5" />
           Marcar como enviado
@@ -243,13 +243,13 @@ function PedidoCard({
             value={rastreio}
             onChange={(e) => setRastreio(e.target.value)}
             placeholder="Código de rastreamento (opcional)"
-            className="w-full text-xs px-2 py-1.5 rounded-lg border border-border bg-muted focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="w-full text-xs px-2 py-1.5 rounded-lg border border-border bg-muted focus:outline-none focus:ring-1 focus:ring-primary"
           />
           <div className="flex gap-1.5">
             <button
               onClick={confirmarEnvio}
               disabled={enviando}
-              className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-60 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-60 transition-colors"
             >
               <Send className="w-3 h-3" />
               {enviando ? "Enviando…" : "Confirmar"}

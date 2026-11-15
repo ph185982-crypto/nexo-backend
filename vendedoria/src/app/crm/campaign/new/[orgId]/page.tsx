@@ -189,7 +189,7 @@ export default function NewCampaignPage() {
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors",
                   i < step ? "bg-green-500 text-white" :
-                  i === step ? "bg-primary text-white" :
+                  i === step ? "bg-primary text-primary-foreground" :
                   "bg-muted text-muted-foreground"
                 )}
               >
@@ -273,7 +273,7 @@ export default function NewCampaignPage() {
               <div
                 className={cn(
                   "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors",
-                  fileName ? "border-green-500 bg-green-50" : "border-gray-300 hover:border-primary hover:bg-primary/5"
+                  fileName ? "border-green-500 bg-green-50" : "border-border hover:border-primary hover:bg-primary/5"
                 )}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -296,7 +296,7 @@ export default function NewCampaignPage() {
                         setRecipients([]);
                         setCsvHeaders([]);
                       }}
-                      className="ml-2 text-gray-400 hover:text-gray-600"
+                      className="ml-2 text-muted-foreground hover:text-muted-foreground"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -394,16 +394,16 @@ export default function NewCampaignPage() {
               {/* Phone Preview */}
               <div className="flex flex-col items-center">
                 <p className="text-xs font-medium text-muted-foreground mb-3">Preview</p>
-                <div className="relative w-56 h-96 bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-800">
-                  <div className="absolute inset-x-2 top-2 bottom-2 bg-[#ece5dd] rounded-2xl overflow-hidden">
+                <div className="relative w-56 h-96 bg-card rounded-lg overflow-hidden border-4 border-border">
+                  <div className="absolute inset-x-2 top-2 bottom-2 bg-[#ece5dd] rounded-lg overflow-hidden">
                     <div className="bg-[#075e54] text-white px-3 py-2 text-xs flex items-center gap-2">
                       <Smartphone className="w-3 h-3" />
                       <span className="font-medium">WhatsApp</span>
                     </div>
                     <div className="p-3 flex justify-end mt-2">
-                      <div className="bg-[#dcf8c6] rounded-xl rounded-br-sm px-3 py-2 max-w-[85%] shadow-sm">
+                      <div className="bg-[#dcf8c6] rounded-lg rounded-br-sm px-3 py-2 max-w-[85%]">
                         <p className="text-xs whitespace-pre-wrap break-words">{previewMessage}</p>
-                        <p className="text-[9px] text-gray-400 text-right mt-1">12:00 ✓✓</p>
+                        <p className="text-[9px] text-muted-foreground text-right mt-1">12:00 ✓✓</p>
                       </div>
                     </div>
                   </div>
@@ -430,7 +430,7 @@ export default function NewCampaignPage() {
                         "p-3 rounded-lg border-2 text-left transition-colors",
                         config.mode === m.value
                           ? "border-primary bg-primary/5"
-                          : "border-border hover:border-gray-300"
+                          : "border-border hover:border-border"
                       )}
                     >
                       <p className="font-medium text-sm">{m.label}</p>

@@ -194,7 +194,7 @@ export default function WorkUnitsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {units.map((unit) => (
-            <Card key={unit.id} className="hover:shadow-md transition-shadow">
+            <Card key={unit.id} className="">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">

@@ -129,7 +129,7 @@ function ConversationItem({
               </span>
             ))}
             {(conv.unreadCount ?? 0) > 0 && (
-              <span className="ml-auto bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+              <span className="ml-auto bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                 {conv.unreadCount}
               </span>
             )}
@@ -147,7 +147,7 @@ function MessageBubble({ message }: { message: Message }) {
     <div className={cn("flex", isSent ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "max-w-[70%] px-3 py-2 rounded-2xl text-sm shadow-sm",
+          "max-w-[70%] px-3 py-2 rounded-lg text-sm",
           isSent
             ? "bg-[#dcf8c6] rounded-br-sm"
             : "bg-card rounded-bl-sm border border-border"
@@ -163,7 +163,7 @@ function MessageBubble({ message }: { message: Message }) {
           return (
             <a href={mapsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
-              <MapPin className="w-4 h-4 shrink-0 text-emerald-600" />
+              <MapPin className="w-4 h-4 shrink-0 text-primary" />
               <span>{label}</span>
             </a>
           );
@@ -172,7 +172,7 @@ function MessageBubble({ message }: { message: Message }) {
           <span className="text-[10px] text-muted-foreground">{formatTime(message.sentAt)}</span>
           {isSent && (
             message.status === "READ"
-              ? <CheckCheck className="w-3 h-3 text-blue-500" />
+              ? <CheckCheck className="w-3 h-3 text-blue-600 dark:text-blue-400" />
               : <Check className="w-3 h-3 text-muted-foreground" />
           )}
         </div>
@@ -341,7 +341,7 @@ export default function ChatPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>Reportar Problema</DropdownMenuItem>
-                  <DropdownMenuItem className="text-orange-600">Encerrar Lead</DropdownMenuItem>
+                  <DropdownMenuItem className="text-orange-700 dark:text-orange-400">Encerrar Lead</DropdownMenuItem>
                   <DropdownMenuItem className="text-destructive">Bloquear Lead</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -416,7 +416,7 @@ export default function ChatPage() {
             <Bot className="w-10 h-10 text-primary" />
           </div>
           <div className="text-center">
-            <h3 className="font-semibold text-lg text-foreground">Nexo Vendas</h3>
+            <h3 className="font-semibold text-lg text-foreground">Vendedor IA</h3>
             <p className="text-muted-foreground text-sm mt-1">
               Selecione uma conversa para começar
             </p>

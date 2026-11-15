@@ -102,7 +102,7 @@ export function ApiKeysTab() {
           <CardTitle className="flex items-center gap-2 text-base"><Plug className="w-4 h-4" /> Conectar ao Claude (chat)</CardTitle>
           <CardDescription>
             Deixa o Claude consultar leads, funil, clientes e contratos (somente leitura). Não precisa de chave:
-            ao conectar, o Nexo pede só um toque em &quot;Autorizar&quot; com você logado aqui.
+            ao conectar, o Vendedor IA pede só um toque em &quot;Autorizar&quot; com você logado aqui.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -116,7 +116,7 @@ export function ApiKeysTab() {
             <li>Copie o endereço acima.</li>
             <li>No Claude: Configurações → Conectores → Adicionar conector personalizado.</li>
             <li>Cole o endereço, deixe os campos de OAuth em branco e confirme.</li>
-            <li>Na tela do Nexo que abrir, toque em <b>Autorizar</b>.</li>
+            <li>Na tela do Vendedor IA que abrir, toque em <b>Autorizar</b>.</li>
           </ol>
         </CardContent>
       </Card>
@@ -153,7 +153,7 @@ export function ApiKeysTab() {
             </Button>
           </div>
 
-          {erro && <p className="text-sm text-red-500">{erro}</p>}
+          {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
 
           {!chaves ? (
             <p className="text-sm text-muted-foreground">Carregando…</p>
@@ -165,14 +165,14 @@ export function ApiKeysTab() {
                 <div key={c.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {c.nome} {c.revogadaEm && <span className="text-xs text-red-500 font-normal">(revogada)</span>}
+                      {c.nome} {c.revogadaEm && <span className="text-xs text-red-600 dark:text-red-400 font-normal">(revogada)</span>}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       <code>{c.prefixo}…</code> · usada pela última vez em {fmt(c.ultimoUsoEm)}
                     </p>
                   </div>
                   {!c.revogadaEm && (
-                    <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-600 shrink-0" onClick={() => void revogar(c.id, c.nome)} disabled={revogando === c.id}>
+                    <Button size="sm" variant="ghost" className="text-red-600 dark:text-red-400 hover:text-red-600 shrink-0" onClick={() => void revogar(c.id, c.nome)} disabled={revogando === c.id}>
                       {revogando === c.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     </Button>
                   )}

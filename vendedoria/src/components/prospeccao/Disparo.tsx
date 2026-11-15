@@ -375,7 +375,7 @@ export default function Disparo({ org }: { org: Org }) {
         )}
 
         {/* Importação de leads por planilha */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-3">
+        <section className="rounded-lg border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2">
             <FileSpreadsheet className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Importar leads por planilha</h2>
@@ -416,8 +416,8 @@ export default function Disparo({ org }: { org: Org }) {
           {resultadoImportacao && (
             <div className={`text-xs rounded-lg px-3 py-2 border ${
               resultadoImportacao.ok
-                ? "border-green-500/30 bg-green-500/5 text-green-600 dark:text-green-400"
-                : "border-red-500/40 bg-red-500/5 text-red-500"
+                ? "border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-400"
+                : "border-red-500/40 bg-red-500/5 text-red-600 dark:text-red-400"
             }`}>
               {resultadoImportacao.ok
                 ? `✓ ${resultadoImportacao.inseridos} lead(s) importado(s) e já elegível(is) pro disparo · ${resultadoImportacao.ignorados} ignorado(s)`
@@ -437,7 +437,7 @@ export default function Disparo({ org }: { org: Org }) {
         </section>
 
         {/* Fila de disparo em tempo real */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
+        <section className="rounded-lg border border-border bg-card p-4 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Send className="w-4 h-4 text-primary" />
@@ -463,10 +463,10 @@ export default function Disparo({ org }: { org: Org }) {
           {fila && (
             <div className={`text-xs rounded-lg px-3 py-2 border ${
               fila.janela.pausado
-                ? "border-red-500/40 bg-red-500/5 text-red-500"
+                ? "border-red-500/40 bg-red-500/5 text-red-600 dark:text-red-400"
                 : fila.janela.dentroJanela
-                  ? "border-green-500/30 bg-green-500/5 text-green-600 dark:text-green-400"
-                  : "border-amber-500/40 bg-amber-500/5 text-amber-600 dark:text-amber-400"
+                  ? "border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-400"
+                  : "border-amber-500/40 bg-amber-500/5 text-amber-700 dark:text-amber-400"
             }`}>
               {fila.janela.pausado
                 ? "⏸ Disparos pausados manualmente — retome abaixo para voltar a enviar."
@@ -490,7 +490,7 @@ export default function Disparo({ org }: { org: Org }) {
                     <span className={`shrink-0 ml-2 px-2 py-0.5 rounded-full text-[10px] font-medium ${
                       j.status === "RUNNING"
                         ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 animate-pulse"
-                        : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                        : "bg-amber-500/15 text-amber-700 dark:text-amber-400"
                     }`}>
                       {j.status === "RUNNING" ? "enviando" : "aguardando"}
                     </span>
@@ -554,11 +554,11 @@ export default function Disparo({ org }: { org: Org }) {
         </section>
 
         {/* Pausa/retomada */}
-        <div className={`rounded-xl border p-4 flex items-center justify-between ${
+        <div className={`rounded-lg border p-4 flex items-center justify-between ${
           config.pausadoManualmente ? "border-red-500/40 bg-red-500/5" : "border-border bg-card"
         }`}>
           <div className="flex items-center gap-3">
-            <ShieldCheck className={`w-5 h-5 ${config.pausadoManualmente ? "text-red-500" : "text-primary"}`} />
+            <ShieldCheck className={`w-5 h-5 ${config.pausadoManualmente ? "text-red-600 dark:text-red-400" : "text-primary"}`} />
             <div>
               <p className="text-sm font-medium text-foreground">
                 {config.pausadoManualmente ? "Disparos PAUSADOS" : "Disparos liberados"}
@@ -580,7 +580,7 @@ export default function Disparo({ org }: { org: Org }) {
         </div>
 
         {/* Template */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
+        <section className="rounded-lg border border-border bg-card p-4 space-y-4">
           <div className="flex items-center gap-2">
             <MessageSquareText className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Modelo de mensagem (template Meta)</h2>
@@ -629,7 +629,7 @@ export default function Disparo({ org }: { org: Org }) {
               )}
             </div>
           ) : (
-            <p className="text-sm text-amber-500">Nenhum template ativo — cadastre abaixo para liberar o disparo.</p>
+            <p className="text-sm text-amber-700 dark:text-amber-400">Nenhum template ativo — cadastre abaixo para liberar o disparo.</p>
           )}
 
           <div className="space-y-3 pt-1">
@@ -704,7 +704,7 @@ export default function Disparo({ org }: { org: Org }) {
                         </button>
                       )}
                       {rejeitado && (
-                        <span className="shrink-0 ml-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-500/15 text-red-500">rejeitado</span>
+                        <span className="shrink-0 ml-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-500/15 text-red-600 dark:text-red-400">rejeitado</span>
                       )}
                     </div>
                   );
@@ -715,7 +715,7 @@ export default function Disparo({ org }: { org: Org }) {
         </section>
 
         {/* Criar template novo direto pela Meta */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
+        <section className="rounded-lg border border-border bg-card p-4 space-y-4">
           <div className="flex items-center gap-2">
             <MessageSquareText className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Criar template novo (enviar pra aprovação da Meta)</h2>
@@ -796,7 +796,7 @@ export default function Disparo({ org }: { org: Org }) {
             <input
               value={novoRodape}
               onChange={(e) => setNovoRodape(e.target.value)}
-              placeholder="ex.: Nexo Brasil"
+              placeholder="ex.: Avanteza"
               className={inputCls}
             />
           </label>
@@ -813,8 +813,8 @@ export default function Disparo({ org }: { org: Org }) {
           {resultadoCriacao && (
             <div className={`text-xs rounded-lg px-3 py-2 border ${
               resultadoCriacao.ok
-                ? "border-green-500/30 bg-green-500/5 text-green-600 dark:text-green-400"
-                : "border-red-500/40 bg-red-500/5 text-red-500"
+                ? "border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-400"
+                : "border-red-500/40 bg-red-500/5 text-red-600 dark:text-red-400"
             }`}>
               {resultadoCriacao.mensagem}
             </div>
@@ -822,7 +822,7 @@ export default function Disparo({ org }: { org: Org }) {
         </section>
 
         {/* Cadência */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
+        <section className="rounded-lg border border-border bg-card p-4 space-y-4">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Cadência e proteção do número</h2>
@@ -888,9 +888,9 @@ function StatFila({ label, value, tone, pulse }: {
 }) {
   const toneCls = {
     neutral: "text-foreground",
-    amber: "text-amber-600 dark:text-amber-400",
+    amber: "text-amber-700 dark:text-amber-400",
     blue: "text-blue-600 dark:text-blue-400",
-    green: "text-green-600 dark:text-green-400",
+    green: "text-green-700 dark:text-green-400",
   }[tone];
   return (
     <div className="rounded-lg border border-border bg-background px-3 py-2.5">

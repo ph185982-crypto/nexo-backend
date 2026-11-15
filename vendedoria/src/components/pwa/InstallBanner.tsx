@@ -52,27 +52,27 @@ export function InstallBanner() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 rounded-2xl border border-emerald-800/60 bg-[#18191D]/95 px-4 py-3 shadow-2xl backdrop-blur-md"
+      className="fixed bottom-4 left-4 right-4 z-50 flex items-center gap-3 rounded-lg border border-marinho-2 bg-marinho px-4 py-3"
       role="banner"
     >
       <img
         src="/icon-192.png"
-        alt="Nexo"
-        className="h-10 w-10 flex-shrink-0 rounded-xl"
+        alt="Vendedor IA"
+        className="h-10 w-10 flex-shrink-0 rounded-lg"
       />
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-white">
-          Instalar Nexo
+        <p className="truncate text-sm font-semibold text-creme">
+          Instalar Vendedor IA
         </p>
-        <p className="truncate text-xs text-emerald-400/80">
+        <p className="truncate text-xs text-areia">
           Acesse mais rápido, direto da sua tela inicial
         </p>
       </div>
 
       <button
         onClick={install}
-        className="flex flex-shrink-0 items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white active:bg-emerald-700"
+        className="flex flex-shrink-0 items-center gap-1.5 rounded-full bg-laranja px-3 py-1.5 text-xs font-semibold text-marinho active:bg-laranja-hover"
         aria-label="Instalar aplicativo"
       >
         <Download className="h-3.5 w-3.5" />
@@ -81,7 +81,7 @@ export function InstallBanner() {
 
       <button
         onClick={dismiss}
-        className="flex-shrink-0 rounded-lg p-1 text-slate-400 hover:text-slate-200"
+        className="flex-shrink-0 rounded-lg p-1 text-areia hover:text-creme"
         aria-label="Fechar"
       >
         <X className="h-4 w-4" />

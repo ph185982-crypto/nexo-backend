@@ -70,7 +70,7 @@ export function LeadDrawer({ id, onClose, onMudou }: { id: string; onClose: () =
         role="dialog"
         aria-modal="true"
         aria-label="Detalhes da empresa"
-        className="w-full sm:max-w-md h-full bg-card border-l border-border shadow-xl flex flex-col"
+        className="w-full sm:max-w-md h-full bg-card border-l border-border flex flex-col"
         onClick={(ev) => ev.stopPropagation()}
       >
         <div className="flex items-start gap-2 px-5 py-4 border-b border-border">
@@ -90,7 +90,7 @@ export function LeadDrawer({ id, onClose, onMudou }: { id: string; onClose: () =
           <div className="flex-1 overflow-auto px-5 py-4 space-y-5 text-sm">
             {/* Contato */}
             <section className="space-y-2">
-              <Linha icon={e.tipoTelefone === "CELULAR" ? <Smartphone className="w-4 h-4 text-green-500" /> : <Phone className="w-4 h-4" />}>
+              <Linha icon={e.tipoTelefone === "CELULAR" ? <Smartphone className="w-4 h-4 text-green-700 dark:text-green-400" /> : <Phone className="w-4 h-4" />}>
                 {fmtTelefone(e.telefone)}
                 <span className="ml-2 text-xs text-muted-foreground">{e.tipoTelefone === "CELULAR" ? "WhatsApp" : e.tipoTelefone === "FIXO" ? "Fixo — não recebe WhatsApp" : ""}</span>
               </Linha>
@@ -103,7 +103,7 @@ export function LeadDrawer({ id, onClose, onMudou }: { id: string; onClose: () =
                 </Linha>
               )}
               {e.ratingGoogle != null && (
-                <Linha icon={<Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}>
+                <Linha icon={<Star className="w-4 h-4 text-yellow-700 dark:text-yellow-400 fill-yellow-500" />}>
                   {e.ratingGoogle.toFixed(1)} no Google ({e.numeroAvaliacoes ?? 0} avaliações)
                 </Linha>
               )}

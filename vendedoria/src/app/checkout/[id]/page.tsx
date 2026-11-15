@@ -195,7 +195,7 @@ export default function CheckoutPage() {
 
         {/* Header */}
         <div style={s.header}>
-          <div style={s.logo}>NEXO BRASIL</div>
+          <div style={s.logo}>AVANTEZA</div>
           <div style={s.selosRow}>
             <span style={s.selo}>🔒 Compra Segura</span>
             <span style={s.selo}>✅ Mercado Pago</span>
@@ -231,21 +231,21 @@ export default function CheckoutPage() {
         {/* Indicador de etapas */}
         <div style={s.etapasRow}>
           <div style={{ ...s.etapaItem, opacity: etapa === 'dados' ? 1 : 0.5 }}>
-            <div style={{ ...s.etapaBola, background: etapa !== 'dados' ? '#10B981' : '#FF7043' }}>
+            <div style={{ ...s.etapaBola, background: etapa !== 'dados' ? '#10B981' : '#FF6A1F' }}>
               {etapa !== 'dados' ? '✓' : '1'}
             </div>
             <span>Dados</span>
           </div>
           <div style={s.etapaLinha} />
           <div style={{ ...s.etapaItem, opacity: ['pagamento', 'pix', 'boleto', 'sucesso'].includes(etapa) ? 1 : 0.4 }}>
-            <div style={{ ...s.etapaBola, background: ['pix', 'boleto', 'sucesso'].includes(etapa) ? '#10B981' : etapa === 'pagamento' ? '#FF7043' : '#D1D5DB' }}>
+            <div style={{ ...s.etapaBola, background: ['pix', 'boleto', 'sucesso'].includes(etapa) ? '#10B981' : etapa === 'pagamento' ? '#FF6A1F' : '#D1D5DB' }}>
               {['pix', 'boleto', 'sucesso'].includes(etapa) ? '✓' : '2'}
             </div>
             <span>Pagamento</span>
           </div>
           <div style={s.etapaLinha} />
           <div style={{ ...s.etapaItem, opacity: ['pix', 'boleto', 'sucesso'].includes(etapa) ? 1 : 0.4 }}>
-            <div style={{ ...s.etapaBola, background: ['pix', 'boleto'].includes(etapa) ? '#FF7043' : '#D1D5DB' }}>
+            <div style={{ ...s.etapaBola, background: ['pix', 'boleto'].includes(etapa) ? '#FF6A1F' : '#D1D5DB' }}>
               3
             </div>
             <span>Confirmar</span>
@@ -323,7 +323,7 @@ export default function CheckoutPage() {
             </div>
 
             <button onClick={pagarPix} disabled={loading}
-              style={{ ...s.btnOpcao, background: '#2448FF' }}>
+              style={{ ...s.btnOpcao, background: '#0B1B33' }}>
               <div style={s.btnOpcaoIcon}>💠</div>
               <div>
                 <div style={s.btnOpcaoTitulo}>Pagar com Pix</div>
@@ -413,7 +413,7 @@ export default function CheckoutPage() {
         {/* ── PIX ── */}
         {etapa === 'pix' && pixData && (
           <div>
-            <h3 style={{ ...s.titulo, color: '#2448FF' }}>💠 Pague com Pix</h3>
+            <h3 style={{ ...s.titulo, color: '#0B1B33' }}>💠 Pague com Pix</h3>
             <div style={s.resumo}>
               <strong>R$ 197,00</strong> · Aprovação imediata
             </div>
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
                 <img
                   src={`data:image/png;base64,${pixData.pixQrCodeBase64}`}
                   alt="QR Code Pix"
-                  style={{ width: '200px', height: '200px', borderRadius: '12px', border: '4px solid #2448FF' }}
+                  style={{ width: '200px', height: '200px', borderRadius: '6px', border: '4px solid #0B1B33' }}
                 />
               </div>
             )}
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
             </div>
 
             <button onClick={copiarPix}
-              style={{ ...s.btnPrincipal, background: copiado ? '#10B981' : '#2448FF' }}>
+              style={{ ...s.btnPrincipal, background: copiado ? '#10B981' : '#0B1B33' }}>
               {copiado ? '✅ Código copiado!' : '📋 Copiar código Pix'}
             </button>
 
@@ -468,20 +468,20 @@ export default function CheckoutPage() {
 const s: Record<string, React.CSSProperties> = {
   bg: {
     minHeight: '100vh',
-    background: '#2448FF',
+    background: '#0B1B33',
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
     padding: '20px 16px 40px',
-    fontFamily: "'Inter', -apple-system, sans-serif",
+    fontFamily: "var(--font-manrope), -apple-system, sans-serif",
   },
   card: {
     background: '#FFFFFF',
-    borderRadius: '20px',
+    borderRadius: '6px',
     padding: '24px 20px',
     maxWidth: '440px',
     width: '100%',
-    boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
+    border: '1px solid #EAD9C2',
   },
   header: {
     textAlign: 'center',
@@ -493,7 +493,7 @@ const s: Record<string, React.CSSProperties> = {
     fontWeight: 900,
     fontSize: '18px',
     letterSpacing: '4px',
-    color: '#18191D',
+    color: '#0B1B33',
     marginBottom: '8px',
   },
   selosRow: { display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' },
@@ -502,7 +502,7 @@ const s: Record<string, React.CSSProperties> = {
     background: '#F0FDF4',
     color: '#166534',
     padding: '3px 10px',
-    borderRadius: '20px',
+    borderRadius: '6px',
     border: '1px solid #BBF7D0',
   },
   produto: {
@@ -510,7 +510,7 @@ const s: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'space-between',
     background: '#F9FAFB',
-    borderRadius: '12px',
+    borderRadius: '6px',
     padding: '14px 16px',
     marginBottom: '12px',
     border: '1px solid #E5E7EB',
@@ -520,12 +520,12 @@ const s: Record<string, React.CSSProperties> = {
   produtoDesc: { fontSize: '12px', color: '#6B7280', marginTop: '2px' },
   frete: { fontSize: '12px', color: '#059669', fontWeight: 600, marginTop: '4px' },
   produtoPreco: { display: 'flex', alignItems: 'flex-start', gap: '2px' },
-  precoLabel: { fontSize: '14px', fontWeight: 700, color: '#18191D', marginTop: '4px' },
-  precoValor: { fontSize: '36px', fontWeight: 900, color: '#18191D', lineHeight: 1 },
+  precoLabel: { fontSize: '14px', fontWeight: 700, color: '#0B1B33', marginTop: '4px' },
+  precoValor: { fontSize: '36px', fontWeight: 900, color: '#0B1B33', lineHeight: 1 },
   garantia: {
     background: '#FFF7ED',
     border: '1px solid #FED7AA',
-    borderRadius: '10px',
+    borderRadius: '6px',
     padding: '10px 14px',
     fontSize: '13px',
     color: '#92400E',
@@ -535,7 +535,7 @@ const s: Record<string, React.CSSProperties> = {
   depoimento: {
     background: '#F0FDF4',
     border: '1px solid #BBF7D0',
-    borderRadius: '10px',
+    borderRadius: '6px',
     padding: '12px 14px',
     marginBottom: '16px',
   },
@@ -565,7 +565,7 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     fontSize: '13px',
     fontWeight: 700,
-    color: '#18191D',
+    color: '#0B1B33',
   },
   etapaLinha: { flex: 1, height: '2px', background: '#E5E7EB', maxWidth: '40px' },
   titulo: { fontSize: '18px', fontWeight: 700, color: '#111827', marginBottom: '16px' },
@@ -573,7 +573,7 @@ const s: Record<string, React.CSSProperties> = {
   label: { fontSize: '13px', fontWeight: 600, color: '#374151' },
   input: {
     border: '1.5px solid #E5E7EB',
-    borderRadius: '10px',
+    borderRadius: '6px',
     padding: '12px 14px',
     fontSize: '15px',
     outline: 'none',
@@ -585,7 +585,7 @@ const s: Record<string, React.CSSProperties> = {
   row: { display: 'flex', gap: '10px' },
   resumo: {
     background: '#F3F4F6',
-    borderRadius: '10px',
+    borderRadius: '6px',
     padding: '12px 16px',
     fontSize: '15px',
     color: '#111827',
@@ -596,7 +596,7 @@ const s: Record<string, React.CSSProperties> = {
     width: '100%',
     color: 'white',
     border: 'none',
-    borderRadius: '14px',
+    borderRadius: '6px',
     padding: '16px',
     marginBottom: '10px',
     cursor: 'pointer',
@@ -610,10 +610,10 @@ const s: Record<string, React.CSSProperties> = {
   btnOpcaoSub: { fontSize: '12px', opacity: 0.85, marginTop: '2px' },
   btnPrincipal: {
     width: '100%',
-    background: '#FF7043',
-    color: '#18191D',
+    background: '#FF6A1F',
+    color: '#0B1B33',
     border: 'none',
-    borderRadius: '14px',
+    borderRadius: '6px',
     padding: '16px',
     fontSize: '16px',
     fontWeight: 800,
@@ -626,7 +626,7 @@ const s: Record<string, React.CSSProperties> = {
     background: 'transparent',
     color: '#6B7280',
     border: '1px solid #E5E7EB',
-    borderRadius: '10px',
+    borderRadius: '6px',
     padding: '12px',
     fontSize: '14px',
     cursor: 'pointer',
@@ -635,7 +635,7 @@ const s: Record<string, React.CSSProperties> = {
   erro: {
     background: '#FEF2F2',
     border: '1px solid #FECACA',
-    borderRadius: '8px',
+    borderRadius: '6px',
     padding: '10px 14px',
     fontSize: '13px',
     color: '#DC2626',

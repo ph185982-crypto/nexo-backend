@@ -113,9 +113,9 @@ const MODULE_META: Array<{ id: Module; icon: React.ElementType; label: string; d
 ];
 
 const TOM_OPTIONS = [
-  { value: "sincero",    label: "Sincero",    desc: "Autêntico e transparente. Acredita no produto.", color: "border-emerald-500 text-emerald-400 bg-emerald-950/40" },
-  { value: "agressivo",  label: "Agressivo",  desc: "Direto ao fechamento. Urgência real. Assertivo.", color: "border-orange-500 text-orange-400 bg-orange-950/40" },
-  { value: "consultivo", label: "Consultivo", desc: "Faz perguntas. Entende a necessidade. Recomenda.", color: "border-blue-500 text-blue-400 bg-blue-950/40" },
+  { value: "sincero",    label: "Sincero",    desc: "Autêntico e transparente. Acredita no produto.", color: "border-primary text-primary bg-secondary" },
+  { value: "agressivo",  label: "Agressivo",  desc: "Direto ao fechamento. Urgência real. Assertivo.", color: "border-orange-500 text-orange-700 dark:text-orange-400 bg-orange-100 dark:bg-orange-950/40" },
+  { value: "consultivo", label: "Consultivo", desc: "Faz perguntas. Entende a necessidade. Recomenda.", color: "border-blue-500 text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-950/40" },
 ];
 
 const OBJETIVO_OPTIONS = [
@@ -125,9 +125,9 @@ const OBJETIVO_OPTIONS = [
 ];
 
 const NIVEL_OPTIONS = [
-  { value: "leve",      label: "Suave",       color: "border-blue-500 text-blue-400 bg-blue-950/40" },
-  { value: "medio",     label: "Equilibrado", color: "border-emerald-500 text-emerald-400 bg-emerald-950/40" },
-  { value: "agressivo", label: "Agressivo",   color: "border-orange-500 text-orange-400 bg-orange-950/40" },
+  { value: "leve",      label: "Suave",       color: "border-blue-500 text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-950/40" },
+  { value: "medio",     label: "Equilibrado", color: "border-primary text-primary bg-secondary" },
+  { value: "agressivo", label: "Agressivo",   color: "border-orange-500 text-orange-700 dark:text-orange-400 bg-orange-100 dark:bg-orange-950/40" },
 ];
 
 function formatDate(iso: string) {
@@ -329,7 +329,7 @@ export default function ConfigureAgentPage() {
                   key={opt.value}
                   onClick={() => persistConfig({ tomDeVoz: opt.value }, selectedOrgId)}
                   className={cn(
-                    "flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all",
+                    "flex items-start gap-3 p-3 rounded-lg border-2 text-left transition-all",
                     config.tomDeVoz === opt.value ? opt.color : "border-border bg-card hover:border-muted-foreground/30"
                   )}
                 >
@@ -365,9 +365,9 @@ export default function ConfigureAgentPage() {
           <div className="space-y-3">
             <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Micro-comportamentos</label>
             <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-card border border-border">
                 <div className="flex items-center gap-2">
-                  <Smile className="w-4 h-4 text-yellow-400" />
+                  <Smile className="w-4 h-4 text-yellow-700 dark:text-yellow-400" />
                   <div>
                     <p className="text-xs font-medium">Emojis</p>
                     <p className="text-[10px] text-muted-foreground">Máx 1 por msg</p>
@@ -378,9 +378,9 @@ export default function ConfigureAgentPage() {
                   onCheckedChange={(v) => persistConfig({ usarEmoji: v }, selectedOrgId)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-card border border-border">
                 <div className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-blue-400" />
+                  <MessageCircle className="w-4 h-4 text-blue-700 dark:text-blue-400" />
                   <div>
                     <p className="text-xs font-medium">Reticências</p>
                     <p className="text-[10px] text-muted-foreground">Pausas naturais</p>
@@ -410,7 +410,7 @@ export default function ConfigureAgentPage() {
                   key={opt.value}
                   onClick={() => persistConfig({ objetivoVenda: opt.value }, selectedOrgId)}
                   className={cn(
-                    "flex items-start gap-3 p-3 rounded-xl border-2 w-full text-left transition-all",
+                    "flex items-start gap-3 p-3 rounded-lg border-2 w-full text-left transition-all",
                     config.objetivoVenda === opt.value
                       ? "border-primary bg-primary/10 text-foreground"
                       : "border-border bg-card hover:border-muted-foreground/30 text-muted-foreground"
@@ -435,7 +435,7 @@ export default function ConfigureAgentPage() {
                   key={opt.value}
                   onClick={() => persistConfig({ nivelVenda: opt.value }, selectedOrgId)}
                   className={cn(
-                    "flex-1 py-2 px-3 rounded-xl border-2 text-sm font-medium transition-all",
+                    "flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all",
                     config.nivelVenda === opt.value ? opt.color : "border-border bg-card text-muted-foreground hover:border-muted-foreground/30"
                   )}
                 >
@@ -451,9 +451,9 @@ export default function ConfigureAgentPage() {
               <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Nível de Urgência</label>
               <span className={cn(
                 "text-sm font-bold px-2.5 py-0.5 rounded-full",
-                config.nivelUrgencia <= 2 ? "bg-blue-950/40 text-blue-400" :
-                config.nivelUrgencia <= 3 ? "bg-emerald-950/40 text-emerald-400" :
-                "bg-orange-950/40 text-orange-400"
+                config.nivelUrgencia <= 2 ? "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400" :
+                config.nivelUrgencia <= 3 ? "bg-secondary text-primary" :
+                "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400"
               )}>
                 {["", "Mínima", "Suave", "Moderada", "Alta", "Máxima"][config.nivelUrgencia]}
               </span>
@@ -488,7 +488,7 @@ export default function ConfigureAgentPage() {
             )}
 
             {config.matrizObjecoes.map((obj, i) => (
-              <div key={i} className="rounded-xl border border-border bg-card p-3 space-y-2">
+              <div key={i} className="rounded-lg border border-border bg-card p-3 space-y-2">
                 <div className="flex items-center gap-2">
                   <Input
                     value={obj.palavraChave}
@@ -550,7 +550,7 @@ export default function ConfigureAgentPage() {
             </Button>
           </div>
 
-          <div className="p-3 rounded-xl bg-muted/50 border border-border text-xs text-muted-foreground">
+          <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs text-muted-foreground">
             <p className="font-medium text-foreground mb-1">💡 Objeção de preço padrão</p>
             <p>A IA detecta automaticamente "caro", "sem dinheiro", "preço alto" e aplica até 5 estratégias de quebra em sequência (parcela → risco zero → comparação → urgência → kit). Essa objeção está sempre ativa.</p>
           </div>
@@ -608,8 +608,8 @@ export default function ConfigureAgentPage() {
             </Button>
           </div>
 
-          <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-800/40 text-xs text-amber-300/80">
-            <p className="font-medium text-amber-300 mb-1">⚠️ Como funciona</p>
+          <div className="p-3 rounded-lg bg-amber-100 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-700 dark:text-amber-300/80">
+            <p className="font-medium text-amber-700 dark:text-amber-300 mb-1">⚠️ Como funciona</p>
             <p>Cada restrição é injetada no prompt como instrução imperativa. Seja específico: "Nunca mencione o concorrente X" é melhor que "Não fale de concorrentes".</p>
           </div>
         </div>
@@ -629,7 +629,7 @@ export default function ConfigureAgentPage() {
                   key={n}
                   onClick={() => persistConfig({ followUpMaxTentativas: n }, selectedOrgId)}
                   className={cn(
-                    "flex-1 py-2 rounded-xl border-2 text-sm font-bold transition-all",
+                    "flex-1 py-2 rounded-lg border-2 text-sm font-bold transition-all",
                     config.followUpMaxTentativas === n
                       ? "border-primary bg-primary/15 text-primary"
                       : "border-border bg-card text-muted-foreground hover:border-muted-foreground/30"
@@ -646,7 +646,7 @@ export default function ConfigureAgentPage() {
           <div className="space-y-3">
             <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Intervalos por Tentativa</label>
             {config.followUpIntervalos.slice(0, config.followUpMaxTentativas).map((hrs, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border">
                 <div className="w-7 h-7 rounded-full bg-primary/20 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0">
                   {i + 1}
                 </div>
@@ -674,7 +674,7 @@ export default function ConfigureAgentPage() {
             ))}
           </div>
 
-          <div className="p-3 rounded-xl bg-muted/50 border border-border text-xs text-muted-foreground">
+          <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs text-muted-foreground">
             <p className="font-medium text-foreground mb-1">💡 Como funciona</p>
             <p>Quando o cliente para de responder, a IA dispara follow-ups nos intervalos configurados. Qualquer resposta do cliente cancela todos os follow-ups pendentes.</p>
           </div>
@@ -687,8 +687,8 @@ export default function ConfigureAgentPage() {
           <div className="flex items-center justify-between flex-shrink-0">
             <ModuleHeader icon={Brain} title="Script do Agente" desc="Roteiro base, argumentos e persona" />
             <div className="flex items-center gap-2 ml-4">
-              {scriptModified && <Badge variant="outline" className="text-xs text-amber-500 border-amber-700/50">modificado</Badge>}
-              {saveSuccess  && <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-700/50"><CheckCircle2 className="w-3 h-3 mr-1" />salvo!</Badge>}
+              {scriptModified && <Badge variant="outline" className="text-xs text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700/50">modificado</Badge>}
+              {saveSuccess  && <Badge variant="outline" className="text-xs text-primary border-border"><CheckCircle2 className="w-3 h-3 mr-1" />salvo!</Badge>}
               <Button
                 variant="ghost" size="sm" onClick={() => setShowVersions((v) => !v)}
                 className="text-xs h-7 gap-1 text-muted-foreground"
@@ -708,7 +708,7 @@ export default function ConfigureAgentPage() {
           </div>
 
           {showVersions && (
-            <div className="border border-border rounded-xl bg-muted/30 max-h-44 overflow-y-auto flex-shrink-0">
+            <div className="border border-border rounded-lg bg-muted/30 max-h-44 overflow-y-auto flex-shrink-0">
               {versions.length === 0
                 ? <p className="text-xs text-muted-foreground p-3">Nenhuma versão salva ainda.</p>
                 : <div className="divide-y divide-border">
@@ -770,7 +770,7 @@ export default function ConfigureAgentPage() {
           <h1 className="font-semibold text-base truncate">Centro de Comando</h1>
           {(configSaving || configSaved) && (
             <div className={cn("flex items-center gap-1 text-xs px-2 py-0.5 rounded-full transition-colors",
-              configSaved ? "text-emerald-400 bg-emerald-950/40" : "text-muted-foreground"
+              configSaved ? "text-primary bg-secondary" : "text-muted-foreground"
             )}>
               {configSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
               {configSaved ? "salvo" : "salvando..."}
@@ -794,8 +794,8 @@ export default function ConfigureAgentPage() {
         )}
 
         {selectedAgent && (
-          <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-800/50 bg-emerald-950/40 hidden sm:flex">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
+          <Badge variant="outline" className="text-xs text-primary border-border bg-secondary hidden sm:flex">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary mr-1.5" />
             {selectedAgent.displayName}
           </Badge>
         )}
@@ -830,7 +830,7 @@ export default function ConfigureAgentPage() {
                     onClick={() => setActiveModule(m.id)}
                     title={m.label}
                     className={cn(
-                      "w-full flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all",
+                      "w-full flex flex-col items-center gap-1 py-2.5 rounded-lg transition-all",
                       activeModule === m.id
                         ? "bg-primary/15 text-primary"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -858,7 +858,7 @@ export default function ConfigureAgentPage() {
           {/* Chat Configurador */}
           <div className={cn("flex flex-col border-b border-border", mobileView === "test" ? "hidden md:flex md:h-[55%]" : "flex-1 md:h-[55%]")}>
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-card flex-shrink-0">
-              <Bot className="w-4 h-4 text-emerald-400" />
+              <Bot className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">Chat com o Configurador</span>
             </div>
 
@@ -867,13 +867,13 @@ export default function ConfigureAgentPage() {
                 {chatMessages.map((msg, i) => (
                   <div key={i} className={cn("flex gap-2 max-w-full", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
                     <div className={cn("flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs",
-                      msg.role === "user" ? "bg-primary" : "bg-emerald-600")}>
+                      msg.role === "user" ? "bg-primary" : "bg-primary")}>
                       {msg.role === "user" ? <User className="w-3 h-3" /> : <Bot className="w-3 h-3" />}
                     </div>
                     <div className={cn("flex flex-col gap-0.5 max-w-[80%]", msg.role === "user" ? "items-end" : "items-start")}>
-                      <div className={cn("px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap leading-relaxed",
+                      <div className={cn("px-3 py-2 rounded-lg text-sm whitespace-pre-wrap leading-relaxed",
                         msg.role === "user"
-                          ? "bg-primary text-white rounded-tr-sm"
+                          ? "bg-primary text-primary-foreground rounded-tr-sm"
                           : "bg-muted text-foreground rounded-tl-sm"
                       )}>{msg.content}</div>
                       <span className="text-[10px] text-muted-foreground px-1">
@@ -884,10 +884,10 @@ export default function ConfigureAgentPage() {
                 ))}
                 {chatLoading && (
                   <div className="flex gap-2">
-                    <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                       <Bot className="w-3 h-3 text-white" />
                     </div>
-                    <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
+                    <div className="bg-muted rounded-lg rounded-tl-sm px-4 py-3 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:0ms]" />
                       <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:150ms]" />
                       <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:300ms]" />
@@ -917,9 +917,9 @@ export default function ConfigureAgentPage() {
           {/* Quick Test */}
           <div className={cn("flex flex-col bg-background flex-shrink-0", mobileView === "test" ? "flex-1" : "md:flex-1")}>
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-card flex-shrink-0">
-              <FlaskConical className="w-4 h-4 text-violet-400" />
+              <FlaskConical className="w-4 h-4 text-violet-700 dark:text-violet-400" />
               <span className="text-sm font-medium">Teste Rápido</span>
-              {scriptModified && <Badge variant="outline" className="text-xs text-amber-500 border-amber-700/50 ml-1">script local</Badge>}
+              {scriptModified && <Badge variant="outline" className="text-xs text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700/50 ml-1">script local</Badge>}
             </div>
 
             <div className="p-3 flex gap-2 flex-shrink-0">
@@ -938,7 +938,7 @@ export default function ConfigureAgentPage() {
             </div>
 
             {testResult && (
-              <div className="mx-3 mb-3 rounded-xl border border-border bg-card overflow-hidden flex-shrink-0">
+              <div className="mx-3 mb-3 rounded-lg border border-border bg-card overflow-hidden flex-shrink-0">
                 <div className="p-3 space-y-1.5">
                   <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Como o agente responderia:</p>
                   {testResult.balloons.map((balloon, i) => (
@@ -950,12 +950,12 @@ export default function ConfigureAgentPage() {
                 {testResult.ruleActivated && (
                   <div className="px-3 py-2 border-t border-border">
                     <p className="text-[11px] text-muted-foreground">
-                      <span className="font-medium text-violet-400">Regra ativada:</span> {testResult.ruleActivated}
+                      <span className="font-medium text-violet-700 dark:text-violet-400">Regra ativada:</span> {testResult.ruleActivated}
                     </p>
                   </div>
                 )}
                 <div className="flex gap-2 p-2 border-t border-border">
-                  <Button size="sm" onClick={handleSaveScript} className="flex-1 h-8 text-xs gap-1 bg-emerald-700 hover:bg-emerald-600">
+                  <Button size="sm" onClick={handleSaveScript} className="flex-1 h-8 text-xs gap-1 bg-primary hover:bg-primary/90">
                     <CheckCircle2 className="w-3.5 h-3.5" />Salvar script
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => setTestResult(null)} className="h-8 text-xs gap-1">
@@ -976,7 +976,7 @@ export default function ConfigureAgentPage() {
 function ModuleHeader({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) {
   return (
     <div className="flex items-start gap-3 mb-1">
-      <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+      <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0 mt-0.5">
         <Icon className="w-4 h-4 text-primary" />
       </div>
       <div>

@@ -225,7 +225,7 @@ export function ContasTab() {
                         onClick={() => setExcluindo(conta)}
                         title="Excluir conta"
                         aria-label={`Excluir ${conta.descricao}`}
-                        className="text-red-500 hover:text-red-500"
+                        className="text-red-600 dark:text-red-400 hover:text-red-500"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>

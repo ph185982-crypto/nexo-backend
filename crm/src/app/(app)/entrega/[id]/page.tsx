@@ -30,14 +30,14 @@ function CartaoEntrega({ c, onAbrir, sobreposto }: { c: Cartao; onAbrir?: () => 
   const feitos = c.checklist.filter((i) => i.feito).length;
   return (
     <div ref={setNodeRef} {...listeners} {...attributes} onClick={onAbrir}
-      className={`mb-2 cursor-grab rounded-[10px] border border-linha bg-superficie px-3 py-2.5 active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${sobreposto ? "rotate-1 shadow-xl" : ""}`}>
+      className={`mb-2 cursor-grab rounded-md border border-areia bg-superficie px-3 py-2.5 active:cursor-grabbing ${isDragging ? "opacity-40" : ""} ${sobreposto ? "rotate-1 border-marinho" : ""}`}>
       <div className="mb-1.5 flex flex-wrap gap-1">
-        <span className="rounded-full bg-azul-8 px-2 py-0.5 text-[10px] font-semibold text-azul">{ROTULO_PILAR[c.pilar]}</span>
-        {c.cliente && <span className="rounded-full border border-linha px-2 py-0.5 text-[10px] font-semibold text-cinza">Cliente</span>}
+        <span className="rounded-full bg-areia px-2 py-0.5 text-[10px] font-semibold text-marinho">{ROTULO_PILAR[c.pilar]}</span>
+        {c.cliente && <span className="rounded-full border border-areia px-2 py-0.5 text-[10px] font-semibold text-suave">Cliente</span>}
       </div>
-      <p className={`text-[13px] font-semibold leading-tight ${c.coluna === "CONCLUIDO" ? "text-cinza line-through" : ""}`}>{c.titulo}</p>
-      <p className="mt-1.5 flex items-center gap-3 text-[11.5px] text-cinza">
-        {p && <span className={p.atrasado ? "font-bold text-critico" : ""}>{p.atrasado ? "Atrasado · " : ""}{p.texto}</span>}
+      <p className={`text-[13px] font-semibold leading-tight ${c.coluna === "CONCLUIDO" ? "text-suave line-through" : ""}`}>{c.titulo}</p>
+      <p className="mt-1.5 flex items-center gap-3 text-[11.5px] text-suave">
+        {p && <span className={p.atrasado ? "font-bold text-perigo-texto" : ""}>{p.atrasado ? "Atrasado · " : ""}{p.texto}</span>}
         {c.checklist.length > 0 && <span>{feitos}/{c.checklist.length}</span>}
       </p>
     </div>
@@ -47,8 +47,8 @@ function CartaoEntrega({ c, onAbrir, sobreposto }: { c: Cartao; onAbrir?: () => 
 function ColunaEntrega({ coluna, cartoes, onAbrir }: { coluna: Coluna; cartoes: Cartao[]; onAbrir: (c: Cartao) => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: coluna });
   return (
-    <section aria-label={ROTULO_COLUNA[coluna]} className={`w-[250px] flex-none rounded-xl p-2 ${isOver ? "bg-azul-8 ring-2 ring-azul/50" : ""}`}>
-      <h3 className="mb-2 flex items-center justify-between px-1 text-[11px] font-bold uppercase tracking-[0.04em]">{ROTULO_COLUNA[coluna]}<span className="rounded-full border border-linha bg-superficie px-2 py-0.5 text-[11px] font-semibold normal-case">{cartoes.length}</span></h3>
+    <section aria-label={ROTULO_COLUNA[coluna]} className={`w-[250px] flex-none rounded-md p-2 ${isOver ? "bg-areia ring-2 ring-marinho/50" : ""}`}>
+      <h3 className="mb-2 flex items-center justify-between px-1 text-[11px] font-bold uppercase tracking-[0.04em]">{ROTULO_COLUNA[coluna]}<span className="rounded-full border border-areia bg-superficie px-2 py-0.5 text-[11px] font-semibold normal-case">{cartoes.length}</span></h3>
       <div ref={setNodeRef} className="min-h-[100px]">{cartoes.map((c) => <CartaoEntrega key={c.id} c={c} onAbrir={() => onAbrir(c)} />)}</div>
     </section>
   );
@@ -94,40 +94,40 @@ export default function EntregaPage() {
     if (r.ok) router.push("/oportunidades"); else setErro("Não foi possível abrir o upsell");
   };
 
-  if (d === null) return <p className="p-8 text-cinza">Carregando…</p>;
-  if (d === "nao-encontrada") return <p className="p-8 text-cinza">Entrega não encontrada.</p>;
+  if (d === null) return <p className="p-8 text-suave">Carregando…</p>;
+  if (d === "nao-encontrada") return <p className="p-8 text-suave">Entrega não encontrada.</p>;
 
   return (
     <div className="flex h-full flex-col">
       <header className="px-6 pb-2 pt-4">
         <div className="flex flex-wrap items-center gap-3">
-          <button onClick={() => router.push("/entrega")} aria-label="Voltar" className="rounded-lg border border-linha bg-superficie px-2.5 py-1 text-[14px]">‹</button>
+          <button onClick={() => router.push("/entrega")} aria-label="Voltar" className="rounded-md border border-areia bg-superficie px-2.5 py-1 text-[14px]">‹</button>
           <div className="min-w-0">
             <h1 className="truncate text-[20px] font-extrabold leading-tight tracking-tight">{d.contato.nome}</h1>
-            <p className="truncate text-[12px] text-cinza">{d.nome}{d.valorMensal > 0 ? ` · ${moeda(d.valorMensal)}/mês` : ""}</p>
+            <p className="truncate text-[12px] text-suave">{d.nome}{d.valorMensal > 0 ? ` · ${moeda(d.valorMensal)}/mês` : ""}</p>
           </div>
           <SaudeChip rotulo={d.saude.rotulo} nota={d.saude.nota} />
-          <span className="text-[12px] text-cinza">{d.saude.concluidos}/{d.saude.total} concluídos{d.saude.atrasados > 0 && <b className="ml-2 text-critico">{d.saude.atrasados} atrasado(s)</b>}{d.saude.esperandoCliente > 0 && <b className="ml-2 text-grafite">{d.saude.esperandoCliente} esperando o cliente</b>}</span>
+          <span className="text-[12px] text-suave">{d.saude.concluidos}/{d.saude.total} concluídos{d.saude.atrasados > 0 && <b className="ml-2 text-perigo-texto">{d.saude.atrasados} atrasado(s)</b>}{d.saude.esperandoCliente > 0 && <b className="ml-2 text-marinho">{d.saude.esperandoCliente} esperando o cliente</b>}</span>
           <div className="ml-auto flex flex-wrap items-center gap-2 text-[12px]">
-            <label className="flex items-center gap-1.5 font-semibold text-cinza">Status
-              <select value={d.status} onChange={(e) => patch({ status: e.target.value })} className="rounded-lg border border-linha bg-superficie px-2 py-1 text-grafite">{STATUS_ENTREGA.map((s) => <option key={s} value={s}>{ROTULO_STATUS_ENTREGA[s]}</option>)}</select></label>
-            <label className="flex items-center gap-1.5 font-semibold text-cinza">Renovação
-              <input type="date" value={diaIso(d.renovacaoEm)} onChange={(e) => patch({ renovacaoEm: e.target.value || null })} className="rounded-lg border border-linha bg-superficie px-2 py-1 text-grafite" /></label>
+            <label className="flex items-center gap-1.5 font-semibold text-suave">Status
+              <select value={d.status} onChange={(e) => patch({ status: e.target.value })} className="rounded-md border border-areia bg-superficie px-2 py-1 text-marinho">{STATUS_ENTREGA.map((s) => <option key={s} value={s}>{ROTULO_STATUS_ENTREGA[s]}</option>)}</select></label>
+            <label className="flex items-center gap-1.5 font-semibold text-suave">Renovação
+              <input type="date" value={diaIso(d.renovacaoEm)} onChange={(e) => patch({ renovacaoEm: e.target.value || null })} className="rounded-md border border-areia bg-superficie px-2 py-1 text-marinho" /></label>
             <button onClick={upsell} className={botaoSecundario}>Abrir upsell</button>
           </div>
           {(d.concluidaEm || (d.renovacaoOportunidadeId && !d.renovacaoOportunidadeId.startsWith("reservando:"))) && (
-            <p className="w-full text-[12px] text-cinza" role="status">
+            <p className="w-full text-[12px] text-suave" role="status">
               {d.concluidaEm && <>Concluída em {new Date(d.concluidaEm).toLocaleDateString("pt-BR")}. </>}
-              {d.renovacaoOportunidadeId && !d.renovacaoOportunidadeId.startsWith("reservando:") && <>A rotina já abriu a <b className="text-grafite">oportunidade de renovação</b> no funil de vendas, com tarefa para preparar a proposta.</>}
+              {d.renovacaoOportunidadeId && !d.renovacaoOportunidadeId.startsWith("reservando:") && <>A rotina já abriu a <b className="text-marinho">oportunidade de renovação</b> no funil de vendas, com tarefa para preparar a proposta.</>}
             </p>
           )}
         </div>
-        {erro && <p role="alert" className="mt-2 text-[13px] font-semibold text-critico">{erro}</p>}
-        <div role="tablist" className="mt-3 flex items-center gap-5 border-b border-linha">
-          {([["cartoes", "Cartões"], ["diagnostico", "Diagnóstico"]] as const).map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-azul text-azul" : "border-transparent text-cinza"}`}>{r}</button>)}
+        {erro && <p role="alert" className="mt-2 text-[13px] font-semibold text-perigo-texto">{erro}</p>}
+        <div role="tablist" className="mt-3 flex items-center gap-5 border-b border-areia">
+          {([["cartoes", "Cartões"], ["diagnostico", "Diagnóstico"]] as const).map(([k, r]) => <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)} className={`-mb-px border-b-2 py-2 text-[13px] font-semibold ${aba === k ? "border-laranja text-marinho" : "border-transparent text-suave"}`}>{r}</button>)}
           {aba === "cartoes" && (
             <div className="ml-auto flex items-center gap-2 pb-1">
-              <select value={pilar} onChange={(e) => setPilar(e.target.value as Pilar | "")} aria-label="Filtrar por pilar" className="rounded-lg border border-linha bg-superficie px-2 py-1 text-[12px]"><option value="">Todos os pilares</option>{PILARES.map((p) => <option key={p} value={p}>{ROTULO_PILAR[p]}</option>)}</select>
+              <select value={pilar} onChange={(e) => setPilar(e.target.value as Pilar | "")} aria-label="Filtrar por pilar" className="rounded-md border border-areia bg-superficie px-2 py-1 text-[12px]"><option value="">Todos os pilares</option>{PILARES.map((p) => <option key={p} value={p}>{ROTULO_PILAR[p]}</option>)}</select>
               <button onClick={() => setEditando("novo")} className={botaoPrimario}>Novo cartão</button>
             </div>
           )}
@@ -155,7 +155,7 @@ function Diagnostico({ diagnostico, onSalvar }: { diagnostico: Record<string, st
   const [salvo, setSalvo] = useState(false);
   return (
     <div className="flex-1 overflow-auto px-6 pb-8 pt-4">
-      <p className="mb-4 max-w-2xl text-[13px] text-cinza">O que foi encontrado em cada pilar. Escreva o problema, a evidência e a decisão necessária; os cartões da entrega saem daqui.</p>
+      <p className="mb-4 max-w-2xl text-[13px] text-suave">O que foi encontrado em cada pilar. Escreva o problema, a evidência e a decisão necessária; os cartões da entrega saem daqui.</p>
       <div className="grid max-w-5xl grid-cols-1 gap-4 lg:grid-cols-2">
         {PILARES.map((p) => (
           <label key={p} className="block"><span className="mb-1 block font-titulo text-[13px] font-bold">{ROTULO_PILAR[p]}</span>
@@ -187,16 +187,16 @@ function EditarCartao({ entregaId, cartao, onFechar, onSalvo }: { entregaId: str
   return (
     <Dialogo titulo={cartao ? "Editar cartão" : "Novo cartão"} onFechar={onFechar}>
       <form onSubmit={salvar} className="space-y-3">
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Título</span><input required maxLength={200} value={titulo} onChange={(e) => setTitulo(e.target.value)} className={campo} /></label>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Título</span><input required maxLength={200} value={titulo} onChange={(e) => setTitulo(e.target.value)} className={campo} /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Pilar</span><select value={pilar} onChange={(e) => setPilar(e.target.value as Pilar)} className={campo}>{PILARES.map((p) => <option key={p} value={p}>{ROTULO_PILAR[p]}</option>)}</select></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Data alvo</span><input type="date" value={dataAlvo} onChange={(e) => setDataAlvo(e.target.value)} className={campo} /></label>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Pilar</span><select value={pilar} onChange={(e) => setPilar(e.target.value as Pilar)} className={campo}>{PILARES.map((p) => <option key={p} value={p}>{ROTULO_PILAR[p]}</option>)}</select></label>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Data alvo</span><input type="date" value={dataAlvo} onChange={(e) => setDataAlvo(e.target.value)} className={campo} /></label>
         </div>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Descrição</span><textarea rows={3} value={descricao} onChange={(e) => setDescricao(e.target.value)} className={campo} /></label>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Checklist (um item por linha)</span><textarea rows={3} value={checklist} onChange={(e) => setChecklist(e.target.value)} className={campo} /></label>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Descrição</span><textarea rows={3} value={descricao} onChange={(e) => setDescricao(e.target.value)} className={campo} /></label>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Checklist (um item por linha)</span><textarea rows={3} value={checklist} onChange={(e) => setChecklist(e.target.value)} className={campo} /></label>
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex items-center justify-between pt-1">
-          {cartao ? <button type="button" onClick={excluir} className="text-[13px] font-semibold text-critico">Excluir</button> : <span />}
+          {cartao ? <button type="button" onClick={excluir} className="text-[13px] font-semibold text-perigo-texto">Excluir</button> : <span />}
           <div className="flex gap-2"><button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button><button type="submit" className={botaoPrimario} disabled={!titulo.trim()}>Salvar</button></div>
         </div>
       </form>

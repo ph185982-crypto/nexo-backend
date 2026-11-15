@@ -176,9 +176,9 @@ export function ReceitasTab() {
       {/* Totais do filtro */}
       {totais && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Resumo titulo="Em aberto" v={totais.abertas} cor="text-orange-500" />
-          <Resumo titulo="Atrasadas" v={totais.atrasadas} cor="text-red-500" />
-          <Resumo titulo="Recebidas" v={totais.recebidas} cor="text-green-500" />
+          <Resumo titulo="Em aberto" v={totais.abertas} cor="text-orange-700 dark:text-orange-400" />
+          <Resumo titulo="Atrasadas" v={totais.atrasadas} cor="text-red-600 dark:text-red-400" />
+          <Resumo titulo="Recebidas" v={totais.recebidas} cor="text-green-700 dark:text-green-400" />
           <Resumo titulo="Perdidas" v={totais.perdidas} cor="text-muted-foreground" />
         </div>
       )}
@@ -206,7 +206,7 @@ export function ReceitasTab() {
                     {r.motivo_perda && r.status === "perdida" && <p className="text-xs text-muted-foreground">Motivo: {r.motivo_perda}</p>}
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-semibold text-green-500">{BRL.format(r.valor)}</p>
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-400">{BRL.format(r.valor)}</p>
                     <StatusReceitaBadge r={r} />
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export function ReceitasTab() {
                           <div className="text-xs text-muted-foreground">Motivo: {r.motivo_perda}</div>
                         )}
                       </td>
-                      <td className="p-3 text-right font-medium text-green-500 whitespace-nowrap">{BRL.format(r.valor)}</td>
+                      <td className="p-3 text-right font-medium text-green-700 dark:text-green-400 whitespace-nowrap">{BRL.format(r.valor)}</td>
                       <td className="p-3 text-muted-foreground whitespace-nowrap">{fmtData(r.data_prevista)}</td>
                       <td className="p-3 text-muted-foreground">{r.cliente || "-"}</td>
                       <td className="p-3 text-muted-foreground">{formatTipoNegocio(r.tipo_negocio ?? "pessoal")}</td>
@@ -290,12 +290,12 @@ export function ReceitasTab() {
                             {c.duracao_meses ? `${c.duracao_meses} meses` : "prazo indeterminado"}
                           </p>
                         </div>
-                        <span className={cn("text-[11px] font-semibold px-2 py-0.5 rounded-full", c.status === "ativo" ? "bg-green-500/10 text-green-600" : "bg-muted text-muted-foreground")}>
+                        <span className={cn("text-[11px] font-semibold px-2 py-0.5 rounded-full", c.status === "ativo" ? "bg-green-500/10 text-green-700 dark:text-green-400" : "bg-muted text-muted-foreground")}>
                           {c.status === "ativo" ? "Ativo" : "Encerrado"}
                         </span>
                       </div>
                       <p className="text-sm">
-                        <span className="font-semibold text-green-500">{BRL.format(c.valor_parcela)}</span>
+                        <span className="font-semibold text-green-700 dark:text-green-400">{BRL.format(c.valor_parcela)}</span>
                         <span className="text-muted-foreground"> / mês · vence dia {c.dia_vencimento}</span>
                         {c.valor_total ? <span className="text-muted-foreground"> · total {BRL.format(c.valor_total)}</span> : null}
                       </p>
@@ -312,7 +312,7 @@ export function ReceitasTab() {
                           <Pencil className="w-3.5 h-3.5" /> Editar valores
                         </Button>
                         {c.status === "ativo" && (
-                          <Button variant="outline" size="sm" disabled={ocupado === c.id} onClick={() => void encerrar(c)} className="gap-1 text-red-500">
+                          <Button variant="outline" size="sm" disabled={ocupado === c.id} onClick={() => void encerrar(c)} className="gap-1 text-red-600 dark:text-red-400">
                             <ThumbsDown className="w-3.5 h-3.5" /> Encerrar contrato
                           </Button>
                         )}
@@ -360,10 +360,10 @@ function AcoesReceita({ r, ocupado, onAgir, onPerda, onEditar, rotulos }: {
           <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onEditar(r)} title="Editar valor, data ou descrição" className="gap-1">
             <Pencil className="w-4 h-4" /> <span className={rotulos ? "" : "hidden xl:inline"}>Editar</span>
           </Button>
-          <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onAgir(r.id, "confirmar")} title="Confirmar recebimento" className="gap-1 text-green-600 hover:text-green-600">
+          <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onAgir(r.id, "confirmar")} title="Confirmar recebimento" className="gap-1 text-green-700 dark:text-green-400 hover:text-green-600">
             <CheckCircle2 className="w-4 h-4" /> <span className={rotulos ? "" : "hidden xl:inline"}>Receber</span>
           </Button>
-          <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onPerda(r)} title="Dar perda nesta receita" className="gap-1 text-red-500 hover:text-red-500">
+          <Button variant="ghost" size="sm" disabled={ocupado} onClick={() => onPerda(r)} title="Dar perda nesta receita" className="gap-1 text-red-600 dark:text-red-400 hover:text-red-500">
             <ThumbsDown className="w-4 h-4" /> Perda
           </Button>
         </>
@@ -597,7 +597,7 @@ function NovaReceitaForm({ onCriada, onErro }: { onCriada: (msg: string) => void
                   <p className="text-sm font-medium text-foreground mb-2">
                     {previa.parcelas.length} parcela(s) serão geradas
                     {mesesEfetivos == null && " — depois o sistema continua gerando mês a mês, sempre 12 meses à frente"} ·{" "}
-                    <span className="text-green-500">{BRL.format(totalPrevia)}</span>
+                    <span className="text-green-700 dark:text-green-400">{BRL.format(totalPrevia)}</span>
                     {mesesEfetivos == null && " nos primeiros 12 meses"}
                   </p>
                   <div className="max-h-44 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-1 text-xs text-muted-foreground">

@@ -1,6 +1,6 @@
 /**
  * GET /api/sdr/bootstrap?secret=<CRON_SECRET>
- * Configura a org Nexo Brasil SDR no banco usando as variáveis de ambiente
+ * Configura a org Avanteza SDR no banco usando as variáveis de ambiente
  * já presentes na Vercel. Idempotente — seguro chamar várias vezes.
  */
 
@@ -126,6 +126,6 @@ export async function GET(req: NextRequest) {
     orgId: org.id,
     providerId: provider.id,
     phoneNumberId,
-    message: "SDR Nexo Brasil configurado ✓",
+    message: "SDR Avanteza configurado ✓",
   });
 }

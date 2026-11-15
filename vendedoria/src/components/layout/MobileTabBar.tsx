@@ -20,8 +20,7 @@ export function MobileTabBar() {
     <nav className={cn(
       "mobile-tab-bar fixed bottom-0 left-0 right-0 z-50 md:hidden",
       "bg-card/85 backdrop-blur-xl border-t border-border",
-      "flex safe-area-bottom",
-      "shadow-[0_-1px_12px_rgba(0,0,0,0.06)]"
+      "flex safe-area-bottom"
     )}>
       {tabs.map((t) => {
         const active = pathname.startsWith(t.href);

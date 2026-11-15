@@ -53,6 +53,36 @@ Acesse: http://localhost:3000
 
 **Credenciais padrão:** `admin@vendedoria.com` / `admin123`
 
+## Login único (Avanteza ID)
+
+A tela de login tem "Entrar com Avanteza" (ação principal), que leva à Central (`AVANTEZA_HUB_URL`, padrão
+`https://app.avanteza.com.br`) em `/sso/authorize?app=vendas&return=<caminho>`. A Central devolve em
+`/api/sso/callback?token=<JWT>`; a rota chama `signIn("avanteza-sso", { token })` e o segundo provider Credentials
+do NextAuth (`src/lib/auth/index.ts` → `src/lib/auth/sso.ts`) confere o token com `src/lib/avanteza-sso.ts`
+(ES256, chave pública do JWKS da Central, emissor, `aud = vendas`, validade de 60 s) e acha o usuário pelo e-mail ou
+cria na primeira entrada (`admin` → ADMIN; os demais → SELLER; senha aleatória que ninguém vê). Quem já existe não
+muda de papel. A sessão é a mesma do login por senha (JWT do NextAuth), e e-mail e senha continuam como reserva.
+O cabeçalho tem o atalho "Central" (`/api/sso/central`). Testes: `tests/sso.test.ts`.
+
+## Identidade visual (Avanteza v2.0)
+
+- **Paleta**: marinho `#0B1B33` (texto, barra lateral, botão padrão), creme `#F5F0E6` (fundo), areia `#EAD9C2` (bordas e
+  pílulas secundárias), laranja `#FF6A1F` (só ação principal, foco e destaque — hover `#E85A12`), branco nos cartões,
+  texto secundário `#55637A`, perigo `#DC2626`. Os valores vivem em `src/app/globals.css` (blocos `:root` e `.dark`).
+- **Tema**: o **claro é o padrão**. O escuro continua disponível pelo botão do cabeçalho (fundo marinho, superfícies
+  `#132A4C`, texto creme; o botão padrão inverte para creme com texto marinho).
+- **Fonte**: Manrope em tudo. **Forma**: raio de 6px (`rounded-lg`/`rounded-md`; pílula = `rounded-full`), bordas de 1px,
+  sem sombras e sem degradês.
+- **Como usar nos componentes**: tokens do tema (`bg-card`, `bg-background`, `text-foreground`, `text-muted-foreground`,
+  `border-border`, `bg-primary text-primary-foreground`, `bg-secondary`), nunca `bg-white`, `gray-*`/`slate-*` ou hex
+  solto. Ação principal da tela: `<Button variant="destaque">` (laranja com **texto marinho** — texto claro sobre laranja
+  não passa em contraste). Superfícies que são marinho nos dois temas usam `bg-marinho text-creme`.
+- **Cores de estado** (verde, vermelho, âmbar, azul do Tailwind) continuam para status; no claro use o tom 700 no texto
+  (`text-green-700 dark:text-green-400`).
+- **Logotipo**: `src/components/ui/logo.tsx` ("avanteza" com o quadrado laranja no lugar do ponto). Nome do app na
+  interface: "Vendedor IA · Avanteza".
+- `tests/marca.test.ts` confere paleta, contraste AA, tema padrão, sombras, degradês, cantos e restos da identidade anterior.
+
 ## Estrutura do Projeto
 
 ```

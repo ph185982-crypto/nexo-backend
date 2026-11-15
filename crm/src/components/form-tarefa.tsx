@@ -32,21 +32,21 @@ export function NovaTarefa({ oportunidadeId, onFechar, onCriada }: { oportunidad
   return (
     <Dialogo titulo="Nova tarefa" onFechar={onFechar}>
       <form onSubmit={salvar} className="space-y-3">
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Título</span>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Título</span>
           <input required maxLength={200} value={titulo} onChange={(e) => setTitulo(e.target.value)} className={campo} placeholder="Ex.: ligar para o dono e confirmar a proposta" /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Tipo</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Tipo</span>
             <select value={tipo} onChange={(e) => setTipo(e.target.value)} className={campo}>{Object.entries(ROTULO_TIPO_TAREFA).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Prioridade</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Prioridade</span>
             <select value={prioridade} onChange={(e) => setPrioridade(e.target.value)} className={campo}>{Object.entries(ROTULO_PRIORIDADE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Prazo</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Prazo</span>
             <input type="datetime-local" value={prazo} onChange={(e) => setPrazo(e.target.value)} className={campo} /></label>
-          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Repetir</span>
+          <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Repetir</span>
             <select value={recorrencia} onChange={(e) => setRecorrencia(e.target.value)} className={campo}><option value="">Não repete</option>{Object.entries(ROTULO_RECORRENCIA).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
         </div>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Checklist (um item por linha)</span>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Checklist (um item por linha)</span>
           <textarea rows={3} value={checklist} onChange={(e) => setChecklist(e.target.value)} className={campo} /></label>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2 pt-1">
           <button type="button" className={botaoSecundario} onClick={onFechar}>Cancelar</button>
           <button type="submit" className={botaoPrimario} disabled={salvando || !titulo.trim()}>{salvando ? "Criando…" : "Criar"}</button>

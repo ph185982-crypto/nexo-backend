@@ -23,7 +23,7 @@ const ETAPA_LABEL: Record<string, string> = {
 
 function MetricCard({ icon: Icon, label, value, sub, color }: { icon: React.ElementType; label: string; value: string; sub?: string; color: string }) {
   return (
-    <div className="bg-card rounded-xl border p-4 flex items-start gap-3">
+    <div className="bg-card rounded-lg border p-4 flex items-start gap-3">
       <div className={cn("p-2 rounded-lg shrink-0", color)}>
         <Icon className="w-5 h-5" />
       </div>
@@ -82,17 +82,17 @@ export default function DashboardPage() {
       {/* Métricas */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <MetricCard icon={Users} label="Leads hoje" value={String(m?.leadsToday ?? 0)} color="bg-blue-50 text-blue-600" />
-        <MetricCard icon={TrendingUp} label="Ativos agora" value={String(m?.ativosAgora ?? 0)} color="bg-green-50 text-green-600" />
+        <MetricCard icon={TrendingUp} label="Ativos agora" value={String(m?.ativosAgora ?? 0)} color="bg-green-50 text-green-700 dark:text-green-400" />
         <MetricCard icon={ShoppingBag} label="Pedidos hoje" value={String(m?.pedidosHoje ?? 0)} color="bg-purple-50 text-purple-600" />
-        <MetricCard icon={BarChart2} label="Conversão" value={`${m?.taxaConversao ?? 0}%`} color="bg-orange-50 text-orange-600" />
-        <MetricCard icon={DollarSign} label="Receita est." value={`R$${((m?.receitaEstimada ?? 0)).toLocaleString("pt-BR",{minimumFractionDigits:2})}`} color="bg-emerald-50 text-emerald-600" />
+        <MetricCard icon={BarChart2} label="Conversão" value={`${m?.taxaConversao ?? 0}%`} color="bg-orange-50 text-orange-700 dark:text-orange-400" />
+        <MetricCard icon={DollarSign} label="Receita est." value={`R$${((m?.receitaEstimada ?? 0)).toLocaleString("pt-BR",{minimumFractionDigits:2})}`} color="bg-secondary text-primary" />
       </div>
 
       {/* Alertas */}
       {(data?.alertas?.length ?? 0) > 0 && (
-        <div className="bg-card rounded-xl border p-4">
+        <div className="bg-card rounded-lg border p-4">
           <h2 className="font-semibold text-sm mb-3 flex items-center gap-2 text-[var(--texto)]">
-            <AlertCircle className="w-4 h-4 text-amber-500" />
+            <AlertCircle className="w-4 h-4 text-amber-700 dark:text-amber-400" />
             Atenção necessária ({data!.alertas.length})
           </h2>
           <div className="space-y-2">
@@ -115,7 +115,7 @@ export default function DashboardPage() {
       )}
 
       {/* Funil */}
-      <div className="bg-card rounded-xl border p-4">
+      <div className="bg-card rounded-lg border p-4">
         <h2 className="font-semibold text-sm mb-3 text-[var(--texto)]">Funil de conversão</h2>
         <div className="space-y-2">
           {(data?.funil ?? []).filter(f => f.count > 0 || f.etapa !== "PERDIDO").map((f) => (
@@ -135,7 +135,7 @@ export default function DashboardPage() {
 
       {/* Gráfico 7d — simples sem deps externas */}
       {(data?.conversao7d?.length ?? 0) > 0 && (
-        <div className="bg-card rounded-xl border p-4">
+        <div className="bg-card rounded-lg border p-4">
           <h2 className="font-semibold text-sm mb-3 text-[var(--texto)]">Conversão — últimos 7 dias</h2>
           <div className="flex items-end gap-2 h-24">
             {data!.conversao7d.map((d) => (

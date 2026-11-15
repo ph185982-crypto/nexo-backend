@@ -41,7 +41,7 @@ export function EditarOportunidade({ c, onFechar, onSalvo }: { c: CartaoDTO; onF
     if (falha) setErro(falha); else onSalvo();
   };
 
-  const rotulo = "mb-1 block text-[12px] font-semibold text-cinza";
+  const rotulo = "mb-1 block text-[12px] font-semibold text-suave";
   return (
     <Dialogo titulo="Editar oportunidade" onFechar={onFechar}>
       <form onSubmit={enviar} className="space-y-3">
@@ -50,7 +50,7 @@ export function EditarOportunidade({ c, onFechar, onSalvo }: { c: CartaoDTO; onF
           <label className="block"><span className={rotulo}>Valor único (R$)</span><input inputMode="decimal" disabled={comProdutos} value={f.valorUnico} onChange={set("valorUnico")} className={`${campo} disabled:opacity-60`} /></label>
           <label className="block"><span className={rotulo}>Valor mensal (R$)</span><input inputMode="decimal" disabled={comProdutos} value={f.valorMensal} onChange={set("valorMensal")} className={`${campo} disabled:opacity-60`} /></label>
         </div>
-        {comProdutos && <p className="text-[11.5px] text-cinza">Os valores vêm da aba Produtos.</p>}
+        {comProdutos && <p className="text-[11.5px] text-suave">Os valores vêm da aba Produtos.</p>}
         <div className="grid grid-cols-2 gap-2">
           <label className="block"><span className={rotulo}>Probabilidade</span>
             <select value={f.probabilidade} onChange={set("probabilidade")} className={campo}><option value="">—</option>{Object.entries(PROBABILIDADE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
@@ -67,7 +67,7 @@ export function EditarOportunidade({ c, onFechar, onSalvo }: { c: CartaoDTO; onF
           <label className="block"><span className={rotulo}>Origem</span><input maxLength={80} value={f.origem} onChange={set("origem")} className={campo} /></label>
           <label className="block"><span className={rotulo}>Tags (separe por vírgula)</span><input value={f.tags} onChange={set("tags")} className={campo} /></label>
         </div>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2 pt-1">
           <button type="button" onClick={onFechar} className={botaoSecundario}>Cancelar</button>
           <button type="submit" disabled={enviando || !det} className={botaoPrimario}>Salvar</button>
@@ -93,9 +93,9 @@ export function Prorrogar({ c, onFechar, onSalvo }: { c: CartaoDTO; onFechar: ()
   return (
     <Dialogo titulo="Prorrogar" onFechar={onFechar}>
       <form onSubmit={enviar} className="space-y-3">
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Nova data limite</span><input required type="date" value={data} onChange={(e) => setData(e.target.value)} className={campo} /></label>
-        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-cinza">Por quê? (opcional)</span><input maxLength={300} value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: cliente pediu para retomar depois das férias" className={campo} /></label>
-        {erro && <p role="alert" className="text-[13px] font-semibold text-critico">{erro}</p>}
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Nova data limite</span><input required type="date" value={data} onChange={(e) => setData(e.target.value)} className={campo} /></label>
+        <label className="block"><span className="mb-1 block text-[12px] font-semibold text-suave">Por quê? (opcional)</span><input maxLength={300} value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: cliente pediu para retomar depois das férias" className={campo} /></label>
+        {erro && <p role="alert" className="text-[13px] font-semibold text-perigo-texto">{erro}</p>}
         <div className="flex justify-end gap-2"><button type="button" onClick={onFechar} className={botaoSecundario}>Cancelar</button><button type="submit" className={botaoPrimario}>Prorrogar</button></div>
       </form>
     </Dialogo>

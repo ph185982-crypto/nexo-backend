@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
   for (const p of pausados) {
     const enviado = await alertarDono(
       `health-pausa-${p.organizationId}-${hoje}`,
-      `🚨 Alerta NEXO: os disparos estão PAUSADOS (${p.motivoPausa ?? "sem motivo registrado"}). Verifique a tela de Disparo para retomar.`,
+      `🚨 Alerta AVANTEZA: os disparos estão PAUSADOS (${p.motivoPausa ?? "sem motivo registrado"}). Verifique a tela de Disparo para retomar.`,
     );
     if (enviado) alertas.push(`pausa:${p.organizationId}`);
   }
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
   for (const pr of providersRuins) {
     const enviado = await alertarDono(
       `health-provider-${pr.id}-${hoje}`,
-      `🚨 Alerta NEXO: o número WhatsApp ${pr.businessPhoneNumberId} está com status ${pr.status}. Verifique o Meta Business Manager.`,
+      `🚨 Alerta AVANTEZA: o número WhatsApp ${pr.businessPhoneNumberId} está com status ${pr.status}. Verifique o Meta Business Manager.`,
     );
     if (enviado) alertas.push(`provider:${pr.id}`);
   }
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
   if (errosEnvio >= 5) {
     const enviado = await alertarDono(
       `health-erros-envio-${hoje}`,
-      `⚠️ Alerta NEXO: ${errosEnvio} envios de prospecção falharam nas últimas 24h. Possível token expirado ou template rejeitado — confira a tela de Disparo.`,
+      `⚠️ Alerta AVANTEZA: ${errosEnvio} envios de prospecção falharam nas últimas 24h. Possível token expirado ou template rejeitado — confira a tela de Disparo.`,
     );
     if (enviado) alertas.push(`erros_envio:${errosEnvio}`);
   }
@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
   for (const a of agentesSandbox) {
     const enviado = await alertarDono(
       `health-sandbox-${a.id}-${hoje}`,
-      `🚨 Alerta NEXO: o agente "${a.displayName}" está em modo SANDBOX — ele NÃO está respondendo clientes reais no WhatsApp. Se isso não foi proposital, desligue em Configurações do Agente agora.`,
+      `🚨 Alerta AVANTEZA: o agente "${a.displayName}" está em modo SANDBOX — ele NÃO está respondendo clientes reais no WhatsApp. Se isso não foi proposital, desligue em Configurações do Agente agora.`,
     );
     if (enviado) alertas.push(`sandbox:${a.id}`);
   }
@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
   if (mensagensFalhas >= 3) {
     const enviado = await alertarDono(
       `health-msg-falhas-${hoje}`,
-      `⚠️ Alerta NEXO: ${mensagensFalhas} respostas da IA falharam ao enviar pro WhatsApp nas últimas 24h. Confira o token/conexão do número.`,
+      `⚠️ Alerta AVANTEZA: ${mensagensFalhas} respostas da IA falharam ao enviar pro WhatsApp nas últimas 24h. Confira o token/conexão do número.`,
     );
     if (enviado) alertas.push(`msg_falhas:${mensagensFalhas}`);
   }

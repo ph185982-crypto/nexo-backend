@@ -29,37 +29,37 @@ export function ResumoIa({ oportunidadeId, ultimaAtividadeEm }: { oportunidadeId
 
   const desatualizado = resumo && new Date(ultimaAtividadeEm) > new Date(resumo.geradoEm);
   return (
-    <section className="mx-5 mt-4 rounded-xl border border-linha p-3.5" aria-label="Resumo da IA">
+    <section className="mx-5 mt-4 rounded-md border border-areia p-3.5" aria-label="Resumo da IA">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-[13px] font-extrabold">Resumo da IA</h3>
         {resumo !== undefined && (
-          <button onClick={gerar} disabled={gerando} className="text-[12px] font-bold text-azul disabled:opacity-50">{gerando ? "Gerando…" : resumo ? "Atualizar" : "Gerar"}</button>
+          <button onClick={gerar} disabled={gerando} className="text-[12px] font-bold text-marinho disabled:opacity-50">{gerando ? "Gerando…" : resumo ? "Atualizar" : "Gerar"}</button>
         )}
       </div>
-      {resumo === undefined && <p className="mt-1.5 text-[12px] text-cinza">Carregando…</p>}
-      {resumo === null && !gerando && <p className="mt-1.5 text-[12px] text-cinza">Lê interações, conversas, reuniões e combinados e diz em que pé está, o que fazer e o que pode dar errado.</p>}
+      {resumo === undefined && <p className="mt-1.5 text-[12px] text-suave">Carregando…</p>}
+      {resumo === null && !gerando && <p className="mt-1.5 text-[12px] text-suave">Lê interações, conversas, reuniões e combinados e diz em que pé está, o que fazer e o que pode dar errado.</p>}
       {resumo && (
         <div className={gerando ? "opacity-50" : ""}>
           <p className="mt-1.5 text-[13px] leading-relaxed">{resumo.resumo}</p>
           {resumo.proximosPassos.length > 0 && (
             <>
-              <p className="mt-2.5 text-[11px] font-bold uppercase tracking-[0.04em] text-cinza">Próximos passos</p>
+              <p className="mt-2.5 text-[11px] font-bold uppercase tracking-[0.04em] text-suave">Próximos passos</p>
               <ol className="mt-1 list-decimal space-y-1 pl-4 text-[12.5px]">{resumo.proximosPassos.map((p) => <li key={p}>{p}</li>)}</ol>
             </>
           )}
           {resumo.riscos.length > 0 && (
             <>
-              <p className="mt-2.5 text-[11px] font-bold uppercase tracking-[0.04em] text-cinza">Riscos</p>
-              <ul className="mt-1 space-y-1 text-[12.5px]">{resumo.riscos.map((r) => <li key={r} className="flex gap-1.5"><i className="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-critico" aria-hidden />{r}</li>)}</ul>
+              <p className="mt-2.5 text-[11px] font-bold uppercase tracking-[0.04em] text-suave">Riscos</p>
+              <ul className="mt-1 space-y-1 text-[12.5px]">{resumo.riscos.map((r) => <li key={r} className="flex gap-1.5"><i className="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-perigo" aria-hidden />{r}</li>)}</ul>
             </>
           )}
-          <p className="mt-2.5 text-[11px] text-cinza">
+          <p className="mt-2.5 text-[11px] text-suave">
             {TEMPERATURA[resumo.temperatura] ?? resumo.temperatura} · gerado {dataHora(resumo.geradoEm)}
-            {desatualizado && <span className="font-bold text-grafite"> · há atividade mais nova</span>}
+            {desatualizado && <span className="font-bold text-marinho"> · há atividade mais nova</span>}
           </p>
         </div>
       )}
-      {erro && <p role="alert" className="mt-2 text-[12px] font-semibold text-critico">{erro}</p>}
+      {erro && <p role="alert" className="mt-2 text-[12px] font-semibold text-perigo-texto">{erro}</p>}
     </section>
   );
 }
@@ -67,8 +67,8 @@ export function ResumoIa({ oportunidadeId, ultimaAtividadeEm }: { oportunidadeId
 /** Faixa no topo da ficha quando a oportunidade aberta está parada há 14 dias ou mais. */
 export function AlertaParada({ dias }: { dias: number }) {
   return (
-    <div role="status" className="mx-5 mt-3 flex items-start gap-2.5 rounded-xl bg-laranja px-3.5 py-2.5 text-grafite">
-      <i className="mt-1.5 h-2 w-2 flex-none rounded-full bg-grafite" aria-hidden />
+    <div role="status" className="mx-5 mt-3 flex items-start gap-2.5 rounded-md bg-laranja px-3.5 py-2.5 text-marinho">
+      <i className="mt-1.5 h-2 w-2 flex-none rounded-full bg-marinho" aria-hidden />
       <p className="text-[12.5px]"><b>Oportunidade parada.</b> Sem atividade há {dias} dias. Registre um contato, agende o próximo passo ou encerre com motivo.</p>
     </div>
   );

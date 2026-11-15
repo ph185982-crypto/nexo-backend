@@ -31,18 +31,18 @@ export const ETAPAS = [
 export type EtapaId = (typeof ETAPAS)[number]["id"] | "encerrado";
 
 export const STATUS_INFO: Record<StatusProspect, { label: string; cor: string; etapa: EtapaId }> = {
-  NOVO:             { label: "Nova",             cor: "bg-slate-500/10 text-slate-600 dark:text-slate-300",   etapa: "qualificar" },
+  NOVO:             { label: "Nova",             cor: "bg-muted text-muted-foreground",   etapa: "qualificar" },
   ENRIQUECIDO:      { label: "Enriquecida",      cor: "bg-blue-500/10 text-blue-600 dark:text-blue-300",      etapa: "qualificar" },
   PONTUADO:         { label: "Pontuada",         cor: "bg-violet-500/10 text-violet-600 dark:text-violet-300", etapa: "qualificar" },
-  ANALISADO:        { label: "Aguardando revisão", cor: "bg-amber-500/10 text-amber-600 dark:text-amber-300", etapa: "revisar" },
-  APROVADO:         { label: "Aprovada",         cor: "bg-green-500/10 text-green-600 dark:text-green-300",   etapa: "abordar" },
-  ERRO_ENVIO:       { label: "Falha no envio",   cor: "bg-orange-500/10 text-orange-600 dark:text-orange-300", etapa: "abordar" },
-  ABORDADO:         { label: "Abordada",         cor: "bg-teal-500/10 text-teal-600 dark:text-teal-300",      etapa: "conversando" },
-  RESPONDEU:        { label: "Respondeu",        cor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-300",      etapa: "conversando" },
+  ANALISADO:        { label: "Aguardando revisão", cor: "bg-amber-500/10 text-amber-700 dark:text-amber-300", etapa: "revisar" },
+  APROVADO:         { label: "Aprovada",         cor: "bg-green-500/10 text-green-700 dark:text-green-300",   etapa: "abordar" },
+  ERRO_ENVIO:       { label: "Falha no envio",   cor: "bg-orange-500/10 text-orange-700 dark:text-orange-300", etapa: "abordar" },
+  ABORDADO:         { label: "Abordada",         cor: "bg-teal-500/10 text-teal-700 dark:text-teal-300",      etapa: "conversando" },
+  RESPONDEU:        { label: "Respondeu",        cor: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",      etapa: "conversando" },
   QUALIFICADO:      { label: "Qualificada",      cor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-300", etapa: "ganhos" },
   REUNIAO_AGENDADA: { label: "Reunião agendada", cor: "bg-primary/10 text-primary",                          etapa: "ganhos" },
   DESCARTADO:       { label: "Descartada",       cor: "bg-red-500/10 text-red-600 dark:text-red-300",         etapa: "encerrado" },
-  PERDIDO:          { label: "Perdida",          cor: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-300",      etapa: "encerrado" },
+  PERDIDO:          { label: "Perdida",          cor: "bg-muted text-muted-foreground",      etapa: "encerrado" },
 };
 
 export function infoStatus(status: string) {

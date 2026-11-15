@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
       saldo: { atual: saldo, anterior: saldoAnt, variacaoPct: variacaoPct(saldo, saldoAnt) },
     };
 
-    // ── Divisão Nexo × Pessoal (sempre os dois blocos, independente do filtro) ──
+    // ── Divisão Avanteza × Pessoal (sempre os dois blocos, independente do filtro) ──
     // Receitas previstas do período agrupadas por negócio/status
     const previstasRows = await prisma.receitaPrevistaMax.groupBy({
       by: ["tipo_negocio", "status"],

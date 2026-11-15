@@ -69,21 +69,21 @@ function HealthBadge({ lastActivityAt }: { lastActivityAt?: string }) {
   if (dias === null) return null;
   if (dias <= 14) {
     return (
-      <Badge className="bg-green-500/10 text-green-400 border-green-500/20 gap-1">
+      <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20 gap-1">
         Contato recente
       </Badge>
     );
   }
   if (dias <= 30) {
     return (
-      <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 gap-1">
+      <Badge className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20 gap-1">
         <Clock className="w-3 h-3" />
         {dias}d sem contato
       </Badge>
     );
   }
   return (
-    <Badge className="bg-red-500/10 text-red-400 border-red-500/20 gap-1">
+    <Badge className="bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20 gap-1">
       <AlertCircle className="w-3 h-3" />
       {dias}d sem contato — falar com o cliente
     </Badge>
@@ -93,14 +93,14 @@ function HealthBadge({ lastActivityAt }: { lastActivityAt?: string }) {
 function StatusBadge({ status }: { status: "none" | "draft" | "finalized" }) {
   if (status === "finalized")
     return (
-      <Badge className="bg-green-500/10 text-green-400 border-green-500/20 gap-1">
+      <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20 gap-1">
         <CheckCircle2 className="w-3 h-3" />
         Diagnóstico concluído
       </Badge>
     );
   if (status === "draft")
     return (
-      <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 gap-1">
+      <Badge className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20 gap-1">
         <Clock className="w-3 h-3" />
         Em diagnóstico
       </Badge>
@@ -198,12 +198,12 @@ export default function DeliveryPage() {
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
-        <Trophy className="w-5 h-5 text-yellow-400" />
+        <Trophy className="w-5 h-5 text-yellow-700 dark:text-yellow-400" />
         <div>
           <h1 className="text-lg font-semibold">Funil de Entrega</h1>
           <p className="text-xs text-muted-foreground">Clientes ganhos — diagnóstico e plano de ação</p>
         </div>
-        <Badge className="ml-auto bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
+        <Badge className="ml-auto bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20">
           {leads.length} cliente{leads.length !== 1 ? "s" : ""}
         </Badge>
         <Button size="sm" onClick={() => setAdicionarOpen(true)} disabled={!ganhoColumnId}>
@@ -241,7 +241,7 @@ export default function DeliveryPage() {
               return (
                 <div
                   key={lead.id}
-                  className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 hover:bg-muted/40 transition-colors group"
+                  className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 hover:bg-muted/40 transition-colors group"
                 >
                   <Link href={`/crm/delivery/${lead.id}`} className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">

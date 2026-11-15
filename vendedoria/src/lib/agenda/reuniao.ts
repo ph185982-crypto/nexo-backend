@@ -54,7 +54,7 @@ export async function marcarReuniao(p: {
     return { eventoId: existente.id, inicio: p.inicio, label: rotuloSlot(p.inicio), meetLink: existente.googleMeetLink ?? undefined, noGoogle: existente.provider === "GOOGLE" };
   }
 
-  const titulo = `Diagnóstico Nexo — ${p.empresa?.trim() || p.nome}`;
+  const titulo = `Diagnóstico Avanteza — ${p.empresa?.trim() || p.nome}`;
   const google = await criarEventoReuniao({
     nomeNegocio: p.empresa?.trim() || p.nome,
     telefone: p.telefone,

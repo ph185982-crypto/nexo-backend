@@ -1123,7 +1123,7 @@ model Checkout {
   @@index([telefoneCliente])
 }
 
-// ─── ProspectSegment (Nexos Brasil — segmentos de prospecção) ──────────────────
+// ─── ProspectSegment (Avanteza — segmentos de prospecção) ──────────────────
 
 model ProspectSegment {
   id                    String   @id @default(cuid())
@@ -1175,7 +1175,7 @@ model SourcingRun {
   @@index([status, atualizadoEm])
 }
 
-// ─── ProspectLead (B2B Prospecção Nexos Brasil) ────────────────────────────────
+// ─── ProspectLead (B2B Prospecção Avanteza) ────────────────────────────────
 
 model ProspectLead {
   id                    String   @id @default(cuid())

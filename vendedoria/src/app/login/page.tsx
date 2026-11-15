@@ -1,131 +1,28 @@
-"use client";
+import { authorizeUrl, caminhoInterno } from "@/lib/avanteza-sso";
+import { APP_SSO } from "@/lib/auth/sso";
+import { FormLogin } from "./form-login";
 
-import React, { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Bot, Eye, EyeOff, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+export const dynamic = "force-dynamic";
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+// Mensagem curta para a volta do login único que não deu certo (o motivo técnico fica no log do servidor).
+const ERROS: Record<string, string> = {
+  sso: "Não foi possível entrar com a Avanteza. Tente de novo ou use e-mail e senha.",
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+/** O NextAuth manda `callbackUrl` como endereço completo; daqui só sai o caminho (nunca outro site). */
+function caminhoPedido(callbackUrl: string | undefined): string {
+  if (!callbackUrl) return "/";
+  if (callbackUrl.startsWith("/")) return caminhoInterno(callbackUrl);
+  try {
+    const u = new URL(callbackUrl);
+    return caminhoInterno(`${u.pathname}${u.search}`);
+  } catch {
+    return "/";
+  }
+}
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (result?.ok) {
-      const cb = new URLSearchParams(window.location.search).get("callbackUrl");
-      router.push(cb && cb.startsWith("/") && !cb.startsWith("//") ? cb : "/crm");
-    } else {
-      const msg =
-        result?.error === "CredentialsSignin"
-          ? "Email ou senha inválidos"
-          : result?.error
-          ? `Erro: ${result.error}`
-          : "Não foi possível conectar. Tente novamente.";
-      setError(msg);
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="min-h-screen bg-primary flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo */}
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-12 h-12 bg-avz-laranja rounded-xl flex items-center justify-center">
-              <Bot className="w-7 h-7 text-avz-grafite" />
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-1">
-            <span className="font-titulo text-3xl font-extrabold text-white">NEXO</span>
-          </div>
-          <p className="text-white/85 text-sm">CRM Inteligente para WhatsApp</p>
-        </div>
-
-        <Card className="border-0 shadow-2xl">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Entrar</CardTitle>
-            <CardDescription className="text-center">
-              Digite suas credenciais para acessar o painel
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
-                disabled={loading}
-              >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Entrar
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <p className="text-center text-white/40 text-xs">
-          © 2026 Nexo Assessoria. Todos os direitos reservados.
-        </p>
-      </div>
-    </div>
-  );
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ erro?: string | string[]; callbackUrl?: string | string[] }> }) {
+  const sp = await searchParams;
+  const um = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+  return <FormLogin entrarComAvanteza={authorizeUrl(APP_SSO, caminhoPedido(um(sp.callbackUrl)))} erroInicial={ERROS[um(sp.erro) ?? ""] ?? ""} />;
 }

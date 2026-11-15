@@ -174,7 +174,7 @@ export default function FornecedorPage() {
               : "bg-red-50 text-red-800 border-red-200"
           )}>
             {importResult.ok
-              ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-green-600" />
+              ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-green-700 dark:text-green-400" />
               : <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-red-600" />}
             <div className="flex-1">
               {importResult.ok ? (
@@ -246,7 +246,7 @@ export default function FornecedorPage() {
       {/* Manual import modal */}
       {showManual && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-background border border-border rounded-xl w-full max-w-2xl shadow-lg">
+          <div className="bg-background border border-border rounded-lg w-full max-w-2xl">
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="font-semibold flex items-center gap-2 text-foreground">
                 <Upload className="w-4 h-4" /> Importação Manual (JSON)
@@ -299,7 +299,7 @@ function ProdutoCard({
 }) {
   return (
     <div className={cn(
-      "relative flex flex-col bg-card border border-border rounded-xl overflow-hidden transition-all hover:shadow-md",
+      "relative flex flex-col bg-card border border-border rounded-lg overflow-hidden transition-all",
       !produto.ativo && "opacity-50"
     )}>
       {/* Image */}

@@ -2,7 +2,7 @@
 import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Menu, LogOut, User, Bell, ShoppingBag, AlertTriangle, BellOff } from "lucide-react";
+import { Menu, LogOut, User, Bell, ShoppingBag, AlertTriangle, BellOff, LayoutGrid } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,9 +36,9 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 };
 
 const TYPE_COLOR: Record<string, string> = {
-  ORDER: "text-emerald-400",
-  ESCALATION: "text-orange-500",
-  OPT_OUT: "text-red-500",
+  ORDER: "text-primary",
+  ESCALATION: "text-orange-700 dark:text-orange-400",
+  OPT_OUT: "text-red-600 dark:text-red-400",
 };
 
 function timeAgo(d: string) {
@@ -131,6 +131,14 @@ export function Header({ onToggleSidebar }: HeaderProps) {
       <div className="flex items-center gap-1.5">
         <Clock />
 
+        {/* Atalho discreto para a Central da Avanteza (os outros aplicativos do login único) */}
+        <Button variant="ghost" size="sm" asChild className="rounded-lg text-muted-foreground hover:text-foreground px-2">
+          <a href="/api/sso/central" title="Central Avanteza" aria-label="Central Avanteza">
+            <LayoutGrid className="w-4 h-4" />
+            <span className="hidden lg:inline text-xs">Central</span>
+          </a>
+        </Button>
+
         <ThemeSwitcher />
 
         {/* Notification bell */}
@@ -191,7 +199,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <Button variant="ghost" size="icon" className="rounded-lg">
               <Avatar className="w-7 h-7">
                 <AvatarImage src={session?.user?.image ?? ""} alt={userName} />
-                <AvatarFallback className="text-[10px] font-semibold text-white bg-emerald-700">
+                <AvatarFallback className="text-[10px] font-semibold text-primary-foreground bg-primary">
                   {getInitials(userName)}
                 </AvatarFallback>
               </Avatar>

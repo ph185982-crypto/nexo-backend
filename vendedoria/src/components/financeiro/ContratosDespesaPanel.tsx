@@ -149,7 +149,7 @@ export function ContratosDespesaPanel({ onChange }: { onChange: () => void }) {
                 <input type="checkbox" checked={f.estimada} onChange={(e) => setF({ ...f, estimada: e.target.checked })} />
                 Valor aproximado (água, luz)
               </label>
-              {erro && <p className="sm:col-span-2 lg:col-span-4 text-sm text-red-500">{erro}</p>}
+              {erro && <p className="sm:col-span-2 lg:col-span-4 text-sm text-red-600 dark:text-red-400">{erro}</p>}
               <div className="sm:col-span-2 lg:col-span-4 flex justify-end gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => { setNovo(false); setErro(null); }}>Cancelar</Button>
                 <Button type="submit" size="sm" disabled={salvando} className="gap-1">{salvando && <Loader2 className="w-3.5 h-3.5 animate-spin" />} Criar contrato</Button>
@@ -188,7 +188,7 @@ export function ContratosDespesaPanel({ onChange }: { onChange: () => void }) {
       <Dialog open={!!encerrando} onOpenChange={(o) => { if (!o) setEncerrando(null); }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><XCircle className="w-4 h-4 text-red-500" /> Encerrar este contrato?</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><XCircle className="w-4 h-4 text-red-600 dark:text-red-400" /> Encerrar este contrato?</DialogTitle>
             <DialogDescription>
               {encerrando && <><strong className="text-foreground">{encerrando.descricao}</strong> deixa de gerar contas e as pendentes que ainda não venceram são canceladas.
               Nada é apagado: as contas pagas e o histórico continuam, e dá para reativar depois.</>}
@@ -230,13 +230,13 @@ function LinhaContrato({ c, onEditar, onEncerrar }: { c: Contrato; onEditar: () 
           {c.parcelas_total != null
             ? <>Parcela {Math.min(c.pagas + 1, c.parcelas_total)} de {c.parcelas_total} · {c.pagas} paga(s) · faltam {c.restantes}{c.valor_restante != null ? ` (${BRL.format(c.valor_restante)})` : ""}</>
             : <>Sem prazo final · {c.pagas} paga(s)</>}
-          {c.proxima && <> · próxima <span className={cn(atrasada && "text-red-500")}>{fmtData(c.proxima.vencimento)}</span> {BRL.format(c.proxima.valor)}{c.proxima.numero === 0 ? " (entrada)" : ""}</>}
+          {c.proxima && <> · próxima <span className={cn(atrasada && "text-red-600 dark:text-red-400")}>{fmtData(c.proxima.vencimento)}</span> {BRL.format(c.proxima.valor)}{c.proxima.numero === 0 ? " (entrada)" : ""}</>}
         </p>
         {c.saldo_devedor != null && <p className="text-[11px] text-muted-foreground">Saldo devedor informado: {BRL.format(c.saldo_devedor)}</p>}
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
         <Button variant="outline" size="icon-sm" onClick={onEditar} title="Editar contrato" aria-label={`Editar contrato ${c.descricao}`}><Pencil className="w-3.5 h-3.5" /></Button>
-        <Button variant="outline" size="icon-sm" onClick={onEncerrar} title="Encerrar contrato" aria-label={`Encerrar contrato ${c.descricao}`} className="text-red-500 hover:text-red-500"><XCircle className="w-3.5 h-3.5" /></Button>
+        <Button variant="outline" size="icon-sm" onClick={onEncerrar} title="Encerrar contrato" aria-label={`Encerrar contrato ${c.descricao}`} className="text-red-600 dark:text-red-400 hover:text-red-500"><XCircle className="w-3.5 h-3.5" /></Button>
       </div>
     </div>
   );
@@ -297,7 +297,7 @@ function EditarContratoDialog({ contrato, onClose, onDone }: { contrato: Contrat
           </label>
           <div className="sm:col-span-2"><Campo label="Observação"><textarea className={cn(inputCls, "h-20 py-2")} value={f.observacao} onChange={(e) => setF({ ...f, observacao: e.target.value })} maxLength={400} /></Campo></div>
         </div>
-        {erro && <p className="text-sm text-red-500">{erro}</p>}
+        {erro && <p className="text-sm text-red-600 dark:text-red-400">{erro}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={salvando}>Cancelar</Button>
           <Button onClick={() => void salvar()} disabled={salvando} className="gap-1.5">{salvando && <Loader2 className="w-4 h-4 animate-spin" />} Salvar</Button>

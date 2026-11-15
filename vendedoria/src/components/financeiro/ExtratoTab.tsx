@@ -217,7 +217,7 @@ export function ExtratoTab() {
                         <td className="p-3">
                           <div className="flex gap-1 justify-end">
                             <Button variant="ghost" size="icon-sm" onClick={saveEdit}>
-                              <Check className="w-3.5 h-3.5 text-green-500" />
+                              <Check className="w-3.5 h-3.5 text-green-700 dark:text-green-400" />
                             </Button>
                             <Button variant="ghost" size="icon-sm" onClick={() => setEditingId(null)}>
                               <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -235,7 +235,7 @@ export function ExtratoTab() {
                         <td className="p-3 text-muted-foreground">{formatTipoNegocio(t.tipo_negocio)}</td>
                         <td className={cn(
                           "p-3 text-right font-medium whitespace-nowrap",
-                          t.tipo === "receita" ? "text-green-500" : "text-red-500"
+                          t.tipo === "receita" ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400"
                         )}>
                           {t.tipo === "despesa" ? "- " : ""}{BRL.format(t.valor)}
                         </td>

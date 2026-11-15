@@ -183,7 +183,7 @@ async function generateOverviewText(organizationId: string): Promise<string> {
     msg += `\n💳 *Compromisso mensal fixo:* R$ ${fmt(compromissoMensal)}\n`;
   }
 
-  msg += `\n_Enviado pelo Nexo Financeiro_ 🤖`;
+  msg += `\n_Enviado pelo Avanteza Financeiro_ 🤖`;
   return msg;
 }
 

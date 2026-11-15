@@ -143,10 +143,10 @@ function AudioPlayer({ url }: { url: string }) {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  OPEN:      "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+  OPEN:      "bg-secondary text-primary",
   ESCALATED: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400",
   BLOCKED:   "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400",
-  CLOSED:    "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+  CLOSED:    "bg-muted text-muted-foreground",
 };
 const STATUS_LABELS: Record<string, string> = {
   OPEN: "Aberto", ESCALATED: "Escalado", BLOCKED: "Bloqueado", CLOSED: "Fechado",
@@ -190,7 +190,7 @@ function formatPhone(raw: string): string {
 
 const AVATAR_COLORS = [
   "bg-indigo-500 text-white",
-  "bg-emerald-600 text-white",
+  "bg-primary text-primary-foreground",
   "bg-amber-500 text-white",
   "bg-rose-500 text-white",
   "bg-sky-500 text-white",
@@ -215,8 +215,8 @@ function ContactCard({ content }: { content: string }) {
   const email  = content.match(/email="([^"]+)"/)?.[1]  ?? null;
   const org    = content.match(/org="([^"]+)"/)?.[1]    ?? null;
   return (
-    <div className="flex items-start gap-3 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 min-w-[200px] max-w-[260px]">
-      <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0 text-base">👤</div>
+    <div className="flex items-start gap-3 p-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 min-w-[200px] max-w-[260px]">
+      <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center shrink-0 text-base">👤</div>
       <div className="flex flex-col gap-0.5 min-w-0">
         <span className="font-semibold text-sm truncate">{nome}</span>
         {org    && <span className="text-xs opacity-60 truncate">{org}</span>}
@@ -235,7 +235,7 @@ function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (u
         <img
           src={src}
           alt="imagem"
-          className="max-w-full rounded-xl cursor-pointer object-cover"
+          className="max-w-full rounded-lg cursor-pointer object-cover"
           style={{ maxHeight: 240 }}
           onClick={() => onImageClick?.(src)}
           loading="lazy"
@@ -250,7 +250,7 @@ function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (u
         src={resolveMedia(msg.mediaUrl)}
         controls
         playsInline
-        className="max-w-full rounded-xl"
+        className="max-w-full rounded-lg"
         style={{ maxHeight: 260 }}
       />
     );
@@ -269,8 +269,8 @@ function MessageContent({ msg, onImageClick }: { msg: Message; onImageClick?: (u
       ?? null;
     return (
       <a href={mapsUrl ?? "#"} target="_blank" rel="noopener noreferrer"
-        className="flex items-center gap-2 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-white/80 transition-colors min-w-[180px]">
-        <MapPin className="w-5 h-5 shrink-0 text-emerald-600" />
+        className="flex items-center gap-2 p-3 rounded-lg border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-white/80 transition-colors min-w-[180px]">
+        <MapPin className="w-5 h-5 shrink-0 text-primary" />
         <div className="flex flex-col">
           <span className="text-xs font-medium">{label ?? "Localização"}</span>
           <span className="text-[10px] opacity-60 text-blue-600">Abrir no mapa →</span>
@@ -291,8 +291,8 @@ function Avatar({ conv, size = "md" }: { conv: Conversation; size?: "sm" | "md" 
   const sizeClass = { sm: "w-8 h-8 text-xs", md: "w-10 h-10 text-sm", lg: "w-12 h-12 text-base" }[size];
   const dotColor = {
     OPEN: "bg-green-500", ESCALATED: "bg-orange-500",
-    BLOCKED: "bg-red-500", CLOSED: "bg-gray-400",
-  }[status] ?? "bg-gray-400";
+    BLOCKED: "bg-red-500", CLOSED: "bg-muted-foreground/40",
+  }[status] ?? "bg-muted-foreground/40";
 
   return (
     <div className="relative shrink-0">
@@ -665,7 +665,7 @@ function ConversationsContent() {
           <img
             src={lightboxUrl}
             alt="imagem ampliada"
-            className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+            className="max-w-full max-h-full object-contain rounded-lg"
             onClick={e => e.stopPropagation()}
           />
         </div>
@@ -764,7 +764,7 @@ function ConversationsContent() {
                 className={cn(
                   "px-3.5 h-8 shrink-0 rounded-full text-[13px] font-medium transition-colors press-scale",
                   statusFilter === v
-                    ? "bg-primary text-white"
+                    ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground"
                 )}
               >
@@ -855,12 +855,12 @@ function ConversationsContent() {
                           </span>
                         )}
                         {conv.followUp?.status === "ACTIVE" && (
-                          <span className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-0.5 font-medium">
+                          <span className="text-[11px] text-amber-700 dark:text-amber-400 flex items-center gap-0.5 font-medium">
                             <Clock className="w-3 h-3" />F{conv.followUp.step}
                           </span>
                         )}
                         {conv.localizacaoRecebida && (
-                          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5 font-medium">
+                          <span className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
                             <MapPin className="w-3 h-3" />Loc
                           </span>
                         )}
@@ -938,7 +938,7 @@ function ConversationsContent() {
                 <p className="text-[12px] text-muted-foreground truncate leading-tight mt-0.5">
                   {formatPhone(selected.lead?.phoneNumber ?? selected.customerWhatsappBusinessId)}
                   {selected.followUp?.status === "ACTIVE" && (
-                    <span className="hidden sm:inline ml-1 text-amber-600">
+                    <span className="hidden sm:inline ml-1 text-amber-700 dark:text-amber-400">
                       · Follow-up {selected.followUp.step}
                     </span>
                   )}
@@ -953,12 +953,12 @@ function ConversationsContent() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="icon" className="h-9 w-9 md:hidden border-orange-200">
-                          <AlertTriangle className="w-4 h-4 text-orange-600" />
+                          <AlertTriangle className="w-4 h-4 text-orange-700 dark:text-orange-400" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={handleDeescalate} disabled={deescalating}>
-                          <ShieldOff className="w-4 h-4 mr-2 text-emerald-600" />
+                          <ShieldOff className="w-4 h-4 mr-2 text-primary" />
                           Voltar para IA
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleTakeover(true)} disabled={takingOver}>
@@ -974,7 +974,7 @@ function ConversationsContent() {
                         Escalado
                       </div>
                       <Button size="sm" variant="outline" onClick={handleDeescalate} disabled={deescalating}
-                        className="h-8 text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                        className="h-8 text-xs gap-1.5 border-border text-primary hover:bg-accent">
                         {deescalating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldOff className="w-3.5 h-3.5" />}
                         Voltar IA
                       </Button>
@@ -988,7 +988,7 @@ function ConversationsContent() {
                 ) : isHumanControl ? (
                   <>
                     <Button size="icon" variant="outline" onClick={() => handleTakeover(false)} disabled={takingOver}
-                      className="h-9 w-9 md:hidden border-emerald-200 text-emerald-700">
+                      className="h-9 w-9 md:hidden border-border text-primary">
                       {takingOver ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bot className="w-4 h-4" />}
                     </Button>
                     <div className="hidden md:flex items-center gap-2">
@@ -997,7 +997,7 @@ function ConversationsContent() {
                         Você no controle
                       </div>
                       <Button size="sm" variant="outline" onClick={() => handleTakeover(false)} disabled={takingOver}
-                        className="h-8 text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                        className="h-8 text-xs gap-1.5 border-border text-primary hover:bg-accent">
                         {takingOver ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
                         Devolver IA
                       </Button>
@@ -1010,7 +1010,7 @@ function ConversationsContent() {
                       {takingOver ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
                     </Button>
                     <div className="hidden md:flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-700 font-medium">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-secondary border border-border rounded-lg text-xs text-primary font-medium">
                         <Bot className="w-3.5 h-3.5" />
                         IA ativa
                       </div>
@@ -1059,7 +1059,7 @@ function ConversationsContent() {
                     }} disabled={diagLoading}>
                       {diagLoading
                         ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        : <AlertTriangle className="w-4 h-4 mr-2 text-amber-500" />}
+                        : <AlertTriangle className="w-4 h-4 mr-2 text-amber-700 dark:text-amber-400" />}
                       Diagnóstico passagem
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -1069,36 +1069,36 @@ function ConversationsContent() {
 
             {/* ── Diagnóstico passagem ─────────────────────────────────────────── */}
             {diagResult && (
-              <div className="bg-slate-800 text-slate-100 text-[11px] px-3 py-2.5 flex-shrink-0 relative">
+              <div className="bg-muted text-foreground text-[11px] px-3 py-2.5 flex-shrink-0 relative">
                 <button
                   onClick={() => setDiagResult(null)}
                   aria-label="Fechar diagnóstico"
-                  className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-base leading-none"
+                  className="absolute top-1.5 right-2 text-muted-foreground hover:text-foreground text-base leading-none"
                 >×</button>
-                <p className="font-bold mb-1.5 text-amber-300">
+                <p className="font-bold mb-1.5 text-amber-700 dark:text-amber-300">
                   {(diagResult.dadosCompletos as boolean)
                     ? "✅ Dados completos — passagem deveria disparar"
                     : "❌ Dados INCOMPLETOS — passagem bloqueada"}
                 </p>
                 {Array.isArray(diagResult.camposFaltando) && (diagResult.camposFaltando as string[]).length > 0 && (
-                  <p className="text-red-300 mb-1">
+                  <p className="text-red-700 dark:text-red-300 mb-1">
                     Faltando: {(diagResult.camposFaltando as string[]).join(" | ")}
                   </p>
                 )}
                 {(diagResult.passagemJaFeita as boolean) && (
-                  <p className="text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
+                  <p className="text-yellow-700 dark:text-yellow-300 mb-1">⚠️ passagemJaFeita=true — [PASSAGEM] já foi emitido antes</p>
                 )}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1">
                   {Object.entries(diagResult.camposDetectados as Record<string, string | null>).map(([k, v]) => (
                     <span key={k}>
-                      <span className={v ? "text-green-300" : "text-red-400"}>{v ? "✅" : "❌"}</span>
-                      {" "}<span className="text-slate-400">{k}:</span>
+                      <span className={v ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-400"}>{v ? "✅" : "❌"}</span>
+                      {" "}<span className="text-muted-foreground">{k}:</span>
                       {" "}<span className="text-white">{v ? v.substring(0, 50) : "não detectado"}</span>
                     </span>
                   ))}
                 </div>
                 {(diagResult.etapa as string) && (
-                  <p className="mt-1 text-slate-400">etapa DB: <span className="text-white">{diagResult.etapa as string}</span></p>
+                  <p className="mt-1 text-muted-foreground">etapa DB: <span className="text-foreground">{diagResult.etapa as string}</span></p>
                 )}
               </div>
             )}
@@ -1139,8 +1139,8 @@ function ConversationsContent() {
 
               {msgError && messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-12 gap-3 text-center px-4">
-                  <AlertTriangle className="w-8 h-8 text-amber-500" />
-                  <p className="text-sm font-medium text-gray-700">Erro ao carregar mensagens</p>
+                  <AlertTriangle className="w-8 h-8 text-amber-700 dark:text-amber-400" />
+                  <p className="text-sm font-medium text-foreground">Erro ao carregar mensagens</p>
                   <p className="text-xs text-muted-foreground max-w-xs break-all">{msgError}</p>
                   <button
                     onClick={() => fetchMessages(selectedId!, false)}
@@ -1162,7 +1162,7 @@ function ConversationsContent() {
                     {showTime && (
                       // sticky: a data fica visível no topo enquanto se rola o dia
                       <div className="flex justify-center my-3 sticky top-0 z-10 pointer-events-none">
-                        <span className="text-[11px] font-medium text-muted-foreground bg-card/85 px-3 py-1 rounded-full shadow-sm backdrop-blur-md">
+                        <span className="text-[11px] font-medium text-muted-foreground bg-card/85 px-3 py-1 rounded-full backdrop-blur-md">
                           {new Date(msg.sentAt).toLocaleDateString("pt-BR", {
                             day: "2-digit", month: "short",
                           })} {formatTime(msg.sentAt)}
@@ -1171,7 +1171,7 @@ function ConversationsContent() {
                     )}
                     <div className={cn("flex", isMe ? "justify-end" : "justify-start")}>
                       <div className={cn(
-                        "max-w-[82%] sm:max-w-[72%] rounded-2xl px-3 py-1.5 shadow-sm",
+                        "max-w-[82%] sm:max-w-[72%] rounded-lg px-3 py-1.5",
                         isMe
                           ? "msg-bubble-sent"
                           : "msg-bubble-received"
@@ -1183,9 +1183,9 @@ function ConversationsContent() {
                             msg.status === "SENDING"
                               ? <Clock className="w-3 h-3 opacity-50" />
                               : msg.status === "FAILED"
-                              ? <span title="Falha ao enviar — o cliente não recebeu esta mensagem" className="flex items-center gap-0.5 text-red-500"><AlertTriangle className="w-3 h-3" /></span>
+                              ? <span title="Falha ao enviar — o cliente não recebeu esta mensagem" className="flex items-center gap-0.5 text-red-600 dark:text-red-400"><AlertTriangle className="w-3 h-3" /></span>
                               : msg.status === "READ"
-                              ? <CheckCheck className="w-3 h-3 text-blue-500" />
+                              ? <CheckCheck className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                               : <Check className="w-3 h-3 opacity-50" />
                           )}
                         </div>
@@ -1203,7 +1203,7 @@ function ConversationsContent() {
                 type="button"
                 onClick={scrollToLatest}
                 aria-label="Ir para a mensagem mais recente"
-                className="absolute bottom-24 right-4 z-20 w-10 h-10 rounded-full bg-card shadow-lg border border-border flex items-center justify-center text-foreground/70 press-scale"
+                className="absolute bottom-24 right-4 z-20 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-foreground/70 press-scale"
               >
                 <ChevronLeft className="w-5 h-5 -rotate-90" />
               </button>
@@ -1219,7 +1219,7 @@ function ConversationsContent() {
                   onClick={() => handleTakeover(true)}
                   className="w-full px-4 py-2 flex items-center gap-2 border-b border-border/60 active:bg-muted/60 transition-colors text-left"
                 >
-                  <Bot className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <Bot className="w-4 h-4 shrink-0 text-primary" />
                   <span className="text-[13px] text-muted-foreground flex-1 truncate">
                     IA respondendo automaticamente
                   </span>
@@ -1233,7 +1233,7 @@ function ConversationsContent() {
                 {showEmojiPicker && (
                   <div
                     ref={emojiPickerRef}
-                    className="absolute bottom-full mb-2 left-2 bg-card border border-border rounded-2xl shadow-2xl p-2.5 z-50"
+                    className="absolute bottom-full mb-2 left-2 bg-card border border-border rounded-lg p-2.5 z-50"
                   >
                     <div className="grid grid-cols-12 gap-0.5" style={{ width: 312 }}>
                       {EMOJI_LIST.map(e => (
@@ -1297,9 +1297,9 @@ function ConversationsContent() {
                       : "Assuma o controle para responder"
                   }
                   rows={1}
-                  // rounded-3xl + bg-muted = campo de mensagem padrão do iOS.
+                  // rounded-lg + bg-muted = campo de mensagem padrão do iOS.
                   // O tamanho de fonte vem do CSS (16px no iOS) pra não dar zoom.
-                  className="min-h-[40px] max-h-32 resize-none flex-1 leading-snug py-2 px-3.5 rounded-3xl bg-muted border-transparent shadow-none"
+                  className="min-h-[40px] max-h-32 resize-none flex-1 leading-snug py-2 px-3.5 rounded-lg bg-muted border-transparent"
                   onKeyDown={e => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -1315,7 +1315,7 @@ function ConversationsContent() {
                   className={cn(
                     "h-10 w-10 shrink-0 rounded-full flex items-center justify-center transition-all press-scale",
                     msgInput.trim()
-                      ? (isHumanControl ? "bg-blue-600 text-white" : "bg-primary text-white")
+                      ? (isHumanControl ? "bg-blue-600 text-primary-foreground" : "bg-primary text-primary-foreground")
                       : "bg-muted text-muted-foreground/50"
                   )}
                 >
@@ -1346,12 +1346,12 @@ function ConversationsContent() {
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <Zap className="w-4 h-4 text-emerald-400" />
+          <Zap className="w-4 h-4 text-primary" />
           {selected.humanTakeover
-            ? <UserCheck className="w-4 h-4 text-blue-500" />
+            ? <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             : selected.lead?.status === "ESCALATED"
-            ? <AlertTriangle className="w-4 h-4 text-orange-500" />
-            : <Bot className="w-4 h-4 text-emerald-400" />
+            ? <AlertTriangle className="w-4 h-4 text-orange-700 dark:text-orange-400" />
+            : <Bot className="w-4 h-4 text-primary" />
           }
         </div>
       )}
@@ -1361,7 +1361,7 @@ function ConversationsContent() {
           <div className="p-4 border-b border-border flex items-start justify-between gap-2">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Zap className="w-4 h-4 text-emerald-400" />
+                <Zap className="w-4 h-4 text-primary" />
                 <h3 className="text-sm font-semibold">Inteligência IA</h3>
               </div>
               <p className="text-xs text-muted-foreground">Contexto da conversa atual</p>
@@ -1416,7 +1416,7 @@ function ConversationsContent() {
                   <span className="text-xs font-medium text-foreground">{selected.etapa?.replace(/_/g, " ") ?? "—"}</span>
                 </div>
                 {selected.localizacaoRecebida && (
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                  <div className="flex items-center gap-1.5 text-xs text-primary">
                     <MapPin className="w-3 h-3" />
                     <span>Localização recebida</span>
                   </div>
@@ -1428,12 +1428,12 @@ function ConversationsContent() {
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Modo de Resposta</p>
               <div className={cn(
-                "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium",
+                "flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium",
                 selected.humanTakeover
                   ? "bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-300"
                   : selected.lead?.status === "ESCALATED"
                   ? "bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-950 dark:border-orange-800 dark:text-orange-300"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950 dark:border-emerald-800 dark:text-emerald-300"
+                  : "bg-secondary border-border text-primary"
               )}>
                 {selected.humanTakeover
                   ? <><UserCheck className="w-4 h-4" /><span>Controle humano</span></>
@@ -1448,7 +1448,7 @@ function ConversationsContent() {
             {selected.followUp && (
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Follow-up</p>
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 text-xs text-amber-700 dark:text-amber-300">
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 text-xs text-amber-700 dark:text-amber-300">
                   <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                   <div>
                     <p className="font-medium">Passo {selected.followUp.step} ativo</p>
@@ -1471,7 +1471,7 @@ function ConversationsContent() {
                   <p className="text-[10px] text-muted-foreground">mensagens</p>
                 </div>
                 <div className="flex-1 bg-muted rounded-lg px-3 py-2 text-center">
-                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                  <p className="text-lg font-bold text-primary tabular-nums">
                     {messages.filter(m => m.role === "ASSISTANT").length}
                   </p>
                   <p className="text-[10px] text-muted-foreground">respostas IA</p>
@@ -1483,7 +1483,7 @@ function ConversationsContent() {
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Última atividade</p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <TrendingUp className="w-3.5 h-3.5 flex-shrink-0 text-emerald-400" />
+                <TrendingUp className="w-3.5 h-3.5 flex-shrink-0 text-primary" />
                 <span>{timeAgo(selected.lastMessageAt)}</span>
               </div>
             </div>

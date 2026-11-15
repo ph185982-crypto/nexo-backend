@@ -10,6 +10,7 @@
 /** Prefixos públicos por desenho — cada rota aqui ou é pública mesmo ou se protege sozinha. */
 export const PREFIXOS_PUBLICOS = [
   "/api/auth/",                 // NextAuth (login, sessão, csrf)
+  "/api/sso/",                  // login único: o callback confere o token assinado pela Central; /central só redireciona
   "/api/health",                // monitoramento externo
   "/api/keepalive",
   "/api/max/health",

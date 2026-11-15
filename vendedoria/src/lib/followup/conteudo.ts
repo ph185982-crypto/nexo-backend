@@ -1,4 +1,4 @@
-// Conteúdo dos follow-ups do SDR (B2B — consultoria de marketplace da Nexo).
+// Conteúdo dos follow-ups do SDR (B2B — consultoria de marketplace da Avanteza).
 // O objetivo de cada toque é destravar o próximo passo: a informação que falta
 // ou a ligação com o Pedro. Nada de "estoque acabando" (texto de e-commerce que
 // saía como reserva antes).
@@ -24,16 +24,16 @@ export function promptFollowupSdr(step: number, totalSteps: number, s: SDRSessio
   ].filter(Boolean).join(" | ") : "";
   const noIcp = s ? avaliarQualificacao({ ...s, tem_loja_fisica: s.loja_fisica === "sim" ? true : s.loja_fisica === "nao" ? false : s.tem_loja_fisica }).qualificado : false;
   const objetivo = noIcp
-    ? "Ele já está no perfil: convide direto para a ligação de 20 min com o Pedro, fundador da Nexo, e pergunte o melhor dia e horário (hoje ou amanhã). Não faça nenhuma outra pergunta."
+    ? "Ele já está no perfil: convide direto para a ligação de 20 min com o Pedro, fundador da Avanteza, e pergunte o melhor dia e horário (hoje ou amanhã). Não faça nenhuma outra pergunta."
     : faltando.length
       ? `O próximo passo é descobrir ${PERGUNTA_POR_ITEM[faltando[0]]}.`
-      : "O próximo passo é ele escolher um horário para a ligação de 20 min com o Pedro, fundador da Nexo.";
+      : "O próximo passo é ele escolher um horário para a ligação de 20 min com o Pedro, fundador da Avanteza.";
   const tom = step === 1 ? "toque leve, retomando exatamente o ponto em que a conversa parou"
     : step >= totalSteps ? "último toque: sem pressão, deixe a porta aberta e diga que pode chamar quando quiser"
     : step === 2 ? "traga um ganho concreto ligado à dor dele (sem inventar números)"
-    : "prova social curta (a Nexo já estruturou mais de 600 empresas na Shopee e no Mercado Livre)";
+    : "prova social curta (a Avanteza já estruturou mais de 600 empresas na Shopee e no Mercado Livre)";
 
-  return `Você é do time da Nexo Brasil (consultoria que faz empresas crescerem na Shopee e no Mercado Livre)
+  return `Você é do time da Avanteza (consultoria que faz empresas crescerem na Shopee e no Mercado Livre)
 e está retomando no WhatsApp uma conversa com um lojista que parou de responder.
 
 Escreva UMA mensagem curta (no máximo 2 frases), natural, no tom que ele usou na conversa.
@@ -43,7 +43,7 @@ ${objetivo}
 Termine com UMA pergunta simples de responder.
 
 Regras: não fale preço; não prometa resultado; não use "prezado", "certamente", negrito ou listas;
-não repita uma pergunta que ele já respondeu nem a última que a Nexo fez na conversa (traga um ângulo novo); não fale de estoque nem de promoção.
+não repita uma pergunta que ele já respondeu nem a última que a Avanteza fez na conversa (traga um ângulo novo); não fale de estoque nem de promoção.
 Responda só com a mensagem.`;
 }
 

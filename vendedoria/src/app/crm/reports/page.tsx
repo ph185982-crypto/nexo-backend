@@ -43,11 +43,11 @@ const ETAPA_LABELS: Record<string, string> = {
 };
 
 const ETAPA_COLORS: Record<string, string> = {
-  NOVO: "bg-gray-400",
+  NOVO: "bg-muted-foreground/40",
   PRODUTO_IDENTIFICADO: "bg-blue-400",
   NEGOCIANDO: "bg-amber-400",
   COLETANDO_DADOS: "bg-orange-400",
-  PEDIDO_CONFIRMADO: "bg-emerald-500",
+  PEDIDO_CONFIRMADO: "bg-primary",
   PERDIDO: "bg-red-400",
 };
 
@@ -92,7 +92,7 @@ function BarChart({ data, color = "bg-primary" }: {
             />
             {d.value2 !== undefined && (
               <div
-                className="w-full rounded-t bg-emerald-400 transition-all"
+                className="w-full rounded-t bg-primary transition-all"
                 style={{ height: `${(d.value2 / max) * 100}%` }}
                 title={`Convertidos: ${d.value2}`}
               />
@@ -116,8 +116,8 @@ function MetricCard({
 }) {
   return (
     <div className={cn(
-      "rounded-xl border p-4",
-      accent ? "bg-primary text-white border-primary" : "bg-card"
+      "rounded-lg border p-4",
+      accent ? "bg-primary text-primary-foreground border-primary" : "bg-card"
     )}>
       <p className={cn("text-xs font-medium mb-1", accent ? "text-white/70" : "text-muted-foreground")}>
         {label}
@@ -167,12 +167,12 @@ function TabConversao({ data }: { data: DashboardData }) {
       </div>
 
       {/* 7-day chart */}
-      <div className="bg-card rounded-xl border p-4">
+      <div className="bg-card rounded-lg border p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold">Leads × Pedidos — últimos 7 dias</h3>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-primary inline-block" />Leads</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-400 inline-block" />Pedidos</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-primary inline-block" />Pedidos</span>
           </div>
         </div>
         {chart7d.length > 0
@@ -181,7 +181,7 @@ function TabConversao({ data }: { data: DashboardData }) {
       </div>
 
       {/* Funnel */}
-      <div className="bg-card rounded-xl border p-4">
+      <div className="bg-card rounded-lg border p-4">
         <h3 className="text-sm font-semibold mb-3">Funil de vendas</h3>
         <div className="space-y-2">
           {funil.map(({ etapa, count }) => (
@@ -191,7 +191,7 @@ function TabConversao({ data }: { data: DashboardData }) {
               </span>
               <div className="flex-1 bg-muted rounded-full h-5 overflow-hidden">
                 <div
-                  className={cn("h-full rounded-full transition-all flex items-center justify-end pr-2", ETAPA_COLORS[etapa] ?? "bg-gray-400")}
+                  className={cn("h-full rounded-full transition-all flex items-center justify-end pr-2", ETAPA_COLORS[etapa] ?? "bg-muted-foreground/40")}
                   style={{ width: total > 0 ? `${Math.max((count / total) * 100, 3)}%` : "3%" }}
                 >
                   {count > 0 && <span className="text-[10px] text-white font-bold">{count}</span>}
@@ -241,7 +241,7 @@ function TabProdutos({ orgId }: { orgId: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-card rounded-xl border p-4">
+      <div className="bg-card rounded-lg border p-4">
         <h3 className="text-sm font-semibold mb-4">Interesse por produto</h3>
         <div className="space-y-3">
           {rows.map(r => (
@@ -270,7 +270,7 @@ function TabProdutos({ orgId }: { orgId: string }) {
       </div>
 
       {/* Conversion by product table */}
-      <div className="bg-card rounded-xl border overflow-hidden">
+      <div className="bg-card rounded-lg border overflow-hidden">
         <div className="px-4 py-3 border-b">
           <h3 className="text-sm font-semibold">Conversão por produto</h3>
         </div>
@@ -293,7 +293,7 @@ function TabProdutos({ orgId }: { orgId: string }) {
                   <span className={cn(
                     "px-1.5 py-0.5 rounded-full",
                     r.count > 0 && (r.pedidos / r.count) >= 0.3
-                      ? "bg-emerald-100 text-emerald-700"
+                      ? "bg-secondary text-primary"
                       : "bg-muted text-muted-foreground"
                   )}>
                     {r.count > 0 ? `${((r.pedidos / r.count) * 100).toFixed(0)}%` : "—"}
@@ -373,24 +373,24 @@ function TabFollowup({ orgId }: { orgId: string }) {
     <div className="space-y-4">
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-card rounded-xl border p-4 text-center">
-          <div className="text-2xl font-bold text-amber-600">{active.length}</div>
+        <div className="bg-card rounded-lg border p-4 text-center">
+          <div className="text-2xl font-bold text-amber-700 dark:text-amber-400">{active.length}</div>
           <div className="text-xs text-muted-foreground mt-0.5">Ativos</div>
         </div>
-        <div className="bg-card rounded-xl border p-4 text-center">
-          <div className="text-2xl font-bold text-emerald-600">{done.length}</div>
+        <div className="bg-card rounded-lg border p-4 text-center">
+          <div className="text-2xl font-bold text-primary">{done.length}</div>
           <div className="text-xs text-muted-foreground mt-0.5">Concluídos</div>
         </div>
-        <div className="bg-card rounded-xl border p-4 text-center">
+        <div className="bg-card rounded-lg border p-4 text-center">
           <div className="text-2xl font-bold text-muted-foreground">{canceled.length}</div>
           <div className="text-xs text-muted-foreground mt-0.5">Cancelados</div>
         </div>
       </div>
 
       {/* Active follow-ups */}
-      <div className="bg-card rounded-xl border overflow-hidden">
+      <div className="bg-card rounded-lg border overflow-hidden">
         <div className="px-4 py-3 border-b flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-500" />
+          <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
           <h3 className="text-sm font-semibold">Follow-ups ativos</h3>
           <span className="ml-auto text-xs text-muted-foreground">{active.length} pendentes</span>
         </div>
@@ -422,7 +422,7 @@ function TabFollowup({ orgId }: { orgId: string }) {
           })}
           {active.length === 0 && (
             <div className="flex items-center gap-2 px-4 py-8 justify-center text-muted-foreground">
-              <CheckCircle className="w-5 h-5 text-emerald-400" />
+              <CheckCircle className="w-5 h-5 text-primary" />
               <span className="text-sm">Nenhum follow-up pendente</span>
             </div>
           )}
@@ -432,16 +432,16 @@ function TabFollowup({ orgId }: { orgId: string }) {
       {/* Done / Canceled summary */}
       {(done.length > 0 || canceled.length > 0) && (
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-card rounded-xl border p-4">
+          <div className="bg-card rounded-lg border p-4">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <CheckCircle className="w-4 h-4 text-primary" />
               <h4 className="text-sm font-semibold">Concluídos</h4>
             </div>
             <p className="text-xs text-muted-foreground">
               {done.length} leads responderam ou compraram durante o fluxo.
             </p>
           </div>
-          <div className="bg-card rounded-xl border p-4">
+          <div className="bg-card rounded-lg border p-4">
             <div className="flex items-center gap-2 mb-2">
               <XCircle className="w-4 h-4 text-muted-foreground" />
               <h4 className="text-sm font-semibold">Cancelados</h4>

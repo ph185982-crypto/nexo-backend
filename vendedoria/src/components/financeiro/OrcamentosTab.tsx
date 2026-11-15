@@ -120,7 +120,7 @@ export function OrcamentosTab() {
                       <span className="font-medium text-foreground">{o.categoria}</span>
                       <span className={cn(
                         "text-sm font-medium",
-                        pct > 100 ? "text-red-500" : pct >= 80 ? "text-yellow-500" : "text-green-500"
+                        pct > 100 ? "text-red-600 dark:text-red-400" : pct >= 80 ? "text-yellow-700 dark:text-yellow-400" : "text-green-700 dark:text-green-400"
                       )}>
                         {pct}%
                       </span>

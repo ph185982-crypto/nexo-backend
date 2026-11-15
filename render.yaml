@@ -45,7 +45,7 @@ services:
 
       # ── WhatsApp Business API ─────────────────────────────────────────────
       - key: META_WHATSAPP_VERIFY_TOKEN
-        value: vendedoria_webhook_2025
+        sync: false         # definir no painel do Render (nunca no repositório)
       - key: META_WHATSAPP_APP_SECRET
         sync: false
       - key: META_WHATSAPP_ACCESS_TOKEN

@@ -138,7 +138,7 @@ export function Revisao({ orgId, segmentIdInicial, buscas, aoMudar, navegar }: {
           <Carregando />
         ) : !atual ? (
           <EmptyState
-            icon={<PartyPopper className="w-6 h-6 text-green-500" />}
+            icon={<PartyPopper className="w-6 h-6 text-green-700 dark:text-green-400" />}
             titulo="Nada para revisar"
             descricao="Todas as empresas em dúvida já foram decididas. As aprovadas seguem para o disparo."
             acao={
@@ -155,7 +155,7 @@ export function Revisao({ orgId, segmentIdInicial, buscas, aoMudar, navegar }: {
               <span className="hidden md:flex items-center gap-1"><Keyboard className="w-3.5 h-3.5" /> A aprova · D descarta · ← → navega</span>
             </div>
 
-            <article key={atual.id} className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-sm">
+            <article key={atual.id} className="rounded-lg border border-border bg-card p-5 space-y-4">
               <header className="flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold text-foreground">{atual.nome ?? "Nome não informado"}</h2>
@@ -169,16 +169,16 @@ export function Revisao({ orgId, segmentIdInicial, buscas, aoMudar, navegar }: {
 
               <div className="grid gap-2 text-sm">
                 <p className="flex items-center gap-2 text-foreground">
-                  {atual.tipoTelefone === "CELULAR" ? <Smartphone className="w-4 h-4 text-green-500" /> : <Phone className="w-4 h-4 text-muted-foreground" />}
+                  {atual.tipoTelefone === "CELULAR" ? <Smartphone className="w-4 h-4 text-green-700 dark:text-green-400" /> : <Phone className="w-4 h-4 text-muted-foreground" />}
                   {fmtTelefone(atual.telefone)}
-                  {atual.tipoTelefone === "FIXO" && <span className="text-xs text-amber-600 dark:text-amber-400">fixo — não recebe WhatsApp</span>}
+                  {atual.tipoTelefone === "FIXO" && <span className="text-xs text-amber-700 dark:text-amber-400">fixo — não recebe WhatsApp</span>}
                 </p>
                 {atual.enderecoCompleto && (
                   <p className="flex items-start gap-2 text-muted-foreground"><MapPin className="w-4 h-4 shrink-0 mt-0.5" /> {atual.enderecoCompleto}</p>
                 )}
                 {atual.ratingGoogle != null && (
                   <p className="flex items-center gap-2 text-muted-foreground">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" /> {atual.ratingGoogle.toFixed(1)} ({atual.numeroAvaliacoes ?? 0} avaliações)
+                    <Star className="w-4 h-4 text-yellow-700 dark:text-yellow-400 fill-yellow-500" /> {atual.ratingGoogle.toFixed(1)} ({atual.numeroAvaliacoes ?? 0} avaliações)
                   </p>
                 )}
               </div>
