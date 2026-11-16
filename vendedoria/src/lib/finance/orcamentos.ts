@@ -4,12 +4,13 @@
 
 import { prisma } from "@/lib/prisma/client";
 import { chaveCategoria } from "./dre";
+import { whereEscopo, type Escopo } from "./escopo";
 
 /** Gasto do mês (despesas do extrato) somado por categoria normalizada. */
-export async function gastoPorCategoriaNoMes(mes: string): Promise<Map<string, number>> {
+export async function gastoPorCategoriaNoMes(mes: string, escopo: Escopo = "todos"): Promise<Map<string, number>> {
   const rows = await prisma.transacao.groupBy({
     by: ["categoria"],
-    where: { tipo: "despesa", mes },
+    where: { tipo: "despesa", mes, ...whereEscopo(escopo) },
     _sum: { valor: true },
   });
   const out = new Map<string, number>();

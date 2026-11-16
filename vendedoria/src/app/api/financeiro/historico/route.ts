@@ -8,6 +8,8 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { MODELOS_FINANCEIROS_AUDITADOS } from "@/lib/finance/historico";
 import { MODELOS_RESTAURAVEIS } from "@/lib/finance/restaurar";
 import { parseData, somarDias } from "@/lib/finance/periodo";
+import { parseEscopo } from "@/lib/finance/escopo";
+import { ENTIDADES_DO_ESCOPO, filtroEscopoHistorico } from "@/lib/finance/historico-escopo";
 import { carimbarHistoricoInicial } from "@/lib/finance/historico-inicial";
 
 export const maxDuration = 30;
@@ -36,6 +38,9 @@ export async function GET(req: NextRequest) {
     const pageSize = Math.min(100, Math.max(10, parseInt(sp.get("pageSize") ?? "30", 10) || 30));
 
     const and: Record<string, unknown>[] = [];
+    // ?escopo=nexo|pessoal (API de serviço): só linhas daquele lado, pelo estado mais recente da linha.
+    const escopo = parseEscopo(sp.get("escopo"));
+    if (escopo !== "todos") and.push(filtroEscopoHistorico(escopo) as Record<string, unknown>);
     const entidade = sp.get("entidade");
     if (entidade && (MODELOS_FINANCEIROS_AUDITADOS as readonly string[]).includes(entidade)) and.push({ entidade });
     const acao = sp.get("acao");
@@ -100,7 +105,7 @@ export async function GET(req: NextRequest) {
       total,
       pagina: page,
       paginas: Math.max(1, Math.ceil(total / pageSize)),
-      entidades: MODELOS_FINANCEIROS_AUDITADOS,
+      entidades: escopo === "todos" ? MODELOS_FINANCEIROS_AUDITADOS : ENTIDADES_DO_ESCOPO[escopo],
     });
   } catch (err) {
     console.error("[financeiro/historico GET]", err);

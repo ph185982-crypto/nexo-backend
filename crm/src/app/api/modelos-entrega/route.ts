@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { listarModelos } from "@/lib/entrega/modelo";
 import { naoAutenticado, usuarioDaRequisicao } from "@/lib/auth/requisicao";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   if (!(await usuarioDaRequisicao(req))) return naoAutenticado();
-  const modelos = await prisma.modeloEntrega.findMany({ orderBy: { nome: "asc" }, include: { itens: { orderBy: { ordem: "asc" } } } });
+  const modelos = await listarModelos();
   return Response.json({ modelos });
 }

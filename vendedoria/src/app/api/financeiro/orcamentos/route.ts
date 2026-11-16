@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
 import { gastoDaCategoria, gastoPorCategoriaNoMes } from "@/lib/finance/orcamentos";
+import { parseEscopo } from "@/lib/finance/escopo";
 import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
 
 async function requireAdmin() {
@@ -11,7 +12,7 @@ async function requireAdmin() {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await requireAdmin();
 
@@ -26,7 +27,8 @@ export async function GET() {
     });
 
     // Gasto do mês por categoria (variações de grafia somadas: "Cartão de crédito " = "Cartão de credito")
-    const gastoMap = await gastoPorCategoriaNoMes(mesAtual);
+    // ?escopo=pessoal (API de serviço da Central): o gasto vem só das despesas pessoais. Sem o parâmetro, soma tudo (tela antiga).
+    const gastoMap = await gastoPorCategoriaNoMes(mesAtual, parseEscopo(req.nextUrl.searchParams.get("escopo")));
     const result = orcamentos.map((o) => ({
       ...o,
       gasto_atual: gastoDaCategoria(gastoMap, o.categoria),
@@ -83,6 +85,9 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "categoria query param required" }, { status: 400 });
     }
 
+    if (!(await prisma.orcamentoMax.findUnique({ where: { categoria }, select: { id: true } }))) {
+      return NextResponse.json({ error: "Orçamento não encontrado." }, { status: 404 });
+    }
     await prisma.orcamentoMax.delete({ where: { categoria } });
 
     return NextResponse.json({ ok: true });
