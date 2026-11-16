@@ -22,7 +22,7 @@ export async function listarEntregas(status?: string | null, agora: Date = new D
 export async function detalheEntrega(id: string, agora: Date = new Date()) {
   const e = await prisma.entrega.findUnique({
     where: { id },
-    include: { contato: { select: { id: true, nome: true } }, cartoes: { orderBy: [{ coluna: "asc" }, { ordem: "asc" }], include: { responsavel: { select: { nome: true } } } }, modelo: { select: { nome: true } } },
+    include: { contato: { select: { id: true, nome: true } }, cartoes: { orderBy: [{ coluna: "asc" }, { ordem: "asc" }], include: { responsavel: { select: { id: true, nome: true } } } }, modelo: { select: { nome: true } } },
   });
   if (!e) return null;
   return { ...e, valorMensal: num(e.valorMensal), saude: calcularSaudeEntrega(e.cartoes, e.renovacaoEm, agora) };

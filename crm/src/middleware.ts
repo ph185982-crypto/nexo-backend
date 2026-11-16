@@ -1,12 +1,12 @@
 // Tudo exige login, exceto: tela de login, /api/login, /api/sso/callback (volta do login único; a rota confere o
-// token assinado pela Central), /api/health, /api/integracoes/* (chave de serviço)
+// token assinado pela Central), /api/health, /api/integracoes/vendedor-ia/* e /api/integracoes/avanteza/entregas/* (chave de serviço)
 // e /api/cron/* (CRON_SECRET) — as duas últimas validam a credencial dentro da própria rota —, e a proposta pública
 // (/p/{token} e /api/publico/*: o token aleatório no endereço é a credencial).
 import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_SESSAO, verificarSessao } from "@/lib/auth/sessao";
 
 const PUBLICOS = ["/login", "/api/login", "/api/sso/callback", "/api/health"];
-const PUBLICO_PREFIXOS = ["/api/integracoes/", "/api/cron/", "/api/publico/", "/p/", "/brand/", "/_next/"];
+const PUBLICO_PREFIXOS = ["/api/integracoes/vendedor-ia/", "/api/integracoes/avanteza/entregas", "/api/cron/", "/api/publico/", "/p/", "/brand/", "/_next/"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

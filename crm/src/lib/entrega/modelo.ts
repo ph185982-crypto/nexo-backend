@@ -37,3 +37,5 @@ export async function definirModeloPadrao(id: string) {
     return tx.modeloEntrega.update({ where: { id }, data: { padrao: true, ativo: true } });
   });
 }
+
+export const listarModelos = () => prisma.modeloEntrega.findMany({ orderBy: { nome: "asc" }, include: { itens: { orderBy: { ordem: "asc" } } } });
