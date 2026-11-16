@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -217,7 +218,7 @@ export default function AILeadsPage() {
       const params = new URLSearchParams({ take: "80" });
       if (filterEtapa) params.set("etapa", filterEtapa);
       if (humanOnly)   params.set("human", "true");
-      const r = await fetch(`/api/ai/monitor?${params}`);
+      const r = await fetch(apiUrl(`/api/ai/monitor?${params}`));
       if (!r.ok) throw new Error();
       setData(await r.json());
     } catch {

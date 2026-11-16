@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQuery, gql } from "@apollo/client";
 import { Loader2, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORGS = gql`query { whatsappBusinessOrganizations { id name } }`;
 
@@ -70,7 +71,7 @@ export default function PipelinePage() {
     if (!orgId) return;
     setLoading(true);
     try {
-      const r = await fetch(`/api/leads?organizationId=${orgId}`);
+      const r = await fetch(apiUrl(`/api/leads?organizationId=${orgId}`));
       setLeads(await r.json() as Lead[]);
     } finally { setLoading(false); }
   }, [orgId]);
@@ -83,7 +84,7 @@ export default function PipelinePage() {
       const convs = l.conversations.map((c, i) => i === 0 ? { ...c, etapa } : c);
       return { ...l, conversations: convs };
     }));
-    await fetch(`/api/leads/${leadId}/etapa`, {
+    await fetch(apiUrl(`/api/leads/${leadId}/etapa`), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ etapa }),

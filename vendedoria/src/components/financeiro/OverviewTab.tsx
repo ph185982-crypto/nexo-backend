@@ -17,6 +17,7 @@ import {
   BRL, fmtData, ParcelaChip, PerdaDialog, executarAcaoReceita, type ReceitaItem,
 } from "./receitas-shared";
 import { FiltroPeriodo, filtroInicial, filtroParaQuery, type FiltroFin } from "./FiltroPeriodo";
+import { apiUrl } from "@/lib/api-url";
 
 const DONUT_COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316", "#eab308", "#22c55e", "#06b6d4"];
 
@@ -90,7 +91,7 @@ export function OverviewTab() {
     setLoading(true);
     setErro(false);
     try {
-      const r = await fetch(`/api/financeiro/overview?${filtroParaQuery(filtro)}`);
+      const r = await fetch(apiUrl(`/api/financeiro/overview?${filtroParaQuery(filtro)}`));
       if (!r.ok) throw new Error(String(r.status));
       setData(await r.json());
     } catch {

@@ -10,6 +10,7 @@ import {
   ShieldCheck, Clock, MessageSquareText, RefreshCw,
   Download, Upload, FileSpreadsheet,
 } from "lucide-react";
+import { apiUrl } from "@/lib/api-url";
 
 interface Org { id: string; name: string }
 
@@ -130,7 +131,7 @@ export default function Disparo({ org }: { org: Org }) {
 
   const carregarFila = useCallback(async (orgId: string) => {
     try {
-      const f = await fetch(`/api/prospeccao/disparo/fila/${orgId}`).then((r) => r.json()) as FilaDisparo;
+      const f = await fetch(apiUrl(`/api/prospeccao/disparo/fila/${orgId}`)).then((r) => r.json()) as FilaDisparo;
       setFila(f);
     } catch { /* ignora erro de rede no polling */ }
   }, []);
@@ -139,9 +140,9 @@ export default function Disparo({ org }: { org: Org }) {
     const o = org;
     setChecklistVersao((v) => v + 1);
     const [cfg, tpls, filaAprovados] = await Promise.all([
-      fetch(`/api/prospeccao/disparo-config/${o.id}`).then((r) => r.json()) as Promise<DisparoConfig>,
-      fetch(`/api/prospeccao/templates?orgId=${o.id}`).then((r) => r.json()) as Promise<Template[]>,
-      fetch(`/api/prospeccao/fila?status=APROVADO&orgId=${o.id}`).then((r) => r.json()) as Promise<{ total: number }>,
+      fetch(apiUrl(`/api/prospeccao/disparo-config/${o.id}`)).then((r) => r.json()) as Promise<DisparoConfig>,
+      fetch(apiUrl(`/api/prospeccao/templates?orgId=${o.id}`)).then((r) => r.json()) as Promise<Template[]>,
+      fetch(apiUrl(`/api/prospeccao/fila?status=APROVADO&orgId=${o.id}`)).then((r) => r.json()) as Promise<{ total: number }>,
     ]);
     setConfig(cfg);
     setTemplates(Array.isArray(tpls) ? tpls : []);
@@ -164,7 +165,7 @@ export default function Disparo({ org }: { org: Org }) {
     if (!org || !config) return;
     setSalvando(true);
     try {
-      const res = await fetch(`/api/prospeccao/disparo-config/${org.id}`, {
+      const res = await fetch(apiUrl(`/api/prospeccao/disparo-config/${org.id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),
@@ -179,7 +180,7 @@ export default function Disparo({ org }: { org: Org }) {
     if (!org || !novoTemplate.trim()) return;
     setSalvando(true);
     try {
-      await fetch("/api/prospeccao/templates", {
+      await fetch(apiUrl("/api/prospeccao/templates"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -206,7 +207,7 @@ export default function Disparo({ org }: { org: Org }) {
     setCriandoTemplate(true);
     setResultadoCriacao(null);
     try {
-      const res = await fetch("/api/prospeccao/templates/criar-meta", {
+      const res = await fetch(apiUrl("/api/prospeccao/templates/criar-meta"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -237,7 +238,7 @@ export default function Disparo({ org }: { org: Org }) {
     if (!org) return;
     setVerificandoStatus(true);
     try {
-      const res = await fetch(`/api/prospeccao/disparo/template-meta/${org.id}`);
+      const res = await fetch(apiUrl(`/api/prospeccao/disparo/template-meta/${org.id}`));
       const data = await res.json() as { analise?: Array<{ nome: string; status?: string; corpoTemplate?: string; problema?: string }> };
       const mapa: Record<string, { status: string; corpoTemplate?: string; problema?: string }> = {};
       for (const a of data.analise ?? []) {
@@ -252,7 +253,7 @@ export default function Disparo({ org }: { org: Org }) {
   const ativarTemplate = async (id: string) => {
     setSalvando(true);
     try {
-      await fetch(`/api/prospeccao/templates/${id}`, {
+      await fetch(apiUrl(`/api/prospeccao/templates/${id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ativo: true }),
@@ -271,7 +272,7 @@ export default function Disparo({ org }: { org: Org }) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("organizationId", org.id);
-      const res = await fetch("/api/prospeccao/leads/importar", { method: "POST", body: formData });
+      const res = await fetch(apiUrl("/api/prospeccao/leads/importar"), { method: "POST", body: formData });
       const data = await res.json() as ResultadoImportacao;
       setResultadoImportacao(data);
       if (data.ok) await carregar();
@@ -288,7 +289,7 @@ export default function Disparo({ org }: { org: Org }) {
     setDisparando(true);
     setStatusDisparo("Disparo iniciado — enviando com intervalos de 30-90s entre mensagens (anti-bloqueio)...");
     try {
-      const res = await fetch(`/api/prospeccao/disparo/executar/${org.id}`, { method: "POST" });
+      const res = await fetch(apiUrl(`/api/prospeccao/disparo/executar/${org.id}`), { method: "POST" });
       const data = await res.json() as {
         ok: boolean; error?: string; status?: string; motivo?: string;
         disparados?: number; ignorados?: number; erros?: number;
@@ -313,7 +314,7 @@ export default function Disparo({ org }: { org: Org }) {
       if (pollRef.current) clearInterval(pollRef.current);
       pollRef.current = setInterval(() => {
         void (async () => {
-          const st = await fetch(`/api/prospeccao/disparo/executar/${org.id}`).then((r) => r.json()) as {
+          const st = await fetch(apiUrl(`/api/prospeccao/disparo/executar/${org.id}`)).then((r) => r.json()) as {
             emAndamento: unknown; ultimoResultado: { resultado: unknown } | null;
           };
           if (!st.emAndamento) {
@@ -611,7 +612,7 @@ export default function Disparo({ org }: { org: Org }) {
                       onBlur={(e) => {
                         const val = e.target.value;
                         if (val !== (t.corpoTexto ?? "")) {
-                          void fetch(`/api/prospeccao/templates/${t.id}`, {
+                          void fetch(apiUrl(`/api/prospeccao/templates/${t.id}`), {
                             method: "PATCH",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ corpoTexto: val }),

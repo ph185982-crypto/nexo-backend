@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 interface Lead { id: string; profileName: string | null; phoneNumber: string; status: string }
 interface Conv {
@@ -49,8 +50,8 @@ export function ContactPanel({ conv, onClose }: { conv: Conv; onClose: () => voi
   const load = useCallback(async () => {
     if (!leadId) return;
     const [nr, tr] = await Promise.all([
-      fetch(`/api/leads/${leadId}/notes`).then(r => r.json()),
-      fetch(`/api/leads/${leadId}/tags`).then(r => r.json()),
+      fetch(apiUrl(`/api/leads/${leadId}/notes`)).then(r => r.json()),
+      fetch(apiUrl(`/api/leads/${leadId}/tags`)).then(r => r.json()),
     ]);
     setNotes(nr as LeadNote[]);
     setTags(tr as LeadTag[]);
@@ -61,7 +62,7 @@ export function ContactPanel({ conv, onClose }: { conv: Conv; onClose: () => voi
   const saveNote = useCallback(async () => {
     if (!leadId || !noteInput.trim()) return;
     setSavingNote(true);
-    await fetch(`/api/leads/${leadId}/notes`, {
+    await fetch(apiUrl(`/api/leads/${leadId}/notes`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: noteInput }),
@@ -74,7 +75,7 @@ export function ContactPanel({ conv, onClose }: { conv: Conv; onClose: () => voi
   const addTag = useCallback(async () => {
     if (!leadId || !tagInput.trim()) return;
     setAddingTag(true);
-    await fetch(`/api/leads/${leadId}/tags`, {
+    await fetch(apiUrl(`/api/leads/${leadId}/tags`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: tagInput.trim() }),
@@ -86,7 +87,7 @@ export function ContactPanel({ conv, onClose }: { conv: Conv; onClose: () => voi
 
   const removeTag = useCallback(async (tagId: string) => {
     if (!leadId) return;
-    await fetch(`/api/leads/${leadId}/tags/${tagId}`, { method: "DELETE" });
+    await fetch(apiUrl(`/api/leads/${leadId}/tags/${tagId}`), { method: "DELETE" });
     await load();
   }, [leadId, load]);
 

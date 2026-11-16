@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface PromptHistory { id: string; version: number; savedBy: string; createdAt: string; content: string }
@@ -74,13 +75,13 @@ export default function AgentPage() {
 
   // ── Load prompt + config on mount ──────────────────────────────────────────
   useEffect(() => {
-    fetch("/api/agent/prompt").then(r => r.json()).then((d: { content: string; version: number; updatedAt: string }) => {
+    fetch(apiUrl("/api/agent/prompt")).then(r => r.json()).then((d: { content: string; version: number; updatedAt: string }) => {
       setPrompt(d.content ?? "");
       setPromptVersion(d.version ?? 1);
       setPromptUpdatedAt(d.updatedAt ?? "");
     }).catch(() => {});
 
-    fetch("/api/agent/config").then(r => r.json()).then((d: AgentConfig) => {
+    fetch(apiUrl("/api/agent/config")).then(r => r.json()).then((d: AgentConfig) => {
       if (d && d.agentName) setConfig(d);
     }).catch(() => {});
   }, []);
@@ -93,7 +94,7 @@ export default function AgentPage() {
   const savePrompt = useCallback(async () => {
     setSavingPrompt(true);
     try {
-      const r = await fetch("/api/agent/prompt", {
+      const r = await fetch(apiUrl("/api/agent/prompt"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: prompt, savedBy: "Pedro" }),
@@ -107,21 +108,21 @@ export default function AgentPage() {
 
   // ── Roteiro: history ───────────────────────────────────────────────────────
   const loadHistory = useCallback(async () => {
-    const r = await fetch("/api/agent/prompt/history");
+    const r = await fetch(apiUrl("/api/agent/prompt/history"));
     const d = await r.json() as PromptHistory[];
     setHistory(d);
     setShowHistory(true);
   }, []);
 
   const restoreVersion = useCallback(async (version: number) => {
-    const r = await fetch("/api/agent/prompt/restore", {
+    const r = await fetch(apiUrl("/api/agent/prompt/restore"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ version }),
     });
     const d = await r.json() as { version: number };
     // Reload prompt
-    const pr = await fetch("/api/agent/prompt");
+    const pr = await fetch(apiUrl("/api/agent/prompt"));
     const pd = await pr.json() as { content: string; version: number; updatedAt: string };
     setPrompt(pd.content);
     setPromptVersion(d.version);
@@ -138,7 +139,7 @@ export default function AgentPage() {
     setChatHistory(newHistory);
     setChatLoading(true);
     try {
-      const r = await fetch("/api/agent/chat", {
+      const r = await fetch(apiUrl("/api/agent/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg, history: chatHistory }),
@@ -149,7 +150,7 @@ export default function AgentPage() {
         setToast(`✅ Roteiro atualizado — v.${d.newVersion} ativo`);
         setPromptVersion(d.newVersion);
         // Reload prompt
-        const pr = await fetch("/api/agent/prompt");
+        const pr = await fetch(apiUrl("/api/agent/prompt"));
         const pd = await pr.json() as { content: string; version: number; updatedAt: string };
         setPrompt(pd.content);
         setPromptUpdatedAt(pd.updatedAt);
@@ -164,7 +165,7 @@ export default function AgentPage() {
     setTestMessages([]);
     setTestLoading(true);
     try {
-      const r = await fetch("/api/agent/test", {
+      const r = await fetch(apiUrl("/api/agent/test"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: testInput }),
@@ -178,7 +179,7 @@ export default function AgentPage() {
   const saveConfig = useCallback(async () => {
     setSavingConfig(true);
     try {
-      await fetch("/api/agent/config", {
+      await fetch(apiUrl("/api/agent/config"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),

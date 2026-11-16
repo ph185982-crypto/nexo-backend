@@ -8,6 +8,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceDot,
 } from "recharts";
+import { apiUrl } from "@/lib/api-url";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -23,7 +24,7 @@ export function ProjecaoTab() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/financeiro/projecao")
+    fetch(apiUrl("/api/financeiro/projecao"))
       .then((r) => r.json())
       .then((d) => setData(d))
       .catch(() => {})

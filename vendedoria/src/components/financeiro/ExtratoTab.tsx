@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatTipoNegocio } from "@/lib/finance/labels";
+import { apiUrl } from "@/lib/api-url";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -50,7 +51,7 @@ export function ExtratoTab() {
         tipo, categoria, tipo_negocio: tipoNegocio, texto,
         data_inicio: dataInicio, data_fim: dataFim,
       });
-      const res = await fetch(`/api/financeiro/transacoes?${params}`);
+      const res = await fetch(apiUrl(`/api/financeiro/transacoes?${params}`));
       const json = await res.json();
       setData(json);
     } catch {
@@ -64,7 +65,7 @@ export function ExtratoTab() {
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Tem certeza que deseja excluir esta transacao?")) return;
-    await fetch(`/api/financeiro/transacoes/${id}`, { method: "DELETE" });
+    await fetch(apiUrl(`/api/financeiro/transacoes/${id}`), { method: "DELETE" });
     fetchData();
   };
 
@@ -80,7 +81,7 @@ export function ExtratoTab() {
 
   const saveEdit = async () => {
     if (!editingId) return;
-    await fetch(`/api/financeiro/transacoes/${editingId}`, {
+    await fetch(apiUrl(`/api/financeiro/transacoes/${editingId}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

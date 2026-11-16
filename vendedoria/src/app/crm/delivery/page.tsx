@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn, formatPhone } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_GANHO_LEADS = gql`
   query GetGanhoLeads($organizationId: String!, $leadsPerColumn: Int) {
@@ -141,7 +142,7 @@ export default function DeliveryPage() {
     const results = await Promise.all(
       leads.map(async (l) => {
         try {
-          const res = await fetch(`/api/delivery/${l.id}/diagnosis`);
+          const res = await fetch(apiUrl(`/api/delivery/${l.id}/diagnosis`));
           const json = await res.json();
           const d = json.diagnosis;
           return [
@@ -165,7 +166,7 @@ export default function DeliveryPage() {
     const results = await Promise.all(
       leads.map(async (l) => {
         try {
-          const res = await fetch(`/api/delivery/${l.id}/depoimento`);
+          const res = await fetch(apiUrl(`/api/delivery/${l.id}/depoimento`));
           const json = await res.json();
           return [l.id, json.askedAt as string | null] as [string, string | null];
         } catch {
@@ -183,7 +184,7 @@ export default function DeliveryPage() {
   const pedirDepoimento = useCallback(async (leadId: string) => {
     setPedindoDepoimento(leadId);
     try {
-      const res = await fetch(`/api/delivery/${leadId}/depoimento`, { method: "POST" });
+      const res = await fetch(apiUrl(`/api/delivery/${leadId}/depoimento`), { method: "POST" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Falha ao pedir depoimento");
       setDepoimentoMap((prev) => ({ ...prev, [leadId]: json.askedAt }));

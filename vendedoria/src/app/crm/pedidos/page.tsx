@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Package, Truck, RefreshCw, Send } from "lucide-react";
+import { apiUrl } from "@/lib/api-url";
 
 interface PedidoNacional {
   id: string;
@@ -43,7 +44,7 @@ export default function PedidosNacionaisPage() {
 
   const fetchPedidos = useCallback(async () => {
     try {
-      const res = await fetch("/api/pedidos/nacionais");
+      const res = await fetch(apiUrl("/api/pedidos/nacionais"));
       const data = await res.json();
       setPedidos(data.pedidos ?? []);
     } catch {
@@ -62,7 +63,7 @@ export default function PedidosNacionaisPage() {
   const handleEnviar = async (id: string, codigo: string) => {
     setEnviando(id);
     try {
-      const res = await fetch(`/api/pedidos/nacional/${id}/despachar`, {
+      const res = await fetch(apiUrl(`/api/pedidos/nacional/${id}/despachar`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ codigoRastreamento: codigo }),

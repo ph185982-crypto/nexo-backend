@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { RefreshCw, TrendingUp, Users, Calendar, MessageSquare } from "lucide-react";
 import { infoStatus } from "@/lib/prospeccao/status";
+import { apiUrl } from "@/lib/api-url";
 
 interface MetricasResponse {
   porStatus: Record<string, number>;
@@ -64,7 +65,7 @@ export default function Resultados({ organizationId, buscas }: {
       if (segmentId)  params.set("segmentId", segmentId);
       if (dataInicio) params.set("dataInicio", dataInicio);
       if (dataFim)    params.set("dataFim", dataFim);
-      const res = await fetch(`/api/prospeccao/metricas/${organizationId}?${params}`);
+      const res = await fetch(apiUrl(`/api/prospeccao/metricas/${organizationId}?${params}`));
       const data = await res.json() as MetricasResponse;
       setMetricas(data);
     } catch (e) {

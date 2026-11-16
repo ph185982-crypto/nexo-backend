@@ -4,9 +4,11 @@ import { ApolloClient, InMemoryCache, createHttpLink, split } from "@apollo/clie
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { apiUrl, prefixoDaPagina } from "@/lib/api-url";
 
 const httpLink = createHttpLink({
-  uri: "/api/graphql",
+  // Função: decide a cada chamada (sob /comercial a API responde em /comercial/api).
+  uri: () => apiUrl("/api/graphql"),
   credentials: "same-origin",
 });
 
@@ -14,7 +16,7 @@ function makeWsLink() {
   if (typeof window === "undefined") return null;
   return new GraphQLWsLink(
     createClient({
-      url: `${window.location.origin.replace("http", "ws")}/api/graphql`,
+      url: `${window.location.origin.replace("http", "ws")}${prefixoDaPagina()}/api/graphql`,
     })
   );
 }

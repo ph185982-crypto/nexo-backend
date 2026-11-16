@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { ApiKeysTab } from "@/components/settings/ApiKeysTab";
 import { ManutencaoTab } from "@/components/settings/ManutencaoTab";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 // ─── GraphQL ──────────────────────────────────────────────────────────────
 
@@ -1006,7 +1007,7 @@ function IntegracoesTab() {
 
   const carregar = React.useCallback(() => {
     setLoading(true);
-    fetch("/api/integrations/google/status")
+    fetch(apiUrl("/api/integrations/google/status"))
       .then((r) => r.json())
       .then((d) => setStatus(d as { connected: boolean; email: string | null; calendarId: string }))
       .catch(() => {})
@@ -1018,7 +1019,7 @@ function IntegracoesTab() {
   const desconectar = async () => {
     setDesconectando(true);
     try {
-      await fetch("/api/integrations/google/status", { method: "DELETE" });
+      await fetch(apiUrl("/api/integrations/google/status"), { method: "DELETE" });
       carregar();
     } finally {
       setDesconectando(false);
@@ -1099,7 +1100,7 @@ function RapidApiCard() {
 
   const carregar = React.useCallback(() => {
     setLoading(true);
-    fetch("/api/integrations/rapidapi")
+    fetch(apiUrl("/api/integrations/rapidapi"))
       .then((r) => r.json())
       .then((d) => setStatus(d as { configured: boolean; maskedKey: string | null; source: string | null }))
       .catch(() => {})
@@ -1113,7 +1114,7 @@ function RapidApiCard() {
     setErro(null);
     setSucesso(false);
     try {
-      const res = await fetch("/api/integrations/rapidapi", {
+      const res = await fetch(apiUrl("/api/integrations/rapidapi"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: key.trim() }),

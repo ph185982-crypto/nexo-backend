@@ -21,11 +21,21 @@ model User {
   image         String?
   password      String?
   role          String    @default("ADMIN") // ADMIN | MANAGER | SELLER
+  // Desativado não entra (login por senha ou SSO) e some das listas de responsável do Comercial.
+  ativo         Boolean   @default(true)
   accounts      Account[]
   sessions      Session[]
   pushSubscriptions PushSubscription[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // Comercial (com_*)
+  comContatos       ComContato[]
+  comOportunidades  ComOportunidade[]
+  comTarefas        ComTarefa[]
+  comContaGoogle    ComContaGoogle?
+  comCartoesEntrega ComEntregaCartao[]
+  comCompromissos   CalendarEvent[]    @relation("ComCompromissoResponsavel")
 }
 
 model Account {
@@ -294,6 +304,10 @@ model Lead {
   motivoDetalhe        String?  @db.Text
   stageHistory         LeadStageHistory[]
 
+  // Comercial: o contato-pessoa e as oportunidades deste lead (ponte Lead ↔ Comercial)
+  comContato           ComContato?
+  comOportunidades     ComOportunidade[]
+
   @@index([adSourceId])
   @@index([ctwaClid])
   @@index([motivoEncerramentoId])
@@ -337,6 +351,7 @@ model MotivoEncerramento {
   ativo          Boolean  @default(true)
   createdAt      DateTime @default(now())
   leads          Lead[]
+  comOportunidades ComOportunidade[]
 
   @@unique([organizationId, tipo, nome])
   @@index([organizationId, tipo, ativo])
@@ -621,6 +636,19 @@ model CalendarEvent {
   reminders                CalendarReminder[]
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
+
+  // Comercial: compromisso da oportunidade/contato (agenda do Comercial). Nulos = evento do SDR.
+  oportunidadeId           String?
+  oportunidade             ComOportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId                String?
+  contato                  ComContato? @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  tipo                     String?  // REUNIAO | LIGACAO | VISITA | OUTRO
+  origem                   String?  // MANUAL | INTEGRACAO
+  responsavelId            String?
+  responsavel              User?    @relation("ComCompromissoResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  @@index([oportunidadeId, status])
+  @@index([startTime])
 }
 
 model CalendarAttendee {
@@ -1678,4 +1706,539 @@ model CrmEventoOutbox {
 
   @@index([status, proximaTentativaEm])
   @@index([leadId, criadoEm])
+}
+
+// ═══ Comercial (ex-CRM Avanteza, tabelas com_*) ══════════════════════════════
+// Portado de crm/prisma/schema.prisma (Etapa 3, F3). Ids preservados na cópia
+// (scripts/comercial-copiar.mjs). Uma organização só: sem organizationId.
+// Responsáveis apontam para User. Compromisso virou CalendarEvent (colunas
+// oportunidadeId/contatoId/tipo/origem/responsavelId).
+// Regra: só src/lib/comercial/funil/mover.ts cria oportunidade ou troca a etapa dela.
+
+model ComContato {
+  id            String       @id @default(cuid())
+  tipo          String // EMPRESA | PESSOA
+  nome          String
+  telefone      String? // só dígitos, com DDI
+  email         String?
+  documento     String? // CNPJ ou CPF
+  segmento      String?
+  cargo         String?
+  cicloDeVida   String       @default("LEAD") // LEAD | PROSPECT | CLIENTE | DESCARTADO
+  origem        String?
+  empresaId     String?
+  empresa       ComContato?  @relation("ComPessoaEmpresa", fields: [empresaId], references: [id], onDelete: SetNull)
+  pessoas       ComContato[] @relation("ComPessoaEmpresa")
+  responsavelId String?
+  responsavel   User?        @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  // Lead do Vendedor IA (ex-vendedorIaLeadId): ponte Lead ↔ Comercial.
+  leadId        String?      @unique
+  lead          Lead?        @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  criadoEm      DateTime     @default(now())
+  atualizadoEm  DateTime     @updatedAt
+
+  oportunidades ComOportunidade[] @relation("ComOportunidadeContato")
+  comoPessoaEm  ComOportunidade[] @relation("ComOportunidadePessoa")
+  feedbacks     ComFeedback[]
+  tarefas       ComTarefa[]
+  compromissos  CalendarEvent[]
+  entregas      ComEntrega[]
+  mensagens     ComMensagem[]
+
+  @@index([tipo, nome])
+  @@index([telefone])
+  @@index([cicloDeVida])
+  @@map("com_contato")
+}
+
+model ComFunil {
+  id     String  @id @default(cuid())
+  nome   String  @unique
+  ordem  Int     @default(0)
+  padrao Boolean @default(false)
+  ativo  Boolean @default(true)
+
+  etapas        ComEtapa[]
+  oportunidades ComOportunidade[]
+
+  @@map("com_funil")
+}
+
+model ComEtapa {
+  id               String   @id @default(cuid())
+  funilId          String
+  funil            ComFunil @relation(fields: [funilId], references: [id], onDelete: Cascade)
+  nome             String
+  ordem            Int
+  tipo             String   @default("ABERTA") // ABERTA | GANHA | PERDIDA
+  descricao        String?  @db.Text
+  // Coluna do kanban do Lead (KanbanColumn.type) equivalente: mover a oportunidade para esta etapa move o Lead junto.
+  kanbanColumnType String?
+
+  oportunidades ComOportunidade[]
+
+  @@unique([funilId, nome])
+  @@index([funilId, ordem])
+  @@map("com_etapa")
+}
+
+model ComOportunidade {
+  id        String      @id @default(cuid())
+  numero    Int         @unique @default(autoincrement())
+  nome      String
+  contatoId String
+  contato   ComContato  @relation("ComOportunidadeContato", fields: [contatoId], references: [id])
+  pessoaId  String?
+  pessoa    ComContato? @relation("ComOportunidadePessoa", fields: [pessoaId], references: [id], onDelete: SetNull)
+
+  funilId String
+  funil   ComFunil @relation(fields: [funilId], references: [id])
+  etapaId String
+  etapa   ComEtapa @relation(fields: [etapaId], references: [id])
+  status  String   @default("EM_ANDAMENTO") // EM_ANDAMENTO | GANHA | PERDIDA
+
+  responsavelId String?
+  responsavel   User?   @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  valorUnico    Decimal   @default(0) @db.Decimal(14, 2)
+  valorMensal   Decimal   @default(0) @db.Decimal(14, 2)
+  probabilidade String?
+  origem        String?
+  tags          String[]
+  finalizaEm    DateTime?
+
+  etapaDesdeEm  DateTime            @default(now())
+  encerradaEm   DateTime?
+  motivoId      String?
+  motivo        MotivoEncerramento? @relation(fields: [motivoId], references: [id], onDelete: SetNull)
+  motivoDetalhe String?             @db.Text
+
+  ultimaAtividadeEm DateTime @default(now())
+  leadId            String?
+  lead              Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  criadoEm          DateTime @default(now())
+  atualizadoEm      DateTime @updatedAt
+
+  resumoIa   Json?
+  resumoIaEm DateTime?
+
+  historico    ComHistoricoEtapa[]
+  feedbacks    ComFeedback[]
+  tarefas      ComTarefa[]
+  compromissos CalendarEvent[]
+  entrega      ComEntrega?
+  combinados   ComCombinado[]
+  analises     ComAnaliseAgente[]
+  produtos     ComOportunidadeProduto[]
+  propostas    ComProposta[]
+
+  @@index([funilId, status, etapaId])
+  @@index([contatoId])
+  @@index([leadId])
+  @@index([encerradaEm])
+  @@map("com_oportunidade")
+}
+
+model ComHistoricoEtapa {
+  id             String          @id @default(cuid())
+  oportunidadeId String
+  oportunidade   ComOportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  deEtapaId      String?
+  deFunilNome    String?
+  deEtapaNome    String?
+  paraEtapaId    String
+  paraFunilNome  String
+  paraEtapaNome  String
+  paraTipo       String
+  entrouEm       DateTime        @default(now())
+  saiuEm         DateTime?
+  origem         String // CRIACAO | MANUAL | INTEGRACAO | AUTOMACAO | IMPORTACAO
+  ator           String?
+  motivo         String?         @db.Text
+
+  @@index([oportunidadeId, entrouEm])
+  @@index([paraEtapaId, entrouEm])
+  @@index([paraTipo, entrouEm])
+  @@map("com_historico_etapa")
+}
+
+// Só para idempotência do replay de eventos no corte (ex-EventoIntegracao do CRM).
+model ComEventoIntegracao {
+  id         String   @id @default(cuid())
+  eventoId   String   @unique
+  origem     String
+  tipo       String
+  payload    Json
+  status     String // PROCESSADO | IGNORADO | ERRO
+  detalhe    String?  @db.Text
+  recebidoEm DateTime @default(now())
+
+  @@index([tipo, recebidoEm])
+  @@map("com_evento_integracao")
+}
+
+model ComFeedback {
+  id             String           @id @default(cuid())
+  oportunidadeId String?
+  oportunidade   ComOportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId      String?
+  contato        ComContato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  tipo           String // NOTA | LIGACAO | WHATSAPP | EMAIL | REUNIAO | SISTEMA
+  texto          String           @db.Text
+  intencao       String?
+  importante     Boolean          @default(false)
+  autor          String?
+  autorNome      String?
+  criadoEm       DateTime         @default(now())
+
+  @@index([oportunidadeId, criadoEm])
+  @@index([contatoId, criadoEm])
+  @@index([intencao, criadoEm])
+  @@map("com_feedback")
+}
+
+model ComTarefa {
+  id             String           @id @default(cuid())
+  titulo         String
+  descricao      String?          @db.Text
+  tipo           String           @default("TAREFA")
+  prioridade     String           @default("NORMAL")
+  prazoEm        DateTime?
+  status         String           @default("ABERTA") // ABERTA | CONCLUIDA | CANCELADA
+  concluidaEm    DateTime?
+  recorrencia    String?
+  checklist      Json             @default("[]")
+  origem         String           @default("MANUAL")
+  responsavelId  String?
+  responsavel    User?            @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  contatoId      String?
+  contato        ComContato?      @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  oportunidade   ComOportunidade? @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  paiId          String?
+  pai            ComTarefa?       @relation("ComSubtarefa", fields: [paiId], references: [id], onDelete: Cascade)
+  subtarefas     ComTarefa[]      @relation("ComSubtarefa")
+  criadoEm       DateTime         @default(now())
+  atualizadoEm   DateTime         @updatedAt
+
+  @@index([status, prazoEm])
+  @@index([responsavelId, status])
+  @@index([oportunidadeId, status])
+  @@map("com_tarefa")
+}
+
+model ComModeloEntrega {
+  id        String  @id @default(cuid())
+  nome      String  @unique
+  descricao String? @db.Text
+  padrao    Boolean @default(false)
+  ativo     Boolean @default(true)
+
+  itens    ComModeloEntregaItem[]
+  entregas ComEntrega[]
+
+  @@map("com_modelo_entrega")
+}
+
+model ComModeloEntregaItem {
+  id        String           @id @default(cuid())
+  modeloId  String
+  modelo    ComModeloEntrega @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+  titulo    String
+  descricao String?          @db.Text
+  pilar     String
+  prazoDias Int?
+  cliente   Boolean          @default(false)
+  ordem     Int              @default(0)
+  checklist Json             @default("[]")
+
+  @@index([modeloId, ordem])
+  @@map("com_modelo_entrega_item")
+}
+
+model ComEntrega {
+  id                      String            @id @default(cuid())
+  oportunidadeId          String            @unique
+  oportunidade            ComOportunidade   @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  contatoId               String
+  contato                 ComContato        @relation(fields: [contatoId], references: [id])
+  nome                    String
+  status                  String            @default("EM_ANDAMENTO")
+  inicioEm                DateTime          @default(now())
+  fimPrevistoEm           DateTime?
+  renovacaoEm             DateTime?
+  valorMensal             Decimal           @default(0) @db.Decimal(14, 2)
+  modeloId                String?
+  modelo                  ComModeloEntrega? @relation(fields: [modeloId], references: [id], onDelete: SetNull)
+  diagnostico             Json              @default("{}")
+  concluidaEm             DateTime?
+  renovacaoOportunidadeId String?
+  criadoEm                DateTime          @default(now())
+  atualizadoEm            DateTime          @updatedAt
+
+  cartoes ComEntregaCartao[]
+
+  @@index([status, renovacaoEm])
+  @@index([contatoId])
+  @@map("com_entrega")
+}
+
+model ComEntregaCartao {
+  id            String     @id @default(cuid())
+  entregaId     String
+  entrega       ComEntrega @relation(fields: [entregaId], references: [id], onDelete: Cascade)
+  titulo        String
+  descricao     String?    @db.Text
+  pilar         String     @default("COMERCIAL")
+  coluna        String     @default("BACKLOG")
+  ordem         Int        @default(0)
+  dataAlvo      DateTime?
+  cliente       Boolean    @default(false)
+  responsavelId String?
+  responsavel   User?      @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  checklist     Json       @default("[]")
+  colunaDesdeEm DateTime   @default(now())
+  planejadoEm   DateTime?
+  concluidoEm   DateTime?
+  criadoEm      DateTime   @default(now())
+
+  @@index([entregaId, coluna, ordem])
+  @@map("com_entrega_cartao")
+}
+
+model ComAutomacao {
+  id           String   @id @default(cuid())
+  nome         String
+  descricao    String?  @db.Text
+  ativo        Boolean  @default(true)
+  gatilho      String
+  criterios    Json     @default("[]")
+  acoes        Json     @default("[]")
+  criadaPorId  String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  execucoes ComAutomacaoExecucao[]
+
+  @@index([ativo, gatilho])
+  @@map("com_automacao")
+}
+
+model ComAutomacaoExecucao {
+  id             String       @id @default(cuid())
+  automacaoId    String
+  automacao      ComAutomacao @relation(fields: [automacaoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  referenciaId   String?
+  gatilho        String
+  indice         Int
+  acaoTipo       String
+  chave          String       @unique
+  status         String       @default("PENDENTE")
+  executarEm     DateTime     @default(now())
+  executadaEm    DateTime?
+  detalhe        String?      @db.Text
+  criadoEm       DateTime     @default(now())
+
+  @@index([status, executarEm])
+  @@index([automacaoId, criadoEm])
+  @@map("com_automacao_execucao")
+}
+
+model ComMeta {
+  id           String   @id @default(cuid())
+  escopo       String   @default("TODOS")
+  ano          Int
+  mes          Int
+  tipo         String   @default("TOTAL")
+  valor        Decimal  @db.Decimal(14, 2)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([escopo, ano, mes, tipo])
+  @@map("com_meta")
+}
+
+model ComCombinado {
+  id              String          @id @default(cuid())
+  oportunidadeId  String
+  oportunidade    ComOportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  descricao       String
+  tipo            String          @default("ENTREGAVEL")
+  responsavel     String          @default("NOS")
+  prazoEm         DateTime?
+  pilar           String?
+  status          String          @default("SUGERIDO")
+  acao            String          @default("NOVO")
+  alvoCombinadoId String?
+  alvoCartaoId    String?
+  evidencia       String?         @db.Text
+  confianca       Float?
+  origem          String          @default("MANUAL")
+  analiseId       String?
+  cartaoId        String?
+  tarefaId        String?
+  compromissoId   String?
+  decididoEm      DateTime?
+  decididoPorId   String?
+  entregueEm      DateTime?
+  criadoEm        DateTime        @default(now())
+  atualizadoEm    DateTime        @updatedAt
+
+  @@index([oportunidadeId, status])
+  @@index([analiseId])
+  @@map("com_combinado")
+}
+
+model ComAnaliseAgente {
+  id             String          @id @default(cuid())
+  oportunidadeId String
+  oportunidade   ComOportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  fonte          String
+  fonteRef       String
+  texto          String          @db.Text
+  status         String          @default("PENDENTE")
+  resumo         String?         @db.Text
+  erro           String?         @db.Text
+  sugestoes      Int             @default(0)
+  modelo         String?
+  tokensEntrada  Int?
+  tokensSaida    Int?
+  criadoEm       DateTime        @default(now())
+  concluidaEm    DateTime?
+
+  @@unique([oportunidadeId, fonte, fonteRef])
+  @@index([status, criadoEm])
+  @@map("com_analise_agente")
+}
+
+model ComMensagem {
+  id             String     @id @default(cuid())
+  contatoId      String
+  contato        ComContato @relation(fields: [contatoId], references: [id], onDelete: Cascade)
+  oportunidadeId String?
+  canal          String     @default("WHATSAPP")
+  autor          String
+  deMim          Boolean
+  texto          String     @db.Text
+  enviadaEm      DateTime
+  origem         String // ARQUIVO | VENDEDOR_IA
+  hash           String     @unique
+  analisadaEm    DateTime?
+  criadoEm       DateTime   @default(now())
+
+  @@index([contatoId, enviadaEm])
+  @@index([origem, analisadaEm])
+  @@index([oportunidadeId, enviadaEm])
+  @@map("com_mensagem")
+}
+
+model ComContaGoogle {
+  id                    String             @id @default(cuid())
+  usuarioId             String             @unique
+  usuario               User               @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  email                 String
+  refreshTokenCifrado   String             @db.Text
+  accessToken           String?            @db.Text
+  accessExpiraEm        DateTime?
+  escopos               String             @db.Text
+  ativa                 Boolean            @default(true)
+  erro                  String?            @db.Text
+  ultimaSincronizacaoEm DateTime?
+  criadoEm              DateTime           @default(now())
+  atualizadoEm          DateTime           @updatedAt
+  reunioes              ComReuniaoGoogle[]
+
+  @@map("com_conta_google")
+}
+
+model ComReuniaoGoogle {
+  id               String         @id @default(cuid())
+  contaId          String
+  conta            ComContaGoogle @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  conferenceRecord String         @unique
+  titulo           String?
+  inicio           DateTime
+  fim              DateTime?
+  meetingCode      String?
+  emails           String[]
+  participantes    Json           @default("[]")
+  transcricao      String?        @db.Text
+  status           String
+  oportunidadeId   String?
+  analiseId        String?
+  criadoEm         DateTime       @default(now())
+  atualizadoEm     DateTime       @updatedAt
+
+  @@index([contaId, status])
+  @@index([oportunidadeId])
+  @@map("com_reuniao_google")
+}
+
+model ComProduto {
+  id          String   @id @default(cuid())
+  nome        String   @unique
+  codigo      String?
+  descricao   String?  @db.Text
+  valor       Decimal  @default(0) @db.Decimal(14, 2)
+  recorrencia String   @default("UNICO")
+  ativo       Boolean  @default(true)
+  criadoEm    DateTime @default(now())
+
+  itens ComOportunidadeProduto[]
+
+  @@map("com_produto")
+}
+
+model ComOportunidadeProduto {
+  id             String          @id @default(cuid())
+  oportunidadeId String
+  oportunidade   ComOportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  produtoId      String?
+  produto        ComProduto?     @relation(fields: [produtoId], references: [id], onDelete: SetNull)
+  nome           String
+  quantidade     Decimal         @default(1) @db.Decimal(10, 2)
+  valorUnitario  Decimal         @db.Decimal(14, 2)
+  desconto       Decimal         @default(0) @db.Decimal(5, 2)
+  recorrencia    String          @default("UNICO")
+  criadoEm       DateTime        @default(now())
+
+  @@index([oportunidadeId])
+  @@map("com_oportunidade_produto")
+}
+
+model ComConfiguracao {
+  chave        String   @id
+  valor        String   @db.Text
+  atualizadoEm DateTime @updatedAt
+
+  @@map("com_configuracao")
+}
+
+model ComProposta {
+  id                 String          @id @default(cuid())
+  numero             Int             @unique @default(autoincrement())
+  oportunidadeId     String
+  oportunidade       ComOportunidade @relation(fields: [oportunidadeId], references: [id], onDelete: Cascade)
+  versao             Int             @default(1)
+  status             String          @default("RASCUNHO")
+  titulo             String
+  introducao         String          @db.Text
+  condicoes          String          @db.Text
+  itens              Json            @default("[]")
+  valorUnico         Decimal         @default(0) @db.Decimal(14, 2)
+  valorMensal        Decimal         @default(0) @db.Decimal(14, 2)
+  validaAte          DateTime?
+  token              String          @unique // link público: /comercial/p/{token}
+  enviadaEm          DateTime?
+  visualizadaEm      DateTime?
+  respondidaEm       DateTime?
+  respostaNome       String?
+  respostaComentario String?         @db.Text
+  criadoPorId        String?
+  criadoEm           DateTime        @default(now())
+  atualizadoEm       DateTime        @updatedAt
+
+  @@index([oportunidadeId, versao])
+  @@map("com_proposta")
 }

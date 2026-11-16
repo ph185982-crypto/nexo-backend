@@ -22,6 +22,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 // ── GraphQL ───────────────────────────────────────────────────────────────────
 
@@ -399,7 +400,7 @@ function ConversationsContent() {
       const params = new URLSearchParams({ organizationId: orgId, status: statusFilter });
       if (search) params.set("search", search);
       if (cursor) params.set("cursor", cursor);
-      const res = await fetch(`/api/conversations?${params}`);
+      const res = await fetch(apiUrl(`/api/conversations?${params}`));
       const data = await res.json() as {
         conversations: Conversation[];
         hasMore: boolean;
@@ -416,7 +417,7 @@ function ConversationsContent() {
           setSelectedConv(fresh);
         } else if (reset) {
           // Conversation not in this batch — fetch individually so the chat header stays visible
-          fetch(`/api/conversations?organizationId=${orgId}&id=${selId}`)
+          fetch(apiUrl(`/api/conversations?organizationId=${orgId}&id=${selId}`))
             .then(r => r.json())
             .then((d: { conversation: Conversation | null }) => { if (d.conversation) setSelectedConv(d.conversation); })
             .catch(() => {});
@@ -436,7 +437,7 @@ function ConversationsContent() {
   const fetchMessages = useCallback(async (convId: string, silent = false) => {
     if (!silent) { setLoadingMessages(true); setMsgError(null); }
     try {
-      const res = await fetch(`/api/graphql`, {
+      const res = await fetch(apiUrl(`/api/graphql`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -616,7 +617,7 @@ function ConversationsContent() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+      const uploadRes = await fetch(apiUrl("/api/upload"), { method: "POST", body: formData });
       if (!uploadRes.ok) throw new Error("Upload falhou");
       const { url } = await uploadRes.json() as { url: string };
       await sendMedia({ variables: { conversationId: selectedId, mediaUrl: url, type } });
@@ -1049,7 +1050,7 @@ function ConversationsContent() {
                       setDiagLoading(true);
                       setDiagResult(null);
                       try {
-                        const res = await fetch("/api/debug/passagem-diag", {
+                        const res = await fetch(apiUrl("/api/debug/passagem-diag"), {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ conversationId: selectedId }),

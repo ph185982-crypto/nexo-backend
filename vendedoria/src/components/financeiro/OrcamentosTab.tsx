@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -26,7 +27,7 @@ export function OrcamentosTab() {
   const fetchOrcamentos = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/financeiro/orcamentos");
+      const res = await fetch(apiUrl("/api/financeiro/orcamentos"));
       const json = await res.json();
       setOrcamentos(json.orcamentos ?? json);
     } catch {
@@ -42,7 +43,7 @@ export function OrcamentosTab() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await fetch("/api/financeiro/orcamentos", {
+      await fetch(apiUrl("/api/financeiro/orcamentos"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

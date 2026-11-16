@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 interface Produto {
   id: string;
@@ -61,7 +62,7 @@ export default function FornecedorPage() {
       const params = new URLSearchParams({ limit: "200" });
       if (q) params.set("q", q);
       if (apenasAtivos) params.set("ativo", "true");
-      const res = await fetch(`/api/produtos?${params}`);
+      const res = await fetch(apiUrl(`/api/produtos?${params}`));
       const data = await res.json() as { total: number; produtos: Produto[] };
       setProdutos(data.produtos ?? []);
       setTotal(data.total ?? 0);
@@ -78,7 +79,7 @@ export default function FornecedorPage() {
     setImporting(true);
     setImportResult(null);
     try {
-      const res = await fetch("/api/produtos/importar", {
+      const res = await fetch(apiUrl("/api/produtos/importar"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ modo: "scraper" }),
@@ -101,7 +102,7 @@ export default function FornecedorPage() {
     setImporting(true);
     setImportResult(null);
     try {
-      const res = await fetch("/api/produtos/importar", {
+      const res = await fetch(apiUrl("/api/produtos/importar"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ modo: "manual", items }),
@@ -119,7 +120,7 @@ export default function FornecedorPage() {
   async function handleToggle(produto: Produto) {
     setProdutos((prev) => prev.map((p) => p.id === produto.id ? { ...p, ativo: !p.ativo } : p));
     try {
-      await fetch("/api/produtos", {
+      await fetch(apiUrl("/api/produtos"), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: produto.id, ativo: !produto.ativo }),
@@ -132,7 +133,7 @@ export default function FornecedorPage() {
   async function handleDelete(id: string) {
     if (!confirm("Remover este produto?")) return;
     setProdutos((prev) => prev.filter((p) => p.id !== id));
-    await fetch(`/api/produtos?id=${id}`, { method: "DELETE" });
+    await fetch(apiUrl(`/api/produtos?id=${id}`), { method: "DELETE" });
   }
 
   return (

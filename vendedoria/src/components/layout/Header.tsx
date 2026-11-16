@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { useQuery, gql } from "@apollo/client";
 import { cn, getInitials } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORG_ID = gql`
   query GetOrgIdForNotifications {
@@ -88,7 +89,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   const fetchNotifications = useCallback(async () => {
     if (!orgId) return;
     try {
-      const res = await fetch(`/api/notifications?organizationId=${orgId}&unread=true`);
+      const res = await fetch(apiUrl(`/api/notifications?organizationId=${orgId}&unread=true`));
       setNotifications(await res.json());
     } catch { /* silent */ }
   }, [orgId]);
@@ -100,7 +101,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
 
   const markAllRead = async () => {
     if (!orgId) return;
-    await fetch("/api/notifications/read-all", {
+    await fetch(apiUrl("/api/notifications/read-all"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ organizationId: orgId }),

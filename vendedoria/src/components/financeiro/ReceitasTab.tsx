@@ -16,6 +16,7 @@ import {
   BRL, fmtData, ParcelaChip, PerdaDialog, StatusReceitaBadge, executarAcaoReceita, type ReceitaItem,
 } from "./receitas-shared";
 import { FiltroPeriodo, filtroInicial, filtroParaQuery, hojeBR, type FiltroFin } from "./FiltroPeriodo";
+import { apiUrl } from "@/lib/api-url";
 
 type StatusFiltro = "todas" | "abertas" | "atrasada" | "recebida" | "perdida";
 
@@ -77,8 +78,8 @@ export function ReceitasTab() {
       const q = filtroParaQuery(filtro);
       if (status !== "todas") q.set("status", status);
       const [rRes, cRes] = await Promise.all([
-        fetch(`/api/financeiro/receitas?${q}`),
-        fetch("/api/financeiro/contratos"),
+        fetch(apiUrl(`/api/financeiro/receitas?${q}`)),
+        fetch(apiUrl("/api/financeiro/contratos")),
       ]);
       const r = await rRes.json();
       const c = await cRes.json();
@@ -106,7 +107,7 @@ export function ReceitasTab() {
   const encerrar = async (c: ContratoItem) => {
     if (!confirm(`Encerrar o contrato "${c.descricao}"? As parcelas futuras ainda pendentes viram perda (ficam gravadas e dá para desfazer uma a uma).`)) return;
     setOcupado(c.id);
-    const res = await fetch(`/api/financeiro/contratos/${c.id}`, {
+    const res = await fetch(apiUrl(`/api/financeiro/contratos/${c.id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ acao: "encerrar" }),
@@ -476,7 +477,7 @@ function NovaReceitaForm({ onCriada, onErro }: { onCriada: (msg: string) => void
       if (modo === "parcelada") { corpo.valor_total = num(f.valor_total); corpo.meses = mesesEfetivos; }
       if (modo === "recorrente") { corpo.valor_parcela = num(f.valor_parcela); corpo.meses = mesesEfetivos; }
 
-      const res = await fetch("/api/financeiro/receitas", {
+      const res = await fetch(apiUrl("/api/financeiro/receitas"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(corpo),

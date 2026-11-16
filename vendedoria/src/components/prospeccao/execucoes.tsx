@@ -7,6 +7,7 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from "react";
 import { api, type ResultadoPipeline } from "./api";
 import { useAviso } from "./ui";
+import { apiUrl } from "@/lib/api-url";
 
 export type TipoExecucao = "sourcing" | "pipeline";
 
@@ -72,7 +73,7 @@ export function ExecucoesProvider({ children, onConcluido }: { children: React.R
 
   const buscar = useCallback(async (segmentId: string, nome: string) => {
     atualizar(segmentId, { tipo: "sourcing", feito: 0, total: 0, texto: "Iniciando busca…" });
-    const res = await fetch(`/api/prospeccao/sourcing/${segmentId}`, { method: "POST" });
+    const res = await fetch(apiUrl(`/api/prospeccao/sourcing/${segmentId}`), { method: "POST" });
     const data = await res.json().catch(() => ({})) as { status?: string; error?: string; inseridos?: number; ignorados?: number };
     if (!res.ok && res.status !== 202 && res.status !== 409) throw new Error(data.error ?? `Erro ${res.status}`);
 

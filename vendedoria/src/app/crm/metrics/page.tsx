@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORGS = gql`
   query GetOrgsMetrics { whatsappBusinessOrganizations { id name } }
@@ -98,7 +99,7 @@ export default function MetricsPage() {
     if (!orgId) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/metrics/leo?organizationId=${orgId}&period=${period}`);
+      const res = await fetch(apiUrl(`/api/metrics/leo?organizationId=${orgId}&period=${period}`));
       setMetrics(await res.json());
     } finally {
       setLoading(false);

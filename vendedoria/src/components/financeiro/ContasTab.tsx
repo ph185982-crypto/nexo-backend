@@ -12,6 +12,7 @@ import { fmtData } from "./receitas-shared";
 import { hojeBR } from "./FiltroPeriodo";
 import { EditarContaDialog, ExcluirContaDialog } from "./ContaDialogs";
 import { ContratosDespesaPanel } from "./ContratosDespesaPanel";
+import { apiUrl } from "@/lib/api-url";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -42,7 +43,7 @@ export function ContasTab() {
   const fetchContas = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/financeiro/contas?status=pendente");
+      const res = await fetch(apiUrl("/api/financeiro/contas?status=pendente"));
       const json = await res.json();
       setContas(json.contas ?? json);
     } catch {
@@ -56,7 +57,7 @@ export function ContasTab() {
   useEffect(() => { fetchContas(); }, [fetchContas]);
 
   const marcarComoPaga = async (id: string) => {
-    await fetch(`/api/financeiro/contas/${id}`, {
+    await fetch(apiUrl(`/api/financeiro/contas/${id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ acao: "pagar" }),
@@ -68,7 +69,7 @@ export function ContasTab() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await fetch("/api/financeiro/contas", {
+      await fetch(apiUrl("/api/financeiro/contas"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

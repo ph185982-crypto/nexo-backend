@@ -31,9 +31,24 @@ export const PREFIXOS_PUBLICOS = [
   "/api/admin/reset-admin",     // exige segredo
   "/api/admin/migrate-from-render",
   "/api/admin/deescalate-all",
+  "/api/comercial/publico/propostas/", // proposta pública do Comercial: o token de 32 caracteres é a credencial (só leitura e resposta)
 ] as const;
 
-export function rotaPublica(pathname: string): boolean {
+/** Páginas públicas fora de /api (o resto de /comercial e /crm exige login). Prefixo exato. */
+export const PAGINAS_PUBLICAS = ["/comercial/p/"] as const;
+
+export const paginaPublica = (pathname: string) => PAGINAS_PUBLICAS.some((p) => pathname.startsWith(p));
+
+/**
+ * O Comercial também responde a API em /comercial/api/* (endereço sob a Central). A regra de acesso é
+ * a mesma de /api/*: normaliza o prefixo antes de decidir, para o alias não furar a proteção.
+ */
+export function normalizarCaminhoApi(pathname: string): string {
+  return pathname.startsWith("/comercial/api/") ? pathname.slice("/comercial".length) : pathname;
+}
+
+export function rotaPublica(caminho: string): boolean {
+  const pathname = normalizarCaminhoApi(caminho);
   return PREFIXOS_PUBLICOS.some((p) => (p.endsWith("/") ? pathname.startsWith(p) : pathname === p || pathname.startsWith(`${p}/`)));
 }
 

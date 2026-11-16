@@ -17,7 +17,7 @@ export type { TipoEncerramento } from "@/lib/crm/encerramento";
 
 type Db = Prisma.TransactionClient;
 
-export type OrigemEtapa = "CRIACAO" | "PIPELINE" | "MANUAL" | "IA" | "SINCRONIZACAO" | "BACKFILL";
+export type OrigemEtapa = "CRIACAO" | "PIPELINE" | "MANUAL" | "IA" | "SINCRONIZACAO" | "BACKFILL" | "COMERCIAL"; // COMERCIAL: veio da oportunidade (lib/comercial/funil/mover.ts)
 
 export interface ColunaRef {
   id: string;

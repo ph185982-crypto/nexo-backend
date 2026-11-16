@@ -6,6 +6,7 @@ import { useQuery, gql } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { Loader2, TrendingUp, Users, ShoppingBag, BarChart2, DollarSign, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORGS = gql`query { whatsappBusinessOrganizations { id name } }`;
 
@@ -61,7 +62,7 @@ export default function DashboardPage() {
     if (!orgId) return;
     setLoading(true);
     try {
-      const r = await fetch(`/api/dashboard?organizationId=${orgId}`);
+      const r = await fetch(apiUrl(`/api/dashboard?organizationId=${orgId}`));
       setData(await r.json() as DashData);
     } finally { setLoading(false); }
   }, [orgId]);

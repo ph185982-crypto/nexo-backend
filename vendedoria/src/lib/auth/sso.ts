@@ -21,7 +21,7 @@ const porEmail = (email: string) => prisma.user.findFirst({ where: { email: { eq
  * - Novo: ADMIN só se a Central disser `admin`; qualquer outro papel entra como SELLER (o mais restrito daqui).
  *   A senha é aleatória, só o hash é guardado e ela nunca é mostrada: a pessoa entra pela Central.
  * - Existente: o papel local NÃO muda.
- * O modelo User deste app não tem campo de "desativado"; quando tiver, a recusa entra aqui.
+ * - Desativado (User.ativo = false): recusado (lança; autorizarSso devolve null).
  */
 export async function usuarioDoSso(identidade: Pick<IdentidadeAvanteza, "email" | "name" | "role">): Promise<{ usuario: UsuarioSessao; criado: boolean }> {
   const email = identidade.email.trim().toLowerCase();
@@ -40,6 +40,7 @@ export async function usuarioDoSso(identidade: Pick<IdentidadeAvanteza, "email" 
       if (!user) throw e;
     }
   }
+  if (user.ativo === false) throw new Error("usuário desativado");
   return { usuario: { id: user.id, name: user.name, email: user.email, role: user.role }, criado };
 }
 

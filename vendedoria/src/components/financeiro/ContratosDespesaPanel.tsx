@@ -18,6 +18,7 @@ import { TIPO_NEGOCIO_OPTIONS, formatTipoNegocio } from "@/lib/finance/labels";
 import { BRL, fmtData } from "./receitas-shared";
 import { Campo, fmtInput, inputCls, parseValor, patch } from "./EditarDialogs";
 import { hojeBR } from "./FiltroPeriodo";
+import { apiUrl } from "@/lib/api-url";
 
 interface Contrato {
   id: string;
@@ -60,7 +61,7 @@ export function ContratosDespesaPanel({ onChange }: { onChange: () => void }) {
 
   const carregar = useCallback(async () => {
     try {
-      const r = await fetch("/api/financeiro/contratos-despesa");
+      const r = await fetch(apiUrl("/api/financeiro/contratos-despesa"));
       if (r.ok) setContratos((await r.json()).contratos ?? []);
     } catch { /* silencioso */ } finally { setLoading(false); }
   }, []);
@@ -74,7 +75,7 @@ export function ContratosDespesaPanel({ onChange }: { onChange: () => void }) {
     if (!(valor > 0)) { setErro("Informe o valor da parcela."); return; }
     setSalvando(true); setErro(null);
     try {
-      const res = await fetch("/api/financeiro/contratos-despesa", {
+      const res = await fetch(apiUrl("/api/financeiro/contratos-despesa"), {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           descricao: f.descricao, credor: f.credor, valor_parcela: valor,

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { BRL } from "./receitas-shared";
+import { apiUrl } from "@/lib/api-url";
 
 interface Item {
   id: string;
@@ -93,7 +94,7 @@ export function HistoricoTab() {
     try {
       const q = new URLSearchParams({ page: String(pagina) });
       for (const [k, v] of Object.entries(f)) if (v) q.set(k, v);
-      const r = await fetch(`/api/financeiro/historico?${q}`);
+      const r = await fetch(apiUrl(`/api/financeiro/historico?${q}`));
       const j = await r.json();
       setItens(j.itens ?? []);
       setTotal(j.total ?? 0);
@@ -113,7 +114,7 @@ export function HistoricoTab() {
   const restaurar = async (it: Item) => {
     if (!confirm(`Restaurar "${it.descricao ?? it.entidade_id}"? O lançamento volta com os mesmos dados de antes da exclusão.`)) return;
     setRestaurando(it.id);
-    const r = await fetch(`/api/financeiro/historico/${it.id}/restaurar`, { method: "POST" });
+    const r = await fetch(apiUrl(`/api/financeiro/historico/${it.id}/restaurar`), { method: "POST" });
     const j = await r.json().catch(() => ({}));
     setRestaurando(null);
     setAviso(r.ok ? { ok: true, msg: "Lançamento restaurado." } : { ok: false, msg: j.error ?? "Não foi possível restaurar." });

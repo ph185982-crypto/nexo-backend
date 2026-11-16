@@ -96,6 +96,10 @@ os follow-ups saem por cron, que é o modo correto em serverless.
 
 ## Crons
 
+> Atualização (2026-11-16): o time da Vercel agora é **Pro** — o limite de dois crons
+> diários do Hobby não vale mais. Agendamento novo entra direto no `vercel.json`
+> (cron da Vercel), não em GitHub Actions. O texto abaixo descreve a época do Hobby.
+
 O plano Hobby permite dois crons, e só diários. O `vercel.json` declara os dois
 que cabem:
 
