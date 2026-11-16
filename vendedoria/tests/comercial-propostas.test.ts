@@ -93,7 +93,10 @@ test("rotas públicas da proposta passam sem login; o resto continua fechado", a
   assert.equal(((await r("/api/comercial/propostas/abc")) as Response).status, 401);
   assert.equal(((await r("/comercial/api/comercial/propostas/abc")) as Response).status, 401, "o alias não fura a proteção");
   assert.equal(((await r("/api/comercial/publico/outra-coisa")) as Response).status, 401, "só o prefixo exato é público");
-  assert.equal(await r("/comercial/oportunidades"), false);
-  assert.equal(await r("/comercial"), false);
-  assert.equal(await r("/comercial/pagina-qualquer"), false);
+  // Página da zona sem sessão: vai ao login único da Central (F5/C6), nunca abre.
+  for (const p of ["/comercial/oportunidades", "/comercial", "/comercial/pagina-qualquer"]) {
+    const res = (await r(p)) as Response;
+    assert.equal(res.status, 302, p);
+    assert.match(res.headers.get("location")!, /\/sso\/authorize\?app=vendas&return=/, p);
+  }
 });

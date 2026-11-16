@@ -19,6 +19,24 @@ import { POST as postCartao } from "@/app/api/integracoes/avanteza/entregas/[id]
 import { GET as getCartao, PATCH as patchCartao, DELETE as delCartao } from "@/app/api/integracoes/avanteza/entregas/[id]/cartoes/[cartaoId]/route";
 import { middleware } from "@/middleware";
 import { NextRequest } from "next/server";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+// Teste de contrato com o Vendedor IA (F5/C7): o Vendedor IA serve a mesma API lendo com_*. As chaves de cada resposta
+// ficam em vendedoria/tests/fixtures/contrato-entregas.json; GERAR_CONTRATO=1 regrava a partir DESTE teste (a referência
+// é o CRM), sem a variável o teste confere. vendedoria/tests/avanteza-entregas-api.test.ts confere o mesmo arquivo.
+const ARQUIVO_CONTRATO = join(process.cwd(), "..", "vendedoria", "tests", "fixtures", "contrato-entregas.json");
+function formato(v: unknown, caminho = "", saida = new Set<string>()): Set<string> {
+  if (Array.isArray(v)) { saida.add(`${caminho}[]`); for (const x of v) formato(x, `${caminho}[]`, saida); }
+  else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) { saida.add(`${caminho}.${k}`); formato(x, `${caminho}.${k}`, saida); }
+  return saida;
+}
+const formas: Record<string, string[]> = {};
+async function guardar(nome: string, r: Response) {
+  const corpo = await r.clone().json();
+  formas[nome] = [...formato(corpo)].sort();
+  return corpo;
+}
 
 const CHAVE = "chave-de-teste-avanteza-0123456789";
 const DIA = 86_400_000;
@@ -72,10 +90,11 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
 
     // lista e quadro
     const lista = await (await getLista(rq("GET"))).json();
+    await guardar("lista", await getLista(rq("GET", undefined, CHAVE, "http://x/a?status=EM_ANDAMENTO")));
     assert.ok(lista.entregas.some((e: { id: string }) => e.id === entrega.id));
     assert.equal((await getLista(rq("GET", undefined, CHAVE, "http://x/a?status=INVALIDO"))).status, 400);
     const quadroUrl = (qs = "") => rq("GET", undefined, CHAVE, `http://x/q?entregaId=${entrega.id}&${qs}`);
-    const quadro = await (await getQuadro(quadroUrl())).json();
+    const quadro = await guardar("quadro", await getQuadro(quadroUrl()));
     assert.equal(quadro.entregas.length, 1);
     assert.equal(quadro.cartoes.length, 2);
     assert.equal(quadro.colunas.length, 5);
@@ -89,11 +108,13 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     assert.equal((await (await getQuadro(quadroUrl("responsavelId=sem"))).json()).cartoes.length, 2);
     assert.equal((await (await getQuadro(quadroUrl(`responsavelId=${user.id}`))).json()).entregas.length, 0, "filtro de cartão tira entrega sem cartão correspondente");
     assert.equal((await (await getQuadro(rq("GET", undefined, CHAVE, `http://x/q?q=${encodeURIComponent(c.marca.toUpperCase())}`))).json()).entregas.length, 1, "busca por nome do cliente, sem diferenciar maiúsculas");
-    assert.equal((await getQuadro(quadroUrl("pilar=XYZ"))).status, 400);
+    const ruim = await getQuadro(quadroUrl("pilar=XYZ"));
+    assert.equal(ruim.status, 400);
+    await guardar("erro", ruim);
 
     // abrir cartão
     const { id: idKick } = kick;
-    const aberto = await (await getCartao(rq("GET"), ctx({ id: entrega.id, cartaoId: idKick }))).json();
+    const aberto = await guardar("cartao", await getCartao(rq("GET"), ctx({ id: entrega.id, cartaoId: idKick })));
     assert.equal(aberto.titulo, "Kickoff");
     assert.equal(aberto.entrega.contato.id, c.contato.id);
     assert.ok(aberto.historico.length >= 1);
@@ -102,7 +123,9 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
 
     // mover cartão: mesma regra do CRM (planejado, colunaDesdeEm), responsável, edição
     const P = (corpo: unknown, cartaoId = idKick) => patchCartao(rq("PATCH", corpo), ctx({ id: entrega.id, cartaoId }));
-    assert.equal((await P({ coluna: "EM_ANDAMENTO", responsavelId: user.id, titulo: "Kickoff com o dono" })).status, 200);
+    const mov = await P({ coluna: "EM_ANDAMENTO", responsavelId: user.id, titulo: "Kickoff com o dono" });
+    assert.equal(mov.status, 200);
+    await guardar("ok", mov);
     let k = await prisma.entregaCartao.findUniqueOrThrow({ where: { id: idKick } });
     assert.deepEqual([k.coluna, k.responsavelId, k.titulo], ["EM_ANDAMENTO", user.id, "Kickoff com o dono"]);
     assert.ok(k.planejadoEm, "mudar de coluna marca como planejado, como no CRM");
@@ -120,7 +143,7 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     // criar cartão
     const novo = await postCartao(rq("POST", { titulo: "Relatório mensal", pilar: "MARKETING", coluna: "ESSA_SEMANA", dataAlvo: new Date(Date.now() + 3 * DIA).toISOString(), responsavelId: user.id }), E);
     assert.equal(novo.status, 201);
-    const idNovo = (await novo.json()).id as string;
+    const idNovo = (await guardar("novoCartao", novo)).id as string;
     assert.equal((await postCartao(rq("POST", { titulo: "" }), E)).status, 400);
     assert.equal((await postCartao(rq("POST", { titulo: "x" }), ctx({ id: "nada" }))).status, 404);
     assert.equal((await postCartao(rq("POST", [1]), E)).status, 400, "corpo precisa ser objeto");
@@ -134,7 +157,7 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     // editar/concluir entrega
     const renova = new Date(Date.now() + 30 * DIA).toISOString();
     assert.equal((await patchEntrega(rq("PATCH", { renovacaoEm: renova, diagnostico: { MARKETING: "Anúncios sem pixel", INEXISTENTE: "x" } }), E)).status, 200);
-    const det = await (await getEntrega(rq("GET"), E)).json();
+    const det = await guardar("entrega", await getEntrega(rq("GET"), E));
     assert.equal(det.diagnostico.MARKETING, "Anúncios sem pixel");
     assert.equal(det.diagnostico.INEXISTENTE, undefined);
     assert.equal(det.cartoes[0].responsavel === null || typeof det.cartoes[0].responsavel.id === "string", true);
@@ -146,9 +169,10 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     const ren = await (await getRenovacoes(rq("GET", undefined, CHAVE, "http://x/r?dias=60"))).json();
     const minha = ren.renovacoes.find((r: { entregaId: string }) => r.entregaId === entrega.id);
     assert.ok(minha && minha.diasParaRenovar <= 30 && minha.renovacaoOportunidadeId === null);
+    formas.renovacoes = [...formato({ renovacoes: [minha] })].sort();
     assert.equal((await getRenovacoes(rq("GET", undefined, CHAVE, "http://x/r?dias=9999"))).status, 400);
     // rotina abre a oportunidade de renovação (via mover.ts) e é idempotente
-    const rot = await (await postRotina(rq("POST"))).json();
+    const rot = await guardar("rotina", await postRotina(rq("POST")));
     assert.ok(rot.renovacoes >= 1);
     const depois = await prisma.entrega.findUniqueOrThrow({ where: { id: entrega.id } });
     assert.ok(depois.renovacaoOportunidadeId && !depois.renovacaoOportunidadeId.startsWith("reservando"));
@@ -166,7 +190,7 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     // upsell abre oportunidade por mover.ts
     const up = await postUpsell(rq("POST"), E);
     assert.equal(up.status, 201);
-    assert.ok(await prisma.oportunidade.findUnique({ where: { id: (await up.json()).oportunidadeId } }));
+    assert.ok(await prisma.oportunidade.findUnique({ where: { id: (await guardar("upsell", up)).oportunidadeId } }));
     assert.equal((await postUpsell(rq("POST"), ctx({ id: "nada" }))).status, 404);
 
     // apagar cartão
@@ -176,6 +200,7 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     // modelos
     const mods = await (await getModelos(rq("GET"))).json();
     assert.ok(mods.modelos.some((m: { id: string; padrao: boolean; itens: unknown[] }) => m.id === modelo.id && m.padrao && m.itens.length === 2));
+    formas.modelos = [...formato({ modelos: [mods.modelos.find((m: { id: string }) => m.id === modelo.id)] })].sort();
     const outro = await prisma.modeloEntrega.create({ data: { nome: `Outro ${c.marca}` } });
     try {
       assert.equal((await patchModelo(rq("PATCH", { padrao: true }), ctx({ modeloId: outro.id }))).status, 200);
@@ -185,7 +210,7 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
     } finally { await prisma.modeloEntrega.delete({ where: { id: outro.id } }); }
 
     // usuários e gatilhos
-    const us = await (await getUsuarios(rq("GET"))).json();
+    const us = await guardar("usuarios", await getUsuarios(rq("GET")));
     assert.ok(us.usuarios.some((u: { id: string }) => u.id === user.id));
     assert.deepEqual(Object.keys(us.usuarios[0]).sort(), ["id", "nome"], "só id e nome");
     const aut = await prisma.automacao.create({ data: { nome: `Aut ${c.marca}`, gatilho: "ENTREGA_CARTAO_ATRASADO" } });
@@ -193,7 +218,16 @@ test("fluxo completo: quadro, abrir/mover/criar/editar/apagar cartão, concluir,
       const g = await (await getGatilhos(rq("GET"))).json();
       assert.equal(g.gatilhos.length, 6);
       assert.equal(g.automacoes.find((a: { id: string }) => a.id === aut.id).rotuloGatilho, "Entrega: cartão atrasado");
+      formas.gatilhos = [...formato({ gatilhos: g.gatilhos, automacoes: [g.automacoes.find((a: { id: string }) => a.id === aut.id)] })].sort();
     } finally { await prisma.automacao.delete({ where: { id: aut.id } }); }
+
+    // Contrato com o Vendedor IA (só se o repositório tiver vendedoria/ ao lado).
+    if (process.env.GERAR_CONTRATO === "1") writeFileSync(ARQUIVO_CONTRATO, JSON.stringify(formas, null, 2) + "\n");
+    else if (existsSync(ARQUIVO_CONTRATO)) {
+      const referencia = JSON.parse(readFileSync(ARQUIVO_CONTRATO, "utf8")) as Record<string, string[]>;
+      assert.deepEqual(Object.keys(formas).sort(), Object.keys(referencia).sort());
+      for (const nome of Object.keys(referencia)) assert.deepEqual(formas[nome], referencia[nome], `formato de "${nome}" mudou: regrave com GERAR_CONTRATO=1 e confira o Vendedor IA`);
+    }
   } finally {
     await prisma.oportunidade.deleteMany({ where: { nome: { contains: c.marca } } });
     await prisma.entrega.deleteMany({ where: { oportunidade: { funilId: c.funil.id } } });

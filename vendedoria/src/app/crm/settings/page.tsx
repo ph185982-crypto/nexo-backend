@@ -1071,7 +1071,7 @@ function IntegracoesTab() {
               Nenhuma conta Google conectada
             </div>
             <Button asChild size="sm">
-              <a href="/api/integrations/google/connect">Conectar conta Google</a>
+              <a href="/api/integrations/google/connect" onClick={(e) => { e.preventDefault(); window.location.href = apiUrl(e.currentTarget.getAttribute("href")!); }}>Conectar conta Google</a>
             </Button>
             <p className="text-xs text-muted-foreground">
               Você será redirecionado para o login do Google e voltará aqui automaticamente.

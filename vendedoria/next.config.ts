@@ -1,10 +1,17 @@
 import type { NextConfig } from "next";
+import { ALIASES_LEGADOS, ARQUIVOS_PUBLICOS, PREFIXO_LEGADO_GENERICO, ZONA } from "./src/lib/zona-comercial";
 
 // Vercel = serverless (no standalone), Render/Docker = standalone
 const isVercel = !!process.env.VERCEL;
 
 const nextConfig: NextConfig = {
   ...(isVercel ? {} : { output: "standalone" }),
+
+  // Endereço único (app.avanteza.com.br/comercial/*, reescrita na Central — ver src/lib/zona-comercial.ts).
+  // SEM basePath: /api/webhooks/whatsapp e /api/webhooks/clicksign continuam onde estão. Os arquivos do Next
+  // saem como /comercial/_next/… (a Central repassa /comercial/* para cá) e a reescrita "beforeFiles" abaixo
+  // os devolve a /_next/… — nos dois domínios. Reverter = apagar assetPrefix e images.path.
+  assetPrefix: ZONA,
 
   // BullMQ + ioredis use Node.js built-ins (child_process, net, worker_threads)
   // that webpack cannot bundle. serverExternalPackages covers Route Handlers;
@@ -26,11 +33,28 @@ const nextConfig: NextConfig = {
     return [
       { source: "/comercial/p/:path*", headers: privado },
       { source: "/api/comercial/publico/:path*", headers: privado },
+      { source: "/comercial/api/comercial/publico/:path*", headers: privado },
     ];
   },
 
   async rewrites() {
-    return [
+    const zonaAntes = [
+      { source: `${ZONA}/_next/:path*`, destination: "/_next/:path*" },
+      ...ARQUIVOS_PUBLICOS.flatMap((a) => [
+        { source: `${ZONA}${a}`, destination: a },
+        ...(a.includes(".") ? [] : [{ source: `${ZONA}${a}/:path*`, destination: `${a}/:path*` }]),
+      ]),
+    ];
+    const zonaDepois = [
+      // Telas antigas do Vendedor IA também sob /comercial (o domínio antigo segue abrindo /crm/*).
+      ...ALIASES_LEGADOS.flatMap(({ zona, legado }) => [
+        { source: zona, destination: legado },
+        { source: `${zona}/:path*`, destination: `${legado}/:path*` },
+      ]),
+      { source: PREFIXO_LEGADO_GENERICO, destination: "/crm" },
+      { source: `${PREFIXO_LEGADO_GENERICO}/:path*`, destination: "/crm/:path*" },
+    ];
+    return { beforeFiles: zonaAntes, afterFiles: [
       { source: "/.well-known/oauth-protected-resource/:path*", destination: "/api/oauth/metadata/recurso" },
       { source: "/.well-known/oauth-protected-resource", destination: "/api/oauth/metadata/recurso" },
       { source: "/.well-known/oauth-authorization-server/:path*", destination: "/api/oauth/metadata/servidor" },
@@ -38,7 +62,8 @@ const nextConfig: NextConfig = {
       // Comercial: a API também responde em /comercial/api/* (endereço sob a Central, ver src/lib/api-url.ts).
       // O middleware cobre /comercial/* e normaliza o prefixo antes de decidir o acesso (rotas-publicas.ts).
       { source: "/comercial/api/:path*", destination: "/api/:path*" },
-    ];
+      ...zonaDepois,
+    ], fallback: [] };
   },
 
   webpack(config, { isServer, nextRuntime }) {
@@ -70,6 +95,7 @@ const nextConfig: NextConfig = {
   },
 
   images: {
+    path: `${ZONA}/_next/image`,
     remotePatterns: [
       { protocol: "https", hostname: "**" },
     ],

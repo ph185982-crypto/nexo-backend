@@ -1,4 +1,5 @@
-// Envio do outbox para o CRM: retentativa com espera crescente; erro de formato (400) não é refeito.
+// Entrega do outbox: retentativa com espera crescente; erro de formato (400/inválido) não é refeito.
+// Destino: o CRM antigo por HTTP ou, com COMERCIAL_NATIVO=1, o tratador em processo (ver eventos.ts).
 import { prisma } from "@/lib/prisma/client";
 
 const ESPERA_MIN = [1, 5, 30, 120, 360, 720, 1440];
@@ -8,7 +9,23 @@ const TIMEOUT_MS = 8_000;
 
 export const esperaAposTentativa = (tentativas: number) => ESPERA_MIN[Math.min(tentativas - 1, ESPERA_MIN.length - 1)] * 60_000;
 
-async function enviar(payload: unknown, timeoutMs: number): Promise<{ ok: true } | { ok: false; definitivo: boolean; erro: string }> {
+type Envio = { ok: true } | { ok: false; definitivo: boolean; erro: string };
+
+/** COMERCIAL_NATIVO=1: o mesmo contrato do CRM, tratado aqui (idempotente por eventoId; DUPLICADO conta como entregue). */
+async function tratarEmProcesso(payload: unknown): Promise<Envio> {
+  const { validarEvento, processarEventoVendedorIa } = await import("@/lib/comercial/integracao/eventos");
+  const v = validarEvento(payload);
+  if (!v.ok) return { ok: false, definitivo: true, erro: `inválido: ${v.erro}` }; // como o 400 do CRM
+  try {
+    await processarEventoVendedorIa(v.evento);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, definitivo: false, erro: `nativo: ${String(e instanceof Error ? e.message : e)}`.slice(0, 200) };
+  }
+}
+
+async function enviar(payload: unknown, timeoutMs: number): Promise<Envio> {
+  if (process.env.COMERCIAL_NATIVO?.trim() === "1") return tratarEmProcesso(payload);
   const base = process.env.CRM_URL?.trim().replace(/\/+$/, "");
   const chave = process.env.CRM_API_KEY?.trim();
   if (!base || !chave) return { ok: false, definitivo: false, erro: "CRM_URL/CRM_API_KEY não configurados" };

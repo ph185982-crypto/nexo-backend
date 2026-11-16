@@ -1,5 +1,6 @@
 vendedoria/
 crm/
+crm-redirecionamentos/
 node_modules/
 .git/
 scrapers/

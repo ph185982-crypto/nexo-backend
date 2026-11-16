@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageSquare, Kanban, Briefcase, ListChecks, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { hrefNaZona } from "@/lib/zona-comercial";
 
 // Cinco atalhos; o resto (Prospecções, Disparos, Contatos, Agenda, Propostas, Financeiro na Central…) fica no menu lateral.
 const tabs = [
@@ -24,12 +25,13 @@ export function MobileTabBar() {
       "flex safe-area-bottom"
     )}>
       {tabs.map((t) => {
-        const active = pathname.startsWith(t.href);
+        const href = hrefNaZona(t.href, pathname); // sob /comercial, as telas antigas também abrem sob /comercial
+        const active = pathname.startsWith(t.href) || pathname.startsWith(href);
         const Icon = t.icon;
         return (
           <Link
             key={t.href}
-            href={t.href}
+            href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex flex-1 flex-col items-center justify-center gap-1 h-14 press-scale",

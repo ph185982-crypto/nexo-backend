@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "routes": [
+    { "src": "^/p/([A-Za-z0-9_-]{8,64})/?$", "status": 308, "headers": { "Location": "https://app.avanteza.com.br/comercial/p/$1", "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" } },
+    { "src": "^/api(/.*)?$", "status": 410, "dest": "/410.json", "headers": { "Cache-Control": "no-store", "Content-Type": "application/json; charset=utf-8" } },
+    { "src": "^/(index\\.html)?$", "status": 308, "headers": { "Location": "https://app.avanteza.com.br/comercial", "Cache-Control": "no-store" } },
+    { "src": "^/.*$", "status": 308, "headers": { "Location": "https://app.avanteza.com.br/comercial", "Cache-Control": "no-store" } }
+  ]
+}

@@ -4,6 +4,7 @@ import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 import React, { useEffect, useState, useCallback } from "react";
 import { Menu, LogOut, User, Bell, ShoppingBag, AlertTriangle, BellOff, LayoutGrid } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { naZona } from "@/lib/zona-comercial";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -14,6 +15,7 @@ import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { useQuery, gql } from "@apollo/client";
 import { cn, getInitials } from "@/lib/utils";
 import { apiUrl } from "@/lib/api-url";
+import { useApiUrl } from "@/hooks/useApiUrl";
 
 const GET_ORG_ID = gql`
   query GetOrgIdForNotifications {
@@ -78,6 +80,7 @@ function Clock() {
 interface HeaderProps { onToggleSidebar: () => void }
 
 export function Header({ onToggleSidebar }: HeaderProps) {
+  const api = useApiUrl(); // sob /comercial: /comercial/api/… já no HTML do servidor
   const { data: session } = useSession();
   const userName = session?.user?.name ?? "Usuário";
   const { data: orgData } = useQuery(GET_ORG_ID);
@@ -134,7 +137,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
 
         {/* Atalho discreto para a Central da Avanteza (os outros aplicativos do login único) */}
         <Button variant="ghost" size="sm" asChild className="rounded-lg text-muted-foreground hover:text-foreground px-2">
-          <a href="/api/sso/central" title="Central Avanteza" aria-label="Central Avanteza">
+          <a href={api("/api/sso/central")} title="Central Avanteza" aria-label="Central Avanteza">
             <LayoutGrid className="w-4 h-4" />
             <span className="hidden lg:inline text-xs">Central</span>
           </a>
@@ -218,7 +221,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: naZona(window.location.pathname) ? apiUrl("/api/sso/central") : "/login" })}
             >
               <LogOut className="mr-2 h-4 w-4" />Sair
             </DropdownMenuItem>

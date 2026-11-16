@@ -4,12 +4,16 @@
 // (/p/{token} e /api/publico/*: o token aleatório no endereço é a credencial).
 import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_SESSAO, verificarSessao } from "@/lib/auth/sessao";
+import { bloqueioSomenteLeitura } from "@/lib/auth/somente-leitura";
 
 const PUBLICOS = ["/login", "/api/login", "/api/sso/callback", "/api/health"];
 const PUBLICO_PREFIXOS = ["/api/integracoes/vendedor-ia/", "/api/integracoes/avanteza/entregas", "/api/cron/", "/api/publico/", "/p/", "/brand/", "/_next/"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  // Congelado para o corte (CRM_SOMENTE_LEITURA=1): nada grava, nem rota pública; só GET passa (e /api/health).
+  const congelado = bloqueioSomenteLeitura(req.method, pathname);
+  if (congelado) return congelado;
   if (PUBLICOS.includes(pathname) || PUBLICO_PREFIXOS.some((p) => pathname.startsWith(p))) return NextResponse.next();
 
   const segredo = process.env.SESSION_SECRET;
