@@ -272,6 +272,7 @@ model Lead {
   prospectLead   ProspectLead? @relation(fields: [prospectLeadId], references: [id])
   prospectLeadId String?
   diagnosis      ClientDiagnosis?
+  contratosEmitidos ContratoEmitido[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   lastActivityAt DateTime?
@@ -1744,6 +1745,7 @@ model ComContato {
   compromissos  CalendarEvent[]
   entregas      ComEntrega[]
   mensagens     ComMensagem[]
+  contratos     ContratoEmitido[]
 
   @@index([tipo, nome])
   @@index([telefone])
@@ -1831,6 +1833,7 @@ model ComOportunidade {
   analises     ComAnaliseAgente[]
   produtos     ComOportunidadeProduto[]
   propostas    ComProposta[]
+  contratos    ContratoEmitido[]
 
   @@index([funilId, status, etapaId])
   @@index([contatoId])
@@ -2241,4 +2244,101 @@ model ComProposta {
 
   @@index([oportunidadeId, versao])
   @@map("com_proposta")
+}
+
+// ═══ Contratos (ex-app Contratos, só ClickSign) ══════════════════════════════
+// Desenho: ETAPA3_DESENHO.md §5. O PDF é gerado no navegador (jsPDF) e guardado aqui (bytea);
+// só o servidor fala com a ClickSign. Assinado → automação (lib/comercial/contratos/automacao.ts).
+
+model ContratoEmitido {
+  id              String            @id @default(cuid())
+  oportunidadeId  String?
+  oportunidade    ComOportunidade?  @relation(fields: [oportunidadeId], references: [id], onDelete: SetNull)
+  contatoId       String?
+  contato         ComContato?       @relation(fields: [contatoId], references: [id], onDelete: SetNull)
+  leadId          String?
+  lead            Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  modelo          String // growth | barbearia (form.modelo)
+  plano           String? // BASE | ESCALE | GROWTH | MARKETPLACE
+  marca           String            @default("avanteza")
+  razaoSocial     String
+  nomeFantasia    String?
+  cnpj            String?
+  representante   String?
+  emailCliente    String?
+  telefoneCliente String?
+  valor           Decimal?          @db.Decimal(14, 2) // valor mensal
+  duracaoMeses    Int?
+  inicioEm        DateTime?
+  vencimentoDia   Int?
+  filename        String
+  formJson        Json // formulário inteiro: "Gerar de novo" refaz o PDF a partir dele
+  substituiId     String? // versão anterior
+  provedor        String            @default("clicksign") // clicksign | zapsign (só leitura, importado)
+  envelopeId      String?           @unique
+  documentoId     String?
+  pastaClicksign  String?
+  status          String            @default("GERADO") // GERADO | ENVIADO | ASSINADO_PARCIAL | ASSINADO | RECUSADO | CANCELADO | ERRO
+  ultimoErro      String?
+  enviadoEm       DateTime?
+  assinadoEm      DateTime?
+  // Automação do "assinado" (ganho, valor do Lead, evento para a Central): reivindicada uma vez só.
+  automatizadoEm  DateTime?
+  origem          String            @default("APP") // APP | IMPORTADO_NAVEGADOR | IMPORTADO_CLICKSIGN
+  criadoPorId     String?
+  criadoEm        DateTime          @default(now())
+  atualizadoEm    DateTime          @updatedAt
+  arquivos        ContratoArquivo[]
+  eventos         ContratoEvento[]
+
+  @@index([oportunidadeId])
+  @@index([status, criadoEm])
+  @@index([documentoId])
+  @@map("contrato_emitido")
+}
+
+model ContratoArquivo {
+  id         String          @id @default(cuid())
+  contratoId String
+  contrato   ContratoEmitido @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  tipo       String // ORIGINAL | ASSINADO
+  nome       String
+  bytes      Bytes
+  sha256     String
+  criadoEm   DateTime        @default(now())
+
+  @@unique([contratoId, tipo])
+  @@map("contrato_arquivo")
+}
+
+model ContratoEvento {
+  id              String           @id @default(cuid())
+  contratoId      String?
+  contrato        ContratoEmitido? @relation(fields: [contratoId], references: [id], onDelete: SetNull)
+  envelopeId      String?
+  tipo            String // nome do evento (ClickSign) ou ação interna (ENVIADO, CANCELADO…)
+  eventoExternoId String?          @unique // idempotência do webhook
+  payload         Json
+  recebidoEm      DateTime         @default(now())
+
+  @@index([contratoId, recebidoEm])
+  @@map("contrato_evento")
+}
+
+// Eventos para a Central Avanteza (POST ${CENTRAL_URL}/api/eventos). Gravados antes de enviar;
+// eventoId é a chave de idempotência dos dois lados (ex.: "contrato.assinado:<envelopeId>").
+model CentralEventoOutbox {
+  id                 String    @id @default(cuid())
+  eventoId           String    @unique
+  tipo               String
+  payload            Json
+  status             String    @default("PENDENTE") // PENDENTE | ENVIADO | FALHOU
+  tentativas         Int       @default(0)
+  proximaTentativaEm DateTime  @default(now())
+  ultimoErro         String?
+  criadoEm           DateTime  @default(now())
+  enviadoEm          DateTime?
+
+  @@index([status, proximaTentativaEm])
+  @@map("central_evento_outbox")
 }

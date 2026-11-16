@@ -13,6 +13,7 @@ import { AbaCombinados } from "./ficha-combinados";
 import { AbaConversa } from "./ficha-conversa";
 import { AbaProdutos } from "./ficha-produtos";
 import { AbaPropostas } from "./ficha-propostas";
+import { AbaContratos, linkNovoContrato } from "./ficha-contratos";
 import { EditarOportunidade, Prorrogar } from "./ficha-editar";
 import { PARADO_CRITICO_DIAS } from "@/lib/comercial/formatar";
 import { apiUrl } from "@/lib/api-url";
@@ -69,6 +70,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
           <p className="text-[12px] font-semibold text-muted-foreground">{c.codigo} · {c.contato.nome}{c.pessoa ? ` · ${c.pessoa.nome}` : ""} · {etapaNome}</p>
         </div>
         <div className="order-3 flex w-full flex-wrap items-center gap-1.5 sm:order-none sm:w-auto sm:flex-none sm:justify-end">
+          <a href={linkNovoContrato(c.id)} className="rounded-md border border-border px-3 py-1.5 text-[12px] font-bold hover:border-primary">Gerar contrato</a>
           <button onClick={() => setDialogo("editar")} className="rounded-md border border-border px-3 py-1.5 text-[12px] font-bold hover:border-primary">Editar</button>
           {aberta && <button onClick={() => setDialogo("prorrogar")} className="rounded-md border border-border px-3 py-1.5 text-[12px] font-bold hover:border-primary">Prorrogar</button>}
           {aberta && final("PERDIDA") && <button onClick={() => onMover(final("PERDIDA")!.id)} className="rounded-md border border-border px-3 py-1.5 text-[12px] font-bold hover:border-destructive hover:text-destructive">Perder</button>}
@@ -150,6 +152,7 @@ export function Painel({ c, etapaNome, etapas, onMover, onFechar, onAtividade }:
         {aba === "combinados" && <AbaCombinados oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "produtos" && <AbaProdutos oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "propostas" && <AbaPropostas oportunidadeId={c.id} onAtividade={onAtividade} />}
+        {aba === "contratos" && <AbaContratos oportunidadeId={c.id} />}
         {aba === "tarefas" && <AbaTarefas oportunidadeId={c.id} onAtividade={onAtividade} />}
         {aba === "conversa" && <AbaConversa oportunidadeId={c.id} />}
       </div>
@@ -170,8 +173,8 @@ function AlertaParada({ dias }: { dias: number }) {
   );
 }
 
-type Aba = "linha" | "combinados" | "produtos" | "propostas" | "tarefas" | "conversa";
-const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["produtos", "Produtos"], ["propostas", "Propostas"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
+type Aba = "linha" | "combinados" | "produtos" | "propostas" | "contratos" | "tarefas" | "conversa";
+const ABAS: ReadonlyArray<readonly [Aba, string]> = [["linha", "Linha do tempo"], ["combinados", "Combinados"], ["produtos", "Produtos"], ["propostas", "Propostas"], ["contratos", "Contratos"], ["tarefas", "Tarefas"], ["conversa", "Conversa (WhatsApp)"]];
 
 /** Tarefa ou feedback muda o aviso "sem próxima atividade" e os indicadores do cartão: o quadro recarrega. */
 function AbaTarefas({ oportunidadeId, onAtividade }: { oportunidadeId: string; onAtividade: () => void }) {
