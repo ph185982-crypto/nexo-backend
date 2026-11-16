@@ -191,6 +191,9 @@ export async function gerenciarReceitaPrevista(args: Record<string, unknown>): P
 
       const receita = await prisma.receitaPrevistaMax.findUnique({ where: { id } });
       if (!receita) return `Receita prevista com ID "${id}" nao encontrada.`;
+      // Sem este guarda, confirmar duas vezes lançava a receita duas vezes no extrato (receita em dobro).
+      if (receita.status === "recebida") return `Receita "${receita.descricao}" ja foi confirmada antes — nao lancei de novo.`;
+      if (receita.status === "perdida") return `Receita "${receita.descricao}" esta marcada como perdida — desfaca a perda antes de confirmar.`;
 
       const now = getBrasiliaNow();
 
@@ -201,7 +204,7 @@ export async function gerenciarReceitaPrevista(args: Record<string, unknown>): P
           valor: receita.valor,
           descricao: receita.descricao,
           categoria: "Renda Variável",
-          tipo_negocio: receita.tipo_negocio ?? "geral",
+          tipo_negocio: receita.tipo_negocio ?? "pessoal", // vazio = pessoal (mesma regra da tela e de lib/finance/escopo.ts)
           empresa: receita.cliente,
           data_transacao: getBrasiliaDateOnly(),
           mes: formatMesUTC(getBrasiliaDateOnly()),
@@ -297,6 +300,9 @@ export async function gerenciarContaPagar(args: Record<string, unknown>): Promis
 
       const conta = await prisma.contaPagarMax.findUnique({ where: { id } });
       if (!conta) return `Conta com ID "${id}" nao encontrada.`;
+      // Sem este guarda, pagar duas vezes lançava a despesa (e a próxima recorrência) em dobro.
+      if (conta.status === "paga") return `Conta "${conta.descricao}" ja esta paga — nao lancei de novo.`;
+      if (conta.status === "cancelada") return `Conta "${conta.descricao}" foi cancelada — nao da para pagar.`;
 
       const now = getBrasiliaNow();
 

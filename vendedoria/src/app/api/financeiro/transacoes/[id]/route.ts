@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { parseData } from "@/lib/finance/periodo";
+import { formatMesUTC } from "@/lib/max/config";
 
 async function requireAdmin() {
   const session = await auth();
@@ -42,9 +44,11 @@ export async function PATCH(
     }
 
     if (data.data_transacao) {
-      const dt = new Date(data.data_transacao as string);
+      const bruto = String(data.data_transacao);
+      const dt = parseData(bruto.slice(0, 10)) ?? new Date(bruto);
+      if (Number.isNaN(dt.getTime())) return NextResponse.json({ error: "Data inválida" }, { status: 400 });
       data.data_transacao = dt;
-      data.mes = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
+      data.mes = formatMesUTC(dt);
     }
 
     const transacao = await prisma.transacao.update({

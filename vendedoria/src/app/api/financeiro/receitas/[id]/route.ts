@@ -58,6 +58,11 @@ export async function PATCH(
       }
       if (body.cliente !== undefined) data.cliente = typeof body.cliente === "string" && body.cliente.trim() ? body.cliente.trim() : null;
       if (body.observacao !== undefined) data.observacao = typeof body.observacao === "string" && body.observacao.trim() ? body.observacao.trim() : null;
+      // Reclassificar Empresa × Pessoal (o livro-razão grava o antes e o depois).
+      if (body.tipo_negocio !== undefined) {
+        if (body.tipo_negocio !== "nexo" && body.tipo_negocio !== "pessoal") return NextResponse.json({ error: "Negócio inválido." }, { status: 400 });
+        data.tipo_negocio = body.tipo_negocio;
+      }
       if (body.data_prevista !== undefined) {
         const d = parseData(String(body.data_prevista));
         if (!d) return NextResponse.json({ error: "Data prevista inválida." }, { status: 400 });

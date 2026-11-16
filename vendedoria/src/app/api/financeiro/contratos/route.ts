@@ -1,11 +1,12 @@
 // GET /api/financeiro/contratos — contratos de receita com o andamento das parcelas.
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { garantirParcelasContratos } from "@/lib/finance/contratos";
+import { parseEscopo, whereEscopo } from "@/lib/finance/escopo";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await requireAdmin();
   } catch {
@@ -16,7 +17,7 @@ export async function GET() {
     await garantirParcelasContratos();
 
     const [contratos, grupos] = await Promise.all([
-      prisma.contratoReceita.findMany({ orderBy: [{ status: "asc" }, { criado_em: "desc" }] }),
+      prisma.contratoReceita.findMany({ where: whereEscopo(parseEscopo(req.nextUrl.searchParams.get("escopo"))), orderBy: [{ status: "asc" }, { criado_em: "desc" }] }),
       prisma.receitaPrevistaMax.groupBy({
         by: ["contrato_id", "status"],
         where: { contrato_id: { not: null } },
