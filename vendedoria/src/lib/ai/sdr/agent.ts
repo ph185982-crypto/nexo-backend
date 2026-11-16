@@ -425,7 +425,7 @@ function validarRespostaSdr(parsed: SDRLLMResponse | null): SDRLLMResponse | nul
 }
 
 // Parseia a resposta JSON do LLM de forma resiliente
-function parseSdrResponse(raw: string): SDRLLMResponse | null {
+export function parseSdrResponse(raw: string): SDRLLMResponse | null {
   const cleaned = raw.trim();
   const candidatos: string[] = [cleaned];
 
@@ -442,6 +442,22 @@ function parseSdrResponse(raw: string): SDRLLMResponse | null {
       const validado = validarRespostaSdr(JSON.parse(candidato) as SDRLLMResponse);
       if (validado) return validado;
     } catch { /* tenta o próximo formato */ }
+  }
+
+  // Texto puro (sem nenhum JSON): acontece quando a DeepSeek devolve vazio no modo JSON e a
+  // tentativa seguinte, sem o modo JSON, responde só com a mensagem. Em vez de descartar e deixar
+  // o lead sem resposta, vira 1 a 3 balões e a conversa continua (sem atualizar a sessão).
+  // Resposta que tem "{" ou "}" é JSON quebrado/cortado: continua sendo descartada.
+  if (cleaned && !/[{}]/.test(cleaned)) {
+    const baloes = cleaned
+      .replace(/```/g, "")
+      .split(/\n+/)
+      .map((l) => l.replace(/^[-*•]\s+/, "").replace(/\*\*/g, "").trim())
+      .filter(Boolean)
+      .slice(0, 3);
+    if (baloes.length > 0 && baloes.join(" ").length <= 700) {
+      return { messages: baloes.map((text, i) => ({ text, delay: i * 1500 })), action: "continue" };
+    }
   }
   return null;
 }
