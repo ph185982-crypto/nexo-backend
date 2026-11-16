@@ -1449,6 +1449,8 @@ model MetaFinanceiraMax {
   // todo dia. valor_atual = soma dos aportes (AporteMetaMax), recalculada a cada aporte.
   aporte_diario      Float?
   cobrar_diariamente Boolean @default(false)
+  // Chave Pix da conta da reserva: vai junto de cada cobrança (chave + copia e cola com o valor).
+  chave_pix          String?
 
   @@map("max_metas_financeiras")
 }

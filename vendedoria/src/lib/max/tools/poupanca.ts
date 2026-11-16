@@ -23,7 +23,7 @@ export async function gerenciarMetaPoupanca(args: Record<string, unknown>): Prom
   if (acao === "consultar") {
     const metas = await listarMetasPoupanca();
     if (metas.length === 0) return "Nenhuma meta de poupança ativa.";
-    return metas.map(resumoMeta).join("\n\n");
+    return metas.map((m) => resumoMeta(m) + (m.chavePix ? `\nPix da reserva: ${m.chavePix}` : "")).join("\n\n");
   }
 
   if (acao === "criar") {
@@ -77,7 +77,8 @@ export async function gerenciarMetaPoupanca(args: Record<string, unknown>): Prom
     const fim = dataValida(args.data_fim);
     if (fim) data.data_fim = fim;
     if (typeof args.cobrar_diariamente === "boolean") data.cobrar_diariamente = args.cobrar_diariamente;
-    if (Object.keys(data).length === 0) return "Diga o que ajustar: aporte_diario, valor_alvo, data_fim ou cobrar_diariamente.";
+    if (typeof args.chave_pix === "string" && args.chave_pix.trim()) data.chave_pix = args.chave_pix.trim();
+    if (Object.keys(data).length === 0) return "Diga o que ajustar: aporte_diario, valor_alvo, data_fim, cobrar_diariamente ou chave_pix.";
     await prisma.metaFinanceiraMax.update({ where: { id: meta.id }, data });
     const m = await obterMetaPoupanca(meta.id);
     return `Meta ajustada.\n${m ? resumoMeta(m) : ""}`;
