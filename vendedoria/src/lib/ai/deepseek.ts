@@ -32,14 +32,13 @@ export interface OpcoesDeepSeek {
   timeoutMs?: number;
 }
 
-/** Chama a DeepSeek. Devolve o texto ou null (sem chave, erro, timeout, resposta vazia). Nunca lança. */
-export async function deepseekChat(mensagens: MensagemChat[], opts: OpcoesDeepSeek = {}): Promise<string | null> {
-  const chave = process.env.DEEPSEEK_API_KEY?.trim();
-  if (!chave) return null;
+type Tentativa = { tipo: "ok"; texto: string } | { tipo: "vazio" } | { tipo: "erro" };
+
+async function umaChamada(chave: string, mensagens: MensagemChat[], opts: OpcoesDeepSeek, comJson: boolean, timeoutMs: number): Promise<Tentativa> {
   try {
     const res = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
       method: "POST",
-      signal: AbortSignal.timeout(opts.timeoutMs ?? TIMEOUT_PADRAO_MS),
+      signal: AbortSignal.timeout(timeoutMs),
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${chave}` },
       body: JSON.stringify({
         model: DEEPSEEK_MODELO,
@@ -47,7 +46,7 @@ export async function deepseekChat(mensagens: MensagemChat[], opts: OpcoesDeepSe
         max_tokens: opts.maxTokens ?? 400,
         temperature: opts.temperature ?? 0.7,
         stream: false,
-        ...(opts.json ? { response_format: { type: "json_object" } } : {}),
+        ...(comJson ? { response_format: { type: "json_object" } } : {}),
       }),
     });
     if (!res.ok) {
@@ -58,15 +57,41 @@ export async function deepseekChat(mensagens: MensagemChat[], opts: OpcoesDeepSe
       if (res.status === 402 || (await import("./alerta-cota")).ehErroDeCota(texto)) {
         void import("./alerta-cota").then((m) => m.alertarCotaEsgotada("DeepSeek", texto || `HTTP ${res.status}`));
       }
-      return null;
+      return { tipo: "erro" };
     }
     const data = (await res.json()) as { choices?: Array<{ message?: { content?: string | null } }> };
     const texto = data.choices?.[0]?.message?.content?.trim();
-    return texto ? texto : null;
+    return texto ? { tipo: "ok", texto } : { tipo: "vazio" };
   } catch (e) {
     console.error("[DeepSeek]", e instanceof Error ? e.message : "erro de rede");
-    return null;
+    return { tipo: "erro" };
   }
+}
+
+/**
+ * Chama a DeepSeek. Devolve o texto ou null (sem chave, erro, timeout, resposta vazia). Nunca lança.
+ *
+ * Resposta VAZIA (HTTP 200 só com espaços) acontece em ~1 de cada 5 chamadas no modo JSON: a
+ * DeepSeek documenta que o modo JSON pode devolver conteúdo vazio. Antes isso virava null em
+ * silêncio e o atendimento caía para a OpenAI — sem crédito, o lead ficava sem resposta. Agora
+ * tenta de novo (rápido, ~1,5 s) e, se continuar vazio, tenta sem o modo JSON (o prompt já pede
+ * JSON e quem chama sabe extrair). Erro HTTP/rede não repete: vai direto para o provedor reserva.
+ */
+export async function deepseekChat(mensagens: MensagemChat[], opts: OpcoesDeepSeek = {}): Promise<string | null> {
+  const chave = process.env.DEEPSEEK_API_KEY?.trim();
+  if (!chave) return null;
+  const limite = Date.now() + (opts.timeoutMs ?? TIMEOUT_PADRAO_MS);
+  const plano = opts.json ? [true, true, false] : [false, false];
+  for (const comJson of plano) {
+    const restante = limite - Date.now();
+    if (restante < 1_500) break;
+    const r = await umaChamada(chave, mensagens, opts, comJson, restante);
+    if (r.tipo === "ok") return r.texto;
+    if (r.tipo === "erro") return null;
+    console.warn(`[DeepSeek] resposta vazia${comJson ? " (modo JSON)" : ""} — tentando de novo`);
+  }
+  console.error("[DeepSeek] respostas vazias em todas as tentativas");
+  return null;
 }
 
 export interface RespostaCompleta {
