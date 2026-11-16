@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
   Settings, X, Radar, Wallet, ChevronLeft, ChevronRight,
-  PhoneCall, Send, Briefcase, Users, ListChecks, CalendarClock, FileText, ArrowUpRight,
+  PhoneCall, Send, Briefcase, Users, ListChecks, CalendarClock, FileText, FileSignature, ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -68,6 +68,7 @@ export const gruposMenu: Array<{ titulo: string | null; itens: ItemMenu[] }> = [
       { href: "/comercial/tarefas",       label: "Tarefas",       icon: ListChecks },
       { href: "/comercial/agenda",        label: "Agenda",        icon: CalendarClock },
       { href: "/comercial/propostas",     label: "Propostas",     icon: FileText },
+      { href: "/comercial/contratos",     label: "Contratos",     icon: FileSignature },
     ],
   },
   {

@@ -672,4 +672,66 @@ export const MAX_TOOLS: Array<{
       },
     },
   },
+  // ── Clientes da consultoria (Central Avanteza → Inbox de combinados). Nada a ver com o financeiro. ──
+  {
+    type: "function",
+    function: {
+      name: "registrar_para_cliente",
+      description:
+        "Registra na Central Avanteza algo combinado com um CLIENTE da consultoria (lojas/anunciantes como Ladies, Showman): mensagem encaminhada, audio transcrito, texto ditado ou legenda de foto/PDF. A Central cria as acoes do plano do cliente. Use quando o Pedro disser 'para a <cliente>: ...', 'registra para o <cliente>', 'anota no <cliente>' ou encaminhar uma conversa de cliente. NAO use para gastos/recebimentos (isso e registrar_transacao).",
+      parameters: {
+        type: "object",
+        properties: {
+          cliente: { type: "string", description: "Nome do cliente como o Pedro falou (ex: 'Ladies', 'Showman')" },
+          conteudo: { type: "string", description: "O texto a registrar, literal (mensagem encaminhada, transcricao do audio ou legenda). Sem resumir, sem inventar." },
+          tipo: { type: "string", enum: ["texto", "audio", "encaminhada", "legenda"], description: "De onde veio o conteudo" },
+          data: { type: "string", description: "Data da conversa YYYY-MM-DD, so se o Pedro disser. Omitir = hoje." },
+        },
+        required: ["cliente", "conteudo"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "pendencias_do_cliente",
+      description:
+        "Lista as acoes abertas (pendencias) de um CLIENTE da consultoria na Central: atrasadas, da semana, as que dependem do cliente. Use para 'o que falta para a Ladies?', 'pendencias da Showman', 'o que tem aberto do <cliente>'.",
+      parameters: {
+        type: "object",
+        properties: { cliente: { type: "string", description: "Nome do cliente" } },
+        required: ["cliente"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "concluir_acao",
+      description:
+        "Marca como concluida uma acao de um CLIENTE da consultoria na Central ('conclui X da Showman', 'ja fiz o kickoff da Ladies'). Se a resposta disser que ha mais de uma acao parecida, NAO conclua: pergunte ao Pedro qual e chame de novo com acao_id.",
+      parameters: {
+        type: "object",
+        properties: {
+          cliente: { type: "string", description: "Nome do cliente" },
+          acao: { type: "string", description: "O que foi concluido, nas palavras do Pedro" },
+          acao_id: { type: "string", description: "ID da acao escolhida pelo Pedro (quando houve duvida entre opcoes)" },
+        },
+        required: ["cliente"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "importar_conversa",
+      description:
+        "Importa na Central a conversa exportada do WhatsApp (.txt ou .zip) que o Pedro acabou de mandar como documento. Use quando a mensagem disser '[Conversa exportada do WhatsApp recebida…]' ou houver 'max-importacao-pendente' na memoria e o Pedro disser de qual cliente e.",
+      parameters: {
+        type: "object",
+        properties: { cliente: { type: "string", description: "Nome do cliente (da legenda ou da resposta do Pedro). Omitir so se a Central ja conhecer esta conversa." } },
+        required: [],
+      },
+    },
+  },
 ];

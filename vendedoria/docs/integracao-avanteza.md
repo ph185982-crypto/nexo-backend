@@ -165,3 +165,28 @@ Testes: `DATABASE_URL=... npx tsx --test tests/avanteza-financeiro-api.test.ts` 
 - Max: confirmar uma receita prevista duas vezes lançava a entrada em dobro; pagar uma conta duas vezes lançava a despesa (e a
   próxima recorrência) em dobro. Agora o segundo pedido responde "já está confirmada/paga" sem lançar. Receita prevista sem
   negócio confirmada pelo Max virava `geral` (fora dos dois escopos); agora vira `pessoal`, como na tela.
+
+# Max → Central: Inbox de combinados dos clientes (F2)
+
+O Max (assistente do dono no WhatsApp; só o número do dono chega a ele) passa a registrar na Central o que é combinado com
+os **clientes da consultoria** — nada do financeiro do Max mudou. Cliente HTTP: `src/lib/integracoes/avanteza-central.ts`
+(respostas validadas com zod, timeout em toda chamada, só a leitura de pendências repete uma vez; escrita nunca repete).
+Ferramentas: `src/lib/max/tools/central.ts`. Contrato das rotas: `avanteza/docs/eventos.md` (seção Capturas).
+
+| Ferramenta do Max | Pedido do dono | Rota da Central |
+|---|---|---|
+| `registrar_para_cliente` | "para a Showman: …", mensagem encaminhada, áudio transcrito, legenda de foto/PDF | `POST /api/capturas` (`origem: whatsapp_max`) |
+| `pendencias_do_cliente` | "o que falta para a Ladies?" | `GET /api/capturas/pendencias?cliente=` |
+| `concluir_acao` | "concluí X da Showman" (ação ambígua → pergunta qual e reenvia com `acao_id`) | `POST /api/capturas/concluir` |
+| `importar_conversa` | `.txt`/`.zip` do "Exportar conversa" mandado como documento | `POST /api/capturas/importar` (arquivo cru, até 4 MB) |
+
+- Cliente ambíguo → a Central responde 409 com as opções e o Max pergunta. Cliente desconhecido → o Max pergunta o nome.
+- Documento `.txt`/`.zip`: o responder guarda só a referência da mídia (`max_contexto_pedro`, chave `max-importacao-pendente`)
+  e o arquivo é baixado da Meta de novo quando o Max chama `importar_conversa`; depois de importado a referência é apagada.
+  Arquivo acima de 4 MB: o Max pede para exportar "sem mídia".
+
+## Configuração (Vercel do projeto nexo-vendedoria)
+
+- `AVANTEZA_CAPTURE_KEY` — a **mesma** da Central (`openssl rand -base64 36`). Sem ela as ferramentas respondem "integração
+  não configurada" e nada é chamado.
+- `CENTRAL_URL` — opcional, padrão `https://app.avanteza.com.br`.
