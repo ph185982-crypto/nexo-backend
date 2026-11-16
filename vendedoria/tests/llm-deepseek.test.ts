@@ -163,3 +163,17 @@ test("DeepSeek: vazia só na primeira chamada recupera na segunda; erro HTTP nã
     sim.restaurar();
   } finally { console.warn = w; console.error = e; volta(); }
 });
+
+test("SDR: resposta em texto puro vira balões (não deixa o lead sem resposta); JSON cortado continua sendo descartado", async () => {
+  const { parseSdrResponse } = await import("@/lib/ai/sdr/agent");
+  const puro = parseSdrResponse("Boa tarde, Alini! Me conta, qual seu nome e o que você vende hoje?");
+  assert.deepEqual(puro?.messages.map((m) => m.text), ["Boa tarde, Alini! Me conta, qual seu nome e o que você vende hoje?"]);
+  assert.equal(puro?.action, "continue");
+  const varias = parseSdrResponse("Oi, tudo bem?\n\nVi que você veio pelo anúncio\n- Qual seu nome?\nquarta linha");
+  assert.deepEqual(varias?.messages.map((m) => m.text), ["Oi, tudo bem?", "Vi que você veio pelo anúncio", "Qual seu nome?"]);
+  assert.deepEqual(varias?.messages.map((m) => m.delay), [0, 1500, 3000]);
+  assert.equal(parseSdrResponse('{"messages":[{"text":"cortado'), null, "JSON cortado não vai para o cliente");
+  assert.equal(parseSdrResponse("   "), null);
+  // JSON válido continua tendo prioridade
+  assert.equal(parseSdrResponse('{"messages":[{"text":"oi","delay":0}],"action":"continue"}')?.messages[0].text, "oi");
+});
