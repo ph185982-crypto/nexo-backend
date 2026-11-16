@@ -19,7 +19,7 @@ const CAMPO_SECRETO = /(password|senha|secret|token|hash|api_?key|credential|aut
 const AREAS: Record<string, string[]> = {
   "Financeiro": [
     "Transacao", "ReceitaPrevistaMax", "ContratoReceita", "ContaPagarMax", "DividaMax",
-    "MetaFinanceiraMax", "OrcamentoMax", "HistoricoFinanceiro", "TarefaMax", "LembreteMax",
+    "MetaFinanceiraMax", "AporteMetaMax", "OrcamentoMax", "HistoricoFinanceiro", "TarefaMax", "LembreteMax",
     "FinancialProfile", "FinancialAccount", "FinancialCategory", "FinancialTransaction",
     "RecurringBill", "InstallmentPlan",
   ],

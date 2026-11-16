@@ -31,6 +31,7 @@ const ENTIDADES: Record<string, string> = {
   DividaMax: "Dívida",
   OrcamentoMax: "Orçamento",
   MetaFinanceiraMax: "Meta",
+  AporteMetaMax: "Aporte na meta",
   ContratoReceita: "Contrato de receita",
   ContratoDespesa: "Contrato de despesa",
   DreClassificacaoMax: "Classificação DRE",

@@ -1445,7 +1445,27 @@ model MetaFinanceiraMax {
   status      String    @default("ativa")
   criado_em   DateTime  @default(now())
 
+  // Meta de poupança (tipo "poupanca"): quanto guardar por dia e se o Max cobra
+  // todo dia. valor_atual = soma dos aportes (AporteMetaMax), recalculada a cada aporte.
+  aporte_diario      Float?
+  cobrar_diariamente Boolean @default(false)
+
   @@map("max_metas_financeiras")
+}
+
+// Dinheiro guardado numa meta de poupança. Não é despesa (não entra no DRE nem nos
+// limites de gasto): é transferência para a reserva. Valor negativo = retirada.
+model AporteMetaMax {
+  id         String   @id @default(uuid())
+  meta_id    String
+  valor      Float
+  data       DateTime @db.Date
+  origem     String   @default("max") // max | tela | inicial
+  observacao String?
+  criado_em  DateTime @default(now())
+
+  @@map("max_aportes_meta")
+  @@index([meta_id, data])
 }
 
 model ReceitaPrevistaMax {
