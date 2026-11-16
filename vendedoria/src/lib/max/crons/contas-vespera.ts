@@ -23,7 +23,7 @@ import { garantirContasDeContratos } from "@/lib/finance/contratos-despesa";
 import { avisarOrcamentos } from "./orcamentos-alerta";
 import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
 import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
-import { semearMetaPoupancaInicial } from "@/lib/finance/metas-poupanca-iniciais";
+import { semearPoupancaInicial } from "@/lib/finance/metas-poupanca-iniciais";
 
 export const chaveVespera = (contaId: string, vencimentoISO: string) => `conta-vespera-${contaId}-${vencimentoISO}`;
 
@@ -75,12 +75,14 @@ export interface Aviso {
   resumo: string;
   url: string;
   tag: string;
+  /** Mensagens extras de WhatsApp, cada uma sozinha (ex.: chave Pix e copia e cola, fáceis de copiar). */
+  complementos?: string[];
 }
 
 /** Entrega por WhatsApp (Max), notificação no CRM e push. Injetável nos testes. */
 export type Entregador = (aviso: Aviso) => Promise<EntregaVespera>;
 
-export const entregarPorTodosOsCanais: Entregador = async ({ titulo, mensagem, resumo, url, tag }) => {
+export const entregarPorTodosOsCanais: Entregador = async ({ titulo, mensagem, resumo, url, tag, complementos }) => {
   const provider = await getOwnerProvider().catch(() => null);
   const out: EntregaVespera = { whatsapp: false, notificacao: false };
 
@@ -88,6 +90,10 @@ export const entregarPorTodosOsCanais: Entregador = async ({ titulo, mensagem, r
     try {
       await sendWhatsAppMessage(provider.businessPhoneNumberId, MAX_OWNER_NUMBER, `🔔 Max de olho:\n\n${mensagem}`, resolveToken(provider.accessToken));
       out.whatsapp = true;
+      for (const extra of complementos ?? []) {
+        await sendWhatsAppMessage(provider.businessPhoneNumberId, MAX_OWNER_NUMBER, extra, resolveToken(provider.accessToken))
+          .catch((e) => console.error("[Max] Complemento do aviso não saiu pelo WhatsApp:", e instanceof Error ? e.message : e));
+      }
     } catch (e) {
       const erro = e instanceof Error ? e.message : String(e);
       const janela = /131047|24.?hour|re-?engagement/i.test(erro);
@@ -184,7 +190,7 @@ export function acionarAvisoContasSePreciso(origem: string, opts: { forcar?: boo
     // Contratos e limites combinados com o dono entram uma única vez (marca no banco).
     await semearContratosDespesaIniciais().catch((e) => console.error(`[Max] contratos iniciais | origem=${origem}:`, e));
     await semearOrcamentosIniciais().catch((e) => console.error(`[Max] limites iniciais | origem=${origem}:`, e));
-    await semearMetaPoupancaInicial().catch((e) => console.error(`[Max] meta de poupança inicial | origem=${origem}:`, e));
+    await semearPoupancaInicial().catch((e) => console.error(`[Max] meta de poupança inicial | origem=${origem}:`, e));
     try {
       await avisarContasDeAmanha();
     } catch (e) {
