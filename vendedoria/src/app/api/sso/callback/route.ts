@@ -31,5 +31,6 @@ export async function GET(req: NextRequest) {
     console.error(`[Auth] Login único: não foi possível abrir a sessão (${e instanceof Error ? e.name : "erro"})`);
     return ir("/login?erro=sso");
   }
+  // A Central manda o caminho de volta; sob /comercial ele já vem como /comercial/… (apps.ts aponta para a zona).
   return ir(destino === "/" ? "/crm" : destino);
 }

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { hrefNaZona } from "@/lib/zona-comercial";
 import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
@@ -96,7 +97,9 @@ export function Sidebar({
   const orgAtiva = orgs.find((o) => o.status === "ACTIVE");
   const conta = orgAtiva?.accounts?.[0];
 
-  const isActive = (href: string) => pathname.startsWith(href);
+  // Sob /comercial (endereço na Central), os links das telas antigas também ficam sob /comercial (zona-comercial.ts).
+  const href = (h: string) => hrefNaZona(h, pathname);
+  const isActive = (h: string) => pathname.startsWith(h) || pathname.startsWith(href(h));
 
   const handleNavClick = () => onMobileClose?.();
 
@@ -167,7 +170,7 @@ export function Sidebar({
                 return item.externo ? (
                   <a key={item.href} href={item.href} onClick={handleNavClick} className={classe} title="Abre na Central Avanteza">{conteudo}</a>
                 ) : (
-                  <Link key={item.href} href={item.href} onClick={handleNavClick} className={classe}>{conteudo}</Link>
+                  <Link key={item.href} href={href(item.href)} onClick={handleNavClick} className={classe}>{conteudo}</Link>
                 );
               })}
             </div>
@@ -187,7 +190,7 @@ export function Sidebar({
           </div>
         )}
         <Link
-          href="/crm/settings"
+          href={href("/crm/settings")}
           onClick={handleNavClick}
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/85 hover:bg-white/10 hover:text-white transition-colors"
         >

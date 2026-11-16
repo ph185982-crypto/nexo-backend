@@ -388,7 +388,7 @@ export default function Disparo({ org }: { org: Org }) {
           </p>
           <div className="flex flex-wrap gap-2">
             <a
-              href="/api/prospeccao/leads/modelo"
+              href="/api/prospeccao/leads/modelo" onClick={(e) => { e.preventDefault(); window.location.href = apiUrl(e.currentTarget.getAttribute("href")!); }}
               download
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm hover:bg-accent/10 transition-colors"
             >

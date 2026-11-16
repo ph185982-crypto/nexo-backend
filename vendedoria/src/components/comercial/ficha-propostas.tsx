@@ -36,7 +36,7 @@ export function AbaPropostas({ oportunidadeId, onAtividade }: { oportunidadeId: 
     await carregar(); onAtividade();
     return j;
   };
-  const link = (p: Proposta) => `${window.location.origin}/p/${p.token}`;
+  const link = (p: Proposta) => `${window.location.origin}/comercial/p/${p.token}`; // a página pública mora em /comercial/p (nos dois domínios)
   const copiar = async (p: Proposta) => {
     try { await navigator.clipboard.writeText(link(p)); setAviso("Link copiado."); } catch { setAviso(`Copie o link: ${link(p)}`); }
   };

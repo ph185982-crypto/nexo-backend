@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { NotificationPrompt } from "@/components/pwa/NotificationPrompt";
+import { apiUrl } from "@/lib/api-url";
 
 function CRMLayoutInner({ children }: { children: React.ReactNode }) {
   // Lazy init lê a preferência salva antes do primeiro paint — evita o
@@ -60,7 +61,8 @@ function CRMLayoutInner({ children }: { children: React.ReactNode }) {
 
 export default function CRMLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    // Sob /comercial (na Central) a sessão do NextAuth responde em /comercial/api/auth; no domínio antigo, /api/auth.
+    <SessionProvider basePath={apiUrl("/api/auth")}>
       <CRMLayoutInner>{children}</CRMLayoutInner>
     </SessionProvider>
   );

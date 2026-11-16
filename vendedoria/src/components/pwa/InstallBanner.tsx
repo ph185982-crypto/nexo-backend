@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Download } from "lucide-react";
+import { ativo } from "@/lib/zona-comercial";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -56,7 +57,7 @@ export function InstallBanner() {
       role="banner"
     >
       <img
-        src="/icon-192.png"
+        src={ativo("/icon-192.png")}
         alt="Vendedor IA"
         className="h-10 w-10 flex-shrink-0 rounded-lg"
       />

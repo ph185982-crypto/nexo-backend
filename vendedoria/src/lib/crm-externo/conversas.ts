@@ -4,8 +4,12 @@
 // Primeira vez de uma conversa: pergunta ao CRM se conhece o lead (envio sem mensagens). Se não conhece,
 // a conversa fica IGNORADA e nada do conteúdo sai daqui — até o lead virar evento do CRM (eventos.ts reabre).
 // NUNCA lança: o atendimento não pode cair por causa do CRM.
+// Com COMERCIAL_NATIVO=1 não há espelho: a ficha da oportunidade lê WhatsappMessage direto
+// (api/comercial/oportunidades/[id]/conversa); as colunas crmStatus/crmSincronizadoAte ficam paradas.
 import { prisma } from "@/lib/prisma/client";
-import { crmConfigurado } from "./eventos";
+import { comercialNativo, crmConfigurado as crmHttp } from "./eventos";
+
+const crmConfigurado = () => crmHttp() && !comercialNativo();
 
 const JANELA_MS = 2 * 86_400_000; // conversas com mensagem do cliente nos últimos 2 dias
 const HISTORICO_INICIAL_MS = 30 * 86_400_000; // na primeira vez, até 30 dias de histórico

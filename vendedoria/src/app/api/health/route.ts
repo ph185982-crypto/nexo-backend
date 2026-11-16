@@ -4,7 +4,7 @@ import { acionarFollowupsSePreciso } from "@/lib/followup/gatilho";
 import { acionarRecuperacaoSePreciso } from "@/lib/ai/sdr/recuperar-falhas";
 import { acionarAvisoContasSePreciso } from "@/lib/max/crons/contas-vespera";
 import { despacharOutboxCrm } from "@/lib/crm-externo/outbox";
-import { crmConfigurado } from "@/lib/crm-externo/eventos";
+import { comercialNativo, crmConfigurado, eventosComercialAtivos } from "@/lib/crm-externo/eventos";
 import { sincronizarConversasCrm } from "@/lib/crm-externo/conversas";
 import { deepseekAtivo, provedorPrincipal } from "@/lib/ai/deepseek";
 import { geminiAtivo } from "@/lib/ai/gemini";
@@ -33,9 +33,10 @@ export async function GET() {
   const avisoContas = dbStatus === "connected" ? acionarAvisoContasSePreciso("health") : "sem-banco";
 
   // Eventos para o CRM Avanteza que ficaram pendentes (CRM fora do ar, timeout…).
-  const crm = dbStatus !== "connected" ? "sem-banco" : !crmConfigurado() ? "desligado" : await despacharOutboxCrm({ limite: 5, orcamentoMs: 15_000 }).catch(() => "erro" as const);
+  // COMERCIAL_NATIVO=1: os mesmos eventos são tratados em processo (o campo segue com o mesmo formato).
+  const crm = dbStatus !== "connected" ? "sem-banco" : !eventosComercialAtivos() ? "desligado" : await despacharOutboxCrm({ limite: 5, orcamentoMs: 15_000 }).catch(() => "erro" as const);
   // Conversas do WhatsApp espelhadas na ficha do CRM (o webhook já manda as recentes; aqui pega o que ficou).
-  const crmConversas = dbStatus !== "connected" || !crmConfigurado() ? undefined : await sincronizarConversasCrm({ limite: 20, orcamentoMs: 12_000 }).catch(() => "erro" as const);
+  const crmConversas = dbStatus !== "connected" || !crmConfigurado() || comercialNativo() ? undefined : await sincronizarConversasCrm({ limite: 20, orcamentoMs: 12_000 }).catch(() => "erro" as const);
 
   return NextResponse.json(
     {

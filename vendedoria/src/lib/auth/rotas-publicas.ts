@@ -14,6 +14,7 @@ export const PREFIXOS_PUBLICOS = [
   "/api/health",                // monitoramento externo
   "/api/integracoes/avanteza/metricas", // só leitura, agregados; a rota confere Bearer AVANTEZA_METRICS_KEY (503 sem a variável)
   "/api/integracoes/avanteza/financeiro", // API de serviço do financeiro; a rota confere Bearer AVANTEZA_FINANCE_KEY (503 sem a variável)
+  "/api/integracoes/avanteza/entregas", // Funil de Entrega da Central (mesmo contrato do CRM antigo); a rota confere Bearer AVANTEZA_CRM_KEY (503 sem a variável)
   "/api/keepalive",
   "/api/max/health",
   "/api/webhooks/",             // Meta: GET de verificação sem assinatura; POST assinado (a rota valida)
@@ -37,7 +38,13 @@ export const PREFIXOS_PUBLICOS = [
 /** Páginas públicas fora de /api (o resto de /comercial e /crm exige login). Prefixo exato. */
 export const PAGINAS_PUBLICAS = ["/comercial/p/"] as const;
 
-export const paginaPublica = (pathname: string) => PAGINAS_PUBLICAS.some((p) => pathname.startsWith(p));
+/**
+ * Arquivos estáticos sob /comercial (assetPrefix e cópias de public/, ver src/lib/zona-comercial.ts): sem login,
+ * senão a proposta pública (e qualquer página antes do login único) sai sem CSS/JS.
+ */
+export const ARQUIVOS_DA_ZONA = /^\/comercial\/(_next\/|fonts\/|icon-\d+\.png$|manifest\.json$|offline\.html$)/;
+
+export const paginaPublica = (pathname: string) => PAGINAS_PUBLICAS.some((p) => pathname.startsWith(p)) || ARQUIVOS_DA_ZONA.test(pathname);
 
 /**
  * O Comercial também responde a API em /comercial/api/* (endereço sob a Central). A regra de acesso é

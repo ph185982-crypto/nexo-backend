@@ -7,6 +7,7 @@
 //    (não muda a numeração das cláusulas citadas no texto: 2, 6.x, 9.x e 10).
 import type { jsPDF as JsPDF } from "jspdf";
 import type { FormContrato } from "./modelo";
+import { ativo } from "@/lib/zona-comercial";
 
 // ── Helpers (iguais aos do app antigo) ──────────────────────────────────────
 export function formatDate(isoStr: string): string {
@@ -266,7 +267,7 @@ const FONTES_MARCA_B64: Record<string, string> = {};
 async function loadBrandFont(doc: JsPDF) {
   await Promise.all(FONTES_MARCA.map(async ([arquivo]) => {
     if (FONTES_MARCA_B64[arquivo]) return;
-    const r = await fetch("/fonts/" + arquivo);
+    const r = await fetch(ativo("/fonts/" + arquivo)); // /comercial/fonts/… responde nos dois domínios
     if (!r.ok) throw new Error("font");
     const buf = new Uint8Array(await r.arrayBuffer());
     let bin = "";

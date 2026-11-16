@@ -229,7 +229,7 @@ export default function CalendarPage() {
               </span>
             ) : (
               <a
-                href="/api/integrations/google/connect"
+                href="/api/integrations/google/connect" onClick={(e) => { e.preventDefault(); window.location.href = apiUrl(e.currentTarget.getAttribute("href")!); }}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:bg-accent/10 transition-colors"
               >
                 Conectar Google Calendar
