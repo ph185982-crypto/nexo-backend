@@ -84,7 +84,9 @@ test("DeepSeek falha (500, saldo, rede): cai para a OpenAI e a chave não vai pa
       const sim = simular({ "api.deepseek.com": falha, "api.openai.com": () => ok("reserva openai") });
       try {
         assert.equal(await callLLM("s", [], "oi", "OPENAI", "gpt-4o-mini"), "reserva openai");
-        assert.ok(sim.chamadas[0].url.includes("deepseek") && sim.chamadas[1].url.includes("openai"));
+        // Erro HTTP: 1 chamada à DeepSeek e já vai para a OpenAI. Resposta vazia: a DeepSeek repete antes.
+        assert.ok(sim.chamadas[0].url.includes("deepseek") && sim.chamadas[sim.chamadas.length - 1].url.includes("openai"));
+        assert.ok(sim.chamadas.slice(0, -1).every((c) => c.url.includes("deepseek")));
       } finally { sim.restaurar(); }
     }
     assert.ok(!logs.some((l) => l.includes(CHAVE_FALSA)), "a chave nunca aparece no log");
@@ -122,4 +124,42 @@ test("saldo esgotado na DeepSeek é reconhecido como falta de crédito", async (
   assert.equal(ehErroDeCota('{"error":{"message":"Insufficient Balance"}}'), true);
   assert.equal(ehErroDeCota("insufficient_quota"), true);
   assert.equal(ehErroDeCota("erro qualquer"), false);
+});
+
+test("DeepSeek devolve resposta vazia (modo JSON): tenta de novo e depois sem JSON, sem cair na OpenAI", async () => {
+  const volta = ambiente({ DEEPSEEK_API_KEY: CHAVE_FALSA, OPENAI_API_KEY: "fake-openai" });
+  const respostas = [ok("   \n  "), ok("   "), ok('{"messages":[{"text":"oi"}]}')];
+  const sim = simular({ "api.deepseek.com": () => respostas.shift() ?? ok(""), "api.openai.com": () => ok("não deveria chamar") });
+  const w = console.warn; console.warn = () => {};
+  try {
+    const { deepseekChat } = await import("@/lib/ai/deepseek");
+    const r = await deepseekChat([{ role: "user", content: "oi JSON" }], { json: true, timeoutMs: 20_000 });
+    assert.equal(r, '{"messages":[{"text":"oi"}]}');
+    assert.equal(sim.chamadas.length, 3, "2 tentativas no modo JSON + 1 sem JSON");
+    assert.ok(sim.chamadas[0].corpo.response_format && sim.chamadas[1].corpo.response_format);
+    assert.equal(sim.chamadas[2].corpo.response_format, undefined, "última tentativa sem modo JSON");
+    assert.ok(sim.chamadas.every((c) => c.url.includes("deepseek")), "a OpenAI não foi chamada");
+  } finally { console.warn = w; sim.restaurar(); volta(); }
+});
+
+test("DeepSeek: vazia só na primeira chamada recupera na segunda; erro HTTP não repete; sempre vazia vira null", async () => {
+  const volta = ambiente({ DEEPSEEK_API_KEY: CHAVE_FALSA });
+  const w = console.warn; const e = console.error; console.warn = () => {}; console.error = () => {};
+  try {
+    const { deepseekChat } = await import("@/lib/ai/deepseek");
+    let sim = simular({ "api.deepseek.com": (() => { const q = [ok(" "), ok('{"a":1}')]; return () => q.shift()!; })() });
+    assert.equal(await deepseekChat([{ role: "user", content: "x" }], { json: true }), '{"a":1}');
+    assert.equal(sim.chamadas.length, 2);
+    sim.restaurar();
+
+    sim = simular({ "api.deepseek.com": () => new Response("boom", { status: 500 }) });
+    assert.equal(await deepseekChat([{ role: "user", content: "x" }], { json: true }), null);
+    assert.equal(sim.chamadas.length, 1, "erro HTTP vai direto para o reserva");
+    sim.restaurar();
+
+    sim = simular({ "api.deepseek.com": () => ok("  ") });
+    assert.equal(await deepseekChat([{ role: "user", content: "x" }], { json: true }), null);
+    assert.equal(sim.chamadas.length, 3);
+    sim.restaurar();
+  } finally { console.warn = w; console.error = e; volta(); }
 });
