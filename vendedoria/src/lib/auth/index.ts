@@ -35,7 +35,7 @@ const nextAuth = NextAuth({
           user!.password!,
         );
 
-        if (!user || !isValid) {
+        if (!user || !isValid || user.ativo === false) {
           await registrarFalhaLogin(email, ip).catch(() => {});
           return null;
         }

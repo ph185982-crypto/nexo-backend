@@ -17,12 +17,27 @@ const nextConfig: NextConfig = {
 
   // Pastas começando com "." não viram rota no App Router: o discovery OAuth
   // do MCP (/.well-known/...) é redirecionado internamente para /api/oauth/metadata.
+  // Proposta pública do Comercial: fora de buscadores e sem cache (cada abertura conta e o status muda).
+  async headers() {
+    const privado = [
+      { key: "X-Robots-Tag", value: "noindex, nofollow" },
+      { key: "Cache-Control", value: "no-store, max-age=0" },
+    ];
+    return [
+      { source: "/comercial/p/:path*", headers: privado },
+      { source: "/api/comercial/publico/:path*", headers: privado },
+    ];
+  },
+
   async rewrites() {
     return [
       { source: "/.well-known/oauth-protected-resource/:path*", destination: "/api/oauth/metadata/recurso" },
       { source: "/.well-known/oauth-protected-resource", destination: "/api/oauth/metadata/recurso" },
       { source: "/.well-known/oauth-authorization-server/:path*", destination: "/api/oauth/metadata/servidor" },
       { source: "/.well-known/oauth-authorization-server", destination: "/api/oauth/metadata/servidor" },
+      // Comercial: a API também responde em /comercial/api/* (endereço sob a Central, ver src/lib/api-url.ts).
+      // O middleware cobre /comercial/* e normaliza o prefixo antes de decidir o acesso (rotas-publicas.ts).
+      { source: "/comercial/api/:path*", destination: "/api/:path*" },
     ];
   },
 

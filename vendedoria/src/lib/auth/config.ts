@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import { decidirAcessoApi } from "./rotas-publicas";
+import { decidirAcessoApi, normalizarCaminhoApi, paginaPublica } from "./rotas-publicas";
 
 // Edge-safe config: sem imports de Prisma ou bcrypt.
 // Usado pelo middleware (Edge runtime) e estendido em index.ts com os providers.
@@ -17,11 +17,13 @@ export const authConfig: NextAuthConfig = {
     authorized({ auth, request }) {
       const { nextUrl } = request;
       const isLoggedIn = !!auth?.user;
-      if (nextUrl.pathname.startsWith("/api/")) {
-        if (decidirAcessoApi(nextUrl.pathname, isLoggedIn, request.headers) === "permitir") return true;
+      const caminhoApi = normalizarCaminhoApi(nextUrl.pathname);
+      if (caminhoApi.startsWith("/api/")) {
+        if (decidirAcessoApi(caminhoApi, isLoggedIn, request.headers) === "permitir") return true;
         return Response.json({ error: "Não autenticado" }, { status: 401 });
       }
-      const isOnCrm = nextUrl.pathname.startsWith("/crm");
+      if (paginaPublica(nextUrl.pathname)) return true; // proposta pública do Comercial (/comercial/p/{token})
+      const isOnCrm = nextUrl.pathname.startsWith("/crm") || nextUrl.pathname === "/comercial" || nextUrl.pathname.startsWith("/comercial/");
       if (isOnCrm) {
         if (isLoggedIn) return true;
         return false;
