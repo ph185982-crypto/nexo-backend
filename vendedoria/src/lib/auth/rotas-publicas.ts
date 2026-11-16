@@ -12,6 +12,7 @@ export const PREFIXOS_PUBLICOS = [
   "/api/auth/",                 // NextAuth (login, sessão, csrf)
   "/api/sso/",                  // login único: o callback confere o token assinado pela Central; /central só redireciona
   "/api/health",                // monitoramento externo
+  "/api/integracoes/avanteza/metricas", // só leitura, agregados; a rota confere Bearer AVANTEZA_METRICS_KEY (503 sem a variável)
   "/api/keepalive",
   "/api/max/health",
   "/api/webhooks/",             // Meta: GET de verificação sem assinatura; POST assinado (a rota valida)

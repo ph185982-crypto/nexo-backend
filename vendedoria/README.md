@@ -64,6 +64,13 @@ cria na primeira entrada (`admin` → ADMIN; os demais → SELLER; senha aleató
 muda de papel. A sessão é a mesma do login por senha (JWT do NextAuth), e e-mail e senha continuam como reserva.
 O cabeçalho tem o atalho "Central" (`/api/sso/central`). Testes: `tests/sso.test.ts`.
 
+## Métricas para a Central (Dashboards)
+
+`GET /api/integracoes/avanteza/metricas?from=YYYY-MM-DD&to=YYYY-MM-DD` com `Authorization: Bearer <AVANTEZA_METRICS_KEY>`
+devolve **só agregados** (leads, funil, vendas, receitas/despesas, previstos, contratos e séries diárias) do escopo
+**Avanteza** — nunca o pessoal. Somente leitura; sem a variável responde 503. Contrato e definições em
+`docs/integracao-avanteza.md`. Testes: `tests/avanteza-metricas.test.ts`.
+
 ## Identidade visual (Avanteza v2.0)
 
 - **Paleta**: marinho `#0B1B33` (texto, barra lateral, botão padrão), creme `#F5F0E6` (fundo), areia `#EAD9C2` (bordas e
