@@ -14,8 +14,11 @@
 //
 // Conexão: DIRECT_URL (ou DATABASE_URL) com um papel que enxergue os schemas `crm` e `public`
 // (o `postgres` do Supabase; o papel do app do CRM, crm_app, NÃO enxerga public).
-// Alternativa só leitura (--relatorio e --verificar): --api-supabase <ref do projeto> com
-// SUPABASE_ACCESS_TOKEN no ambiente: consultas pela API de gestão com read_only=true.
+// Alternativa sem a porta 5432: --api-supabase <ref do projeto> com SUPABASE_ACCESS_TOKEN no ambiente (API de
+// gestão, roda como dono). Leituras vão com read_only=true. --copiar, --refazer e --desfazer mandam as MESMAS
+// instruções num único query "begin; …; commit;" (read_only=false): erro no meio = nada gravado (rollback).
+// No modo API as contagens de inseridas/apagadas vêm da diferença antes/depois de cada tabela.
+// SUPABASE_API_BASE troca o endereço da API (só para testes).
 // Opções: --org <id> (organização do Vendedor IA; obrigatória se houver mais de uma),
 //         --permitir-extras (no --verificar, linhas a mais no destino viram aviso, não erro).
 // Nunca imprime segredo.
@@ -32,10 +35,6 @@ if (modos.length !== 1) {
 }
 const modo = modos[0];
 const refApi = valor("--api-supabase");
-if (refApi && !["--relatorio", "--verificar"].includes(modo)) {
-  console.error("--api-supabase é só leitura: use com --relatorio ou --verificar");
-  process.exit(2);
-}
 if (["--refazer", "--desfazer"].includes(modo) && !flag("--sim")) {
   console.error(`${modo} apaga dados: confirme com --sim`);
   process.exit(2);
@@ -43,17 +42,24 @@ if (["--refazer", "--desfazer"].includes(modo) && !flag("--sim")) {
 
 // ─── Executor: Prisma (leitura e escrita) ou API de gestão do Supabase (só leitura) ─────────
 let prisma = null;
-async function consultarApi(sql) {
+const API_BASE = (process.env.SUPABASE_API_BASE || "https://api.supabase.com").replace(/\/$/, "");
+async function consultarApi(sql, { escrita = false } = {}) {
   const token = process.env.SUPABASE_ACCESS_TOKEN;
   if (!token) throw new Error("SUPABASE_ACCESS_TOKEN não definido");
-  const r = await fetch(`https://api.supabase.com/v1/projects/${refApi}/database/query`, {
+  const r = await fetch(`${API_BASE}/v1/projects/${encodeURIComponent(refApi)}/database/query`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ query: sql, read_only: true }),
+    body: JSON.stringify({ query: sql, read_only: !escrita }),
   });
   const corpo = await r.text();
-  if (!r.ok) throw new Error(`API Supabase ${r.status}: ${corpo.slice(0, 300)}`);
-  return JSON.parse(corpo);
+  // Nunca imprime o token: só o status e o começo da resposta da API.
+  if (!r.ok) throw new Error(`API Supabase ${r.status}: ${corpo.replaceAll(token, "***").slice(0, 500)}`);
+  return corpo ? JSON.parse(corpo) : [];
+}
+/** Modo API: as instruções vão juntas numa transação explícita (um query só). Falha em qualquer uma = rollback. */
+async function transacaoApi(instrucoes) {
+  const corpo = instrucoes.map((i) => `${i.sql.trim().replace(/;\s*$/, "")};`).join("\n");
+  await consultarApi(`begin;\n${corpo}\ncommit;`, { escrita: true });
 }
 const normal = (linhas) => linhas.map((l) => Object.fromEntries(Object.entries(l).map(([k, v]) => [k, typeof v === "bigint" ? Number(v) : v])));
 async function q(sql, db = prisma) {
@@ -61,7 +67,7 @@ async function q(sql, db = prisma) {
   return normal(await db.$queryRawUnsafe(sql));
 }
 async function exec(sql, db) {
-  if (refApi) throw new Error("escrita não permitida no modo API");
+  if (refApi) throw new Error("no modo API a escrita vai por transacaoApi");
   return db.$executeRawUnsafe(sql);
 }
 const um = async (sql, db) => (await q(sql, db))[0] ?? {};
@@ -284,21 +290,46 @@ async function relatorio() {
 }
 
 // ─── Cópia ────────────────────────────────────────────────────────────────────────────────
-async function copiarEm(tx, org) {
-  const ins = {};
-  ins.User = await exec(SQL_CRIA_USUARIOS, tx);
-  await exec(SQL_MAPA_USUARIO, tx);
-  ins.MotivoEncerramento = await exec(comOrg(SQL_CRIA_MOTIVOS, org), tx);
-  await exec(comOrg(SQL_MAPA_MOTIVO, org), tx);
+// Instruções da cópia, na ordem de dependência. `nome` = linha do relatório (null = instrução auxiliar).
+function instrucoesDaCopia(org) {
+  const lista = [
+    { nome: "User", sql: SQL_CRIA_USUARIOS },
+    { nome: null, sql: SQL_MAPA_USUARIO },
+    { nome: "MotivoEncerramento", sql: comOrg(SQL_CRIA_MOTIVOS, org) },
+    { nome: null, sql: comOrg(SQL_MAPA_MOTIVO, org) },
+  ];
   for (const t of T) {
-    ins[t.nome] = await exec(comOrg(t.ins, org), tx);
-    if (t.depois) ins[`${t.nome} (participantes)`] = await exec(t.depois, tx);
+    lista.push({ nome: t.nome, sql: comOrg(t.ins, org) });
+    if (t.depois) lista.push({ nome: `${t.nome} (participantes)`, sql: t.depois });
   }
   for (const [tabela, col] of SEQUENCIAS) {
-    await exec(`select setval(pg_get_serial_sequence(${lit(tabela)}, ${lit(col)}), coalesce((select max(${col}) from ${tabela}), 0) + 1, false)`, tx);
+    lista.push({ nome: null, sql: `select setval(pg_get_serial_sequence(${lit(tabela)}, ${lit(col)}), coalesce((select max(${col}) from ${tabela}), 0) + 1, false)` });
   }
-  return ins;
+  return lista;
 }
+
+/** Prisma: executa a lista dentro da transação e devolve as linhas afetadas por nome. */
+async function executarLista(tx, lista) {
+  const n = {};
+  for (const i of lista) {
+    const afetadas = await exec(i.sql, tx);
+    if (i.nome) n[i.nome] = (n[i.nome] ?? 0) + afetadas;
+  }
+  return n;
+}
+const copiarEm = (tx, org) => executarLista(tx, instrucoesDaCopia(org));
+
+// Modo API: contagem por linha do relatório (mesmos nomes da lista), antes e depois da transação.
+async function contagens() {
+  const partes = [
+    `(select count(*)::int from public."User") as "User"`,
+    `(select count(*)::int from public."MotivoEncerramento") as "MotivoEncerramento"`,
+    ...T.map((t) => `(select count(*)::int from ${t.destino}${ondeDestino(t)}) as "${t.nome}"`),
+    `(select count(*)::int from public."CalendarAttendee" where "calendarEventId" in (select id from crm."Compromisso")) as "Compromisso (participantes)"`,
+  ];
+  return um(`select ${partes.join(", ")}`);
+}
+const diferenca = (antes, depois, sinal = 1) => Object.fromEntries(Object.keys(depois).map((k) => [k, sinal * (depois[k] - antes[k])]));
 
 function imprimirInseridas(ins) {
   for (const [k, v] of Object.entries(ins)) console.log(`${k.padEnd(32)} inseridas=${v}`);
@@ -307,29 +338,56 @@ function imprimirInseridas(ins) {
 
 async function copiar() {
   const org = await organizacao();
-  const ins = await prisma.$transaction((tx) => copiarEm(tx, org), { timeout: 600_000, maxWait: 30_000 });
+  let ins;
+  if (refApi) {
+    const antes = await contagens();
+    await transacaoApi(instrucoesDaCopia(org));
+    ins = diferenca(antes, await contagens());
+  } else {
+    ins = await prisma.$transaction((tx) => copiarEm(tx, org), { timeout: 600_000, maxWait: 30_000 });
+  }
   console.log("== Cópia concluída ==");
   imprimirInseridas(ins);
 }
 
 const DELETAR_COM = [...T].reverse();
-async function apagarCopiados(tx, { tudo }) {
-  const apagadas = {};
+function instrucoesDeApagar({ tudo }) {
+  const lista = [];
   for (const t of DELETAR_COM) {
     if (t.nome === "Compromisso") {
-      await exec(`delete from public."CalendarAttendee" where "calendarEventId" in (select id from crm."Compromisso")${tudo ? ` or "calendarEventId" in (select id from public."CalendarEvent" where ${t.destinoFiltro})` : ""}`, tx);
-      apagadas[t.nome] = await exec(`delete from public."CalendarEvent" where id in (select id from crm."Compromisso")${tudo ? ` or ${t.destinoFiltro}` : ""}`, tx);
+      lista.push({ nome: "Compromisso (participantes)", sql: `delete from public."CalendarAttendee" where "calendarEventId" in (select id from crm."Compromisso")${tudo ? ` or "calendarEventId" in (select id from public."CalendarEvent" where ${t.destinoFiltro})` : ""}` });
+      lista.push({ nome: t.nome, sql: `delete from public."CalendarEvent" where id in (select id from crm."Compromisso")${tudo ? ` or ${t.destinoFiltro}` : ""}` });
       continue;
     }
     // Ordem inversa de dependência; FKs com cascade (filhas) já sumiram antes.
-    apagadas[t.nome] = await exec(tudo ? `delete from ${t.destino}` : `delete from ${t.destino} where id in (select id from ${t.origem})`, tx);
+    lista.push({ nome: t.nome, sql: tudo ? `delete from ${t.destino}` : `delete from ${t.destino} where id in (select id from ${t.origem})` });
   }
-  return apagadas;
+  return lista;
 }
+const apagarCopiados = (tx, o) => executarLista(tx, instrucoesDeApagar(o));
+
+// Motivos e usuários que a cópia criou (mesmo id do CRM) e que ninguém mais usa.
+const INSTRUCOES_DESFAZER_EXTRA = [
+  { nome: "MotivoEncerramento", sql: `delete from public."MotivoEncerramento" m where m.id in (select id from crm."MotivoEncerramento")
+      and not exists (select 1 from public."Lead" l where l."motivoEncerramentoId"=m.id) and not exists (select 1 from public.com_oportunidade o where o."motivoId"=m.id)` },
+  { nome: "User", sql: `delete from public."User" u where u.id in (select id from crm."Usuario") and u.password is null
+      and not exists (select 1 from public."Account" a where a."userId"=u.id) and not exists (select 1 from public."Session" s where s."userId"=u.id)
+      and not exists (select 1 from public.com_oportunidade o where o."responsavelId"=u.id) and not exists (select 1 from public.com_contato c where c."responsavelId"=u.id)
+      and not exists (select 1 from public.com_tarefa t where t."responsavelId"=u.id)` },
+];
 
 async function refazer() {
   const org = await organizacao();
-  const r = await prisma.$transaction(async (tx) => {
+  let r;
+  if (refApi) {
+    // Uma transação: apaga tudo e copia de novo. Apagadas = o que havia; inseridas = o que ficou (User/motivos: diferença).
+    const antes = await contagens();
+    await transacaoApi([...instrucoesDeApagar({ tudo: true }), ...instrucoesDaCopia(org)]);
+    const depois = await contagens();
+    const apagadas = Object.fromEntries(Object.keys(antes).filter((k) => k !== "User" && k !== "MotivoEncerramento").map((k) => [k, antes[k]]));
+    const ins = { ...depois, User: depois.User - antes.User, MotivoEncerramento: depois.MotivoEncerramento - antes.MotivoEncerramento };
+    r = { apagadas, ins };
+  } else r = await prisma.$transaction(async (tx) => {
     const apagadas = await apagarCopiados(tx, { tudo: true });
     const ins = await copiarEm(tx, org);
     return { apagadas, ins };
@@ -340,17 +398,15 @@ async function refazer() {
 }
 
 async function desfazer() {
-  const r = await prisma.$transaction(async (tx) => {
-    const apagadas = await apagarCopiados(tx, { tudo: false });
-    // Motivos e usuários que a cópia criou (mesmo id do CRM) e que ninguém mais usa.
-    apagadas.MotivoEncerramento = await exec(`delete from public."MotivoEncerramento" m where m.id in (select id from crm."MotivoEncerramento")
-      and not exists (select 1 from public."Lead" l where l."motivoEncerramentoId"=m.id) and not exists (select 1 from public.com_oportunidade o where o."motivoId"=m.id)`, tx);
-    apagadas.User = await exec(`delete from public."User" u where u.id in (select id from crm."Usuario") and u.password is null
-      and not exists (select 1 from public."Account" a where a."userId"=u.id) and not exists (select 1 from public."Session" s where s."userId"=u.id)
-      and not exists (select 1 from public.com_oportunidade o where o."responsavelId"=u.id) and not exists (select 1 from public.com_contato c where c."responsavelId"=u.id)
-      and not exists (select 1 from public.com_tarefa t where t."responsavelId"=u.id)`, tx);
-    return apagadas;
-  }, { timeout: 600_000, maxWait: 30_000 });
+  const lista = [...instrucoesDeApagar({ tudo: false }), ...INSTRUCOES_DESFAZER_EXTRA];
+  let r;
+  if (refApi) {
+    const antes = await contagens();
+    await transacaoApi(lista);
+    r = diferenca(antes, await contagens(), -1);
+  } else {
+    r = await prisma.$transaction((tx) => executarLista(tx, lista), { timeout: 600_000, maxWait: 30_000 });
+  }
   console.log("== Desfeito ==");
   for (const [k, v] of Object.entries(r)) console.log(`${k.padEnd(32)} apagadas=${v}`);
 }
