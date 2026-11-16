@@ -510,6 +510,30 @@ export const MAX_TOOLS: Array<{
   {
     type: "function",
     function: {
+      name: "gerenciar_meta_poupanca",
+      description:
+        "Metas de poupanca (dinheiro guardado na reserva). Use 'aportar' quando Pedro disser que guardou/separou/depositou na reserva (ex.: 'guardei 63') — isso NAO e despesa, nunca use registrar_transacao para isso. 'retirar' quando ele tirar da reserva. 'consultar' para progresso e projecao. 'ajustar' muda valor diario, alvo, prazo ou liga/desliga a cobranca diaria. 'criar' cria uma meta nova.",
+      parameters: {
+        type: "object",
+        properties: {
+          acao: { type: "string", enum: ["aportar", "retirar", "consultar", "ajustar", "criar"], description: "Acao a executar" },
+          valor: { type: "number", description: "Valor guardado ou retirado (aportar/retirar); em criar, o que ja esta guardado" },
+          data: { type: "string", description: "YYYY-MM-DD. So preencha se Pedro disser a data; senao e hoje." },
+          meta: { type: "string", description: "Nome (ou parte) da meta, se houver mais de uma" },
+          observacao: { type: "string", description: "Observacao opcional" },
+          descricao: { type: "string", description: "Nome da meta (criar)" },
+          valor_alvo: { type: "number", description: "Valor total da meta (criar/ajustar)" },
+          data_fim: { type: "string", description: "Prazo YYYY-MM-DD (criar/ajustar)" },
+          aporte_diario: { type: "number", description: "Valor a guardar por dia (criar/ajustar)" },
+          cobrar_diariamente: { type: "boolean", description: "Liga/desliga a cobranca diaria (ajustar)" },
+        },
+        required: ["acao"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "projecao_caixa",
       description:
         "Faz uma projecao de fluxo de caixa para os proximos dias, considerando receitas previstas, contas a pagar e taxa diaria de gastos.",

@@ -23,6 +23,7 @@ import { garantirContasDeContratos } from "@/lib/finance/contratos-despesa";
 import { avisarOrcamentos } from "./orcamentos-alerta";
 import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
 import { semearOrcamentosIniciais } from "@/lib/finance/orcamentos-iniciais";
+import { semearMetaPoupancaInicial } from "@/lib/finance/metas-poupanca-iniciais";
 
 export const chaveVespera = (contaId: string, vencimentoISO: string) => `conta-vespera-${contaId}-${vencimentoISO}`;
 
@@ -183,6 +184,7 @@ export function acionarAvisoContasSePreciso(origem: string, opts: { forcar?: boo
     // Contratos e limites combinados com o dono entram uma única vez (marca no banco).
     await semearContratosDespesaIniciais().catch((e) => console.error(`[Max] contratos iniciais | origem=${origem}:`, e));
     await semearOrcamentosIniciais().catch((e) => console.error(`[Max] limites iniciais | origem=${origem}:`, e));
+    await semearMetaPoupancaInicial().catch((e) => console.error(`[Max] meta de poupança inicial | origem=${origem}:`, e));
     try {
       await avisarContasDeAmanha();
     } catch (e) {
@@ -192,6 +194,12 @@ export function acionarAvisoContasSePreciso(origem: string, opts: { forcar?: boo
       await avisarOrcamentos();
     } catch (e) {
       console.error(`[Max] Aviso de orçamento | origem=${origem} falhou:`, e);
+    }
+    try {
+      const { cobrarPoupancaDoDia } = await import("./cobranca-poupanca");
+      await cobrarPoupancaDoDia();
+    } catch (e) {
+      console.error(`[Max] Cobrança da poupança | origem=${origem} falhou:`, e);
     }
   };
   try {
