@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { parseEscopo, whereEscopo } from "@/lib/finance/escopo";
 import { garantirContasDeContratos } from "@/lib/finance/contratos-despesa";
 import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
 
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
     await garantirContasDeContratos().catch((e) => console.error("[contas] gerar contas de contratos:", e));
 
     const status = new URL(req.url).searchParams.get("status");
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = { ...whereEscopo(parseEscopo(new URL(req.url).searchParams.get("escopo"))) };
     if (status) where.status = status;
 
     const contas = await prisma.contaPagarMax.findMany({

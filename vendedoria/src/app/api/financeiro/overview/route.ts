@@ -34,7 +34,8 @@ function variacaoPct(atual: number, anterior: number): number | null {
 
 /** Filtro de Transacao para o período. Em mês inteiro usa `mes` (mesmo critério de sempre). */
 function whereTransacao(p: Periodo) {
-  return p.tipo === "mes" && p.mes ? { mes: p.mes } : { data_transacao: { gte: p.de, lte: p.ate } };
+  // confirmado: true = mesmo critério das métricas da Central (/dashboards); lançamento não confirmado não é receita/despesa.
+  return { confirmado: true, ...(p.tipo === "mes" && p.mes ? { mes: p.mes } : { data_transacao: { gte: p.de, lte: p.ate } }) };
 }
 
 interface SomaBloco { receitas: number; despesas: number }
@@ -227,7 +228,7 @@ export async function GET(req: NextRequest) {
     const meses = Array.from({ length: 6 }, (_, i) => somarMeses(mesFim, i - 5));
     const mensalRows = await prisma.transacao.groupBy({
       by: ["mes", "tipo", "tipo_negocio"],
-      where: { mes: { in: meses } },
+      where: { mes: { in: meses }, confirmado: true },
       _sum: { valor: true },
     });
     const mensal = meses.map((mes) => {

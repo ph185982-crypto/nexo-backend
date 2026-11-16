@@ -4,9 +4,10 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma/client";
 import { authConfig } from "./config";
 import { autorizarSso, PROVIDER_SSO } from "./sso";
+import { SESSAO_SERVICO, servicoAtivo } from "@/lib/finance/servico";
 import { ipDaRequisicao, limparFalhasLogin, loginBloqueado, registrarFalhaLogin } from "./tentativas";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const nextAuth = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -62,3 +63,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
+
+export const { handlers, signIn, signOut } = nextAuth;
+
+// `auth()` sem argumentos (uso nas rotas e páginas) devolve a sessão de serviço SOMENTE dentro de `emServico`
+// (API de serviço da Central, depois de conferir AVANTEZA_FINANCE_KEY). Qualquer outro uso cai no NextAuth.
+export const auth = ((...args: unknown[]) => {
+  if (args.length === 0 && servicoAtivo()) return Promise.resolve(SESSAO_SERVICO);
+  return (nextAuth.auth as (...a: unknown[]) => unknown)(...args);
+}) as typeof nextAuth.auth;

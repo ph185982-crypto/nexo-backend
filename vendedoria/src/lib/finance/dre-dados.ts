@@ -30,7 +30,7 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 /** Um item por lançamento do extrato: a descrição decide a linha da DRE. */
 async function linhasDoPeriodo(p: Periodo, escopo: Escopo): Promise<LinhaAgregada[]> {
   const rows = await prisma.transacao.findMany({
-    where: { ...whereTransacaoPeriodo(p), ...whereEscopo(escopo) },
+    where: { confirmado: true, ...whereTransacaoPeriodo(p), ...whereEscopo(escopo) },
     select: { id: true, tipo: true, categoria: true, descricao: true, valor: true, data_transacao: true },
   });
   return rows
@@ -88,7 +88,7 @@ async function previstosDoPeriodo(p: Periodo, escopo: Escopo) {
 async function serieMensal(mesFim: string, escopo: Escopo, mapa: MapaClassificacao) {
   const meses = Array.from({ length: 12 }, (_, i) => somarMeses(mesFim, i - 11));
   const rows = await prisma.transacao.findMany({
-    where: { mes: { in: meses }, ...whereEscopo(escopo) },
+    where: { mes: { in: meses }, confirmado: true, ...whereEscopo(escopo) },
     select: { id: true, mes: true, tipo: true, categoria: true, descricao: true, valor: true },
   });
   const ano = Number(mesFim.slice(0, 4));

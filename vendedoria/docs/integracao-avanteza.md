@@ -85,3 +85,66 @@ Definições:
 | `AVANTEZA_METRICS_ORG_ID` | não | restringe o comercial a uma organização (id de `WhatsappBusinessOrganization`). Vazio = todas. |
 
 Teste local: `DATABASE_URL=... npx tsx --test tests/avanteza-metricas.test.ts`.
+
+---
+
+# API de serviço do Financeiro (Central Avanteza → Vendedor IA)
+
+A tela **Financeiro** da Central (`/financeiro`) lê e escreve nas MESMAS tabelas do Max (`Transacao`, `ContaPagarMax`,
+`ReceitaPrevistaMax`, `ContratoReceita`, `MetaFinanceiraMax`/`AporteMetaMax`) por esta API. O Max continua respondendo no
+WhatsApp, sem mudança de schema.
+
+```
+{GET|POST|PATCH|DELETE} /api/integracoes/avanteza/financeiro/<recurso>?escopo=empresa|pessoal
+Authorization: Bearer <AVANTEZA_FINANCE_KEY>
+```
+
+- **Autenticação própria** (a rota está na lista pública do middleware; o prefixo é exato): sem `AVANTEZA_FINANCE_KEY` na
+  Vercel responde **503**; chave ausente/errada **401**; comparação em tempo constante (hash dos dois lados). É uma chave
+  **diferente** da `AVANTEZA_METRICS_KEY` (a de métricas, só leitura de agregados, não abre o financeiro).
+- **Mesma regra de negócio:** a rota valida com zod e executa as rotas `/api/financeiro/*` (as da tela do Vendedor IA), que usam
+  `src/lib/finance/*`. Só dentro dessa execução `auth()` devolve a sessão de serviço (`src/lib/finance/servico.ts`, AsyncLocalStorage).
+  O histórico (`HistoricoFinanceiro`) audita as escritas como sempre.
+- **Escopo obrigatório:** `escopo=empresa` (`tipo_negocio = nexo`) ou `escopo=pessoal` (`pessoal`; em receitas previstas, vazio também).
+  `todos` é recusado. Criações recebem o negócio do escopo (o corpo não o escolhe). Ids de outro escopo respondem **404**.
+  Reclassificar Empresa × Pessoal: `PATCH transacoes/:id` com `{"tipo_negocio":"nexo"|"pessoal"}` (e `receitas/:id` com `acao:"editar"`;
+  `contas/:id` com `acao:"editar"`). Lançamentos de `lukaizen`/`geral` ficam fora dos dois escopos.
+- **Sem logs de valores:** a rota não escreve log; erros internos voltam como `{"error":"falha ao processar"}`; erros de validação
+  listam só os nomes dos campos.
+- Respostas com `Cache-Control: no-store`. Corpo e query com campos desconhecidos são recusados (400).
+
+| Método e recurso | O que faz |
+|---|---|
+| `GET transacoes` | extrato paginado: `tipo`, `categoria`, `texto`, `data_inicio`, `data_fim`, `confirmado`, `page`, `pageSize` (≤100) |
+| `POST transacoes` | `{tipo, valor, descricao, categoria, data_transacao?, empresa?}` (sem data = dia de Brasília) |
+| `PATCH transacoes/:id` | edita; aceita `tipo_negocio` (reclassificar) e `confirmado` |
+| `POST transacoes/:id/confirmar` | marca o lançamento como confirmado |
+| `DELETE transacoes/:id` | exclui (o livro-razão grava a cópia antes) |
+| `GET contas` · `POST contas` | contas a pagar (`status`); criação `{descricao, valor, data_vencimento, categoria?, recorrente?, frequencia?}` |
+| `PATCH contas/:id` | `{acao:"pagar"}` (gera a despesa no extrato) · `{acao:"cancelar"}` · `{acao:"editar", …}` |
+| `DELETE contas/:id` | exclui a conta |
+| `GET receitas` · `POST receitas` | receitas previstas (`mes|dia|de|ate`, `status`, `contrato_id`); `modo` `avulsa`, `parcelada` ou `recorrente` (gera as parcelas) |
+| `PATCH receitas/:id` | `{acao:"confirmar"}` (baixa: marca recebida e lança a entrada) · `perder` · `reverter_perda` · `editar` |
+| `GET contratos` · `PATCH contratos/:id` | contratos de receita com andamento das parcelas · `{acao:"encerrar"}` / `{acao:"editar", …}` |
+| `GET metas` · `POST metas/aportes` · `PATCH metas/:id` · `DELETE metas/aportes/:id` | metas de poupança (**só `escopo=pessoal`**; empresa = 404) |
+| `GET resumo` | visão geral (mesmo cálculo de `/api/financeiro/overview`): `mes|dia|de|ate` |
+| `GET dre` | DRE gerencial (mesmo cálculo da aba DRE) |
+| `GET categorias` | categorias de receita/despesa usadas no escopo |
+
+Não exposto (continua só na tela do Vendedor IA): projeção de caixa (mistura os dois escopos), orçamentos, dívidas, contratos de
+despesa, histórico/restauração.
+
+| Variável (Vercel do **nexo-vendedoria**) | Obrigatória | Para quê |
+|---|---|---|
+| `AVANTEZA_FINANCE_KEY` | sim, para a Central usar o Financeiro | chave da API acima (a **mesma** vai na Central). `openssl rand -base64 36`. Sem ela: 503. |
+
+Testes: `DATABASE_URL=... npx tsx --test tests/avanteza-financeiro-api.test.ts` (banco descartável).
+
+## Correções de despesas feitas junto (2026-11-16)
+
+- `POST /api/financeiro/transacoes` sem data usava `new Date()` (UTC): lançamentos feitos depois das 21h de Brasília caíam no dia
+  seguinte (e, no último dia do mês, no mês seguinte). Agora usa o dia de Brasília; datas só-dia são lidas em UTC.
+- A visão geral e a DRE da tela somavam lançamentos `confirmado = false`; as métricas da Central não. Agora todos exigem `confirmado = true`.
+- Max: confirmar uma receita prevista duas vezes lançava a entrada em dobro; pagar uma conta duas vezes lançava a despesa (e a
+  próxima recorrência) em dobro. Agora o segundo pedido responde "já está confirmada/paga" sem lançar. Receita prevista sem
+  negócio confirmada pelo Max virava `geral` (fora dos dois escopos); agora vira `pessoal`, como na tela.

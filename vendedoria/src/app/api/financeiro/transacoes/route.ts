@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { parseEscopo, whereEscopo } from "@/lib/finance/escopo";
+import { parseData } from "@/lib/finance/periodo";
+import { formatMesUTC, getBrasiliaDateOnly } from "@/lib/max/config";
 
 async function requireAdmin() {
   const session = await auth();
@@ -27,6 +30,10 @@ export async function GET(req: NextRequest) {
     if (tipo) where.tipo = tipo;
     if (categoria) where.categoria = categoria;
     if (tipo_negocio) where.tipo_negocio = tipo_negocio;
+    // escopo=nexo|pessoal (usado pela API de serviço da Central); vale mais que tipo_negocio solto.
+    Object.assign(where, whereEscopo(parseEscopo(url.searchParams.get("escopo"))));
+    if (url.searchParams.get("confirmado") === "true") where.confirmado = true;
+    if (url.searchParams.get("confirmado") === "false") where.confirmado = false;
     if (texto) where.descricao = { contains: texto, mode: "insensitive" };
     if (data_inicio || data_fim) {
       where.data_transacao = {};
@@ -79,8 +86,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const dataTransacao = data_transacao ? new Date(data_transacao) : new Date();
-    const mes = `${dataTransacao.getFullYear()}-${String(dataTransacao.getMonth() + 1).padStart(2, "0")}`;
+    // Data só-dia em UTC. Sem data, vale o DIA DE BRASÍLIA: new Date() (UTC) jogava lançamentos feitos depois das 21h
+    // para o dia seguinte e, no último dia do mês, para o mês seguinte.
+    const dataTransacao = data_transacao ? (parseData(String(data_transacao).slice(0, 10)) ?? new Date(data_transacao)) : getBrasiliaDateOnly();
+    if (Number.isNaN(dataTransacao.getTime())) return NextResponse.json({ error: "Data inválida" }, { status: 400 });
+    const mes = formatMesUTC(dataTransacao);
 
     const transacao = await prisma.transacao.create({
       data: {
