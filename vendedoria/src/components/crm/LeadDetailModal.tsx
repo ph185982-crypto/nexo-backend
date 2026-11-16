@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn, getInitials, getAvatarColor, formatDate, formatDateTime, relativeTime, formatPhone } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 // ─── GraphQL Documents ────────────────────────────────────────────────────────
 
@@ -125,7 +126,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
   const loadNotes = useCallback(async (leadId: string) => {
     setNotesLoading(true);
     try {
-      const res = await fetch(`/api/leads/${leadId}/notes`);
+      const res = await fetch(apiUrl(`/api/leads/${leadId}/notes`));
       if (res.ok) setNotes(await res.json());
     } catch (e) {
       console.error("Erro ao carregar feedback:", e);
@@ -143,7 +144,7 @@ export function LeadDetailModal({ lead, open, onClose, onOpenChat }: LeadDetailM
     if (!lead?.id || !newNote.trim() || sendingNote) return;
     setSendingNote(true);
     try {
-      const res = await fetch(`/api/leads/${lead.id}/notes`, {
+      const res = await fetch(apiUrl(`/api/leads/${lead.id}/notes`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newNote.trim() }),

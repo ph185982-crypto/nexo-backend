@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import { apiUrl } from "@/lib/api-url";
 
 export const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -80,7 +81,7 @@ export async function executarAcaoReceita(
   motivo?: string,
 ): Promise<{ ok: boolean; erro?: string }> {
   try {
-    const res = await fetch(`/api/financeiro/receitas/${id}`, {
+    const res = await fetch(apiUrl(`/api/financeiro/receitas/${id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ acao, ...(motivo ? { motivo } : {}) }),

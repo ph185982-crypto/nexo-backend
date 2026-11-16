@@ -11,6 +11,7 @@ import { StrategyTab }     from "./_components/StrategyTab";
 import { ObjectionsTab }   from "./_components/ObjectionsTab";
 import { ConstraintsTab }  from "./_components/ConstraintsTab";
 import { FollowUpTab }     from "./_components/FollowUpTab";
+import { apiUrl } from "@/lib/api-url";
 
 // ─── Toast system ─────────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ function useActiveVersion() {
   const [info, setInfo] = useState<VersionInfo | null>(null);
 
   useEffect(() => {
-    fetch("/api/ai/versions?take=1")
+    fetch(apiUrl("/api/ai/versions?take=1"))
       .then(r => r.json())
       .then((rows: VersionInfo[]) => { if (rows[0]) setInfo(rows[0]); })
       .catch(() => {});

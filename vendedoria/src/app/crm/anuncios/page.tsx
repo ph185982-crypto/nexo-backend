@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from "react";
 import { Loader2, Megaphone } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { apiUrl } from "@/lib/api-url";
 
 interface Linha {
   adSourceId: string | null; adHeadline: string | null;
@@ -29,7 +30,7 @@ export default function AnunciosPage() {
     let vivo = true;
     setDados(null);
     setErro(null);
-    fetch(`/api/anuncios/resumo?de=${de}&ate=${ate}`)
+    fetch(apiUrl(`/api/anuncios/resumo?de=${de}&ate=${ate}`))
       .then(async (r) => { if (!r.ok) throw new Error(`Erro ${r.status}`); return r.json() as Promise<Resposta>; })
       .then((j) => { if (vivo) setDados(j); })
       .catch((e: Error) => { if (vivo) setErro(e.message); });

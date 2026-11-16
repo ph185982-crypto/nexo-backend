@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery, gql } from "@apollo/client";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORGS = gql`
   query GetOrgsReports {
@@ -218,7 +219,7 @@ function TabProdutos({ orgId }: { orgId: string }) {
   useEffect(() => {
     if (!orgId) return;
     setLoading(true);
-    fetch(`/api/leads?organizationId=${orgId}`)
+    fetch(apiUrl(`/api/leads?organizationId=${orgId}`))
       .then(r => r.json())
       .then((leads: Array<{ conversations?: Array<{ produtoInteresse?: string | null; etapa?: string }> }>) => {
         const map: Record<string, { count: number; pedidos: number }> = {};
@@ -331,7 +332,7 @@ function TabFollowup({ orgId }: { orgId: string }) {
   useEffect(() => {
     if (!orgId) return;
     setLoading(true);
-    fetch(`/api/leads?organizationId=${orgId}`)
+    fetch(apiUrl(`/api/leads?organizationId=${orgId}`))
       .then(r => r.json())
       .then((leads: Array<{
         id: string;
@@ -474,7 +475,7 @@ export default function ReportsPage() {
     if (!orgId) return;
     setLoadingDash(true);
     try {
-      const res = await fetch(`/api/dashboard?organizationId=${orgId}`);
+      const res = await fetch(apiUrl(`/api/dashboard?organizationId=${orgId}`));
       setDashData(await res.json() as DashboardData);
     } finally {
       setLoadingDash(false);

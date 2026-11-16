@@ -12,6 +12,7 @@ import {
   Package,
   Calendar,
 } from "lucide-react";
+import { apiUrl } from "@/lib/api-url";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -118,7 +119,7 @@ function AgendaTab() {
     setFiring(true);
     setResult(null);
     try {
-      const res = await fetch("/api/cron/oferta?force=1", { method: "POST" });
+      const res = await fetch(apiUrl("/api/cron/oferta?force=1"), { method: "POST" });
       const data = await res.json() as { ok: boolean; nomeProduto?: string; error?: string };
       setResult(data);
     } catch (err) {
@@ -225,7 +226,7 @@ function HistoricoTab() {
     try {
       const params = new URLSearchParams({ page: String(page), limit: "20" });
       if (status) params.set("status", status);
-      const res = await fetch(`/api/ofertas?${params}`);
+      const res = await fetch(apiUrl(`/api/ofertas?${params}`));
       const data = await res.json() as { total: number; ofertas: Oferta[] };
       setOfertas(data.ofertas ?? []);
       setTotal(data.total ?? 0);

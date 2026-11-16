@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { apiUrl } from "@/lib/api-url";
 
 interface FollowUpSettings {
   id: string;
@@ -31,7 +32,7 @@ export function FollowUpTab({ onSave, onError }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch("/api/ai/followup");
+      const r = await fetch(apiUrl("/api/ai/followup"));
       if (!r.ok) throw new Error();
       const data: FollowUpSettings = await r.json();
       setSettings(data);
@@ -55,7 +56,7 @@ export function FollowUpTab({ onSave, onError }: Props) {
         followUpHours:  form.followUpHours,
         followUpPrompt: form.followUpPrompt || null,
       };
-      const r = await fetch("/api/ai/followup", {
+      const r = await fetch(apiUrl("/api/ai/followup"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

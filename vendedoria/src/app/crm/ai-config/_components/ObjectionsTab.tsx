@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 type ObjType = "PRICE" | "COMPETITOR" | "TIMING" | "DISINTEREST" | "TRUST" | "FEATURE";
 
@@ -62,7 +63,7 @@ export function ObjectionsTab({ onSave, onError }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch("/api/ai/objections");
+      const r = await fetch(apiUrl("/api/ai/objections"));
       if (!r.ok) throw new Error();
       setRules(await r.json());
     } catch { onError("Erro ao carregar objeções"); }
@@ -103,7 +104,7 @@ export function ObjectionsTab({ onSave, onError }: Props) {
     if (!confirm("Excluir esta regra de objeção?")) return;
     setDeleting(id);
     try {
-      const r = await fetch(`/api/ai/objections/${id}`, { method: "DELETE" });
+      const r = await fetch(apiUrl(`/api/ai/objections/${id}`), { method: "DELETE" });
       if (!r.ok) throw new Error();
       await load(); onSave("Regra excluída.");
     } catch { onError("Erro ao excluir"); }
@@ -112,7 +113,7 @@ export function ObjectionsTab({ onSave, onError }: Props) {
 
   const handleToggle = async (rule: ObjectionRule) => {
     try {
-      const r = await fetch(`/api/ai/objections/${rule.id}`, {
+      const r = await fetch(apiUrl(`/api/ai/objections/${rule.id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: !rule.isActive }),

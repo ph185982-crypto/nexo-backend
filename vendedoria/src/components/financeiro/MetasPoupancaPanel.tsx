@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { inputCls, parseValor, fmtInput, patch } from "./EditarDialogs";
+import { apiUrl } from "@/lib/api-url";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const dataBR = (iso: string) => iso.split("-").reverse().join("/");
@@ -43,7 +44,7 @@ export function MetasPoupancaPanel() {
 
   const carregar = useCallback(async () => {
     try {
-      const r = await fetch("/api/financeiro/metas-poupanca", { cache: "no-store" });
+      const r = await fetch(apiUrl("/api/financeiro/metas-poupanca"), { cache: "no-store" });
       if (r.ok) setMetas(await r.json());
       else setMetas([]);
     } catch {
@@ -87,7 +88,7 @@ function MetaCard({ meta: m, onMudou }: { meta: Meta; onMudou: (msg: string) => 
     const v = parseValor(valor);
     if (!(v > 0)) { onMudou("Informe um valor válido."); return; }
     setOcupado(true);
-    const r = await fetch("/api/financeiro/metas-poupanca", {
+    const r = await fetch(apiUrl("/api/financeiro/metas-poupanca"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ meta_id: m.id, valor: sinal * v }),
@@ -98,7 +99,7 @@ function MetaCard({ meta: m, onMudou }: { meta: Meta; onMudou: (msg: string) => 
 
   const excluir = async (id: string) => {
     if (!confirm("Excluir este aporte?")) return;
-    const r = await fetch(`/api/financeiro/metas-poupanca?aporte_id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => null);
+    const r = await fetch(apiUrl(`/api/financeiro/metas-poupanca?aporte_id=${encodeURIComponent(id)}`), { method: "DELETE" }).catch(() => null);
     onMudou(r?.ok ? "Aporte excluído." : "Não foi possível excluir.");
   };
 

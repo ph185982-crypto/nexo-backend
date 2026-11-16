@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { apiUrl } from "@/lib/api-url";
 
 type Etapa = 'dados' | 'pagamento' | 'pix' | 'boleto' | 'sucesso' | 'erro';
 
@@ -35,7 +36,7 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    fetch(`/api/checkout/${id}`)
+    fetch(apiUrl(`/api/checkout/${id}`))
       .then(r => r.json())
       .then((data: { expirado?: boolean; pago?: boolean; erro?: string; ok?: boolean }) => {
         if (data.expirado || data.erro) { setCheckoutValido(false); return; }
@@ -50,7 +51,7 @@ export default function CheckoutPage() {
     if (cepLimpo.length !== 8) return;
     setBuscandoCEP(true);
     try {
-      const res = await fetch(`/api/cep/${cepLimpo}`);
+      const res = await fetch(apiUrl(`/api/cep/${cepLimpo}`));
       const data = await res.json() as { logradouro?: string; cidade?: string; estado?: string };
       if (data.logradouro) {
         setForm(f => ({ ...f, endereco: data.logradouro!, cidade: data.cidade ?? f.cidade, estado: data.estado ?? f.estado }));
@@ -84,7 +85,7 @@ export default function CheckoutPage() {
     setLoading(true);
     setErroMensagem('');
     try {
-      const res = await fetch(`/api/checkout/${id}/pix`, {
+      const res = await fetch(apiUrl(`/api/checkout/${id}/pix`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome: form.nome, cep: form.cep, endereco: form.endereco, numero: form.numero, complemento: form.complemento, cidade: form.cidade, estado: form.estado }),
@@ -103,7 +104,7 @@ export default function CheckoutPage() {
     setLoading(true);
     setErroMensagem('');
     try {
-      const res = await fetch(`/api/checkout/${id}/parcelado`, {
+      const res = await fetch(apiUrl(`/api/checkout/${id}/parcelado`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome: form.nome, cep: form.cep, endereco: form.endereco, numero: form.numero, complemento: form.complemento, cidade: form.cidade, estado: form.estado }),
@@ -125,7 +126,7 @@ export default function CheckoutPage() {
     setLoading(true);
     setErroMensagem('');
     try {
-      const res = await fetch(`/api/checkout/${id}/boleto`, {
+      const res = await fetch(apiUrl(`/api/checkout/${id}/boleto`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome: form.nome, cpf: form.cpf, cep: form.cep, endereco: form.endereco, numero: form.numero, complemento: form.complemento, cidade: form.cidade, estado: form.estado }),

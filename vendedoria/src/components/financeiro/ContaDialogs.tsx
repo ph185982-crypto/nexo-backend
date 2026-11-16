@@ -12,6 +12,7 @@ import {
 import { TIPO_NEGOCIO_OPTIONS } from "@/lib/finance/labels";
 import { BRL, fmtData } from "./receitas-shared";
 import { Campo, fmtInput, inputCls, parseValor, patch } from "./EditarDialogs";
+import { apiUrl } from "@/lib/api-url";
 
 export interface ContaItem {
   id: string;
@@ -113,7 +114,7 @@ export function ExcluirContaDialog({
     setExcluindo(true);
     setErro(null);
     try {
-      const res = await fetch(`/api/financeiro/contas/${conta.id}`, { method: "DELETE" });
+      const res = await fetch(apiUrl(`/api/financeiro/contas/${conta.id}`), { method: "DELETE" });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         setErro(j.error ?? `Erro ${res.status}`);

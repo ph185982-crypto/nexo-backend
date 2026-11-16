@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn, formatDateTime } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const LIST_EVENTS = gql`
   query ListCalendarEvents($organizationId: String!, $month: Int!, $year: Int!) {
@@ -117,7 +118,7 @@ export default function CalendarPage() {
   // Status da conexão Google Calendar
   const [googleStatus, setGoogleStatus] = useState<{ connected: boolean; email: string | null } | null>(null);
   useEffect(() => {
-    fetch("/api/integrations/google/status")
+    fetch(apiUrl("/api/integrations/google/status"))
       .then((r) => r.json())
       .then((d) => setGoogleStatus(d as { connected: boolean; email: string | null }))
       .catch(() => {});
@@ -133,7 +134,7 @@ export default function CalendarPage() {
   useEffect(() => {
     if (!orgId) return;
     setLoadingFollowups(true);
-    fetch(`/api/followups?organizationId=${orgId}`)
+    fetch(apiUrl(`/api/followups?organizationId=${orgId}`))
       .then((r) => r.json())
       .then((d) => { if (Array.isArray(d)) setFollowups(d); })
       .catch(() => {})
@@ -531,7 +532,7 @@ export default function CalendarPage() {
               onClick={() => {
                 if (!orgId) return;
                 setLoadingFollowups(true);
-                fetch(`/api/followups?organizationId=${orgId}`)
+                fetch(apiUrl(`/api/followups?organizationId=${orgId}`))
                   .then((r) => r.json())
                   .then((d) => { if (Array.isArray(d)) setFollowups(d); })
                   .catch(() => {})

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 type Archetype = "Vendedor" | "Consultor" | "Amigo" | "Especialista" | "Coach";
 
@@ -49,7 +50,7 @@ export function PersonaTab({ onSave, onError }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch("/api/ai/personality");
+      const r = await fetch(apiUrl("/api/ai/personality"));
       if (!r.ok) throw new Error(await r.text());
       setProfiles(await r.json());
     } catch { onError("Erro ao carregar personas"); }
@@ -87,7 +88,7 @@ export function PersonaTab({ onSave, onError }: Props) {
     if (!confirm("Excluir esta persona? Ela será desvinculada do agente.")) return;
     setDeleting(id);
     try {
-      const r = await fetch(`/api/ai/personality/${id}`, { method: "DELETE" });
+      const r = await fetch(apiUrl(`/api/ai/personality/${id}`), { method: "DELETE" });
       if (!r.ok) throw new Error("Erro ao excluir");
       await load(); onSave("Persona excluída.");
     } catch { onError("Erro ao excluir persona"); }

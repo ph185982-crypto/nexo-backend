@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { apiUrl } from "@/lib/api-url";
 
 function urlBase64ToUint8Array(base64: string): Uint8Array {
   const padding = "=".repeat((4 - (base64.length % 4)) % 4);
@@ -12,7 +13,7 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
 async function subscribeAndSave(): Promise<boolean> {
   try {
     const reg = await navigator.serviceWorker.ready;
-    const res = await fetch("/api/push/vapid-public-key");
+    const res = await fetch(apiUrl("/api/push/vapid-public-key"));
     if (!res.ok) return false;
     const { publicKey } = await res.json() as { publicKey: string };
 
@@ -21,7 +22,7 @@ async function subscribeAndSave(): Promise<boolean> {
       applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as ArrayBuffer,
     });
 
-    const saved = await fetch("/api/push/subscribe", {
+    const saved = await fetch(apiUrl("/api/push/subscribe"), {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(sub),

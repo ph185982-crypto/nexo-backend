@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, formatPhone } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -703,14 +704,14 @@ export default function DeliveryDetailPage({
     setLoading(true);
     try {
       // Fetch lead info
-      const leadRes = await fetch(`/api/delivery/${leadId}/lead-info`);
+      const leadRes = await fetch(apiUrl(`/api/delivery/${leadId}/lead-info`));
       if (leadRes.ok) setLead(await leadRes.json());
 
       // Fetch or create diagnosis
-      let diagRes = await fetch(`/api/delivery/${leadId}/diagnosis`);
+      let diagRes = await fetch(apiUrl(`/api/delivery/${leadId}/diagnosis`));
       let diagJson = await diagRes.json();
       if (!diagJson.diagnosis) {
-        diagRes = await fetch(`/api/delivery/${leadId}/diagnosis`, { method: "POST" });
+        diagRes = await fetch(apiUrl(`/api/delivery/${leadId}/diagnosis`), { method: "POST" });
         diagJson = await diagRes.json();
       }
       const d: Diagnosis = diagJson.diagnosis;
@@ -738,7 +739,7 @@ export default function DeliveryDetailPage({
   const saveDraft = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`/api/delivery/${leadId}/diagnosis`, {
+      const res = await fetch(apiUrl(`/api/delivery/${leadId}/diagnosis`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...blockData, priorizacaoData }),
@@ -759,7 +760,7 @@ export default function DeliveryDetailPage({
     if (!confirm("Finalizar o diagnóstico? Após isso ele não poderá ser editado.")) return;
     setFinalizing(true);
     try {
-      const res = await fetch(`/api/delivery/${leadId}/diagnosis`, {
+      const res = await fetch(apiUrl(`/api/delivery/${leadId}/diagnosis`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...blockData, priorizacaoData, finalize: true }),
@@ -802,7 +803,7 @@ export default function DeliveryDetailPage({
       prev.map((c) => (c.id === cardId ? { ...c, column: newColumn } : c)),
     );
 
-    await fetch(`/api/delivery/${leadId}/cards/${cardId}`, {
+    await fetch(apiUrl(`/api/delivery/${leadId}/cards/${cardId}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ column: newColumn }),
@@ -826,7 +827,7 @@ export default function DeliveryDetailPage({
   const handleCardSave = async (data: Partial<DeliveryCard>) => {
     if (editingCard?.id) {
       // Update
-      const res = await fetch(`/api/delivery/${leadId}/cards/${editingCard.id}`, {
+      const res = await fetch(apiUrl(`/api/delivery/${leadId}/cards/${editingCard.id}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -837,7 +838,7 @@ export default function DeliveryDetailPage({
       );
     } else {
       // Create
-      const res = await fetch(`/api/delivery/${leadId}/cards`, {
+      const res = await fetch(apiUrl(`/api/delivery/${leadId}/cards`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, column: defaultCardColumn }),
@@ -849,7 +850,7 @@ export default function DeliveryDetailPage({
 
   const handleCardDelete = async (cardId: string) => {
     setCards((prev) => prev.filter((c) => c.id !== cardId));
-    await fetch(`/api/delivery/${leadId}/cards/${cardId}`, { method: "DELETE" });
+    await fetch(apiUrl(`/api/delivery/${leadId}/cards/${cardId}`), { method: "DELETE" });
   };
 
   const readOnly = diagnosis?.isFinalized ?? false;

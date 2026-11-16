@@ -18,6 +18,7 @@ import {
   AlertTriangle, Plus, Trash2, Send, Brain, Settings2,
   TrendingUp, Mic, Timer, ChevronRight,
 } from "lucide-react";
+import { apiUrl } from "@/lib/api-url";
 
 // ── GraphQL ──────────────────────────────────────────────────────────────────
 
@@ -185,7 +186,7 @@ export default function ConfigureAgentPage() {
 
   const loadConfig = useCallback(async (orgId: string) => {
     try {
-      const res = await fetch(`/api/config?organizationId=${orgId}`);
+      const res = await fetch(apiUrl(`/api/config?organizationId=${orgId}`));
       if (!res.ok) return;
       const raw = await res.json() as Partial<FullAiConfig>;
       setConfig({
@@ -204,7 +205,7 @@ export default function ConfigureAgentPage() {
     setConfig(next);
     setConfigSaving(true);
     try {
-      await fetch("/api/config", {
+      await fetch(apiUrl("/api/config"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ organizationId: orgId, ...next, savedBy: "dashboard" }),
@@ -247,7 +248,7 @@ export default function ConfigureAgentPage() {
     setChatMessages((prev) => [...prev, userMsg]);
     setChatLoading(true);
     try {
-      const res = await fetch("/api/agent-config/chat", {
+      const res = await fetch(apiUrl("/api/agent-config/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [...chatMessages, userMsg].map((m) => ({ role: m.role, content: m.content })), agentId: selectedAgentId }),
@@ -287,7 +288,7 @@ export default function ConfigureAgentPage() {
     if (!msg || !selectedAgentId || testLoading) return;
     setTestLoading(true); setTestResult(null);
     try {
-      const res = await fetch("/api/agent-config/test", {
+      const res = await fetch(apiUrl("/api/agent-config/test"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agentId: selectedAgentId, message: msg, customScript: scriptModified ? scriptContent : undefined }),

@@ -20,6 +20,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const MAX_IMAGES = 8;
 
@@ -172,7 +173,7 @@ function ImageGallery({
           for (const file of toUpload) {
             const fd = new FormData();
             fd.append("file", file);
-            const res = await fetch("/api/upload", { method: "POST", body: fd });
+            const res = await fetch(apiUrl("/api/upload"), { method: "POST", body: fd });
             if (res.ok) {
               const { url } = await res.json() as { url: string };
               onAdd(url);
@@ -218,7 +219,7 @@ export default function ProductsPage() {
     if (!selectedOrgId) return;
     setLoadingProducts(true);
     try {
-      const res = await fetch(`/api/products?organizationId=${selectedOrgId}`);
+      const res = await fetch(apiUrl(`/api/products?organizationId=${selectedOrgId}`));
       setProducts(await res.json());
     } catch {
       setFeedback({ type: "err", msg: "Erro ao carregar produtos." });
@@ -297,14 +298,14 @@ export default function ProductsPage() {
       };
 
       if (editingProduct) {
-        await fetch(`/api/products/${editingProduct.id}`, {
+        await fetch(apiUrl(`/api/products/${editingProduct.id}`), {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         setFeedback({ type: "ok", msg: "Produto atualizado!" });
       } else {
-        await fetch("/api/products", {
+        await fetch(apiUrl("/api/products"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, organizationId: selectedOrgId }),
@@ -325,7 +326,7 @@ export default function ProductsPage() {
     if (!confirm("Excluir este produto?")) return;
     setDeletingId(id);
     try {
-      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      await fetch(apiUrl(`/api/products/${id}`), { method: "DELETE" });
       setProducts((prev) => prev.filter((p) => p.id !== id));
       setFeedback({ type: "ok", msg: "Produto excluído." });
     } catch {
@@ -336,7 +337,7 @@ export default function ProductsPage() {
   }
 
   async function toggleActive(product: Product) {
-    await fetch(`/api/products/${product.id}`, {
+    await fetch(apiUrl(`/api/products/${product.id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: !product.isActive }),
@@ -349,7 +350,7 @@ export default function ProductsPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await fetch(apiUrl("/api/upload"), { method: "POST", body: fd });
       if (!res.ok) { const e = await res.json() as { error?: string }; setFeedback({ type: "err", msg: e.error ?? "Falha no upload de vídeo." }); return; }
       const { url } = await res.json() as { url: string };
       setForm((prev) => ({ ...prev, videoUrl: url }));

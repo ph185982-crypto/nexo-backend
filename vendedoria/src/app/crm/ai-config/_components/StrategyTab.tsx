@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 type Urgency = "low" | "medium" | "high";
 
@@ -46,7 +47,7 @@ export function StrategyTab({ onSave, onError }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch("/api/ai/strategy");
+      const r = await fetch(apiUrl("/api/ai/strategy"));
       if (!r.ok) throw new Error();
       setProfiles(await r.json());
     } catch { onError("Erro ao carregar estratégias"); }
@@ -84,7 +85,7 @@ export function StrategyTab({ onSave, onError }: Props) {
     if (!confirm("Excluir esta estratégia?")) return;
     setDeleting(id);
     try {
-      const r = await fetch(`/api/ai/strategy/${id}`, { method: "DELETE" });
+      const r = await fetch(apiUrl(`/api/ai/strategy/${id}`), { method: "DELETE" });
       if (!r.ok) throw new Error();
       await load(); onSave("Estratégia excluída.");
     } catch { onError("Erro ao excluir"); }

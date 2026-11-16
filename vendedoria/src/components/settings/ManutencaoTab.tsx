@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { apiUrl } from "@/lib/api-url";
 
 interface Previa { escopo: "escalados" | "outbound"; descricao?: string; destino?: string; quantidade: number; erro?: string }
 
@@ -23,7 +24,7 @@ export function ManutencaoTab({ orgId }: { orgId: string }) {
     if (!orgId) return;
     setCarregando(true);
     try {
-      const res = await fetch(`/api/admin/kanban/sincronizar?organizationId=${orgId}`);
+      const res = await fetch(apiUrl(`/api/admin/kanban/sincronizar?organizationId=${orgId}`));
       const data = await res.json();
       setPrevias(data.previas ?? []);
     } catch {
@@ -40,7 +41,7 @@ export function ManutencaoTab({ orgId }: { orgId: string }) {
     setAplicando(p.escopo);
     setMensagem(null);
     try {
-      const res = await fetch("/api/admin/kanban/sincronizar", {
+      const res = await fetch(apiUrl("/api/admin/kanban/sincronizar"), {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ organizationId: orgId, escopo: p.escopo }),
       });

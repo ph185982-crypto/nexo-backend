@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 interface ConstraintRule {
   id: string;
@@ -36,7 +37,7 @@ export function ConstraintsTab({ onSave, onError }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch("/api/ai/constraints");
+      const r = await fetch(apiUrl("/api/ai/constraints"));
       if (!r.ok) throw new Error();
       setRules(await r.json());
     } catch { onError("Erro ao carregar restrições"); }
@@ -74,7 +75,7 @@ export function ConstraintsTab({ onSave, onError }: Props) {
     if (!confirm("Excluir esta restrição?")) return;
     setDeleting(id);
     try {
-      const r = await fetch(`/api/ai/constraints/${id}`, { method: "DELETE" });
+      const r = await fetch(apiUrl(`/api/ai/constraints/${id}`), { method: "DELETE" });
       if (!r.ok) throw new Error();
       await load(); onSave("Restrição excluída.");
     } catch { onError("Erro ao excluir"); }
@@ -83,7 +84,7 @@ export function ConstraintsTab({ onSave, onError }: Props) {
 
   const handleToggle = async (rule: ConstraintRule) => {
     try {
-      await fetch(`/api/ai/constraints/${rule.id}`, {
+      await fetch(apiUrl(`/api/ai/constraints/${rule.id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: !rule.isActive }),

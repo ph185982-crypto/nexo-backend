@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIntervaloVisivel } from "@/hooks/useIntervaloVisivel";
 import type { FilaDeLigacoes, LigacaoMarcada, LigacaoPendente } from "@/lib/crm/ligacoes";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORGS = gql`query GetOrgsLigacoes { whatsappBusinessOrganizations { id name status } }`;
 
@@ -41,7 +42,7 @@ export default function LigacoesPage() {
     if (!orgId) return;
     setCarregando(true);
     try {
-      const res = await fetch(`/api/ligacoes?organizationId=${orgId}`);
+      const res = await fetch(apiUrl(`/api/ligacoes?organizationId=${orgId}`));
       if (res.ok) setFila(await res.json());
     } finally {
       setCarregando(false);
@@ -54,7 +55,7 @@ export default function LigacoesPage() {
   const concluir = async (p: LigacaoPendente) => {
     setOcupado(p.notificacaoId);
     try {
-      await fetch(`/api/notifications/${p.notificacaoId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) });
+      await fetch(apiUrl(`/api/notifications/${p.notificacaoId}`), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) });
       setFila((f) => f ? { ...f, pendentes: f.pendentes.filter((x) => x.notificacaoId !== p.notificacaoId) } : f);
     } finally {
       setOcupado(null);

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Kanban, Calendar, MessageSquare, Bot,
-  Settings, X, Radar, Wallet, ChevronLeft, ChevronRight, Trophy,
-  Megaphone, PhoneCall,
+  Settings, X, Radar, Wallet, ChevronLeft, ChevronRight,
+  PhoneCall, Send, Briefcase, Users, ListChecks, CalendarClock, FileText, ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -42,16 +42,38 @@ interface SidebarProps {
   onAccountSelect?: (accountId: string) => void;
 }
 
-const navItems = [
-  { href: "/crm/conversations", label: "Conversas",       icon: MessageSquare },
-  { href: "/crm/ligacoes",      label: "Ligações",        icon: PhoneCall },
-  { href: "/crm/lead/kanban",   label: "CRM",             icon: Kanban },
-  { href: "/crm/delivery",      label: "Funil de Entrega", icon: Trophy },
-  { href: "/crm/prospeccao",    label: "Prospecções",     icon: Radar },
-  { href: "/crm/anuncios",      label: "Anúncios",        icon: Megaphone },
-  { href: "/crm/calendar",      label: "Calendário",      icon: Calendar },
-  { href: "/crm/configure-agent", label: "Agente",        icon: Bot },
-  { href: "/crm/financeiro",    label: "Financeiro",      icon: Wallet },
+type ItemMenu = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; externo?: boolean };
+
+// Fora do menu (as rotas continuam existindo): Funil de Entrega antigo (/crm/delivery), Anúncios (/crm/anuncios,
+// vai para o Marketing da Central), Pedidos e Checkout. O Financeiro mora na Central (as rotas daqui seguem para o
+// Max e para a API de serviço).
+export const gruposMenu: Array<{ titulo: string | null; itens: ItemMenu[] }> = [
+  {
+    titulo: null,
+    itens: [
+      { href: "/crm/conversations",   label: "Conversas",    icon: MessageSquare },
+      { href: "/crm/ligacoes",        label: "Ligações",     icon: PhoneCall },
+      { href: "/crm/lead/kanban",     label: "Leads (SDR)",  icon: Kanban },
+      { href: "/crm/prospeccao",      label: "Prospecções",  icon: Radar },
+      { href: "/crm/disparos",        label: "Disparos",     icon: Send },
+      { href: "/crm/calendar",        label: "Calendário",   icon: Calendar },
+      { href: "/crm/configure-agent", label: "Agente",       icon: Bot },
+    ],
+  },
+  {
+    titulo: "Comercial",
+    itens: [
+      { href: "/comercial/oportunidades", label: "Oportunidades", icon: Briefcase },
+      { href: "/comercial/contatos",      label: "Contatos",      icon: Users },
+      { href: "/comercial/tarefas",       label: "Tarefas",       icon: ListChecks },
+      { href: "/comercial/agenda",        label: "Agenda",        icon: CalendarClock },
+      { href: "/comercial/propostas",     label: "Propostas",     icon: FileText },
+    ],
+  },
+  {
+    titulo: null,
+    itens: [{ href: "https://app.avanteza.com.br/financeiro", label: "Financeiro", icon: Wallet, externo: true }],
+  },
 ];
 
 export function Sidebar({
@@ -116,30 +138,39 @@ export function Sidebar({
       </button>
 
       <ScrollArea className="flex-1">
-        <nav className="py-3 px-2 space-y-0.5">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={handleNavClick}
-                className={cn(
+        <nav className="py-3 px-2">
+          {gruposMenu.map((grupo, gi) => (
+            <div key={grupo.titulo ?? `g${gi}`} className={cn("space-y-0.5", gi > 0 && "mt-3 pt-3 border-t border-white/10")}>
+              {grupo.titulo && (
+                <p className={cn("px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-areia", collapsed && "md:hidden")}>{grupo.titulo}</p>
+              )}
+              {grupo.itens.map((item) => {
+                const Icon = item.icon;
+                const active = !item.externo && isActive(item.href);
+                const classe = cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   active
                     ? "bg-white/15 text-white"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
-                )}
-              >
-                <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-white" : "")} />
-                <span className={cn(collapsed && "md:hidden")}>{item.label}</span>
-                {active && !collapsed && (
-                  <span className="ml-auto w-1 h-4 rounded-full bg-laranja flex-shrink-0" />
-                )}
-              </Link>
-            );
-          })}
+                );
+                const conteudo = (
+                  <>
+                    <Icon className={cn("w-4 h-4 flex-shrink-0", active ? "text-white" : "")} />
+                    <span className={cn(collapsed && "md:hidden")}>{item.label}</span>
+                    {item.externo && <ArrowUpRight className={cn("ml-auto w-3.5 h-3.5 opacity-70", collapsed && "md:hidden")} aria-hidden />}
+                    {active && !collapsed && (
+                      <span className="ml-auto w-1 h-4 rounded-full bg-laranja flex-shrink-0" />
+                    )}
+                  </>
+                );
+                return item.externo ? (
+                  <a key={item.href} href={item.href} onClick={handleNavClick} className={classe} title="Abre na Central Avanteza">{conteudo}</a>
+                ) : (
+                  <Link key={item.href} href={item.href} onClick={handleNavClick} className={classe}>{conteudo}</Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
       </ScrollArea>
 

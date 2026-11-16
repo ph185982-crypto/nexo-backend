@@ -9,6 +9,7 @@ import { Plug, Plus, Copy, Trash2, Loader2, Check, AlertTriangle } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { apiUrl } from "@/lib/api-url";
 
 interface ChaveApi {
   id: string;
@@ -35,7 +36,7 @@ export function ApiKeysTab() {
 
   const carregar = useCallback(async () => {
     try {
-      const r = await fetch("/api/admin/api-keys");
+      const r = await fetch(apiUrl("/api/admin/api-keys"));
       if (!r.ok) throw new Error(`Erro ${r.status}`);
       setChaves(await r.json());
     } catch (e) {
@@ -49,7 +50,7 @@ export function ApiKeysTab() {
     setCriando(true);
     setErro(null);
     try {
-      const r = await fetch("/api/admin/api-keys", {
+      const r = await fetch(apiUrl("/api/admin/api-keys"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome: nome.trim() || "Sem nome" }),
@@ -70,7 +71,7 @@ export function ApiKeysTab() {
     if (!confirm(`Revogar a chave "${nomeChave}"? Qualquer ferramenta usando ela perde o acesso imediatamente.`)) return;
     setRevogando(id);
     try {
-      await fetch(`/api/admin/api-keys/${id}`, { method: "DELETE" });
+      await fetch(apiUrl(`/api/admin/api-keys/${id}`), { method: "DELETE" });
       await carregar();
     } finally {
       setRevogando(null);

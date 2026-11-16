@@ -14,6 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api-url";
 
 const GET_ORGS = gql`
   query GetOrgsDisparos {
@@ -101,7 +102,7 @@ export default function DisparosPage() {
     setLoadingLeads(true);
     setSelectedLeadIds(new Set());
     setResults(null);
-    fetch(`/api/leads?organizationId=${selectedOrgId}`)
+    fetch(apiUrl(`/api/leads?organizationId=${selectedOrgId}`))
       .then((r) => r.json())
       .then((data) => {
         setLeads(Array.isArray(data) ? data : []);
@@ -156,7 +157,7 @@ export default function DisparosPage() {
     setSending(true);
     setResults(null);
     try {
-      const res = await fetch("/api/disparos", {
+      const res = await fetch(apiUrl("/api/disparos"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

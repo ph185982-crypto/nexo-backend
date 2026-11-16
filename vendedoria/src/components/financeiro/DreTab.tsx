@@ -24,6 +24,7 @@ import {
   ESTRUTURA_DRE, GRUPOS_DRE, analiseVertical, variacaoPct, dreParaCsv, grupoInfo, gruposDoTipo, labelMesCurto,
   type CategoriasPorGrupo, type Dre, type GrupoDre, type ItemClassificacao, type ItemLancamento, type PontoSerie, type RelatorioDre,
 } from "@/lib/finance/dre";
+import { apiUrl } from "@/lib/api-url";
 
 const TOOLTIP_STYLE = {
   backgroundColor: "hsl(var(--card))",
@@ -87,7 +88,7 @@ export function DreTab() {
     setLoading(true);
     setErro(false);
     try {
-      const r = await fetch(`/api/financeiro/dre?${filtroParaQuery(filtro)}`);
+      const r = await fetch(apiUrl(`/api/financeiro/dre?${filtroParaQuery(filtro)}`));
       if (!r.ok) throw new Error(String(r.status));
       setData(await r.json());
     } catch {
@@ -102,7 +103,7 @@ export function DreTab() {
   const classificarCategoria = async (item: ItemClassificacao, grupo: GrupoDre | null) => {
     setOcupado(item.chave);
     try {
-      const r = await fetch("/api/financeiro/dre/classificacao", {
+      const r = await fetch(apiUrl("/api/financeiro/dre/classificacao"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tipo: item.tipo, categoria: item.categoria, grupo }),
@@ -125,7 +126,7 @@ export function DreTab() {
     if (!l.id) return;
     setOcupado(l.id);
     try {
-      const r = await fetch("/api/financeiro/dre/classificacao", {
+      const r = await fetch(apiUrl("/api/financeiro/dre/classificacao"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lancamentoId: l.id, grupo }),

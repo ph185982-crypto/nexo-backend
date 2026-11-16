@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Kanban, Radar, Bot, Wallet } from "lucide-react";
+import { MessageSquare, Kanban, Briefcase, ListChecks, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Cinco atalhos; o resto (Prospecções, Disparos, Contatos, Agenda, Propostas, Financeiro na Central…) fica no menu lateral.
 const tabs = [
-  { href: "/crm/conversations", label: "Conversas",   icon: MessageSquare },
-  { href: "/crm/lead/kanban",   label: "CRM",         icon: Kanban },
-  { href: "/crm/prospeccao",    label: "Prospecções", icon: Radar },
-  { href: "/crm/configure-agent", label: "Agente",    icon: Bot },
-  { href: "/crm/financeiro",    label: "Financeiro",  icon: Wallet },
+  { href: "/crm/conversations",       label: "Conversas",     icon: MessageSquare },
+  { href: "/crm/lead/kanban",         label: "Leads",         icon: Kanban },
+  { href: "/comercial/oportunidades", label: "Oportunidades", icon: Briefcase },
+  { href: "/comercial/tarefas",       label: "Tarefas",       icon: ListChecks },
+  { href: "/crm/configure-agent",     label: "Agente",        icon: Bot },
 ];
 
 export function MobileTabBar() {
