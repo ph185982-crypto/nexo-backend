@@ -20,6 +20,7 @@ import { analiseProfunda, projecaoCaixa } from "./analise";
 import { buscarNaWeb } from "./web";
 import { consultarCrm } from "./crm";
 import { gerenciarAgenda } from "./agenda";
+import { gerenciarMetaPoupanca } from "./poupanca";
 
 export async function executeMaxTool(
   name: string,
@@ -67,6 +68,8 @@ export async function executeMaxTool(
         return await consultarCrm(args);
       case "gerenciar_agenda":
         return await gerenciarAgenda(args);
+      case "gerenciar_meta_poupanca":
+        return await gerenciarMetaPoupanca(args);
       default:
         return `Tool "${name}" nao reconhecida.`;
     }

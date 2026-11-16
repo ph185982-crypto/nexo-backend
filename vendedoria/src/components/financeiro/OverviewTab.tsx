@@ -1,5 +1,6 @@
 "use client";
 
+import { MetasPoupancaPanel } from "./MetasPoupancaPanel";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Loader2, TrendingUp, TrendingDown, DollarSign, ArrowUp, ArrowDown, CalendarClock,
@@ -138,6 +139,9 @@ export function OverviewTab() {
         </div>
         <FiltroPeriodo filtro={filtro} onChange={setFiltro} />
       </div>
+
+      {/* Metas de poupança (o Max cobra o valor diário) */}
+      <MetasPoupancaPanel />
 
       {aviso && (
         <div role="status" className="flex items-start justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm">

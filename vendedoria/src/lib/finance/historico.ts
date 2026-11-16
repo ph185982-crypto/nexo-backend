@@ -24,6 +24,7 @@ export const MODELOS_FINANCEIROS_AUDITADOS = [
   "DividaMax",
   "OrcamentoMax",
   "MetaFinanceiraMax",
+  "AporteMetaMax",
   "ContratoReceita",
   "ContratoDespesa",
   "DreClassificacaoMax",
