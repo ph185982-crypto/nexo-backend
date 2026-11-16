@@ -10,6 +10,7 @@ import {
 import { speechTTS } from "./openai";
 import { MAX_OWNER_NUMBER, MAX_TTS_MODEL, MAX_TTS_VOICE, MAX_TTS_CHAR_LIMIT, resolveToken } from "./config";
 import { uploadWhatsAppMedia, sendWhatsAppAudioById } from "@/lib/whatsapp/send";
+import { CHAVE_IMPORTACAO_PENDENTE, ehConversaExportada } from "./tools/central";
 
 export interface MaxMessageInput {
   text?: string;
@@ -56,8 +57,20 @@ export async function handleMaxMessage(
   try {
     let userContent: string | Array<{ type: string; [k: string]: unknown }>;
 
-    // Handle media (image/document)
-    if (input.media && (input.media.type === "image" || input.media.type === "document")) {
+    // Conversa exportada do WhatsApp (.txt/.zip) mandada como documento: não é comprovante. Guarda a referência da mídia
+    // (o arquivo é baixado de novo só quando o Max chamar importar_conversa) e avisa o modelo.
+    if (input.media?.type === "document" && ehConversaExportada(input.media.filename, input.media.mimeType)) {
+      const arquivo = (input.media.filename ?? "conversa.txt").slice(0, 200);
+      await prisma.contextoPedro.upsert({
+        where: { chave: CHAVE_IMPORTACAO_PENDENTE },
+        update: { valor: JSON.stringify({ mediaId: input.media.mediaId, arquivo, recebidoEm: new Date().toISOString() }), categoria: "rotina" },
+        create: { chave: CHAVE_IMPORTACAO_PENDENTE, valor: JSON.stringify({ mediaId: input.media.mediaId, arquivo, recebidoEm: new Date().toISOString() }), categoria: "rotina" },
+      });
+      userContent =
+        `[Conversa exportada do WhatsApp recebida: ${arquivo}]` +
+        (input.media.caption ? `\nLegenda do Pedro: ${input.media.caption}` : "") +
+        "\nChame importar_conversa com o cliente da legenda (se houver). Sem cliente, chame sem o campo: a Central usa o cliente desta conversa se ja conhecer; se ela pedir o cliente, pergunte ao Pedro.";
+    } else if (input.media && (input.media.type === "image" || input.media.type === "document")) {
       try {
         const buffer = await fetchMetaMediaWithTimeout(input.media.mediaId, token);
 

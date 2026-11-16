@@ -21,6 +21,7 @@ import { buscarNaWeb } from "./web";
 import { consultarCrm } from "./crm";
 import { gerenciarAgenda } from "./agenda";
 import { gerenciarMetaPoupanca } from "./poupanca";
+import { concluirAcao, importarConversa, pendenciasDoCliente, registrarParaCliente } from "./central";
 
 export async function executeMaxTool(
   name: string,
@@ -70,6 +71,14 @@ export async function executeMaxTool(
         return await gerenciarAgenda(args);
       case "gerenciar_meta_poupanca":
         return await gerenciarMetaPoupanca(args);
+      case "registrar_para_cliente":
+        return await registrarParaCliente(args);
+      case "pendencias_do_cliente":
+        return await pendenciasDoCliente(args);
+      case "concluir_acao":
+        return await concluirAcao(args);
+      case "importar_conversa":
+        return await importarConversa(args);
       default:
         return `Tool "${name}" nao reconhecida.`;
     }
