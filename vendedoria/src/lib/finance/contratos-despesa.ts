@@ -248,8 +248,8 @@ export interface ContratoComProgresso extends ContratoDespesa {
   proxima: { vencimento: string; valor: number; numero: number } | null;
 }
 
-export async function listarContratosDespesa(): Promise<ContratoComProgresso[]> {
-  const contratos = await prisma.contratoDespesa.findMany({ orderBy: [{ status: "asc" }, { descricao: "asc" }] });
+export async function listarContratosDespesa(tipoNegocio?: string): Promise<ContratoComProgresso[]> {
+  const contratos = await prisma.contratoDespesa.findMany({ where: tipoNegocio ? { tipo_negocio: tipoNegocio } : {}, orderBy: [{ status: "asc" }, { descricao: "asc" }] });
   const contas = await prisma.contaPagarMax.groupBy({
     by: ["contrato_id", "status"],
     where: { contrato_id: { not: null }, parcela_numero: { gt: 0 } }, // a entrada não conta como parcela

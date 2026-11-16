@@ -3,18 +3,20 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { parseEscopo } from "@/lib/finance/escopo";
 import { ErroValidacao } from "@/lib/finance/erros";
 import { criarContratoDespesa, garantirContasDeContratos, listarContratosDespesa } from "@/lib/finance/contratos-despesa";
 import { semearContratosDespesaIniciais } from "@/lib/finance/contratos-despesa-iniciais";
 
 export const maxDuration = 30;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try { await requireAdmin(); } catch { return NextResponse.json({ error: "Forbidden" }, { status: 403 }); }
   try {
     await semearContratosDespesaIniciais();
     await garantirContasDeContratos();
-    return NextResponse.json({ contratos: await listarContratosDespesa() });
+    const escopo = parseEscopo(req.nextUrl.searchParams.get("escopo")); // nexo|pessoal = só aquele lado (API de serviço)
+    return NextResponse.json({ contratos: await listarContratosDespesa(escopo === "todos" ? undefined : escopo) });
   } catch (err) {
     console.error("[financeiro/contratos-despesa GET]", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

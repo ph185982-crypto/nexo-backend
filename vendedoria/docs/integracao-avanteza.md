@@ -130,9 +130,26 @@ Authorization: Bearer <AVANTEZA_FINANCE_KEY>
 | `GET resumo` | visão geral (mesmo cálculo de `/api/financeiro/overview`): `mes|dia|de|ate` |
 | `GET dre` | DRE gerencial (mesmo cálculo da aba DRE) |
 | `GET categorias` | categorias de receita/despesa usadas no escopo |
+| `GET projecao` | projeção de caixa dia a dia (`dias` 1–60, padrão 30) **do escopo pedido**: saldo do mês até hoje (confirmados), gasto médio diário dos últimos 60 dias, receitas previstas e contas a pagar pendentes de cada dia, `primeiro_negativo` |
+| `GET orcamentos` · `POST orcamentos` · `DELETE orcamentos?categoria=` | limites mensais por categoria com o gasto do mês (`gasto_atual`, só despesas pessoais); `POST {categoria, limite_mensal}` cria ou atualiza. **Só `escopo=pessoal`** (empresa = 404: a tabela não tem campo de negócio) |
+| `GET dividas` · `PATCH dividas/:id` | dívidas ativas com `restante` e `progresso`; `{acao:"pagar_parcela", valor}` (lança a despesa pessoal) · `{acao:"quitar"}`. **Só `escopo=pessoal`.** Não existe criação por esta API (o Max cadastra) |
+| `GET contratos-despesa` · `POST contratos-despesa` · `PATCH contratos-despesa/:id` | contratos de despesa (financiamento, parcela, internet…) com `pagas`, `restantes`, `proxima`; criação `{descricao, valor_parcela, primeiro_vencimento, parcelas_total?, dia_vencimento?, credor?, categoria?, entrada?, entrada_data?, saldo_devedor?, estimada?, observacao?}` (gera as contas do mês e do seguinte); `{acao:"editar"\|"encerrar"\|"reativar"}` (editar aceita `tipo_negocio` para reclassificar). Nunca apaga |
+| `GET historico` · `POST historico/:id/restaurar` | livro-razão do escopo (`entidade`, `acao`, `de`, `ate`, `q`, `page`, `pageSize`) e restauração de **lançamentos, receitas previstas e contas excluídos** |
 
-Não exposto (continua só na tela do Vendedor IA): projeção de caixa (mistura os dois escopos), orçamentos, dívidas, contratos de
-despesa, histórico/restauração.
+### Etapa 2: projeção, orçamentos, dívidas, contratos de despesa e histórico
+
+- **Projeção sempre por escopo.** A rota da tela (`/api/financeiro/projecao`) continua somando os dois lados quando chamada sem
+  `?escopo=`; a API de serviço sempre passa `nexo`/`pessoal`, que filtra as quatro fontes (lançamentos, burn, receitas
+  previstas — vazio vale pessoal —, contas a pagar). Teste de banco garante que conta/receita pessoal não aparece na empresa.
+  Também passou a contar só lançamentos `confirmado = true`, como a visão geral. Não existem cenários na regra de negócio: é um
+  único caminho. A projeção **não** inclui contas e receitas já vencidas em aberto, e o gasto médio diário e as contas
+  pendentes podem se sobrepor (regra herdada da tela; é estimativa, não saldo bancário).
+- **Histórico por escopo.** `HistoricoFinanceiro` não tem coluna de escopo; vale o retrato mais recente da linha
+  (`src/lib/finance/historico-escopo.ts`): `tipo_negocio` `nexo` = empresa, `pessoal` = pessoal (vazio vale pessoal em receita
+  prevista e meta); dívidas, orçamentos e aportes só existem no pessoal; DRE e modelos legados não têm escopo e **não aparecem
+  em nenhum dos dois**. Uma linha reclassificada aparece só no escopo em que está agora. Restaurar exige que a linha seja do
+  escopo pedido (senão 404) e segue a regra da tela: só `Transacao`, `ReceitaPrevistaMax` e `ContaPagarMax`.
+- Escritas continuam auditadas pelo próprio livro-razão (`HistoricoFinanceiro`), como as da tela.
 
 | Variável (Vercel do **nexo-vendedoria**) | Obrigatória | Para quê |
 |---|---|---|

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { auth } from "@/lib/auth";
+import { parseEscopo, whereEscopo, whereEscopoReceita } from "@/lib/finance/escopo";
 
 async function requireAdmin() {
   const session = await auth();
@@ -18,6 +19,10 @@ export async function GET(req: NextRequest) {
       10
     );
     const dias = Math.min(60, Math.max(1, diasParam));
+    // ?escopo=nexo|pessoal: a projeção de UM lado só (a API de serviço da Central sempre passa). Sem o parâmetro = os dois
+    // somados, como a tela do Vendedor IA sempre fez.
+    const escopo = parseEscopo(new URL(req.url).searchParams.get("escopo"));
+    const porNegocio = whereEscopo(escopo);
 
     const now = new Date(
       new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
@@ -27,11 +32,11 @@ export async function GET(req: NextRequest) {
     // Current month saldo
     const [recAgg, despAgg] = await Promise.all([
       prisma.transacao.aggregate({
-        where: { mes: mesAtual, tipo: "receita" },
+        where: { mes: mesAtual, tipo: "receita", confirmado: true, ...porNegocio },
         _sum: { valor: true },
       }),
       prisma.transacao.aggregate({
-        where: { mes: mesAtual, tipo: "despesa" },
+        where: { mes: mesAtual, tipo: "despesa", confirmado: true, ...porNegocio },
         _sum: { valor: true },
       }),
     ]);
@@ -44,11 +49,11 @@ export async function GET(req: NextRequest) {
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
     const [burnAgg, burnMin] = await Promise.all([
       prisma.transacao.aggregate({
-        where: { tipo: "despesa", data_transacao: { gte: sixtyDaysAgo } },
+        where: { tipo: "despesa", confirmado: true, data_transacao: { gte: sixtyDaysAgo }, ...porNegocio },
         _sum: { valor: true },
       }),
       prisma.transacao.aggregate({
-        where: { tipo: "despesa", data_transacao: { gte: sixtyDaysAgo } },
+        where: { tipo: "despesa", confirmado: true, data_transacao: { gte: sixtyDaysAgo }, ...porNegocio },
         _min: { data_transacao: true },
       }),
     ]);
@@ -68,12 +73,14 @@ export async function GET(req: NextRequest) {
         where: {
           status: "pendente",
           data_prevista: { gte: hoje, lte: fimProjecao },
+          ...whereEscopoReceita(escopo),
         },
       }),
       prisma.contaPagarMax.findMany({
         where: {
           status: "pendente",
           data_vencimento: { gte: hoje, lte: fimProjecao },
+          ...porNegocio,
         },
       }),
     ]);
@@ -134,6 +141,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
+      escopo,
       saldo_atual,
       burn_rate,
       primeiro_negativo,

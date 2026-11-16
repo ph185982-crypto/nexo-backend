@@ -12,6 +12,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma/client";
 import { conferirChave } from "@/lib/integracoes/avanteza-metricas";
 import { emServico } from "@/lib/finance/servico";
+import { escopoDoHistorico } from "@/lib/finance/historico-escopo";
 
 export const ESCOPOS = ["empresa", "pessoal"] as const;
 export type EscopoServico = (typeof ESCOPOS)[number];
@@ -100,11 +101,39 @@ const bMetaEdicao = z.object({
   descricao: texto(200), status: z.enum(["ativa", "encerrada"]),
 }).partial().strict().refine((b) => Object.keys(b).length > 0, "nada para alterar");
 
+// Projeção de caixa, orçamentos, dívidas, contratos de despesa e histórico (Etapa 2 do Financeiro da Central)
+const qProjecao = z.object({ escopo: escopoQ, dias: inteiroTexto.optional() }).strict();
+const bOrcamento = z.object({ categoria: texto(80), limite_mensal: z.number().finite().positive().max(1_000_000_000) }).strict();
+const qOrcamentoExcluir = z.object({ escopo: escopoQ, categoria: texto(80) }).strict();
+const bDividaAcao = z.discriminatedUnion("acao", [
+  z.object({ acao: z.literal("pagar_parcela"), valor }).strict(),
+  z.object({ acao: z.literal("quitar") }).strict(),
+]);
+const bContratoDespesaNovo = z.object({
+  descricao: texto(200), credor: texto(120).nullable().optional(), categoria: texto(80).optional(), valor_parcela: valor,
+  parcelas_total: z.number().int().min(1).max(600).nullable().optional(), dia_vencimento: z.number().int().min(1).max(31).optional(),
+  primeiro_vencimento: data, entrada: valor.nullable().optional(), entrada_data: data.nullable().optional(),
+  saldo_devedor: valor.nullable().optional(), estimada: z.boolean().optional(), observacao: texto(500).nullable().optional(),
+}).strict();
+const bContratoDespesaAcao = z.discriminatedUnion("acao", [
+  z.object({ acao: z.literal("encerrar") }).strict(),
+  z.object({ acao: z.literal("reativar") }).strict(),
+  z.object({
+    acao: z.literal("editar"), descricao: texto(200).optional(), credor: texto(120).nullable().optional(), categoria: texto(80).optional(),
+    valor_parcela: valor.optional(), saldo_devedor: valor.nullable().optional(), estimada: z.boolean().optional(),
+    observacao: texto(500).nullable().optional(), tipo_negocio: negocio.optional(), // tipo_negocio = reclassificar Empresa × Pessoal
+  }).strict(),
+]);
+const qHistorico = z.object({
+  escopo: escopoQ, entidade: texto(40).optional(), acao: z.enum(["criado", "atualizado", "excluido"]).optional(),
+  de: data.optional(), ate: data.optional(), q: texto(120).optional(), page: inteiroTexto.optional(), pageSize: inteiroTexto.optional(),
+}).strict();
+
 // ─── Tabela de rotas ─────────────────────────────────────────────────────────
 type Metodo = "GET" | "POST" | "PATCH" | "DELETE";
 type Handler = (req: NextRequest, ctx?: { params: Promise<{ id: string }> }) => Promise<Response>;
 type Modulo = Partial<Record<Metodo, Handler>>;
-export type Entidade = "transacao" | "conta" | "receita" | "contrato";
+export type Entidade = "transacao" | "conta" | "receita" | "contrato" | "contratoDespesa" | "historico";
 
 const MODULOS = {
   transacoes: () => import("@/app/api/financeiro/transacoes/route") as Promise<Modulo>,
@@ -119,6 +148,14 @@ const MODULOS = {
   meta: () => import("@/app/api/financeiro/metas-poupanca/[id]/route") as Promise<Modulo>,
   overview: () => import("@/app/api/financeiro/overview/route") as Promise<Modulo>,
   dre: () => import("@/app/api/financeiro/dre/route") as Promise<Modulo>,
+  projecao: () => import("@/app/api/financeiro/projecao/route") as Promise<Modulo>,
+  orcamentos: () => import("@/app/api/financeiro/orcamentos/route") as Promise<Modulo>,
+  dividas: () => import("@/app/api/financeiro/dividas/route") as Promise<Modulo>,
+  divida: () => import("@/app/api/financeiro/dividas/[id]/route") as Promise<Modulo>,
+  contratosDespesa: () => import("@/app/api/financeiro/contratos-despesa/route") as Promise<Modulo>,
+  contratoDespesa: () => import("@/app/api/financeiro/contratos-despesa/[id]/route") as Promise<Modulo>,
+  historico: () => import("@/app/api/financeiro/historico/route") as Promise<Modulo>,
+  historicoRestaurar: () => import("@/app/api/financeiro/historico/[id]/restaurar/route") as Promise<Modulo>,
 } as const;
 
 interface RotaDef {
@@ -161,6 +198,19 @@ export const ROTAS: RotaDef[] = [
   { metodo: "GET", caminho: "resumo", modulo: "overview", query: qPeriodo },
   { metodo: "GET", caminho: "dre", modulo: "dre", query: qPeriodo },
   { metodo: "GET", caminho: "categorias", modulo: "categorias", query: soEscopo },
+  // Projeção SEMPRE por escopo (a rota da tela soma os dois; aqui o escopo vira ?escopo=nexo|pessoal e filtra as 4 fontes).
+  { metodo: "GET", caminho: "projecao", modulo: "projecao", query: qProjecao },
+  // Orçamentos e dívidas não têm campo de negócio: existem só no Pessoal (empresa = 404).
+  { metodo: "GET", caminho: "orcamentos", modulo: "orcamentos", query: soEscopo, soPessoal: true },
+  { metodo: "POST", caminho: "orcamentos", modulo: "orcamentos", query: soEscopo, body: bOrcamento, soPessoal: true },
+  { metodo: "DELETE", caminho: "orcamentos", modulo: "orcamentos", query: qOrcamentoExcluir, soPessoal: true },
+  { metodo: "GET", caminho: "dividas", modulo: "dividas", query: soEscopo, soPessoal: true },
+  { metodo: "PATCH", caminho: "dividas/:id", modulo: "divida", query: soEscopo, body: bDividaAcao, soPessoal: true },
+  { metodo: "GET", caminho: "contratos-despesa", modulo: "contratosDespesa", query: soEscopo },
+  { metodo: "POST", caminho: "contratos-despesa", modulo: "contratosDespesa", query: soEscopo, body: bContratoDespesaNovo, injetaNegocio: true },
+  { metodo: "PATCH", caminho: "contratos-despesa/:id", modulo: "contratoDespesa", query: soEscopo, body: bContratoDespesaAcao, entidade: "contratoDespesa" },
+  { metodo: "GET", caminho: "historico", modulo: "historico", query: qHistorico },
+  { metodo: "POST", caminho: "historico/:id/restaurar", modulo: "historicoRestaurar", query: soEscopo, entidade: "historico" },
 ];
 
 const RE_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -195,6 +245,12 @@ export async function registroNoEscopo(entidade: Entidade, id: string, escopo: E
   if (entidade === "transacao") tipo = (await prisma.transacao.findUnique({ where: { id }, select: { tipo_negocio: true } }))?.tipo_negocio;
   else if (entidade === "conta") tipo = (await prisma.contaPagarMax.findUnique({ where: { id }, select: { tipo_negocio: true } }))?.tipo_negocio;
   else if (entidade === "contrato") tipo = (await prisma.contratoReceita.findUnique({ where: { id }, select: { tipo_negocio: true } }))?.tipo_negocio;
+  else if (entidade === "contratoDespesa") tipo = (await prisma.contratoDespesa.findUnique({ where: { id }, select: { tipo_negocio: true } }))?.tipo_negocio;
+  else if (entidade === "historico") {
+    // Linha do livro-razão: vale o escopo do retrato mais recente; entidade sem escopo (DRE, legados) nunca é do cliente.
+    const h = await prisma.historicoFinanceiro.findUnique({ where: { id }, select: { entidade: true, antes: true, depois: true } });
+    return h ? escopoDoHistorico(h.entidade, h.antes, h.depois) === alvo : false;
+  }
   else {
     const r = await prisma.receitaPrevistaMax.findUnique({ where: { id }, select: { tipo_negocio: true } });
     if (!r) return false;
