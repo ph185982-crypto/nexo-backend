@@ -3,6 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { projetarMeta } from "@/lib/finance/metas-poupanca";
+import { crc16, pixCopiaECola } from "@/lib/finance/pix";
 
 const temBanco = Boolean(process.env.DATABASE_URL);
 const D = (s: string) => new Date(`${s}T00:00:00Z`);
@@ -22,6 +23,20 @@ test("projeção: R$ 63/dia de 16/11/2026 a 31/05/2027 não fecha R$ 28 mil — 
   assert.equal(p.atraso, 0);
 });
 
+test("Pix copia e cola: CRC do exemplo do Banco Central e payload com chave e valor", () => {
+  // Exemplo do Manual do BR Code (BCB): CRC final 1D3D
+  const exemplo = "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***6304";
+  assert.equal(crc16(exemplo), "1D3D");
+  const chave = "d57d1fc1-c6cc-4ce9-bf6c-6bdce974b687";
+  const cod = pixCopiaECola({ chave, valor: 63 });
+  assert.ok(cod.startsWith("000201"));
+  assert.ok(cod.includes(`0136${chave}`));
+  assert.ok(cod.includes("540563.00"));
+  assert.ok(cod.includes("5802BR"));
+  assert.equal(cod.slice(-4), crc16(cod.slice(0, -4)));
+  assert.ok(!pixCopiaECola({ chave }).includes("5405"), "sem valor, sem campo 54");
+});
+
 test("projeção: dia cumprido sai da conta, atraso acumula, meta batida", () => {
   const base = { alvo: 1000, aporteDiario: 10, dataInicio: D("2026-11-01"), dataFim: D("2026-11-30"), hoje: D("2026-11-11") };
   const cumprido = projetarMeta({ ...base, atual: 110, guardadoHoje: 10, guardadoAteOntem: 100 });
@@ -39,14 +54,14 @@ test("projeção: dia cumprido sai da conta, atraso acumula, meta batida", () =>
 
 test("seed, cobrança diária (manhã/noite, uma vez), aporte pelo Max e retirada", { skip: !temBanco, timeout: 60_000 }, async () => {
   const { prisma } = await import("@/lib/prisma/client");
-  const { semearMetaPoupancaInicial, META_INICIAL } = await import("@/lib/finance/metas-poupanca-iniciais");
+  const { semearMetaPoupancaInicial, aplicarPixMetaInicial, META_INICIAL } = await import("@/lib/finance/metas-poupanca-iniciais");
   const { cobrarPoupancaDoDia } = await import("@/lib/max/crons/cobranca-poupanca");
   const { gerenciarMetaPoupanca } = await import("@/lib/max/tools/poupanca");
   const { listarMetasPoupanca } = await import("@/lib/finance/metas-poupanca");
 
   // Isola: outras metas de poupança do banco de teste ficam fora.
   await prisma.metaFinanceiraMax.updateMany({ where: { tipo: "poupanca" }, data: { status: "encerrada" } });
-  await prisma.alertaEnviadoMax.deleteMany({ where: { chave: { in: ["seed-meta-poupanca-28k-v1"] } } });
+  await prisma.alertaEnviadoMax.deleteMany({ where: { chave: { in: ["seed-meta-poupanca-28k-v1", "seed-meta-poupanca-pix-v1"] } } });
   await prisma.alertaEnviadoMax.deleteMany({ where: { chave: { startsWith: "poupanca-" } } });
 
   const r1 = await semearMetaPoupancaInicial();
@@ -61,8 +76,16 @@ test("seed, cobrança diária (manhã/noite, uma vez), aporte pelo Max e retirad
   assert.equal(meta.cobrarDiariamente, true);
   assert.equal(meta.projecao.pendenteHoje, 63);
 
+  assert.equal(meta.chavePix, META_INICIAL.chave_pix);
+  // Meta antiga sem chave (como em produção): a chave entra uma vez; a do dono não é trocada.
+  await prisma.metaFinanceiraMax.update({ where: { id: meta.id }, data: { chave_pix: null } });
+  assert.equal((await aplicarPixMetaInicial()).aplicada, true);
+  assert.equal((await prisma.metaFinanceiraMax.findUniqueOrThrow({ where: { id: meta.id } })).chave_pix, META_INICIAL.chave_pix);
+  assert.equal((await aplicarPixMetaInicial()).aplicada, false);
+
   const msgs: string[] = [];
-  const entregar = async (a: { mensagem: string }) => { msgs.push(a.mensagem); return { whatsapp: true, notificacao: true }; };
+  const extras: string[][] = [];
+  const entregar = async (a: { mensagem: string; complementos?: string[] }) => { msgs.push(a.mensagem); extras.push(a.complementos ?? []); return { whatsapp: true, notificacao: true }; };
 
   // 07:00 em Brasília: cedo demais
   assert.equal((await cobrarPoupancaDoDia({ agora: new Date("2026-11-16T10:00:00Z"), entregar })).situacao, "fora-do-horario");
@@ -73,6 +96,10 @@ test("seed, cobrança diária (manhã/noite, uma vez), aporte pelo Max e retirad
   assert.match(msgs[0], /R\$\s?1\.000,00 de R\$\s?28\.000,00/);
   assert.match(msgs[0], /R\$\s?138,00\/dia/);
   assert.match(msgs[0], /guardei 63/);
+  assert.match(msgs[0], /Pix para a reserva/);
+  assert.ok(msgs[0].includes(META_INICIAL.chave_pix));
+  assert.equal(extras[0][0], META_INICIAL.chave_pix, "chave sozinha numa mensagem");
+  assert.ok(extras[0][1].startsWith("000201") && extras[0][1].includes("540563.00"), "copia e cola com R$ 63");
   // 11:00: já cobrou de manhã
   assert.equal((await cobrarPoupancaDoDia({ agora: new Date("2026-11-16T14:00:00Z"), entregar })).situacao, "nada");
   assert.equal(msgs.length, 1);

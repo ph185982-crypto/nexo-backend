@@ -526,6 +526,7 @@ export const MAX_TOOLS: Array<{
           data_fim: { type: "string", description: "Prazo YYYY-MM-DD (criar/ajustar)" },
           aporte_diario: { type: "number", description: "Valor a guardar por dia (criar/ajustar)" },
           cobrar_diariamente: { type: "boolean", description: "Liga/desliga a cobranca diaria (ajustar)" },
+          chave_pix: { type: "string", description: "Chave Pix da conta da reserva (ajustar), enviada junto de cada cobranca" },
         },
         required: ["acao"],
       },

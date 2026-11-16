@@ -34,7 +34,7 @@ test("recuperação de falhas da IA: tenta de novo na janela, avisa fora dela, i
   const naJanela = await conversa("Val", [["USER", "Quero saber como funciona", 2], ["ASSISTANT", MENSAGEM_FALHA_SDR, 1.9]]);
   const jaRespondida = await conversa("Kelly", [["USER", "oi", 40], ["ASSISTANT", MENSAGEM_FALHA_SDR, 40], ["ASSISTANT", "Oi Kelly, tudo bem?", 39]]);
   const comHumano = await conversa("Anderson", [["USER", "oi", 40], ["ASSISTANT", MENSAGEM_FALHA_SDR, 40]], { humanTakeover: true });
-  const esgotada = await conversa("Mirian", [["USER", "oi", 3], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.9], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2]]);
+  const esgotada = await conversa("Mirian", [["USER", "oi", 3], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.95], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.9], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.5], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2]]);
 
   const chamadas: Array<[string, string, string]> = [];
   try {
@@ -47,6 +47,12 @@ test("recuperação de falhas da IA: tenta de novo na janela, avisa fora dela, i
     // Avisa uma vez só
     const r2 = await recuperarFalhasSdr({ agora: AGORA, maxReprocessar: 0, reprocessar: async () => {} });
     assert.equal(r2.avisadas.length, 0, "não duplica o aviso");
+
+    // Três esperas já enviadas (falha por causa do sistema): ainda ganha mais uma tentativa
+    const duasEsperas = await conversa("Alini", [["USER", "Boa tarde", 3], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.9], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.7], ["ASSISTANT", MENSAGEM_FALHA_SDR, 2.5]]);
+    const r3 = await recuperarFalhasSdr({ agora: AGORA, maxReprocessar: 10, reprocessar: async () => {} });
+    assert.ok(r3.reprocessadas.includes(duasEsperas), "com 3 esperas a IA ainda tenta mais uma vez");
+    assert.ok(!r3.reprocessadas.includes(esgotada), "com 4 esperas desiste e só avisa o dono");
 
     // Aparece na tela Ligações, com o lead
     const { pendentes } = await listarLigacoes(org.id);

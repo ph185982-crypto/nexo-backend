@@ -4,7 +4,7 @@
 // aportes. O Max cobra o valor diário pelo WhatsApp; aqui o dono vê e ajusta.
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Loader2, PiggyBank, Trash2, Pencil, Check } from "lucide-react";
+import { Loader2, PiggyBank, Trash2, Pencil, Check, Copy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,7 @@ interface Meta {
   atual: number;
   aporteDiario: number;
   cobrarDiariamente: boolean;
+  chavePix: string | null;
   dataInicio: string;
   dataFim: string;
   projecao: {
@@ -74,6 +75,11 @@ function MetaCard({ meta: m, onMudou }: { meta: Meta; onMudou: (msg: string) => 
   const [diario, setDiario] = useState(fmtInput(m.aporteDiario));
   const [alvo, setAlvo] = useState(fmtInput(m.alvo));
   const [prazo, setPrazo] = useState(m.dataFim);
+  const [pix, setPix] = useState(m.chavePix ?? "");
+
+  const copiar = async (texto: string, oQue: string) => {
+    try { await navigator.clipboard.writeText(texto); onMudou(`${oQue} copiad${oQue.endsWith("a") ? "a" : "o"}.`); } catch { onMudou("Não foi possível copiar."); }
+  };
 
   useEffect(() => { setValor(fmtInput(p.pendenteHoje || m.aporteDiario)); }, [p.pendenteHoje, m.aporteDiario]);
 
@@ -101,7 +107,7 @@ function MetaCard({ meta: m, onMudou }: { meta: Meta; onMudou: (msg: string) => 
     const a = parseValor(alvo);
     if (!(d >= 0) || !(a > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(prazo)) { onMudou("Confira valor diário, meta e prazo."); return; }
     setOcupado(true);
-    const r = await patch(`/api/financeiro/metas-poupanca/${m.id}`, { aporte_diario: d, valor_alvo: a, data_fim: prazo });
+    const r = await patch(`/api/financeiro/metas-poupanca/${m.id}`, { aporte_diario: d, valor_alvo: a, data_fim: prazo, chave_pix: pix });
     setOcupado(false);
     if (r.ok) setEditando(false);
     onMudou(r.ok ? "Meta atualizada." : (r.erro ?? "Erro ao salvar."));
@@ -172,7 +178,18 @@ function MetaCard({ meta: m, onMudou }: { meta: Meta; onMudou: (msg: string) => 
             <label className="space-y-1"><span className="text-xs text-muted-foreground">Valor por dia</span><input className={inputCls} value={diario} onChange={(e) => setDiario(e.target.value)} inputMode="decimal" /></label>
             <label className="space-y-1"><span className="text-xs text-muted-foreground">Meta</span><input className={inputCls} value={alvo} onChange={(e) => setAlvo(e.target.value)} inputMode="decimal" /></label>
             <label className="space-y-1"><span className="text-xs text-muted-foreground">Prazo</span><input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} /></label>
+            <label className="space-y-1 sm:col-span-3"><span className="text-xs text-muted-foreground">Chave Pix da reserva</span><input className={inputCls} value={pix} onChange={(e) => setPix(e.target.value)} placeholder="Chave que o Max manda junto da cobrança" /></label>
             <Button size="sm" onClick={salvar} disabled={ocupado}><Check className="w-4 h-4 mr-1" />Salvar</Button>
+          </div>
+        )}
+
+        {m.chavePix && (
+          <div className="flex flex-wrap items-center gap-2 rounded-md border border-border p-2.5">
+            <span className="text-xs text-muted-foreground">Pix da reserva</span>
+            <code className="text-xs text-foreground break-all">{m.chavePix}</code>
+            <Button variant="ghost" size="sm" onClick={() => copiar(m.chavePix!, "Chave Pix")} aria-label="Copiar chave Pix">
+              <Copy className="w-3.5 h-3.5" />
+            </Button>
           </div>
         )}
 

@@ -15,7 +15,11 @@ export const META_INICIAL = {
   ja_guardado: 1000,
   data_inicio: "2026-11-16",
   data_fim: "2027-05-31",
+  // Chave Pix (aleatória) da conta da reserva, informada pelo dono em 16/11/2026.
+  chave_pix: "d57d1fc1-c6cc-4ce9-bf6c-6bdce974b687",
 } as const;
+
+const MARCA_PIX = "seed-meta-poupanca-pix-v1";
 
 export async function semearMetaPoupancaInicial(): Promise<{ criada: boolean }> {
   try {
@@ -35,6 +39,7 @@ export async function semearMetaPoupancaInicial(): Promise<{ criada: boolean }> 
         data_fim: new Date(`${META_INICIAL.data_fim}T00:00:00Z`),
         aporte_diario: META_INICIAL.aporte_diario,
         cobrar_diariamente: true,
+        chave_pix: META_INICIAL.chave_pix,
       },
     });
     await registrarAporte({
@@ -49,4 +54,32 @@ export async function semearMetaPoupancaInicial(): Promise<{ criada: boolean }> 
     await prisma.alertaEnviadoMax.deleteMany({ where: { chave: MARCA } }).catch(() => {});
     throw e;
   }
+}
+
+/**
+ * A meta já existia em produção antes da chave Pix: grava a chave nela uma única vez
+ * (só se estiver vazia — se o dono trocou a chave, fica a dele).
+ */
+export async function aplicarPixMetaInicial(): Promise<{ aplicada: boolean }> {
+  try {
+    await prisma.alertaEnviadoMax.create({ data: { chave: MARCA_PIX } });
+  } catch {
+    return { aplicada: false };
+  }
+  try {
+    const r = await prisma.metaFinanceiraMax.updateMany({
+      where: { tipo: TIPO_POUPANCA, descricao: META_INICIAL.descricao, chave_pix: null },
+      data: { chave_pix: META_INICIAL.chave_pix },
+    });
+    return { aplicada: r.count > 0 };
+  } catch (e) {
+    await prisma.alertaEnviadoMax.deleteMany({ where: { chave: MARCA_PIX } }).catch(() => {});
+    throw e;
+  }
+}
+
+/** Seed da meta + chave Pix, na ordem certa. */
+export async function semearPoupancaInicial(): Promise<void> {
+  await semearMetaPoupancaInicial();
+  await aplicarPixMetaInicial();
 }

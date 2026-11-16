@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { listarMetasPoupanca, obterMetaPoupanca, registrarAporte, excluirAporte } from "@/lib/finance/metas-poupanca";
-import { semearMetaPoupancaInicial } from "@/lib/finance/metas-poupanca-iniciais";
+import { semearPoupancaInicial } from "@/lib/finance/metas-poupanca-iniciais";
 
 async function requireAdmin() {
   const session = await auth();
@@ -18,7 +18,7 @@ function erro(err: unknown, onde: string) {
 export async function GET() {
   try {
     await requireAdmin();
-    await semearMetaPoupancaInicial().catch((e) => console.error("[metas-poupanca] meta inicial:", e));
+    await semearPoupancaInicial().catch((e) => console.error("[metas-poupanca] meta inicial:", e));
     return NextResponse.json(await listarMetasPoupanca());
   } catch (err) {
     return erro(err, "GET");

@@ -4,9 +4,9 @@
 // para sempre: a mensagem prometia resposta e ninguém respondia.
 //
 // Para cada conversa parada na mensagem de espera:
-//  • janela de 24h da Meta aberta e ainda sem nova tentativa → a IA tenta de
-//    novo responder a última mensagem do cliente (no máximo 1 vez: se falhar,
-//    outra mensagem de espera é gravada e a conversa cai no caso abaixo);
+//  • janela de 24h da Meta aberta e com menos de 4 mensagens de espera → a IA tenta
+//    de novo responder a última mensagem do cliente (até 3 novas tentativas, cada
+//    uma 5 min depois da anterior; se continuar falhando, cai no caso abaixo);
 //  • janela fechada ou já tentou → aviso "📞 A IA não respondeu" para o dono,
 //    que aparece na tela Ligações com o link do WhatsApp (uma vez por conversa).
 // Conversa assumida por humano ou lead já escalado fica de fora.
@@ -17,6 +17,8 @@ import { MENSAGEM_FALHA_SDR } from "./fallback";
 
 const JANELA_RESPOSTA_MS = 23 * 3_600_000; // margem antes das 24h da Meta
 const ESPERA_ANTES_DE_TENTAR_MS = 5 * 60_000;
+/** Mensagens de espera já enviadas ao cliente a partir das quais a IA desiste e o dono é avisado (eram 2; subiu porque as falhas de 16/11 foram do sistema, não do lead). */
+const MAX_ESPERAS = 4;
 export const TITULO_AVISO = "📞 A IA não respondeu";
 
 export interface ResultadoRecuperacao {
@@ -68,7 +70,7 @@ export async function recuperarFalhasSdr(opts: {
     const janelaAberta = agora.getTime() - ultimaCliente.sentAt.getTime() < JANELA_RESPOSTA_MS;
     const agent = conv.provider?.agent;
     const sdrAtivo = agent?.kind === "AI" && agent.status === "ACTIVE" && Boolean(agent.systemPrompt?.trimStart().startsWith("[SDR]"));
-    const podeTentar = janelaAberta && sdrAtivo && esperas < 2 && agora.getTime() - ultimaIa.sentAt.getTime() >= ESPERA_ANTES_DE_TENTAR_MS;
+    const podeTentar = janelaAberta && sdrAtivo && esperas < MAX_ESPERAS && agora.getTime() - ultimaIa.sentAt.getTime() >= ESPERA_ANTES_DE_TENTAR_MS;
 
     if (podeTentar && out.reprocessadas.length < maxReprocessar) {
       const reprocessar = opts.reprocessar ?? (await import("./agent")).processSdrResponse;

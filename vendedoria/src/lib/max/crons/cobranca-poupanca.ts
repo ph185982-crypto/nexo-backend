@@ -9,6 +9,7 @@
 
 import { prisma } from "@/lib/prisma/client";
 import { listarMetasPoupanca, resumoMeta, brl, type MetaPoupanca } from "@/lib/finance/metas-poupanca";
+import { pixCopiaECola } from "@/lib/finance/pix";
 import { entregarPorTodosOsCanais, partesBrasilia, type Entregador, type EntregaVespera } from "./contas-vespera";
 
 export const HORA_MANHA = 9;
@@ -25,7 +26,16 @@ export function montarMensagemCobranca(m: MetaPoupanca, periodo: "manha" | "noit
       ? `💰 Hora de guardar: ${brl(valorHoje)} hoje na ${m.descricao}.`
       : `🌙 Ainda faltam ${brl(valorHoje)} para guardar hoje na ${m.descricao}.`;
   const valorResposta = Number.isInteger(valorHoje) ? String(valorHoje) : valorHoje.toFixed(2).replace(".", ",");
-  return `${abertura}\n\n${resumoMeta(m)}\n\nJá guardou? Me responda "guardei ${valorResposta}".`;
+  const pix = m.chavePix
+    ? `\n\n📲 Pix para a reserva (chave aleatória):\n${m.chavePix}\nMandei a chave e o Pix copia e cola (já com ${brl(valorHoje)}) nas próximas mensagens.`
+    : "";
+  return `${abertura}\n\n${resumoMeta(m)}${pix}\n\nJá guardou? Me responda "guardei ${valorResposta}".`;
+}
+
+/** Chave sozinha e copia e cola com o valor do dia: cada um numa mensagem, para copiar com um toque. */
+export function complementosPix(m: MetaPoupanca): string[] {
+  if (!m.chavePix) return [];
+  return [m.chavePix, pixCopiaECola({ chave: m.chavePix, valor: m.projecao.pendenteHoje })];
 }
 
 export interface ResultadoCobranca {
@@ -61,6 +71,7 @@ export async function cobrarPoupancaDoDia(opts: { agora?: Date; entregar?: Entre
       resumo: `${m.descricao}: ${brl(m.atual)} de ${brl(m.alvo)} (${m.projecao.pct}%)`,
       url: "/crm/financeiro",
       tag: "meta-poupanca",
+      complementos: complementosPix(m),
     });
     ultimaEntrega = entrega;
     if (!entrega.whatsapp && !entrega.notificacao) {

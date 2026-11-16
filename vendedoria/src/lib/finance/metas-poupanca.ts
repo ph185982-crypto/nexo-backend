@@ -83,6 +83,7 @@ export interface MetaPoupanca {
   atual: number;
   aporteDiario: number;
   cobrarDiariamente: boolean;
+  chavePix: string | null;
   dataInicio: string;
   dataFim: string;
   status: string;
@@ -109,6 +110,7 @@ async function montarMeta(meta: MetaDb, hoje: Date): Promise<MetaPoupanca> {
     atual,
     aporteDiario: meta.aporte_diario ?? 0,
     cobrarDiariamente: meta.cobrar_diariamente,
+    chavePix: meta.chave_pix ?? null,
     dataInicio: dataISO(dataInicio),
     dataFim: dataISO(dataFim),
     status: meta.status,
