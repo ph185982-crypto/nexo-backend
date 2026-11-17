@@ -15,6 +15,7 @@ export const PREFIXOS_PUBLICOS = [
   "/api/integracoes/avanteza/metricas", // só leitura, agregados; a rota confere Bearer AVANTEZA_METRICS_KEY (503 sem a variável)
   "/api/integracoes/avanteza/financeiro", // API de serviço do financeiro; a rota confere Bearer AVANTEZA_FINANCE_KEY (503 sem a variável)
   "/api/integracoes/avanteza/entregas", // Funil de Entrega da Central (mesmo contrato do CRM antigo); a rota confere Bearer AVANTEZA_CRM_KEY (503 sem a variável)
+  "/api/integracoes/avanteza/busca", // busca global da Central (só leitura); a rota confere Bearer AVANTEZA_CRM_KEY (503 sem a variável)
   "/api/keepalive",
   "/api/max/health",
   "/api/webhooks/",             // Meta: GET de verificação sem assinatura; POST assinado (a rota valida)
