@@ -1,5 +1,5 @@
 // Semente do CRM antigo (schema `crm`) para testar scripts/comercial-copiar.mjs sem tocar em produção.
-// O schema `crm` é criado a partir de crm/prisma/schema.prisma (o mesmo do app do CRM).
+// O schema `crm` é criado a partir de tests/fixtures/crm-schema.prisma (cópia do schema do CRM antigo, desligado em 2026-11-17).
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import type { PrismaClient } from "@prisma/client";
@@ -9,7 +9,7 @@ const PRISMA = path.join(RAIZ, "node_modules", ".bin", "prisma");
 
 /** Cria o schema `crm` vazio (DDL gerado do schema Prisma do CRM). Recria se já existir. */
 export function criarSchemaCrm(url: string) {
-  const diff = spawnSync(PRISMA, ["migrate", "diff", "--from-empty", "--to-schema-datamodel", path.join(RAIZ, "..", "crm", "prisma", "schema.prisma"), "--script"], { encoding: "utf8", cwd: RAIZ });
+  const diff = spawnSync(PRISMA, ["migrate", "diff", "--from-empty", "--to-schema-datamodel", path.join(RAIZ, "tests", "fixtures", "crm-schema.prisma"), "--script"], { encoding: "utf8", cwd: RAIZ });
   if (diff.status !== 0) throw new Error(`prisma migrate diff falhou: ${diff.stderr}`);
   const sql = `DROP SCHEMA IF EXISTS crm CASCADE;\nCREATE SCHEMA crm;\nSET search_path TO crm;\n${diff.stdout}`;
   const r = spawnSync(PRISMA, ["db", "execute", "--stdin", "--url", url], { input: sql, encoding: "utf8", cwd: RAIZ });
