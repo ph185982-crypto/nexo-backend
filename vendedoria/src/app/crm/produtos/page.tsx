@@ -137,7 +137,7 @@ export default function FornecedorPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col">
       {/* Header */}
       <div className="px-6 py-4 border-b border-border flex-shrink-0">
         <div className="flex items-center justify-between gap-4">
@@ -247,7 +247,7 @@ export default function FornecedorPage() {
       {/* Manual import modal */}
       {showManual && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-background border border-border rounded-lg w-full max-w-2xl">
+          <div className="modal-painel border border-border rounded-2xl w-full max-w-2xl">
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="font-semibold flex items-center gap-2 text-foreground">
                 <Upload className="w-4 h-4" /> Importação Manual (JSON)

@@ -762,7 +762,7 @@ export default function ConfigureAgentPage() {
   // ── Layout ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-background">
+    <div className="flex flex-col h-full overflow-hidden">
 
       {/* ── Top bar ── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card flex-shrink-0">

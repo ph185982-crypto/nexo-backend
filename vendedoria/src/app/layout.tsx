@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import "@/styles/avanteza-tokens.css"; // cópia do kit Avanteza (tokens do vidro, claro e escuro)
 import "./globals.css";
 import { ApolloProvider } from "@/lib/graphql/ApolloProvider";
 import { InstallBanner } from "@/components/pwa/InstallBanner";
 import { ativo } from "@/lib/zona-comercial";
+import { THEME_INIT_SCRIPT, SIDEBAR_INIT_SCRIPT, THEME_COLORS } from "@/lib/theme/tema";
 
-// Identidade Avanteza v2.0: Manrope em tudo (texto, títulos e números).
-const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-manrope", display: "swap" });
+// Visual "vidro" da plataforma Avanteza (kit): Plus Jakarta Sans em tudo, como na Central.
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-jakarta", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Vendedor IA · Avanteza",
@@ -33,10 +34,7 @@ export const viewport: Viewport = {
   // Zoom por pinça continua liberado de propósito (acessibilidade). O
   // auto-zoom ao focar input é evitado via font-size 16px no globals.css,
   // que resolve a causa sem tirar o zoom de quem precisa.
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F0E6" },
-    { media: "(prefers-color-scheme: dark)", color: "#0B1B33" },
-  ],
+  themeColor: THEME_COLORS.dark, // o botão de tema troca para a cor do tema escolhido
 };
 
 export default function RootLayout({
@@ -47,10 +45,12 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={manrope.variable}
+      className={jakarta.variable}
       suppressHydrationWarning
     >
       <head>
+        {/* Tema e menu recolhido antes da pintura (sem flash): mesmas chaves da Central (src/lib/theme/tema.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT + SIDEBAR_INIT_SCRIPT }} />
         {/* PWA — Service Worker registration. Sob /comercial a origem é a da Central (app.avanteza.com.br):
             um service worker do Vendedor IA com escopo "/" tomaria conta das páginas da Central, então não registra. */}
         <script
@@ -67,15 +67,8 @@ if ('serviceWorker' in navigator && !/^\\/comercial(\\/|$)/.test(location.pathna
         />
       </head>
       <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <ApolloProvider>{children}</ApolloProvider>
-          <InstallBanner />
-        </ThemeProvider>
+        <ApolloProvider>{children}</ApolloProvider>
+        <InstallBanner />
       </body>
     </html>
   );

@@ -217,7 +217,7 @@ export default function AgentPage() {
         <div className="flex flex-col flex-1 min-h-0 p-4 gap-3">
 
           {/* ── Aviso arquitetural ──────────────────────────────────────────── */}
-          <div style={{ background: "#FEF3C7", border: "1px solid #F59E0B", borderRadius: "8px", padding: "12px 16px", fontSize: "13px", color: "#92400E" }}>
+          <div className="rounded-xl border border-l-4 border-border border-l-laranja bg-card px-4 py-3 text-[13px] text-foreground">
             ⚠️ <strong>Este é o único lugar onde o comportamento da IA é configurado.</strong>
             {" "}O código não interfere no que a IA fala — só no que ela pode fazer (enviar mídia, calcular frete, gerar pagamento).
             Qualquer mudança de produto, tom de voz ou script deve ser feita aqui.
@@ -252,7 +252,7 @@ export default function AgentPage() {
           {/* History modal */}
           {showHistory && (
             <div className="fixed inset-0 z-50 bg-black/40 flex items-end md:items-center justify-center p-4" onClick={() => setShowHistory(false)}>
-              <div className="bg-card rounded-lg w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="modal-painel rounded-2xl w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b">
                   <h3 className="font-semibold">Histórico de versões</h3>
                   <button onClick={() => setShowHistory(false)}><X className="w-4 h-4" /></button>
@@ -279,7 +279,7 @@ export default function AgentPage() {
           {/* History detail modal */}
           {historyDetail && (
             <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4" onClick={() => setHistoryDetail(null)}>
-              <div className="bg-card rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="modal-painel rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b">
                   <h3 className="font-semibold">v.{historyDetail.version} — {fmtDate(historyDetail.createdAt)}</h3>
                   <button onClick={() => setHistoryDetail(null)}><X className="w-4 h-4" /></button>
@@ -371,7 +371,7 @@ export default function AgentPage() {
               <p className="text-xs text-[var(--texto-secundario)] font-medium">Resposta do agente:</p>
               {testMessages.map((m, i) => (
                 <div key={i} className="flex justify-end">
-                  <div className="max-w-[85%] bg-[#dcf8c6] rounded-lg rounded-tr-sm px-3.5 py-2 text-sm">
+                  <div className="max-w-[85%] bg-[#dcf8c6] text-marinho rounded-lg rounded-tr-sm px-3.5 py-2 text-sm">
                     {m}
                   </div>
                 </div>

@@ -46,7 +46,7 @@ export function NotificationPrompt() {
       <div className="absolute inset-0 bg-marinho/50" onClick={dismiss} />
 
       {/* Card */}
-      <div className="relative w-full max-w-sm rounded-lg border border-border bg-card p-6">
+      <div className="modal-painel relative w-full max-w-sm rounded-2xl border border-border p-6">
         <button
           onClick={dismiss}
           className="absolute right-4 top-4 rounded-lg p-1 text-muted-foreground hover:text-foreground"

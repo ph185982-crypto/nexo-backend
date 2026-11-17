@@ -149,7 +149,7 @@ function MessageBubble({ message }: { message: Message }) {
         className={cn(
           "max-w-[70%] px-3 py-2 rounded-lg text-sm",
           isSent
-            ? "bg-[#dcf8c6] rounded-br-sm"
+            ? "bg-[#dcf8c6] text-marinho rounded-br-sm"
             : "bg-card rounded-bl-sm border border-border"
         )}
       >

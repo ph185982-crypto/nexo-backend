@@ -19,10 +19,11 @@ export function MobileTabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className={cn(
+    // Barra inferior de vidro (só no celular): cinco atalhos; o item atual ganha a pílula laranja com texto marinho.
+    <nav aria-label="Atalhos" className={cn(
       "mobile-tab-bar fixed bottom-0 left-0 right-0 z-50 md:hidden",
-      "bg-card/85 backdrop-blur-xl border-t border-border",
-      "flex safe-area-bottom"
+      "vidro-forte mx-2 mb-[max(0.5rem,env(safe-area-inset-bottom))] rounded-[22px] px-1",
+      "flex"
     )}>
       {tabs.map((t) => {
         const href = hrefNaZona(t.href, pathname); // sob /comercial, as telas antigas também abrem sob /comercial
@@ -35,10 +36,12 @@ export function MobileTabBar() {
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex flex-1 flex-col items-center justify-center gap-1 h-14 press-scale",
-              active ? "text-primary" : "text-muted-foreground"
+              active ? "text-foreground" : "text-muted-foreground"
             )}
           >
-            <Icon className={cn("w-[22px] h-[22px] transition-all", active && "stroke-[2.4px]")} />
+            <span className={cn("grid h-7 w-11 place-items-center rounded-full transition-colors", active && "bg-laranja text-marinho shadow-brilho")}>
+              <Icon className={cn("w-[20px] h-[20px] transition-all", active && "stroke-[2.4px]")} />
+            </span>
             <span className={cn(
               "text-[10px] leading-none tracking-tight",
               active ? "font-semibold" : "font-medium"

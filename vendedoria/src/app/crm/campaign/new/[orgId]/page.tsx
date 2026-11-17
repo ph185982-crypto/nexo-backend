@@ -401,9 +401,9 @@ export default function NewCampaignPage() {
                       <span className="font-medium">WhatsApp</span>
                     </div>
                     <div className="p-3 flex justify-end mt-2">
-                      <div className="bg-[#dcf8c6] rounded-lg rounded-br-sm px-3 py-2 max-w-[85%]">
+                      <div className="bg-[#dcf8c6] text-marinho rounded-lg rounded-br-sm px-3 py-2 max-w-[85%]">
                         <p className="text-xs whitespace-pre-wrap break-words">{previewMessage}</p>
-                        <p className="text-[9px] text-muted-foreground text-right mt-1">12:00 ✓✓</p>
+                        <p className="text-[9px] text-marinho/70 text-right mt-1">12:00 ✓✓</p>
                       </div>
                     </div>
                   </div>

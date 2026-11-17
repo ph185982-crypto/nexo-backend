@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ui/theme-switcher";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 /**
@@ -49,15 +50,16 @@ export function FormLogin({ entrarComAvanteza, erroInicial }: { entrarComAvantez
   };
 
   return (
-    <div className="min-h-screen bg-marinho flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <ThemeToggle className="fixed right-3.5 top-3.5 z-50" />
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <Logo className="text-4xl text-creme" />
-          <p className="text-areia text-sm font-semibold">Vendedor IA · Avanteza</p>
+          <Logo className="text-4xl text-foreground" />
+          <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.25em]">Vendedor IA · Comercial</p>
         </div>
 
-        <Card className="border-marinho-2">
+        <Card className="rounded-2xl p-1.5">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Entrar</CardTitle>
             <CardDescription className="text-center">
@@ -131,7 +133,7 @@ export function FormLogin({ entrarComAvanteza, erroInicial }: { entrarComAvantez
           </CardContent>
         </Card>
 
-        <p className="text-center text-creme/60 text-xs">
+        <p className="text-center text-muted-foreground text-xs">
           © 2026 Avanteza. Todos os direitos reservados.
         </p>
       </div>

@@ -15,7 +15,7 @@ export function Dialogo({ titulo, onFechar, children }: { titulo: string; onFech
       ref={ref}
       onClose={onFechar}
       onClick={(e) => { if (e.target === ref.current) onFechar(); }}
-      className="w-[min(420px,92vw)] rounded-md bg-card p-0 text-foreground"
+      className="w-[min(420px,92vw)] rounded-2xl border border-border bg-card p-0 text-foreground"
     >
       <div className="p-6">
         <h2 className="mb-4 text-[18px] font-extrabold">{titulo}</h2>
@@ -25,6 +25,6 @@ export function Dialogo({ titulo, onFechar, children }: { titulo: string; onFech
   );
 }
 
-export const campo = "w-full rounded-md border border-border bg-card px-3 py-2.5 text-[14px]";
-export const botaoPrimario = "rounded-md bg-primary hover:bg-primary/90 px-4 py-2.5 text-[13px] font-bold text-primary-foreground disabled:opacity-50";
-export const botaoSecundario = "rounded-md border border-primary px-4 py-2.5 text-[13px] font-bold text-foreground";
+export const campo = "w-full rounded-md border border-input bg-background px-3.5 py-2.5 text-[14px] text-foreground";
+export const botaoPrimario = "rounded-full bg-primary hover:bg-primary/90 px-4 py-2.5 text-[13px] font-bold text-primary-foreground disabled:opacity-50";
+export const botaoSecundario = "rounded-full border border-primary px-4 py-2.5 text-[13px] font-bold text-foreground";

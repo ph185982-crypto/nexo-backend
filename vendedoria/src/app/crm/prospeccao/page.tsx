@@ -170,7 +170,7 @@ function ProspeccaoHub() {
         </div>
 
         {/* Conteúdo */}
-        <div className="flex-1 min-h-0 flex flex-col bg-background">
+        <div className="flex-1 min-h-0 flex flex-col">
           {aba === "geral" && (
             <VisaoGeral resumo={resumo} navegar={navegar} novaBusca={() => setWizard({ aberto: true })} />
           )}
