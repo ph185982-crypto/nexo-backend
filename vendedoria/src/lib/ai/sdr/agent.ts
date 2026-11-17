@@ -21,6 +21,7 @@ import { dataDoToque } from "@/lib/followup/cadencia";
 import { buildSdrSystemPrompt, formatarTelefoneOwner } from "./prompt";
 import { MENSAGEM_FALHA_SDR } from "./fallback";
 import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
+import { ehApenasCortesia, TEXTO_REACAO } from "./cortesia";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
@@ -689,6 +690,15 @@ async function runSdrResponse(
 
   // ── Carregar sessão SDR ─────────────────────────────────────────────────────
   const session = await loadSdrSession(conversationId);
+
+  // ── Reação / cortesia depois do handoff: nada a responder ────────────────────
+  // Reação (👍 numa mensagem) nunca merece resposta. Com a ligação já combinada, "ok",
+  // "obrigado" e "até logo" também não: o modelo devolve `messages: []` e isso antes virava
+  // "tive um probleminha" para o lead e alerta falso para o dono.
+  if (userMessage.trim() === TEXTO_REACAO || (session.status === "handoff_enviado" && ehApenasCortesia(userMessage))) {
+    console.log(`[SDR] Mensagem sem pedido de resposta (${userMessage.trim() === TEXTO_REACAO ? "reação" : "cortesia pós-handoff"}) — sem resposta | conv=${conversationId}`);
+    return;
+  }
 
   // ── Lead pediu uma pessoa ou mostrou que a IA travou → humano assume ─────────
   const motivoHumano = detectarPedidoHumano(userMessage);
