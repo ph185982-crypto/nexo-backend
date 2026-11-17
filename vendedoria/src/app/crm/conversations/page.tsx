@@ -648,7 +648,7 @@ function ConversationsContent() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-1 min-h-0 overflow-hidden bg-background" style={{ height: "100%" }}>
+    <div className="flex flex-1 min-h-0 overflow-hidden" style={{ height: "100%" }}>
 
       {/* ── Lightbox ──────────────────────────────────────────────────────────── */}
       {lightboxUrl && (
@@ -896,7 +896,7 @@ function ConversationsContent() {
         onTouchEnd={handleTouchEnd}
         className={cn(
           "flex-col overflow-hidden relative",
-          "bg-[#EDEBE4] dark:bg-[#121316]",
+          "chat-fundo",
         "md:flex md:flex-1",
         mobilePanel === "chat" ? "flex flex-1 w-full" : "hidden",
       )}>
@@ -980,7 +980,7 @@ function ConversationsContent() {
                         Voltar IA
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => handleTakeover(true)} disabled={takingOver}
-                        className="h-8 text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50">
+                        className="h-8 text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-300/40 dark:text-blue-200 dark:hover:bg-blue-400/10">
                         {takingOver ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5" />}
                         Assumir
                       </Button>
@@ -1016,7 +1016,7 @@ function ConversationsContent() {
                         IA ativa
                       </div>
                       <Button size="sm" variant="outline" onClick={() => handleTakeover(true)} disabled={takingOver}
-                        className="h-8 text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50">
+                        className="h-8 text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-300/40 dark:text-blue-200 dark:hover:bg-blue-400/10">
                         {takingOver ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5" />}
                         Tomar controle
                       </Button>
@@ -1224,7 +1224,7 @@ function ConversationsContent() {
                   <span className="text-[13px] text-muted-foreground flex-1 truncate">
                     IA respondendo automaticamente
                   </span>
-                  <span className="text-[13px] font-semibold text-blue-600 shrink-0">
+                  <span className="text-[13px] font-semibold text-blue-700 dark:text-blue-200 shrink-0">
                     Assumir
                   </span>
                 </button>

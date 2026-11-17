@@ -57,7 +57,7 @@ export default function OfertasPage() {
   const [tab, setTab] = useState<"agenda" | "historico">("agenda");
 
   return (
-    <div className="flex flex-col h-full bg-background text-foreground">
+    <div className="flex flex-col h-full text-foreground">
       {/* Header */}
       <div className="border-b border-border px-6 py-4">
         <div className="flex items-center gap-3">
@@ -362,7 +362,7 @@ function OfertaRow({ oferta, onClick }: { oferta: Oferta; onClick: () => void })
 function OfertaModal({ oferta, onClose }: { oferta: Oferta; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="modal-painel border border-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-semibold">{oferta.nomeProduto}</h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">✕</button>

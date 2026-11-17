@@ -27,7 +27,7 @@ import {
 import { apiUrl } from "@/lib/api-url";
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "hsl(var(--card))",
+  backgroundColor: "hsl(var(--popover))",
   border: "1px solid hsl(var(--border))",
   borderRadius: "8px",
   color: "hsl(var(--foreground))",
@@ -579,7 +579,7 @@ function GraficoSaidas({ dre }: { dre: Dre }) {
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
             <XAxis type="number" tick={TICK} tickFormatter={kBRL} />
             <YAxis type="category" dataKey="nome" width={150} tick={TICK} />
-            <Tooltip formatter={(value: number) => BRL.format(value)} contentStyle={TOOLTIP_STYLE} cursor={{ fill: "hsl(var(--muted))" }} />
+            <Tooltip formatter={(value: number) => BRL.format(value)} contentStyle={TOOLTIP_STYLE} cursor={{ fill: "hsl(var(--muted) / var(--muted-a))" }} />
             <Bar dataKey="valor" name="Saída" radius={[0, 4, 4, 0]}>
               {dados.map((_, i) => <Cell key={i} fill={CORES[i % CORES.length]} />)}
             </Bar>

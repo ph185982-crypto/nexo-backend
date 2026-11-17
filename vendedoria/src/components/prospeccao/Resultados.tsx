@@ -84,7 +84,7 @@ export default function Resultados({ organizationId, buscas }: {
     : 1;
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap px-4 md:px-6 py-3 border-b border-border bg-card">
         <div>

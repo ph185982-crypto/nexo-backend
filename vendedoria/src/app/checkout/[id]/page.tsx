@@ -474,7 +474,7 @@ const s: Record<string, React.CSSProperties> = {
     alignItems: 'flex-start',
     justifyContent: 'center',
     padding: '20px 16px 40px',
-    fontFamily: "var(--font-manrope), -apple-system, sans-serif",
+    fontFamily: "var(--font-jakarta), -apple-system, sans-serif",
   },
   card: {
     background: '#FFFFFF',

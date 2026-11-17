@@ -485,7 +485,7 @@ export default function ReportsPage() {
   useEffect(() => { void fetchDash(); }, [fetchDash]);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 overflow-hidden bg-background">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Page header */}
       <div className="bg-card border-b px-4 py-3 flex items-center gap-3 flex-shrink-0">
         <BarChart2 className="w-5 h-5 text-primary shrink-0" />

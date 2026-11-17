@@ -11,7 +11,8 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+import { ThemeToggle } from "@/components/ui/theme-switcher";
+import { Logo } from "@/components/ui/logo";
 import { useQuery, gql } from "@apollo/client";
 import { cn, getInitials } from "@/lib/utils";
 import { apiUrl } from "@/lib/api-url";
@@ -77,9 +78,9 @@ function Clock() {
   );
 }
 
-interface HeaderProps { onToggleSidebar: () => void }
+interface HeaderProps { onToggleSidebar: () => void; menuAberto?: boolean }
 
-export function Header({ onToggleSidebar }: HeaderProps) {
+export function Header({ onToggleSidebar, menuAberto = false }: HeaderProps) {
   const api = useApiUrl(); // sob /comercial: /comercial/api/… já no HTML do servidor
   const { data: session } = useSession();
   const userName = session?.user?.name ?? "Usuário";
@@ -113,17 +114,21 @@ export function Header({ onToggleSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="h-14 bg-card border-b border-border flex items-center justify-between px-4 gap-4 flex-shrink-0">
+    // Barra superior de vidro (flutuante, como a da Central): no celular faz o papel da barra com menu, logo e tema.
+    <header className="vidro mx-3 mt-2 mb-2 flex h-14 flex-shrink-0 items-center justify-between gap-3 rounded-full py-2 pl-2 pr-2.5 safe-area-top md:mx-0 md:mr-4 md:mt-4 md:mb-3 md:rounded-2xl md:pl-3 md:pr-3">
       {/* Left */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="flex min-w-0 items-center gap-2">
+        <button
+          type="button"
           onClick={onToggleSidebar}
-          className="text-muted-foreground hover:text-foreground rounded-lg"
+          className="icon-btn"
+          aria-label="Abrir ou recolher o menu"
+          aria-expanded={menuAberto}
+          aria-controls="menu-lateral"
         >
-          <Menu className="w-4 h-4" />
-        </Button>
+          <Menu className="h-5 w-5" aria-hidden />
+        </button>
+        <Logo className="text-[19px] md:hidden" />
         <div className="hidden md:block">
           <p className="text-sm text-muted-foreground">
             Bem-vindo, <span className="font-semibold text-foreground">{userName}</span>
@@ -136,14 +141,14 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         <Clock />
 
         {/* Atalho discreto para a Central da Avanteza (os outros aplicativos do login único) */}
-        <Button variant="ghost" size="sm" asChild className="rounded-lg text-muted-foreground hover:text-foreground px-2">
+        <Button variant="ghost" size="sm" asChild className="hidden px-2.5 text-muted-foreground hover:text-foreground sm:inline-flex">
           <a href={api("/api/sso/central")} title="Central Avanteza" aria-label="Central Avanteza">
             <LayoutGrid className="w-4 h-4" />
             <span className="hidden lg:inline text-xs">Central</span>
           </a>
         </Button>
 
-        <ThemeSwitcher />
+        <ThemeToggle className="md:hidden" />
 
         {/* Notification bell */}
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -151,12 +156,13 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="relative rounded-lg text-muted-foreground hover:text-foreground"
+              className="relative rounded-full text-muted-foreground hover:text-foreground"
               onClick={fetchNotifications}
+              aria-label={unreadCount > 0 ? `Notificações: ${unreadCount} não lidas` : "Notificações"}
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-laranja px-1 text-[9px] font-extrabold text-marinho">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -200,7 +206,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         {/* User avatar */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-lg">
+            <Button variant="ghost" size="icon" className="rounded-full" aria-label="Conta">
               <Avatar className="w-7 h-7">
                 <AvatarImage src={session?.user?.image ?? ""} alt={userName} />
                 <AvatarFallback className="text-[10px] font-semibold text-primary-foreground bg-primary">

@@ -68,7 +68,7 @@ export default function AIConfigPage() {
   }, [toast]);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-background">
+    <div className="flex flex-col h-full overflow-hidden">
 
       {/* ── Top bar ── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b bg-card flex-shrink-0">

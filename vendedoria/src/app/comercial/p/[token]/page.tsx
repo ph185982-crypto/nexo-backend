@@ -21,8 +21,8 @@ export default async function PropostaPublica({ params }: { params: Promise<{ to
   const op = p.oportunidade;
 
   return (
-    <main className="min-h-dvh bg-background px-4 py-8 text-foreground print:bg-card print:py-0 sm:py-12">
-      <article className="mx-auto max-w-[780px] rounded-md border border-border bg-card p-6 print:max-w-none print:border-0 print:rounded-none print:p-0 sm:p-10">
+    <main className="min-h-dvh px-4 py-8 text-foreground print:py-0 sm:py-12">
+      <article className="vidro mx-auto max-w-[780px] rounded-2xl p-6 print:max-w-none print:border-0 print:rounded-none print:p-0 print:shadow-none sm:p-10">
         <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-6">
           <Logo className="text-[26px] text-foreground" />
           <div className="text-[12px] text-muted-foreground sm:text-right">

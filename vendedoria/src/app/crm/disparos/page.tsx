@@ -181,7 +181,7 @@ export default function DisparosPage() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col">
       {/* Header */}
       <div className="px-6 py-4 border-b flex items-center gap-3 flex-shrink-0">
         <Send className="w-5 h-5 text-primary" />

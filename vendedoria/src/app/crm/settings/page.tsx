@@ -322,14 +322,14 @@ function WhatsappTab({ orgs, refetch }: { orgs: OrgType[]; refetch: () => void }
 
   return (
     <div className="space-y-6">
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-l-4 border-l-laranja">
         <CardContent className="pt-4">
-          <h3 className="text-sm font-semibold text-blue-900 mb-2">Como obter as credenciais da Meta</h3>
-          <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+          <h3 className="text-sm font-semibold text-foreground mb-2">Como obter as credenciais da Meta</h3>
+          <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
             <li>Acesse <strong>developers.facebook.com</strong> → Seu App → WhatsApp → API Setup</li>
             <li>Copie o <strong>Phone Number ID</strong> e o <strong>WhatsApp Business Account ID (WABA ID)</strong></li>
             <li>Gere um <strong>Access Token</strong> permanente nas configurações do app</li>
-            <li>Configure o webhook: <code className="bg-blue-100 px-1 rounded text-xs">/api/webhooks/whatsapp</code></li>
+            <li>Configure o webhook: <code className="bg-muted px-1 rounded text-foreground text-xs">/api/webhooks/whatsapp</code></li>
           </ol>
         </CardContent>
       </Card>

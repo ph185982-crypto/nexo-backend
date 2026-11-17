@@ -126,7 +126,7 @@ export function WizardBusca({ orgId, editar, duplicar, onClose, onSalvo }: {
         role="dialog"
         aria-modal="true"
         aria-label={editar ? "Editar busca" : "Nova busca"}
-        className="w-full sm:max-w-2xl max-h-[92dvh] flex flex-col rounded-t-lg sm:rounded-lg border border-border bg-card"
+        className="w-full sm:max-w-2xl max-h-[92dvh] flex flex-col rounded-t-2xl sm:rounded-2xl border border-border bg-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Topo */}

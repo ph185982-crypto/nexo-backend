@@ -2,79 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Visual "vidro" da plataforma Avanteza (kit em src/styles/avanteza-tokens.css, cópia de packages/avanteza-kit).
+   Regra do dono (nov/2026): vidro moderno, bordas arredondadas, sombras suaves, transparência, Plus Jakarta Sans,
+   menu lateral recolhível, claro e escuro — igual à Central. tests/marca.test.ts confere tokens e contraste AA no
+   pior caso do fundo (pico da orbe + vidro empilhado) nos dois temas.
+
+   O tema do shadcn/Tailwind é a ponte para o kit: cada variável abaixo é o kit em HSL (o teste confere a igualdade).
+   Superfícies de vidro têm cor + alfa separados (--card + --card-a): `bg-card` vira hsl(var(--card) / var(--card-a))
+   pelo tailwind.config.ts. Fora do Tailwind, use a forma com alfa: hsl(var(--card) / var(--card-a)). */
 @layer base {
-  :root {
-    /* Identidade Avanteza v2.0 — claro (padrão do app).
-       marinho #0B1B33 · creme #F5F0E6 · areia #EAD9C2 · laranja #FF6A1F · branco nos cartões.
-       Regras: Manrope em tudo, raio de 6px, bordas de 1px, sem sombras, sem degradês;
-       laranja só em ação principal, foco e destaque. tests/marca.test.ts confere. */
-    --background: 40 42.9% 93.1%;       /* creme */
-    --foreground: 216 64.5% 12.2%;      /* marinho */
-    --card: 0 0% 100%;
-    --card-foreground: 216 64.5% 12.2%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 216 64.5% 12.2%;
-    --primary: 216 64.5% 12.2%;         /* marinho: botão padrão */
-    --primary-foreground: 40 42.9% 93.1%;
-    --secondary: 34.5 48.8% 83.9%;      /* areia: pílulas secundárias */
-    --secondary-foreground: 216 64.5% 12.2%;
-    --muted: 36.9 46.4% 89%;            /* areia clara (derivado): o texto suave passa em AA aqui, na areia cheia não */
-    --muted-foreground: 217.3 17.9% 40.6%; /* texto suave #55637A */
-    --accent: 36.9 46.4% 89%;           /* fundo de hover/foco */
-    --accent-foreground: 216 64.5% 12.2%;
-    --laranja: 20.1 100% 56.1%;         /* #FF6A1F — preenchimento com texto marinho */
-    --laranja-hover: 20.2 85.6% 49%;    /* #E85A12 */
-    --destructive: 0 72.2% 50.6%;       /* perigo #DC2626 (preenchimento) */
+  /* Escuro (também o padrão sem atributo, como no kit). O script do <head> põe data-theme e a classe "dark". */
+  :root, :root[data-theme="dark"], .dark {
+    --background: 219.1 62.2% 7.3%;     /* campo/superfície afundada = --avz-shade, alfa --background-a */
+    --background-a: 0.5;
+    --foreground: 40 42.9% 93.1%;       /* --avz-text (creme) */
+    --card: 0 0% 100%;                  /* vidro: --avz-glass-rgb */
+    --card-a: 0.07;
+    --card-foreground: 40 42.9% 93.1%;
+    --popover: 216.5 62.2% 14.5%;       /* --avz-solid-2 (diálogos, menus, dicas: quase opaco) */
+    --popover-a: 0.97;
+    --popover-foreground: 40 42.9% 93.1%;
+    --primary: 40 42.9% 93.1%;          /* botão padrão: creme com texto marinho */
+    --primary-foreground: 216 64.5% 12.2%;
+    --secondary: 215.2 58.1% 25.3%;     /* --avz-navy-3: pílulas, balão enviado */
+    --secondary-foreground: 40 42.9% 93.1%;
+    --muted: 0 0% 100%;                 /* realce (--avz-tint) */
+    --muted-a: 0.05;
+    --muted-foreground: 216.5 28.4% 84.1%; /* --avz-muted */
+    --accent: 0 0% 100%;                /* hover/seleção (--avz-tint) */
+    --accent-a: 0.08;
+    --accent-foreground: 40 42.9% 93.1%;
+    --destructive: 0 72.2% 50.6%;       /* perigo (preenchimento, texto branco) */
     --destructive-foreground: 0 0% 100%;
-    --destructive-texto: 0 73.7% 41.8%; /* texto de perigo: o #DC2626 não passa em AA sobre creme */
-    --border: 34.5 48.8% 83.9%;         /* areia */
-    --input: 34.5 48.8% 83.9%;
-    --ring: 20.1 100% 56.1%;            /* foco laranja */
-    --radius: 0.375rem;                 /* 6px */
-    --sidebar-bg: 216 64.5% 12.2%;      /* marinho */
-    --sidebar-fg: 40 42.9% 93.1%;
-    /* Constantes da marca (não mudam com o tema): superfícies sempre marinho, texto sobre laranja etc. */
+    --destructive-texto: 0 96.3% 89.4%; /* --avz-danger */
+    --ok-texto: 155.3 76.4% 75.1%;      /* --avz-ok */
+    --aviso-texto: 45.9 96.7% 64.5%;    /* --avz-warn */
+    --border: 217.1 26.2% 25.5%;        /* --avz-glass-border sobre o fundo (sólido, serve em hsl() cru) */
+    --input: 217.1 26.2% 25.5%;
+    --ring: 20.9 100% 77.5%;            /* foco = --avz-accent-text */
+    --laranja: 20.1 100% 56.1%;         /* --avz-orange: preenchimento, sempre com texto marinho */
+    --laranja-hover: 20.3 100% 60.6%;   /* --avz-orange-hover */
+    --laranja-texto: 20.9 100% 77.5%;   /* --avz-accent-text: laranja como texto/ícone */
+    /* Constantes da marca (iguais nos dois temas) */
     --marinho: 216 64.5% 12.2%;
     --marinho-2: 215.8 60% 18.6%;
     --creme: 40 42.9% 93.1%;
     --areia: 34.5 48.8% 83.9%;
+    --radius: 0.875rem;                 /* 14px = --avz-radius-md */
   }
 
-  .dark {
-    /* Escuro (opcional, pelo botão de tema): marinho no fundo, marinho 2 nas superfícies, texto creme,
-       bordas no tom da areia esmaecida. O botão padrão inverte (creme com texto marinho). */
-    --background: 216 64.5% 12.2%;
-    --foreground: 40 42.9% 93.1%;
-    --card: 215.8 60% 18.6%;
-    --card-foreground: 40 42.9% 93.1%;
-    --popover: 215.8 60% 18.6%;
-    --popover-foreground: 40 42.9% 93.1%;
-    --primary: 40 42.9% 93.1%;
-    --primary-foreground: 216 64.5% 12.2%;
-    --secondary: 216 56.5% 24.3%;
-    --secondary-foreground: 40 42.9% 93.1%;
-    --muted: 216 56.5% 24.3%;
-    --muted-foreground: 216.4 23.7% 72.7%;
-    --accent: 215.8 53.8% 28%;
-    --accent-foreground: 40 42.9% 93.1%;
-    --laranja: 20.1 100% 56.1%;
-    --laranja-hover: 20.2 85.6% 49%;
+  /* Claro: creme com orbes suaves, vidro branco translúcido, texto marinho, laranja só como acento. */
+  :root[data-theme="light"] {
+    --background: 40 42.9% 93.1%;       /* creme (com alfa: campo levemente afundado) */
+    --background-a: 0.6;
+    --foreground: 216 64.5% 12.2%;
+    --card: 0 0% 100%;
+    --card-a: 0.66;
+    --card-foreground: 216 64.5% 12.2%;
+    --popover: 40 100% 98.8%;           /* --avz-solid-2 */
+    --popover-a: 0.97;
+    --popover-foreground: 216 64.5% 12.2%;
+    --primary: 216 64.5% 12.2%;         /* botão padrão marinho com texto creme */
+    --primary-foreground: 40 42.9% 93.1%;
+    --secondary: 34.5 48.8% 83.9%;      /* areia */
+    --secondary-foreground: 216 64.5% 12.2%;
+    --muted: 216 64.5% 12.2%;           /* --avz-tint (marinho) em alfa baixo */
+    --muted-a: 0.06;
+    --muted-foreground: 218 22.4% 35.9%; /* --avz-muted */
+    --accent: 216 64.5% 12.2%;
+    --accent-a: 0.08;
+    --accent-foreground: 216 64.5% 12.2%;
     --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-texto: 0 90.6% 70.8%;
-    --border: 217.9 26.8% 27.8%;        /* areia a ~18% sobre o marinho */
-    --input: 217.9 26.8% 27.8%;
-    --ring: 20.1 100% 56.1%;
-    --sidebar-bg: 216 64.5% 12.2%;
-    --sidebar-fg: 40 42.9% 93.1%;
+    --destructive-texto: 3.7 78.4% 36.3%;
+    --ok-texto: 157.5 84.6% 20.4%;
+    --aviso-texto: 36.4 100% 23.9%;
+    --border: 40 4.1% 85.7%;
+    --input: 40 4.1% 85.7%;
+    --ring: 23 100% 30.2%;
+    --laranja: 20.1 100% 56.1%;
+    --laranja-hover: 20.3 100% 60.6%;
+    --laranja-texto: 23 100% 30.2%;
   }
 }
 
-/* Nomes antigos (algumas telas ainda usam var(--texto) etc.).
-   Apontam para os tokens do tema: funcionam no claro e no escuro. */
-:root, .dark {
-  --fundo: hsl(var(--background));
-  --superficie: hsl(var(--card));
+/* Impressão (proposta em PDF pelo navegador): sempre no claro, sem vidro nem orbes, sobre papel branco. */
+@media print {
+  html:root[data-theme] {
+    --background: 0 0% 100%; --background-a: 1; --foreground: 216 64.5% 12.2%;
+    --card: 0 0% 100%; --card-a: 1; --card-foreground: 216 64.5% 12.2%;
+    --popover: 0 0% 100%; --popover-a: 1; --popover-foreground: 216 64.5% 12.2%;
+    --primary: 216 64.5% 12.2%; --primary-foreground: 40 42.9% 93.1%;
+    --secondary: 34.5 48.8% 83.9%; --secondary-foreground: 216 64.5% 12.2%;
+    --muted: 216 64.5% 12.2%; --muted-a: 0.06; --muted-foreground: 218 22.4% 35.9%;
+    --border: 40 4.1% 85.7%; --destructive-texto: 3.7 78.4% 36.3%; --laranja-texto: 23 100% 30.2%;
+    --avz-glass-border: transparent; --avz-shadow: none; --avz-shadow-sm: none;
+    color-scheme: light;
+  }
+  .vidro, .vidro-forte { -webkit-backdrop-filter: none; backdrop-filter: none; background-image: none; }
+}
+
+/* Nomes antigos (algumas telas ainda usam var(--texto) etc.): apontam para os tokens do tema. */
+:root, .dark, :root[data-theme="light"] {
+  --fundo: var(--avz-bg);
+  --superficie: hsl(var(--card) / var(--card-a));
   --texto: hsl(var(--foreground));
   --texto-secundario: hsl(var(--muted-foreground));
   --texto-terciario: hsl(var(--muted-foreground));
@@ -85,13 +116,35 @@
 
 @layer base {
   * { @apply border-border; }
+  html {
+    background: var(--avz-bg);
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: var(--font-manrope), system-ui, sans-serif;
+    @apply text-foreground antialiased;
+    background: transparent; /* o fundo fica no <html>; as orbes (z-index -1) aparecem por cima dele */
+    font-family: var(--avz-font);
     overflow-x: hidden;
     /* iOS: impede o "rubber band" da página inteira ao rolar listas internas */
     overscroll-behavior-y: none;
   }
+  /* Ambiente: duas orbes (laranja e azul), fixas e sutis, como na Central. Só transform animado, e devagar. */
+  body::before, body::after {
+    content: ""; position: fixed; z-index: -1; pointer-events: none; border-radius: 50%; will-change: transform;
+  }
+  body::before {
+    width: 62vmax; height: 62vmax; left: -18vmax; top: -22vmax;
+    background: radial-gradient(closest-side, rgba(255, 106, 31, var(--avz-orb-orange-a)), rgba(255, 106, 31, 0) 100%);
+    animation: orbe-a 46s ease-in-out infinite alternate;
+  }
+  body::after {
+    width: 70vmax; height: 70vmax; right: -24vmax; bottom: -30vmax;
+    background: radial-gradient(closest-side, rgba(59, 130, 246, var(--avz-orb-blue-a)), rgba(59, 130, 246, 0) 100%);
+    animation: orbe-b 58s ease-in-out infinite alternate;
+  }
+  @media (prefers-reduced-motion: reduce) { body::before, body::after { animation: none; } }
+  @media print { body::before, body::after { display: none; } html { background: white; } }
   html, body {
     height: 100%;
     /* iOS Safari infla fontes em landscape sem isso */
@@ -99,6 +152,9 @@
     text-size-adjust: 100%;
   }
   button, a { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline-color: hsl(var(--ring)); }
+  ::selection { background: rgba(255, 106, 31, 0.4); color: hsl(var(--foreground)); }
+  select option { background: var(--avz-option-bg); color: hsl(var(--foreground)); }
 
   /* iOS Safari dá zoom automático ao focar campos com fonte < 16px.
      16px é o mínimo para manter o layout estável ao abrir o teclado. */
@@ -106,6 +162,132 @@
     input, textarea, select { font-size: 16px; }
   }
 }
+@keyframes orbe-a { to { transform: translate3d(8vmax, 6vmax, 0) scale(1.08); } }
+@keyframes orbe-b { to { transform: translate3d(-7vmax, -5vmax, 0) scale(1.06); } }
+
+@layer components {
+  /* Vidro: cartões, barra superior, palco das telas. Utilitários (border-*, bg-*) continuam podendo sobrescrever. */
+  .vidro {
+    background-color: hsl(var(--card) / var(--card-a));
+    background-image: linear-gradient(150deg, rgb(var(--avz-glass-rgb) / 0.06), rgb(var(--avz-glass-rgb) / 0) 60%);
+    border: 1px solid var(--avz-glass-border);
+    box-shadow: var(--avz-shadow);
+    -webkit-backdrop-filter: blur(var(--avz-blur)) saturate(1.25);
+    backdrop-filter: blur(var(--avz-blur)) saturate(1.25);
+  }
+  /* Vidro forte: diálogos, menus suspensos, popovers e gaveta — quase opaco, o que está atrás não atrapalha a leitura. */
+  .vidro-forte {
+    background-color: hsl(var(--popover) / var(--popover-a));
+    color: hsl(var(--popover-foreground));
+    border: 1px solid var(--avz-glass-border);
+    box-shadow: var(--avz-shadow);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    backdrop-filter: blur(20px) saturate(1.3);
+  }
+  /* Sem backdrop-filter: fundo sólido do kit (legível do mesmo jeito). */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .vidro { background-color: var(--avz-solid); background-image: none; }
+    .vidro-forte { background-color: var(--avz-solid-2); }
+  }
+  /* Modais e diálogos: a superfície do painel é sempre o vidro forte, mesmo quando a tela usa bg-card. */
+  dialog.bg-card, [role="dialog"].bg-card, [aria-modal="true"].bg-card, .modal-painel {
+    background-color: hsl(var(--popover) / var(--popover-a));
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    backdrop-filter: blur(20px) saturate(1.3);
+    box-shadow: var(--avz-shadow);
+  }
+  dialog::backdrop { background: var(--avz-scrim); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+
+  /* Botão redondo de ícone (tema, menu, fechar) — igual à Central. */
+  .icon-btn {
+    display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; padding: 0; cursor: pointer;
+    border: 1px solid var(--avz-glass-border); background: var(--avz-glass-strong); color: hsl(var(--foreground));
+  }
+  .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-btn:hover { background: rgb(var(--avz-tint) / 0.16); }
+  .theme-toggle .i-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .i-moon { display: none; }
+  :root[data-theme="light"] .theme-toggle .i-sun { display: block; }
+}
+
+/* ───── Casca (AppShell): sidebar de vidro + conteúdo — mesmo desenho da Central ───── */
+.shell { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
+.shell-body { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; margin-left: calc(var(--avz-sidebar-w) + 32px); }
+.palco { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.sidebar {
+  position: fixed; z-index: 40; top: 16px; bottom: 16px; left: 16px; width: var(--avz-sidebar-w);
+  border-radius: var(--avz-radius-lg); padding: 18px 12px 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden;
+  background: linear-gradient(150deg, rgb(var(--avz-glass-rgb) / var(--avz-glass-strong-a)), rgb(var(--avz-glass-rgb) / var(--avz-glass-a)));
+  border: 1px solid var(--avz-glass-border); box-shadow: var(--avz-shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25); backdrop-filter: blur(20px) saturate(1.25);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .sidebar { background: var(--avz-solid); } }
+.sb-brand { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 6px 8px; }
+.sb-brand-txt { display: flex; flex-direction: column; min-width: 0; text-decoration: none; color: hsl(var(--foreground)); }
+.sb-sub { margin-top: 6px; font-size: 9px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--avz-heading); }
+.sb-mark { display: none; }
+.sb-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; margin: 0 -4px; padding: 0 4px; }
+.sb-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: hsl(var(--muted-foreground)); padding: 14px 12px 6px; }
+.sb-link {
+  display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 8px 12px; border-radius: var(--avz-radius-item);
+  color: hsl(var(--foreground)); text-decoration: none; font-weight: 600; font-size: 14px; position: relative;
+  transition: background 0.18s ease, transform 0.18s ease; border: 0; background: transparent; width: 100%; text-align: left; cursor: pointer; font-family: inherit;
+}
+.sb-link svg { width: 19px; height: 19px; flex: none; opacity: 0.9; }
+.sb-link:hover { background: rgb(var(--avz-tint) / 0.10); transform: translateX(2px); }
+.sb-link[aria-current="page"] { background: var(--avz-orange); color: var(--avz-navy); font-weight: 800; box-shadow: var(--avz-glow); }
+.sb-link[aria-current="page"]:hover { transform: none; background: var(--avz-orange-hover); }
+.sb-link .sb-ext { margin-left: auto; width: 14px; height: 14px; opacity: 0.6; }
+.sb-link.sb-central { border: 1px solid var(--avz-glass-border); background: var(--avz-glass); }
+.sb-link.sb-central:hover { background: rgb(var(--avz-tint) / 0.12); }
+.sb-muted { color: hsl(var(--muted-foreground)); font-size: 13.5px; }
+.sb-foot { border-top: 1px solid var(--avz-hairline); padding: 10px 0 0; display: flex; flex-direction: column; gap: 2px; }
+.sb-zap { display: flex; align-items: center; gap: 8px; padding: 4px 12px 6px; font-size: 12px; color: hsl(var(--muted-foreground)); white-space: nowrap; overflow: hidden; }
+.sb-zap i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.sb-close { display: none; }
+.scrim { display: none; }
+
+@media (max-width: 767px) {
+  .shell-body { margin-left: 0; }
+  .sidebar {
+    top: 0; bottom: 0; left: 0; z-index: 60; width: min(300px, 86vw); border-radius: 0 28px 28px 0; transform: translateX(-104%);
+    visibility: hidden; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.3s;
+    background: var(--avz-drawer-bg); padding-top: max(18px, env(safe-area-inset-top));
+  }
+  .shell.open .sidebar { transform: none; visibility: visible; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s; }
+  .scrim { display: block; position: fixed; inset: 0; z-index: 55; background: var(--avz-scrim); border: 0; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .shell.open .scrim { opacity: 1; pointer-events: auto; }
+  .sb-close { display: inline-grid; }
+  .sb-theme, .sb-collapse { display: none !important; }
+}
+
+/* Menu recolhido (telas largas): coluna de ícones de 72px. Estado em data-sidebar="collapsed" no <html> (antes da pintura). */
+@media (min-width: 768px) {
+  .sidebar { transition: width 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .shell-body { transition: margin-left 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  :root[data-sidebar="collapsed"] { --avz-sidebar-w: var(--avz-sidebar-w-collapsed); }
+  :root[data-sidebar="collapsed"] .sidebar { padding: 14px 10px 12px; }
+  :root[data-sidebar="collapsed"] .sb-brand { flex-direction: column; justify-content: center; gap: 10px; padding: 2px 0 8px; }
+  :root[data-sidebar="collapsed"] .sb-brand-txt { display: none; }
+  :root[data-sidebar="collapsed"] .sb-mark {
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--avz-radius-item); text-decoration: none;
+    color: hsl(var(--foreground)); font-weight: 800; font-size: 26px; letter-spacing: -0.05em; line-height: 1;
+    background: var(--avz-glass); border: 1px solid var(--avz-glass-border);
+  }
+  :root[data-sidebar="collapsed"] .sb-label { display: none; }
+  :root[data-sidebar="collapsed"] .sb-nav > [role="group"] + [role="group"] { border-top: 1px solid var(--avz-hairline); margin-top: 6px; padding-top: 6px; }
+  :root[data-sidebar="collapsed"] .sb-link { justify-content: center; padding: 0; min-height: 46px; }
+  :root[data-sidebar="collapsed"] .sb-link:hover { transform: none; }
+  :root[data-sidebar="collapsed"] .sb-text, :root[data-sidebar="collapsed"] .sb-ext {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  :root[data-sidebar="collapsed"] .sb-zap { justify-content: center; padding: 6px 0; }
+}
+
+/* Logotipo: "avanteza" minúsculo com o ponto laranja redondo (src/components/ui/logo.tsx), como na Central. */
+.logo { font-weight: 800; letter-spacing: -0.045em; line-height: 1; white-space: nowrap; }
+.logo-ponto { display: inline-block; width: 0.22em; height: 0.22em; margin-left: 0.06em; border-radius: 50%; background: var(--avz-orange); vertical-align: baseline; }
+.sb-mark i { display: inline-block; width: 0.22em; height: 0.22em; border-radius: 50%; background: var(--avz-orange); margin-left: 0.05em; }
 
 @layer utilities {
   /* Scrollbars */
@@ -124,29 +306,23 @@
   }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-  /* ── Safe areas (iPhone notch / home indicator) ──────────────────────────
-     A classe .safe-area-bottom já era usada pela MobileTabBar mas nunca
-     existiu — a barra ficava por baixo do home indicator no iPhone. */
+  /* ── Safe areas (iPhone notch / home indicator) ── */
   .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
   .safe-area-top    { padding-top: env(safe-area-inset-top, 0px); }
   .safe-area-x {
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
   }
-  /* Altura do home indicator, para reservar espaço sem virar padding */
   .h-safe-bottom { height: env(safe-area-inset-bottom, 0px); }
   .mb-safe-bottom { margin-bottom: env(safe-area-inset-bottom, 0px); }
 
-  /* Reserva a altura da MobileTabBar (56px) + home indicator. Só no mobile —
-     a partir de md a barra some e o padding tem que zerar. */
-  .pb-tabbar { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
+  /* Reserva a altura da MobileTabBar (56px + 8px de folga) + home indicator. Só no mobile. */
+  .pb-tabbar { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
   @media (min-width: 768px) {
     .pb-tabbar { padding-bottom: 0; }
   }
 
-  /* Dentro de uma conversa no mobile, a tab bar sai de cena (padrão
-     WhatsApp/Telegram): o compositor precisa da altura e a navegação
-     volta pelo botão de voltar / swipe. */
+  /* Dentro de uma conversa no mobile, a tab bar sai de cena (padrão WhatsApp/Telegram). */
   @media (max-width: 767px) {
     body[data-chat-open="true"] .mobile-tab-bar { display: none; }
     body[data-chat-open="true"] .pb-tabbar { padding-bottom: 0; }
@@ -168,28 +344,27 @@
   .press-scale:active { transform: scale(0.96); opacity: 0.7; }
 }
 
-/* Balões de chat — o wrapper controla largura e padding.
-   Estas classes cuidam só de cor/canto, senão o `max-w-xs` e o padding
-   daqui brigavam com o `max-w-[80%] px-3.5 py-2` aplicado no elemento. */
+/* Balões de chat — o wrapper controla largura e padding; aqui só cor, borda e canto.
+   Enviado: areia (claro) / marinho 3 (escuro), opaco. Recebido: vidro forte (legível sobre o fundo da conversa). */
 .msg-bubble-sent {
   background: hsl(var(--secondary));
   color: hsl(var(--secondary-foreground));
+  box-shadow: var(--avz-shadow-sm);
 }
 .msg-bubble-received {
-  background: hsl(var(--card));
-  color: hsl(var(--card-foreground));
-  border: 1px solid hsl(var(--border));
+  background: hsl(var(--popover) / var(--popover-a));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid var(--avz-glass-border);
+  box-shadow: var(--avz-shadow-sm);
 }
+/* Fundo da área de conversa: levemente afundado em relação ao vidro. */
+.chat-fundo { background: rgb(var(--avz-tint) / 0.035); }
 
 /* Kanban */
 .kanban-column { @apply flex flex-col gap-2 min-w-[280px] max-w-[280px]; }
 .kanban-card {
-  @apply bg-card rounded-lg border border-border p-3 cursor-pointer hover:border-primary transition-colors;
+  @apply bg-card rounded-xl border border-border p-3 cursor-pointer hover:border-primary transition-colors shadow-suave;
 }
 
-/* Texto de perigo: tom que passa em AA sobre creme (claro) e sobre marinho (escuro). */
+/* Textos de estado: tons que passam em AA sobre o vidro nos dois temas. */
 .text-destructive { color: hsl(var(--destructive-texto)); }
-
-/* Logotipo: "avanteza" minúsculo com o quadrado laranja no lugar do ponto final (src/components/ui/logo.tsx). */
-.logo { font-weight: 800; letter-spacing: -0.045em; line-height: 1; white-space: nowrap; }
-.logo-ponto { display: inline-block; width: 0.2em; height: 0.2em; margin-left: 0.06em; background: hsl(var(--laranja)); vertical-align: baseline; }

@@ -87,7 +87,7 @@ export function ProjecaoTab() {
                   formatter={(value: number) => [BRL.format(value), "Saldo"]}
                   labelFormatter={(label) => `Data: ${label}`}
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
+                    backgroundColor: "hsl(var(--popover))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "8px",
                     color: "hsl(var(--foreground))",

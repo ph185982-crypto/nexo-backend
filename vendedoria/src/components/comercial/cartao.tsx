@@ -28,7 +28,7 @@ export function Cartao({ c, selecionado, onAbrir, sobreposto }: { c: CartaoDTO; 
       {...listeners}
       {...attributes}
       onClick={onAbrir}
-      className={`mb-2.5 cursor-grab rounded-md border bg-card px-3.5 pt-3 active:cursor-grabbing ${selecionado ? "border-primary ring-1 ring-primary" : "border-border"} ${isDragging ? "opacity-40" : ""} ${sobreposto ? "rotate-1 border-primary" : ""}`}
+      className={`mb-2.5 cursor-grab rounded-lg border bg-card px-3.5 pt-3 shadow-suave active:cursor-grabbing ${selecionado ? "border-primary ring-1 ring-primary" : "border-border"} ${isDragging ? "opacity-40" : ""} ${sobreposto ? "rotate-1 border-primary" : ""}`}
     >
       {c.tags.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-1">

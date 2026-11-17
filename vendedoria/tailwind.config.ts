@@ -16,23 +16,27 @@ const config: Config = {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-        // Constantes da identidade Avanteza v2.0 (iguais no claro e no escuro) — valores em globals.css.
+        // Constantes da marca Avanteza (iguais no claro e no escuro) — valores do kit em globals.css.
         marinho: { DEFAULT: "hsl(var(--marinho))", 2: "hsl(var(--marinho-2))" },
         creme: "hsl(var(--creme))",
         areia: "hsl(var(--areia))",
-        laranja: { DEFAULT: "hsl(var(--laranja))", hover: "hsl(var(--laranja-hover))" }, // preenchimento, com texto marinho
+        // Laranja: preenchimento com texto marinho; como texto/ícone só `laranja-texto` (queimado no claro).
+        laranja: { DEFAULT: "hsl(var(--laranja))", hover: "hsl(var(--laranja-hover))", texto: "hsl(var(--laranja-texto))" },
+        ok: { texto: "hsl(var(--ok-texto))" },
+        aviso: { texto: "hsl(var(--aviso-texto))" },
+        // Superfícies de vidro: cor + alfa do tema (--x-a); o modificador /NN multiplica o alfa do tema.
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--accent) / calc(<alpha-value> * var(--accent-a)))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        background: "hsl(var(--background))",
+        background: "hsl(var(--background) / calc(<alpha-value> * var(--background-a)))",
         foreground: "hsl(var(--foreground))",
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: "hsl(var(--card) / calc(<alpha-value> * var(--card-a)))",
           foreground: "hsl(var(--card-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
+          DEFAULT: "hsl(var(--popover) / calc(<alpha-value> * var(--popover-a)))",
           foreground: "hsl(var(--popover-foreground))",
         },
         secondary: {
@@ -40,7 +44,7 @@ const config: Config = {
           foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT: "hsl(var(--muted) / calc(<alpha-value> * var(--muted-a)))",
           foreground: "hsl(var(--muted-foreground))",
         },
         destructive: {
@@ -50,26 +54,25 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        kanban: {
-          blue: "#3b82f6",
-          green: "#22c55e",
-          orange: "#f97316",
-          purple: "#8b5cf6",
-          red: "#ef4444",
-          gray: "#6b7280",
-          lightblue: "#60a5fa",
-        },
       },
+      // Raios do kit (vidro): cartões 22px, diálogos 26px, campos 14px, itens 16px; pílulas em rounded-full.
       borderRadius: {
-        // Raio único de 6px (pílulas continuam em rounded-full).
-        lg: "var(--radius)",
-        md: "var(--radius)",
-        sm: "calc(var(--radius) - 2px)",
+        "2xl": "var(--avz-radius-lg)",
+        xl: "var(--avz-radius)",
+        lg: "var(--avz-radius-item)",
+        md: "var(--avz-radius-md)",
+        sm: "var(--avz-radius-sm)",
+      },
+      // Sombras suaves do kit (nada de sombra dura do Tailwind).
+      boxShadow: {
+        vidro: "var(--avz-shadow)",
+        suave: "var(--avz-shadow-sm)",
+        brilho: "var(--avz-glow)",
       },
       fontFamily: {
-        // Manrope em tudo; `titulo` continua existindo para não caçar classe por classe.
-        sans: ["var(--font-manrope)", "system-ui", "sans-serif"],
-        titulo: ["var(--font-manrope)", "system-ui", "sans-serif"],
+        // Plus Jakarta Sans em tudo (kit); `titulo` continua existindo para não caçar classe por classe.
+        sans: ["var(--font-jakarta)", "Plus Jakarta Sans", "system-ui", "sans-serif"],
+        titulo: ["var(--font-jakarta)", "Plus Jakarta Sans", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "monospace"],
       },
       animation: {

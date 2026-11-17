@@ -95,7 +95,7 @@ export default function PipelinePage() {
   const getProduto = (l: Lead) => l.conversations[0]?.produtoInteresse;
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-background">
+    <div className="flex flex-col h-full min-h-0">
       <div className="bg-card border-b border-border px-4 py-3 flex items-center gap-3 shrink-0">
         <h1 className="font-semibold text-foreground">Pipeline</h1>
         {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
