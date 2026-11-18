@@ -7,7 +7,7 @@
 // Aqui uma chamada curta e barata lê o que o LEAD disse e preenche SÓ o que está faltando.
 
 import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
-import { pareceNomeDePessoa, type ItemHandoff } from "./handoff-gate";
+import { faltandoParaHandoff, pareceNomeDePessoa, type ItemHandoff } from "./handoff-gate";
 import type { SDRSession } from "./types";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -76,4 +76,25 @@ export async function extrairDadosFaltantes(faltando: ItemHandoff[], conversa: M
   } catch {
     return {};
   }
+}
+
+/**
+ * Completa a sessão com o que o lead já disse na conversa e o modelo não gravou. Usado antes de
+ * escrever um follow-up: sem isso o acompanhamento "descobria" que faltava o nome de quem já tinha
+ * se apresentado ("como você gosta de ser chamada?" para a Luciana e a Rosângela, 17/11).
+ */
+export async function completarSessaoPelaConversa(
+  s: SDRSession,
+  conversa: Msg[],
+  timeoutMs = 8_000,
+): Promise<{ sessao: SDRSession; preenchidos: string[] }> {
+  const faltando = faltandoParaHandoff(s);
+  if (faltando.length === 0) return { sessao: s, preenchidos: [] };
+  const extra = await extrairDadosFaltantes(faltando, conversa, timeoutMs);
+  const preenchidos = Object.keys(extra);
+  if (preenchidos.length === 0) return { sessao: s, preenchidos: [] };
+  const sessao: SDRSession = { ...s, ...extra };
+  if (sessao.loja_fisica === "sim") sessao.tem_loja_fisica = true;
+  else if (sessao.loja_fisica === "nao") sessao.tem_loja_fisica = false;
+  return { sessao, preenchidos };
 }

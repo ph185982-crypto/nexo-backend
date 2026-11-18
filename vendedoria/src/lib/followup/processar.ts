@@ -10,7 +10,8 @@ import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 import { sendWhatsAppMessage, sendWhatsAppTemplate } from "@/lib/whatsapp/send";
 import { planejarEnvio, proximoEnvio, templateFollowup } from "@/lib/followup/janela";
 import { promptFollowupSdr, fallbackFollowupSdr, primeiroNome } from "@/lib/followup/conteudo";
-import { loadSdrSession } from "@/lib/ai/sdr/session";
+import { loadSdrSession, saveSdrSession } from "@/lib/ai/sdr/session";
+import { completarSessaoPelaConversa } from "@/lib/ai/sdr/extrair-sessao";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { MAX_FOLLOWUPS, dataDoToque } from "@/lib/followup/cadencia";
 
@@ -280,7 +281,20 @@ export async function processarFollowupsVencidos(opts: { orcamentoMs?: number } 
         select: { provider: { select: { agent: { select: { systemPrompt: true } } } } },
       }).catch(() => null);
       const ehSdr = !!agenteConv?.provider?.agent?.systemPrompt?.trimStart().startsWith("[SDR]");
-      const sessaoSdr = ehSdr ? await loadSdrSession(fu.conversationId).catch(() => null) : null;
+      let sessaoSdr = ehSdr ? await loadSdrSession(fu.conversationId).catch(() => null) : null;
+      // O modelo nem sempre grava na sessão o que o lead disse (nome, CNPJ…): completa pela conversa
+      // para o acompanhamento não perguntar de novo o que o lead já respondeu.
+      if (sessaoSdr && sessaoSdr.status !== "handoff_enviado") {
+        const comp = await completarSessaoPelaConversa(
+          sessaoSdr,
+          history.map((m) => ({ role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant", content: m.content })),
+        ).catch(() => null);
+        if (comp && comp.preenchidos.length > 0) {
+          console.log(`[FollowUp] Sessão completada pela conversa: ${comp.preenchidos.join(", ")} | conv=${fu.conversationId}`);
+          sessaoSdr = comp.sessao;
+          await saveSdrSession(fu.conversationId, comp.sessao).catch(() => {});
+        }
+      }
 
       // Lead que já ouviu "vamos te chamar" não recebe "ficou alguma dúvida?":
       // quem precisa agir é o dono. Encerra a sequência e avisa para ligar.
