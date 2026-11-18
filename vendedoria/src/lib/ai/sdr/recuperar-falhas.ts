@@ -118,6 +118,12 @@ export function acionarRecuperacaoSePreciso(origem: string, opts: { forcar?: boo
   ultimaRecuperacao = agora;
   const trabalho = async () => {
     try {
+      const { recuperarBastoesPerdidos } = await import("./bastoes-perdidos");
+      await recuperarBastoesPerdidos();
+    } catch (e) {
+      console.error(`[SDR] Bastões perdidos | origem=${origem} falhou:`, e);
+    }
+    try {
       const r = await recuperarFalhasSdr();
       if (r.reprocessadas.length || r.avisadas.length) {
         console.log(`[SDR] Recuperação de falhas | origem=${origem} reprocessadas=${r.reprocessadas.length} avisadas=${r.avisadas.length}`);
