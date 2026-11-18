@@ -1099,3 +1099,69 @@ async function runSdrResponse(
 
   console.log(`[SDR] ✅ Concluído | conv=${conversationId} | action=${parsed.action} | score=${newSession.score} | etapa=${newSession.etapa}`);
 }
+
+// ─── Bastão atrasado ─────────────────────────────────────────────────────────
+// Para lead que a IA já deixou esperando uma ligação ("vou te conectar com o Pedro…") mas cujo
+// handoff nunca foi executado — o caso de 17/11/2026, quando o portão bloqueava por um dado que o
+// lead tinha dado por texto e a despedida saía assim mesmo. Faz o mesmo que o handoff normal
+// (escala o lead, avisa o Pedro por WhatsApp + notificação + push, move o card e cancela os
+// follow-ups), recuperando antes da conversa o que o modelo não gravou. Não escreve ao lead.
+export async function passarBastaoRecuperado(leadId: string): Promise<{ ok: boolean; motivo: string }> {
+  const lead = await prisma.lead.findUnique({ where: { id: leadId }, select: { id: true, phoneNumber: true, profileName: true, status: true } });
+  if (!lead) return { ok: false, motivo: "lead não encontrado" };
+  if (lead.status === "ESCALATED" || lead.status === "BLOCKED") return { ok: false, motivo: `lead já está ${lead.status}` };
+
+  const conv = await prisma.whatsappConversation.findFirst({
+    where: { leadId },
+    select: {
+      id: true,
+      provider: { select: { businessPhoneNumberId: true, accessToken: true, organizationId: true } },
+    },
+  });
+  if (!conv?.provider) return { ok: false, motivo: "sem conversa/provedor" };
+  const provider = conv.provider;
+
+  let session: SDRSession = { ...SDR_EMPTY_SESSION, ...(await loadSdrSession(conv.id)), mode: "SDR" };
+  const mensagens = await prisma.whatsappMessage.findMany({
+    where: { conversationId: conv.id },
+    orderBy: { sentAt: "desc" },
+    take: 24,
+    select: { role: true, content: true },
+  });
+  const conversa = mensagens.reverse().map((m) => ({ role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant", content: m.content }));
+
+  const antes = faltandoParaHandoff(session);
+  if (antes.length > 0) {
+    const extra = await extrairDadosFaltantes(antes, conversa, 15_000);
+    if (Object.keys(extra).length > 0) session = normalizarSessao(mergeSdrSession(session, extra), session);
+  }
+  const faltou = faltandoParaHandoff(session);
+
+  // Reivindica o handoff de forma atômica: só uma execução leva count===1.
+  const claim = await prisma.lead.updateMany({
+    where: { id: lead.id, status: { notIn: ["ESCALATED", "BLOCKED"] } },
+    data: { status: "ESCALATED", lastActivityAt: new Date() },
+  });
+  if (claim.count === 0) return { ok: false, motivo: "handoff já realizado" };
+
+  session = { ...session, status: "handoff_enviado", etapa: "humano_assumiu" };
+  const bastao =
+    `♻️ BASTÃO ATRASADO — a IA prometeu seu contato a este lead e o aviso não tinha saído.\n\n` +
+    formatHandoffMessage(lead.phoneNumber, session, null) +
+    (faltou.length > 0 ? `\n\n❓ Ainda não informado pelo lead: ${faltou.join(", ")}` : "");
+  await notificarHandoff(bastao, provider.businessPhoneNumberId, provider.accessToken ?? undefined, provider.organizationId, lead.id, conv.id);
+
+  await moverLeadPorTipo(
+    lead.id, provider.organizationId, "ESCALATED", "Lead escalado para especialista (bastão recuperado)", "ESCALATED",
+    { dadosCrm: dadosParaEventoCrm(session) },
+  ).catch((e) => console.error("[SDR] Bastão recuperado: falha ao mover o card:", e));
+  await prisma.leadActivity.create({
+    data: { leadId: lead.id, type: "STATUS_CHANGE", description: "Lead escalado para especialista (bastão recuperado)", createdBy: "AI_AGENT" },
+  }).catch(() => {});
+  await prisma.conversationFollowUp.updateMany({ where: { conversationId: conv.id, status: "ACTIVE" }, data: { status: "DONE" } }).catch(() => {});
+  await cancelFollowUpJobs(conv.id).catch(() => {});
+  await saveSdrSession(conv.id, session).catch(() => {});
+  await sincronizarQualificacaoNoLead(lead.id, session).catch(() => {});
+  console.log(`[SDR] Bastão recuperado | lead=${lead.id} | falta=${faltou.join(",") || "nada"}`);
+  return { ok: true, motivo: faltou.length ? `escalado (faltou: ${faltou.join(", ")})` : "escalado" };
+}
