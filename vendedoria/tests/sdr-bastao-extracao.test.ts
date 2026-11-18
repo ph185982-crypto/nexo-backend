@@ -119,3 +119,37 @@ test("SDR: despedida escrita pelo modelo com CNPJ não gravado → recupera da c
     await prisma.$disconnect();
   }
 });
+
+test("follow-up: completa a sessão pela conversa — não pergunta o nome de quem já se apresentou (Luciana, Rosângela)", { timeout: 30_000 }, async () => {
+  process.env.DEEPSEEK_API_KEY = "chave-falsa-de-teste";
+  const fetchOriginal = globalThis.fetch;
+  globalThis.fetch = (async (url: string | URL) => {
+    if (String(url).includes("api.deepseek.com")) {
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ nome: "Luciana", cnpj: "tem", segmento: "cintos no atacado" }) } }] }), { status: 200 });
+    }
+    return fetchOriginal(url);
+  }) as typeof fetch;
+  try {
+    const { completarSessaoPelaConversa } = await import("@/lib/ai/sdr/extrair-sessao");
+    const { promptFollowupSdr } = await import("@/lib/followup/conteudo");
+    const { SDR_EMPTY_SESSION } = await import("@/lib/ai/sdr/types");
+    // O modelo não gravou o nome nem o CNPJ, que a lead disse por texto.
+    const sessao = { ...SDR_EMPTY_SESSION, mode: "SDR" as const, status: "em_qualificacao" as const };
+    const antes = promptFollowupSdr(1, 3, sessao);
+    assert.match(antes, /o nome da pessoa/, "sem completar, o acompanhamento mandaria perguntar o nome");
+    const { sessao: completa, preenchidos } = await completarSessaoPelaConversa(sessao, [
+      { role: "user", content: "Me chamo Luciana" }, { role: "assistant", content: "Prazer, Luciana. E o que você vende hoje?" },
+      { role: "user", content: "Cintos no atacado" }, { role: "user", content: "Sim tem cnpj" },
+    ]);
+    assert.deepEqual(preenchidos.sort(), ["cnpj", "nome", "segmento"]);
+    assert.equal(completa.nome, "Luciana");
+    assert.equal(completa.cnpj, "tem");
+    const depois = promptFollowupSdr(1, 3, completa);
+    assert.doesNotMatch(depois, /o nome da pessoa/, "completada, não manda mais perguntar o nome");
+    assert.match(depois, /nome: Luciana/);
+    assert.match(depois, /NUNCA pergunte o nome/);
+    // Sessão completa não gera chamada
+    const completaDeNovo = await completarSessaoPelaConversa({ ...completa, empresa: "X", problema_principal: "vende pouco no atacado e quer crescer", faturamento_total: "20 mil", loja_fisica: "nao", disponibilidade: "hoje" }, []);
+    assert.deepEqual(completaDeNovo.preenchidos, []);
+  } finally { globalThis.fetch = fetchOriginal; }
+});

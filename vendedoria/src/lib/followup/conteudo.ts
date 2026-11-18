@@ -44,6 +44,7 @@ Termine com UMA pergunta simples de responder.
 
 Regras: não fale preço; não prometa resultado; não use "prezado", "certamente", negrito ou listas;
 não repita uma pergunta que ele já respondeu nem a última que a Avanteza fez na conversa (traga um ângulo novo); não fale de estoque nem de promoção.
+NUNCA pergunte o nome, como ele prefere ser chamado, o que vende, CNPJ ou faturamento se isso já aparece no histórico — leia o histórico antes de perguntar.
 Responda só com a mensagem.`;
 }
 
