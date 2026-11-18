@@ -26,7 +26,7 @@ export function filtrarRepetidas<T extends { text: string }>(balões: T[], envia
   return saida;
 }
 
-const FECHAMENTO = /(especialista vai|fundador vai|vamos deixar agendado|deixar agendado|te chamarmos|te chamar amanha|vai te ligar|te ligar|te passar pro|te passar para|passar pro nosso)/;
+const FECHAMENTO = /(especialista vai|fundador vai|vamos deixar agendado|deixar agendado|te chamarmos|te chamar amanha|vai te ligar|te ligar|te passar pro|te passar para|passar pro nosso|conectar com o pedro|conectar com o especialista|te conectar|salva o contato|salvar o contato|salve o contato|contato dele|ele te chama|pedro te chama|pedro vai te|foi ele quem estruturou|fundador da avanteza)/;
 
 /** O texto promete ligação/encaminhamento ao especialista? */
 export function pareceFechamento(texto: string): boolean {

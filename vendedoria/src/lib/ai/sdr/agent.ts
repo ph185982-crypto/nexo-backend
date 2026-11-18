@@ -7,7 +7,8 @@ import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
 import { MOTIVO } from "@/lib/crm/motivos";
 import { loadSdrSession, saveSdrSession } from "./session";
 import { avaliarQualificacao } from "./qualificacao";
-import { decidirHandoff, faltandoParaHandoff, pareceNomeDePessoa, type ItemHandoff } from "./handoff-gate";
+import { decidirHandoff, faltandoParaHandoff, pareceNomeDePessoa, temHorario, type ItemHandoff } from "./handoff-gate";
+import { extrairDadosFaltantes } from "./extrair-sessao";
 import { perfilComunicacao } from "./estilo";
 import { filtrarRepetidas, pareceFechamento, ultimasDaIA } from "./anti-repeticao";
 import { forcarProximoPasso, leadPerguntou, perguntaCombinada } from "./fluxo-rapido";
@@ -21,6 +22,7 @@ import { dataDoToque } from "@/lib/followup/cadencia";
 import { buildSdrSystemPrompt, formatarTelefoneOwner } from "./prompt";
 import { MENSAGEM_FALHA_SDR } from "./fallback";
 import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
+import { ehApenasCortesia, TEXTO_REACAO } from "./cortesia";
 import { type SDRSession, type SDRLLMResponse, SDR_EMPTY_SESSION } from "./types";
 import { acquireAiLock, releaseAiLock } from "@/lib/ai/conversation-lock";
 
@@ -690,6 +692,15 @@ async function runSdrResponse(
   // ── Carregar sessão SDR ─────────────────────────────────────────────────────
   const session = await loadSdrSession(conversationId);
 
+  // ── Reação / cortesia depois do handoff: nada a responder ────────────────────
+  // Reação (👍 numa mensagem) nunca merece resposta. Com a ligação já combinada, "ok",
+  // "obrigado" e "até logo" também não: o modelo devolve `messages: []` e isso antes virava
+  // "tive um probleminha" para o lead e alerta falso para o dono.
+  if (userMessage.trim() === TEXTO_REACAO || (session.status === "handoff_enviado" && ehApenasCortesia(userMessage))) {
+    console.log(`[SDR] Mensagem sem pedido de resposta (${userMessage.trim() === TEXTO_REACAO ? "reação" : "cortesia pós-handoff"}) — sem resposta | conv=${conversationId}`);
+    return;
+  }
+
   // ── Lead pediu uma pessoa ou mostrou que a IA travou → humano assume ─────────
   const motivoHumano = detectarPedidoHumano(userMessage);
   if (motivoHumano) {
@@ -771,6 +782,22 @@ async function runSdrResponse(
 
   // ── Atualizar sessão ─────────────────────────────────────────────────────────
   let newSession = normalizarSessao(mergeSdrSession(session, parsed.updateSession), session);
+
+  // ── Dados que o lead já deu mas o modelo não gravou ──────────────────────────
+  // Na hora de fechar (modelo pediu handoff, escreveu a despedida ou o lead já marcou horário),
+  // lê a conversa e preenche SÓ o que falta. Sem isso, "sim, tenho CNPJ" dito por texto bloqueava
+  // o bastão e a despedida saía mesmo assim (17/11: Eloisa e Daniela ficaram sem bastão).
+  {
+    const pendentes = faltandoParaHandoff(newSession);
+    const fechando = parsed.action === "handoff" || parsed.messages.some((m) => pareceFechamento(m.text)) || temHorario(newSession);
+    if (pendentes.length > 0 && fechando && Date.now() < llmDeadline - 6_000) {
+      const extra = await extrairDadosFaltantes(pendentes, [...history, { role: "user" as const, content: userMessage }]);
+      if (Object.keys(extra).length > 0) {
+        console.log(`[SDR] Dados recuperados da conversa: ${Object.keys(extra).join(", ")} | lead=${lead.id}`);
+        newSession = normalizarSessao(mergeSdrSession(newSession, extra), session);
+      }
+    }
+  }
 
   // ── Portão do handoff: dados completos + ICP, verificado no código ─────────
   // Se o modelo tentou encerrar antes da hora, pede UMA vez para ele refazer a
