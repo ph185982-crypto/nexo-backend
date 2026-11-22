@@ -124,6 +124,15 @@ export function acionarRecuperacaoSePreciso(origem: string, opts: { forcar?: boo
     } catch (e) {
       console.error(`[SDR] Bastões perdidos | origem=${origem} falhou:`, e);
     }
+    // Bastões que ficaram pendentes com a janela do Pedro fechada: saem aqui também (rotina horária), não só quando chega mensagem.
+    try {
+      const { prisma } = await import("@/lib/prisma/client");
+      const { entregarPendentes } = await import("@/lib/whatsapp/aviso-dono");
+      const provs = await prisma.whatsappProviderConfig.findMany({ select: { businessPhoneNumberId: true, accessToken: true } });
+      for (const p of provs) await entregarPendentes(p.businessPhoneNumberId, p.accessToken ?? undefined);
+    } catch (e) {
+      console.error(`[SDR] Bastões perdidos | origem=${origem} falhou:`, e);
+    }
     try {
       const r = await recuperarFalhasSdr();
       if (r.reprocessadas.length || r.avisadas.length) {
