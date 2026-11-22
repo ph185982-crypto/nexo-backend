@@ -50,15 +50,29 @@ export const PERGUNTA_POR_ITEM: Record<ItemHandoff, string> = {
   horario: "o melhor dia e horário para a ligação com o Pedro",
 };
 
+/**
+ * Quem está começando do zero (ainda não fatura) não tem nome de empresa, loja física nem uma "dor de vendas" com
+ * número — perguntar isso trava o bastão para sempre. 21/11: o Giliardo (moda fitness, CLT, sem CNPJ, "terça à tarde")
+ * recebeu 3 vezes "qual o nome da empresa ou loja?" e o Pedro nunca soube dele.
+ */
+export function ehIniciante(s: SDRSession): boolean {
+  if (!faturamentoRespondido(s.faturamento_total)) return false;
+  const valor = parseFaturamentoMensal(s.faturamento_total);
+  if (valor !== null) return valor === 0;
+  const t = (s.faturamento_total ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return /\b(nao fatur|ainda nao|zero|nada|nenhum|sem faturamento|comecando|iniciando|nao vend)/.test(t);
+}
+
 /** O que ainda falta para poder passar o lead (na ordem em que convém perguntar). */
 export function faltandoParaHandoff(s: SDRSession, agora: Date = new Date()): ItemHandoff[] {
   const f: ItemHandoff[] = [];
+  const iniciante = ehIniciante(s);
   if (!pareceNomeDePessoa(s.nome)) f.push("nome");
-  if (!(s.empresa ?? "").trim()) f.push("empresa");
+  if (!iniciante && !(s.empresa ?? "").trim()) f.push("empresa");
   if (!(s.segmento ?? "").trim() && s.canais_atuais.length === 0) f.push("segmento");
-  if (!dorEspecifica(s.problema_principal)) f.push("dor");
+  if (!iniciante && !dorEspecifica(s.problema_principal)) f.push("dor");
   if (!faturamentoRespondido(s.faturamento_total)) f.push("faturamento");
-  if (s.loja_fisica !== "sim" && s.loja_fisica !== "nao" && s.tem_loja_fisica !== true) f.push("loja_fisica");
+  if (!iniciante && s.loja_fisica !== "sim" && s.loja_fisica !== "nao" && s.tem_loja_fisica !== true) f.push("loja_fisica");
   if (!(s.cnpj ?? "").trim()) f.push("cnpj");
   if (!temHorario(s, agora)) f.push("horario");
   return f;

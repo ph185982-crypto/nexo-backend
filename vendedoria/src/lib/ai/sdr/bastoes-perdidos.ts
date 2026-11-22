@@ -14,12 +14,22 @@ export const LEADS_SEM_BASTAO: Array<{ id: string; nome: string }> = [
   { id: "cmwlynh4o00016fmgb2dvpdf4", nome: "Djavan (almofadas) — quer ser chamado hoje" },
 ];
 
+// 22/11: o Giliardo (moda fitness, começando do zero, "terça à tarde") ficou preso no portão pedindo "nome da empresa"
+// (ele ainda não tem empresa). Com o portão corrigido para quem está começando, o bastão sai pela mesma recuperação.
+const MARCA_2 = "bastoes-perdidos-2026-11-22-v1";
+export const LEADS_SEM_BASTAO_2: Array<{ id: string; nome: string }> = [
+  { id: "cmwptod0j0001uu55v7tnjh77", nome: "Giliardo (moda fitness, começando do zero) — pediu terça à tarde" },
+];
+export const recuperarBastoesPerdidos2 = (passar?: (id: string) => Promise<{ ok: boolean; motivo: string }>) =>
+  recuperarBastoesPerdidos(LEADS_SEM_BASTAO_2, passar, MARCA_2);
+
 export async function recuperarBastoesPerdidos(
   leads: Array<{ id: string; nome: string }> = LEADS_SEM_BASTAO,
   passar?: (id: string) => Promise<{ ok: boolean; motivo: string }>,
+  marca: string = MARCA,
 ): Promise<Array<{ id: string; nome: string; ok: boolean; motivo: string }>> {
   try {
-    await prisma.alertaEnviadoMax.create({ data: { chave: MARCA } });
+    await prisma.alertaEnviadoMax.create({ data: { chave: marca } });
   } catch {
     return []; // já rodou
   }
@@ -39,7 +49,7 @@ export async function recuperarBastoesPerdidos(
     }
   }
   // Se algo falhou de verdade, libera a marca para a próxima rodada tentar de novo (os já escalados são ignorados).
-  if (algumaFalha) await prisma.alertaEnviadoMax.deleteMany({ where: { chave: MARCA } }).catch(() => {});
+  if (algumaFalha) await prisma.alertaEnviadoMax.deleteMany({ where: { chave: marca } }).catch(() => {});
   console.log(`[SDR] Bastões perdidos: ${out.filter((o) => o.ok).length}/${out.length} escalados`);
   return out;
 }

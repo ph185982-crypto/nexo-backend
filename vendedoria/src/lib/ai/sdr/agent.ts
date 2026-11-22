@@ -232,42 +232,33 @@ export async function notificarHandoff(
   organizationId: string,
   leadId: string,
   conversationId: string,
-): Promise<{ whatsappOk: boolean; erroWhatsapp?: string; janelaFechada?: boolean }> {
-  let whatsappOk = false;
-  let erroWhatsapp: string | undefined;
-  let janelaFechada = false;
-  try {
-    await sendWhatsAppMessage(phoneNumberId, HANDOFF_NUMBER, bastao, token);
-    whatsappOk = true;
-  } catch (e) {
-    erroWhatsapp = e instanceof Error ? e.message : String(e);
-    janelaFechada = /131047|24.?hour|re-?engagement/i.test(erroWhatsapp);
-    console.error(
-      `[SDR] ❌ Falha ao enviar bastão via WhatsApp${janelaFechada ? " (janela de 24h fechada — especialista precisa mandar uma mensagem pro bot pra reabrir)" : ""}:`,
-      erroWhatsapp,
-    );
+): Promise<{ whatsappOk: boolean; erroWhatsapp?: string; janelaFechada?: boolean; pendente?: boolean }> {
+  // 1) O aviso fica gravado primeiro (aparece no CRM em qualquer caso e é a fila do WhatsApp).
+  const aviso = await prisma.ownerNotification.create({
+    data: { type: "ESCALATION", title: "🔥 Novo lead escalado", body: bastao, organizationId, leadId, conversationId },
+  }).catch((e) => { console.error("[SDR] Falha ao gravar OwnerNotification:", e); return null; });
+
+  // 2) WhatsApp: com a janela de 24 h do Pedro aberta, sai na hora; fechada, fica pendente e sai assim que ele escrever
+  //    para o número (a Meta aceitava o texto e depois descartava — ver src/lib/whatsapp/aviso-dono.ts).
+  const { entregarAvisoAoDono } = await import("@/lib/whatsapp/aviso-dono");
+  const r = await entregarAvisoAoDono(aviso?.id ?? null, bastao, phoneNumberId, token);
+  if (!r.whatsappOk && aviso) {
+    await prisma.ownerNotification.update({
+      where: { id: aviso.id },
+      data: { title: r.janelaFechada ? "🔥 Novo lead escalado — WhatsApp sai quando você mandar uma mensagem ao número" : "🔥 Novo lead escalado (WhatsApp falhou — veja aqui)" },
+    }).catch(() => {});
   }
 
-  await prisma.ownerNotification.create({
-    data: {
-      type: "ESCALATION",
-      title: whatsappOk ? "🔥 Novo lead escalado" : "🔥 Novo lead escalado (WhatsApp falhou — veja aqui)",
-      body: bastao,
-      organizationId,
-      leadId,
-      conversationId,
-    },
-  }).catch((e) => console.error("[SDR] Falha ao gravar OwnerNotification:", e));
-
+  // 3) Push sempre (não depende da janela da Meta).
   const { sendPushToAll } = await import("@/lib/push/notificar");
   await sendPushToAll({
-    title: whatsappOk ? "🔥 Novo lead escalado" : "🔥 Novo lead escalado — WhatsApp não entregou",
+    title: r.whatsappOk ? "🔥 Novo lead escalado" : "🔥 Novo lead escalado — mande um 'oi' no WhatsApp do bot para receber o bastão",
     body: bastao.split("\n").filter(Boolean).slice(0, 3).join(" · ").slice(0, 180),
     url: `/crm/lead/kanban?leadId=${leadId}`,
     tag: `handoff-${leadId}`,
   }).catch((e) => console.error("[SDR] Falha ao enviar push do handoff:", e));
 
-  return { whatsappOk, erroWhatsapp, janelaFechada };
+  return { whatsappOk: r.whatsappOk, erroWhatsapp: r.erroWhatsapp, janelaFechada: r.janelaFechada, pendente: r.pendente };
 }
 
 // A IA sai de cena e o Pedro assume: usado quando o lead pede uma pessoa, se

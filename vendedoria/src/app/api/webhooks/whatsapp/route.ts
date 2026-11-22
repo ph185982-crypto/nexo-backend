@@ -107,6 +107,14 @@ export async function POST(req: NextRequest) {
           await handleIncomingMessage(message, value.contacts?.[0], providerConfig);
         }
 
+        // Bastões que não chegaram ao Pedro (janela de 24 h fechada): saem assim que a janela estiver aberta —
+        // em especial quando ele mesmo escreve para o número.
+        if ((value.messages ?? []).length) {
+          const { entregarPendentes } = await import("@/lib/whatsapp/aviso-dono");
+          await entregarPendentes(providerConfig.businessPhoneNumberId, providerConfig.accessToken ?? undefined)
+            .catch((e) => console.error("[Webhook] entregarPendentes falhou:", e));
+        }
+
         // Process status updates
         for (const status of value.statuses ?? []) {
           await handleStatusUpdate(status);
@@ -594,9 +602,14 @@ async function handleStatusUpdate(status: StatusMeta) {
     data: { status: newStatus },
   }).catch(() => ({ count: 0 }));
 
-  if (count === 0) {
+  // Aviso ao Pedro (bastão) que a Meta não entregou: volta para a fila.
+  const { statusDeAviso } = await import("@/lib/whatsapp/aviso-dono");
+  const ehAviso = await statusDeAviso(status.id, status.status, status.errors?.[0]?.code ?? null).catch(() => false);
+
+  if (count === 0 && !ehAviso) {
     // Mensagens enviadas antes desta correção não têm wamid gravado — esperado.
-    console.log(`[Webhook] Status ${status.status} sem mensagem correspondente (wamid ${status.id})`);
+    const erroMeta = status.errors?.[0] ? ` | erro ${status.errors[0].code ?? "?"}: ${status.errors[0].title ?? status.errors[0].message ?? ""}` : "";
+    console.log(`[Webhook] Status ${status.status} sem mensagem correspondente (wamid ${status.id})${erroMeta}`);
   } else if (newStatus === "FAILED") {
     console.error(`[Webhook] ⚠️ Meta reportou FALHA DE ENTREGA (wamid ${status.id}) — cliente não recebeu`);
   }
