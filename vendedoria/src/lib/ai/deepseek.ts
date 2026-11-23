@@ -15,8 +15,15 @@ export const DEEPSEEK_BASE_URL = (process.env.DEEPSEEK_BASE_URL ?? "https://api.
 /** Modelo de conversa (rápido, sem raciocínio longo): serve para respostas de WhatsApp em segundos. */
 export const DEEPSEEK_MODELO = process.env.DEEPSEEK_MODEL ?? "deepseek-chat";
 
+// Disjuntor de saldo (23/11): sem saldo, a DeepSeek responde 402 em toda chamada; cada atendimento perdia segundos
+// tentando antes de cair na OpenAI e partes que só usam a DeepSeek (extração, follow-up) falhavam. Depois de um 402 ela
+// sai da fila por 20 min (por instância) e tudo vai direto para a OpenAI; depois tenta de novo sozinha.
+const G = globalThis as typeof globalThis & { __deepseekSemSaldoAte?: number };
+export function marcarDeepseekSemSaldo(agora: number = Date.now(), ms: number = 20 * 60_000): void { G.__deepseekSemSaldoAte = agora + ms; }
+export function deepseekSemSaldo(agora: number = Date.now()): boolean { return agora < (G.__deepseekSemSaldoAte ?? 0); }
+
 export function deepseekAtivo(): boolean {
-  return Boolean(process.env.DEEPSEEK_API_KEY?.trim());
+  return Boolean(process.env.DEEPSEEK_API_KEY?.trim()) && !deepseekSemSaldo();
 }
 
 export interface MensagemChat {
@@ -55,6 +62,7 @@ async function umaChamada(chave: string, mensagens: MensagemChat[], opts: Opcoes
       console.error(`[DeepSeek] HTTP ${res.status}:`, texto.slice(0, 300));
       // 402 = saldo insuficiente na DeepSeek.
       if (res.status === 402 || (await import("./alerta-cota")).ehErroDeCota(texto)) {
+        if (res.status === 402) marcarDeepseekSemSaldo();
         void import("./alerta-cota").then((m) => m.alertarCotaEsgotada("DeepSeek", texto || `HTTP ${res.status}`));
       }
       return { tipo: "erro" };
@@ -79,7 +87,7 @@ async function umaChamada(chave: string, mensagens: MensagemChat[], opts: Opcoes
  */
 export async function deepseekChat(mensagens: MensagemChat[], opts: OpcoesDeepSeek = {}): Promise<string | null> {
   const chave = process.env.DEEPSEEK_API_KEY?.trim();
-  if (!chave) return null;
+  if (!chave || deepseekSemSaldo()) return null;
   const limite = Date.now() + (opts.timeoutMs ?? TIMEOUT_PADRAO_MS);
   const plano = opts.json ? [true, true, false] : [false, false];
   for (const comJson of plano) {
@@ -114,7 +122,7 @@ export async function deepseekCompletion(corpo: {
   timeoutMs?: number;
 }): Promise<RespostaCompleta | null> {
   const chave = process.env.DEEPSEEK_API_KEY?.trim();
-  if (!chave) return null;
+  if (!chave || deepseekSemSaldo()) return null;
   try {
     const res = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
       method: "POST",
@@ -133,6 +141,7 @@ export async function deepseekCompletion(corpo: {
       const texto = await res.text().catch(() => "");
       console.error(`[DeepSeek] HTTP ${res.status}:`, texto.slice(0, 300));
       if (res.status === 402 || (await import("./alerta-cota")).ehErroDeCota(texto)) {
+        if (res.status === 402) marcarDeepseekSemSaldo();
         void import("./alerta-cota").then((m) => m.alertarCotaEsgotada("DeepSeek", texto || `HTTP ${res.status}`));
       }
       return null;
