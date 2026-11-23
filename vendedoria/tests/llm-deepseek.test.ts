@@ -8,6 +8,7 @@ const CHAVE_FALSA = "chave-falsa-de-teste-000";
 type Chamada = { url: string; auth: string | null; corpo: Record<string, unknown> };
 
 function simular(respostas: Record<string, () => Response>) {
+  (globalThis as { __deepseekSemSaldoAte?: number }).__deepseekSemSaldoAte = 0;   // cada cenário começa com o disjuntor zerado
   const chamadas: Chamada[] = [];
   const original = globalThis.fetch;
   globalThis.fetch = (async (url: string | URL, init?: RequestInit) => {
@@ -176,4 +177,16 @@ test("SDR: resposta em texto puro vira balões (não deixa o lead sem resposta);
   assert.equal(parseSdrResponse("   "), null);
   // JSON válido continua tendo prioridade
   assert.equal(parseSdrResponse('{"messages":[{"text":"oi","delay":0}],"action":"continue"}')?.messages[0].text, "oi");
+});
+
+test("sem saldo (402): a DeepSeek sai da fila por 20 min e tudo vai direto para a OpenAI; depois volta sozinha", async () => {
+  process.env.DEEPSEEK_API_KEY = "chave-de-teste";
+  const D = await import("@/lib/ai/deepseek");
+  const agora = Date.now();
+  D.marcarDeepseekSemSaldo(agora);
+  assert.equal(D.deepseekSemSaldo(agora + 60_000), true);
+  assert.equal(D.deepseekAtivo(), false);
+  assert.equal(D.deepseekSemSaldo(agora + 21 * 60_000), false);
+  D.marcarDeepseekSemSaldo(0, 0);   // limpa para os outros testes
+  assert.equal(D.deepseekAtivo(), true);
 });
