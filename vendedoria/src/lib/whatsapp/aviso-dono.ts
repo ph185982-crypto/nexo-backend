@@ -96,7 +96,8 @@ export async function entregarAvisoAoDono(
 export async function avisosPendentes(agora: Date = new Date()) {
   const desde = new Date(Math.max(AVISOS_DESDE.getTime(), agora.getTime() - JANELA_PENDENTES_MS));
   const avisos = await prisma.ownerNotification.findMany({
-    where: { type: "ESCALATION", createdAt: { gte: desde } },
+    // só bastão de LEAD (tem leadId): alertas de operação (saldo da IA etc.) não são bastão e já saem por push
+    where: { type: "ESCALATION", leadId: { not: null }, createdAt: { gte: desde } },
     orderBy: { createdAt: "asc" },
     select: { id: true, body: true, createdAt: true, leadId: true },
     take: 30,
