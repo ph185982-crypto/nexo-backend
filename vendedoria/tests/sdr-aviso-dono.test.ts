@@ -41,3 +41,12 @@ test("aviso ao dono: reconhece o número do Pedro em qualquer grafia e só manda
   // Sem histórico do Pedro neste número: tenta (comportamento antigo)
   assert.equal(podeMandarTexto(null, agora), true);
 });
+
+test("alerta de saldo: com OpenAI de reserva a DeepSeek sem saldo NÃO diz que a IA parou; sem reserva diz", async () => {
+  const { textoAlertaCota } = await import("@/lib/ai/alerta-cota-texto");
+  const com = textoAlertaCota("DeepSeek", "Insufficient Balance", true);
+  assert.match(com.titulo, /atendendo pela OpenAI/); assert.doesNotMatch(com.corpo, /mensagem de espera|parou de responder/);
+  const sem = textoAlertaCota("DeepSeek", "Insufficient Balance", false);
+  assert.match(sem.titulo, /a IA parou de responder/);
+  assert.match(textoAlertaCota("OpenAI", "x", true).titulo, /OpenAI sem créditos/);
+});
