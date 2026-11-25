@@ -20,8 +20,14 @@ import { textosConfirmacao, textosHorarioOcupado, textosSemHorario } from "./rot
 export interface Provedor { businessPhoneNumberId: string; accessToken: string | null; organizationId: string }
 export interface LeadRef { id: string; phoneNumber: string; profileName: string | null }
 
-/** URL do vídeo de depoimentos (o Pedro sobe o arquivo e põe o link na Vercel). */
-export const videoDepoimentos = (): string | null => process.env.VIDEO_DEPOIMENTOS_URL?.trim() || null;
+/** Vídeo de depoimentos (enviado pelo dono em 25/11; arquivo em public/midia). VIDEO_DEPOIMENTOS_URL na Vercel troca;
+ * VIDEO_DEPOIMENTOS_URL=desligado deixa a confirmação sem vídeo. */
+export const VIDEO_DEPOIMENTOS_PADRAO = "https://nexo-vendedoria.vercel.app/midia/depoimentos-avanteza.mp4";
+export const videoDepoimentos = (): string | null => {
+  const v = process.env.VIDEO_DEPOIMENTOS_URL?.trim();
+  if (v?.toLowerCase() === "desligado") return null;
+  return v || VIDEO_DEPOIMENTOS_PADRAO;
+};
 
 /** Manda os balões e grava cada um na conversa. Falha num balão não derruba os outros. */
 export async function enviarBaloes(conversationId: string, p: Provedor, para: string, textos: string[], citar?: string, sandbox = false): Promise<void> {
