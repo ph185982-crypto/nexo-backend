@@ -20,6 +20,7 @@ import { buscarSlotsLigacao } from "@/lib/agenda/reuniao";
 import { proximoEnvio } from "@/lib/followup/janela";
 import { dataDoToque } from "@/lib/followup/cadencia";
 import { buildSdrSystemPrompt } from "./prompt";
+import { aplicarPersona, carregarPersona, personaAtual } from "./julia/persona";
 import { turnoAbertura, turnoJulia, turnoRespostaAutomatica, type SaidaTurno } from "./julia/motor";
 import { agendarFollowup, efetivarPassagem, encerrarFollowups, enviarBaloes, marcarPrioridade, tratarPosPassagem } from "./julia/efeitos";
 import { ehPrioridade } from "./julia/icp";
@@ -254,9 +255,9 @@ async function transferirParaHumano(args: {
   }).catch((e) => console.error("[SDR] Falha ao marcar humanTakeover:", e));
 
   const nome = session.nome || (pareceNomeDePessoa(lead.profileName) ? lead.profileName : null);
-  const texto = motivo === "ia_travou"
+  const texto = aplicarPersona(motivo === "ia_travou"
     ? `${nome ? `${nome.split(/\s+/)[0]}, ` : ""}pra não te fazer repetir nada, vou te passar direto pro Pedro — ele continua a conversa daqui 🙏`
-    : mensagemDeTransferencia(motivo, nome);
+    : mensagemDeTransferencia(motivo, nome), await carregarPersona());
   try {
     const wamid = await sendWhatsAppMessage(provider.businessPhoneNumberId, lead.phoneNumber, texto, token);
     await prisma.whatsappMessage.create({
@@ -541,6 +542,7 @@ async function runSdrResponse(
   token: string | undefined,
   phoneNumberId: string,
 ): Promise<void> {
+  await carregarPersona(); // Pedro até o nome "Avanteza" ser registrado no WhatsApp; depois Júlia (julia/persona.ts)
   // ── Sinais de intenção da mensagem → CRM Avanteza (regras, sem chamar o modelo; em segundo plano) ──
   void emitirIntencoesDaMensagem(lead.id, userMessage).catch(() => {});
 
@@ -637,7 +639,7 @@ async function runSdrResponse(
     }
     const parsed = raw ? parseSdrResponse(raw) : null;
     if (!parsed) console.error(`[Júlia] Modelo sem resposta válida — seguindo com os textos fixos do roteiro | conv=${conversationId}`);
-    saida = turnoJulia({ sessao: session, mensagem: userMessage, llm: parsed, slotsLivres: slots, agora: now, nomePerfil: lead.profileName });
+    saida = turnoJulia({ sessao: session, mensagem: userMessage, llm: parsed, slotsLivres: slots, agora: now, nomePerfil: lead.profileName, persona: personaAtual() });
   }
 
   // ── Ligação escolhida → passagem para o Pedro ─────────────────────────────────────────────────────────

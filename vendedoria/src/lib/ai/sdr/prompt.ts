@@ -2,7 +2,7 @@
 // de resposta. As decisões (rota, pergunta, horários, passagem) são do código (./julia/motor.ts); o modelo lê o que o
 // lead disse, reage e responde dúvidas.
 import { type SDRSession } from "./types";
-import { ROTEIRO_JULIA } from "./julia/roteiro";
+import { roteiroDa, personaAtual } from "./julia/persona";
 import { classificar, proximaPergunta, ROTULO_FAIXA } from "./julia/icp";
 import { PERGUNTA_TEXTO } from "./julia/motor";
 import type { Slot } from "@/lib/agenda/slots";
@@ -37,7 +37,7 @@ export function buildSdrSystemPrompt(session: SDRSession, whatsappProfileName?: 
   const proxima = proximaPergunta(session);
   const slots = contexto?.slots ?? [];
   return `[SDR]
-${ROTEIRO_JULIA}
+${roteiroDa(personaAtual())}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CONTEXTO DESTE TURNO (do sistema)

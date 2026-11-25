@@ -206,3 +206,71 @@ test("Troca de horário depois da passagem → 2 próximos livres; escolheu → 
   const r = turnoPosPassagem({ sessao: o.sessao, mensagem: "18h30", slotsLivres: amanha, agora: AGORA });
   assert.equal(r.acao, "remarcar");
 });
+
+// ── Persona "Pedro" (pedido do dono em 25/11: até o nome "Avanteza" valer no WhatsApp, a SDR se apresenta como Pedro) ──
+import * as R from "@/lib/ai/sdr/julia/roteiro";
+import { aplicarPersona, roteiroDa, personaAtual, proibidoDaPersona, _definirPersona } from "@/lib/ai/sdr/julia/persona";
+import { mensagemDeTransferencia } from "@/lib/ai/sdr/humano";
+
+function todosOsTextosFixos(): string[] {
+  const h1 = "hoje às 12h15", h2 = "amanhã às 18h30";
+  return [
+    ...Object.values(R.ABERTURAS).flat(), R.PERGUNTA_LOJA, R.PERGUNTA_CNPJ, R.PERGUNTA_FATURAMENTO,
+    ...R.textosQualificado("Ana", h1, h2), ...R.textosNovosHorarios(h1, h2), ...R.textosNovosHorarios(h1, null),
+    ...R.textosConfirmacao(h1, true), ...R.textosMorno("Ana"), ...R.textosFora("Ana"), R.TEXTO_RECEBI_FOTO,
+    R.TEXTO_RESPOSTA_AUTOMATICA, R.TEXTO_OPT_OUT, R.textoFollowup1("Ana"), R.textoFollowup1Qualificado("Ana", h1, h2),
+    R.textoFollowup1Qualificado("Ana", h1, null), R.TEXTO_FOLLOWUP_2, R.textoLembreteLead("Ana", "12h15"),
+    ...R.textosSemHorario("Ana"), ...R.textosHorarioOcupado(h1, h2), ...R.textosHorarioOcupado(h1, null),
+    mensagemDeTransferencia("frustrado", "Ana"), mensagemDeTransferencia("pediu_humano" as never, "Ana"),
+  ];
+}
+
+test("persona Pedro: nenhum texto fixo cita a Júlia nem fala do Pedro na 3ª pessoa", () => {
+  const saida = todosOsTextosFixos().map((t) => aplicarPersona(t, "pedro"));
+  for (const t of saida) {
+    assert.ok(!/j[uú]lia/i.test(t), `cita Júlia: ${t}`);
+    assert.ok(!/\bo pedro\b|\bpro pedro\b|\bele (pode|te|já)\b/i.test(t.replace("Aqui é o Pedro", "")), `Pedro na 3ª pessoa: ${t}`);
+    assert.ok(!/obrigada/i.test(t), `feminino: ${t}`);
+    assert.ok(!R.PROIBIDO_SEMPRE.test(t), `Nexo/600: ${t}`);
+  }
+  assert.equal(aplicarPersona(R.ABERTURAS.tenho_loja[0], "pedro"), "Oi! Aqui é o Pedro, da Avanteza 👋");
+  assert.deepEqual(R.textosConfirmacao("hoje às 18h30", false).map((t) => aplicarPersona(t, "pedro")).slice(0, 2), [
+    "Fechado: hoje às 18h30. Te ligo do (62) 98446-5388.",
+    "Pra ligação render: me manda foto de 3 produtos que mais vendem, com o preço de venda. Já levo a conta de quanto sobra em cada marketplace.",
+  ]);
+  if (process.env.JULIA_MOSTRAR) console.log(`\n── Persona Pedro (textos fixos) ──\n${saida.map((t) => `  ${t}`).join("\n")}\n`);
+});
+
+test("persona Júlia: textos ficam como estão", () => {
+  for (const t of todosOsTextosFixos()) assert.equal(aplicarPersona(t, "julia"), t);
+});
+
+test("persona Pedro: roteiro do modelo se apresenta como Pedro e é honesto sobre o assistente virtual", () => {
+  const r = roteiroDa("pedro");
+  assert.match(r, /^Você é o Pedro, fundador da Avanteza/);
+  assert.match(r, /assistente virtual/);
+  const semAsRegras = r.replace(/Nunca use o nome "Júlia"\.|Usar o nome "Júlia"/g, "");
+  assert.ok(!/j[uú]lia/i.test(semAsRegras), "roteiro do Pedro cita a Júlia");
+  assert.ok(!/\bo Pedro te\b|com o Pedro, fundador/.test(r));
+  assert.ok(!R.PROIBIDO_SEMPRE.test(r.replace(/Nunca diga "Nexo"|Dizer "Nexo"|"600 marcas"/g, "")));
+  assert.equal(roteiroDa("julia"), ROTEIRO_JULIA);
+});
+
+test("filtro do modelo segue a persona", () => {
+  assert.deepEqual(limparMensagensDoModelo([{ text: "Sou a Júlia 🙂" }, { text: "Aqui é o Pedro" }], "pedro"), ["Aqui é o Pedro"]);
+  assert.deepEqual(limparMensagensDoModelo([{ text: "Sou a Júlia 🙂" }, { text: "Aqui é o Pedro" }], "julia"), ["Sou a Júlia 🙂"]);
+  assert.ok(proibidoDaPersona("pedro").test("a Júlia te ajuda"));
+});
+
+test("persona padrão é Pedro até o nome valer; SDR_PERSONA força", () => {
+  _definirPersona(null);
+  const antes = process.env.SDR_PERSONA;
+  delete process.env.SDR_PERSONA;
+  assert.equal(personaAtual(), "pedro");
+  _definirPersona("julia");
+  assert.equal(personaAtual(), "julia");
+  process.env.SDR_PERSONA = "pedro";
+  assert.equal(personaAtual(), "pedro");
+  if (antes === undefined) delete process.env.SDR_PERSONA; else process.env.SDR_PERSONA = antes;
+  _definirPersona(null);
+});
