@@ -190,13 +190,13 @@ model AgentConfigVersion {
 
 model AgentConfig {
   id                   String              @id @default(cuid())
-  agentName            String              @default("Pedro")
+  agentName            String              @default("Júlia")
   bastaoNumber         String              @default("5562984465388")
   currentPrompt        String              @default("") @db.Text
   promptVersion        Int                 @default(1)
-  followUpHours        String              @default("4,24,48,72")
+  followUpHours        String              @default("24,72")
   followUpPrompt       String?             @db.Text
-  maxFollowUps         Int                 @default(4)
+  maxFollowUps         Int                 @default(2)
   deliveryWeekStart    Int                 @default(9)
   deliveryWeekEnd      Int                 @default(18)
   deliverySatStart     Int                 @default(8)

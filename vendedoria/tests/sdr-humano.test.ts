@@ -38,7 +38,7 @@ test("'não tenho loja física' conta como resposta no portão; prompt pede os c
     problema_principal: "quer vender na Shopee e Mercado Livre, mas não obteve sucesso", loja_fisica: "nao" as const };
   assert.ok(!faltandoParaHandoff(s).includes("loja_fisica"), "loja_fisica=nao não é pendência");
   const prompt = buildSdrSystemPrompt(SDR_EMPTY_SESSION, "Ana");
-  for (const campo of ['"empresa"', '"loja_fisica"', '"horario_reuniao"', '"segmento"', '"cnpj"']) assert.ok(prompt.includes(campo), `prompt sem ${campo}`);
+  for (const campo of ['"empresa"', '"loja_fisica"', '"horario_escolhido"', '"segmento"', '"cnpj"']) assert.ok(prompt.includes(campo), `prompt sem ${campo}`);
   assert.match(prompt, /NUNCA pergunte de novo/);
 });
 

@@ -117,6 +117,35 @@ export function acionarRecuperacaoSePreciso(origem: string, opts: { forcar?: boo
   if (!opts.forcar && agora - ultimaRecuperacao < INTERVALO_RECUPERACAO_MS) return "throttle";
   ultimaRecuperacao = agora;
   const trabalho = async () => {
+    // Perfil do WhatsApp da Júlia (uma vez) e aviso quando o nome "Avanteza" for aprovado (1 consulta por dia).
+    try {
+      const { atualizarPerfilAvanteza, avisarNomeAprovado } = await import("@/lib/whatsapp/perfil-avanteza");
+      await atualizarPerfilAvanteza();
+      await avisarNomeAprovado();
+    } catch (e) {
+      console.error(`[PerfilWhatsApp] | origem=${origem} falhou:`, e);
+    }
+    // Limpeza única do Kanban (só depois de o dono aprovar a prévia: LIMPEZA_AUTORIZADA em julia/limpeza.ts).
+    try {
+      const { LIMPEZA_AUTORIZADA, limpezaSdr } = await import("./julia/limpeza");
+      if (LIMPEZA_AUTORIZADA) await limpezaSdr({ executar: true });
+    } catch (e) {
+      console.error(`[Júlia] Limpeza | origem=${origem} falhou:`, e);
+    }
+    // Lembretes das ligações (o cron de 10 em 10 min é o principal; aqui é reforço).
+    try {
+      const { enviarLembretesLigacao } = await import("./julia/lembretes");
+      await enviarLembretesLigacao();
+    } catch (e) {
+      console.error(`[Júlia] Lembretes | origem=${origem} falhou:`, e);
+    }
+    // Identidade da Júlia no banco igual ao código (nome, prompt, follow-up, nome da conta).
+    try {
+      const { sincronizarIdentidadeJulia } = await import("./julia/identidade");
+      await sincronizarIdentidadeJulia();
+    } catch (e) {
+      console.error(`[Júlia] Sincronização da identidade | origem=${origem} falhou:`, e);
+    }
     try {
       const { recuperarBastoesPerdidos, recuperarBastoesPerdidos2 } = await import("./bastoes-perdidos");
       await recuperarBastoesPerdidos();

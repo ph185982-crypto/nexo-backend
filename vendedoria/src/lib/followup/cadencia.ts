@@ -1,8 +1,8 @@
-// Cadência de follow-up quando o lead não responde: 1º toque 2h depois da
-// mensagem da IA, depois 12h, 24h e 48h. Os prazos contam sempre a partir da
-// MESMA mensagem (a última da IA), não do toque anterior.
+// Cadência de follow-up quando o lead não responde (roteiro da Júlia, 24/11): 1º toque no dia seguinte (24 h) e
+// 2º no 3º dia (72 h), que encerra. Os prazos contam sempre a partir da MESMA mensagem (a última da IA).
+// O 1º toque é puxado para dentro da janela de 24 h do WhatsApp (lib/followup/janela.ts).
 
-export const CADENCIA_HORAS = [2, 12, 24, 48] as const;
+export const CADENCIA_HORAS = [24, 72] as const;
 export const MAX_FOLLOWUPS = CADENCIA_HORAS.length;
 
 const HORA_MS = 60 * 60 * 1000;

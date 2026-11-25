@@ -36,6 +36,28 @@ export interface SDRSession {
   horario_reuniao?: string;
   /** ID do CalendarEvent criado quando a ligação foi marcada. */
   reuniao_evento_id?: string;
+
+  // ── Roteiro da Júlia (src/lib/ai/sdr/julia) ─────────────────────────────────
+  /** Qual opção do anúncio abriu a conversa. */
+  abertura?: "tenho_loja" | "ja_vendo" | "comecando" | "outra";
+  /** Tipo de loja/estoque como o lead disse (ex.: "loja física", "fábrica", "atacado"). */
+  tipo_estoque?: string;
+  /** Faixa do faturamento ATUAL (1..4; 0 = não quis dizer). */
+  faixa_faturamento?: 0 | 1 | 2 | 3 | 4;
+  /** A pergunta de faturamento já foi feita (para não insistir). */
+  faturamento_perguntado?: boolean;
+  /** Última pergunta do roteiro feita pela Júlia (para ler a resposta curta: "sim", "2"…). */
+  ultima_pergunta?: "loja" | "cnpj" | "faturamento" | "horario";
+  /** Horários oferecidos (ISO), na ordem em que apareceram para o lead. */
+  slots_oferecidos?: string[];
+  /** Trecho mais importante que o lead disse (vai no aviso ao Pedro). */
+  frase_chave?: string;
+  /** Classificação calculada no código. */
+  icp?: "QUALIFICADO" | "MORNO" | "FORA" | "PENDENTE";
+  /** Resposta automática detectada: quando, e quando saiu a mensagem única de retomada. */
+  auto_resposta?: { detectada_em: string; retomada_em?: string };
+  /** A Júlia já respondeu "Recebi! Já passei pro Pedro" depois da passagem. */
+  foto_respondida?: boolean;
 }
 
 export interface SDRMessage {

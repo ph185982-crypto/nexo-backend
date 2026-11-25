@@ -30,6 +30,7 @@ export interface AlvoColuna {
 export const ALVOS_COLUNA: Record<string, AlvoColuna> = {
   EM_QUALIFICACAO: { tipos: ["EM_QUALIFICACAO"], nomes: ["em qualificacao", "qualificacao"] },
   MORNO:           { tipos: ["MORNO"], nomes: ["mornos", "mornos (nutricao)", "morno"] },
+  ESCALATED:       { tipos: ["ESCALATED"], nomes: ["ligacao marcada", "handoff enviado"] },
   QUALIFICADO:     { tipos: ["QUALIFICADO", "PROPOSTA_NEGOCIACAO"], nomes: ["qualificados", "qualificado"] },
   PROPOSTA_NEGOCIACAO: { tipos: ["PROPOSTA_NEGOCIACAO", "QUALIFICADO"], nomes: ["qualificados", "qualificado", "proposta e negociacao"] },
 };
@@ -42,8 +43,9 @@ export const ALVOS_COLUNA: Record<string, AlvoColuna> = {
  * Se quiser que etapas seguintes também avisem a Meta, acrescente os tipos aqui.
  */
 export const COLUNAS_QUALIFICADO = {
-  tipos: ["QUALIFICADO", "PROPOSTA_NEGOCIACAO"],
-  nomes: ["qualificados", "qualificado"],
+  // "Ligação marcada" (tipo ESCALATED, ex-"Handoff enviado"): só entra quem é QUALIFICADO e escolheu horário (roteiro da Júlia).
+  tipos: ["QUALIFICADO", "PROPOSTA_NEGOCIACAO", "ESCALATED"],
+  nomes: ["qualificados", "qualificado", "ligacao marcada"],
 };
 
 /** Só para o painel de anúncios: etapas que implicam lead já qualificado. */

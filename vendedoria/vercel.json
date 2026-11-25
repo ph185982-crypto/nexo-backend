@@ -1,8 +1,25 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
-    { "path": "/api/cron/disparo-diario", "schedule": "0 12 * * *" },
-    { "path": "/api/cron/daily-summary", "schedule": "0 21 * * *" },
-    { "path": "/api/cron/comercial", "schedule": "*/10 * * * *" }
+    {
+      "path": "/api/cron/disparo-diario",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/daily-summary",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/comercial",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/lembretes",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/followup",
+      "schedule": "*/15 * * * *"
+    }
   ]
 }

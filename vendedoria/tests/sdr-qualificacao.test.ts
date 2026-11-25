@@ -70,7 +70,9 @@ test("eventoDaColuna: layout canônico e legado", () => {
   assert.equal(eventoDaColuna({ type: "TRIAGE", name: "Novos" }), null);
   assert.equal(eventoDaColuna({ type: "CUSTOM", name: "Em qualificação" }), null);
   assert.equal(eventoDaColuna({ type: "LOST", name: "Fora do ICP" }), null);
-  assert.equal(eventoDaColuna({ type: "ESCALATED", name: "Handoff enviado" }), null);
+  assert.equal(eventoDaColuna({ type: "JUNK", name: "Fora do ICP" }), null);
+  // "Ligação marcada" (ex-"Handoff enviado") dispara LeadSubmitted (roteiro da Júlia)
+  assert.equal(eventoDaColuna({ type: "ESCALATED", name: "Ligação marcada" }), "LeadSubmitted");
 });
 
 import { agregarPorAnuncio } from "@/lib/anuncios";

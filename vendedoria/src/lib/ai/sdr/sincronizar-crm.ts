@@ -2,26 +2,25 @@
 // Kanban num CRM: o card mostra empresa, faturamento, ICP e a ligação marcada.
 
 import { prisma } from "@/lib/prisma/client";
-import { avaliarQualificacao, parseFaturamentoMensal, temCnpjConfirmado } from "./qualificacao";
+import { classificar, cnpjAtivo, faturamentoParaLead, lojaOuEstoque } from "./julia/icp";
 import { pareceNomeDePessoa } from "./handoff-gate";
 import type { SDRSession } from "./types";
 
 export function camposCrmDaSessao(s: SDRSession): Record<string, unknown> {
-  const loja = s.loja_fisica === "sim" || s.tem_loja_fisica === true ? "SIM" : s.loja_fisica === "nao" ? "NAO" : null;
-  const cnpjTxt = (s.cnpj ?? "").trim();
-  const cnpj = !cnpjTxt ? null : temCnpjConfirmado(cnpjTxt) ? "TEM" : "NAO_TEM";
-  const fat = parseFaturamentoMensal(s.faturamento_total);
-  const respondeuTudo = loja !== null && cnpj !== null && fat !== null;
-  const icp = avaliarQualificacao({ ...s, tem_loja_fisica: loja === "SIM" });
+  // Regras do roteiro da Júlia (./julia/icp.ts): loja = loja física OU fábrica/atacado com estoque próprio; faturamento
+  // ATUAL por faixa (ponto médio); ICP pela loja/estoque + CNPJ — faturamento não elimina ninguém.
+  const loja = lojaOuEstoque(s);
+  const cnpj = cnpjAtivo(s);
+  const fat = faturamentoParaLead(s);
   const dados: Record<string, unknown> = {
     empresa: s.empresa?.trim() || null,
     segmento: s.segmento?.trim() || null,
     faturamentoMensal: fat,
-    lojaFisica: loja,
-    cnpjStatus: cnpj,
-    dorPrincipal: s.problema_principal?.trim() || null,
-    icpStatus: icp.qualificado ? "QUALIFICADO" : respondeuTudo ? "FORA" : "PENDENTE",
-    scoreSdr: Number.isFinite(s.score) ? Math.max(0, Math.min(100, Math.round(s.score))) : null,
+    lojaFisica: loja === null ? null : loja ? "SIM" : "NAO",
+    cnpjStatus: cnpj === null ? null : cnpj ? "TEM" : "NAO_TEM",
+    dorPrincipal: (s.frase_chave || s.problema_principal)?.trim() || null,
+    icpStatus: classificar(s),
+    scoreSdr: Number.isFinite(s.score) && s.score > 0 ? Math.max(0, Math.min(100, Math.round(s.score))) : null,
     reuniaoEm: s.horario_reuniao && s.reuniao_evento_id ? new Date(s.horario_reuniao) : null,
   };
   // Só grava o que existe — nunca apaga dado do CRM porque o turno não trouxe.

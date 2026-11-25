@@ -108,3 +108,46 @@ export function horarioAceitavel(iso: string | null | undefined, agora: Date = n
   if (p.hora < Math.min(...horas) || p.hora > ultima) return null;
   return d;
 }
+
+// ── Ligação da Júlia com o Pedro (roteiro novo, 24/11/2026) ─────────────────────────────────────────
+// Horários FIXOS (Brasília), seg a sex, 20 min. Para trocar: HORARIOS_LIGACAO="12:15,18:30" na Vercel.
+export const DURACAO_LIGACAO_MIN = 20;
+const ANTECEDENCIA_LIGACAO_MIN = 45; // não oferece horário que começa em menos de 45 min
+
+export function horariosLigacao(env: Record<string, string | undefined> = process.env): Array<[number, number]> {
+  const bruto = env.HORARIOS_LIGACAO ?? "12:15,18:30";
+  const lista = bruto.split(",").map((h) => h.trim().match(/^(\d{1,2})[:h](\d{2})$/)).filter(Boolean)
+    .map((m) => [Number(m![1]), Number(m![2])] as [number, number])
+    .filter(([h, m]) => h >= 6 && h <= 22 && m >= 0 && m < 60);
+  return lista.length ? lista.sort((a, b) => a[0] * 60 + a[1] - (b[0] * 60 + b[1])) : [[12, 15], [18, 30]];
+}
+
+/** Os próximos `quantidade` horários livres da agenda de ligação (pula passados, fins de semana e ocupados). */
+export function gerarSlotsLigacao(opts: { agora?: Date; ocupados?: Intervalo[]; quantidade?: number; horarios?: Array<[number, number]> } = {}): Slot[] {
+  const agora = opts.agora ?? new Date();
+  const ocupados = opts.ocupados ?? [];
+  const quantidade = opts.quantidade ?? 2;
+  const horarios = opts.horarios ?? horariosLigacao();
+  const limite = agora.getTime() + ANTECEDENCIA_LIGACAO_MIN * 60_000;
+  const duracao = DURACAO_LIGACAO_MIN * 60_000;
+  const out: Slot[] = [];
+  for (let d = 0; d <= 14 && out.length < quantidade; d++) {
+    const ref = partesBRT(new Date(agora.getTime() + d * 86_400_000));
+    if (!DIAS_SEMANA_UTEIS.includes(ref.diaSemana)) continue;
+    for (const [h, m] of horarios) {
+      if (out.length >= quantidade) break;
+      const inicio = deBRT(ref.ano, ref.mes, ref.dia, h, m);
+      if (inicio.getTime() < limite) continue;
+      const fim = new Date(inicio.getTime() + duracao);
+      if (ocupados.some((o) => inicio.getTime() < o.end && fim.getTime() > o.start)) continue;
+      out.push({ inicio, fim, label: rotuloSlot(inicio, agora), iso: inicio.toISOString() });
+    }
+  }
+  return out;
+}
+
+/** "12h15" de um horário (Brasília). */
+export function horaBRT(d: Date): string {
+  const p = partesBRT(d);
+  return p.minuto ? `${p.hora}h${String(p.minuto).padStart(2, "0")}` : `${p.hora}h`;
+}

@@ -4,12 +4,12 @@ import { CADENCIA_HORAS, MAX_FOLLOWUPS, dataDoToque } from "../src/lib/followup/
 
 const H = 3600_000;
 
-test("cadência é 2h, 12h, 24h e 48h contadas da mesma mensagem", () => {
-  assert.deepEqual([...CADENCIA_HORAS], [2, 12, 24, 48]);
-  assert.equal(MAX_FOLLOWUPS, 4);
+test("cadência da Júlia: 24h e 72h contadas da mesma mensagem", () => {
+  assert.deepEqual([...CADENCIA_HORAS], [24, 72]);
+  assert.equal(MAX_FOLLOWUPS, 2);
   const base = new Date("2026-10-25T12:00:00Z");
-  const horas = [1, 2, 3, 4].map((s) => (dataDoToque(s, base, base).getTime() - base.getTime()) / H);
-  assert.deepEqual(horas, [2, 12, 24, 48]);
+  const horas = [1, 2].map((s) => (dataDoToque(s, base, base).getTime() - base.getTime()) / H);
+  assert.deepEqual(horas, [24, 72]);
 });
 
 test("toque atrasado nunca é agendado no passado", () => {
