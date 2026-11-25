@@ -1,5 +1,6 @@
 // Follow-up do roteiro da Júlia: 1º toque no dia seguinte e 2º no 3º dia (encerra e vai para "Perdido", motivo "Sem
 // resposta"). Nada para Fora/Morno/passado ao Pedro. A retomada única da resposta automática também sai por aqui.
+import { aplicarPersona, carregarPersona } from "./persona";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppTemplate } from "@/lib/whatsapp/send";
 import { planejarEnvio } from "@/lib/followup/janela";
@@ -38,6 +39,7 @@ export async function followupJulia(fu: ItemFollowup, sessao: SDRSession, ultima
   let enviou = false;
   try {
     if (envio.modo === "texto" && plano.texto) {
+      plano.texto = aplicarPersona(plano.texto, await carregarPersona());
       const wamid = await sendWhatsAppMessage(fu.phoneNumberId, fu.phoneNumber, plano.texto, token);
       await prisma.whatsappMessage.create({ data: { content: plano.texto, type: "TEXT", role: "ASSISTANT", sentAt: agora, status: "SENT", conversationId: fu.conversationId, ...(wamid ? { wamid } : {}) } });
       enviou = true;

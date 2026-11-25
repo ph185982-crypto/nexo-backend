@@ -5,11 +5,12 @@ import type { Slot } from "@/lib/agenda/slots";
 import type { SDRSession, SDRLLMResponse } from "../types";
 import { pareceNomeDePessoa } from "../handoff-gate";
 import {
-  ABERTURAS, PERGUNTA_CNPJ, PERGUNTA_FATURAMENTO, PERGUNTA_LOJA, PROIBIDO, FATURAMENTO_FUTURO,
+  ABERTURAS, PERGUNTA_CNPJ, PERGUNTA_FATURAMENTO, PERGUNTA_LOJA, PROIBIDO_SEMPRE, FATURAMENTO_FUTURO,
   TEXTO_FOLLOWUP_2, TEXTO_RECEBI_FOTO, TEXTO_RESPOSTA_AUTOMATICA,
   sem, textoFollowup1, textoFollowup1Qualificado, textosConfirmacao, textosFora, textosMorno, textosNovosHorarios, textosQualificado,
   tipoDeAbertura, type Abertura,
 } from "./roteiro";
+import { proibidoDaPersona, type Persona } from "./persona";
 import { classificar, cnpjAtivo, lerFaixa, lojaOuEstoque, proximaPergunta, simOuNao, type Icp, type Pergunta } from "./icp";
 import { ehMidia, ehRespostaAutomatica, escolherSlot, pediuTrocarHorario } from "./sinais";
 
@@ -90,10 +91,11 @@ export function citaPreco(t: string): boolean {
 }
 
 /** Mensagens do modelo que podem sair: sem Nexo/600, sem pergunta de faturamento futuro, no máximo 3. */
-export function limparMensagensDoModelo(msgs: Array<{ text: string }> | undefined): string[] {
+export function limparMensagensDoModelo(msgs: Array<{ text: string }> | undefined, persona: Persona = "julia"): string[] {
+  const nome = proibidoDaPersona(persona);
   return (msgs ?? [])
     .map((m) => String(m?.text ?? "").replace(/\*\*/g, "").trim())
-    .filter((t) => t && !PROIBIDO.test(t) && !FATURAMENTO_FUTURO.test(t) && !citaPreco(t))
+    .filter((t) => t && !PROIBIDO_SEMPRE.test(t) && !nome.test(t) && !FATURAMENTO_FUTURO.test(t) && !citaPreco(t))
     .slice(0, 3);
 }
 
@@ -114,6 +116,7 @@ export function turnoJulia(e: {
   slotsLivres: Slot[];
   agora?: Date;
   nomePerfil?: string | null;
+  persona?: Persona;
 }): SaidaTurno {
   const agora = e.agora ?? new Date();
   const s: SDRSession = { ...e.sessao };
@@ -153,7 +156,7 @@ export function turnoJulia(e: {
   const icp = classificar(s);
   s.icp = icp;
   const nome = primeiroNome(s, e.nomePerfil);
-  const doModelo = limparMensagensDoModelo(e.llm?.messages);
+  const doModelo = limparMensagensDoModelo(e.llm?.messages, e.persona);
   const reacao = doModelo.filter((t) => !t.includes("?")).slice(0, 1);
   const respostaAPergunta = leadFezPergunta(e.mensagem) ? doModelo.slice(0, 2) : [];
 

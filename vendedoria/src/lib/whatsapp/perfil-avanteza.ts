@@ -7,17 +7,19 @@
 //  4. corrige o WhatsappProviderConfig (accountName "Avanteza", displayPhoneNumber da API)
 import { prisma } from "@/lib/prisma/client";
 import { canonicalBrazilianNumber } from "./send";
+import { MARCA_NOME_REGISTRADO } from "@/lib/ai/sdr/julia/persona";
 
 const GRAPH = "https://graph.facebook.com/v20.0";
 export const NUMERO_JULIA = "6293250802"; // canônico (DDD + 8 dígitos) de (62) 99325-0802
 export const NOME_EXIBICAO = "Avanteza";
-const MARCA = "perfil-whatsapp-avanteza-v1";
+// v2 (25/11): descrição sem citar a Júlia, porque até o nome "Avanteza" sair a SDR se apresenta como Pedro.
+const MARCA = "perfil-whatsapp-avanteza-v2";
 
 export const PERFIL_AVANTEZA = {
   messaging_product: "whatsapp",
   about: "Consultoria de marketplace para lojistas de Goiânia",
   description:
-    "A Avanteza coloca lojistas de Goiânia para vender no Mercado Livre, na Shopee e no TikTok Shop, com o nosso time operando junto e as contas no seu nome. Aqui no WhatsApp quem te atende primeiro é a Júlia, nossa assistente virtual. A ligação é com o Pedro, fundador. Atendimento de segunda a sexta, das 9h às 17h.",
+    "A Avanteza coloca lojistas de Goiânia para vender no Mercado Livre, na Shopee e no TikTok Shop, com o nosso time operando junto e as contas no seu nome. Aqui no WhatsApp o primeiro atendimento é do nosso assistente virtual, e a ligação é com o Pedro, fundador. Atendimento de segunda a sexta, das 9h às 17h.",
   email: "pedro@avanteza.com.br",
   websites: ["https://avanteza.com.br"],
   address: "Goiânia, GO",
@@ -119,16 +121,27 @@ export async function registrarNumero(): Promise<{ ok: boolean; erro?: string }>
   if (!c) return { ok: false, erro: "conta da Júlia não encontrada" };
   if (!pin) return { ok: false, erro: "WHATSAPP_2FA_PIN não está configurado" };
   const r = await graph("POST", `${c.businessPhoneNumberId}/register`, tokenDa(c), { messaging_product: "whatsapp", pin });
-  if (r.ok) await prisma.alertaEnviadoMax.create({ data: { chave: "whatsapp-nome-registrado" } }).catch(() => {});
+  if (r.ok) await marcarNomeRegistrado();
   return r.ok ? { ok: true } : { ok: false, erro: erroLimpo(r.dados) };
 }
 
-/** Rotina: quando o nome for aprovado, avisa o Pedro (uma vez) que falta registrar o número em até 14 dias. */
+/** Nome "Avanteza" valendo no WhatsApp: a SDR passa de Pedro para Júlia (julia/persona.ts). */
+async function marcarNomeRegistrado(): Promise<void> {
+  await prisma.alertaEnviadoMax.create({ data: { chave: MARCA_NOME_REGISTRADO } }).catch(() => {});
+  console.log("[PerfilWhatsApp] Nome Avanteza valendo — a SDR passa a se apresentar como Júlia");
+}
+
+/**
+ * Rotina (1 consulta por dia até o nome valer): quando o nome for aprovado, avisa o Pedro (uma vez) que falta registrar
+ * o número em até 14 dias; quando o WhatsApp já mostrar "Avanteza", grava a marca que troca a SDR para Júlia.
+ */
 export async function avisarNomeAprovado(): Promise<void> {
-  if (await prisma.alertaEnviadoMax.findUnique({ where: { chave: "whatsapp-nome-aprovado-aviso" } }).catch(() => null)) return;
+  if (await prisma.alertaEnviadoMax.findUnique({ where: { chave: MARCA_NOME_REGISTRADO } }).catch(() => null)) return;
   const dia = new Date().toISOString().slice(0, 10);
   try { await prisma.alertaEnviadoMax.create({ data: { chave: `whatsapp-nome-status:${dia}` } }); } catch { return; } // 1 consulta por dia
   const s = await statusDoNome();
+  if (s && String(s.verified_name ?? "").trim().toLowerCase() === NOME_EXIBICAO.toLowerCase()) { await marcarNomeRegistrado(); return; }
+  if (await prisma.alertaEnviadoMax.findUnique({ where: { chave: "whatsapp-nome-aprovado-aviso" } }).catch(() => null)) return;
   if (!s || !/APPROVED/i.test(String(s.new_name_status ?? ""))) return;
   const c = await contaDaJulia();
   if (!c) return;

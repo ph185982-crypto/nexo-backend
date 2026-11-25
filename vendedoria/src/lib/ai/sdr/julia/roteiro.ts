@@ -195,6 +195,8 @@ export function sem(t: string | null | undefined): string {
 
 /** Mensagem que não pode sair: cita a Nexo, os "600" ou se apresenta como Pedro. */
 export const PROIBIDO = /\bnexo\b|\b600\b|seiscentas|\b(aqui (e|é) o|sou o) pedro\b/i;
+/** Proibido em qualquer persona (a parte de nome fica em ./persona.ts). */
+export const PROIBIDO_SEMPRE = /\bnexo\b|\b600\b|seiscentas/i;
 /** Pergunta de faturamento futuro/meta (o roteiro só aceita o ATUAL). */
 export const FATURAMENTO_FUTURO = /(fatura(mento)?|vender|faturar)[^?]{0,40}(esperad|meta|previs|pretende|quer (chegar|faturar)|planeja)|(esperad|meta|previs)[^?]{0,30}fatura/i;
 

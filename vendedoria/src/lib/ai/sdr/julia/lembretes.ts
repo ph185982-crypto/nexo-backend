@@ -2,6 +2,7 @@
 // empresa, faixa, link da conversa). Roda no cron de 10 em 10 min (/api/cron/lembretes) e na rotina horária.
 // Cada lembrete sai uma vez (marca em max_alertas_enviados). Janela de 24 h do lead fechada: template
 // LEMBRETE_TEMPLATE_NAME (parâmetros: nome, hora) se existir; sem template, não manda (e o Pedro é avisado).
+import { aplicarPersona, carregarPersona } from "./persona";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppTemplate } from "@/lib/whatsapp/send";
 import { dentroDaJanela } from "@/lib/followup/janela";
@@ -38,7 +39,7 @@ export async function enviarLembretesLigacao(agora: Date = new Date()): Promise<
 
     if (await marcar(`lembrete-lead:${e.id}`)) {
       const ultima = await prisma.whatsappMessage.findFirst({ where: { conversationId: conv.id, role: "USER" }, orderBy: { sentAt: "desc" }, select: { sentAt: true } });
-      const texto = textoLembreteLead(nome, hora);
+      const texto = aplicarPersona(textoLembreteLead(nome, hora), await carregarPersona());
       try {
         if (dentroDaJanela(ultima?.sentAt ?? null, agora)) {
           const wamid = await sendWhatsAppMessage(conv.provider.businessPhoneNumberId, e.lead.phoneNumber, texto, token);

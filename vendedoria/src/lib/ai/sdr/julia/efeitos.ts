@@ -1,5 +1,6 @@
 // Efeitos do roteiro da Júlia no banco/WhatsApp: passagem para o Pedro (ligação marcada), aviso ao Pedro no formato
 // novo, pós-passagem (foto uma vez, troca de horário), tag "Prioridade" e agendamento do follow-up.
+import { aplicarPersona, carregarPersona } from "./persona";
 import { prisma } from "@/lib/prisma/client";
 import { sendWhatsAppMessage, sendWhatsAppVideo } from "@/lib/whatsapp/send";
 import { moverLeadPorTipo } from "@/lib/crm/pipeline-mover";
@@ -25,6 +26,8 @@ export const videoDepoimentos = (): string | null => process.env.VIDEO_DEPOIMENT
 /** Manda os balões e grava cada um na conversa. Falha num balão não derruba os outros. */
 export async function enviarBaloes(conversationId: string, p: Provedor, para: string, textos: string[], citar?: string, sandbox = false): Promise<void> {
   if (sandbox) return;
+  const persona = await carregarPersona();
+  textos = textos.map((t) => aplicarPersona(t, persona));
   for (let i = 0; i < textos.length; i++) {
     if (i > 0) await new Promise((r) => setTimeout(r, 1200));
     try {
