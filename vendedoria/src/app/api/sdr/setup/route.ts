@@ -71,12 +71,21 @@ export async function POST(req: NextRequest) {
   if (!existingColumns) {
     await prisma.kanbanColumn.createMany({
       data: [
+        // Layout do roteiro da Júlia (24/11/2026) — mesma ordem da migração 20261125000000_julia_roteiro.
         { name: "Novos", order: 0, type: "TRIAGE", isSystemDefault: true, isDefaultEntry: true, organizationId: org.id, color: "#8a94a6" },
         { name: "Em qualificação", order: 1, type: "CUSTOM", organizationId: org.id, color: "#55637a" },
         { name: "Qualificados", order: 2, type: "CUSTOM", organizationId: org.id, color: "#e0b48a" },
-        { name: "Mornos (nutrição)", order: 3, type: "CUSTOM", organizationId: org.id, color: "#c9a77a" },
-        { name: "Handoff enviado", order: 4, type: "ESCALATED", isSystemDefault: true, organizationId: org.id, color: "#2f4a73" },
-        { name: "Fora do ICP", order: 5, type: "LOST", isSystemDefault: true, organizationId: org.id, color: "#8c5a4a" },
+        { name: "Ligação marcada", order: 3, type: "ESCALATED", isSystemDefault: true, organizationId: org.id, color: "#2f4a73" },
+        { name: "1º Contato", order: 4, type: "CONTATO_1", organizationId: org.id, color: "#0EA5E9" },
+        { name: "2º Contato", order: 5, type: "CONTATO_2", organizationId: org.id, color: "#0EA5E9" },
+        { name: "3º Contato", order: 6, type: "CONTATO_3", organizationId: org.id, color: "#0EA5E9" },
+        { name: "Reunião Agendada", order: 7, type: "REUNIAO_AGENDADA", organizationId: org.id, color: "#6366F1" },
+        { name: "Proposta", order: 8, type: "PROPOSTA", organizationId: org.id, color: "#14B8A6" },
+        { name: "Em Contrato", order: 9, type: "CONTRATO", organizationId: org.id, color: "#A855F7" },
+        { name: "Ganho", order: 10, type: "GANHO", organizationId: org.id, color: "#22C55E" },
+        { name: "Mornos", order: 11, type: "CUSTOM", organizationId: org.id, color: "#c9a77a" },
+        { name: "Fora do ICP", order: 12, type: "JUNK", isSystemDefault: true, organizationId: org.id, color: "#8c5a4a" },
+        { name: "Perdido", order: 13, type: "LOST", isSystemDefault: true, organizationId: org.id, color: "#64748B" },
       ],
     });
     console.log("[SDR Setup] Colunas Kanban criadas");

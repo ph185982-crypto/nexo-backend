@@ -16,10 +16,14 @@ import { detectarPedidoHumano, mensagemDeTransferencia, type MotivoHumano } from
 import { dadosParaEventoCrm, sincronizarQualificacaoNoLead } from "./sincronizar-crm";
 import { emitirEventoCrm, emitirIntencoesDaMensagem } from "@/lib/crm-externo/eventos";
 import { horarioAceitavel, rotuloSlot, type Slot } from "@/lib/agenda/slots";
-import { buscarSlotsReuniao, marcarReuniao } from "@/lib/agenda/reuniao";
+import { buscarSlotsLigacao } from "@/lib/agenda/reuniao";
 import { proximoEnvio } from "@/lib/followup/janela";
 import { dataDoToque } from "@/lib/followup/cadencia";
-import { buildSdrSystemPrompt, formatarTelefoneOwner } from "./prompt";
+import { buildSdrSystemPrompt } from "./prompt";
+import { turnoAbertura, turnoJulia, turnoRespostaAutomatica, type SaidaTurno } from "./julia/motor";
+import { agendarFollowup, efetivarPassagem, encerrarFollowups, enviarBaloes, marcarPrioridade, tratarPosPassagem } from "./julia/efeitos";
+import { ehPrioridade } from "./julia/icp";
+import { TEXTO_OPT_OUT } from "./julia/roteiro";
 import { MENSAGEM_FALHA_SDR } from "./fallback";
 import { deepseekAtivo, deepseekChat } from "@/lib/ai/deepseek";
 import { ehApenasCortesia, TEXTO_REACAO } from "./cortesia";
@@ -171,46 +175,6 @@ export function formatHandoffMessage(
 📊 Score: ${session.score ?? 0}${session.objecoes_mencionadas.length > 0 ? `\n⚠️ Atenção: ${session.objecoes_mencionadas.join(", ")}` : ""}${session.produto_indicado ? `\n💡 Indicado: ${session.produto_indicado}` : ""}`;
 }
 
-/** Pergunta direta (reserva) quando a IA tentou encerrar sem ter o item. */
-const PERGUNTA_NATURAL: Record<ItemHandoff, string> = {
-  nome: "como é seu nome?",
-  empresa: "qual o nome da sua empresa?",
-  segmento: "o que vocês vendem hoje?",
-  dor: "hoje, o que mais trava as vendas de vocês?",
-  faturamento: "pra eu entender o porte: quanto o negócio fatura por mês, mais ou menos?",
-  loja_fisica: "vocês têm loja física?",
-  cnpj: "a empresa já tem CNPJ ativo?",
-  horario: "qual horário fica melhor pra uma ligação de 20 min com o Pedro?",
-};
-
-/** Fechamento do handoff escrito pelo código — só quando o modelo não o escreveu. */
-function mensagensDeHandoff(s: SDRSession): Array<{ text: string; delay: number }> {
-  const primeiro = (s.nome ?? "").trim().split(/\s+/)[0];
-  const inicio = horarioAceitavel(s.horario_reuniao);
-  const quando = inicio
-    ? `Ele te chama ${rotuloSlot(inicio)} pra conversar`
-    : (s.disponibilidade ?? "").trim()
-      ? `Já avisei ele que você pode falar ${s.disponibilidade.trim()} — ele te chama pra combinar`
-      : "Ele te chama em breve pra combinar o melhor horário";
-  return [
-    { text: `Perfeito${primeiro ? `, ${primeiro}` : ""}, já tenho tudo que preciso`, delay: 0 },
-    { text: "Vou te passar pro Pedro, fundador da Avanteza — ele estruturou a operação de mais de 600 empresas e vai conduzir a conversa pessoalmente", delay: 1500 },
-    { text: `Já salva o contato dele: 📲 Pedro | Avanteza: ${formatarTelefoneOwner()}`, delay: 1500 },
-    { text: quando, delay: 1500 },
-  ];
-}
-
-function mensagensDeReserva(acao: string, faltando: ItemHandoff[], slots: Slot[]): Array<{ text: string; delay: number }> {
-  if (acao === "nurture") {
-    return [
-      { text: "Entendi o seu momento, obrigado por me contar", delay: 0 },
-      { text: "Agora a consultoria ainda não é o melhor passo pra vocês, mas posso te mandar uns conteúdos que ajudam bastante", delay: 1500 },
-      { text: "E quando o negócio crescer mais um pouco, me chama aqui que a gente monta a estratégia certinha", delay: 2500 },
-    ];
-  }
-  return [{ text: perguntaCombinada(faltando.length ? faltando : ["horario"], slots), delay: 0 }];
-}
-
 // Notifica o especialista sobre um handoff por TODOS os canais disponíveis —
 // nunca só WhatsApp.
 //
@@ -310,7 +274,8 @@ async function transferirParaHumano(args: {
   const motivoTexto = motivo === "pediu_humano" ? "Lead pediu para falar com uma pessoa"
     : motivo === "frustrado" ? "Lead demonstrou frustração com a IA"
     : "IA travou (sem resposta nova para dar)";
-  await moverLeadPorTipo(lead.id, provider.organizationId, "ESCALATED", `${motivoTexto} — Pedro assume a conversa`, "ESCALATED");
+  // Não vai para "Ligação marcada" (lá só entra quem marcou a ligação): qualificado vai para "Qualificados"; os demais ficam onde estão.
+  if (session.icp === "QUALIFICADO" || session.qualificado_em) await moverLeadPorTipo(lead.id, provider.organizationId, "QUALIFICADO", `${motivoTexto} — Pedro assume a conversa`);
   await prisma.leadActivity.create({
     data: { leadId: lead.id, type: "STATUS_CHANGE", description: `${motivoTexto} — IA saiu, humano assumiu`, createdBy: "AI_AGENT" },
   }).catch(() => {});
@@ -455,69 +420,6 @@ export function parseSdrResponse(raw: string): SDRLLMResponse | null {
   return null;
 }
 
-// Agenda a nutrição do lead morno — primeiro toque em 7 dias.
-//
-// Antes isto era um laço de step 1..3 fazendo upsert por `conversationId`, que
-// é @unique: as três iterações escreviam NA MESMA LINHA e só a última
-// sobrevivia. Na prática a "nutrição de 3 toques em 30 dias" virava uma única
-// mensagem daqui a um mês. Os toques seguintes são responsabilidade do cron,
-// que avança o step conforme a linha for sendo processada.
-async function scheduleNurtureFollowups(
-  conversationId: string,
-  phone: string,
-  phoneNumberId: string,
-  accessToken: string | null | undefined,
-): Promise<void> {
-  const now = new Date();
-  // O cliente acabou de falar (esta run responde a ele): a janela vai até now+24h.
-  const primeiroToque = proximoEnvio(dataDoToque(1, now, now), now, now);
-  if (!primeiroToque) return;
-
-  await prisma.conversationFollowUp.upsert({
-    where: { conversationId },
-    update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt: primeiroToque },
-    create: {
-      conversationId,
-      step: 1,
-      status: "ACTIVE",
-      aiMessageAt: now,
-      nextSendAt: primeiroToque,
-      phoneNumber: phone,
-      phoneNumberId,
-      accessToken: accessToken ?? undefined,
-    },
-  });
-}
-
-// Agenda follow-up de lead qualificado sem resposta (24h, 48h, 72h)
-async function scheduleQualifiedFollowup(
-  conversationId: string,
-  phone: string,
-  phoneNumberId: string,
-  accessToken: string | null | undefined,
-  leadName: string | null,
-): Promise<void> {
-  const now = new Date();
-  const nextSendAt = proximoEnvio(dataDoToque(1, now, now), now, now);
-  if (!nextSendAt) return;
-
-  await prisma.conversationFollowUp.upsert({
-    where: { conversationId },
-    update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName },
-    create: {
-      conversationId,
-      step: 1,
-      status: "ACTIVE",
-      aiMessageAt: now,
-      nextSendAt,
-      leadName,
-      phoneNumber: phone,
-      phoneNumberId,
-      accessToken: accessToken ?? undefined,
-    },
-  });
-}
-
 /**
  * Coerência da sessão depois do merge: loja_fisica ↔ tem_loja_fisica, e
  * horário da ligação só se for um horário aceitável (futuro, dia útil,
@@ -564,6 +466,28 @@ export async function processSdrResponse(
   if (!conversation?.lead || !conversation.provider) {
     console.error("[SDR] Conversa não encontrada ou sem lead:", conversationId);
     return;
+  }
+
+  // Identidade (nome Júlia, prompt) igual ao código — uma vez por instância, sem segurar a resposta.
+  void import("./julia/identidade").then((m) => m.sincronizarIdentidadeJulia()).catch(() => {});
+
+  // ── Depois da passagem (ligação marcada): só foto (uma vez) e troca de horário ─────────────────────────
+  // Vem antes dos guards: com a ligação marcada a conversa tem humanTakeover=true e o lead está ESCALATED.
+  if (conversation.lead.status !== "BLOCKED") {
+    const sessaoAtual = await loadSdrSession(conversationId).catch(() => null);
+    if (sessaoAtual && (sessaoAtual.etapa === "ligacao_marcada" || sessaoAtual.etapa === "remarcando")) {
+      if (!(await acquireAiLock(conversationId))) return;
+      try {
+        await tratarPosPassagem({
+          conversationId, sessao: sessaoAtual, mensagem: userMessage,
+          lead: { id: conversation.lead.id, phoneNumber: conversation.lead.phoneNumber, profileName: conversation.lead.profileName },
+          provedor: conversation.provider, citar: incomingMessageId, sandbox: Boolean(agent.sandboxMode),
+        });
+      } finally {
+        await releaseAiLock(conversationId);
+      }
+      return;
+    }
   }
 
   // ── Guards de segurança — mesmos do agente padrão ────────────────────────────
@@ -618,34 +542,16 @@ async function runSdrResponse(
   phoneNumberId: string,
 ): Promise<void> {
   // ── Sinais de intenção da mensagem → CRM Avanteza (regras, sem chamar o modelo; em segundo plano) ──
-  // ANTES do debounce: numa rajada ("tá caro" e logo "ok") as execuções das mensagens antigas abortam
-  // no debounce; se o gancho ficasse depois, só a última mensagem seria analisada e o sinal se perderia.
   void emitirIntencoesDaMensagem(lead.id, userMessage).catch(() => {});
 
-  // ── Debounce ──────────────────────────────────────────────────────────────
-  // Espera o cliente terminar de digitar antes de responder. Se uma mensagem
-  // mais nova chegar nesse meio-tempo, esta execução aborta — a execução da
-  // mensagem mais nova (que vai passar pelo mesmo debounce) responde por todas
-  // de uma vez, já que o histórico carregado logo abaixo inclui as anteriores.
-  const thisMessage = await prisma.whatsappMessage.findUnique({
-    where: { id: incomingMessageId },
-    select: { sentAt: true },
-  });
+  // ── Debounce: espera o lead terminar de digitar; a mensagem mais nova responde por todas ─────────────
+  const thisMessage = await prisma.whatsappMessage.findUnique({ where: { id: incomingMessageId }, select: { sentAt: true } });
   await new Promise((r) => setTimeout(r, DEBOUNCE_MS));
   if (thisMessage) {
-    // O timestamp da Meta vem em SEGUNDOS: duas mensagens digitadas no mesmo
-    // segundo ficam com sentAt idêntico. Com `gt` puro nenhuma das duas runs
-    // via a outra como mais nova e ambas respondiam — justamente a rajada que
-    // o debounce existe pra resolver. O desempate por id cobre o empate: a run
-    // mais nova continua, a mais antiga aborta.
     const newerCount = await prisma.whatsappMessage.count({
       where: {
-        conversationId,
-        role: "USER",
-        OR: [
-          { sentAt: { gt: thisMessage.sentAt } },
-          { sentAt: thisMessage.sentAt, id: { gt: incomingMessageId } },
-        ],
+        conversationId, role: "USER",
+        OR: [{ sentAt: { gt: thisMessage.sentAt } }, { sentAt: thisMessage.sentAt, id: { gt: incomingMessageId } }],
       },
     });
     if (newerCount > 0) {
@@ -654,441 +560,133 @@ async function runSdrResponse(
     }
   }
 
+  const p = provider;
+  const leadRef = { id: lead.id, phoneNumber: phone, profileName: lead.profileName };
+  const sandbox = Boolean(agent.sandboxMode);
+
+  // ── Pediu para parar: desculpa em uma frase e encerra (Perdido, motivo opt-out) ──────────────────────
   if (detectDesinteresse(userMessage)) {
     console.log(`[SDR] Desinteresse/opt-out detectado — encerrando conv ${conversationId}`);
     await prisma.lead.update({ where: { id: lead.id }, data: { status: "BLOCKED" } }).catch(() => {});
-    // Também tira do funil de trabalho: marcando só o status, o lead que pediu
-    // pra não ser mais contatado continuava aparecendo em "Novos"/"Em
-    // qualificação" e o dono seguia tentando trabalhar um contato morto.
-    await moverLeadPorTipo(
-      lead.id, provider.organizationId, "DESCARTADO",
-      "Lead pediu para não ser mais contatado (opt-out)", "LOST",
-      { motivoEncerramento: MOTIVO.OPT_OUT, ator: "AI_AGENT", origem: "IA" },
-    );
-    await prisma.conversationFollowUp.updateMany({
-      where: { conversationId, status: "ACTIVE" },
-      data: { status: "OPT_OUT" },
-    }).catch(() => {});
+    await moverLeadPorTipo(lead.id, p.organizationId, "DESCARTADO", "Lead pediu para não ser mais contatado (opt-out)", "LOST",
+      { motivoEncerramento: MOTIVO.OPT_OUT, ator: "AI_AGENT", origem: "IA" });
+    await prisma.conversationFollowUp.updateMany({ where: { conversationId, status: "ACTIVE" }, data: { status: "OPT_OUT" } }).catch(() => {});
     await cancelFollowUpJobs(conversationId).catch(() => {});
-    const session = await loadSdrSession(conversationId);
-    await saveSdrSession(conversationId, { ...SDR_EMPTY_SESSION, ...session, mode: "SDR", status: "fora" });
-    try {
-      await sendWhatsAppMessage(phoneNumberId, phone, "Tudo bem, sem problema. Qualquer coisa é só chamar aqui.", token);
-    } catch (e) {
-      console.error("[SDR] Erro ao enviar confirmação de opt-out:", e);
+    const sess = await loadSdrSession(conversationId);
+    await saveSdrSession(conversationId, { ...SDR_EMPTY_SESSION, ...sess, mode: "SDR", status: "fora" });
+    await enviarBaloes(conversationId, p, phone, [TEXTO_OPT_OUT], undefined, sandbox);
+    return;
+  }
+
+  let session: SDRSession = { ...SDR_EMPTY_SESSION, ...(await loadSdrSession(conversationId)), mode: "SDR" };
+
+  // ── Reação (👍) e cortesia depois do encerramento: nada a responder ─────────────────────────────────
+  if (userMessage.trim() === TEXTO_REACAO || (["handoff_enviado", "fora", "morno"].includes(session.status) && ehApenasCortesia(userMessage))) return;
+
+  // ── Histórico (cronológico) ──────────────────────────────────────────────────────────────────────────
+  const recentMessages = (await prisma.whatsappMessage.findMany({
+    where: { conversationId }, orderBy: { sentAt: "desc" }, take: 20, select: { id: true, content: true, role: true },
+  })).reverse();
+  const history = recentMessages.filter((m) => m.id !== incomingMessageId).map((m) => ({ role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant", content: m.content }));
+  const anteriorDoLead = [...recentMessages].reverse().find((m) => m.role === "USER" && m.id !== incomingMessageId)?.content ?? null;
+
+  // ── Resposta automática (ex.: "‎Iharla Closet agradece seu contato…"): não responde, pausa 24 h ────────
+  const auto = turnoRespostaAutomatica(session, userMessage, anteriorDoLead, now);
+  if (auto) {
+    await saveSdrSession(conversationId, auto.sessao).catch(() => {});
+    if (auto.acao === "auto_resposta_pausa") {
+      // uma retomada só, dentro da janela de 24 h do WhatsApp (o follow-up manda "Acho que caiu na resposta automática")
+      await agendarFollowup(conversationId, p, leadRef, now, new Date(now.getTime() + 23 * 3_600_000)).catch(() => {});
+      console.log(`[Júlia] Resposta automática detectada — IA pausada por 24 h | conv=${conversationId}`);
+    } else if (auto.acao === "auto_resposta_parar") {
+      await encerrarFollowups(conversationId);
+      await moverLeadPorTipo(lead.id, p.organizationId, "LOST", "Só respostas automáticas — Júlia parou", undefined,
+        { motivoEncerramento: MOTIVO.RESPOSTA_AUTOMATICA, ator: "AI_AGENT", origem: "IA" });
+      console.log(`[Júlia] Resposta automática de novo — conversa encerrada | conv=${conversationId}`);
     }
     return;
   }
+  // Uma pessoa respondeu depois da resposta automática: segue o roteiro normalmente.
+  if (session.auto_resposta) session = { ...session, auto_resposta: undefined };
 
-  // ── Carregar sessão SDR ─────────────────────────────────────────────────────
-  const session = await loadSdrSession(conversationId);
-
-  // ── Reação / cortesia depois do handoff: nada a responder ────────────────────
-  // Reação (👍 numa mensagem) nunca merece resposta. Com a ligação já combinada, "ok",
-  // "obrigado" e "até logo" também não: o modelo devolve `messages: []` e isso antes virava
-  // "tive um probleminha" para o lead e alerta falso para o dono.
-  if (userMessage.trim() === TEXTO_REACAO || (session.status === "handoff_enviado" && ehApenasCortesia(userMessage))) {
-    console.log(`[SDR] Mensagem sem pedido de resposta (${userMessage.trim() === TEXTO_REACAO ? "reação" : "cortesia pós-handoff"}) — sem resposta | conv=${conversationId}`);
-    return;
-  }
-
-  // ── Lead pediu uma pessoa ou mostrou que a IA travou → humano assume ─────────
+  // ── Pediu uma pessoa / frustrado → Pedro assume ─────────────────────────────────────────────────────
   const motivoHumano = detectarPedidoHumano(userMessage);
   if (motivoHumano) {
-    console.log(`[SDR] Pedido de humano/frustração detectado (${motivoHumano}) | conv=${conversationId}`);
     await transferirParaHumano({ conversationId, motivo: motivoHumano, session, lead, provider, ultimaMensagem: userMessage });
     return;
   }
 
-  // ── Carregar histórico de mensagens (últimas 20) ─────────────────────────────
-  const recentMessages = await prisma.whatsappMessage.findMany({
-    where: { conversationId },
-    orderBy: { sentAt: "desc" },
-    take: 20,
-    select: { content: true, role: true },
-  });
-
-  const history = recentMessages
-    .reverse()
-    .map((m) => ({
-      role: (m.role === "USER" ? "user" : "assistant") as "user" | "assistant",
-      content: m.content,
-    }));
-
-  // ── Marcar como lido ──────────────────────────────────────────────────────────
   try {
     const { markWhatsAppMessageRead } = await import("@/lib/whatsapp/send");
     await markWhatsAppMessageRead(phoneNumberId, incomingMessageId, token);
   } catch { /* não crítico */ }
 
-  // ── Construir system prompt ─────────────────────────────────────────────────
-  // Estilo do lead (para a IA espelhar), o que falta descobrir, o ICP e — só
-  // para quem já está no ICP — os horários livres reais para a ligação.
-  // (recentMessages já está em ordem cronológica: o .reverse() acima é in-place)
-  const perfil = perfilComunicacao(recentMessages.filter((m) => m.role === "USER").map((m) => m.content));
-  const sessaoLoja = { ...session, tem_loja_fisica: session.loja_fisica === "sim" ? true : session.loja_fisica === "nao" ? false : session.tem_loja_fisica };
-  const icpAtual = avaliarQualificacao(sessaoLoja);
-  const faltandoAtual = faltandoParaHandoff(session);
-  const respondeuIcp = !faltandoAtual.some((i) => i === "faturamento" || i === "loja_fisica" || i === "cnpj");
-  const icpEstado = icpAtual.qualificado ? "qualificado" : respondeuIcp ? "fora" : "pendente";
-  // Todo lead que responde as perguntas vai para o Pedro: os horários livres são
-  // oferecidos a quem já respondeu faturamento, loja física e CNPJ.
-  const slots: Slot[] = respondeuIcp
-    ? await buscarSlotsReuniao(provider.organizationId).catch(() => [])
-    : [];
-  const motivoForaIcp = icpEstado === "fora"
-    ? icpAtual.faltando.map((f) => (f === "faturamento" ? "faturamento abaixo de R$ 40 mil/mês" : f === "loja_fisica" ? "sem loja física" : "sem CNPJ ativo")).join(", ")
-    : undefined;
-  const systemPrompt = buildSdrSystemPrompt(session, lead.profileName, {
-    perfil, slots, faltando: faltandoAtual, icp: icpEstado, motivoForaIcp,
-  });
-
-  // ── Chamar LLM ──────────────────────────────────────────────────────────────
-  // Orçamento único pra toda a fase de LLM (tentativas + fallback de provider).
-  // O webhook tem maxDuration=60s e ainda precisa sobrar tempo pra parsear,
-  // salvar sessão e enviar os balões (delays + "digitando..."). Sem deadline
-  // compartilhado, 3 tentativas × até 4 providers × 20s cada podiam somar 180s+.
-  const SDR_LLM_BUDGET_MS = 35_000;
-  const llmDeadline = Date.now() + SDR_LLM_BUDGET_MS;
-  let raw: string | null = null;
-  for (let attempt = 0; attempt < 3 && Date.now() < llmDeadline; attempt++) {
-    raw = await callSdrLLM(systemPrompt, history, userMessage, agent.aiProvider, agent.aiModel, llmDeadline);
-    if (raw) break;
-    if (Date.now() >= llmDeadline) break;
-    await new Promise((r) => setTimeout(r, Math.min(1000 * (attempt + 1), Math.max(llmDeadline - Date.now(), 0))));
+  // ── Turno do roteiro ─────────────────────────────────────────────────────────────────────────────────
+  const primeira = !recentMessages.some((m) => m.role === "ASSISTANT") && (session.etapa === "boas_vindas" || !session.abertura);
+  let saida: SaidaTurno;
+  if (primeira) {
+    saida = turnoAbertura(session, userMessage);
+  } else {
+    const slots: Slot[] = await buscarSlotsLigacao(p.organizationId, 2, now).catch(() => []);
+    const systemPrompt = buildSdrSystemPrompt(session, lead.profileName, { slots });
+    const llmDeadline = Date.now() + 30_000;
+    let raw: string | null = null;
+    for (let attempt = 0; attempt < 2 && Date.now() < llmDeadline; attempt++) {
+      raw = await callSdrLLM(systemPrompt, history, userMessage, agent.aiProvider, agent.aiModel, llmDeadline);
+      if (raw) break;
+    }
+    const parsed = raw ? parseSdrResponse(raw) : null;
+    if (!parsed) console.error(`[Júlia] Modelo sem resposta válida — seguindo com os textos fixos do roteiro | conv=${conversationId}`);
+    saida = turnoJulia({ sessao: session, mensagem: userMessage, llm: parsed, slotsLivres: slots, agora: now, nomePerfil: lead.profileName });
   }
 
-  if (!raw) {
-    console.error("[SDR] Nenhuma resposta do LLM para conv:", conversationId);
-    await notifySdrFailure(conversationId, phoneNumberId, phone, token, provider.organizationId, lead.profileName, "LLM não respondeu dentro do orçamento de tempo");
+  // ── Ligação escolhida → passagem para o Pedro ─────────────────────────────────────────────────────────
+  if (saida.acao === "marcar_ligacao") {
+    await saveSdrSession(conversationId, saida.sessao).catch(() => {});
+    await efetivarPassagem({ conversationId, sessao: saida.sessao, slotIso: saida.slotEscolhido ?? null, lead: leadRef, provedor: p, citar: incomingMessageId, sandbox, agora: now });
     return;
   }
 
-  const parsed = parseSdrResponse(raw);
-  if (!parsed) {
-    console.error("[SDR] Falha ao parsear resposta do LLM:", raw.substring(0, 200));
-    await notifySdrFailure(conversationId, phoneNumberId, phone, token, provider.organizationId, lead.profileName, `Resposta do LLM não era JSON válido: ${raw.substring(0, 200)}`);
-    return;
+  // ── Nunca repete ao lead o que acabou de dizer (texto fixo repetido vira "Só pra confirmar: …") ────────
+  const jaEnviadas = ultimasDaIA(recentMessages, 6);
+  let mensagens = filtrarRepetidas(saida.mensagens.map((text) => ({ text, delay: 0 })), jaEnviadas).map((m) => m.text);
+  if (!mensagens.length && saida.mensagens.length) {
+    const ult = saida.mensagens[saida.mensagens.length - 1];
+    mensagens = [`Só pra confirmar: ${ult.charAt(0).toLowerCase()}${ult.slice(1)}`];
   }
+  await saveSdrSession(conversationId, saida.sessao).catch((e) => console.error("[SDR] Falha ao salvar sessão parcial:", e));
+  await enviarBaloes(conversationId, p, phone, mensagens, incomingMessageId, sandbox);
 
-  // ── Atualizar sessão ─────────────────────────────────────────────────────────
-  let newSession = normalizarSessao(mergeSdrSession(session, parsed.updateSession), session);
-
-  // ── Dados que o lead já deu mas o modelo não gravou ──────────────────────────
-  // Na hora de fechar (modelo pediu handoff, escreveu a despedida ou o lead já marcou horário),
-  // lê a conversa e preenche SÓ o que falta. Sem isso, "sim, tenho CNPJ" dito por texto bloqueava
-  // o bastão e a despedida saía mesmo assim (17/11: Eloisa e Daniela ficaram sem bastão).
-  {
-    const pendentes = faltandoParaHandoff(newSession);
-    const fechando = parsed.action === "handoff" || parsed.messages.some((m) => pareceFechamento(m.text)) || temHorario(newSession);
-    if (pendentes.length > 0 && fechando && Date.now() < llmDeadline - 6_000) {
-      const extra = await extrairDadosFaltantes(pendentes, [...history, { role: "user" as const, content: userMessage }]);
-      if (Object.keys(extra).length > 0) {
-        console.log(`[SDR] Dados recuperados da conversa: ${Object.keys(extra).join(", ")} | lead=${lead.id}`);
-        newSession = normalizarSessao(mergeSdrSession(newSession, extra), session);
-      }
-    }
-  }
-
-  // ── Portão do handoff: dados completos + ICP, verificado no código ─────────
-  // Se o modelo tentou encerrar antes da hora, pede UMA vez para ele refazer a
-  // resposta (mantendo o tom natural); se ainda insistir ou não houver tempo,
-  // usa uma pergunta direta. Nunca manda a mensagem de "o Pedro vai te ligar"
-  // para quem não está pronto.
-  const decisao = decidirHandoff(parsed.action, newSession);
-  if (decisao.correcao) {
-    console.log(`[SDR] Ação do modelo corrigida (${decisao.motivo}) → ${decisao.acao} | lead=${lead.id}`);
-    let refeito: SDRLLMResponse | null = null;
-    if (Date.now() < llmDeadline - 4_000) {
-      const raw2 = await callSdrLLM(`${systemPrompt}\n\n${decisao.correcao}`, history, userMessage, agent.aiProvider, agent.aiModel, llmDeadline);
-      refeito = raw2 ? parseSdrResponse(raw2) : null;
-    }
-    if (refeito && refeito.action === decisao.acao && refeito.messages.length > 0) {
-      parsed.messages = refeito.messages;
-      newSession = normalizarSessao(mergeSdrSession(session, { ...parsed.updateSession, ...refeito.updateSession }), session);
-    } else if (decisao.acao === "handoff") {
-      parsed.messages = mensagensDeHandoff(newSession);
-    } else {
-      parsed.messages = mensagensDeReserva(decisao.acao, decisao.faltando, slots);
-    }
-    parsed.action = decisao.acao;
-    // A resposta refeita pode ter mudado a sessão: confere de novo.
-    const final = decidirHandoff(parsed.action, newSession);
-    if (final.acao !== parsed.action) {
-      parsed.action = final.acao;
-      parsed.messages = final.acao === "handoff" ? mensagensDeHandoff(newSession) : mensagensDeReserva(final.acao, final.faltando, slots);
-    }
-  }
-
-  // Mesmo sem o modelo pedir "handoff", ele às vezes escreve "o especialista vai
-  // te ligar / vamos deixar agendado" com action=continue — e a cada mensagem do
-  // lead repetia esse fechamento sem que nada fosse de fato encaminhado.
-  if (parsed.action === "continue" && parsed.messages.some((m) => pareceFechamento(m.text))) {
-    const pendentes = faltandoParaHandoff(newSession);
-    if (pendentes.length > 0) {
-      console.log(`[SDR] Fechamento sem handoff substituído por pergunta | lead=${lead.id} | falta=${pendentes.join(",")}`);
-      parsed.messages = mensagensDeReserva("continue", pendentes, slots);
-    }
-  }
-
-  // Fluxo rápido: lead já dentro do ICP → nada de pergunta fora do roteiro. O código
-  // escolhe a próxima pergunta (nome/empresa/dor/horário) e, se o lead não perguntou
-  // nada, mantém só a reação curta do modelo.
-  if (parsed.action === "continue") {
-    const pendentesAgora = faltandoParaHandoff(newSession);
-    const jaRespondeuQualificacao = !pendentesAgora.some((i) => i === "faturamento" || i === "loja_fisica" || i === "cnpj");
-    if (jaRespondeuQualificacao && !leadPerguntou(userMessage)) {
-      const pendentes = faltandoParaHandoff(newSession);
-      if (pendentes.length > 0) {
-        const slotsAgora = pendentes[0] === "horario" && slots.length === 0
-          ? await buscarSlotsReuniao(provider.organizationId).catch(() => [])
-          : slots;
-        console.log(`[SDR] Qualificação respondida — forçando próximo passo (${pendentes[0]}) | lead=${lead.id}`);
-        parsed.messages = forcarProximoPasso(parsed.messages, pendentes, slotsAgora);
-      }
-    }
-  }
-
-  // Nunca repete ao lead algo que a IA já disse nas últimas mensagens.
-  const jaEnviadas = ultimasDaIA(recentMessages, 8);
-  const originais = parsed.messages.length;
-  parsed.messages = filtrarRepetidas(parsed.messages, jaEnviadas);
-  if (parsed.messages.length === 0 && originais > 0 && parsed.action === "continue") {
-    const pendentes = faltandoParaHandoff(newSession);
-    if (pendentes.length > 0) {
-      parsed.messages = filtrarRepetidas(
-        [{ text: PERGUNTA_NATURAL[pendentes[0]].charAt(0).toUpperCase() + PERGUNTA_NATURAL[pendentes[0]].slice(1), delay: 0 }],
-        jaEnviadas,
-      );
-    }
-  }
-  if (parsed.messages.length < originais) {
-    console.log(`[SDR] ${originais - parsed.messages.length} balão(ões) repetido(s) barrado(s) | lead=${lead.id}`);
-  }
-  // Tudo que a IA quis dizer já tinha sido dito (inclusive a pergunta de reserva):
-  // ela está travada. Silêncio ou a 5ª repetição queimam o lead — o Pedro assume.
-  if (parsed.messages.length === 0 && originais > 0 && parsed.action === "continue") {
-    await saveSdrSession(conversationId, newSession).catch(() => {});
-    await transferirParaHumano({ conversationId, motivo: "ia_travou", session: newSession, lead, provider, ultimaMensagem: userMessage });
-    return;
-  }
-
-  // Persiste o que foi coletado ANTES de enviar os balões. O envio leva de 12 a
-  // 20s (delays + "digitando..."), e se a invocação for cortada nesse meio a
-  // sessão nunca era salva: na mensagem seguinte o agente voltava para
-  // etapa "boas_vindas" com score 0 e perguntava tudo de novo, apesar da regra
-  // do prompt de nunca repetir pergunta já respondida. O status definitivo é
-  // gravado no fim, depois de processada a ação.
-  await saveSdrSession(conversationId, newSession).catch((e) =>
-    console.error("[SDR] Falha ao salvar sessão parcial:", e),
-  );
-
-  // ── Qualificação (loja física + faturamento ≥ mínimo + CNPJ) ─────────────────
-  // Quando os três critérios batem, o lead vai para "Qualificados" — o que também
-  // dispara o evento LeadSubmitted da API de Conversões (se veio de anúncio).
-  const qualificacao = avaliarQualificacao(newSession);
-  // Só na transição (1ª vez que bate os critérios): depois disso o lead pode ser
-  // movido à mão ou seguir para outras etapas sem o SDR arrastá-lo de volta.
-  const acabouDeQualificar = qualificacao.qualificado && !session.qualificado_em;
-  if (acabouDeQualificar) {
-    newSession.qualificado_em = new Date().toISOString();
-    await saveSdrSession(conversationId, newSession).catch((e) =>
-      console.error("[SDR] Falha ao salvar qualificação:", e),
-    );
-  }
-  const jaQualificado = Boolean(newSession.qualificado_em);
-  if (acabouDeQualificar && parsed.action !== "close") {
-    await moverLeadPorTipo(
-      lead.id, provider.organizationId, "QUALIFICADO",
-      `Lead qualificado pelo SDR (loja física + faturamento ≥ R$ 40 mil/mês + CNPJ) — faturamento lido: R$ ${qualificacao.faturamentoMensal?.toLocaleString("pt-BR")}`,
-      undefined, { dadosCrm: dadosParaEventoCrm(newSession) },
-    );
-  }
-
-  // ── Enviar mensagens em blocos ───────────────────────────────────────────────
-  if (!agent.sandboxMode) {
-    let bubbleIndex = 0;
-    for (const msg of parsed.messages.slice(0, 4)) {
-      // Cita (reply-quote) a mensagem do cliente só no primeiro balão da
-      // resposta — deixa claro pra quem a IA está respondendo, como um humano.
-      const isFirstBubble = bubbleIndex === 0;
-      bubbleIndex++;
-      const delay = typeof msg.delay === "number" ? msg.delay : 0;
-      if (delay > 0) await new Promise((r) => setTimeout(r, delay));
-
-      try {
-        // msg.audio desativado — áudio TTS desabilitado globalmente
-        if (false && msg.audio) {
-          void msg.audio; // nunca executa
-        } else {
-          await simulateTypingDelay(phoneNumberId, incomingMessageId, msg.text, phone, token);
-          const wamid = await sendWhatsAppMessage(
-            phoneNumberId, phone, msg.text, token,
-            isFirstBubble ? incomingMessageId : undefined,
-          );
-          await prisma.whatsappMessage.create({
-            data: {
-              wamid,
-              content: msg.text,
-              type: "TEXT",
-              role: "ASSISTANT",
-              sentAt: new Date(),
-              status: "SENT",
-              conversationId,
-            },
-          }).catch(() => {});
-        }
-      } catch (e) {
-        console.error("[SDR] Erro ao enviar mensagem:", e);
-      }
-    }
-  }
-
-  // ── Processar ação ───────────────────────────────────────────────────────────
-  switch (parsed.action) {
-    case "handoff": {
-      newSession.status = "handoff_enviado";
-
-      // Reivindica o handoff ANTES de enviar o bastão. O guard lá em cima lê o
-      // status no início da run, ~30s antes desta linha — se o lead mandasse
-      // outra mensagem nesse meio-tempo, a segunda run passava pelo guard e o
-      // especialista recebia "NOVO LEAD" duplicado do mesmo cliente.
-      // updateMany condicional é atômico: só uma run leva count===1.
-      const claim = await prisma.lead.updateMany({
-        where: { id: lead.id, status: { not: "ESCALATED" } },
-        data: { status: "ESCALATED", lastActivityAt: now },
-      }).catch(() => ({ count: 0 }));
-
-      if (claim.count === 0) {
-        console.log(`[SDR] Handoff já realizado para lead=${lead.id} — ignorando duplicata`);
-        break;
-      }
-
-      // Ligação combinada → reunião no CRM (e no Google Agenda, se conectado)
-      let reuniao: { label: string; meetLink?: string } | null = null;
-      const inicioReuniao = horarioAceitavel(newSession.horario_reuniao);
-      if (inicioReuniao) {
-        try {
-          const r = await marcarReuniao({
-            organizationId: provider.organizationId,
-            leadId: lead.id,
-            inicio: inicioReuniao,
-            nome: newSession.nome || lead.profileName || phone,
-            empresa: newSession.empresa,
-            telefone: phone,
-            resumo: formatHandoffMessage(phone, newSession),
-          });
-          newSession.reuniao_evento_id = r.eventoId;
-          reuniao = { label: r.label, meetLink: r.meetLink };
-        } catch (e) {
-          console.error("[SDR] Falha ao marcar a ligação:", e);
-        }
-      }
-
-      if (!agent.sandboxMode) {
-        const bastao = formatHandoffMessage(phone, newSession, reuniao ?? (inicioReuniao ? { label: rotuloSlot(inicioReuniao) } : null));
-        await notificarHandoff(bastao, phoneNumberId, token, provider.organizationId, lead.id, conversationId);
-      }
-      // Com ligação marcada vai para "Reunião Agendada"; sem, para o handoff.
-      await moverLeadPorTipo(
-        lead.id, provider.organizationId, reuniao ? "REUNIAO_AGENDADA" : "ESCALATED",
-        reuniao ? `Ligação marcada pelo SDR: ${reuniao.label}` : "Lead escalado para especialista pelo SDR", "ESCALATED",
-        { dadosCrm: dadosParaEventoCrm(newSession) },
-      );
-      // Ligação marcada: o CRM recebe o horário (cria o compromisso). O escalonamento sem ligação já saiu pelo moverLeadPorTipo.
-      if (reuniao && inicioReuniao) {
-        await emitirEventoCrm({ tipo: "reuniao.agendada", leadId: lead.id, reuniaoEm: inicioReuniao.toISOString(), dados: dadosParaEventoCrm(newSession) });
-      }
-      await prisma.leadActivity.create({
-        data: { leadId: lead.id, type: "STATUS_CHANGE", description: "Lead escalado para especialista pelo SDR", createdBy: "AI_AGENT" },
-      }).catch(() => {});
-      // Cancela follow-ups pendentes
-      await prisma.conversationFollowUp.updateMany({
-        where: { conversationId, status: "ACTIVE" },
-        data: { status: "DONE" },
-      }).catch(() => {});
-      console.log(`[SDR] Handoff enviado para ${HANDOFF_NUMBER} | lead=${lead.id} | score=${newSession.score}`);
+  // ── Efeitos no CRM ───────────────────────────────────────────────────────────────────────────────────
+  const s = saida.sessao;
+  switch (saida.acao) {
+    case "fora":
+      await moverLeadPorTipo(lead.id, p.organizationId, "FORA_ICP", "Sem loja e sem estoque próprio — rota FORA", undefined,
+        { motivoEncerramento: MOTIVO.FORA_ICP, ator: "AI_AGENT", origem: "IA", dadosCrm: dadosParaEventoCrm(s) });
+      await encerrarFollowups(conversationId);
       break;
-    }
-
-    case "nurture": {
-      newSession.status = "morno";
-      await moverLeadPorTipo(lead.id, provider.organizationId, "MORNO", "Lead qualificado como morno pelo SDR — iniciando nutrição");
-      await scheduleNurtureFollowups(conversationId, phone, phoneNumberId, token).catch((e) =>
-        console.error("[SDR] Erro ao agendar nutrição:", e)
-      );
-      console.log(`[SDR] Nutrição agendada | lead=${lead.id} | score=${newSession.score}`);
+    case "morno":
+      await moverLeadPorTipo(lead.id, p.organizationId, "MORNO", "Tem loja/estoque, sem CNPJ — rota MORNO", undefined, { dadosCrm: dadosParaEventoCrm(s) });
+      await encerrarFollowups(conversationId);
       break;
-    }
-
-    case "close": {
-      newSession.status = "fora";
-      await moverLeadPorTipo(lead.id, provider.organizationId, "LOST", "Lead fora do ICP — encerrado pelo SDR", undefined, {
-        motivoEncerramento: MOTIVO.FORA_ICP, ator: "AI_AGENT", origem: "IA",
-      });
-      await prisma.conversationFollowUp.updateMany({
-        where: { conversationId, status: "ACTIVE" },
-        data: { status: "DONE" },
-      }).catch(() => {});
-      console.log(`[SDR] Lead encerrado com educação | lead=${lead.id} | score=${newSession.score}`);
+    case "oferecer_horarios":
+      if (!session.qualificado_em) {
+        await moverLeadPorTipo(lead.id, p.organizationId, "QUALIFICADO", "Qualificado pela Júlia (loja/estoque + CNPJ) — horários oferecidos", undefined, { dadosCrm: dadosParaEventoCrm(s) });
+      }
+      if (ehPrioridade(s)) await marcarPrioridade(lead.id, p.organizationId).catch(() => {});
+      await agendarFollowup(conversationId, p, leadRef, now).catch(() => {});
       break;
-    }
-
-    case "continue":
-    default: {
-      // Qualquer estado não-terminal volta pra "em qualificação" quando o lead
-      // responde de novo. Antes só "novo" era promovido, então um lead marcado
-      // "morno" ou "fora" que voltasse a conversar seguia sendo qualificado
-      // ativamente mas continuava parado em "Mornos"/"Fora do ICP" no board.
-      if (newSession.status !== "handoff_enviado") {
-        newSession.status = "em_qualificacao";
-      }
-      // Reflete a qualificação em andamento no Kanban — moverLeadPorTipo já é
-      // idempotente (não faz nada se o lead já está na coluna), seguro chamar
-      // a cada turno em vez de só na transição novo→em_qualificacao.
-      // Lead já qualificado NÃO volta para "Em qualificação" a cada turno.
-      if (newSession.status === "em_qualificacao" && !jaQualificado) {
-        await moverLeadPorTipo(lead.id, provider.organizationId, "EM_QUALIFICACAO");
-      }
-      // Agenda follow-up para leads qualificados que param de responder
-      if (newSession.score >= 70 && newSession.status !== "handoff_enviado") {
-        await scheduleQualifiedFollowup(
-          conversationId, phone, phoneNumberId, token, lead.profileName ?? null
-        ).catch(() => {});
-      } else {
-        // Follow-up padrão SDR: 1º toque 2h depois, seguido de 12h, 24h e 48h (cadência fixa).
-        const nextSendAt = proximoEnvio(dataDoToque(1, now, now), now, now) ?? dataDoToque(1, now, now);
-        await prisma.conversationFollowUp.upsert({
-          where: { conversationId },
-          update: { step: 1, status: "ACTIVE", aiMessageAt: now, nextSendAt, leadName: lead.profileName ?? null },
-          create: {
-            conversationId,
-            step: 1,
-            status: "ACTIVE",
-            aiMessageAt: now,
-            nextSendAt,
-            leadName: lead.profileName ?? null,
-            phoneNumber: phone,
-            phoneNumberId,
-            accessToken: token,
-          },
-        }).catch(() => {});
-      }
+    default:
+      // abertura / perguntar: em qualificação (quem já foi qualificado não volta)
+      if (!s.qualificado_em) await moverLeadPorTipo(lead.id, p.organizationId, "EM_QUALIFICACAO");
+      await agendarFollowup(conversationId, p, leadRef, now).catch(() => {});
       break;
-    }
   }
 
-  // ── Salvar sessão atualizada ─────────────────────────────────────────────────
-  await saveSdrSession(conversationId, newSession);
-  await sincronizarQualificacaoNoLead(lead.id, newSession);
-
-  // ── Atualizar lastMessageAt da conversa ──────────────────────────────────────
-  await prisma.whatsappConversation.update({
-    where: { id: conversationId },
-    data: { updatedAt: now },
-  }).catch(() => {});
-
-  console.log(`[SDR] ✅ Concluído | conv=${conversationId} | action=${parsed.action} | score=${newSession.score} | etapa=${newSession.etapa}`);
+  await saveSdrSession(conversationId, s);
+  await sincronizarQualificacaoNoLead(lead.id, s);
+  await prisma.whatsappConversation.update({ where: { id: conversationId }, data: { updatedAt: now } }).catch(() => {});
+  console.log(`[Júlia] ✅ ${saida.acao} | icp=${saida.icp} | conv=${conversationId}`);
 }
 
 // ─── Bastão atrasado ─────────────────────────────────────────────────────────

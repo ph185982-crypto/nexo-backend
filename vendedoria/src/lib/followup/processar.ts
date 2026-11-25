@@ -208,7 +208,7 @@ export async function processarFollowupsVencidos(opts: { orcamentoMs?: number } 
   const agentConfig = await prisma.agentConfig.findFirst().catch(() => null);
   const maxFollowUps = MAX_FOLLOWUPS;
   const followUpPrompt = (agentConfig as typeof agentConfig & { followUpPrompt?: string | null })?.followUpPrompt ?? null;
-  const agentName = agentConfig?.agentName ?? "Pedro";
+  const agentName = agentConfig?.agentName ?? "Júlia";
 
   // Claim atômico com lease: empurra nextSendAt 15 min pra frente ao pegar o
   // item, então uma execução concorrente (outro cron, ou o gatilho oportunista
@@ -282,6 +282,13 @@ export async function processarFollowupsVencidos(opts: { orcamentoMs?: number } 
       }).catch(() => null);
       const ehSdr = !!agenteConv?.provider?.agent?.systemPrompt?.trimStart().startsWith("[SDR]");
       let sessaoSdr = ehSdr ? await loadSdrSession(fu.conversationId).catch(() => null) : null;
+      // Roteiro da Júlia: textos fixos, 2 toques, "Perdido" no fim (src/lib/ai/sdr/julia/followup.ts).
+      if (ehSdr && sessaoSdr) {
+        const { followupJulia } = await import("@/lib/ai/sdr/julia/followup");
+        const r = await followupJulia(fu, sessaoSdr, ultimaDoCliente, fu.accessToken ?? process.env.META_WHATSAPP_ACCESS_TOKEN ?? undefined, now);
+        if (r === "enviado") results.sent++; else results.closed++;
+        continue;
+      }
       // O modelo nem sempre grava na sessão o que o lead disse (nome, CNPJ…): completa pela conversa
       // para o acompanhamento não perguntar de novo o que o lead já respondeu.
       if (sessaoSdr && sessaoSdr.status !== "handoff_enviado") {

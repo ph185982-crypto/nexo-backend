@@ -37,7 +37,9 @@ export type FunilTipo =
   | "QUALIFICADO"
   | "MORNO"
   | "ESCALATED"
-  | "PROPOSTA_NEGOCIACAO";
+  | "PROPOSTA_NEGOCIACAO"
+  // Roteiro da Júlia: "Fora do ICP" é uma coluna própria (tipo JUNK), separada de "Perdido" (LOST)
+  | "FORA_ICP";
 
 /** As colunas canônicas do funil de vendas. */
 export type FunilCanonico =
@@ -64,6 +66,7 @@ const MAPA_CANONICO: Record<FunilTipo | FunilCanonico, FunilCanonico> = {
   GANHO:               "GANHO",
   LOST:                "LOST",
   DESCARTADO:          "LOST",
+  FORA_ICP:            "LOST",
 };
 
 export function canonicalizarTipo(tipo: string): FunilCanonico {
@@ -85,6 +88,11 @@ async function resolverColuna(organizationId: string, tipo: string) {
     orderBy: { order: "asc" },
   });
   const porTipo = (t: string) => colunas.find((c) => c.type === t);
+
+  // "Fora do ICP" tem coluna própria (JUNK); "Perdido" fica com o LOST. Sem a coluna, cai no LOST como antes.
+  if (tipo === "FORA_ICP") {
+    return porTipo("JUNK") ?? colunas.find((c) => normalizarNome(c.name) === "fora do icp") ?? porTipo("LOST") ?? null;
+  }
 
   const alvo = canonicalizarTipo(tipo);
   const direta = porTipo(alvo) ?? porTipo(tipo);

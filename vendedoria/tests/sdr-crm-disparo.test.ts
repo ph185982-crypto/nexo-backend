@@ -5,19 +5,22 @@ import assert from "node:assert/strict";
 import { camposCrmDaSessao } from "@/lib/ai/sdr/sincronizar-crm";
 import { SDR_EMPTY_SESSION } from "@/lib/ai/sdr/types";
 
-test("camposCrmDaSessao: ICP, faturamento, loja e CNPJ viram colunas do CRM", () => {
+test("camposCrmDaSessao: regras da Júlia — ICP por loja/estoque + CNPJ, faturamento pelo ponto médio da faixa", () => {
   const q = camposCrmDaSessao({
-    ...SDR_EMPTY_SESSION, nome: "Carla", empresa: "Bella Modas", segmento: "moda", faturamento_total: "60 mil por mês",
-    loja_fisica: "sim", cnpj: "tem", problema_principal: "Shopee parada em 3 pedidos/semana", score: 85,
+    ...SDR_EMPTY_SESSION, nome: "Carla", empresa: "Bella Modas", segmento: "moda", faixa_faturamento: 3,
+    loja_fisica: "sim", cnpj: "tem", frase_chave: "Shopee parada em 3 pedidos/semana", score: 85,
   });
   assert.deepEqual(
     [q.empresa, q.faturamentoMensal, q.lojaFisica, q.cnpjStatus, q.icpStatus, q.scoreSdr],
-    ["Bella Modas", 60000, "SIM", "TEM", "QUALIFICADO", 85],
+    ["Bella Modas", 75000, "SIM", "TEM", "QUALIFICADO", 85],
   );
-  const fora = camposCrmDaSessao({ ...SDR_EMPTY_SESSION, faturamento_total: "5 mil", loja_fisica: "nao", cnpj: "não tem" });
-  assert.equal(fora.icpStatus, "FORA");
-  const pendente = camposCrmDaSessao({ ...SDR_EMPTY_SESSION, faturamento_total: "50 mil" });
+  // faturamento baixo não elimina: loja + CNPJ = QUALIFICADO
+  assert.equal(camposCrmDaSessao({ ...SDR_EMPTY_SESSION, faixa_faturamento: 1, loja_fisica: "sim", cnpj: "tem" }).icpStatus, "QUALIFICADO");
+  assert.equal(camposCrmDaSessao({ ...SDR_EMPTY_SESSION, loja_fisica: "sim", cnpj: "nao tem" }).icpStatus, "MORNO");
+  assert.equal(camposCrmDaSessao({ ...SDR_EMPTY_SESSION, loja_fisica: "nao" }).icpStatus, "FORA");
+  const pendente = camposCrmDaSessao({ ...SDR_EMPTY_SESSION, faturamento_total: "meta de 50 mil" });
   assert.equal(pendente.icpStatus, "PENDENTE");
+  assert.equal("faturamentoMensal" in pendente, false); // texto livre/meta nunca vira faturamento
   assert.equal("empresa" in pendente, false); // não apaga dado do CRM com vazio
 });
 

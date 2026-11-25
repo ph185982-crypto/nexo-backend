@@ -50,7 +50,7 @@ export function tipoEventoDaEtapa(tipo: string): TipoEventoCrm | null {
   switch (tipo) {
     case "QUALIFICADO": case "PROPOSTA": case "PROPOSTA_NEGOCIACAO": return "lead.qualificado";
     case "ESCALATED": return "lead.escalado";
-    case "LOST": case "DESCARTADO": case "JUNK": return "lead.perdido";
+    case "LOST": case "DESCARTADO": case "JUNK": case "FORA_ICP": return "lead.perdido";
     case "GANHO": return "lead.ganho";
     default: return null;
   }

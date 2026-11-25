@@ -11,6 +11,8 @@ export const MOTIVO = {
   SEM_INTERESSE: "Sem interesse",
   FORA_ICP: "Fora do perfil (ICP)",
   OPT_OUT: "Pediu para não receber mensagens",
+  SEM_RESPOSTA: "Sem resposta",
+  RESPOSTA_AUTOMATICA: "Resposta automática",
 } as const;
 
 const PADRAO: Record<TipoEncerramento, string[]> = {
@@ -25,6 +27,8 @@ const PADRAO: Record<TipoEncerramento, string[]> = {
     "Não é o decisor",
     "Contato inválido ou spam",
     MOTIVO.OPT_OUT,
+    MOTIVO.SEM_RESPOSTA,
+    MOTIVO.RESPOSTA_AUTOMATICA,
   ],
   GANHO: [
     "Dor confirmada e urgente",
